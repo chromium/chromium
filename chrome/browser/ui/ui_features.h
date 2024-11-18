@@ -144,18 +144,12 @@ BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 extern const char kTabScrollingButtonPositionParameterName[];
 
-BASE_DECLARE_FEATURE(kSidePanelWebView);
-
 #if !defined(ANDROID)
 BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
 #endif
 
 BASE_DECLARE_FEATURE(kSidePanelResizing);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
-
-BASE_DECLARE_FEATURE(kSideSearch);
-BASE_DECLARE_FEATURE(kSideSearchFeedback);
-BASE_DECLARE_FEATURE(kSearchWebInSidePanel);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 

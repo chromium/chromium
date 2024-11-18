@@ -29,13 +29,19 @@
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_web_ui.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -213,16 +219,37 @@ class BocaAppPageHandlerTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
                                           /*disabled_features=*/{});
-    // Sign in test user.
+    // Set up UserManager related modules.
     auto account_id = AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaId);
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
-    fake_user_manager_->AddUser(account_id);
+    auto browser_context_helper_delegate =
+        std::make_unique<ash::FakeBrowserContextHelperDelegate>();
+    auto* browser_context_helper_delegate_ptr =
+        browser_context_helper_delegate.get();
+    browser_context_helper_ = std::make_unique<ash::BrowserContextHelper>(
+        std::move(browser_context_helper_delegate));
 
+    // Set up global BocaAppClient's mock.
     boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
     EXPECT_CALL(*boca_app_client_, AddSessionManager(_)).Times(1);
     ON_CALL(*boca_app_client_, GetIdentityManager())
         .WillByDefault(Return(nullptr));
 
+    // Sign in a test user.
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+    auto* browser_context =
+        browser_context_helper_delegate_ptr->CreateBrowserContext(
+            browser_context_helper_delegate_ptr->GetUserDataDir()->AppendASCII(
+                "test-browser-context"),
+            /*is_off_the_record=*/false);
+    ash::AnnotatedAccountId::Set(browser_context, account_id);
+
+    // Create BocaSessionManager mock.
     EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
     session_manager_ =
         std::make_unique<StrictMock<MockSessionManager>>(&session_client_impl_);
@@ -231,19 +258,34 @@ class BocaAppPageHandlerTest : public testing::Test {
     ON_CALL(*boca_app_client(), GetSessionManager())
         .WillByDefault(Return(session_manager()));
 
+    // Create the WebContents for the BrowserContext.
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(browser_context));
+    web_ui_ = std::make_unique<content::TestWebUI>();
+    web_ui_->set_web_contents(web_contents_.get());
+
     EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/true))
         .Times(1);
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         remote_.BindNewPipeAndPassReceiver(),
         // TODO(b/359929870):Setting nullptr for other dependencies for now.
         // Adding test case for classroom and tab info.
-        pending_receiver_.InitWithNewPipeAndPassRemote(), nullptr, nullptr,
-        &session_client_impl_, /*=is_producer*/ true);
+        pending_receiver_.InitWithNewPipeAndPassRemote(), web_ui_.get(),
+        /*classroom_client_impl=*/nullptr, &session_client_impl_,
+        /*is_producer=*/true);
   }
 
   void TearDown() override {
     EXPECT_CALL(*session_manager(), ToggleAppStatus(/*is_app_opened=*/false))
         .Times(1);
+
+    boca_app_handler_.reset();
+    web_ui_.reset();
+    web_contents_.reset();
+    session_manager_.reset();
+    boca_app_client_.reset();
+    browser_context_helper_.reset();
+    fake_user_manager_.Reset();
   }
 
  protected:
@@ -253,19 +295,23 @@ class BocaAppPageHandlerTest : public testing::Test {
   BocaAppHandler* boca_app_handler() { return boca_app_handler_.get(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      fake_user_manager_;
+  std::unique_ptr<ash::BrowserContextHelper> browser_context_helper_;
   // Among all BocaAppHandler dependencies,BocaAppClient should construct early
   // and destruct last.
   std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;
+
+  StrictMock<MockSessionClientImpl> session_client_impl_{nullptr};
   std::unique_ptr<StrictMock<MockSessionManager>> session_manager_;
+  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::TestWebUI> web_ui_;
   mojo::Remote<mojom::PageHandler> remote_;
   mojo::PendingReceiver<mojom::Page> pending_receiver_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
-  StrictMock<MockSessionClientImpl> session_client_impl_{nullptr};
   std::unique_ptr<BocaAppHandler> boca_app_handler_;
-  signin::IdentityTestEnvironment identity_test_env_;
 };
 
 TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {

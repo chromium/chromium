@@ -158,7 +158,7 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     // For now, start the first candidate for a URL only if there are no
     // matching prerenders. We could be cleverer in the future.
     if (matching_prerenders.empty()) {
-      CHECK_GT(matching_candidates.size(), 0u);
+      CHECK(!matching_candidates.empty());
       candidates_to_start.push_back(std::move(matching_candidates[0]));
     }
 

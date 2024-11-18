@@ -799,6 +799,7 @@
 <translation id="1556127816860282890">فعالیت پس‌زمینه و برخی جلوه‌های بصری، مثل پیمایش روان، ممکن است محدود شوند</translation>
 <translation id="1556537182262721003">انتقال دایرکتوری برنامهٔ افزودنی به نمایه ممکن نیست.</translation>
 <translation id="1557939148300698553">ایجاد نمایه</translation>
+<translation id="155803912725350982">کلیدهای آهسته</translation>
 <translation id="155865706765934889">صفحه لمسی</translation>
 <translation id="1558671750917454373">ازسر گرفتن پخش محتوا در <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">این اقدام دسترسی مکان را برای برنامه‌ها، وب‌سایت‌های دارای اجازه مکان، و خدمات سیستم مجاز می‌کند</translation>
@@ -3557,6 +3558,7 @@
 <translation id="3488199663160411179">نام</translation>
 <translation id="3490695139702884919">در حال بارگیری… <ph name="PERCENT" />٪</translation>
 <translation id="3491171603443463516">اگر پین یا گذرواژه‌تان را فراموش کردید، می‌توانید داده‌های محلی را بازیابی کنید</translation>
+<translation id="3491616972057195633">کلیدهای ضدتکرار</translation>
 <translation id="3491669675709357988">‏حساب فرزندتان برای کنترل‌های والدین Family Link راه‌اندازی نشده است. بعد از تمام کردن راه‌اندازی، می‌توانید کنترل‌های والدین را اضافه کنید. می‌توانید اطلاعات را در کنترل‌های والدین در برنامه «کاوش» پیدا کنید.</translation>
 <translation id="3491678231052507920">‏سایت‌ها معمولاً از داده‌ها و دستگاه‌های واقعیت مجازی استفاده می‌کنند تا به شما اجازه دهند به جلسه‌های VR وارد شوید</translation>
 <translation id="3493043608231401654">برداشتن <ph name="TAB_TITLE" /> از گروه برگه</translation>
@@ -3643,6 +3645,7 @@
 <translation id="3551320343578183772">بستن برگه</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">هنگام «خروج» پاک شد</translation>
+<translation id="3553442438687311630">‏اصالت‌سنجی Microsoft</translation>
 <translation id="3554493885489666172">دستگاهتان توسط <ph name="PROFILE_NAME" /> مدیریت می‌شود. سرپرستان می‌توانند به داده‌های موجود در همه نمایه‌های این دستگاه دسترسی داشته باشند.</translation>
 <translation id="3555812735919707620">حذف برنامه افزودنی</translation>
 <translation id="3557101512409028104">‏محدودیت‌های وب‌سایت و محدودیت‌های مدت تماشای صفحه با Family Link تنظیم شود</translation>
@@ -3794,10 +3797,11 @@
 <translation id="3654045516529121250">خواندن تنظیمات دسترس‌پذیری خودتان</translation>
 <translation id="3654682977761834281">داده‌های برگرفته از سایت‌های جاسازی‌شده</translation>
 <translation id="3656328935986149999">سرعت مکان‌نما</translation>
+<translation id="3656701180077048004">بین زمان فشردن کلید و زمان فعال شدن آن تأخیری اضافه می‌کند</translation>
 <translation id="3658871634334445293">‏شتاب TrackPoint</translation>
 <translation id="3659929705630080526">کد دسترسی نادرستی را چند بار وارد کرده‌اید. بعداً دوباره امتحان کنید</translation>
 <translation id="3660234220361471169">غیر قابل اطمینان</translation>
-<translation id="3661106764436337772">سریع‌تر و با قاطعیت بیشتر بنویسید</translation>
+<translation id="3661106764436337772">سریع‌تر و با اطمینان بیشتر بنویسید</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{یک گذرواژه موجود پیدا شد}one{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}other{{NUM_PASSWORDS} گذرواژه موجود پیدا شد}}</translation>
 <translation id="3662207097851752847">‏«حساب Google» خود را در تلفنتان تأیید کنید</translation>
 <translation id="3663417513679360795">اطلاعات بیشتر درباره روشن کردن پیش‌بارگذاری استاندارد</translation>
@@ -6679,6 +6683,7 @@
 <translation id="5731247495086897348">جا&amp;گذاری و رفتن</translation>
 <translation id="5733109311583381874">کلمات موردنظرتان را به فرهنگ‌های لغت کاربر اضافه کنید تا موارد برگزیده برای تبدیل را سفارشی کنید.</translation>
 <translation id="5733669387494115331">‏تنظیمات سرویس‌های Google</translation>
+<translation id="5733913382424854675">گروه‌بندی برگه‌ها با هوش مصنوعی</translation>
 <translation id="5734362860645681824">ارتباطات</translation>
 <translation id="5734697361979786483">افزودن دستگاه ذخیره‌سازی متصل به شبکه</translation>
 <translation id="5735513236153491131">اکنون تقویت شود</translation>
@@ -7968,6 +7973,7 @@
 <translation id="6677527809400770913">اشاره <ph name="GESTURE" /> به <ph name="ACTION" /> اختصاص داده شد</translation>
 <translation id="6678604587151240716">امواج بزرگ در دریا حرکت می‌کنند، با زمینی در پس‌زمینه دور. آثاری از نور نارنجی درست فراتر از افق در آسمانی با حال‌وهوای تیره وجود دارد.</translation>
 <translation id="6678717876183468697">نشانی وب عبارت</translation>
+<translation id="6679947539429331601">برای ۱۲ ساعت پنهان شود</translation>
 <translation id="6680442031740878064">در دسترس: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">رده‌بندی</translation>
 <translation id="6683022854667115063">هدفون</translation>
@@ -8606,6 +8612,7 @@
 <translation id="7127980134843952133">سابقه بارگیری</translation>
 <translation id="7128151990937044829">وقتی اعلان‌ها مسدود شده‌اند، نشانگری در نوار نشانی نشان داده شود</translation>
 <translation id="7130438335435247835">‏نام نقطه دسترسی (APN)</translation>
+<translation id="7130680050151101667">این کارت نمایش داده نشود</translation>
 <translation id="7131040479572660648">خواندن داده‌های شما در <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">افزودن &amp;صفحه...</translation>
 <translation id="7131431455372521159">‏همه دستگاه‌های TrackPoint قطع ارتباط شده است</translation>
@@ -10110,6 +10117,7 @@
 <translation id="8194788147118885421">مرور کردن برگه‌های غیرفعال</translation>
 <translation id="8195265224453131880">شدت</translation>
 <translation id="8195854162863398249">غیر فعال کردن <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">تأخیر قبل‌از فعال کردن مجدد یک کلید</translation>
 <translation id="8197673340773315084">نام یا برچسبی مثل «کاری» یا «شخصی» اضافه کنید</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
 <translation id="8198457270656084773">به‌دنبال صفحه گزارش دستگاه سیستم هستید؟ به <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> بروید.</translation>
@@ -10525,6 +10533,7 @@
 <translation id="8486666913807228950">دلیل: قانون معکوس <ph name="REVERT_RULE" /> در فهرست «باز کردن اجباری در» پیدا شد.</translation>
 <translation id="8487678622945914333">بزرگ‌نمایی</translation>
 <translation id="8487699605742506766">نقطه اتصال</translation>
+<translation id="8488735603679729015">تأخیر قبل‌از فعال کردن کلید</translation>
 <translation id="8489156414266187072">پیشنهادهای شخصی فقط در حساب شما نمایش داده می‌شوند</translation>
 <translation id="8490896350101740396">برنامه‌های کیوسک زیر «<ph name="UPDATED_APPS" />» به‌روز شده‌اند. لطفاً برای تکمیل فرآیند به‌روزرسانی دستگاه را مجدداً راه‌اندازی کنید.</translation>
 <translation id="8492822722330266509">سایت‌ها می‌توانند بالاپر ارسال کنند و از هدایت‌ها استفاده کنند</translation>
@@ -10912,6 +10921,7 @@
 <translation id="8755376271068075440">&amp;بزرگ تر</translation>
 <translation id="8755584192133371929">برگه‌ای را برای هم‌رسانی انتخاب کنید</translation>
 <translation id="875604634276263540">نشانی وب تصویر نامعتبر است</translation>
+<translation id="8756262226135340085">فشردن‌های تکراری و سریع یک کلید در صفحه‌کلید را نادیده می‌گیرد</translation>
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> برداشته شد</translation>
 <translation id="8759753423332885148">بیشتر بدانید.</translation>

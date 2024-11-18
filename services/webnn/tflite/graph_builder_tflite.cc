@@ -458,6 +458,8 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*relu_input=*/DataTypeConstraint::kFloat16To32,
        /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
        /*reshape_input=*/kAllDataTypesExceptUint4,
+       // TODO(crbug.com/377366939): Implement Reverse.
+       /*reverse_input=*/{},
        // TODO(crbug.com/370538329): Implement scatterElements.
        /*scatter_elements_input=*/{},
        /*scatter_elements_indices=*/{},
@@ -884,6 +886,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     }
     case mojom::Operation::Tag::kGatherElements:
+    case mojom::Operation::Tag::kReverse:
     case mojom::Operation::Tag::kScatterElements:
       return base::unexpected(NotSupportedOperatorError(op));
   }

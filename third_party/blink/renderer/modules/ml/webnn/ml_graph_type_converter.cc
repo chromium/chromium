@@ -1507,6 +1507,16 @@ OperationPtr CreateReshapeOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewReshape(std::move(reshape_mojo));
 }
 
+OperationPtr CreateReverseOperation(const OperandToIdMap& operand_to_id_map,
+                                    const MLOperator* reverse) {
+  auto reverse_mojo = blink_mojom::Reverse::New(
+      GetOperatorInputId(reverse, operand_to_id_map),
+      GetOperatorOutputId(reverse, operand_to_id_map),
+      static_cast<const MLReverseOperator*>(reverse)->Axes(),
+      reverse->Options()->label());
+  return blink_mojom::Operation::NewReverse(std::move(reverse_mojo));
+}
+
 OperationPtr CreateScatterElementsOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* scatter_elements) {
@@ -1856,6 +1866,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kReshape:
       graph_info->operations.push_back(
           CreateReshapeOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kReverse:
+      graph_info->operations.push_back(
+          CreateReverseOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kScatterElements:
       graph_info->operations.push_back(

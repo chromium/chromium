@@ -804,6 +804,7 @@
 <translation id="1556127816860282890">قد يتم إيقاف الأنشطة التي تتم في الخلفية وبعض التأثيرات المرئية، مثل الانتقال السلس للأعلى أو للأسفل.</translation>
 <translation id="1556537182262721003">تعذر نقل دليل الإضافة إلى الملف الشخصي.</translation>
 <translation id="1557939148300698553">إنشاء ملف شخصي</translation>
+<translation id="155803912725350982">المفاتيح البطيئة</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1558671750917454373">استئناف البث على "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1561331397460162942">يترتب على ذلك منح إذن الوصول إلى الموقع الجغرافي لكلّ من التطبيقات والمواقع الإلكترونية المسموح لها بذلك وخدمات النظام</translation>
@@ -3556,6 +3557,7 @@
 <translation id="3488199663160411179">الاسم</translation>
 <translation id="3490695139702884919">جارٍ التنزيل… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">يمكنك استعادة البيانات المحلّية في حال نسيان رقم التعريف الشخصي أو كلمة المرور</translation>
+<translation id="3491616972057195633">تجاهُل النقرات المتكرّرة</translation>
 <translation id="3491669675709357988">‏لم يتم إعداد أدوات رقابة الأهل لحساب طفلك في تطبيق Family Link. يمكنك إضافة أدوات رقابة الأهل بعد الانتهاء من الإعداد. يمكنك العثور على معلومات حول أدوات رقابة الأهل في تطبيق "استكشاف".</translation>
 <translation id="3491678231052507920">تستخدم المواقع الإلكترونية عادةً أجهزة الواقع الافتراضي وبياناتها للسماح لك بالدخول إلى جلسات الواقع الافتراضي.</translation>
 <translation id="3493043608231401654">إزالة "<ph name="TAB_TITLE" />" من مجموعة علامات التبويب</translation>
@@ -3642,6 +3644,7 @@
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">تم المحو عند الخروج</translation>
+<translation id="3553442438687311630">Microsoft Authentication</translation>
 <translation id="3554493885489666172">تتم إدارة جهازك من قِبل <ph name="PROFILE_NAME" />. يمكن للمشرفين الوصول إلى البيانات في أي ملف شخصي على هذا الجهاز.</translation>
 <translation id="3555812735919707620">إزالة الإضافة</translation>
 <translation id="3557101512409028104">‏ضبط الحدود القصوى المسموح بها للقيود على المواقع الإلكترونية ووقت النظر إلى الشاشة باستخدام Family Link</translation>
@@ -3793,6 +3796,7 @@
 <translation id="3654045516529121250">الاطّلاع على إعدادات تسهيل الاستخدام</translation>
 <translation id="3654682977761834281">البيانات الواردة من المواقع الإلكترونية المضمّنة</translation>
 <translation id="3656328935986149999">سرعة المؤشر</translation>
+<translation id="3656701180077048004">تضيف هذه الميزة مدةً بين وقت الضغط على مفتاح ووقت تفعيله</translation>
 <translation id="3658871634334445293">‏تسارع TrackPoint</translation>
 <translation id="3659929705630080526">لقد أدخلت رمز دخول غير صحيح عدّة مرات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3660234220361471169">غير موثوق بها</translation>
@@ -6679,6 +6683,7 @@
 <translation id="5731247495086897348">ل&amp;صق وانتقال</translation>
 <translation id="5733109311583381874">يمكنك إضافة كلماتك الخاصة إلى قواميس المستخدم حتى يتم تخصيص الكلمات المرشَّحة لتحويلها إلى اللغة المحدَّدة.</translation>
 <translation id="5733669387494115331">‏إعدادات خدمات Google</translation>
+<translation id="5733913382424854675">تجميع علامات التبويب باستخدام الذكاء الاصطناعي</translation>
 <translation id="5734362860645681824">الاتصالات</translation>
 <translation id="5734697361979786483">إضافة خادم مشاركة الملفات</translation>
 <translation id="5735513236153491131">تعزيز الأداء الآن</translation>
@@ -7975,6 +7980,7 @@
 <translation id="6677527809400770913">تم تخصيص الإيماءة "<ph name="GESTURE" />" إلى "<ph name="ACTION" />"</translation>
 <translation id="6678604587151240716">أمواج كبيرة تتصادم في البحر، مع أرض في الخلفية البعيدة وخيوط من الضوء البرتقالي فوق الأفق، في سماء مظلمة</translation>
 <translation id="6678717876183468697">‏عنوان URL للاستعلام</translation>
+<translation id="6679947539429331601">إخفاء لمدة 12 ساعة</translation>
 <translation id="6680442031740878064">المساحة المتاحة: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">تقييم</translation>
 <translation id="6683022854667115063">سمّاعات رأس</translation>
@@ -8613,6 +8619,7 @@
 <translation id="7127980134843952133">سجل التنزيل</translation>
 <translation id="7128151990937044829">عرض مؤشر في شريط العناوين عند حظر الإشعارات</translation>
 <translation id="7130438335435247835">‏اسم نقطة الوصول (APN)</translation>
+<translation id="7130680050151101667">عدم عرض هذه البطاقة</translation>
 <translation id="7131040479572660648">قراءة بياناتك على <ph name="WEBSITE_1" />، <ph name="WEBSITE_2" /> و<ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">إضافة &amp;صفحة...</translation>
 <translation id="7131431455372521159">انقطع اتصال كل عِصيّ التأشير.</translation>
@@ -10118,6 +10125,7 @@
 <translation id="8194788147118885421">مراجعة علامات التبويب غير النشطة</translation>
 <translation id="8195265224453131880">الكثافة</translation>
 <translation id="8195854162863398249">إيقاف ميزة "<ph name="FEATURE_NAME" />"</translation>
+<translation id="8195920051450756553">المهلة التي يتم بعد انقضائها تفعيل المفتاح نفسه مرة أخرى</translation>
 <translation id="8197673340773315084">يُرجى إضافة اسم أو تصنيف، مثل "مخصّص للعمل" أو "شخصي".</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8198457270656084773">هل تبحث عن صفحة سجلّ الجهاز الخاصة بالنظام؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10534,6 +10542,7 @@
 <translation id="8486666913807228950">السبب: تم العثور على القاعدة المعكوسة <ph name="REVERT_RULE" /> في القائمة "فرض الفتح في".</translation>
 <translation id="8487678622945914333">تكبير</translation>
 <translation id="8487699605742506766">نقطة الاتصال</translation>
+<translation id="8488735603679729015">المهلة التي يتم بعد انقضائها تفعيل المفتاح</translation>
 <translation id="8489156414266187072">لا يتم عرض الاقتراحات الشخصية إلّا على حسابك.</translation>
 <translation id="8490896350101740396">‏تم تحديث تطبيقات kiosk التالية "<ph name="UPDATED_APPS" />". يُرجى إعادة تشغيل الجهاز لإكمال عملية الإعادة تحميل.</translation>
 <translation id="8492822722330266509">السماح للمواقع الإلكترونية بإرسال النوافذ المنبثقة واستخدام عمليات إعادة التوجيه</translation>
@@ -10921,6 +10930,7 @@
 <translation id="8755376271068075440">أ&amp;كبر</translation>
 <translation id="8755584192133371929">اختيار علامة تبويب لمشاركتها</translation>
 <translation id="875604634276263540">‏عنوان URL للصورة غير صالح.</translation>
+<translation id="8756262226135340085">تتجاهل هذه الميزة الضغطات المتكررة بسرعة على مفتاح لوحة المفاتيح نفسه</translation>
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
 <translation id="8757368836647541092">تمت إزالة <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">معرفة المزيد.</translation>

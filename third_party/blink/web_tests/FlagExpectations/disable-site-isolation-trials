@@ -89,7 +89,6 @@ crbug.com/626703 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-
 crbug.com/626703 external/wpt/webnn/conformance_tests/prelu.https.any.html?gpu [ Crash ]
 crbug.com/626703 external/wpt/fedcm/fedcm-login-status/confirm-idp-login.https.html [ Timeout ]
 crbug.com/626703 virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/single-get-before-onload.https.html [ Timeout ]
-crbug.com/626703 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Crash Failure ]
 crbug.com/626703 external/wpt/url/a-element-origin-xhtml.xhtml [ Crash Failure ]

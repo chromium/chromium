@@ -195,24 +195,6 @@ BASE_FEATURE(kResponsiveToolbar,
              "ResponsiveToolbar",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the side search feature for Google Search. Presents recent Google
-// search results in a browser side panel.
-BASE_FEATURE(kSideSearch, "SideSearch", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSideSearchFeedback,
-             "SideSearchFeedback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Displays right-click search results of a highlighted text in side panel,
-// So users are not forced to switch to a new tab to view the search results
-BASE_FEATURE(kSearchWebInSidePanel,
-             "SearchWebInSidePanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSidePanelWebView,
-             "SidePanelWebView",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if !defined(ANDROID)
 BASE_FEATURE(kSidePanelCompanionDefaultPinned,
              "SidePanelCompanionDefaultPinned",

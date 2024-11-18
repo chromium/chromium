@@ -7,6 +7,7 @@ import './info_card.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HealthdApiMemoryResult, HealthdApiTelemetryResult, SystemZramInfo} from '../externs.js';
+import {toFixedFloat} from '../utils/number_utils.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
 import {getTemplate} from './memory_card.html.js';
@@ -133,8 +134,8 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
       'Total Used': this.getFormattedMemory(totalUsedMemoryKib),
       'Original Size': this.getFormattedMemory(originalDataSizeKib),
       'Compressed Size': this.getFormattedMemory(compressedDataSizeKib),
-      'Compression Ratio': compressionRatio.toFixed(2),
-      'Space Reduction': `${spaceReductionPercentage.toFixed(2)}%`,
+      'Compression Ratio': toFixedFloat(compressionRatio, 2),
+      'Space Reduction': `${toFixedFloat(spaceReductionPercentage, 2)}%`,
     });
   }
 
@@ -164,7 +165,7 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
   private getFormattedMemoryWithPercentage(memory: number, totalMemory: number):
       string {
     return `${this.getFormattedMemory(memory)} (${
-        (memory / totalMemory * 100).toFixed(2)}%)`;
+        toFixedFloat(memory / totalMemory * 100, 2)}%)`;
   }
 
   private getFormattedMemory(memory: number): string {
@@ -176,13 +177,13 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
           memory /= 1024;
           unitIdx++;
         }
-        return `${memory.toFixed(2)} ${units[unitIdx]}`;
+        return `${toFixedFloat(memory, 2)} ${units[unitIdx]}`;
       }
       case MemoryUnitEnum.GIBI: {
-        return `${(memory / 1024 / 1024).toFixed(2)} GiB`;
+        return `${toFixedFloat(memory / 1024 / 1024, 2)} GiB`;
       }
       case MemoryUnitEnum.MEBI: {
-        return `${(memory / 1024).toFixed(2)} MiB`;
+        return `${toFixedFloat(memory / 1024, 2)} MiB`;
       }
       case MemoryUnitEnum.KIBI: {
         return `${memory} KiB`;

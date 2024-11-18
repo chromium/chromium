@@ -3,7 +3,7 @@ Short Name: content_analysis_sdk
 URL: https://github.com/chromium/content_analysis_sdk
 Version: N/A
 Revision: DEPS
-License: BSD
+License: BSD-3-Clause
 License File: ./LICENSE
 Security Critical: yes
 Shipped: yes

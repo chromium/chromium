@@ -8,6 +8,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import type {CpuUsage} from '../cpu_usage_helper.js';
 import {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../externs.js';
+import {toFixedFloat} from '../utils/number_utils.js';
 
 import {getTemplate} from './cpu_card.html.js';
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
@@ -68,11 +69,12 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
           const maxFreqKhz = parseInt(logicalCpu.frequency.max);
           const freqPercentage = (maxFreqKhz === 0) ?
               'N/A' :
-              (curFreqKhz / maxFreqKhz * 100).toFixed(2);
+              toFixedFloat(curFreqKhz / maxFreqKhz * 100, 2);
           return {
             'Core ID': logicalCpu.coreId,
-            'Current / Max Frequency': `${curFreqKhz / 1e6}GHz / ${
-                maxFreqKhz / 1e6}GHz (${freqPercentage}%)`,
+            'Current / Max Frequency':
+                `${toFixedFloat(curFreqKhz / 1e6, 3)}GHz / ${
+                    toFixedFloat(maxFreqKhz / 1e6, 3)}GHz (${freqPercentage}%)`,
           };
         }),
       });
@@ -98,10 +100,11 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
     }
 
     this.$.infoCard.updateDisplayedInfo(1, {
-      'Overall': `${((systemPercentage + userPercentage) / count).toFixed(2)}%`,
-      'System': `${(systemPercentage / count).toFixed(2)}%`,
-      'User': `${(userPercentage / count).toFixed(2)}%`,
-      'Idle': `${(idlePercentage / count).toFixed(2)}%`,
+      'Overall':
+          `${toFixedFloat((systemPercentage + userPercentage) / count, 2)}%`,
+      'System': `${toFixedFloat(systemPercentage / count, 2)}%`,
+      'User': `${toFixedFloat(userPercentage / count, 2)}%`,
+      'Idle': `${toFixedFloat(idlePercentage / count, 2)}%`,
     });
   }
 

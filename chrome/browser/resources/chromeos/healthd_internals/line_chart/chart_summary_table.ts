@@ -5,6 +5,8 @@
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {toFixedFloat} from '../utils/number_utils.js';
+
 import {getTemplate} from './chart_summary_table.html.js';
 import {DataSeries} from './utils/data_series.js';
 import type {DataPointsStatistics} from './utils/data_series.js';
@@ -29,17 +31,6 @@ interface DisplayedLineInfo {
   maxValue: number;
   // The average value of line.
   averageValue: number;
-}
-
-function toFixedFloat(num: number, maxFloatDigits: number = 3): string {
-  const numStr = num.toString();
-  const decimalIndex = numStr.indexOf('.');
-  // No need to truncate.
-  if (decimalIndex === -1 ||
-      numStr.length - decimalIndex - 1 <= maxFloatDigits) {
-    return numStr;
-  }
-  return num.toFixed(maxFloatDigits);
 }
 
 function toReadableDuration(timeMilliseconds: number): string {
@@ -135,16 +126,16 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
       this.set(`displayedData.${i}.isVisible`, dataSeries.getVisible());
       this.set(
           `displayedData.${i}.latestValue`,
-          toFixedFloat(statistics.latest / unitScale));
+          toFixedFloat(statistics.latest / unitScale, 3));
       this.set(
           `displayedData.${i}.minValue`,
-          toFixedFloat(statistics.min / unitScale));
+          toFixedFloat(statistics.min / unitScale, 3));
       this.set(
           `displayedData.${i}.maxValue`,
-          toFixedFloat(statistics.max / unitScale));
+          toFixedFloat(statistics.max / unitScale, 3));
       this.set(
           `displayedData.${i}.averageValue`,
-          toFixedFloat(statistics.average / unitScale));
+          toFixedFloat(statistics.average / unitScale, 3));
     }
   }
 }

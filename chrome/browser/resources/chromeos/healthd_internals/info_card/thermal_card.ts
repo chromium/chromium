@@ -7,6 +7,7 @@ import './info_card.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HealthdApiTelemetryResult, HealthdApiThermalResult} from '../externs.js';
+import {toFixedFloat} from '../utils/number_utils.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
 import {getTemplate} from './thermal_card.html.js';
@@ -94,10 +95,10 @@ export class HealthdInternalsThermalCardElement extends PolymerElement {
   private convertTemperature(temperatureCelsius: number): string {
     switch (this.temperatureUnit) {
       case TemperatureUnitEnum.CELSIUS: {
-        return `${temperatureCelsius.toFixed(4)} °C`;
+        return `${toFixedFloat(temperatureCelsius, 4)} °C`;
       }
       case TemperatureUnitEnum.FAHRENHEIT: {
-        return `${(temperatureCelsius * 9 / 5 + 32).toFixed(4)} °F`;
+        return `${toFixedFloat(temperatureCelsius * 9 / 5 + 32, 4)} °F`;
       }
       default: {
         console.error('Unknown temperature unit: ', this.temperatureUnit);

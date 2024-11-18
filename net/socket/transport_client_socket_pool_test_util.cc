@@ -374,7 +374,7 @@ MockTransportClientSocketFactory::CreateTransportClientSocket(
   Rule rule(client_socket_type_);
   if (!rules_.empty()) {
     rule = rules_.front();
-    rules_ = rules_.subspan(1);
+    rules_ = rules_.subspan<1>();
   }
 
   if (rule.expected_addresses) {

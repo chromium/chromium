@@ -35,9 +35,10 @@ void WebSocketSplitPacketCloseHandler::SendSplitCloseFrame() {
   // Split the close frame into two parts and send each separately.
   const auto close_frame_span = close_frame->span();
 
-  const size_t split_index = 1;  // Split after the first byte
-  connection()->SendRaw(close_frame_span.subspan(0, split_index));
-  connection()->SendRaw(close_frame_span.subspan(split_index));
+  // Split after the first byte
+  const auto [first, rest] = close_frame_span.split_at<1>();
+  connection()->SendRaw(first);
+  connection()->SendRaw(rest);
   connection()->DisconnectAfterAnyWritesDone();
 }
 

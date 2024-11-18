@@ -500,11 +500,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "audio-flexible-loopback-for-system-loopback",
-    "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "audio-hfp-mic-sr-toggle",
     "owners": [ "paulhsia@chromium.org", "cranelw@chromium.org", "chromeos-audio@google.com" ],
     "expiry_milestone": 135
@@ -1662,11 +1657,6 @@
     "name": "crabbyavif",
     "owners": [ "vigneshv@google.com", "image-codecs-eng@google.com" ],
     "expiry_milestone": 133
-  },
-  {
-    "name": "cras-processor-dedicated-thread",
-    "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
-    "expiry_milestone": 130
   },
   {
     "name": "cras-processor-wav-dump",

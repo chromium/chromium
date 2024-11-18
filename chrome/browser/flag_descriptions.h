@@ -1237,9 +1237,6 @@ extern const char kHeavyAdPrivacyMitigationsDescription[];
 extern const char kTabAudioMutingName[];
 extern const char kTabAudioMutingDescription[];
 
-extern const char kCrasProcessorDedicatedThreadName[];
-extern const char kCrasProcessorDedicatedThreadDescription[];
-
 extern const char kCrasProcessorWavDumpName[];
 extern const char kCrasProcessorWavDumpDescription[];
 
@@ -4500,9 +4497,6 @@ extern const char kShowForceRespectUiGainsToggleDescription[];
 
 extern const char kCrOSSystemVoiceIsolationOptionName[];
 extern const char kCrOSSystemVoiceIsolationOptionDescription[];
-
-extern const char kAudioFlexibleLoopbackForSystemLoopbackName[];
-extern const char kAudioFlexibleLoopbackForSystemLoopbackDescription[];
 
 extern const char kShowSpatialAudioToggleName[];
 extern const char kShowSpatialAudioToggleDescription[];

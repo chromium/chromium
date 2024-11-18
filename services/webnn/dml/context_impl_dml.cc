@@ -310,6 +310,9 @@ ContextProperties ContextImplDml::GetProperties(
        // Reshape is emulated by identity.
        /*reshape_input=*/kFloat16To32Ints8To32,
 
+       // Reverse is emulated by slice.
+       /*reverse_input=*/kFloat16To32Ints8To32,
+
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_operator_desc#tensor-support
        /*scatter_elements_input=*/kFloat16To32Ints8To32,
        /*scatter_elements_indices=*/kGatherScatterIndicesSupportedDataTypes,
@@ -390,6 +393,8 @@ ContextProperties ContextImplDml::GetProperties(
     properties.data_type_limits.gather_nd_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.reshape_input =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reverse_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;
     properties.data_type_limits.scatter_elements_input =
         DataTypeConstraint::kAllDataTypesAtLeast8bits;

@@ -113,7 +113,7 @@ bool FixedSetIncrementalLookup::Advance(char input) {
         // If this is not the last character in the label, the next byte should
         // be interpreted as a character or return value. Otherwise, the next
         // byte should be interpreted as a list of child node offsets.
-        bytes_ = bytes_.subspan(1);
+        bytes_ = bytes_.subspan<1>();
         DCHECK(!bytes_.empty());
         bytes_starts_with_label_character_ = !is_last_char_in_label;
         return true;
@@ -144,7 +144,7 @@ bool FixedSetIncrementalLookup::Advance(char input) {
           // should be interpreted as a character or return value. Otherwise,
           // the next byte should be interpreted as a list of child node
           // offsets.
-          bytes_ = offset_bytes.subspan(1);
+          bytes_ = offset_bytes.subspan<1>();
           DCHECK(!bytes_.empty());
           bytes_starts_with_label_character_ = !is_last_char_in_label;
           return true;

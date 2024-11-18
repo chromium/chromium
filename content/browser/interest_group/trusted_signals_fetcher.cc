@@ -491,7 +491,7 @@ void TrustedSignalsFetcher::OnRequestComplete(
     return;
   }
 
-  base::span<const uint8_t> cbor = remaining_span.subspan(0, cbor_length);
+  base::span<const uint8_t> cbor = remaining_span.first(cbor_length);
   data_decoder::DataDecoder::ParseCborIsolated(
       cbor, base::BindOnce(&TrustedSignalsFetcher::OnCborParsed,
                            weak_ptr_factory_.GetWeakPtr()));

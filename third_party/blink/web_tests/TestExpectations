@@ -2696,12 +2696,20 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/379207981 [ Mac12 ] external/wpt/css/css-grid/alignment/grid-baseline-001.html [ Failure ]
+crbug.com/379418916 [ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-complex.tentative.html [ Timeout ]
+crbug.com/379418916 [ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html [ Timeout ]
+crbug.com/379418916 [ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html [ Timeout ]
+crbug.com/379072454 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription.html [ Timeout ]
+crbug.com/379072454 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Timeout ]
 crbug.com/379008012 [ Mac14-arm64 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac13-arm64 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac13 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac12 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac11-arm64 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
+crbug.com/379008012 [ Mac14 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac11 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
+crbug.com/379008012 [ Mac15 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Failure Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Timeout ]
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_verification_error-downgraded.tentative.html [ Crash Timeout ]
@@ -2746,6 +2754,7 @@ crbug.com/378750930 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https
 crbug.com/378750930 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.worker.html?high [ Timeout ]
 crbug.com/378701431 [ Win10.20h2 ] external/wpt/acid/acid2/reftest.html [ Failure ]
 crbug.com/378701431 [ Win11-arm64 ] external/wpt/acid/acid2/reftest.html [ Failure ]
+crbug.com/378701410 [ Mac13 ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Timeout ]
 crbug.com/378701410 [ Mac14 ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Timeout ]
 crbug.com/378701432 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-contain-video.html [ Failure ]
 crbug.com/378634699 [ Mac13 ] external/wpt/mst-content-hint/RTCRtpSendParameters-degradationPreference.html [ Timeout ]
@@ -2821,10 +2830,12 @@ crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabi
 crbug.com/371061343 [ Mac ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol-handler-query.https.html [ Skip Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac14 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
+crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/RTCConfiguration-rtcpMuxPolicy.html [ Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-canTrickleIceCandidates.html [ Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/RTCRtpSender.https.html [ Timeout ]
 crbug.com/371233767 [ Mac14 ] external/wpt/webrtc/RTCRtpSender.https.html [ Timeout ]
 crbug.com/371233767 [ Mac13 ] external/wpt/webrtc/back-forward-cache-with-closed-webrtc-connection.https.window.html [ Timeout ]
+crbug.com/371233767 [ Mac15 ] external/wpt/webrtc/back-forward-cache-with-closed-webrtc-connection.https.window.html [ Timeout ]
 crbug.com/371068262 [ Mac14 ] external/wpt/media-capabilities/encodingInfo.webrtc.html [ Timeout ]
 crbug.com/371068252 [ Mac14 ] external/wpt/webcodecs/video-encoder-flush.https.any.html?vp8 [ Timeout ]
 crbug.com/371068252 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.html?baseline [ Timeout ]
@@ -2928,6 +2939,7 @@ crbug.com/360151046 external/wpt/css/css-text-decor/text-emphasis-punctuation-3.
 crbug.com/359927330 [ Mac13 ] external/wpt/webcodecs/video-encoder-flush.https.any.html?h264_avc [ Timeout ]
 crbug.com/359927330 [ Win11-arm64 ] external/wpt/webcodecs/video-encoder-flush.https.any.html?h264_avc [ Timeout ]
 crbug.com/359927330 [ Mac15-arm64 ] external/wpt/webcodecs/video-encoder-flush.https.any.html?h264_avc [ Timeout ]
+crbug.com/359927330 [ Mac13 ] external/wpt/webcodecs/video-encoder-flush.https.any.worker.html?h264_avc [ Timeout ]
 crbug.com/359927330 [ Win11-arm64 ] external/wpt/webcodecs/video-encoder-flush.https.any.worker.html?h264_avc [ Timeout ]
 crbug.com/359927330 [ Mac15-arm64 ] external/wpt/webcodecs/video-encoder-flush.https.any.worker.html?h264_avc [ Timeout ]
 crbug.com/359696068 [ Win11 ] virtual/threaded/external/wpt/css/css-view-transitions/nested/normal-goes-up.tentative.html [ Failure ]
@@ -5862,25 +5874,25 @@ crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customi
 
 
 ### Tests failing with CSSGapDecorations Enabled:
-crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Failure Crash ]
+crbug.com/357648037 virtual/css-gap-decorations/animations/interpolation/webkit-column-rule-color-interpolation.html [ Crash Failure Timeout ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-animations/responsive/column-rule-color-001.html [ Failure ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/animation/column-rule-color-interpolation.html [ Failure ]
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-valid.html [ Failure ]
 # Failing because we're parsing into a new type of CSSValue, will be fixed in a follow-up CL,
 # when we handle the computed style.
-crbug.com/357648037 virtual/css-gap-decorations/fast/multicol/change-column-rule.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-cascade/all-prop-revert-layer.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/animation/column-rule-width-interpolation.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-computed.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-shorthand.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-width-computed.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-width-invalid.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-variables/variable-reference-visited.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/cssom/declaration-block-all-crash.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-001.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/addition-per-property-001.html [ Failure Crash ]
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html [ Failure Crash ]
+crbug.com/357648037 virtual/css-gap-decorations/fast/multicol/change-column-rule.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-cascade/all-prop-revert-layer.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/animation/column-rule-width-interpolation.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-computed.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-shorthand.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-width-computed.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-multicol/parsing/column-rule-width-invalid.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-variables/variable-reference-visited.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/cssom/declaration-block-all-crash.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/accumulation-per-property-001.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/addition-per-property-001.html [ Crash Failure Timeout ]
+crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html [ Crash Failure Timeout ]
 ### End of tests failing with CSSGapDecorations Enabled
 
 # Position-try-fallbacks UA stylesheet parsing problem:
@@ -8570,7 +8582,7 @@ crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?gpu [ Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.html?gpu [ Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Failure Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu [ Pass Timeout ]
 
 # Flaky on headless shell
@@ -8602,3 +8614,6 @@ crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabi
 
 # Gardener 2024-11-15
 crbug.com/359319433 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
+
+# Gardener 2024-11-18
+crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]

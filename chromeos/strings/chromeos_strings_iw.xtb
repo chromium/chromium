@@ -541,6 +541,7 @@
 <translation id="3606583719724308068">‏זמן אחזור ארוך לאתרי HTTPS</translation>
 <translation id="361575905210396100">תודה על המשוב</translation>
 <translation id="3621072146987826699">פילים</translation>
+<translation id="3628462041319107639">מתבצעת הורדה של מודל התמלול…</translation>
 <translation id="3632040286124154621">הצעה טובה</translation>
 <translation id="3632579075709132555">לחצן להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3639873154908477486">לפי שם בסדר עולה</translation>
@@ -573,6 +574,7 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="382043424867370667">טפט השקיעה</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
+<translation id="383586991013681190">צריך לבחור את שפת התמליל ולהוריד בהגדרות</translation>
 <translation id="3836587210832263413">חשוב להפעיל רק תוספים מהימנים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
@@ -716,6 +718,7 @@
 <translation id="4474142134969976028">אין תוצאות מתאימות</translation>
 <translation id="4479639480957787382">אתרנט</translation>
 <translation id="4483049906298469269">לא ניתן היה לבצע פינג לשער הרשת שאינה מוגדרת כברירת מחדל.</translation>
+<translation id="4483498983731992167">לא ניתן ליצור את התמליל</translation>
 <translation id="4486524074141928967">המערכת תוציא אותך מהחשבון בשעה <ph name="TIME" /></translation>
 <translation id="4500722292849917410">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל מקש צירוף (Ctrl,‏ Alt,‏ Shift או <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">צבע הממשק</translation>
@@ -847,6 +850,7 @@
 <translation id="5099354524039520280">למעלה</translation>
 <translation id="5107243100836678918">מקשי קיצור בלי המקש <ph name="META_KEY" /> עלולים להיות חופפים למקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את המקש <ph name="KEY" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">נרדפות:</translation>
+<translation id="5121677070210013200">‏לא ניתן להוריד את מודל התמלול. צריך לנסות שוב או להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="5130848777448318809">סוסי פוני</translation>
 <translation id="5137451382116112100">מסך מלא</translation>
 <translation id="5140788690559353412">‏אם הגישה לחשבון הבית ספרי שלך תאבד, לא תהיה לך יותר גישה לאימייל ולקבצים ב-Google Drive שמשויכים לחשבון, כמו Gmail, ‏Docs, ‏Slides ועוד.</translation>
@@ -1262,6 +1266,7 @@
 <translation id="7040729769968826896">הפעלת זיהוי הדובר</translation>
 <translation id="7041549558901442110">המכשיר לא מחובר.</translation>
 <translation id="7046522406494308071">לאפס את כל קיצורי הדרך לברירות המחדל?</translation>
+<translation id="7049916119678019302">אפשר להוריד את מודל התמלול בהגדרות</translation>
 <translation id="7058278511608979688">סיום ושמירה</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
 <translation id="7066538517128343186">מקש <ph name="KEY" /></translation>

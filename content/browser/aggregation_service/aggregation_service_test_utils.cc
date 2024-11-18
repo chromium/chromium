@@ -400,8 +400,7 @@ std::vector<uint8_t> DecryptPayloadWithHpke(
     return {};
   }
 
-  base::span<const uint8_t> ciphertext =
-      payload.subspan(X25519_PUBLIC_VALUE_LEN);
+  auto ciphertext = payload.subspan<X25519_PUBLIC_VALUE_LEN>();
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
 
