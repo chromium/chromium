@@ -14,6 +14,13 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/public/provider/chrome/browser/material/material_branding_api.h"
 
+namespace {
+// The amount of time after a snackbar is presented, during which it will
+// retain a11y focus so that VoiceOver is not interrupted by a modal dismissal
+// transition.
+const double kRetainA11yFocusSeconds = 0.75;
+}  // namespace
+
 // Allow access to `usesLegacyDismissalBehavior` since the autoroller to update
 // the header is broken.
 @interface MDCSnackbarMessage (UsesLegacyDismissalBehavior)
@@ -116,6 +123,45 @@
 - (void)snackbarManager:(MDCSnackbarManager*)snackbarManager
     willPresentSnackbarWithMessageView:(MDCSnackbarMessageView*)messageView {
   ios::provider::ApplyBrandingToSnackbarMessageView(messageView);
+
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    // This snackbar may be presented right before a modal is dismissed, which
+    // would cause the a11y focus to return to the top of the view that
+    // presented it, interrupting VoiceOver as it is reading the snackbar's
+    // message. To prevent that, focus changes will be observed for a period of
+    // time so that the snackbar can retain the focus by brute force.
+    [self retainAccessibilityFocusOnView:messageView
+                                 seconds:kRetainA11yFocusSeconds];
+  }
+}
+
+#pragma mark - Private
+
+// Forces `view` to retain the accessibility focus for `seconds`. If
+// another view becomes focused, the focus is forced back to `view`.
+- (void)retainAccessibilityFocusOnView:(UIView*)view seconds:(double)seconds {
+  __weak UIView* weakView = view;
+  auto retainFocus = ^(NSNotification* notification) {
+    id focusedElement = notification.userInfo[UIAccessibilityFocusedElementKey];
+    if (weakView && focusedElement != weakView) {
+      UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                      weakView);
+    }
+  };
+
+  // Observe accessibility focus changes.
+  id observer = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIAccessibilityElementFocusedNotification
+                  object:nil
+                   queue:nil
+              usingBlock:retainFocus];
+
+  // Stop observing after `seconds`.
+  dispatch_time_t time =
+      dispatch_time(DISPATCH_TIME_NOW, seconds * NSEC_PER_SEC);
+  dispatch_after(time, dispatch_get_main_queue(), ^{
+    [[NSNotificationCenter defaultCenter] removeObserver:observer];
+  });
 }
 
 @end
