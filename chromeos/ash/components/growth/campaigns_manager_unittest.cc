@@ -623,7 +623,7 @@ class CampaignsManagerTest : public testing::Test {
     pref_->registry()->RegisterListPref(
         kTestPref1, base::Value::List().Append("v0").Append("v1"));
     pref_->registry()->RegisterStringPref(kTestPref2, "v2");
-    pref_->registry()->RegisterStringPref(kTestPref3, "v3");
+    pref_->registry()->RegisterBooleanPref(kTestPref3, true);
   }
 
   void InitializeUserManager() {
@@ -2314,10 +2314,11 @@ TEST_F(CampaignsManagerTest, GetCampaignMatchMultiTargetingsMismatch) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignWithInvalidPrefTargeting) {
+  // Pref values: pref1=[v0,v1], pref2=v2, pref3=true
   LoadComponentWithUserPrefTargeting(R"(
     [
       {
-        "name": "pref1",
+        "name": "pref_1",
         "value": "v0"
       }
     ])");
@@ -2326,6 +2327,7 @@ TEST_F(CampaignsManagerTest, GetCampaignWithInvalidPrefTargeting) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMismatch) {
+  // Pref values: pref1=[v0,v1], pref2=v2, pref3=true
   LoadComponentWithUserPrefTargeting(R"(
     [
       {
@@ -2344,7 +2346,8 @@ TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMismatch) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMatch) {
-  // This 2nd set of considtion match pref1 = value_0 and pref2 = value_2.
+  // Pref values: pref1=[v0,v1], pref2=v2, pref3=true
+  // This 2 sets of condition matched with pref1 = v1 and pref3 = true.
   LoadComponentWithUserPrefTargeting(R"(
     [
       {
@@ -2353,13 +2356,13 @@ TEST_F(CampaignsManagerTest, GetCampaignWithPrefTargetingMatch) {
       },
       {
         "name": "pref2",
-        "value": ["v2"]
+        "value": ["v3"]
       }
     ],
     [
       {
         "name": "pref3",
-        "value": ["v3"]
+        "value": [true]
       }
     ])");
 
