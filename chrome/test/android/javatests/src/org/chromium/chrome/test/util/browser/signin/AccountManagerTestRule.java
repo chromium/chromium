@@ -266,6 +266,10 @@ public class AccountManagerTestRule implements TestRule {
         mFakeAccountManagerFacade.removeAccount(accountId);
     }
 
+    public void setAccountFetchFailed() {
+        mFakeAccountManagerFacade.setAccountFetchFailed();
+    }
+
     /** See {@link FakeAccountManagerFacade#blockGetCoreAccountInfos(boolean)}. */
     public FakeAccountManagerFacade.UpdateBlocker blockGetCoreAccountInfosUpdate(
             boolean populateCache) {

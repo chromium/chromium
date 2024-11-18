@@ -131,6 +131,8 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /** Whether the minor mode is enabled for the account added by AddAccountActivityStub. */
     private boolean mIsMinorModeEnabledForAccountToAdd;
 
+    private boolean mDidAccountFetchingSucceed = true;
+
     /** Creates an object of FakeAccountManagerFacade. */
     public FakeAccountManagerFacade() {}
 
@@ -224,7 +226,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     @Override
     public boolean didAccountFetchSucceed() {
-        return true;
+        return mDidAccountFetchingSucceed;
+    }
+
+    public void setAccountFetchFailed() {
+        mDidAccountFetchingSucceed = false;
     }
 
     @Override
