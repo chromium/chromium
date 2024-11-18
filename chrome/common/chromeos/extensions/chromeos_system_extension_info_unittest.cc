@@ -21,7 +21,7 @@ TEST(ChromeOSSystemExtensionInfo, GoogleExtension) {
   const auto& extension_info =
       chromeos::GetChromeOSExtensionInfoById(google_extension_id);
   EXPECT_THAT(extension_info.manufacturers,
-              testing::UnorderedElementsAre("ASUS", "HP"));
+              testing::UnorderedElementsAre("ASUS", "HP", "Acer"));
   EXPECT_EQ("*://googlechromelabs.github.io/*", extension_info.pwa_origin);
   EXPECT_FALSE(extension_info.iwa_id);
 }
@@ -47,6 +47,19 @@ TEST(ChromeOSSystemExtensionInfo, ASUSExtension) {
   EXPECT_THAT(extension_info.manufacturers,
               testing::UnorderedElementsAre("ASUS"));
   EXPECT_EQ("https://dlcdnccls.asus.com/*", extension_info.pwa_origin);
+  EXPECT_FALSE(extension_info.iwa_id);
+}
+
+TEST(ChromeOSSystemExtensionInfo, AcerExtension) {
+  const auto& acer_extension_id = "aoefhlbfcighemjpchndkhonjfjoehnm";
+  ASSERT_TRUE(chromeos::IsChromeOSSystemExtension(acer_extension_id));
+
+  const auto& extension_info =
+      chromeos::GetChromeOSExtensionInfoById(acer_extension_id);
+  EXPECT_THAT(extension_info.manufacturers,
+              testing::UnorderedElementsAre("Acer"));
+  EXPECT_EQ("https://acerpartners.com/acerbooster/*",
+            extension_info.pwa_origin);
   EXPECT_FALSE(extension_info.iwa_id);
 }
 
@@ -111,7 +124,7 @@ TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
       "gogonhoemckpdpadfnjnpgbjpbjnodgc");
   EXPECT_EQ(kPwaOriginOverride, google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
-              testing::UnorderedElementsAre("HP", "ASUS"));
+              testing::UnorderedElementsAre("HP", "ASUS", "Acer"));
   EXPECT_FALSE(google_extension_info.iwa_id);
 
   const auto& hp_extension_info = chromeos::GetChromeOSExtensionInfoById(
@@ -138,7 +151,7 @@ TEST(ChromeOSSystemExtensionInfo, IwaIdOverride) {
   EXPECT_EQ("*://googlechromelabs.github.io/*",
             google_extension_info.pwa_origin);
   EXPECT_THAT(google_extension_info.manufacturers,
-              testing::UnorderedElementsAre("HP", "ASUS"));
+              testing::UnorderedElementsAre("HP", "ASUS", "Acer"));
   EXPECT_EQ(kIwaIdOverride, google_extension_info.iwa_id->id());
 
   const auto& hp_extension_info = chromeos::GetChromeOSExtensionInfoById(
@@ -156,6 +169,7 @@ TEST(ChromeOSSystemExtensionInfo, IsChromeOSSystemExtensionProvider) {
 
   EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("HP"));
   EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("ASUS"));
+  EXPECT_TRUE(chromeos::IsChromeOSSystemExtensionProvider("Acer"));
 
   EXPECT_FALSE(chromeos::IsChromeOSSystemExtensionProvider("NotAProvider"));
   // "Google" is only for dev extension.

@@ -50,7 +50,7 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
   ChromeOSSystemExtensionInfoMap map{
       {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
        {
-           /*manufacturers=*/{"HP", "ASUS"},
+           /*manufacturers=*/{"HP", "ASUS", "Acer"},
            /*pwa_origin=*/"*://googlechromelabs.github.io/*",
            /*iwa_id=*/std::nullopt,
        }},
@@ -66,13 +66,19 @@ ChromeOSSystemExtensionInfoMap ConstructMap() {
            /*pwa_origin=*/"https://dlcdnccls.asus.com/*",
            /*iwa_id=*/std::nullopt,
        }},
+      {/*extension_id=*/"aoefhlbfcighemjpchndkhonjfjoehnm",
+       {
+           /*manufacturers=*/{"Acer"},
+           /*pwa_origin=*/"https://acerpartners.com/acerbooster/*",
+           /*iwa_id=*/std::nullopt,
+       }},
   };
 
   if (IsChromeOSSystemExtensionDevExtensionEnabled()) {
     map.try_emplace(
         kChromeOSSystemExtensionDevExtensionId,
         ChromeOSSystemExtensionInfo{
-            /*manufacturers=*/{"Google", "HP", "ASUS"},
+            /*manufacturers=*/{"Google", "HP", "ASUS", "Acer"},
             /*pwa_origin=*/"*://googlechromelabs.github.io/*",
             /*iwa_id=*/
             web_package::SignedWebBundleId::Create(
