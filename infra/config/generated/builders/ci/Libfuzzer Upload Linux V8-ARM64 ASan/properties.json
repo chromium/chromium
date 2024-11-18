@@ -20,7 +20,7 @@
                   "clobber",
                   "mb"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "chromium_clang",
                 "target_bits": 64,
                 "target_platform": "linux"
