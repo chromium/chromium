@@ -46,6 +46,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
@@ -72,12 +73,15 @@ using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::Contains;
 using ::testing::DoDefault;
 using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::Field;
+using ::testing::Gt;
 using ::testing::IsEmpty;
+using ::testing::IsNull;
 using ::testing::Matcher;
 using ::testing::Not;
 using ::testing::NotNull;
@@ -197,6 +201,34 @@ TEST_F(SunfishDisabledTest, NoTextDetectionInDefaultMode) {
   // No text detection request should have been made, so there should not be a
   // pending DLP check.
   EXPECT_FALSE(CaptureModeTestApi().IsPendingDlpCheck());
+}
+
+// Tests that the feedback button is not shown in default capture mode if the
+// feature is disabled.
+TEST_F(SunfishDisabledTest, FeedbackButtonNotShownInDefaultMode) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_TRUE(session);
+  CaptureModeSessionTestApi session_test_api(session);
+  views::Widget* feedback_button_widget =
+      session_test_api.GetFeedbackButtonWidget();
+  // There are various ways a widget can be hidden. Any of them should pass this
+  // test.
+  EXPECT_THAT(
+      feedback_button_widget,
+      AnyOf(IsNull(), Property("IsVisible", &views::Widget::IsVisible, false),
+            Property("GetLayer", &views::Widget::GetLayer,
+                     AnyOf(Property("GetTargetOpacity",
+                                    &ui::Layer::GetTargetOpacity, 0.f),
+                           Property("GetTargetVisibility",
+                                    &ui::Layer::GetTargetVisibility, false)))));
 }
 
 class SunfishTest : public SunfishTestBase {
@@ -1308,6 +1340,82 @@ TEST_F(SunfishTest, IsCursorVisible) {
   controller->PerformImageSearch(PerformCaptureType::kSearch);
   WaitForCaptureFileToBeSaved();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+// Tests that the feedback button is shown in the Sunfish session.
+TEST_F(SunfishTest, FeedbackButtonShown) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  controller->StartSunfishSession();
+
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_TRUE(session);
+  CaptureModeSessionTestApi session_test_api(session);
+  views::Widget* feedback_button_widget =
+      session_test_api.GetFeedbackButtonWidget();
+  ASSERT_TRUE(feedback_button_widget);
+  EXPECT_TRUE(feedback_button_widget->IsVisible());
+  ui::Layer* feedback_button_layer = feedback_button_widget->GetLayer();
+  ASSERT_TRUE(feedback_button_layer);
+  EXPECT_TRUE(feedback_button_layer->GetTargetVisibility());
+  EXPECT_GT(feedback_button_layer->GetTargetOpacity(), 0.f);
+}
+
+// Tests that the feedback button is shown in default capture mode.
+TEST_F(SunfishTest, FeedbackButtonShownInDefaultMode) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_TRUE(session);
+  CaptureModeSessionTestApi session_test_api(session);
+  views::Widget* feedback_button_widget =
+      session_test_api.GetFeedbackButtonWidget();
+  ASSERT_TRUE(feedback_button_widget);
+  EXPECT_TRUE(feedback_button_widget->IsVisible());
+  ui::Layer* feedback_button_layer = feedback_button_widget->GetLayer();
+  ASSERT_TRUE(feedback_button_layer);
+  EXPECT_TRUE(feedback_button_layer->GetTargetVisibility());
+  EXPECT_GT(feedback_button_layer->GetTargetOpacity(), 0.f);
+}
+
+// Tests that the feedback button is hidden in default capture mode if the
+// enabled pref is false.
+TEST_F(SunfishTest, FeedbackButtonNotShownInDefaultModeIfEnabledPrefIsFalse) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kSunfishEnabled, false);
+
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_TRUE(session);
+  CaptureModeSessionTestApi session_test_api(session);
+  views::Widget* feedback_button_widget =
+      session_test_api.GetFeedbackButtonWidget();
+  // There are various ways a widget can be hidden. Any of them should pass this
+  // test.
+  EXPECT_THAT(
+      feedback_button_widget,
+      AnyOf(IsNull(), Property("IsVisible", &views::Widget::IsVisible, false),
+            Property("GetLayer", &views::Widget::GetLayer,
+                     AnyOf(Property("GetTargetOpacity",
+                                    &ui::Layer::GetTargetOpacity, 0.f),
+                           Property("GetTargetVisibility",
+                                    &ui::Layer::GetTargetVisibility, false)))));
 }
 
 // Tests the search button shown and pressed metrics are being properly

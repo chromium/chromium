@@ -55,6 +55,8 @@ class CaptureModeSessionTestApi {
 
   views::Widget* GetDimensionsLabelWidget();
 
+  views::Widget* GetFeedbackButtonWidget();
+
   UserNudgeController* GetUserNudgeController();
 
   MagnifierGlass& GetMagnifierGlass();

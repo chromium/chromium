@@ -12,6 +12,7 @@
 #include "ash/capture_mode/recording_type_menu_view.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -73,6 +74,10 @@ views::Widget* CaptureModeSessionTestApi::GetRecordingTypeMenuWidget() {
 
 views::Widget* CaptureModeSessionTestApi::GetDimensionsLabelWidget() {
   return session_->dimensions_label_widget_.get();
+}
+
+views::Widget* CaptureModeSessionTestApi::GetFeedbackButtonWidget() {
+  return session_->feedback_button_widget_.get();
 }
 
 UserNudgeController* CaptureModeSessionTestApi::GetUserNudgeController() {
