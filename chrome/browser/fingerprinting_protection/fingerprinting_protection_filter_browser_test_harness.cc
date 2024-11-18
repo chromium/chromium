@@ -26,7 +26,7 @@ FingerprintingProtectionFilterBrowserTest::
 
 void FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread() {
   SubresourceFilterSharedBrowserTest::SetUpOnMainThread();
-  ASSERT_TRUE(embedded_test_server()->Start());
+  // Allow derived classes to start the server on their own.
 }
 
 void FingerprintingProtectionFilterBrowserTest::
@@ -74,6 +74,11 @@ FingerprintingProtectionFilterDryRunBrowserTest::
 FingerprintingProtectionFilterDryRunBrowserTest::
     ~FingerprintingProtectionFilterDryRunBrowserTest() = default;
 
+void FingerprintingProtectionFilterDryRunBrowserTest::SetUpOnMainThread() {
+  FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
+
 // ======= FingerprintingProtectionFilterEnabledInIncognitoBrowserTest ========
 
 FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
@@ -87,6 +92,12 @@ FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
 
 FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
     ~FingerprintingProtectionFilterEnabledInIncognitoBrowserTest() = default;
+
+void FingerprintingProtectionFilterEnabledInIncognitoBrowserTest::
+    SetUpOnMainThread() {
+  FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
 
 // ============= FingerprintingProtectionFilterDisabledBrowserTest ============
 
@@ -103,5 +114,10 @@ FingerprintingProtectionFilterDisabledBrowserTest::
 
 FingerprintingProtectionFilterDisabledBrowserTest::
     ~FingerprintingProtectionFilterDisabledBrowserTest() = default;
+
+void FingerprintingProtectionFilterDisabledBrowserTest::SetUpOnMainThread() {
+  FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
 
 }  // namespace fingerprinting_protection_filter

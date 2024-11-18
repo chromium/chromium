@@ -41,6 +41,7 @@ GURL GetURLWithFragment(const GURL& url, std::string_view fragment) {
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
                        SubframeDocumentLoadFiltering) {
+  ASSERT_TRUE(embedded_test_server()->Start());
   // TODO(https://crbug.com/358371545): Test console messaging for subframe
   // blocking once its implementation is resolved.
   base::HistogramTester histogram_tester;
@@ -330,6 +331,7 @@ class FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled
 IN_PROC_BROWSER_TEST_F(
     FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled,
     PerformanceMeasurementsHistogramsAreRecorded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
   base::HistogramTester histogram_tester;
 
   GURL url(GetTestUrl(kTestFrameSetPath));
@@ -386,6 +388,12 @@ class
         {{features::kEnableFingerprintingProtectionFilterInIncognito,
           {{"performance_measurement_rate", "1.0"}}}},
         /*disabled_features=*/{});
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    FingerprintingProtectionFilterBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
  private:
