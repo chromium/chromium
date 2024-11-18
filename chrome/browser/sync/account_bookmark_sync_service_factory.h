@@ -38,7 +38,7 @@ class AccountBookmarkSyncServiceFactory : public ProfileKeyedServiceFactory {
   ~AccountBookmarkSyncServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
