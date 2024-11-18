@@ -40,10 +40,11 @@ LookalikeUrlServiceFactory::LookalikeUrlServiceFactory()
 LookalikeUrlServiceFactory::~LookalikeUrlServiceFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
-KeyedService* LookalikeUrlServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LookalikeUrlServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = static_cast<Profile*>(context);
-  return new LookalikeUrlService(
+  return std::make_unique<LookalikeUrlService>(
       profile->GetPrefs(),
       HostContentSettingsMapFactory::GetForProfile(profile));
 }
