@@ -1175,7 +1175,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(good_dir_info.path, dialog_params_.default_path);
+  EXPECT_EQ(good_dir_info.path.AsEndingWithSeparator(),
+            dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -1280,7 +1281,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(default_dir, dialog_params_.default_path);
+  EXPECT_EQ(default_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -1381,7 +1382,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
   // temp_dir_.GetPath() maps to kTestMountPoint.
-  EXPECT_EQ(temp_dir_.GetPath(), dialog_params_.default_path);
+  EXPECT_EQ(temp_dir_.GetPath().AsEndingWithSeparator(),
+            dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -1488,7 +1490,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(default_dir, dialog_params_.default_path);
+  EXPECT_EQ(default_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -1595,7 +1597,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
              "  self.selected_entry = e;"
              "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(desktop_dir, dialog_params_.default_path);
+  EXPECT_EQ(desktop_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
@@ -1635,7 +1637,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
   EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params_.type);
   // Windows file system is case-insensitive.
   EXPECT_TRUE(base::FilePath::CompareEqualIgnoreCase(
-      test_file_dir.value(), dialog_params_.default_path.value()));
+      test_file_dir.AsEndingWithSeparator().value(),
+      dialog_params_.default_path.value()));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_DirectoryHandle) {
@@ -1671,7 +1674,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_DirectoryHandle) {
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(test_dir, dialog_params_.default_path);
+  EXPECT_EQ(test_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -1708,7 +1711,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params_.type);
   // temp_dir_.GetPath() maps to kTestMountPoint.
-  EXPECT_EQ(temp_dir_.GetPath(), dialog_params_.default_path);
+  EXPECT_EQ(temp_dir_.GetPath().AsEndingWithSeparator(),
+            dialog_params_.default_path);
 }
 
 // Correctly saving a symlink as the starting directory should work on all OSes,
@@ -1749,7 +1753,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Symlink) {
                    "  self.selected_entry = e;"
                    "  return e.name; })()"));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(symlink, dialog_params_.default_path);
+  EXPECT_EQ(symlink.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
@@ -1962,7 +1966,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_ID) {
                        "  return e.name; })()",
                        id)));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(test_dir, dialog_params_.default_path);
+  EXPECT_EQ(test_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
@@ -2043,7 +2047,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
                                 "  return e.name; })()",
                                 id)));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(dir_handle, dialog_params_.default_path);
+  EXPECT_EQ(dir_handle.AsEndingWithSeparator(), dialog_params_.default_path);
 
   // (C) Since this new `id` has not yet been set, fall back on using the
   // WellKnownDirectory specified via `startIn`.
@@ -2059,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
                                 "  return e.name; })()",
                                 id)));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(desktop_dir, dialog_params_.default_path);
+  EXPECT_EQ(desktop_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 
   // (D) The `id` is set. Use the LastPickedDirectory given this `id`.
   EXPECT_EQ(
@@ -2071,7 +2075,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
                                 "  return e.name; })()",
                                 id)));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(desktop_dir, dialog_params_.default_path);
+  EXPECT_EQ(desktop_dir.AsEndingWithSeparator(), dialog_params_.default_path);
 
   // (E) A directory handle is specified via `startIn`, so prioritize this over
   // the stored ID.
@@ -2087,7 +2091,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
                                 "  return e.name; })()",
                                 id)));
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params_.type);
-  EXPECT_EQ(dir_handle, dialog_params_.default_path);
+  EXPECT_EQ(dir_handle.AsEndingWithSeparator(), dialog_params_.default_path);
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, PickerTitle) {

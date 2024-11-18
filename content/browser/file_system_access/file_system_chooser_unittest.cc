@@ -37,7 +37,9 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
   std::vector<PathInfo> SyncShowDialog(
       WebContents* web_contents,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      bool include_accepts_all) {
+      bool include_accepts_all,
+      base::FilePath default_directory = base::FilePath(),
+      base::FilePath suggested_name = base::FilePath()) {
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
                            std::vector<PathInfo>>
         future;
@@ -46,8 +48,8 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
         FileSystemChooser::Options(ui::SelectFileDialog::SELECT_OPEN_FILE,
                                    blink::mojom::AcceptsTypesInfo::New(
                                        std::move(accepts), include_accepts_all),
-                                   std::u16string(), base::FilePath(),
-                                   base::FilePath()),
+                                   std::u16string(), default_directory,
+                                   suggested_name),
         future.GetCallback(), base::ScopedClosureRunner());
     return std::get<1>(future.Take());
   }
@@ -322,6 +324,32 @@ TEST_F(FileSystemChooserTest, DialogCaller) {
 
   ASSERT_TRUE(dialog_params_.caller.has_value());
   EXPECT_EQ(dialog_params_.caller.value(), gurl);
+}
+
+TEST_F(FileSystemChooserTest, DefaultPath) {
+  base::FilePath default_dir = base::FilePath(FILE_PATH_LITERAL("default"))
+                                   .Append(FILE_PATH_LITERAL("dir"));
+  base::FilePath suggested_name(FILE_PATH_LITERAL("suggested.txt"));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
+
+  // Set only default-dir.
+  SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/true,
+                 default_dir, base::FilePath());
+  // Should end with a separator, so we can detect that suggested name is empty.
+  EXPECT_EQ(dialog_params_.default_path, default_dir.AsEndingWithSeparator());
+
+  // Set default-dir and suggested-name.
+  SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/true,
+                 default_dir,
+                 base::FilePath(FILE_PATH_LITERAL("suggested.txt")));
+  EXPECT_EQ(dialog_params_.default_path, default_dir.Append(suggested_name));
+
+  // Set only suggested-name.
+  SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/true,
+                 base::FilePath(),
+                 base::FilePath(FILE_PATH_LITERAL("suggested.txt")));
+  EXPECT_EQ(dialog_params_.default_path, suggested_name);
 }
 
 }  // namespace content

@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
@@ -29,6 +30,7 @@ import androidx.core.content.ContextCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
@@ -319,6 +321,10 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param fileTypes MIME types requested (i.e. "image/*")
      * @param capture The capture value as described in http://www.w3.org/TR/html-media-capture/
      * @param multiple Whether it should be possible to select multiple files.
+     * @param defaultDirectory directory to open chooser at when intentAction is
+     *     ACTION_{OPEN,CREATE}_DOCUMENT{_TREE}.
+     * @param suggestedName suggested filename for save-as when intentAction is
+     *     ACTION_CREATE_DOCUMENT.
      * @param window The WindowAndroid that can show intents
      */
     @CalledByNative
@@ -327,6 +333,8 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
             String[] fileTypes,
             boolean capture,
             boolean multiple,
+            @JniType("std::string") String defaultDirectory,
+            @JniType("std::string") String suggestedName,
             WindowAndroid window) {
         mIntentAction =
                 UiAndroidFeatureMap.isEnabled(UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT)
@@ -356,6 +364,13 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                     intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
                 }
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
+            }
+            if (!TextUtils.isEmpty(defaultDirectory)) {
+                intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, Uri.parse(defaultDirectory));
+            }
+            if (Intent.ACTION_CREATE_DOCUMENT.equals(intentAction)
+                    && !TextUtils.isEmpty(suggestedName)) {
+                intent.putExtra(Intent.EXTRA_TITLE, suggestedName);
             }
             if (!mWindowAndroid.showIntent(intent, this, R.string.low_memory_error)) {
                 onFileNotSelected();
