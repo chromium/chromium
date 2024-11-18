@@ -179,7 +179,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
         if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
-            return new AuthTabIntentDataProvider(intent, this);
+            return new AuthTabIntentDataProvider(intent, this, colorScheme);
         } else if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
                 intent, /* recordMetrics= */ true)) {
             return new IncognitoCustomTabIntentDataProvider(intent, this, colorScheme);
