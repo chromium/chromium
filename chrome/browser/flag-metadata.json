@@ -8032,6 +8032,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "show-new-tab-animations",
+    "owners": [ "ckitagawa@chromium.org", "polardz@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "show-overdraw-feedback",
     "owners": [ "andrescj@chromium.org", "chromeos-gfx@google.com" ],
     // This is a debug flag to visualize compositing and rendering issues in

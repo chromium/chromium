@@ -2755,6 +2755,9 @@ extern const char kSecurePaymentConfirmationAndroidDescription[];
 extern const char kShareCustomActionsInCCTName[];
 extern const char kShareCustomActionsInCCTDescription[];
 
+extern const char kShowNewTabAnimationsName[];
+extern const char kShowNewTabAnimationsDescription[];
+
 extern const char kShowReadyToPayDebugInfoName[];
 extern const char kShowReadyToPayDebugInfoDescription[];
 

@@ -18411,6 +18411,7 @@ from previous Chrome versions.
   <int value="-753988121" label="FlossIsAvailabilityCheckNeeded:enabled"/>
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-753170441" label="LocationProviderManager:disabled"/>
+  <int value="-752554170" label="ShowNewTabAnimations:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
   <int value="-749550261" label="SeamlessRefreshRateSwitching:enabled"/>
@@ -22015,6 +22016,7 @@ from previous Chrome versions.
   <int value="702117246" label="OmniboxSiteSearchStarterPack:disabled"/>
   <int value="703122112" label="ShoppingList:enabled"/>
   <int value="703469777" label="AndroidNightModeTabReparenting:enabled"/>
+  <int value="704405738" label="ShowNewTabAnimations:enabled"/>
   <int value="705407202" label="AutofillSaveCardImprovedUserConsent:disabled"/>
   <int value="705411729" label="AccessiblePDFForm:disabled"/>
   <int value="705601070" label="PickerCloud:disabled"/>

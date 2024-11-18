@@ -284,6 +284,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPwaRestoreUiAtStartup,
     &kOmahaMinSdkVersionAndroid,
     &kShortCircuitUnfocusAnimation,
+    &kShowNewTabAnimations,
     &kPartnerCustomizationsUma,
     &kQuickDeleteAndroidFollowup,
     &kQuickDeleteAndroidSurvey,
@@ -846,6 +847,10 @@ BASE_FEATURE(kOmahaMinSdkVersionAndroid,
 
 BASE_FEATURE(kShortCircuitUnfocusAnimation,
              "ShortCircuitUnfocusAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShowNewTabAnimations,
+             "ShowNewTabAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartnerCustomizationsUma,

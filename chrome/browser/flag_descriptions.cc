@@ -7871,6 +7871,10 @@ const char kHideTabletToolbarDownloadButtonName[] =
     "Hide Tablet Toolbar Download Button";
 const char kHideTabletToolbarDownloadButtonDescription[] =
     "Hides the download button on tablet toolbar";
+
+const char kShowNewTabAnimationsName[] = "Show New Tab Animations";
+const char kShowNewTabAnimationsDescription[] =
+    "Shows new animations for creating tabs.";
 #else
 const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
 const char kTaskManagerDesktopRefreshDescription[] =
