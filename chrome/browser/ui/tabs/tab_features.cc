@@ -81,6 +81,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   CHECK(!initialized_);
   initialized_ = true;
 
+  // In tests you may want to disable TabFeatures initialization.
+  // See tabs::PreventTabFeatureInitialization
   CHECK(tab.GetBrowserWindowInterface());
 
   tab_subscriptions_.push_back(

@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_WEB_CONTENTS_LISTENER_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;
@@ -61,7 +62,14 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   // is a MainFrame navigation.
   void UpdateTabRedirectChain(content::NavigationHandle* navigation_handle);
 
-  // Retrieves the SavedTabGroup that contains the tab |local_tab_|.
+  // Perform the navigation to the local_tab_ to the specified `url`.
+  void PerformNavigation(const GURL& url);
+
+  // Functions that are called when the tab switches activation state.
+  void OnTabEnteredForeground(tabs::TabInterface* tab_interface);
+
+  // Retrieves the SavedTabGroup that contains the tab with the id
+  // |local_tab_id_|.
   const SavedTabGroup saved_group();
 
   // The service used to query and manage SavedTabGroups.
@@ -72,6 +80,13 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
 
   // The subscription to the tab discarding callback in the `local_tab_`.
   base::CallbackListSubscription tab_discard_subscription_;
+
+  // Subscription that resumes performing a navigation once the tab is
+  // foregrounded if the cached_url_ exists.
+  base::CallbackListSubscription tab_foregrounded_subscription_;
+
+  // Stored urls which will be navigated to once the tab is foregrounded.
+  std::optional<GURL> cached_url_;
 };
 
 }  // namespace tab_groups

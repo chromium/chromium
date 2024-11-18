@@ -13,13 +13,11 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
-#include "components/favicon/content/content_favicon_driver.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/utils.h"
-#include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
@@ -75,6 +73,11 @@ void SavedTabGroupWebContentsListener::OnTabDiscarded(
     content::WebContents* old_content,
     content::WebContents* new_content) {
   Observe(new_content);
+
+  tab_foregrounded_subscription_ =
+      tab_interface->RegisterDidEnterForeground(base::BindRepeating(
+          &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
+          base::Unretained(this)));
 }
 
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
@@ -85,6 +88,11 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
       base::BindRepeating(&SavedTabGroupWebContentsListener::OnTabDiscarded,
                           base::Unretained(this)));
   Observe(local_tab->GetContents());
+
+  tab_foregrounded_subscription_ =
+      local_tab->RegisterDidEnterForeground(base::BindRepeating(
+          &SavedTabGroupWebContentsListener::OnTabEnteredForeground,
+          base::Unretained(this)));
 }
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
@@ -111,6 +119,18 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
     return;
   }
 
+  // If deferring remote navigations is enabled and the tab is in the
+  // background, then dont actually perform the navigation, instead cache the
+  // URL for performing the navigation later.
+  if (!IsTabGroupsDeferringRemoteNavigations() ||
+      local_tab_->IsInForeground()) {
+    PerformNavigation(url);
+  } else {
+    cached_url_ = url;
+  }
+}
+
+void SavedTabGroupWebContentsListener::PerformNavigation(const GURL& url) {
   // Start loading the URL. Mark the navigation as sync initiated to avoid ping
   // pong issues.
   content::NavigationController::LoadURLParams params(url);
@@ -199,6 +219,14 @@ const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {
   CHECK(iter != all_groups.end());
 
   return *iter;
+}
+
+void SavedTabGroupWebContentsListener::OnTabEnteredForeground(
+    tabs::TabInterface* tab_interface) {
+  if (cached_url_.has_value()) {
+    PerformNavigation(cached_url_.value());
+    cached_url_.reset();
+  }
 }
 
 }  // namespace tab_groups
