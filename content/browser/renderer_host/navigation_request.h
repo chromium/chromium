@@ -1372,6 +1372,10 @@ class CONTENT_EXPORT NavigationRequest
 
   void set_force_no_https_upgrade() { force_no_https_upgrade_ = true; }
 
+  bool was_reset_for_cross_document_restart() const {
+    return was_reset_for_cross_document_restart_;
+  }
+
  private:
   friend class NavigationRequestTest;
 
@@ -2923,6 +2927,11 @@ class CONTENT_EXPORT NavigationRequest
 
   // The initial request method of the request, before any redirects.
   std::string request_method_;
+
+  // Set to true if `this` started as a same-document navigation but couldn't
+  // commit, and was restarted as a cross-document navigation. See
+  // `blink::mojom::CommitResult::RestartCrossDocument`.
+  bool was_reset_for_cross_document_restart_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

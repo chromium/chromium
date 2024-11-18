@@ -181,7 +181,11 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // Abort the animation when the primary main frame renderer is destroyed.
     kPrimaryMainFrameRenderProcessDestroyed = 20,
 
-    kMaxValue = kPrimaryMainFrameRenderProcessDestroyed,
+    // https://crbug.com/378504116: Abort the animation when the same-doc
+    // navigation restarts as a cross-document one.
+    kSameDocNavRestarts = 21,
+
+    kMaxValue = kSameDocNavRestarts,
   };
 
   // Indicates what animation state caused input event suppression.
