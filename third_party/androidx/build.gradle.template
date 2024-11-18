@@ -123,6 +123,7 @@ dependencies {
     compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
     compile 'androidx.print:print:{{androidx_dependency_version}}'
     compile 'androidx.sqlite:sqlite-android:{{androidx_dependency_version}}'
+    compile 'androidx.concurrent:concurrent-futures-ktx:{{androidx_dependency_version}}'
 
     String media3Version = '1.2.0'
     compile "androidx.media3:media3-common:${media3Version}"
