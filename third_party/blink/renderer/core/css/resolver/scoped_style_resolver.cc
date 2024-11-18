@@ -456,11 +456,17 @@ void ForEachImplicitScopeTrigger(TreeScope& scope,
   for (const RuleSet::Interval<StyleScope>& interval :
        rule_set.ScopeIntervals()) {
     const StyleScope* style_scope = interval.value.Get();
-    if (!style_scope || !style_scope->IsImplicit()) {
-      continue;
-    }
-    if (Element* scoping_root = ImplicitScopeTrigger(scope, sheet)) {
-      func(*scoping_root, *style_scope);
+    while (style_scope) {
+      if (style_scope->IsImplicit()) {
+        if (Element* scoping_root = ImplicitScopeTrigger(scope, sheet)) {
+          func(*scoping_root, *style_scope);
+        }
+      }
+      // Note that ScopeIntervals() only reaches the @scope rules that
+      // hold some style rule directly, but it's also possible to do e.g.
+      // @scope { @scope (.a) { div {} } }, where an implicit @scope exists
+      // as a parent-@scope only.
+      style_scope = style_scope->Parent();
     }
   }
 }
