@@ -12,16 +12,16 @@ import org.junit.rules.ExternalResource;
  * <p>Use this when resetting is not directly done by test runners (as it is in Chrome).
  */
 public class JniResetterRule extends ExternalResource {
-    private JniTestOverrides mSnapshot;
+    private JniTestInstancesSnapshot mSnapshot;
 
     @Override
     protected void before() {
         // Use a snapshot rather than clearing to allow for overrides set during @BeforeClass.
-        mSnapshot = JniTestOverrides.snapshotOverridesForTesting();
+        mSnapshot = JniTestInstancesSnapshot.snapshotOverridesForTesting();
     }
 
     @Override
     protected void after() {
-        JniTestOverrides.restoreSnapshotForTesting(mSnapshot);
+        JniTestInstancesSnapshot.restoreSnapshotForTesting(mSnapshot);
     }
 }

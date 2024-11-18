@@ -59,10 +59,10 @@ def _native_method(sb, native, method_fqn):
 
 def _class_body(sb, ctx):
   sb(f"""\
-private static JniOverrideHolder sOverride;
+private static JniTestInstanceHolder sOverride;
 
 public static {ctx.interface_name} get() {{
-  JniOverrideHolder holder = sOverride;
+  JniTestInstanceHolder holder = sOverride;
   if (holder != null && holder.value != null) {{
     return ({ctx.interface_name}) holder.value;
   }}
@@ -72,14 +72,10 @@ public static {ctx.interface_name} get() {{
 
 public static void setInstanceForTesting({ctx.interface_name} impl) {{
   if (sOverride == null) {{
-    sOverride = JniOverrideHolder.create();
+    sOverride = JniTestInstanceHolder.create();
   }}
   sOverride.value = impl;
 }}
-
-// TODO(crbug.com/329069277): Delete.
-public static final JniStaticTestMocker TEST_HOOKS = \
-x -> setInstanceForTesting(({ctx.interface_name}) x);
 
 """)
 
@@ -97,9 +93,8 @@ x -> setInstanceForTesting(({ctx.interface_name}) x);
 def _imports(sb, ctx):
   classes = {
       'org.jni_zero.CheckDiscard',
-      'org.jni_zero.JniStaticTestMocker',
+      'org.jni_zero.JniTestInstanceHolder',
       'org.jni_zero.NativeLibraryLoadedStatus',
-      'org.jni_zero.internal.JniOverrideHolder',
   }
   if not ctx.per_file_natives:
     classes.add(ctx.gen_jni_class.full_name_with_dots)

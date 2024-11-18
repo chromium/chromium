@@ -8,19 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.jni_zero.CheckDiscard;
-import org.jni_zero.JniStaticTestMocker;
+import org.jni_zero.JniTestInstanceHolder;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForTests;
 import org.jni_zero.SampleUnderSamePackage;
-import org.jni_zero.internal.JniOverrideHolder;
 import this.is.a.package.prefix.org.jni_zero.GEN_JNI;
 
 @CheckDiscard("crbug.com/993421")
 public class SampleForTestsJni implements SampleForTests.Natives {
-  private static JniOverrideHolder sOverride;
+  private static JniTestInstanceHolder sOverride;
 
   public static SampleForTests.Natives get() {
-    JniOverrideHolder holder = sOverride;
+    JniTestInstanceHolder holder = sOverride;
     if (holder != null && holder.value != null) {
       return (SampleForTests.Natives) holder.value;
     }
@@ -30,13 +29,10 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   public static void setInstanceForTesting(SampleForTests.Natives impl) {
     if (sOverride == null) {
-      sOverride = JniOverrideHolder.create();
+      sOverride = JniTestInstanceHolder.create();
     }
     sOverride.value = impl;
   }
-
-  // TODO(crbug.com/329069277): Delete.
-  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleForTests.Natives) x);
 
 
   @Override
