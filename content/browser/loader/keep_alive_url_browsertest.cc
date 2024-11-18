@@ -18,6 +18,8 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
+#include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/loader/keep_alive_url_loader.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
@@ -1883,5 +1885,81 @@ IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
 
 // All other send-on-BFCache behaviors are covered in
 // send-on-deactivate.tentative.https.window.js
+
+class KeepAliveURLAttributionReportingBrowserTest
+    : public KeepAliveURLBrowserTest {
+ protected:
+  void SetUp() override {
+    // Attribution Reporting API only supports HTTPS requests.
+    SetUseHttps();
+    KeepAliveURLBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    auto mock_manager = std::make_unique<MockAttributionManager>();
+    auto mock_data_host_manager =
+        std::make_unique<MockAttributionDataHostManager>();
+    mock_manager->SetDataHostManager(std::move(mock_data_host_manager));
+    static_cast<StoragePartitionImpl*>(
+        web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
+        ->OverrideAttributionManagerForTesting(std::move(mock_manager));
+
+    KeepAliveURLBrowserTest::SetUpOnMainThread();
+  }
+
+  const FeaturesType& GetEnabledFeatures() override {
+    static const FeaturesType enabled_features =
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(
+            {{blink::features::kKeepAliveInBrowserMigration, {}},
+             {blink::features::kAttributionReportingInBrowserMigration, {}}});
+    return enabled_features;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KeepAliveURLAttributionReportingBrowserTest,
+    ::testing::Values(net::HttpRequestHeaders::kGetMethod,
+                      net::HttpRequestHeaders::kPostMethod),
+    [](const testing::TestParamInfo<KeepAliveURLBrowserTest::ParamType>& info) {
+      return info.param;
+    });
+
+IN_PROC_BROWSER_TEST_P(KeepAliveURLAttributionReportingBrowserTest,
+                       ReceiveViolatingCSPRedirect_NotForwarded) {
+  const std::string method = GetParam();
+  const char violating_csp_redirect_target[] =
+      "http://b.test/beacon-redirected";
+  auto request_handler =
+      std::move(RegisterRequestHandlers({kKeepAliveEndpoint})[0]);
+  ASSERT_TRUE(server()->Start());
+  const GURL allowed_csp_url = server()->GetURL(kAllowedCspHost, "/");
+
+  auto* data_host_manager = static_cast<MockAttributionDataHostManager*>(
+      AttributionManager::FromWebContents(web_contents())
+          ->GetDataHostManager());
+  EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationStarted).Times(1);
+  EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationData).Times(0);
+  EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationCompleted)
+      .Times(1);
+
+  // Set up redirects according to the following redirect chain:
+  // fetch("http://a.test:<port>/beacon", keepalive: true)
+  // --> http://b.test/beacon-redirected
+  ASSERT_NO_FATAL_FAILURE(
+      LoadPageWithKeepAliveRequestAndSendResponseAfterUnload(
+          GetKeepAlivePageURL(
+              method, /*num_requests=*/1,
+              GetConnectSrcCSPHeader(url::Origin::Create(allowed_csp_url))),
+          request_handler.get(),
+          base::StringPrintf(k301Response, violating_csp_redirect_target)));
+
+  // The redirect doesn't match CSP source from the 1st page, so the loader is
+  // terminated.
+  // While the 1st page is unloaded, the disconnection may not propagate to
+  // browser process in time, such that calling
+  // `WaitforTotalCompleteProcessed()` here might be flaky.
+  loaders_observer().WaitForTotalOnComplete({net::ERR_BLOCKED_BY_CSP});
+}
 
 }  // namespace content

@@ -56,6 +56,7 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   void OnReceiveRedirect(const net::HttpResponseHeaders* headers,
                          const GURL& redirect_url);
   void OnReceiveResponse(const net::HttpResponseHeaders* headers);
+  void OnError();
 
  private:
   friend class KeepAliveAttributionRequestHelperTestPeer;
@@ -63,6 +64,8 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   KeepAliveAttributionRequestHelper(BackgroundRegistrationsId,
                                     AttributionDataHostManager*,
                                     const GURL& reporting_url);
+
+  void OnComplete();
 
   BackgroundRegistrationsId id_;
 
