@@ -161,6 +161,7 @@ public class Fido2CredentialRequest
     private void returnErrorAndResetCallback(int error) {
         recordOutcomeMetric();
         assert mErrorCallback != null;
+        if (mErrorCallback == null) return;
         mErrorCallback.onError(error);
         mErrorCallback = null;
         mGetAssertionCallback = null;
