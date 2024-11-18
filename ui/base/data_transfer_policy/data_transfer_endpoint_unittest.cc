@@ -47,6 +47,20 @@ TEST(DataTransferEndpointTest, Equal) {
 
   EXPECT_FALSE(default_endpoint1 == default_endpoint2);
 
+  DataTransferEndpoint default_endpoint3(EndpointType::kDefault,
+                                         {.off_the_record = true});
+  DataTransferEndpoint default_endpoint4(EndpointType::kDefault,
+                                         {.off_the_record = false});
+
+  EXPECT_FALSE(default_endpoint3 == default_endpoint4);
+
+  DataTransferEndpoint default_endpoint5(EndpointType::kDefault, {});
+
+  EXPECT_TRUE(default_endpoint5 == default_endpoint1);
+  EXPECT_FALSE(default_endpoint5 == default_endpoint2);
+  EXPECT_FALSE(default_endpoint5 == default_endpoint3);
+  EXPECT_TRUE(default_endpoint5 == default_endpoint4);
+
   DataTransferEndpoint url_endpoint1(GURL(kExample1Url),
                                      {
                                          .notify_if_restricted = true,
