@@ -1489,7 +1489,9 @@ void UserMediaProcessor::OnAudioSourceStarted(
     }
     pending_local_sources_.erase(it);
 
-    current_request_info_->EndTrace("CreateAudioSource");
+    if (current_request_info_) {
+      current_request_info_->EndTrace("CreateAudioSource");
+    }
 
     NotifyCurrentRequestInfoOfAudioSourceStarted(source, result, result_name);
     return;
@@ -1719,7 +1721,9 @@ void UserMediaProcessor::OnVideoSourceStarted(
     MediaStreamRequestResult result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  current_request_info_->EndTrace("CreateVideoSource");
+  if (current_request_info_) {
+    current_request_info_->EndTrace("CreateVideoSource");
+  }
 }
 
 MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
