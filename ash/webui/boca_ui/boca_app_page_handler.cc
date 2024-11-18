@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/boca/session_api/remove_student_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/wm/constants.h"
 #include "content/public/browser/web_contents.h"
@@ -161,7 +162,8 @@ BocaAppHandler::BocaAppHandler(
       remote_(std::move(remote)),
       session_client_impl_(session_client_impl),
       web_ui_(web_ui) {
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+      web_ui->GetWebContents()->GetBrowserContext());
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));

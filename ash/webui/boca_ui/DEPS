@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/grit/chromeos_boca_app_bundle_resources.h",
   "+chromeos/grit/chromeos_boca_app_bundle_resources_map.h",
   "+chromeos/ash/components/boca",
+  "+chromeos/ash/components/browser_context_helper",
   "+google_apis",
   "+google_apis/classroom",
   "+google_apis/common",
