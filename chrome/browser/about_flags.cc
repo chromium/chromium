@@ -4117,13 +4117,17 @@ const FeatureEntry::FeatureParam kAndroidHubEnableHistory[] = {
 const FeatureEntry::FeatureParam kAndroidHubEnableAllExtraProviders[] = {
     {"enable_bookmark_provider", "true"},
     {"enable_history_provider", "true"}};
+const FeatureEntry::FeatureParam kAndroidHubEnableEnterToSearch[] = {
+    {"enable_press_enter_to_search", "true"}};
 const FeatureEntry::FeatureVariation kAndroidHubSearchVariations[] = {
     {"with bookmarks", kAndroidHubEnableBookmarks,
      std::size(kAndroidHubEnableBookmarks), nullptr},
     {"with history", kAndroidHubEnableHistory,
      std::size(kAndroidHubEnableHistory), nullptr},
     {"with all extra providers", kAndroidHubEnableAllExtraProviders,
-     std::size(kAndroidHubEnableAllExtraProviders), nullptr}};
+     std::size(kAndroidHubEnableAllExtraProviders), nullptr},
+    {"with pressing enter to search", kAndroidHubEnableEnterToSearch,
+     std::size(kAndroidHubEnableEnterToSearch), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Feature variations for kSubframeProcessReuseThresholds.
