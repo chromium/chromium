@@ -607,7 +607,7 @@ def GitApplyCherryPicks():
 
     # TODO(crbug.com/363219692): Remove once we roll past this revision.
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  'edb669350a59ce48586152cf87b1d1f2841cea62')
+                  'f20103f9f3e35dad241dd81cd3ae9eb2dafb3f44')
 
     print('Finished applying cherry-picks.')
 
