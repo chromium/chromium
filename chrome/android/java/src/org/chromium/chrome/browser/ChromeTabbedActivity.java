@@ -1122,7 +1122,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return false;
     }
 
-    /** Returns whether startup was cold or not. */
+    // Returns whether startup was cold or not.
     private boolean isColdStart() {
         return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                 && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
@@ -1269,11 +1269,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void onPauseWithNative() {
         mTabModelSelector.commitAllTabClosures();
-
-        if (!isColdStart() && isMainIntentLaunch()) {
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS, mTimeToFirstDrawAfterStartMs);
-        }
 
         if (mIncognitoCookiesFetcher != null) {
             mIncognitoCookiesFetcher.persistCookies();
@@ -3553,6 +3548,15 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public void onPause() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onPause")) {
+
+            // isColdStart() relies on {@link SimpleStartupForegroundSessionDetector} and the
+            // session is discarded during AsyncInitializationActivity's onPause so the metric has
+            // to be recorded here instead of onPauseWithNative().
+            if (!isColdStart() && isMainIntentLaunch()) {
+                RecordHistogram.recordTimesHistogram(
+                        HISTOGRAM_MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS,
+                        mTimeToFirstDrawAfterStartMs);
+            }
             super.onPause();
         }
     }
