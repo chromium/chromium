@@ -322,17 +322,21 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           picker_name = selector->Argument();
           break;
         case CSSSelector::kPseudoIs:
-        case CSSSelector::kPseudoWhere: {
-          const CSSSelectorList* selector_list = selector->SelectorList();
-          DCHECK(selector_list);
+        case CSSSelector::kPseudoWhere:
+        case CSSSelector::kPseudoParent: {
+          const CSSSelector* selector_list = selector->SelectorListOrParent();
           // If the :is/:where has only a single argument, it effectively acts
           // like a normal selector (save for specificity), and we can put it
           // into a bucket based on that selector.
-          if (selector_list->IsSingleComplexSelector()) {
-            ExtractSelectorValues(
-                selector_list->First(), style_scope, id, class_name, attr_name,
-                attr_value, is_exact_attr, custom_pseudo_element_name, tag_name,
-                part_name, picker_name, pseudo_type);
+          //
+          // Note that `selector_list` may be nullptr for top-level '&'
+          // selectors.
+          if (selector_list &&
+              CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
+            ExtractSelectorValues(selector_list, style_scope, id, class_name,
+                                  attr_name, attr_value, is_exact_attr,
+                                  custom_pseudo_element_name, tag_name,
+                                  part_name, picker_name, pseudo_type);
           }
           break;
         }

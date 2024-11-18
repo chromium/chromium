@@ -794,6 +794,37 @@ TEST(RuleSetTest, SingleScope) {
   }
 }
 
+TEST(RuleSetTest, ParentPseudoBucketing_Single) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(R"CSS(
+    .a {
+      & {
+        color: green;
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  EXPECT_EQ(0u, rule_set.UniversalRules().size());
+  EXPECT_EQ(2u, rule_set.ClassRules(AtomicString("a")).size());
+}
+
+TEST(RuleSetTest, ParentPseudoBucketing_Multiple) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(R"CSS(
+    .a, .b {
+      & {
+        color: green;
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  EXPECT_EQ(1u, rule_set.UniversalRules().size());
+  EXPECT_EQ(1u, rule_set.ClassRules(AtomicString("a")).size());
+  EXPECT_EQ(1u, rule_set.ClassRules(AtomicString("b")).size());
+}
+
 TEST(RuleSetTest, ScopePseudoBucketing_Single) {
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
@@ -874,6 +905,21 @@ TEST(RuleSetTest, ScopePseudoBucketing_Implicit) {
   )CSS");
   RuleSet& rule_set = sheet.GetRuleSet();
   EXPECT_EQ(1u, rule_set.UniversalRules().size());
+}
+
+TEST(RuleSetTest, ScopePseudoBucketing_NestedDeclarations) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(R"CSS(
+    .a {
+      @scope (&) {
+        color: green; /* Matches like :where(:scope) */
+      }
+    }
+  )CSS");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  EXPECT_EQ(0u, rule_set.UniversalRules().size());
+  EXPECT_EQ(2u, rule_set.ClassRules(AtomicString("a")).size());
 }
 
 class RuleSetCascadeLayerTest : public SimTest {
