@@ -1290,9 +1290,10 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OS-level notification"/>
   <int value="3" label="New Tab Page Infobar"/>
   <int value="4" label="Password Manager Error Message"/>
+  <int value="5" label="Account menu"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
+<!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultUserActionTriggerForUMA) -->
 
 </enums>
 

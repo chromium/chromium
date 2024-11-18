@@ -363,7 +363,7 @@
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+      syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
   SigninTrustedVaultDialogIntent intent =
@@ -385,7 +385,7 @@
   trusted_vault::SecurityDomainId securityDomainID =
       trusted_vault::SecurityDomainId::kChromeSync;
   syncer::TrustedVaultUserActionTriggerForUMA trigger =
-      syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
+      syncer::TrustedVaultUserActionTriggerForUMA::kAccountMenu;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU;
   SigninTrustedVaultDialogIntent intent =
