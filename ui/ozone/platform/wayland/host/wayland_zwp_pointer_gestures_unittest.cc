@@ -133,17 +133,12 @@ TEST_F(WaylandPointerGesturesTest, PinchZoomScale) {
           pinch, /* time */ 0, /* dx */ 0, /* dy */ 0,
           wl_fixed_from_double(scale), /* rotation */ 0);
     });
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_FLOAT_EQ(observer.latest_scale_update(),
-                    wl_fixed_to_double(wl_fixed_from_double(scale)));
-#else
     // The conversion from double to fixed and back is necessary because it
     // happens during the roundtrip, and it creates significant error.
     EXPECT_FLOAT_EQ(
         observer.latest_scale_update(),
         wl_fixed_to_double(wl_fixed_from_double(scale)) / previous_scale);
     previous_scale = wl_fixed_to_double(wl_fixed_from_double(scale));
-#endif
   }
 }
 

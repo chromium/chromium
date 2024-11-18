@@ -125,20 +125,6 @@ class WaylandPointerTest : public WaylandTestSimple {
 
     auto* mouse_event = event->AsMouseEvent();
     EXPECT_EQ(event_type, mouse_event->type());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // These checks rely on the Exo-only protocol zcr_pointer_stylus_v2 [1]
-    // at //t_p/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml
-    auto compare_float = [](float a, float b) -> bool {
-      constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
-      return std::isnan(a) ? std::isnan(b) : fabs(a - b) < kEpsilon;
-    };
-
-    EXPECT_EQ(pointer_type, mouse_event->pointer_details().pointer_type);
-    EXPECT_TRUE(compare_float(force, mouse_event->pointer_details().force));
-    EXPECT_TRUE(compare_float(tilt_x, mouse_event->pointer_details().tilt_x));
-    EXPECT_TRUE(compare_float(tilt_y, mouse_event->pointer_details().tilt_y));
-#endif
   }
 };
 
@@ -497,11 +483,7 @@ TEST_F(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
     const gfx::Point hotspot_dip =
         gfx::ScaleToRoundedPoint(hotspot_px, 1 / scale);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    BitmapCursorFactory cursor_factory;
-#else
     WaylandCursorFactory cursor_factory(connection_.get());
-#endif
     auto cursor = cursor_factory.CreateImageCursor(
         mojom::CursorType::kCustom, dummy_cursor, hotspot_px, scale);
 
@@ -542,11 +524,7 @@ TEST_F(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 
       auto* mock_pointer_surface =
           wl::MockSurface::FromResource(surface_resource);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      EXPECT_EQ(mock_pointer_surface->buffer_scale(), std::ceil(scale));
-#else
       EXPECT_EQ(mock_pointer_surface->buffer_scale(), std::ceil(scale - 0.2f));
-#endif
 
       // Update the focus.
       EXPECT_CALL(
@@ -698,17 +676,6 @@ TEST_F(WaylandPointerTest, FlingCancel) {
 
   // axis_stop event which should trigger FLING_START.
   SendAxisStopEvents();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The third axis event, which simulates placing the finger on the touchpad
-  // again using offset 0, should trigger a FLING_CANCEL.
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    auto* const pointer = server->seat()->pointer()->resource();
-    SendAxisEvents(pointer, server->GetNextTime(),
-                   WL_POINTER_AXIS_SOURCE_FINGER,
-                   WL_POINTER_AXIS_VERTICAL_SCROLL, 0);
-  });
-#endif
 
   // Another axis scroll event is added. In Linux, this must lead to a
   // FLING_CANCEL being triggered before a usual scroll event occurs because a

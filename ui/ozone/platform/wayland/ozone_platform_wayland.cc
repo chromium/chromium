@@ -366,13 +366,10 @@ class OzonePlatformWayland : public OzonePlatform,
       // arbitrary position.
       properties->supports_global_screen_coordinates = false;
 
-#if BUILDFLAG(IS_LINUX)
       // TODO(crbug.com/40800718): Revisit (and maybe remove) once proper
       // support, probably backed by org.freedesktop.portal.Screenshot.PickColor
-      // API is implemented. Note: this is restricted to Linux Desktop as Lacros
-      // implements it at a higher level layer using ChromeOS' mojo croapi.
+      // API is implemented.
       properties->supports_color_picker_dialog = false;
-#endif
 
       initialised = true;
     }

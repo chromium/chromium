@@ -193,19 +193,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool is_active_ = false;
   bool is_suspended_ = false;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Unique ID for this window. May be shared over non-Wayland IPC transports
-  // (e.g. mojo) to identify the window.
-  std::string window_unique_id_;
-
-  int64_t initial_display_id_ = display::kInvalidDisplayId;
-#else
   // Id of the chromium app passed through
   // PlatformWindowInitProperties::wm_class_name. This is used by Wayland
   // compositor to identify the app, unite it's windows into the same stack of
   // windows and find *.desktop file to set various preferences including icons.
   std::string app_id_;
-#endif
 
   // Title of the ShellToplevel.
   std::u16string window_title_;

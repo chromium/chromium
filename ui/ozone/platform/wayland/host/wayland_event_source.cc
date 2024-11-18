@@ -638,14 +638,9 @@ void WaylandEventSource::SetTargetAndDispatchEvent(Event* event,
   if (event->IsLocatedEvent()) {
     SetRootLocation(event->AsLocatedEvent());
     auto* cursor_position = connection_->wayland_cursor_position();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool update_cursor_position = cursor_position && event->IsMouseEvent();
-#else
     // TODO(crbug.com/40934709): Touch event should not update the cursor
     // position.
-    bool update_cursor_position = cursor_position;
-#endif
-    if (update_cursor_position) {
+    if (cursor_position) {
       cursor_position->OnCursorPositionChanged(
           GetLocationInScreen(event->AsLocatedEvent()));
     }
@@ -819,13 +814,11 @@ void WaylandEventSource::OnHoldEvent(EventType event_type,
     return;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Prevent generating any scroll events if pointer has just been moved.
   if (!is_fling_active_) {
     return;
   }
   is_fling_active_ = false;
-#endif
 
   // Prevent fling start if axis stop arrives after hold gesture.
   if (pointer_scroll_data_) {
@@ -1110,28 +1103,17 @@ void WaylandEventSource::ProcessPointerScrollData() {
   int flags = pointer_flags_ | keyboard_modifiers_;
   // Dispatch Fling event if pointer.axis_stop is notified and the recent
   // pointer.axis events meets the criteria to start fling scroll.
-  if (pointer_scroll_data_->dx == 0 && pointer_scroll_data_->dy == 0
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      && pointer_scroll_data_->is_axis_stop
-#endif
-  ) {
+  if (pointer_scroll_data_->dx == 0 && pointer_scroll_data_->dy == 0 &&
+      pointer_scroll_data_->is_axis_stop) {
     gfx::Vector2dF initial_velocity = ComputeFlingVelocity();
     float vx = initial_velocity.x();
     float vy = initial_velocity.y();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    ScrollEvent event(pointer_scroll_data_->is_axis_stop
-                          ? EventType::kScrollFlingStart
-                          : EventType::kScrollFlingCancel,
-                      pointer_location_, pointer_location_, timestamp, flags,
-                      vx, vy, vx, vy, kGestureScrollFingerCount);
-#else
     // In Linux there is no axis event with 0 delta when start scrolling.
     // A fling is therefore always started at this point.
     ScrollEvent event(EventType::kScrollFlingStart, pointer_location_,
                       pointer_location_, timestamp, flags, vx, vy, vx, vy,
                       kGestureScrollFingerCount);
     is_fling_active_ = true;
-#endif
     pointer_frames_.push_back(
         std::make_unique<FrameData>(event, base::NullCallback()));
   } else if (pointer_scroll_data_->axis_source) {
@@ -1147,7 +1129,6 @@ void WaylandEventSource::ProcessPointerScrollData() {
                    WL_POINTER_AXIS_SOURCE_FINGER ||
                *pointer_scroll_data_->axis_source ==
                    WL_POINTER_AXIS_SOURCE_CONTINUOUS) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       // Fling has to be stopped if a new scroll event is received.
       // From Wayland 1.23 this will be done through hold event.
       if (is_fling_active_) {
@@ -1158,7 +1139,6 @@ void WaylandEventSource::ProcessPointerScrollData() {
         pointer_frames_.push_back(std::make_unique<FrameData>(
             stop_fling_event, base::NullCallback()));
       }
-#endif
       ScrollEvent event(EventType::kScroll, pointer_location_,
                         pointer_location_, timestamp, flags,
                         pointer_scroll_data_->dx, pointer_scroll_data_->dy,

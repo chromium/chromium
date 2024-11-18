@@ -3805,18 +3805,12 @@ TEST_P(WaylandWindowTest, CreatesPopupOnButtonPressSerial) {
       auto* test_popup = GetTestXdgPopupByWindow(server, surface_id);
       ASSERT_TRUE(test_popup);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       if (use_explicit_grab) {
         EXPECT_NE(test_popup->grab_serial(), button_release_serial);
         EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
       } else {
         EXPECT_EQ(test_popup->grab_serial(), 0U);
       }
-#else
-      // crbug.com/1320528: Lacros uses explicit grab always.
-      EXPECT_NE(test_popup->grab_serial(), button_release_serial);
-      EXPECT_EQ(test_popup->grab_serial(), button_press_serial);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     });
   }
 }
@@ -3873,15 +3867,12 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
     PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
       auto* test_popup = GetTestXdgPopupByWindow(server, surface_id);
       ASSERT_TRUE(test_popup);
-      // crbug.com/1320528: Lacros uses explicit grab always.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       // Unless the use-wayland-explicit-grab switch is set, touch events
       // are the exception, i.e: the serial sent before the "up" event
       // (latest) cannot be used, otherwise, some compositors may dismiss
       // popups.
       if (!use_explicit_grab)
         EXPECT_EQ(test_popup->grab_serial(), 0U);
-#endif
     });
 
     popup->Hide();
@@ -3905,7 +3896,6 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
       auto* test_popup = GetTestXdgPopupByWindow(server, surface_id);
       ASSERT_TRUE(test_popup);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       uint32_t expected_serial = touch_down_serial;
       auto env = base::Environment::Create();
       if (base::nix::GetDesktopEnvironment(env.get()) ==
@@ -3918,10 +3908,6 @@ TEST_P(WaylandWindowTest, CreatesPopupOnTouchDownSerial) {
       } else {
         EXPECT_EQ(test_popup->grab_serial(), 0U);
       }
-#else
-      // crbug.com/1320528: Lacros uses explicit grab always.
-      EXPECT_EQ(test_popup->grab_serial(), touch_down_serial);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     });
   }
 }

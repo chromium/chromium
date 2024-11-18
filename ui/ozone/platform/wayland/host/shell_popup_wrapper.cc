@@ -28,13 +28,11 @@ namespace ui {
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 bool IsGnomeShell() {
   auto env = base::Environment::Create();
   return base::nix::GetDesktopEnvironment(env.get()) ==
          base::nix::DESKTOP_ENVIRONMENT_GNOME;
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -74,11 +72,9 @@ XDGPopupWrapperImpl* ShellPopupWrapper::AsXDGPopupWrapper() {
 void ShellPopupWrapper::GrabIfPossible(
     WaylandConnection* connection,
     std::optional<bool> parent_shell_popup_has_grab) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!cmd_line->HasSwitch(switches::kUseWaylandExplicitGrab))
     return;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // When drag process starts, as described the protocol -
   // https://goo.gl/1Mskq3, the client must have an active implicit grab. If
@@ -103,10 +99,8 @@ void ShellPopupWrapper::GrabIfPossible(
     return;
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (serial->type == wl::SerialType::kTouchPress && IsGnomeShell())
     return;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   Grab(serial->value);
   has_grab_ = true;

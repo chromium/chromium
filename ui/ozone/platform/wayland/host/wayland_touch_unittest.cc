@@ -79,19 +79,6 @@ class WaylandTouchTest : public WaylandTestSimple {
 
     auto* touch_event = event->AsTouchEvent();
     EXPECT_EQ(event_type, touch_event->type());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // These checks rely on the Exo-only protocol zcr_touch_stylus_v2 [1]
-    // at //t_p/wayland-protocols/unstable/stylus/stylus-unstable-v2.xml
-    auto compare_float = [](float a, float b) -> bool {
-      constexpr float kEpsilon = std::numeric_limits<float>::epsilon();
-      return std::isnan(a) ? std::isnan(b) : fabs(a - b) < kEpsilon;
-    };
-
-    EXPECT_EQ(pointer_type, touch_event->pointer_details().pointer_type);
-    EXPECT_TRUE(compare_float(force, touch_event->pointer_details().force));
-    EXPECT_TRUE(compare_float(tilt_x, touch_event->pointer_details().tilt_x));
-    EXPECT_TRUE(compare_float(tilt_y, touch_event->pointer_details().tilt_y));
-#endif
   }
 };
 

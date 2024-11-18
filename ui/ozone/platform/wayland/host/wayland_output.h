@@ -32,8 +32,6 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
   // wayland-linux, it is mostly used interchangeably with WaylandScreen's
   // `display::Display::id1` property, which is an int64_t instead, though it is
   // worth bearing in mind they are slightly different, under the hood.
-  // On lacros, the display id sent from ash-chrome is used for
-  // `display::Display::id`.
   using Id = uint32_t;
 
   static constexpr char kInterfaceName[] = "wl_output";

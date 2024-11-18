@@ -911,19 +911,6 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   opacity_ = properties.opacity;
   type_ = properties.type;
 
-  // Lacros currently uses a different approach to support KeyboardLock,
-  // which relies on the Exo-specific zcr-keyboard-extension-v1 + a permanent
-  // zwp-keyboard-shortcuts-inhibitor-v1. For more details, see comments in
-  // OzonePlatformWayland::CreateKeyboardHook function.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  WaylandKeyboard* keyboard =
-      connection_->seat() ? connection_->seat()->keyboard() : nullptr;
-  if (keyboard && properties.inhibit_keyboard_shortcuts) {
-    permanent_keyboard_shortcuts_inhibitor_ =
-        keyboard->CreateShortcutsInhibitor(this);
-  }
-#endif
-
   connection_->window_manager()->AddWindow(GetWidget(), this);
 
   if (!OnInitialize(std::move(properties), &state)) {
@@ -1236,14 +1223,9 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
     connection_->SetPlatformCursor(
         reinterpret_cast<wl_cursor*>(cursor->platform_data()),
         std::ceil(cursor->cursor_image_scale_factor()));
-  } else if (connection_->zcr_cursor_shapes() &&
-             zcr_shape.has_value()) {  // Check for Exo server-side cursor
-                                       // support.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Lacros should not load image assets for default cursors. See
-    // `BitmapCursorFactory::GetDefaultCursor()`.
-    DCHECK(cursor->bitmaps().empty());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else if (connection_->zcr_cursor_shapes() && zcr_shape.has_value()) {
+    // Check for Exo server-side cursor support.
+    // TODO(crbug.com/374244479): remove this protocol.
     connection_->zcr_cursor_shapes()->SetCursorShape(zcr_shape.value());
   } else if (!cursor->bitmaps()
                   .empty()) {  // Use client-side bitmap cursors as fallback.

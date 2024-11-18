@@ -1006,9 +1006,6 @@ TEST_P(WaylandScreenTest, SetWindowScale) {
   display::Display::ResetForceDeviceScaleFactorForTesting();
 }
 
-// Lacros uses screen coordinates so this test doesn't make any sense there.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 // Regression test for https://crbug.com/1346534.
 //
 // Scenario: With (at least) one output connected and a surface, with no output
@@ -1044,8 +1041,6 @@ TEST_P(WaylandScreenTest, SetWindowScaleWithoutEnteredOutput) {
 
   EXPECT_EQ(window_->applied_state().window_scale, 2);
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Checks that output transform is properly translated into Display orientation.
 // The first one is counter-clockwise, while the latter is clockwise.

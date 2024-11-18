@@ -1266,8 +1266,10 @@ TEST_P(WaylandInputMethodContextTest, OnCommitAfterPreeditStringWithoutCursor) {
             gfx::Range(0));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
+TEST_P(WaylandInputMethodContextTest, DISABLED_OnConfirmCompositionText) {
   constexpr char16_t text[] = u"ab😀cあdef";
   constexpr gfx::Range range(5, 6);  // あ is selected.
 
@@ -1308,8 +1310,11 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
             gfx::Range(0));
 }
 
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
 TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedKeepSelectionNoComposition) {
+       DISABLED_OnConfirmCompositionTextExtendedKeepSelectionNoComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
   connection_->Flush();
@@ -1328,8 +1333,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0, 4));
 }
 
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
 TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedKeepSelectionComposition) {
+       DISABLED_OnConfirmCompositionTextExtendedKeepSelectionComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
   input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
@@ -1349,8 +1357,12 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(3));
 }
 
-TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition) {
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
+TEST_P(
+    WaylandInputMethodContextTest,
+    DISABLED_OnConfirmCompositionTextExtendedDontKeepSelectionNoComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(0, 4));
   connection_->Flush();
@@ -1371,8 +1383,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0));
 }
 
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
 TEST_P(WaylandInputMethodContextTest,
-       OnConfirmCompositionTextExtendedDontKeepSelectionComposition) {
+       DISABLED_OnConfirmCompositionTextExtendedDontKeepSelectionComposition) {
   input_method_context_->SetSurroundingText(
       u"abcd", gfx::Range(0, 4), gfx::Range::InvalidRange(), gfx::Range(2));
   input_method_context_->OnPreeditString("xyz", {}, gfx::Range(1));
@@ -1394,7 +1409,11 @@ TEST_P(WaylandInputMethodContextTest,
             gfx::Range(0));
 }
 
-TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionTextForLongRange) {
+// TODO(crbug.com/374244479): even though it was only running on lacros, this
+// might still be useful for Linux. Disable this for now.. If it's not, consider
+// removing this. It was left here intentionally.
+TEST_P(WaylandInputMethodContextTest,
+       DISABLED_OnConfirmCompositionTextForLongRange) {
   const std::u16string text(5000, u'あ');
   constexpr gfx::Range range(4000, 4500);
 
@@ -1454,7 +1473,6 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionTextForLongRange) {
   EXPECT_EQ(input_method_context_->predicted_state_for_testing().composition,
             gfx::Range(0));
 }
-#endif
 
 TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
   constexpr char16_t text[] = u"abcあdef";

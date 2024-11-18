@@ -48,12 +48,6 @@
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/check.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace ui {
 namespace {
 
@@ -92,21 +86,6 @@ bool IsImeEnabled() {
   if (base::FeatureList::IsEnabled(features::kWaylandTextInputV3)) {
     return true;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros chrome, we check whether ash-chrome supports IME, then
-  // enable IME if so. This allows us to control IME enabling state in
-  // Lacros-chrome side, which helps us on releasing.
-  // TODO(crbug.com/40737321): In the future, we may want to unify the behavior
-  // of ozone/wayland across platforms.
-  const chromeos::BrowserParamsProxy* init_params =
-      chromeos::BrowserParamsProxy::Get();
-  if (init_params->ExoImeSupport() !=
-      crosapi::mojom::ExoImeSupport::kUnsupported) {
-    return true;
-  }
-#endif
-
   // Do not enable wayland IME by default.
   return false;
 }
@@ -663,10 +642,13 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
 
   const gfx::Range new_selection_range =
       gfx::Range(offsets[1] + utf16_offset, offsets[0] + utf16_offset);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Cursor position may be wrong on Lacros due to timing issue for some
+
+  // TODO(crbug.com/374244479): this might still be useful for Linux. If it's
+  // not, consider removing this. It was left here intentionally.
+  constexpr bool kWorkaroundSurroundingTextTimingIssue = false;
+  // Cursor position may have been wrong on Lacros due to timing issue for some
   // scenario when surrounding text is longer than wayland message size
-  // limitation (4000 bytes) such as:
+  // limitation (4000 bytes) such as (does it apply to Wayland/Linux as well?):
   // 1. Set surrounding text with 8000 bytes and send the selection adjusted to
   // 4000 bytes (wayland message size maximum).
   // 2. Exo requests to delete surrounding text sent from 1.
@@ -678,12 +660,13 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   //
   // This timing issue will be fixed by sending whole surrounding text instead
   // of trimmed text.
-  if (selection == new_selection_range) {
-    pending_keep_selection_ = true;
-  } else {
-    NOTIMPLEMENTED_LOG_ONCE();
+  if (kWorkaroundSurroundingTextTimingIssue) {
+    if (selection == new_selection_range) {
+      pending_keep_selection_ = true;
+    } else {
+      NOTIMPLEMENTED_LOG_ONCE();
+    }
   }
-#endif
 
   surrounding_text_tracker_.OnSetEditableSelectionRange(new_selection_range);
 }
