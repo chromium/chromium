@@ -18,7 +18,7 @@
 
 namespace blink {
 
-class DocumentTiming;
+struct DocumentTimingValues;
 class DocumentLoader;
 class DocumentLoadTiming;
 class LocalDOMWindow;
@@ -78,8 +78,6 @@ class CORE_EXPORT PerformanceNavigationTiming final
   static V8NavigationTimingType::Enum GetNavigationTimingType(
       WebNavigationType);
 
-  const DocumentTiming* GetDocumentTiming() const;
-
   DocumentLoader* GetDocumentLoader() const;
 
   DocumentLoadTiming* GetDocumentLoadTiming() const;
@@ -88,6 +86,8 @@ class CORE_EXPORT PerformanceNavigationTiming final
 
   NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
+
+  Member<DocumentTimingValues> document_timing_values_;
 };
 }  // namespace blink
 
