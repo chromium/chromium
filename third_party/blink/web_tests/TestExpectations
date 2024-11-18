@@ -2696,12 +2696,12 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac12 ] external/wpt/css/css-grid/alignment/grid-baseline-001.html [ Failure ]
-[ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-complex.tentative.html [ Timeout ]
-[ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html [ Timeout ]
-[ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Timeout ]
+crbug.com/379207981 [ Mac12 ] external/wpt/css/css-grid/alignment/grid-baseline-001.html [ Failure ]
+crbug.com/379418916 [ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-complex.tentative.html [ Timeout ]
+crbug.com/379418916 [ Mac15 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html [ Timeout ]
+crbug.com/379418916 [ Mac14 ] external/wpt/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.tentative.html [ Timeout ]
+crbug.com/379072454 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription.html [ Timeout ]
+crbug.com/379072454 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Timeout ]
 crbug.com/379008012 [ Mac14-arm64 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac13-arm64 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
 crbug.com/379008012 [ Mac13 ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Timeout ]
@@ -8582,7 +8582,7 @@ crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?gpu [ Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.html?gpu [ Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Pass Timeout ]
-crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Pass Timeout Failure ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Failure Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu [ Pass Timeout ]
 
 # Flaky on headless shell
@@ -8616,4 +8616,4 @@ crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabi
 crbug.com/359319433 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
 
 # Gardener 2024-11-18
-crbug.com/379516106 [ Mac14 Debug ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
+crbug.com/379516106 [ Debug Mac14 ] external/wpt/css/css-overflow/scrollbar-large-scale-in-iframe.html [ Pass Timeout ]
