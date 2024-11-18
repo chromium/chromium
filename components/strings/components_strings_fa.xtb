@@ -3398,6 +3398,7 @@
 <translation id="7156870133441232244">‏سرور باید به «امنیت لایه انتقال» (TLS) نسخه ۱.۲ یا بالاتر ارتقا داده شود.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{برای ارسال این فایل بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}one{برای ارسال این فایل‌ها بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}other{برای ارسال این فایل‌ها بااستفاده از <ph name="FEATURE_NAME" />، مقداری فضا (<ph name="DISK_SPACE_SIZE" />) در دستگاهتان آزاد کنید}}</translation>
 <translation id="7160999678034985039">لطفاً کارتان را ذخیره کنید و وقتی آماده شدید، به‌روزرسانی را شروع کنید.</translation>
+<translation id="7162277662076933695">کارت‌خوان هوشمند</translation>
 <translation id="7163295244162773898">{0,plural, =1{فایل محرمانه کپی شود؟}one{فایل محرمانه کپی شود؟}other{فایل‌های محرمانه کپی شود؟}}</translation>
 <translation id="7168625890036931112">«<ph name="DATA_CONTROLS_RESTRICTION" />» محدودیت پشتیبانی‌شده‌ای در این پلاتفرم نیست</translation>
 <translation id="717330890047184534">‏شناسه Gaia:</translation>

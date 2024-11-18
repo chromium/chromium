@@ -1222,6 +1222,7 @@ Jika kebijakan ini disetel ke Diterapkan, setelah akun terkelola login, pengguna
 Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, pengguna mungkin akan melihat balon yang meminta mereka membuat profil baru setelah akun terkelola login. Balon tersebut dapat ditutup dan pengguna dapat melanjutkan penjelajahan di lingkungan yang tidak dikelola. Balon tersebut dikontrol oleh kebijakan <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Kebijakan ini tidak berpengaruh jika disetel di tingkat perangkat.</translation>
+<translation id="1834796168555733063">Nonaktifkan penyimpanan kunci sandi menggunakan pengelola sandi</translation>
 <translation id="1836380138559328229">Simpan kredensial Wi-Fi aktif di tingkat perangkat</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
 <translation id="1838910874018595451">Konfigurasi yang diisi otomatis untuk tiket Kerberos</translation>
@@ -4049,6 +4050,7 @@ Perhatikan bahwa kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="E
 
  Jika kebijakan ini disetel ke nilai kosong atau yang tidak valid, nilai <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> tambahan tidak akan ditambahkan ke permintaan tugas pencetakan.
 </translation>
+<translation id="3896591584655529057">Aktifkan penyimpanan kunci sandi menggunakan pengelola sandi</translation>
 <translation id="3897218615484393758">Membatasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat login secara offline di layar kunci</translation>
 <translation id="3897860452756794695">Perilaku baru offsetParent akan digunakan.</translation>
 <translation id="3898345958122666461">Nonaktifkan NTLMv2</translation>
@@ -8813,6 +8815,11 @@ Catatan: Jika Anda menggunakan kebijakan ini untuk menentukan zona waktu secara 
       Jika ekstensi tidak ada dalam daftar, atau daftar tidak disetel, panggilan ke API akan gagal dan disertai kode error.</translation>
 <translation id="718956142899066210">Jenis sambungan yang diizinkan untuk pembaruan</translation>
 <translation id="7190286937411178540">Mengaktifkan fitur aksesibilitas penyorotan fokus keyboard</translation>
+<translation id="7190595750461561896">Kebijakan ini mengontrol kemampuan browser untuk menyimpan kunci sandi di pengelola sandi bawaan. Kebijakan ini tidak membatasi akses ke, atau mengubah konten, kunci sandi yang sudah disimpan di pengelola sandi. Jika kebijakan <ph name="POLICY_NAME" /> disetel ke Nonaktif, penyimpanan di pengelola sandi bawaan akan dinonaktifkan secara umum, termasuk kunci sandi dan sandi, sehingga kebijakan ini tidak berlaku.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna dapat menyimpan kunci sandi di pengelola sandi bawaan jika login ke <ph name="PRODUCT_NAME" />.
+
+Jika kebijakan ini disetel ke Nonaktif, pengguna tidak dapat menyimpan kunci sandi di pengelola sandi bawaan, tetapi kunci sandi yang disimpan sebelumnya akan tetap berfungsi.</translation>
 <translation id="719398790886719721">Nonaktifkan akses root ke mesin virtual Linux</translation>
 <translation id="7194407337890404814">Nama penyedia penelusuran default</translation>
 <translation id="7196336906814426783">Kebijakan ini menetapkan serangkaian interval mingguan untuk penjadwalan penangguhan otomatis. Saat interval dimulai, perangkat <ph name="PRODUCT_OS_NAME" /> akan memasuki mode ditangguhkan, dan akan aktif saat interval berakhir.
@@ -11412,6 +11419,7 @@ Untuk mengetahui informasi selengkapnya tentang konteks aman, lihat https://www.
 
       Kebijakan ini adalah tindakan sementara dan akan dihapus di <ph name="PRODUCT_NAME" /> versi mendatang. Setelah kebijakan dihapus, <ph name="PRODUCT_NAME" /> akan dapat mengkueri jenis DNS tambahan kapan saja.</translation>
 <translation id="9167719789236691545">Nonaktifkan Drive di aplikasi File <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9171359005568194889">Aktifkan penyimpanan kunci sandi ke pengelola sandi</translation>
 <translation id="9172648973829444124">Aktifkan paksa Mode Khusus HTTPS dalam Mode Seimbang</translation>
 <translation id="9172911925443428317">Jangan izinkan pop-up Rating App Store ditampilkan</translation>
 <translation id="9173133289347070466">Survei dalam produk <ph name="PRODUCT_NAME" /> mengumpulkan masukan pengguna untuk browser. Respons survei tidak dikaitkan dengan akun pengguna.

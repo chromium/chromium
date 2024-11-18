@@ -2317,6 +2317,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2575407791320728464">Netinkamas URL. Įsitikinkite, kad jis tinkamai suformatuotas.</translation>
 <translation id="2575441894380764255">Neleidžiama rodyti nepageidaujamų ar klaidinančių skelbimų</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Šis įrenginys bus saugomas 1 metus, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}one{Šis įrenginys bus saugomas {YEARS} metus, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}few{Šis įrenginys bus saugomas {YEARS} metus, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}many{Šis įrenginys bus saugomas {YEARS} metų, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}other{Šis įrenginys bus saugomas {YEARS} metų, ir kitą kartą galėsite prisijungti be kodo. Tai nustatė jūsų administratorius.}}</translation>
+<translation id="2577127557293415225">Trumpam užmerkti abi akis</translation>
 <translation id="257779572837908839">Nustatyti kaip „Chromebox“ susitikimams</translation>
 <translation id="2580889980133367162">Visada leisti <ph name="HOST" /> atsisiųsti kelis failus</translation>
 <translation id="258095186877893873">Ilga</translation>
@@ -2787,6 +2788,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2904210161403910217">Nuo paskutinio karto, kai buvote prisijungę, pasikeitė slaptažodis</translation>
 <translation id="2904506722835398619">Reikia prisijungti ir sinchronizuoti</translation>
 <translation id="2904845070985032877">Pristabdyti animacijas</translation>
+<translation id="2905556994482999199">Naudoti galvos judesius ir veido išraiškas „Chromebook“ įrenginiui valdyti</translation>
 <translation id="2907619724991574506">Paleidimo URL</translation>
 <translation id="2907798539022650680">Nepavyko prisijungti prie „<ph name="NAME" />“: <ph name="DETAILS" />
     Serverio pranešimas: <ph name="SERVER_MSG" /></translation>
@@ -7259,6 +7261,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6143186082490678276">Gauti pagalbos</translation>
 <translation id="6143366292569327983">Pasirinkite puslapio kalbą, iš kurios norite versti</translation>
 <translation id="6144938890088808325">Padėkite mums tobulinti „Chromebook“ kompiuterius</translation>
+<translation id="6145363037359279595">Sveiki, <ph name="CHILD_NAME" />!</translation>
 <translation id="6146409560350811147">Sinchronizavimas neveikia. Bandykite prisijungti dar kartą.</translation>
 <translation id="6147020289383635445">Įvyko spaudinio peržiūros klaida.</translation>
 <translation id="6147253937684562370">Jei norite atrakinti profilį, prisijunkite naudodami pagrindinės paskyros el. pašto adresą: <ph name="EMAIL" /></translation>

@@ -801,6 +801,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1556127816860282890">L'attività in background e alcuni effetti visivi, come lo scorrimento continuo, potrebbero essere limitati</translation>
 <translation id="1556537182262721003">Impossibile spostare la directory dell'estensione nel profilo.</translation>
 <translation id="1557939148300698553">Crea profilo</translation>
+<translation id="155803912725350982">Tasti lenti</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Riprendi la trasmissione su <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Consente l'accesso alla posizione per le app e i siti web che dispongono dell'autorizzazione di accesso alla posizione e ai servizi di sistema</translation>
@@ -3551,6 +3552,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3488199663160411179">nome</translation>
 <translation id="3490695139702884919">Download… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">I dati locali possono essere ripristinati se dimentichi il PIN o la password</translation>
+<translation id="3491616972057195633">Antirimbalzo dei tasti</translation>
 <translation id="3491669675709357988">L'account di tuo figlio non è configurato per la funzionalità Controllo genitori di Family Link. Per aggiungere questa funzionalità, devi completare la configurazione. Leggi informazioni su Controllo genitori nell'app Esplora.</translation>
 <translation id="3491678231052507920">In genere, i siti usano dati e dispositivi per realtà virtuale per consentirti di avviare sessioni VR</translation>
 <translation id="3493043608231401654">Rimuovi <ph name="TAB_TITLE" /> dal gruppo di schede</translation>
@@ -3637,6 +3639,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3551320343578183772">Chiudi scheda</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cancellato all'uscita</translation>
+<translation id="3553442438687311630">Autenticazione Microsoft</translation>
 <translation id="3554493885489666172">Il dispositivo è gestito da <ph name="PROFILE_NAME" />. Gli amministratori possono accedere ai dati in qualsiasi profilo su questo dispositivo.</translation>
 <translation id="3555812735919707620">Rimuovi estensione</translation>
 <translation id="3557101512409028104">Imposta limitazioni relative ai siti web e limiti per il tempo di utilizzo con Family Link</translation>
@@ -3788,6 +3791,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3654045516529121250">Lettura delle impostazioni di accessibilità</translation>
 <translation id="3654682977761834281">Dati da siti incorporati</translation>
 <translation id="3656328935986149999">Velocità del cursore</translation>
+<translation id="3656701180077048004">Aggiunge un ritardo tra il momento in cui premi un tasto e la sua attivazione</translation>
 <translation id="3658871634334445293">Accelerazione TrackPoint</translation>
 <translation id="3659929705630080526">Hai inserito troppe volte un codice di accesso errato. Riprova più tardi.</translation>
 <translation id="3660234220361471169">Non attendibile</translation>
@@ -6673,6 +6677,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5731247495086897348">Incolla e vi&amp;sita</translation>
 <translation id="5733109311583381874">Aggiungi le tue parole ai dizionari utente per personalizzare i candidati di conversione.</translation>
 <translation id="5733669387494115331">Impostazioni dei servizi Google</translation>
+<translation id="5733913382424854675">Raggruppa schede con l'AI</translation>
 <translation id="5734362860645681824">Comunicazioni</translation>
 <translation id="5734697361979786483">Aggiungi condivisione file</translation>
 <translation id="5735513236153491131">Aumenta prestazioni ora</translation>
@@ -7960,6 +7965,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6677527809400770913">Gesto <ph name="GESTURE" /> assegnato a <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Grandi onde che si infrangono in mare, con la terra sullo sfondo in lontananza. Cenni di luce arancione appena oltre l'orizzonte, in un cielo altrimenti cupo e malinconico.</translation>
 <translation id="6678717876183468697">URL query</translation>
+<translation id="6679947539429331601">Nascondi per 12 ore</translation>
 <translation id="6680442031740878064">Disponibile: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocità</translation>
 <translation id="6683022854667115063">Cuffie</translation>
@@ -8598,6 +8604,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7127980134843952133">Cronologia download</translation>
 <translation id="7128151990937044829">Mostra un indicatore nella barra degli indirizzi quando le notifiche sono bloccate</translation>
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
+<translation id="7130680050151101667">Non mostrare questa scheda</translation>
 <translation id="7131040479572660648">Lettura dei dati su <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Aggiungi pa&amp;gina...</translation>
 <translation id="7131431455372521159">Tutti i TrackPoint sono stati disconnessi</translation>
@@ -10103,6 +10110,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8194788147118885421">Rivedi le schede non attive</translation>
 <translation id="8195265224453131880">Intensità</translation>
 <translation id="8195854162863398249">Disattiva <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Ritardo prima di attivare di nuovo lo stesso tasto</translation>
 <translation id="8197673340773315084">Aggiungi un nome o un'etichetta, ad es. "Lavoro"</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>
 <translation id="8198457270656084773">Stai cercando la pagina del log di sistema del dispositivo? Visita<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10518,6 +10526,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8486666913807228950">Motivo: la regola invertita <ph name="REVERT_RULE" /> è stata rilevata nell'elenco "Forza l'apertura in".</translation>
 <translation id="8487678622945914333">Ingrandisci</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488735603679729015">Ritardo prima dell'attivazione del tasto</translation>
 <translation id="8489156414266187072">I suggerimenti personali vengono mostrati soltanto nel tuo account</translation>
 <translation id="8490896350101740396">Le seguenti app kiosk "<ph name="UPDATED_APPS" />" sono state aggiornate. Riavvia il dispositivo per completare la procedura di aggiornamento.</translation>
 <translation id="8492822722330266509">I siti possono inviare popup e usare reindirizzamenti</translation>
@@ -10905,6 +10914,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8755376271068075440">Più &amp;grande</translation>
 <translation id="8755584192133371929">Seleziona una scheda da condividere</translation>
 <translation id="875604634276263540">L'URL dell'immagine non è valido</translation>
+<translation id="8756262226135340085">Ignora le pressioni ripetute velocemente dello stesso tasto della tastiera</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
 <translation id="8757368836647541092">Utente <ph name="USER_NAME_OR_EMAIL" /> rimosso</translation>
 <translation id="8759753423332885148">Scopri di più.</translation>

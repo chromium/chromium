@@ -796,6 +796,7 @@
 <translation id="1556127816860282890">后台活动和某些视觉效果（例如流畅滚动）可能会受到限制</translation>
 <translation id="1556537182262721003">无法将扩展程序目录移动到个人资料中。</translation>
 <translation id="1557939148300698553">创建个人资料</translation>
+<translation id="155803912725350982">慢速键</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1558671750917454373">继续投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1561331397460162942">这将允许具有位置信息权限的应用和网站以及系统服务使用位置信息</translation>
@@ -3541,6 +3542,7 @@
 <translation id="3488199663160411179">名称</translation>
 <translation id="3490695139702884919">正在下载…<ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">如果您忘记了 PIN 码或密码，可以恢复本地数据</translation>
+<translation id="3491616972057195633">防抖键</translation>
 <translation id="3491669675709357988">您孩子的账号尚未设置 Family Link 家长控制功能。完成设置后，即可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
 <translation id="3491678231052507920">网站通常会使用您的虚拟现实设备和数据以让您进入 VR 会话</translation>
 <translation id="3493043608231401654">从标签页分组中移除“<ph name="TAB_TITLE" />”</translation>
@@ -3627,6 +3629,7 @@
 <translation id="3551320343578183772">关闭标签页</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">退出时清除</translation>
+<translation id="3553442438687311630">Microsoft 身份验证</translation>
 <translation id="3554493885489666172">您的设备由 <ph name="PROFILE_NAME" /> 管理。管理员可访问此设备上任意个人资料中的数据。</translation>
 <translation id="3555812735919707620">卸载扩展程序</translation>
 <translation id="3557101512409028104">通过 Family Link 设置网站限制和屏幕使用时间限制</translation>
@@ -3778,6 +3781,7 @@
 <translation id="3654045516529121250">读取您的无障碍设置</translation>
 <translation id="3654682977761834281">来自嵌入式网站的数据</translation>
 <translation id="3656328935986149999">光标速度</translation>
+<translation id="3656701180077048004">在按下按键与启用按键之间增加延迟</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
 <translation id="3659929705630080526">访问代码输错次数过多。请稍后重试</translation>
 <translation id="3660234220361471169">不可信</translation>
@@ -6661,6 +6665,7 @@
 <translation id="5731247495086897348">粘贴并转到(&amp;S)</translation>
 <translation id="5733109311583381874">将您自己的字词添加到用户字典中，以便自定义候选转换字词。</translation>
 <translation id="5733669387494115331">Google 服务设置</translation>
+<translation id="5733913382424854675">利用 AI 将标签页分组</translation>
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
 <translation id="5735513236153491131">立即提升</translation>
@@ -7948,6 +7953,7 @@
 <translation id="6677527809400770913">已将手势“<ph name="GESTURE" />”分配给“<ph name="ACTION" />”</translation>
 <translation id="6678604587151240716">海中巨浪翻滚，远处背景是一片陆地。天空暗沉，地平线上隐约透出橙色光芒。</translation>
 <translation id="6678717876183468697">查询网址</translation>
+<translation id="6679947539429331601">隐藏 12 小时</translation>
 <translation id="6680442031740878064">可用空间：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">语速</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
@@ -8586,6 +8592,7 @@
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="7128151990937044829">当通知处于屏蔽状态时在地址栏中显示“已屏蔽”图标</translation>
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
+<translation id="7130680050151101667">不显示此卡片</translation>
 <translation id="7131040479572660648">读取您在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上的数据</translation>
 <translation id="713122686776214250">添加网页(&amp;G)...</translation>
 <translation id="7131431455372521159">所有 TrackPoint 均已断开连接</translation>
@@ -10091,6 +10098,7 @@
 <translation id="8194788147118885421">查看闲置标签页</translation>
 <translation id="8195265224453131880">强度</translation>
 <translation id="8195854162863398249">停用“<ph name="FEATURE_NAME" />”功能</translation>
+<translation id="8195920051450756553">再次启用同一按键前的延迟时间</translation>
 <translation id="8197673340773315084">添加一个名称或标签，例如“工作”或“个人”</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8198457270656084773">想查看系统设备日志页面？请访问 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
@@ -10506,6 +10514,7 @@
 <translation id="8486666913807228950">原因：系统在“会被强制在…中打开”列表中发现了反转规则“<ph name="REVERT_RULE" />”。</translation>
 <translation id="8487678622945914333">放大</translation>
 <translation id="8487699605742506766">热点</translation>
+<translation id="8488735603679729015">启用按键前的延迟时间</translation>
 <translation id="8489156414266187072">个性化建议仅会显示在您的账号中</translation>
 <translation id="8490896350101740396">下列自助服务终端应用“<ph name="UPDATED_APPS" />”已更新完毕。请重启设备，以便完成更新流程。</translation>
 <translation id="8492822722330266509">网站可以发送弹出式窗口并使用重定向</translation>
@@ -10893,6 +10902,7 @@
 <translation id="8755376271068075440">放大(&amp;L)</translation>
 <translation id="8755584192133371929">选择要分享的标签页</translation>
 <translation id="875604634276263540">图片网址无效</translation>
+<translation id="8756262226135340085">忽略快速重复按下同一键盘按键的操作</translation>
 <translation id="8756969031206844760">要更新密码吗？</translation>
 <translation id="8757368836647541092">已移除<ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">了解详情。</translation>

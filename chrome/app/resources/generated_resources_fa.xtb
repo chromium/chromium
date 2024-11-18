@@ -446,6 +446,7 @@
 <translation id="1296911687402551044">سنجاق کردن برگه انتخاب‌شده</translation>
 <translation id="1297175357211070620">مقصد</translation>
 <translation id="129770436432446029">ارسال بازخورد برای <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129808599775632797">تغییرات</translation>
 <translation id="130097046531636712">این ویژگی شارژ باتری را با محدود کردن فعالیت پس‌زمینه و جلوه‌های بصری مثل پیمایش روان، افزایش می‌دهد.</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> می‌تواند این فایل‌ها را ویرایش کند:</translation>
 <translation id="130174306655812048">‏«Ok Google، نام این آهنگ چیست؟» را امتحان کنید</translation>
@@ -1771,6 +1772,7 @@
 <translation id="2214018885812055163">پوشه‌های اشتراک‌گذاری‌شده</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;۱ خط نشان داده نمی‌شود&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> خط نشان داده نمی‌شوند&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> خط نشان داده نمی‌شوند&gt;}}</translation>
 <translation id="2215070081105889450">برای هم‌رسانی صدا، درعوض برگه یا صفحه‌ای را هم‌رسانی کنید</translation>
+<translation id="2217208085547223783">وضعیت اعتماد</translation>
 <translation id="2218019600945559112">موشواره و صفحه لمسی</translation>
 <translation id="2218515861914035131">جای‌گذاری به‌عنوان متن ساده</translation>
 <translation id="221872881068107022">پیمایش معکوس</translation>
@@ -2502,6 +2504,7 @@
 <translation id="2722547199758472013">شناسه: <ph name="EXTENSION_ID" /></translation>
 <translation id="2722817840640790566">باز کردن «نمایه مهمان»</translation>
 <translation id="2723819893410108315">لیمویی</translation>
+<translation id="2724822892847436256">محدودیت‌ها</translation>
 <translation id="2724841811573117416">‏گزارش‌های WebRTC</translation>
 <translation id="272488616838512378">تبدیل واحد</translation>
 <translation id="2725200716980197196">اتصال به شبکه بازیابی شد</translation>
@@ -3462,6 +3465,7 @@
 <translation id="3421835120203732951">افزودن نمایه جدید</translation>
 <translation id="3423111258700187173">نتایج پیداشده در <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">درباره این ویژگی مبتنی بر هوش مصنوعی بیشتر بدانید</translation>
+<translation id="3423275441470187644">اعتماد</translation>
 <translation id="3423463006624419153">در «<ph name="PHONE_NAME_1" />» و «<ph name="PHONE_NAME_2" />»:</translation>
 <translation id="3423858849633684918">لطفاً <ph name="PRODUCT_NAME" /> را مجدداً راه‌اندازی کنید</translation>
 <translation id="3424969259347320884">توضیح دهید وقتی برگه خراب شد مشغول انجام چه کاری بودید</translation>
@@ -4590,6 +4594,7 @@
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
+<translation id="4198420883535766848">برداشتن برگه از فهرست</translation>
 <translation id="4200609364258658652">کپی کردن فریم ویدیو</translation>
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
 <translation id="4200983522494130825">&amp;برگه جدید</translation>
@@ -5151,6 +5156,7 @@
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{گروه برگه حذف شود؟}one{گروه برگه حذف شود؟}other{گروه‌های برگه حذف شود؟}}</translation>
 <translation id="4608500690299898628">&amp;یافتن...</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> با خطایی مواجه شده است</translation>
+<translation id="4610493438923139095">غیرقابل‌اعتماد</translation>
 <translation id="4610637590575890427">آیا می‌خواستید به <ph name="SITE" /> بروید؟</translation>
 <translation id="4611114513649582138">اتصال داده دردسترس است</translation>
 <translation id="4611759022973144129">می‌توانید از این گذرواژه برای ورود به سیستم <ph name="DEVICE_TYPE" /> استفاده کنید.</translation>
@@ -5176,6 +5182,7 @@
 <translation id="4627442949885028695">ادامه از دستگاه دیگری</translation>
 <translation id="4628762811416793313">‏راه‌اندازی محتوی Linux تکمیل نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="4629521233550547305">باز کردن نمایه <ph name="PROFILE_NAME" /></translation>
+<translation id="4629803160911640220">قابل‌اعتماد</translation>
 <translation id="4631955550884380853">صدای متمرکز</translation>
 <translation id="4632655012900268062">سفارشی‌سازی کارت‌ها</translation>
 <translation id="4633003931260532286">افزونه به «<ph name="IMPORT_NAME" />» با نسخه حداقل «<ph name="IMPORT_VERSION" />» نیاز دارد اما تنها نسخه «<ph name="INSTALLED_VERSION" />» نصب شده است</translation>
@@ -6831,6 +6838,7 @@
 <translation id="5842497610951477805">فعال کردن بلوتوث</translation>
 <translation id="5844284118433003733">‏وقتی به سیستم وارد شده باشید، این داده‌ها به «حساب Google» شما پیوند داده می‌شود تا از شما در سراسر سرویس‌های Google محافظت کند؛ مثلاً افزایش محافظت در Gmail پس‌از یک حادثه امنیتی.</translation>
 <translation id="5844574845205796324">پیشنهاد محتوای جدید برای کاوش</translation>
+<translation id="5844685625984052392">راهنمایی</translation>
 <translation id="5846200638699387931">خطای دستوری رابطه: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">بدون سایه</translation>
 <translation id="5846504156837627898">مدیریت اجازه‌های سایت</translation>

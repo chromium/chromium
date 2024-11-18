@@ -800,6 +800,7 @@
 <translation id="1556127816860282890">ब्याकग्राउन्डमा हुने गतिविधि र निर्वाध रूपमा स्क्रोल गर्ने सुविधालगायतका केही भिजुअल इफेक्टहरू सीमित रूपमा उपलब्ध हुन सक्छन्</translation>
 <translation id="1556537182262721003">प्रोफाइलमा एक्स्टेन्शन निर्देशिका सार्न सकिएन।</translation>
 <translation id="1557939148300698553">प्रोफाइल बनाउनुहोस्</translation>
+<translation id="155803912725350982">स्लो की</translation>
 <translation id="155865706765934889">टचप्याड</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> मा कास्ट गर्ने कार्य सुचारु गर्नुहोस्</translation>
 <translation id="1561331397460162942">तपाईंले लोकेसन प्रयोग गर्ने अनुमति दिनुभयो भने यो अनुमति दिइएका एप, वेबसाइट र सिस्टमका सेवाहरूले लोकेसन प्रयोग गर्न पाउँछन्</translation>
@@ -3547,6 +3548,7 @@
 <translation id="3488199663160411179">नाम</translation>
 <translation id="3490695139702884919">डाउनलोड गरिँदै छ... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">तपाईंले आफ्नो PIN वा पासवर्ड बिर्सनुभयो भने पनि लोकल डेटा रिस्टोर गर्न सकिन्छ</translation>
+<translation id="3491616972057195633">बाउन्स की</translation>
 <translation id="3491669675709357988">तपाईंका बच्चाको खातामा Family Link का अभिभावकीय नियन्त्रणहरू सेटअप गरिएका छैनन्। तपाईंले सेटअप पूरा गरिसकेपछि तपाईं बच्चाको खातामा अभिभावकीय नियन्त्रणहरू थप्न सक्नुहुन्छ। तपाईं एक्स्प्लोर एपमा अभिभावकीय नियन्त्रणसम्बन्धी जानकारी फेला पार्न सक्नुहुन्छ।</translation>
 <translation id="3491678231052507920">साइटहरू तपाईंलाई VR सत्रमा प्रवेश गर्ने अनुमति दिन सामान्यतया तपाईंका भर्चुअल रियालिटी चल्ने यन्त्र र तिनमा भएका डेटा प्रयोग गर्छन्</translation>
 <translation id="3493043608231401654">ट्याब समूहबाट <ph name="TAB_TITLE" /> हटाउनुहोस्</translation>
@@ -3633,6 +3635,7 @@
 <translation id="3551320343578183772">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">बाहिर निस्कदा खालि गरिएको</translation>
+<translation id="3553442438687311630">Microsoft को पुष्टि गर्ने मोड्युल</translation>
 <translation id="3554493885489666172"><ph name="PROFILE_NAME" /> ले तपाईंको डिभाइसको व्यवस्थापन गर्छ। एड्मिनहरू यस यन्त्रमा रहेका जुनसुकै प्रोफाइलमा भएका डेटा हेर्न तथा प्रयोग गर्न सक्छन्।</translation>
 <translation id="3555812735919707620">एक्सटेन्सन हटाउनुहोस्</translation>
 <translation id="3557101512409028104">Family Link मार्फत वेबसाइटका प्रतिबन्धहरू र स्क्रिन हेरेर बिताउने समयको सीमा सेट गर्नुहोस्</translation>
@@ -3784,6 +3787,7 @@
 <translation id="3654045516529121250">तपाइँका पहुँच सेटिङहरू पढ्नुहोस्</translation>
 <translation id="3654682977761834281">इम्बेड गरिएका साइटहरूका डेटा</translation>
 <translation id="3656328935986149999">कर्सरको गति</translation>
+<translation id="3656701180077048004">तपाईंले कुनै की थिचेपछि उक्त की एक्टिभेट हुन लाग्ने समय बढाउँछ</translation>
 <translation id="3658871634334445293">TrackPoint एक्सिलेरेसन</translation>
 <translation id="3659929705630080526">तपाईंले अत्यन्तै धेरै पटक गलत एक्सेस कोड हाल्नुभएको छ। पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3660234220361471169">अविश्वासनीय</translation>
@@ -6671,6 +6675,7 @@
 <translation id="5731247495086897348">टाँ&amp;स्नुहोस् र जानुहोस्</translation>
 <translation id="5733109311583381874">रूपान्तरण गर्नु पर्ने शब्दहरू कस्टमाइज गर्न प्रयोगकर्ताका शब्दकोशमा आफ्नै शब्दहरू हाल्नुहोस्।</translation>
 <translation id="5733669387494115331">Google का सेवाहरूसम्बन्धी सेटिङ</translation>
+<translation id="5733913382424854675">AI प्रयोग गरी ट्याबहरूको समूह बनाउनुहोस्</translation>
 <translation id="5734362860645681824">सञ्चारहरू</translation>
 <translation id="5734697361979786483">फाइल आदान प्रदान गर्ने सुविधा थप्नुहोस्</translation>
 <translation id="5735513236153491131">अहिले नै बुस्ट गर्नुहोस्</translation>
@@ -7958,6 +7963,7 @@
 <translation id="6677527809400770913"><ph name="ACTION" /> गर्न <ph name="GESTURE" /> जेस्चर असाइन गरिएको छ</translation>
 <translation id="6678604587151240716">ब्याकग्राउन्डमा अलि टाढा जमिन र समुद्रमा ठुला ठुला छालहरू उर्लिरहेका छन्। अँध्यारो आकाशमा क्षितिजको परतिर सुन्तला रङका बत्तीहरू देखिएका छन्।</translation>
 <translation id="6678717876183468697">प्रश्न URL</translation>
+<translation id="6679947539429331601">१२ घण्टासम्म लुकाउनुहोस्</translation>
 <translation id="6680442031740878064">उपलब्ध खाली ठाउँ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">मूल्याङ्कन गर्नुहोस्</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
@@ -8595,6 +8601,7 @@
 <translation id="7127980134843952133">इतिहास डाउनलोड गर्नुहोस्</translation>
 <translation id="7128151990937044829">सूचनाहरू देखाउन रोक लगाइएको बेला ठेगाना पट्टीमा एउटा सूचक देखाउनुहोस्</translation>
 <translation id="7130438335435247835">एक्सेस पोइन्टको नाम (APN)</translation>
+<translation id="7130680050151101667">यो कार्ड नदेखाउनुहोस्</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" /> , <ph name="WEBSITE_2" /> , र <ph name="WEBSITE_3" />मा तपाईंको डेटा पढ्नुहोस्</translation>
 <translation id="713122686776214250">पृ&amp;ष्ठ थप्नुहोस् ...</translation>
 <translation id="7131431455372521159">सबै TrackPoint डिस्कनेक्ट गरिएका छन्</translation>
@@ -10099,6 +10106,7 @@
 <translation id="8194788147118885421">निष्क्रिय ट्याबहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="8195265224453131880">तीव्रता</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> अफ गर्नुहोस्</translation>
+<translation id="8195920051450756553">एउटै की फेरि एक्टिभेट हुन लाग्ने समय</translation>
 <translation id="8197673340773315084">"कार्य" वा "व्यक्तिगत" जस्तो कुनै नाम वा लेबल हाल्नुहोस्</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
 <translation id="8198457270656084773">सिस्टमसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
@@ -10514,6 +10522,7 @@
 <translation id="8486666913807228950">कारण: <ph name="REVERT_RULE" /> इन्भर्टेड रुल "जे भए पनि यो ब्राउजरमा खोलियोस्" को सूचीमा भेटिएको थियो।</translation>
 <translation id="8487678622945914333">जुम बढाउनुहोस्</translation>
 <translation id="8487699605742506766">हटस्पट</translation>
+<translation id="8488735603679729015">की फेरि एक्टिभेट हुन लाग्ने समय</translation>
 <translation id="8489156414266187072">व्यक्तिगत सिफारिस तपाईंको खातामा मात्र देखाइन्छन्</translation>
 <translation id="8490896350101740396">निम्न kisok एपहरू " <ph name="UPDATED_APPS" /> "अद्यावधिक गरिएका छन्। अद्यावधिक प्रक्रिया पूरा गर्न यन्त्रलाई रिबुट गर्नुहोस्।</translation>
 <translation id="8492822722330266509">साइटहरूले पप-अप पठाउन र रिडिरेक्ट गर्न सक्छन्</translation>
@@ -10901,6 +10910,7 @@
 <translation id="8755376271068075440">&amp;ठूलो</translation>
 <translation id="8755584192133371929">आफूले सेयर गर्न चाहेको ट्याब चयन गर्नुहोस्</translation>
 <translation id="875604634276263540">इमेजको URL अवैध छ</translation>
+<translation id="8756262226135340085">किबोर्डको एउटै की तुरुन्तै बारम्बार थिच्दा बेवास्ता गर्छ</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> लाई हटाइयो</translation>
 <translation id="8759753423332885148">बढी जान्नुहोस्।</translation>

@@ -803,6 +803,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1556127816860282890">Aktywność w tle i niektóre efekty wizualne (np. płynne przewijanie) mogą być ograniczone</translation>
 <translation id="1556537182262721003">Nie można przenieść katalogu rozszerzenia do profilu.</translation>
 <translation id="1557939148300698553">Utwórz profil</translation>
+<translation id="155803912725350982">Klawisze powolne</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Wznów przesyłanie na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Z lokalizacji będą mogły korzystać aplikacje i strony, które mają odpowiednie uprawnienia, oraz usługi systemowe</translation>
@@ -3531,6 +3532,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3488199663160411179">imię i nazwisko</translation>
 <translation id="3490695139702884919">Pobieram... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">Jeśli zapomnisz hasło lub kod PIN, możesz przywrócić dane lokalne</translation>
+<translation id="3491616972057195633">Klawisze z powtórzeń</translation>
 <translation id="3491669675709357988">Konto Twojego dziecka nie jest skonfigurowane pod kątem kontroli rodzicielskiej w Family Link. Możesz ją dodać, gdy zakończysz konfigurowanie. Informacje o kontroli rodzicielskiej znajdziesz w aplikacji Odkrywaj.</translation>
 <translation id="3491678231052507920">Strony zwykle używają urządzeń i danych rzeczywistości wirtualnej, by umożliwić Ci udział w sesjach VR</translation>
 <translation id="3493043608231401654">Usuń kartę <ph name="TAB_TITLE" /> z grupy kart</translation>
@@ -3617,6 +3619,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3551320343578183772">Zamknij kartę</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Usuń po zamknięciu</translation>
+<translation id="3553442438687311630">Uwierzytelnianie Microsoft</translation>
 <translation id="3554493885489666172">Twoim urządzeniem zarządza <ph name="PROFILE_NAME" />. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
 <translation id="3555812735919707620">Usuń rozszerzenie</translation>
 <translation id="3557101512409028104">Ustaw ograniczenia dostępu do stron i czasu korzystania z urządzenia w Family Link</translation>
@@ -3768,6 +3771,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3654045516529121250">Odczyt ustawień ułatwień dostępu</translation>
 <translation id="3654682977761834281">Dane z umieszczonych witryn</translation>
 <translation id="3656328935986149999">Szybkość kursora</translation>
+<translation id="3656701180077048004">Dodaje opóźnienie między naciśnięciem klawisza a jego aktywacją</translation>
 <translation id="3658871634334445293">Przyspieszenie TrackPointa</translation>
 <translation id="3659929705630080526">Zbyt wiele razy podano nieprawidłowy kod dostępu. Spróbuj ponownie później.</translation>
 <translation id="3660234220361471169">Niezaufany</translation>
@@ -6653,6 +6657,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5731247495086897348">Wkl&amp;ej i otwórz</translation>
 <translation id="5733109311583381874">Dodaj własne słowa do słowników użytkownika, aby dostosować kandydatury do konwersji.</translation>
 <translation id="5733669387494115331">Ustawienia usług Google</translation>
+<translation id="5733913382424854675">Grupuj karty za pomocą AI</translation>
 <translation id="5734362860645681824">Komunikacja</translation>
 <translation id="5734697361979786483">Dodaj udział plików</translation>
 <translation id="5735513236153491131">Zwiększ wydajność</translation>
@@ -7945,6 +7950,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6677527809400770913">Przypisano gest <ph name="GESTURE" /> do czynności <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Wielkie fale rozbijające się na morzu. Daleko w tle widać ląd. Przebłyski pomarańczowego światła spoza horyzontu na tle ciemnego, ponurego nieba.</translation>
 <translation id="6678717876183468697">URL zapytania</translation>
+<translation id="6679947539429331601">Ukryj na 12 godzin</translation>
 <translation id="6680442031740878064">Dostępne: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Szybkość</translation>
 <translation id="6683022854667115063">Słuchawki</translation>
@@ -8581,6 +8587,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7127980134843952133">Historia pobierania</translation>
 <translation id="7128151990937044829">Jeśli powiadomienia są blokowane, pokaż wskaźnik na pasku adresu</translation>
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
+<translation id="7130680050151101667">Nie pokazuj tej karty</translation>
 <translation id="7131040479572660648">Odczyt Twoich danych na stronie <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> i <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Dodaj &amp;stronę</translation>
 <translation id="7131431455372521159">Wszystkie TrackPointy zostały rozłączone</translation>
@@ -10085,6 +10092,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8194788147118885421">Sprawdź nieaktywne karty</translation>
 <translation id="8195265224453131880">Natężenie</translation>
 <translation id="8195854162863398249">Wyłącz <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Opóźnienie przed ponownym aktywowaniem tego samego klawisza</translation>
 <translation id="8197673340773315084">Dodaj nazwę lub etykietę, np. Praca lub Osobisty</translation>
 <translation id="8198456017687137612">Przesyłam kartę</translation>
 <translation id="8198457270656084773">Szukasz strony z logiem urządzenia na poziomie systemu? Wejdź na <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10500,6 +10508,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8486666913807228950">Przyczyna: na liście „Wymuszaj otwieranie w” znaleziono odwróconą regułę <ph name="REVERT_RULE" />.</translation>
 <translation id="8487678622945914333">Powiększ</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488735603679729015">Opóźnienie przed aktywacją klawisza</translation>
 <translation id="8489156414266187072">Spersonalizowane sugestie są pokazywane tylko na Twoim koncie</translation>
 <translation id="8490896350101740396">Zaktualizowano aplikacje kiosku: „<ph name="UPDATED_APPS" />”. Uruchom ponownie urządzenie, by zakończyć proces aktualizacji.</translation>
 <translation id="8492822722330266509">Strony mogą wysyłać wyskakujące okienka i używać przekierowań</translation>
@@ -10885,6 +10894,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8755376271068075440">&amp;Większy</translation>
 <translation id="8755584192133371929">Wybierz kartę do udostępnienia</translation>
 <translation id="875604634276263540">URL obrazu jest nieprawidłowy</translation>
+<translation id="8756262226135340085">Ignoruje szybko powtarzane naciśnięcia tego samego klawisza</translation>
 <translation id="8756969031206844760">Zaktualizować hasło?</translation>
 <translation id="8757368836647541092">Usunięto użytkownika <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Więcej informacji.</translation>

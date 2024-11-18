@@ -803,6 +803,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1556127816860282890">Baggrundsaktivitet og visse visuelle effekter som f.eks. jævn rulning kan være begrænset</translation>
 <translation id="1556537182262721003">Udvidelsesmappen kunne ikke flyttes til profilen.</translation>
 <translation id="1557939148300698553">Opret profil</translation>
+<translation id="155803912725350982">Langsomtaster</translation>
 <translation id="155865706765934889">Touchplade</translation>
 <translation id="1558671750917454373">Genoptag casting til <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Dette giver apps, websites med lokationstilladelsen og systemtjenester adgang til lokationen</translation>
@@ -3565,6 +3566,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3488199663160411179">navn</translation>
 <translation id="3490695139702884919">Downloader... <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Lokale data kan gendannes, hvis du glemmer din pinkode eller adgangskode</translation>
+<translation id="3491616972057195633">Elastiktaster</translation>
 <translation id="3491669675709357988">Der er ikke konfigureret indstillinger for børnesikring på dit barns konto. Du kan tilføje indstillinger for børnesikring, når du har gennemført konfigurationen. Du kan få flere oplysninger om indstillinger for børnesikring i appen Udforsk.</translation>
 <translation id="3491678231052507920">Websites bruger normalt dine virtual reality-enheder og -data til at gøre det muligt for dig at deltage i VR-sessioner</translation>
 <translation id="3493043608231401654">Fjern <ph name="TAB_TITLE" /> fra fanegruppe</translation>
@@ -3651,6 +3653,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3551320343578183772">Luk fanen</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Ryddes ved lukning</translation>
+<translation id="3553442438687311630">Microsoft-godkendelse</translation>
 <translation id="3554493885489666172">Din enhed administreres af <ph name="PROFILE_NAME" />. Administratorer kan få adgang til dataene på enhver profil på denne enhed.</translation>
 <translation id="3555812735919707620">Fjern udvidelse</translation>
 <translation id="3557101512409028104">Angiv websitebegrænsninger og grænser for skærmtid ved hjælp af Family Link</translation>
@@ -3802,6 +3805,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3654045516529121250">Læse dine indstillinger for hjælpefunktioner</translation>
 <translation id="3654682977761834281">Data fra indlejrede websites</translation>
 <translation id="3656328935986149999">Markørens hastighed</translation>
+<translation id="3656701180077048004">Tilføjer en forsinkelse mellem, hvornår du trykker på en tast, og hvornår den aktiveres</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
 <translation id="3659929705630080526">Du har angivet en forkert adgangskode for mange gange. Prøv igen senere</translation>
 <translation id="3660234220361471169">Ikke pålidelig</translation>
@@ -6690,6 +6694,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5731247495086897348">Ind&amp;sæt og fortsæt</translation>
 <translation id="5733109311583381874">Føj dine egne ord til brugerordbøger for at tilpasse konverteringskandidaterne.</translation>
 <translation id="5733669387494115331">Indstillinger for Google-tjenester</translation>
+<translation id="5733913382424854675">Gruppér faner med AI</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Tilføj fildeling</translation>
 <translation id="5735513236153491131">Boost nu</translation>
@@ -7980,6 +7985,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6677527809400770913">Tildelte bevægelsen <ph name="GESTURE" /> til <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Store bølger, der plasker i havet, med fjernt land i baggrunden. Toner af orange lys i horisonten på en ellers mørk og dunkel himmel.</translation>
 <translation id="6678717876183468697">Webadresse for søgeforespørgsler</translation>
+<translation id="6679947539429331601">Skjul i 12 timer</translation>
 <translation id="6680442031740878064">Tilgængelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Talehastighed</translation>
 <translation id="6683022854667115063">Høretelefoner</translation>
@@ -8618,6 +8624,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7127980134843952133">Downloadhistorik</translation>
 <translation id="7128151990937044829">Vis en indikator i adresselinjen, når en notifikation blokeres</translation>
 <translation id="7130438335435247835">Adgangspunkt (APN)</translation>
+<translation id="7130680050151101667">Vis ikke dette kort</translation>
 <translation id="7131040479572660648">Læs dine data på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> og <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Tilføj side...</translation>
 <translation id="7131431455372521159">Forbindelsen til alle TrackPoints er blevet afbrudt</translation>
@@ -10122,6 +10129,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8194788147118885421">Gennemgå inaktive faner</translation>
 <translation id="8195265224453131880">Intensitet</translation>
 <translation id="8195854162863398249">Deaktiver <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Forsinkelse, inden samme tast aktiveres igen</translation>
 <translation id="8197673340773315084">Tilføj et navn eller en etiket, f.eks. Arbejde eller Privat</translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8198457270656084773">Leder du efter siden med systemets enhedslog? Gå til<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10537,6 +10545,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8486666913807228950">Årsag: Den omvendte regel <ph name="REVERT_RULE" /> blev fundet på listen "Gennemtving åbning i".</translation>
 <translation id="8487678622945914333">Zoom ind</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488735603679729015">Forsinkelse inden aktivering af tast</translation>
 <translation id="8489156414266187072">Personlige forslag vises kun på din konto</translation>
 <translation id="8490896350101740396">Følgende terminalapps "<ph name="UPDATED_APPS" />" er opdateret. Genstart din enhed for at fuldføre opdateringsprocessen.</translation>
 <translation id="8492822722330266509">Websites kan sende pop op-vinduer og bruge omdirigeringer</translation>
@@ -10925,6 +10934,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8755376271068075440">&amp;Større</translation>
 <translation id="8755584192133371929">Vælg en fane, du vil dele</translation>
 <translation id="875604634276263540">Billedwebadressen er ugyldig</translation>
+<translation id="8756262226135340085">Ignorerer hurtige gentagne tryk på samme tast</translation>
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> er fjernet</translation>
 <translation id="8759753423332885148">Få flere oplysninger.</translation>

@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chromeను ఆటోమేటిక్ బ్రౌజర్‌గా సెట్ చేయడానికి Chrome సెట్టింగ్‌ను తెరుస్తుంది.</translation>
 <translation id="1670609221633730681">Chrome చిట్కా: మీ అడ్రస్ బార్ పొజిషన్‌ను ఎంచుకోండి</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chromeలో మీ పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
 <translation id="1790080846677398234">Chromeలో మీ బుక్‌మార్క్‌లకు ఇన్‌పుట్ చేసిన URLలను జోడిస్తుంది.</translation>
 <translation id="1799920918471566157">Chrome చిట్కాలు</translation>
 <translation id="1830634592642484976">ఈ అడ్రస్ ప్రస్తుతం Chromeలో సేవ్ అవుతుంది. దీనిని Google ప్రోడక్ట్‌లన్నింటిలో ఉపయోగించాలంటే, మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో దానిని సేవ్ చేయండి.</translation>
@@ -219,6 +220,7 @@
 
 మీ Chrome ఎక్స్‌పీరియన్స్‌ను మెరుగుపరచడానికి డేటాను ఉపయోగించే మరిన్ని సెట్టింగ్‌ల కోసం <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
 <translation id="6922332667202044570">Chromeలో బ్రౌజింగ్ డేటాను తొలగించండి.</translation>
+<translation id="6924922227983877439">లింక్‌లను ఆటోమేటిక్‌గా Chromeలో తెరవండి</translation>
 <translation id="6975725306479268850">ఆటోఫిల్ కోసం Chromeను ఉపయోగించండి</translation>
 <translation id="7056826488869329999">Chromeలో సేఫ్టీ చెక్‌ను తెరిచి, రన్ చేయండి.</translation>
 <translation id="7061455974939528301">Chrome చిహ్నాన్ని నొక్కి, పట్టుకుని, "మొదటి స్క్రీన్‌ను ఎడిట్ చేయండి"ని క్లిక్ చేయండి</translation>

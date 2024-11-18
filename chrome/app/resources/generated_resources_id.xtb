@@ -802,6 +802,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1556127816860282890">Aktivitas latar belakang dan beberapa efek visual, seperti scroll yang lancar, mungkin dibatasi</translation>
 <translation id="1556537182262721003">Tidak dapat memindah direktori ekstensi ke dalam profil.</translation>
 <translation id="1557939148300698553">Buat Profil</translation>
+<translation id="155803912725350982">Tombol lambat</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Lanjutkan transmisi ke <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Tindakan ini mengizinkan akses lokasi untuk aplikasi dan situs yang memiliki izin akses lokasi, serta layanan sistem</translation>
@@ -3564,6 +3565,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3488199663160411179">nama</translation>
 <translation id="3490695139702884919">Mendownload ... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">Data lokal dapat dipulihkan jika Anda lupa PIN atau sandi</translation>
+<translation id="3491616972057195633">Tombol pantul</translation>
 <translation id="3491669675709357988">Akun anak Anda belum disiapkan untuk kontrol orang tua Family Link. Anda dapat menambahkan kontrol orang tua setelah menyelesaikan penyiapan. Anda akan menemukan informasi tentang kontrol orang tua di aplikasi Jelajahi.</translation>
 <translation id="3491678231052507920">Situs biasanya menggunakan perangkat dan data virtual reality Anda agar Anda dapat masuk ke sesi VR</translation>
 <translation id="3493043608231401654">Hapus <ph name="TAB_TITLE" /> dari grup tab</translation>
@@ -3650,6 +3652,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3551320343578183772">Tutup Tab</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Dihapus saat Keluar</translation>
+<translation id="3553442438687311630">Microsoft Authentication</translation>
 <translation id="3554493885489666172">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" />. Administrator dapat mengakses data di profil mana pun di perangkat ini.</translation>
 <translation id="3555812735919707620">Buang ekstensi</translation>
 <translation id="3557101512409028104">Setel pembatasan situs dan batas waktu pemakaian perangkat dengan Family Link</translation>
@@ -3801,6 +3804,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3654045516529121250">Baca setelan aksesibilitas Anda</translation>
 <translation id="3654682977761834281">Data dari situs tersemat</translation>
 <translation id="3656328935986149999">Kecepatan kursor</translation>
+<translation id="3656701180077048004">Menambahkan jeda diantara saat Anda menekan tombol dan saat tombol tersebut aktif</translation>
 <translation id="3658871634334445293">Akselerasi TrackPoint</translation>
 <translation id="3659929705630080526">Anda terlalu sering memasukkan kode akses yang salah. Coba lagi nanti</translation>
 <translation id="3660234220361471169">Tidak tepercaya</translation>
@@ -6689,6 +6693,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5731247495086897348">Tem&amp;pel dan Buka</translation>
 <translation id="5733109311583381874">Tambahkan kata-kata Anda sendiri ke kamus pengguna untuk menyesuaikan kandidat konversi.</translation>
 <translation id="5733669387494115331">Setelan Layanan Google</translation>
+<translation id="5733913382424854675">Kelompokkan Tab Dengan AI</translation>
 <translation id="5734362860645681824">Komunikasi</translation>
 <translation id="5734697361979786483">Tambahkan berbagi file</translation>
 <translation id="5735513236153491131">Tingkatkan Sekarang</translation>
@@ -7977,6 +7982,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6677527809400770913">Menetapkan gestur <ph name="GESTURE" /> ke <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Ombak besar yang mendebur di laut, dengan latar belakang daratan yang berada di kejauhan. Secercah cahaya jingga tampak di balik cakrawala, di tengah langit yang terlihat gelap.</translation>
 <translation id="6678717876183468697">URL Kueri</translation>
+<translation id="6679947539429331601">Sembunyikan selama 12 jam</translation>
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Beri rating</translation>
 <translation id="6683022854667115063">Headphone</translation>
@@ -8615,6 +8621,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7127980134843952133">Histori download</translation>
 <translation id="7128151990937044829">Tampilkan indikator dalam kolom URL saat notifikasi diblokir</translation>
 <translation id="7130438335435247835">Nama poin akses (APN)</translation>
+<translation id="7130680050151101667">Jangan tampilkan kartu ini</translation>
 <translation id="7131040479572660648">Membaca data Anda di <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, dan <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Tambahkan la&amp;man...</translation>
 <translation id="7131431455372521159">Semua TrackPoint telah terputus</translation>
@@ -10119,6 +10126,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8194788147118885421">Tinjau tab tidak aktif</translation>
 <translation id="8195265224453131880">Intensitas</translation>
 <translation id="8195854162863398249">Nonaktifkan <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Penundaan sebelum mengaktifkan tombol yang sama lagi</translation>
 <translation id="8197673340773315084">Tambahkan nama atau label, seperti Kantor atau Pribadi</translation>
 <translation id="8198456017687137612">Mentransmisikan tab</translation>
 <translation id="8198457270656084773">Mencari halaman log perangkat sistem? Buka <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10534,6 +10542,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8486666913807228950">Alasan: Aturan terbalik <ph name="REVERT_RULE" /> ditemukan dalam daftar "Buka paksa di".</translation>
 <translation id="8487678622945914333">Perbesar</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488735603679729015">Penundaan sebelum mengaktifkan tombol</translation>
 <translation id="8489156414266187072">Saran pribadi hanya ditampilkan di akun Anda</translation>
 <translation id="8490896350101740396">Aplikasi kios "<ph name="UPDATED_APPS" />" berikut telah diperbarui. Booting ulang perangkat untuk menyelesaikan proses pembaruan.</translation>
 <translation id="8492822722330266509">Situs dapat menampilkan pop-up dan menggunakan pengalihan</translation>
@@ -10921,6 +10930,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8755376271068075440">&amp;Lebih besar</translation>
 <translation id="8755584192133371929">Pilih tab untuk dibagikan</translation>
 <translation id="875604634276263540">URL gambar tidak valid</translation>
+<translation id="8756262226135340085">Mengabaikan penekanan tombol keyboard yang sama secara berulang dan cepat</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> dihapus</translation>
 <translation id="8759753423332885148">Pelajari lebih lanjut.</translation>

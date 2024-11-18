@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Dozvolite da sajt čuva podatke na uređaju</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
+<translation id="1396327438254055134">Dozvolite sajtu da koristi V8 optimizator.</translation>
 <translation id="1415402041810619267">URL je skraćen</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> sajt}one{<ph name="SITE_COUNT" /> sajt}few{<ph name="SITE_COUNT" /> sajta}other{<ph name="SITE_COUNT" /> sajtova}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Dekoder slika</translation>
 <translation id="1785415724048343560">Preporučuje se za najbolji doživljaj</translation>
 <translation id="1799920918471566157">Saveti za Chrome</translation>
+<translation id="1816835383954230954">Kada je optimizator uključen, Chrome radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno. Kada je optimizator isključen, to smanjuje performanse, ali čini V8 otpornijim na napade.</translation>
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Kada je uključeno, sajtovi mogu da traže da koriste kameru. Kada je isključeno, sajtovi ne mogu da koriste kameru.</translation>
 <translation id="3521663503435878242">Sajtovi na domenu <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Ne dozvoljavaj sajtovima da prate moje ruke</translation>
+<translation id="3532312529397438268">Sajtovi ne mogu da koriste V8 optimizator</translation>
 <translation id="3536227077203206203">Dozvoljeno ovaj put</translation>
 <translation id="3538390592868664640">Sprečite sajtove da prave 3D mapu okruženja ili da prate položaj kamere</translation>
 <translation id="3544058026430919413">Preduzeće može da definiše grupu sajtova koji mogu da koriste kolačiće da bi delili aktivnosti u grupi. Ovo je isključeno u režimu bez arhiviranja.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zumiranje</translation>
 <translation id="4807122856660838973">Uključite Bezbedno pregledanje</translation>
 <translation id="4811450222531576619">Saznajte više o njenom izvoru i temi</translation>
+<translation id="481168145262973879">Sajtovi mogu da koriste V8 optimizator</translation>
 <translation id="4816495437032298535">Sačuvano zumiranje za sajtove</translation>
 <translation id="4836046166855586901">Pitaj kada sajt želi da zna kada aktivno koristim ovaj uređaj</translation>
 <translation id="483914009762354899">Uvrsti sve sajtove u okviru ovog domena</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Želite da izbrišete podatke sajta? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6992289844737586249">Pitaj pre nego što dozvoliš sajtovima da koriste mikrofon (preporučeno)</translation>
+<translation id="6999131147875565462">Chrome radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno</translation>
 <translation id="7000754031042624318">Isključeno je u Android podešavanjima</translation>
 <translation id="7016516562562142042">Dozvoljeno je za aktuelni pretraživač</translation>
 <translation id="702275896380648118">Ovaj sajt određuje stvari koje vam se sviđaju, a zatim predlaže oglase za druge sajtove. Ovaj sajt takođe prima podatke o vašim temama oglasa iz Chrome-a da bi vam prikazivao relevantnije oglase.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Bolja organizacija</translation>
 <translation id="967624055006145463">Sačuvani podaci</translation>
+<translation id="969975166333045662">Sprečite sajt da koristi V8 optimizator.</translation>
 </translationbundle>

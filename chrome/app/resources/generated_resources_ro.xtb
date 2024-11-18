@@ -802,6 +802,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1556127816860282890">Este posibil ca activitatea în fundal și unele efecte vizuale, cum ar fi derularea lină, să fie limitate</translation>
 <translation id="1556537182262721003">Directorul extensiei nu se poate muta în profil.</translation>
 <translation id="1557939148300698553">Creează un profil</translation>
+<translation id="155803912725350982">Taste lente</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Reia proiectarea pe <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Astfel, se permite accesul la locație pentru aplicații, site-uri care au permisiunea pentru locație și servicii de sistem</translation>
@@ -3551,6 +3552,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3488199663160411179">nume</translation>
 <translation id="3490695139702884919">Se descarcă… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Datele locale pot fi restabilite dacă uiți codul PIN sau parola</translation>
+<translation id="3491616972057195633">Evită apăsarea repetată</translation>
 <translation id="3491669675709357988">Contul copilului nu este configurat pentru control parental din Family Link. După ce finalizezi configurarea, poți adăuga opțiuni de control parental. Vei găsi informații despre controlul parental în aplicația Explorare.</translation>
 <translation id="3491678231052507920">Site-urile folosesc de obicei dispozitivele de realitate virtuală și datele conexe pentru a-ți permite accesul la sesiuni RV</translation>
 <translation id="3493043608231401654">Elimină <ph name="TAB_TITLE" /> din grupul de file</translation>
@@ -3637,6 +3639,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3551320343578183772">Închide fila</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Șters la ieșire</translation>
+<translation id="3553442438687311630">Autentificare Microsoft</translation>
 <translation id="3554493885489666172">Dispozitivul este gestionat de <ph name="PROFILE_NAME" />. Administratorii pot accesa datele din orice profil de pe acest dispozitiv.</translation>
 <translation id="3555812735919707620">Eliminați extensia</translation>
 <translation id="3557101512409028104">Setează restricții pentru site-uri și limite de timp pentru durata de folosire a ecranului cu Family Link</translation>
@@ -3788,6 +3791,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3654045516529121250">Citește setările de accesibilitate</translation>
 <translation id="3654682977761834281">Date de la site-urile încorporate</translation>
 <translation id="3656328935986149999">Viteza cursorului</translation>
+<translation id="3656701180077048004">Adaugă o întârziere între momentul în care apeși o tastă și momentul în care se activează</translation>
 <translation id="3658871634334445293">Accelerare TrackPoint</translation>
 <translation id="3659929705630080526">Ai introdus de prea multe ori un cod de acces incorect. Încearcă din nou mai târziu</translation>
 <translation id="3660234220361471169">Nu prezintă încredere</translation>
@@ -6674,6 +6678,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5731247495086897348">In&amp;serează și accesează</translation>
 <translation id="5733109311583381874">Pentru a personaliza sugestiile de conversie, adaugă propriile cuvinte în dicționarele utilizatorului.</translation>
 <translation id="5733669387494115331">Setări pentru serviciile Google</translation>
+<translation id="5733913382424854675">Grupează filele cu AI</translation>
 <translation id="5734362860645681824">Comunicații</translation>
 <translation id="5734697361979786483">Adaugă un dispozitiv de stocare în rețea</translation>
 <translation id="5735513236153491131">Accelerează acum</translation>
@@ -7964,6 +7969,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6677527809400770913">Gestul <ph name="GESTURE" /> a fost alocat pentru <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Valuri uriașe spărgându-se în mare, cu țărmul în fundalul îndepărtat. Urme de lumină portocalie se văd dincolo de orizont, pe un cer altfel întunecat.</translation>
 <translation id="6678717876183468697">Adresa URL a interogării</translation>
+<translation id="6679947539429331601">Ascunde timp de 12 ore</translation>
 <translation id="6680442031740878064">Spațiu disponibil: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Ritmul</translation>
 <translation id="6683022854667115063">Căști</translation>
@@ -8602,6 +8608,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7127980134843952133">Istoricul descărcărilor</translation>
 <translation id="7128151990937044829">Afișează un indicator în bara de adrese când sunt blocate notificările</translation>
 <translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
+<translation id="7130680050151101667">Nu afișa acest card</translation>
 <translation id="7131040479572660648">Citește datele de pe <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> și <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Adăugați pa&amp;gina...</translation>
 <translation id="7131431455372521159">Toate TrackPoint-urile au fost deconectate</translation>
@@ -10107,6 +10114,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8194788147118885421">Examinează filele inactive</translation>
 <translation id="8195265224453131880">Intensitate</translation>
 <translation id="8195854162863398249">Dezactivează <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Durata până la activarea din nou a aceleiași taste</translation>
 <translation id="8197673340773315084">Adaugă un nume sau o etichetă, cum ar fi Serviciu sau Personal</translation>
 <translation id="8198456017687137612">Se proiectează fila</translation>
 <translation id="8198457270656084773">Cauți pagina cu jurnalul de dispozitiv al sistemului? Accesează<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10522,6 +10530,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8486666913807228950">Motivul: în lista „Deschide forțat în” s-a găsit regula inversată <ph name="REVERT_RULE" />.</translation>
 <translation id="8487678622945914333">Mărește</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488735603679729015">Întârziere înainte de activarea tastei</translation>
 <translation id="8489156414266187072">Sugestiile personale se afișează numai în contul tău</translation>
 <translation id="8490896350101740396">Următoarele aplicații de tip chioșc „<ph name="UPDATED_APPS" />” au fost actualizate. Repornește dispozitivul pentru a finaliza procesul de actualizare.</translation>
 <translation id="8492822722330266509">Site-urile pot să afișeze ferestre pop-up și să folosească redirecționări</translation>
@@ -10909,6 +10918,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8755376271068075440">&amp;Mai mare</translation>
 <translation id="8755584192133371929">Selectează o filă de trimis</translation>
 <translation id="875604634276263540">Adresa URL a imaginii nu este validă</translation>
+<translation id="8756262226135340085">Ignoră apăsările repetate rapid ale aceleiași taste de pe tastatură</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>
 <translation id="8757368836647541092">S-a șters <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Află mai multe.</translation>

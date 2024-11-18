@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Otvara podešavanje Chrome-a da bi ga postavilo kao podrazumevani pregledač.</translation>
 <translation id="1670609221633730681">Savet za Chrome: Odaberite položaj trake za adresu</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Sačuvajte lozinke u Chrome-u</translation>
 <translation id="1790080846677398234">Dodaje unete URL-ove u obeleživače u Chrome-u.</translation>
 <translation id="1799920918471566157">Saveti za Chrome</translation>
 <translation id="1830634592642484976">Ova adresa je trenutno sačuvana u Chrome-u. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" />.</translation>
@@ -219,6 +220,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 
 Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Izbrišite podatke pregledanja u Chrome-u.</translation>
+<translation id="6924922227983877439">Podrazumevano otvarajte linkove u Chrome-u</translation>
 <translation id="6975725306479268850">Izaberite Chrome za automatsko popunjavanje</translation>
 <translation id="7056826488869329999">Otvara i pokreće Proveru bezbednosti u Chrome-u.</translation>
 <translation id="7061455974939528301">Pritisnite i zadržite ikonu Chrome-a, pa kliknite na Izmenite početni ekran</translation>

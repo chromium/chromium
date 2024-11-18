@@ -801,6 +801,7 @@
 <translation id="1556127816860282890">פעילות ברקע ואפקטים חזותיים מסוימים, כמו גלילה חלקה, עשויים להיות מוגבלים</translation>
 <translation id="1556537182262721003">לא היתה אפשרות להעביר ספריית תוספים לפרופיל.</translation>
 <translation id="1557939148300698553">יצירת פרופיל</translation>
+<translation id="155803912725350982">מקשים איטיים</translation>
 <translation id="155865706765934889">לוח מגע</translation>
 <translation id="1558671750917454373">המשך ההעברה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">הפעולה הזו מאפשרת גישה למיקום לאפליקציות, ולאתרים עם הרשאת גישה למיקום ולשירותי המערכת</translation>
@@ -3563,6 +3564,7 @@
 <translation id="3488199663160411179">שם</translation>
 <translation id="3490695139702884919">‏מתבצעת הורדה… ‎<ph name="PERCENT" />%‎</translation>
 <translation id="3491171603443463516">ניתן לשחזר את הנתונים המקומיים במקרה שקוד האימות או הסיסמה נשכחו</translation>
+<translation id="3491616972057195633">סינון הקשות חוזרות</translation>
 <translation id="3491669675709357988">‏בחשבון של הילד או הילדה שלך לא מוגדרת בקרת הורים של Family Link. יש לך אפשרות להוסיף בקרת הורים לאחר סיום ההגדרה. באפליקציה 'מה חדש ב-Chromebook' מפורט מידע נוסף על בקרת הורים.</translation>
 <translation id="3491678231052507920">‏אתרים משתמשים בדרך כלל בנתונים ובמכשירים של מציאות מדומה כדי לאפשר כניסה לפעילויות VR</translation>
 <translation id="3493043608231401654">הסרה של <ph name="TAB_TITLE" /> מקבוצת הכרטיסיות</translation>
@@ -3649,6 +3651,7 @@
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">מנוקה בעת היציאה</translation>
+<translation id="3553442438687311630">Microsoft Authentication</translation>
 <translation id="3554493885489666172">המכשיר שלך מנוהל על-ידי <ph name="PROFILE_NAME" />. למנהלי המערכת יש גישה לנתונים של כל פרופיל במכשיר הזה.</translation>
 <translation id="3555812735919707620">הסרת תוסף</translation>
 <translation id="3557101512409028104">‏הגדרה של הגבלות גישה לאתרים וזמן מסך בעזרת Family Link</translation>
@@ -3800,6 +3803,7 @@
 <translation id="3654045516529121250">קריאת הגדרות הנגישות שלך</translation>
 <translation id="3654682977761834281">נתונים מאתרים מוטמעים</translation>
 <translation id="3656328935986149999">מהירות הסמן</translation>
+<translation id="3656701180077048004">הוספת השהיה בין הלחיצה על מקש לבין ההפעלה שלו</translation>
 <translation id="3658871634334445293">‏האצה של TrackPoint</translation>
 <translation id="3659929705630080526">הזנת קוד גישה שגוי יותר מדי פעמים. עליך לנסות שוב מאוחר יותר</translation>
 <translation id="3660234220361471169">לא אמין</translation>
@@ -6689,6 +6693,7 @@
 <translation id="5731247495086897348">הד&amp;בקה ומעבר אל</translation>
 <translation id="5733109311583381874">יש לך אפשרות להוסיף מילים משלך למילוני המשתמש כדי להתאים אישית את הצעות ההמרה.</translation>
 <translation id="5733669387494115331">‏ההגדרות של שירותי Google</translation>
+<translation id="5733913382424854675">‏קיבוץ כרטיסיות באמצעות AI</translation>
 <translation id="5734362860645681824">תקשורת</translation>
 <translation id="5734697361979786483">הוספת התקן רשת לשיתוף קבצים</translation>
 <translation id="5735513236153491131">שיפור עכשיו</translation>
@@ -7981,6 +7986,7 @@
 <translation id="6677527809400770913">התנועה <ph name="GESTURE" /> הוקצתה לפעולה <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">גלים גדולים שמתנפצים בים, עם יבשה רחוקה ברקע. רמזים של אור כתום מופיעים ממש מעבר לאופק, בשמיים קודרים.</translation>
 <translation id="6678717876183468697">כתובת אתר של שאילתה</translation>
+<translation id="6679947539429331601">הסתרה למשך 12 שעות</translation>
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">קצב</translation>
 <translation id="6683022854667115063">אוזניות</translation>
@@ -8619,6 +8625,7 @@
 <translation id="7127980134843952133">היסטוריית הורדות</translation>
 <translation id="7128151990937044829">הצגה של חיווי בסרגל הכתובות כשהתראה נחסמת</translation>
 <translation id="7130438335435247835">‏שם נקודת הגישה (APN)</translation>
+<translation id="7130680050151101667">לא להציג את הכרטיס הזה</translation>
 <translation id="7131040479572660648">קריאת הנתונים שלך באתרים <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> ו-<ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">הוספת &amp;דף...</translation>
 <translation id="7131431455372521159">‏כל נקודות TrackPoint נותקו</translation>
@@ -10125,6 +10132,7 @@
 <translation id="8194788147118885421">בדיקת הכרטיסיות הלא פעילות</translation>
 <translation id="8195265224453131880">עוצמה</translation>
 <translation id="8195854162863398249">השבתה של <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">השהיה לפני הפעלה חוזרת של אותו מקש</translation>
 <translation id="8197673340773315084">יש להוסיף שם או תווית, כמו 'עבודה' או 'אישי'</translation>
 <translation id="8198456017687137612">העברת הכרטיסייה</translation>
 <translation id="8198457270656084773">רוצה לאתר את דף יומן המכשיר של המערכת? צריך לעבור אל <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10540,6 +10548,7 @@
 <translation id="8486666913807228950">סיבה: הכלל ההפוך <ph name="REVERT_RULE" /> נמצא ברשימה 'פתיחה מאולצת באמצעות'.</translation>
 <translation id="8487678622945914333">התקרבות לתצוגה</translation>
 <translation id="8487699605742506766">נקודה לשיתוף אינטרנט</translation>
+<translation id="8488735603679729015">השהיה לפני הפעלת מפתח</translation>
 <translation id="8489156414266187072">הצעות מותאמות אישית מוצגות בחשבון שלך בלבד</translation>
 <translation id="8490896350101740396">אפליקצית הקיוסק הבאות "<ph name="UPDATED_APPS" />" עודכנו. יש להפעיל מחדש את המכשיר כדי להשלים את תהליך העדכון.</translation>
 <translation id="8492822722330266509">אתרים יכולים להציג חלונות קופצים ולהשתמש בהפניות אוטומטיות</translation>
@@ -10927,6 +10936,7 @@
 <translation id="8755376271068075440">&amp;גדול יותר</translation>
 <translation id="8755584192133371929">בחירת כרטיסייה לשיתוף</translation>
 <translation id="875604634276263540">‏כתובת ה-URL של התמונה לא תקינה</translation>
+<translation id="8756262226135340085">המערכת מתעלמת מהקשה מהירה על אותו מקש שוב ושוב.</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>
 <translation id="8757368836647541092">הסרת את <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">למידע נוסף</translation>

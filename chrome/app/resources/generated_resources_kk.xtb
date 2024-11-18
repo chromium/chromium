@@ -798,6 +798,7 @@
 <translation id="1556127816860282890">Фондық режимдегі әрекеттер және кейбір визуалдық әсерлер (біркелкі айналдыру сияқты) шектелуі мүмкін.</translation>
 <translation id="1556537182262721003">Кеңейтім каталогін профиль ішіне жылжыту мүмкін емес.</translation>
 <translation id="1557939148300698553">Профиль жасау</translation>
+<translation id="155803912725350982">Баяу пернелер</translation>
 <translation id="155865706765934889">Сенсорлық тақта</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> құрылғысына трансляциялауды жалғастыру</translation>
 <translation id="1561331397460162942">Локация пайдалану рұқсаты бар қолданбалар, веб-сайттар және жүйелік қызметтер локацияны пайдалана алады.</translation>
@@ -3546,6 +3547,7 @@
 <translation id="3488199663160411179">аты</translation>
 <translation id="3490695139702884919">Жүктеп алынуда… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">PIN кодыңызды немесе құпия сөзіңізді ұмытып қалсаңыз, жергілікті деректерді қалпына келтіруге болады.</translation>
+<translation id="3491616972057195633">Пернелердің байқаусызда басылуын елемеу</translation>
 <translation id="3491669675709357988">Балаңыздың аккаунты Family Link ата-ана бақылауы үшін реттелмеген. Реттеуді аяқтағаннан кейін, ата-ана бақылауын қоса аласыз. Ата-ана бақылауы туралы ақпаратты Explore қолданбасынан таба аласыз.</translation>
 <translation id="3491678231052507920">VR сеанстарына кіре алуыңыз үшін, сайттар әдетте виртуалдық шындық құрылғыларын және деректерді қолданады.</translation>
 <translation id="3493043608231401654">Қойындылар тобынан <ph name="TAB_TITLE" /> қойындысын өшіру</translation>
@@ -3632,6 +3634,7 @@
 <translation id="3551320343578183772">Қойындыны жабу</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Шыққанда өшіріледі</translation>
+<translation id="3553442438687311630">Microsoft Authentication</translation>
 <translation id="3554493885489666172">Құрылғыңызды <ph name="PROFILE_NAME" /> басқарады. Әкімшілер бұл құрылғыдағы кез келген профильдің деректерін пайдалана алады.</translation>
 <translation id="3555812735919707620">Кеңейтімді жою</translation>
 <translation id="3557101512409028104">Family Link қолданбасы арқылы веб-сайт шектеулерін және пайдалану уақытына қойылатын шектеулерді орнатыңыз.</translation>
@@ -3783,6 +3786,7 @@
 <translation id="3654045516529121250">Арнайы мүмкіндіктер параметрлерін оқу</translation>
 <translation id="3654682977761834281">Ендірілген сайттар деректері</translation>
 <translation id="3656328935986149999">Курсор жылдамдығы</translation>
+<translation id="3656701180077048004">Перне басылғаннан кейін кідіріспен іске қосылады.</translation>
 <translation id="3658871634334445293">TrackPoint жылдамдатуы</translation>
 <translation id="3659929705630080526">Рұқсат кодын енгізгенде тым көп қателестіңіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="3660234220361471169">Сенімсіз</translation>
@@ -6667,6 +6671,7 @@
 <translation id="5731247495086897348">Қо&amp;ю және өту</translation>
 <translation id="5733109311583381874">Конверсия үміткерлерін бейімдеу үшін пайдаланушы сөздіктеріне өз сөздеріңізді қосыңыз.</translation>
 <translation id="5733669387494115331">Google қызметтерінің параметрлері</translation>
+<translation id="5733913382424854675">Қойындыларды жасанды интеллект арқылы топтау</translation>
 <translation id="5734362860645681824">Байланыстар</translation>
 <translation id="5734697361979786483">Файл бөлісу функциясын қосу</translation>
 <translation id="5735513236153491131">Қазір арттыру</translation>
@@ -7954,6 +7959,7 @@
 <translation id="6677527809400770913"><ph name="GESTURE" /> қимылы <ph name="ACTION" /> әрекетіне тағайындалды</translation>
 <translation id="6678604587151240716">Теңізде биік толқын тулайды. Алыста жер көрінеді. Қошқыл аспан көлегейлеп, көкжиектен қызғылт сары жарық ұшқындары сығалайды.</translation>
 <translation id="6678717876183468697">Сұрау URL мекенжайы</translation>
+<translation id="6679947539429331601">12 сағат жасыру</translation>
 <translation id="6680442031740878064">Бос: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Жылдамдық</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>
@@ -8591,6 +8597,7 @@
 <translation id="7127980134843952133">Жүктеу журналы</translation>
 <translation id="7128151990937044829">Хабарландыруға тыйым салынған кезде мекенжай жолағында индикатор көрсету</translation>
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
+<translation id="7130680050151101667">Бұл картаны көрсетпеу</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және <ph name="WEBSITE_3" /> сайттарындағы деректеріңізді оқу</translation>
 <translation id="713122686776214250">Б&amp;ет қосу…</translation>
 <translation id="7131431455372521159">Барлық TrackPoint құрылғысы ажыратылды.</translation>
@@ -10094,6 +10101,7 @@
 <translation id="8194788147118885421">Әрекетсіз қойындыларды тексеру</translation>
 <translation id="8195265224453131880">Қарқын</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> функциясын өшіру</translation>
+<translation id="8195920051450756553">Бір пернені қайтадан іске қосу алдындағы кідіріс</translation>
 <translation id="8197673340773315084">Атау не белгі қосыңыз, мысалы, "Жұмыс" немесе "Жеке".</translation>
 <translation id="8198456017687137612">Қойынды трансляциялануда</translation>
 <translation id="8198457270656084773">Жүйелік құрылғы журналының бетін іздеп жатырсыз ба? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> сілтемесіне өтіңіз.</translation>
@@ -10509,6 +10517,7 @@
 <translation id="8486666913807228950">Себеп: <ph name="REVERT_RULE" /> теріс ережесі "Күштеп ашу" тізімінен табылды.</translation>
 <translation id="8487678622945914333">Үлкейту</translation>
 <translation id="8487699605742506766">Хотспот</translation>
+<translation id="8488735603679729015">Пернені іске қосу алдындағы кідіріс</translation>
 <translation id="8489156414266187072">Жеке ұсыныстар сіздің аккаунтыңызға ғана көрсетіледі.</translation>
 <translation id="8490896350101740396">Келесі киоск қолданбалары "<ph name="UPDATED_APPS" />" жаңартылды. Жаңарту процесін аяқтау үшін құрылғыны қайта іске қосыңыз.</translation>
 <translation id="8492822722330266509">Сайттар қалқымалы терезелерді жібереді және бағытты ауыстыру функцияларын пайдаланады.</translation>
@@ -10896,6 +10905,7 @@
 <translation id="8755376271068075440">&amp;Үлкенірек</translation>
 <translation id="8755584192133371929">Бөлісетін қойындыны таңдау</translation>
 <translation id="875604634276263540">Кескіннің URL мекенжайы жарамсыз.</translation>
+<translation id="8756262226135340085">Бір перненің тез арада қайталап басылуын елемейді.</translation>
 <translation id="8756969031206844760">Құпия сөз жаңартылсын ба?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> өшірілді.</translation>
 <translation id="8759753423332885148">Толығырақ.</translation>

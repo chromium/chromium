@@ -1150,6 +1150,7 @@ Wenn diese Richtlinie erzwungen wird, muss der Nutzer nach der Anmeldung mit ein
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, kann der Nutzer nach der Anmeldung mit einem verwalteten Konto über ein Infofeld aufgefordert werden, ein neues Profil zu erstellen. Das Infofeld lässt sich schließen und der Nutzer kann dann in einer nicht verwalteten Umgebung weiter im Internet surfen. Das Infofeld wird über die Richtlinie „<ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />“ gesteuert.
 
 Diese Richtlinie hat keine Auswirkungen, wenn sie auf Geräteebene konfiguriert wird.</translation>
+<translation id="1834796168555733063">Speichern von Passkeys im Passwortmanager deaktivieren</translation>
 <translation id="1836380138559328229">Anmeldedaten für das aktive WLAN auf Geräteebene speichern</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
 <translation id="1838910874018595451">Voreingestellte Konfiguration für Kerberos-Tickets</translation>
@@ -3896,6 +3897,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
  Wenn die Richtlinie nicht konfiguriert oder auf einen leeren oder ungültigen Wert festgelegt ist, wird Druckauftragsanfragen kein zusätzlicher Wert „<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />“ hinzugefügt.
 </translation>
+<translation id="3896591584655529057">Speichern von Passkeys im Passwortmanager aktivieren</translation>
 <translation id="3897218615484393758">Zeit beschränken, während der sich ein über SAML authentifizierter Nutzer offline auf dem Sperrbildschirm anmelden kann</translation>
 <translation id="3897860452756794695">Das neue „offsetParent“-Verhalten wird verwendet.</translation>
 <translation id="3898345958122666461">NTLMv2 deaktivieren</translation>
@@ -8416,6 +8418,11 @@ Hinweis: Wenn du diese Richtlinie verwendest, um die Zeitzone automatisch zu erm
       Wenn eine Erweiterung nicht in der Liste enthalten ist oder keine Liste festgelegt wurde, schlägt der API-Aufruf fehl und ein Fehlercode wird angezeigt.</translation>
 <translation id="718956142899066210">Für Updates zugelassene Verbindungstypen</translation>
 <translation id="7190286937411178540">Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" aktivieren</translation>
+<translation id="7190595750461561896">Diese Richtlinie legt fest, ob der Browser Passkeys im integrierten Passwortmanager speichern kann. Der Zugriff auf Passkeys, die bereits im Passwortmanager gespeichert sind, wird dadurch nicht eingeschränkt. Passkeys werden auch nicht geändert. Wenn die Richtlinie „<ph name="POLICY_NAME" />“ deaktiviert ist, ist das Speichern im integrierten Passwortmanager generell deaktiviert, auch für Passkeys und Passwörter. Diese Richtlinie ist dann nicht anwendbar.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Passkeys im integrierten Passwortmanager speichern, wenn sie in <ph name="PRODUCT_NAME" /> angemeldet sind.
+
+Ist die Richtlinie deaktiviert, können Nutzer keine Passkeys im integrierten Passwortmanager speichern. Zuvor gespeicherte Passkeys funktionieren aber weiterhin.</translation>
 <translation id="719398790886719721">Root-Zugriff auf virtuelle Maschinen mit Linux deaktivieren</translation>
 <translation id="7194407337890404814">Name der Standardsuchmaschine</translation>
 <translation id="7196336906814426783">Diese Richtlinie legt eine Reihe von wöchentlichen Intervallen zur Planung des automatischen Ruhemodus fest. Zu Beginn eines Intervalls wechselt das <ph name="PRODUCT_OS_NAME" />-Gerät in den Ruhemodus und wird wieder aktiv, wenn das Intervall endet.
@@ -10943,6 +10950,7 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus künftigen Versionen von <ph name="PRODUCT_NAME" /> entfernt. Nachdem sie entfernt wurde, kann <ph name="PRODUCT_NAME" /> zusätzliche DNS-Typen immer abfragen.</translation>
 <translation id="9167719789236691545">Synchronisierung zwischen Drive und der App "Dateien" von <ph name="PRODUCT_OS_NAME" /> deaktivieren</translation>
+<translation id="9171359005568194889">Speichern von Passkeys im Passwortmanager aktivieren</translation>
 <translation id="9172648973829444124">Aktivieren des Nur-HTTPS-Modus im ausgewogenen Modus erzwingen</translation>
 <translation id="9172911925443428317">Werbung für App Store-Bewertungen nicht zulassen</translation>
 <translation id="9173133289347070466">Mit produktinternen Umfragen für <ph name="PRODUCT_NAME" /> wird Nutzerfeedback zum Browser erfasst. Umfrageantworten sind nicht mit Nutzerkonten verknüpft.
