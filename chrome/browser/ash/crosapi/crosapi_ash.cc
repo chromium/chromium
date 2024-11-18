@@ -47,7 +47,6 @@
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
-#include "chrome/browser/ash/crosapi/download_status_updater_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
 #include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
@@ -518,20 +517,6 @@ void CrosapiAsh::BindDocumentScan(
 void CrosapiAsh::BindDownloadController(
     mojo::PendingReceiver<mojom::DownloadController> receiver) {
   download_controller_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindDownloadStatusUpdater(
-    mojo::PendingReceiver<mojom::DownloadStatusUpdater> receiver) {
-  // Delay creating `download_status_updater_ash_` until binding so that the Ash
-  // profile is ready.
-  if (!download_status_updater_ash_) {
-    Profile* const profile = GetAshProfile();
-    CHECK(profile);
-    download_status_updater_ash_ =
-        std::make_unique<DownloadStatusUpdaterAsh>(profile);
-  }
-
-  download_status_updater_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDriveIntegrationService(

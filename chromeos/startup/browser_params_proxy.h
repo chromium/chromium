@@ -136,8 +136,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsDriveFsBulkPinningAvailable() const;
 
-  bool IsSysUiDownloadsIntegrationV2Enabled() const;
-
   bool IsCrosBatterySaverAvailable() const;
 
   bool IsAppInstallServiceUriEnabled() const;

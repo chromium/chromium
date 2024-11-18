@@ -39,7 +39,6 @@ import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
-import "chromeos/crosapi/mojom/download_status_updater.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/editor_panel.mojom";
@@ -346,13 +345,6 @@ interface Crosapi {
   // Added in M92.
   [MinVersion=28] BindDownloadController@33(
       pending_receiver<DownloadController> receiver);
-
-  // Binds the DownloadStatusUpdater interface, which allows Lacros download
-  // status updates to be passed into Ash Chrome for rendering in the
-  // appropriate System UI surface(s).
-  // Added in M115.
-  [MinVersion=107] BindDownloadStatusUpdater@110(
-      pending_receiver<DownloadStatusUpdater> receiver);
 
   // Binds the DriveIntegrationService interface for getting information about
   // the local Google Drive mount.
@@ -1518,10 +1510,8 @@ struct BrowserInitParams {
   [MinVersion=66]
   bool is_floss_available@66;
 
-  // Indicates whether the new downloads integration with System UI surfaces is
-  // enabled in Ash, so as to allow the browser to disable competing behaviors.
   [MinVersion=67]
-  bool is_sys_ui_downloads_integration_v2_enabled@67;
+  bool REMOVED_67@67;
 
   // Indicates whether ChromeOS Battery Saver is available, so browser specific
   // energy saving UI should defer to the OS.

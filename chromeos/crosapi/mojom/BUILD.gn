@@ -40,7 +40,6 @@ mojom("mojom") {
     "dlp.mojom",
     "document_scan.mojom",
     "download_controller.mojom",
-    "download_status_updater.mojom",
     "drive_integration_service.mojom",
     "echo_private.mojom",
     "editor_panel.mojom",

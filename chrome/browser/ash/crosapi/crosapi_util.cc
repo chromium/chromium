@@ -90,7 +90,6 @@
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
-#include "chromeos/crosapi/mojom/download_status_updater.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
 #include "chromeos/crosapi/mojom/echo_private.mojom.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
@@ -463,7 +462,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Dlp>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DocumentScan>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DownloadController>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::DownloadStatusUpdater>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DriveIntegrationService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EchoPrivate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::EditorPanelManager>(),
@@ -883,8 +881,6 @@ void InjectBrowserInitParams(
 
   params->is_drivefs_bulk_pinning_available =
       drive::util::IsDriveFsBulkPinningAvailable();
-
-  params->is_sys_ui_downloads_integration_v2_enabled = true;
 
   params->is_cros_battery_saver_available =
       ash::features::IsBatterySaverAvailable();
