@@ -90,22 +90,6 @@ void ArcKeyMintBridge::UpdatePlaceholderKeysAfterBootstrap(
   }
 }
 
-void ArcKeyMintBridge::SetSerialNumberInKeyMint(
-    const std::string& serial_number) {
-  DCHECK(!serial_number.empty());
-  DCHECK(!arcvm_serial_number_.has_value());
-  arcvm_serial_number_ = serial_number;
-}
-
-void ArcKeyMintBridge::SendSerialNumberToKeyMint() {
-  if (!arcvm_serial_number_.has_value()) {
-    LOG(ERROR) << "Failed to send serial number as it is empty.";
-    return;
-  }
-
-  cert_store_bridge_->SetSerialNumber(arcvm_serial_number_.value());
-}
-
 void ArcKeyMintBridge::GetServer(GetServerCallback callback) {
   if (keymint_server_proxy_.is_bound()) {
     std::move(callback).Run(keymint_server_proxy_.Unbind());
@@ -129,7 +113,6 @@ void ArcKeyMintBridge::OnBootstrapMojoConnection(
     BootstrapMojoConnectionCallback callback,
     bool result) {
   if (result) {
-    SendSerialNumberToKeyMint();
     DVLOG(1) << "Success bootstrapping Mojo in arc-keymintd.";
   } else {
     LOG(ERROR) << "Error bootstrapping Mojo in arc-keymintd.";

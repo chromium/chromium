@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 1
 
 // This file defines the mojo interface between arc-keymint and Chrome for the
-// keys that are backed by TPM hardware and accessible by Chrome.
+// keys hardware-backed and accessible by Chrome.
 
-// Note that this module name is different than keymint.mojom's.
 module arc.keymint.mojom;
 
 import "chrome/services/keymanagement/public/mojom/cert_store_types.mojom";
@@ -34,15 +33,12 @@ struct ChromeOsKey {
   KeyData key_data;
 };
 
+
 // Interface exposed by arc-keymint daemon and called by Chrome
 // (CertStoreBridgeKeyMint).
-// Next method ID: 3
+// Next method ID: 2
 // Deprecated method IDs: 0
 interface CertStoreInstance {
   // Updates info about the latest set of keys owned by Chrome OS.
   UpdatePlaceholderKeys@1(array<ChromeOsKey> keys) => (bool success);
-
-  // Sets the ARCVM's serial number in KeyMint for Attestation.
-  [MinVersion=2]
-  SetSerialNumber@2(string serial_number);
 };
