@@ -212,7 +212,8 @@
   [self.lensHandler reloadResult:result];
 }
 
-- (void)reloadURL:(GURL)URL {
+- (void)loadURL:(GURL)URL omniboxText:(NSString*)omniboxText {
+  [self updateOmniboxText:omniboxText];
   [self.resultConsumer loadResultsURL:URL];
 }
 
