@@ -8808,21 +8808,6 @@
             ]
         }
     ],
-    "EnableBatchUploadFromSettings": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableBatchUploadFromSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableCertManagementUIV2": [
         {
             "platforms": [
