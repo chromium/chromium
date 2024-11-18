@@ -45,6 +45,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -318,6 +319,10 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Test
     @EnableFeatures({SigninFeatures.CCT_SIGN_IN_PROMPT})
     public void testCreateMismatchNotificationChecker() {
+        HistogramWatcher mismatchNoticeSuppressedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.CctAccountMismatchNoticeSuppressed",
+                        MismatchNotificationController.SuppressedReason.FRE_COMPLETED_RECENTLY);
         FeatureList.setDisableNativeForTesting(true);
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(SigninFeatures.CCT_SIGN_IN_PROMPT, true);
@@ -343,11 +348,13 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                 "Should NOT create checker for no app ID",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker(null));
 
+        // FRE was recently completed
         SigninPreferencesManager.getInstance()
                 .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
         assertNull(
                 "Should NOT create checker when the FRE was recently completed",
                 mBaseCustomTabRootUiCoordinator.createMismatchNotificationChecker("app-id"));
+        mismatchNoticeSuppressedWatcher.assertExpected();
 
         // Advance the clock so that the suppression period start is no longer recent.
         mFakeTimeTestRule.advanceMillis(DateUtils.WEEK_IN_MILLIS * 10);

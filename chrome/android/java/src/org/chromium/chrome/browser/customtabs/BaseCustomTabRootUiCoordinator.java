@@ -311,7 +311,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                         && SigninFeatureMap.isEnabled(SigninFeatures.CCT_SIGN_IN_PROMPT);
         if (!signInPromptEnabled) return null;
 
-        if (isMismatchNotificationSuppressed()) return null;
+        if (isMismatchNotificationSuppressed()) {
+            MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
+                    MismatchNotificationController.SuppressedReason.FRE_COMPLETED_RECENTLY);
+            return null;
+        }
 
         Profile profile = mProfileSupplier.get();
         if (profile == null) return null;

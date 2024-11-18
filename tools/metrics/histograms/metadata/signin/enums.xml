@@ -1000,6 +1000,20 @@ chromium-metrics-reviews@google.com.
              ProfileSeparationDomainExceptionList policy."/>
 </enum>
 
+<!-- LINT.IfChange(SuppressedReason) -->
+
+<enum name="SuppressedReason">
+  <int value="0" label="Account list not yet available"/>
+  <int value="1"
+      label="The user has already seen the mismatch notice a sufficient
+             number of times"/>
+  <int value="2" label="The user has dismissed the notice multiple times."/>
+  <int value="3" label="The user has recently seen the mismatch notice"/>
+  <int value="4" label="The user recently went through the FRE"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java:SuppressedReason) -->
+
 <enum name="SyncButtonClicked">
   <int value="0" label="Equal weighted sync opt-in button clicked"/>
   <int value="1" label="Equal weighted sync cancel button clicked"/>
