@@ -291,32 +291,14 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
 }
 
 void FacilitatedPaymentsManager::OnPurchaseActionResult(
-    FacilitatedPaymentsApiClient::PurchaseActionResult result) {
+    PurchaseActionResult result) {
   // When server responds to the purchase action, Google Play Services takes
   // over, and the progress screen gets dismissed. Calling `DismissPrompt`
   // clears the associated Java objects.
   DismissPrompt();
-  LogInitiatePurchaseActionResult(
-      /*result=*/result ==
-          FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
+  LogInitiatePurchaseActionResultAndLatency(
+      GetInitiatePurchaseActionResultString(result),
       base::TimeTicks::Now() - purchase_action_start_time_);
-  // Map the result received from the purchase action to overall transaction
-  // result.
-  TransactionResult transaction_result = TransactionResult::kFailed;
-  switch (result) {
-    case FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk:
-      transaction_result = TransactionResult::kSuccess;
-      break;
-    case FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke:
-      transaction_result = TransactionResult::kFailed;
-      break;
-    case FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled:
-      transaction_result = TransactionResult::kAbandoned;
-      break;
-  }
-  LogTransactionResult(transaction_result, trigger_source_,
-                       base::TimeTicks::Now() - fop_selector_shown_time_,
-                       ukm_source_id_);
 }
 
 void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
@@ -361,6 +343,18 @@ void FacilitatedPaymentsManager::ShowProgressScreen() {
 void FacilitatedPaymentsManager::ShowErrorScreen() {
   ui_state_ = UiState::kErrorScreen;
   client_->ShowErrorScreen();
+}
+
+std::string FacilitatedPaymentsManager::GetInitiatePurchaseActionResultString(
+    PurchaseActionResult result) {
+  switch (result) {
+    case PurchaseActionResult::kResultOk:
+      return std::string("Succeeded");
+    case PurchaseActionResult::kCouldNotInvoke:
+      return std::string("Failed");
+    case PurchaseActionResult::kResultCanceled:
+      return std::string("Abandoned");
+  }
 }
 
 }  // namespace payments::facilitated

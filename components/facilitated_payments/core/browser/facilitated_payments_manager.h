@@ -35,6 +35,8 @@ namespace payments::facilitated {
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsDriver;
 
+using PurchaseActionResult = FacilitatedPaymentsApiClient::PurchaseActionResult;
+
 // A cross-platform interface that manages the flow of payments for non-form
 // based form-of-payments between the browser and the Payments platform. It is
 // owned by `FacilitatedPaymentsDriver`.
@@ -192,22 +194,9 @@ class FacilitatedPaymentsManager {
       FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           OnPurchaseActionPositiveResult_UiPromptDismissed);
+                           OnPurchaseActionResult_UiPromptDismissed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           OnPurchaseActionNegativeResult_UiPromptDismissed);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           InvokePurchaseActionCompleted_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           TransactionSuccess_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      TransactionAbandonedAfterInvokePurchaseAction_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      TransactionFailedAfterInvokePurchaseAction_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      FOPSelectorNotShown_TransactionResultHistogramNotLogged);
+                           LogInitiatePurchaseActionResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiClientInitializedLazily);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
@@ -288,8 +277,7 @@ class FacilitatedPaymentsManager {
 
   // Called after receiving the `result` of invoking the purchase manager for
   // payment.
-  void OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult result);
+  void OnPurchaseActionResult(PurchaseActionResult result);
 
   // Called by the view to communicate UI events.
   void OnUiEvent(UiEvent ui_event_type);
@@ -307,6 +295,10 @@ class FacilitatedPaymentsManager {
 
   // Sets the internal state and triggers showing the error screen.
   void ShowErrorScreen();
+
+  // Converts the PurchaseActionResult to the string version.
+  std::string GetInitiatePurchaseActionResultString(
+      PurchaseActionResult result);
 
   // Owner.
   const raw_ref<FacilitatedPaymentsDriver> driver_;
