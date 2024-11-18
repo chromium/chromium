@@ -233,7 +233,7 @@ SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
   scheduler::TaskAttributionInfo* task_state = tracker->RunningTask();
   SoftNavigationContext* context =
       task_state ? task_state->GetSoftNavigationContext() : nullptr;
-  TRACE_EVENT1("scheduler",
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted",
                "has_context", !!context);
   if (context) {
@@ -246,7 +246,7 @@ SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
     SoftNavigationContext* context) {
-  TRACE_EVENT2("scheduler",
+  TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
                "url", url, "has_context", !!context);
   if (context) {
@@ -267,8 +267,9 @@ bool SoftNavigationHeuristics::ModifiedDOM() {
     context->MarkMainModification();
     EmitSoftNavigationEntryIfAllConditionsMet(context);
   }
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedDOM",
-               "has_context", !!context);
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
+               "SoftNavigationHeuristics::ModifiedDOM", "has_context",
+               !!context);
   return !!context;
 }
 
@@ -330,7 +331,8 @@ void SoftNavigationHeuristics::RecordPaint(
   bool is_above_threshold = (softnav_painted_area_ > required_paint_area);
 
   TRACE_EVENT_INSTANT(
-      "loading", "SoftNavigationHeuristics_RecordPaint", "softnav_painted_area",
+      TRACE_DISABLED_BY_DEFAULT("loading"),
+      "SoftNavigationHeuristics_RecordPaint", "softnav_painted_area",
       softnav_painted_area_, "required_paint_area", required_paint_area, "url",
       (last_detected_soft_navigation_ ? last_detected_soft_navigation_->Url()
                                       : ""),
@@ -447,8 +449,9 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
 
   // TODO(crbug.com/40942324): Replace task_id with either an id for the
   // `SoftNavigationContext` or a serialized version of the object.
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",
-               "task_id", task_state.Id().value());
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("loading"),
+               "SoftNavigationHeuristics::OnCreateTaskScope", "task_id",
+               task_state.Id().value());
   // This is invoked when executing a callback with an active `EventScope`,
   // which happens for click and keyboard input events, as well as
   // user-initiated navigation and popstate events. Running such an event
