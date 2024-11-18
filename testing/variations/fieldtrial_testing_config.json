@@ -20145,6 +20145,7 @@
                         "SafetyHubAndroidSurvey"
                     ],
                     "disable_features": [
+                        "SafeHubFollowup",
                         "SafetyHub"
                     ]
                 }
