@@ -1923,13 +1923,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.RaceNetworkRequestEligible"
-    units="ms" expires_after="2024-07-21">
+    units="ms" expires_after="2025-05-16">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
     The {Timing} time of pages with the Service Worker fetch handlers. Metrics
     won't be recorded if pages are not controlled by service workers. This is
     recorded only when the ServiceWorker script is eligible for the experiment.
+
+    Warning: this histogram was expired from 2024-07-21 to 2024-11-18.
   </summary>
   <token key="Timing">
     <variant name="NavigationToFirstContentfulPaint"/>
