@@ -983,13 +983,10 @@ crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 
 crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
-
-
 crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
-
+crbug.com/379667913 [ chromeos chromeos-board-amd64-generic angle-opengles graphite-disabled passthrough ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
 crbug.com/angleproject/7904 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
