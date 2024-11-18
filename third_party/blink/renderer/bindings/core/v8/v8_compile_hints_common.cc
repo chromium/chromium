@@ -17,14 +17,13 @@ uint32_t ScriptNameHash(v8::Local<v8::Value> name_value,
   if (!name_value->ToString(context).ToLocal(&name_string)) {
     return 0;
   }
-  int name_length = name_string->Utf8Length(isolate);
+  size_t name_length = name_string->Utf8LengthV2(isolate);
   if (name_length == 0) {
     return 0;
   }
 
-  std::string name_std_string(name_length + 1, '\0');
-  name_string->WriteUtf8(isolate, &name_std_string[0]);
-  name_std_string.resize(name_length);
+  std::string name_std_string(name_length, '\0');
+  name_string->WriteUtf8V2(isolate, name_std_string.data(), name_length);
 
   // We need the hash function to be stable across computers, thus using
   // PersistentHash.

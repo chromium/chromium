@@ -370,12 +370,13 @@ std::string TranslateAgent::ExecuteScriptAndGetStringResult(
   }
 
   v8::Local<v8::String> v8_str = result.As<v8::String>();
-  int length = v8_str->Utf8Length(isolate);
-  if (length <= 0)
+  size_t length = v8_str->Utf8LengthV2(isolate);
+  if (length == 0) {
     return std::string();
+  }
 
-  std::string str(static_cast<size_t>(length), '\0');
-  v8_str->WriteUtf8(isolate, &str[0], length);
+  std::string str(length, '\0');
+  v8_str->WriteUtf8V2(isolate, str.data(), length);
   return str;
 }
 

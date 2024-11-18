@@ -224,13 +224,12 @@ NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
     // it or parse it in some other way. So if it's short enough, we try to
     // construct a simple StringView on our own.
     const v8::Local<v8::String> string = value.As<v8::String>();
-    if (string->Length() <= 128 && string->IsOneByte()) {
+    uint32_t length = string->Length();
+    if (length <= 128 && string->IsOneByte()) {
       LChar buffer[128];
-      int len =
-          string->WriteOneByte(script_state->GetIsolate(), buffer, /*start=*/0,
-                               /*length=*/-1, v8::String::NO_NULL_TERMINATION);
+      string->WriteOneByteV2(script_state->GetIsolate(), 0, length, buffer);
       SetPropertyInternal(
-          unresolved_property, String(), StringView(buffer, len), false,
+          unresolved_property, String(), StringView(buffer, length), false,
           execution_context->GetSecureContextMode(), exception_state);
       if (exception_state.HadException()) {
         return NamedPropertySetterResult::kIntercepted;
