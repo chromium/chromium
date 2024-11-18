@@ -476,6 +476,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/tabs/ui_bundled",
     "//ios/chrome/browser/ui/authentication",

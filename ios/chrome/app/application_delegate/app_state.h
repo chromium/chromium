@@ -66,10 +66,6 @@ enum class PostCrashAction {
 // Container for startup information.
 @property(nonatomic, weak) id<StartupInformation> startupInformation;
 
-// YES if the user has ever interacted with the application. May be NO if the
-// application has been woken up by the system for background work.
-@property(nonatomic, readonly) BOOL userInteracted;
-
 // YES if the sign-in upgrade promo has been presented to the user, once.
 @property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
 
@@ -90,40 +86,12 @@ enum class PostCrashAction {
 // orientation.
 @property(nonatomic, readonly) BOOL portraitOnly;
 
-// YES if the application is getting terminated.
-@property(nonatomic, readonly) BOOL appIsTerminating;
-
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<AppStateAgent>>* connectedAgents;
 
 // Can be used to schedule deferred initialization tasks.
 @property(nonatomic, readonly) DeferredInitializationRunner* deferredRunner;
-
-// Logs duration of the session and records that chrome is no longer in cold
-// start.
-- (void)willResignActive;
-
-// Called when the application is getting terminated. It stops all outgoing
-// requests, config updates, clears the device sharing manager and stops the
-// mainChrome instance.
-- (void)applicationWillTerminate:(UIApplication*)application;
-
-// Called when the application discards set of scene sessions, these sessions
-// can no longer be accessed and all their associated data should be destroyed.
-- (void)application:(UIApplication*)application
-    didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions;
-
-// Called when going into the background. iOS already broadcasts, so
-// stakeholders can register for it directly.
-- (void)applicationDidEnterBackground:(UIApplication*)application
-                         memoryHelper:(MemoryWarningHelper*)memoryHelper;
-
-// Called when returning to the foreground. Resets and uploads the metrics.
-// Starts the browser to foreground if needed.
-- (void)applicationWillEnterForeground:(UIApplication*)application
-                       metricsMediator:(MetricsMediator*)metricsMediator
-                          memoryHelper:(MemoryWarningHelper*)memoryHelper;
 
 // Returns the foreground and active scene, if there is one.
 - (SceneState*)foregroundActiveScene;

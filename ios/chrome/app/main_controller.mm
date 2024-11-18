@@ -18,6 +18,8 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -39,6 +41,7 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/background_refresh/background_refresh_app_agent.h"
 #import "ios/chrome/app/background_refresh/test_refresher.h"
@@ -112,6 +115,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
@@ -381,6 +385,18 @@ void BeginMemoryExperimentationAfterDelay() {
   // True if the launch metrics have already been recorded.
   BOOL _launchMetricsRecorded;
 
+  // YES if the user has ever interacted with the application. May be NO if the
+  // application has been woken up by the system for background work.
+  BOOL _userInteracted;
+
+  // Whether the application is currently in the background. Workaround for
+  // rdar://22392526 where -applicationDidEnterBackground: can be called twice.
+  // TODO(crbug.com/41211311): remove when rdar:22392526 is fixed
+  BOOL _applicationInBackground;
+
+  // YES if any Profile had initialized the UI for its first Scene.
+  BOOL _firstWindowCreated;
+
   // An object to record metrics related to the user's first action.
   std::unique_ptr<FirstUserActionRecorder> _firstUserActionRecorder;
 
@@ -407,7 +423,7 @@ void BeginMemoryExperimentationAfterDelay() {
 
   // The set of "scene sessions" that needs to be discarded. See
   // -application:didDiscardSceneSessions: for details.
-  NSSet<UISceneSession*>* _sceneSessionsToDiscard;
+  NSMutableSet<UISceneSession*>* _sceneSessionsToDiscard;
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
@@ -425,10 +441,9 @@ void BeginMemoryExperimentationAfterDelay() {
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize isFirstRun = _isFirstRun;
+@synthesize isTerminating = _isTerminating;
 @synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
-
-SEQUENCE_CHECKER(_sequenceChecker);
 
 #pragma mark - Application lifecycle
 
@@ -508,7 +523,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
   //
   // TODO(crbug.com/40190949): Stop watching for a crash if this is a background
   // fetch.
-  if (_appState.userInteracted) {
+  if (_userInteracted) {
     GetApplicationContext()->GetMetricsService()->OnAppEnterForeground();
   }
 
@@ -518,9 +533,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
   [NSURLCache setSharedURLCache:[EmptyNSURLCache emptyNSURLCache]];
 
   if (_sceneSessionsToDiscard) {
-    [_appState application:[UIApplication sharedApplication]
-        didDiscardSceneSessions:_sceneSessionsToDiscard];
-    _sceneSessionsToDiscard = nil;
+    [self application:[UIApplication sharedApplication]
+        didDiscardSceneSessions:std::exchange(_sceneSessionsToDiscard, nil)];
   }
 
   [self.appState queueTransitionToNextInitStage];
@@ -675,24 +689,163 @@ SEQUENCE_CHECKER(_sequenceChecker);
 #pragma mark - AppLifetimeObserver
 
 - (void)applicationWillResignActive:(UIApplication*)application {
-  [_appState willResignActive];
+  if (_appState.initStage < AppInitStage::kSafeMode) {
+    return;
+  }
+
+  // Reset the failed startup count as the user was able to background the app.
+  crash_util::ResetFailedStartupAttemptCount();
+
+  // Nothing to do if no profile has been fully yet loaded.
+  if (_highestProfileInitStageReached < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  // -applicationWillResignActive: is called by the OS when the application
+  // loses the focus (either because the last window is backgrounded or when
+  // the user switch to another application while in split screen mode on an
+  // iPad). Next time a windows become active, it should be considered as a
+  // "cold start" since the application was still running without the focus
+  // as opposed to a "warm start" which happens when the application was not
+  // running and did the whole startup sequence before activating the window.
+  _isColdStart = NO;
+
+  // Forward the event to all ProfileControllers.
+  for (const auto& pair : _profileControllers) {
+    ProfileController* controller = pair.second;
+    [controller applicationWillResignActive:application];
+  }
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
-  [_appState applicationWillTerminate:application];
+  // Avoid re-entrancy, and then mark the app as terminating.
+  CHECK(!_isTerminating);
+  _isTerminating = YES;
+
+  if (!_applicationInBackground) {
+    base::UmaHistogramBoolean(
+        "Stability.IOS.UTE.AppWillTerminateWasCalledInForeground", true);
+  }
+
+  [_appState.appCommandDispatcher prepareForShutdown];
+
+  // Cancel any in-flight distribution notification.
+  ios::provider::CancelAppDistributionNotifications();
+
+  // Forward the event to all ProfileControllers.
+  for (const auto& pair : _profileControllers) {
+    ProfileController* controller = pair.second;
+    [controller applicationWillTerminate:application];
+  }
+
+  [self stopChromeMain];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
-  [_appState applicationDidEnterBackground:application
-                              memoryHelper:memoryHelper];
+  // Exit the application if backgrounding while in safe mode.
+  if (_appState.initStage == AppInitStage::kSafeMode) {
+    exit(0);
+  }
+
+  if (_applicationInBackground) {
+    return;
+  }
+
+  _applicationInBackground = YES;
+  crash_keys::SetCurrentlyInBackground(true);
+
+  // Reset `-startupHadExternalIntent` for all scenes in case external intents
+  // were triggered while the application was in the foreground.
+  for (SceneState* scene in _appState.connectedScenes) {
+    scene.startupHadExternalIntent = NO;
+  }
+
+  // The remainder of the cleanup is only valid if at least one of the profile
+  // has been initialized, so return early if this is not the case.
+  if (_highestProfileInitStageReached < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  [self expireFirstUserActionRecorder];
+
+  // Forward the event to all ProfileControllers.
+  for (const auto& pair : _profileControllers) {
+    ProfileController* controller = pair.second;
+    [controller applicationDidEnterBackground:application
+                                 memoryHelper:memoryHelper];
+  }
+
+  // Mark the startup as clean if it hasn't already been.
+  [_appState.deferredRunner runBlockNamed:kStartupResetAttemptCount];
+
+  // Update metrics.
+  [MetricsMediator logDateInUserDefaults];
+  [MetricsMediator
+      applicationDidEnterBackground:[memoryHelper
+                                        foregroundMemoryWarningCount]];
+
+  // Clear the memory warning flag since the application is in the background.
+  PreviousSessionInfo* sessionInfo = [PreviousSessionInfo sharedInstance];
+  [sessionInfo resetMemoryWarningFlag];
+  [sessionInfo stopRecordingMemoryFootprint];
+
+  GetApplicationContext()->OnAppEnterBackground();
 }
 
 - (void)applicationWillEnterForeground:(UIApplication*)application
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
-  [_appState applicationWillEnterForeground:application
-                            metricsMediator:_metricsMediator
-                               memoryHelper:memoryHelper];
+  // Invariant: the application has passed AppInitStage::kStart.
+  CHECK_GT(_appState.initStage, AppInitStage::kStart);
+
+  // Fully initialize the browser objects for the browser UI if it is not
+  // already the case. This is especially needed for scene startup.
+  if (_appState.initStage < AppInitStage::kBrowserObjectsForUI) {
+    // TODO(crbug.com/40760092): This function should only be called once
+    // during a specific stage, but this requires non-trivial refactoring, so
+    // for now #initializeUIPreSafeMode will just return early if called more
+    // than once.
+    // The application has been launched in background and the initialization
+    // is not complete.
+    [self initializeUIPreSafeMode];
+    return;
+  }
+
+  // Don't go further with foregrounding the app when the app has not passed
+  // safe mode yet or was initialized from the background.
+  if (_appState.initStage <= AppInitStage::kSafeMode ||
+      !_applicationInBackground) {
+    return;
+  }
+
+  _applicationInBackground = NO;
+  crash_keys::SetCurrentlyInBackground(false);
+
+  GetApplicationContext()->OnAppEnterForeground();
+
+  // Update the state of metrics and crash reporting as the method of
+  // communication may have changed while the app was in the backgroumd.
+  [_metricsMediator updateMetricsStateBasedOnPrefsUserTriggered:NO];
+  [MetricsMediator
+      logLaunchMetricsWithStartupInformation:self
+                             connectedScenes:_appState.connectedScenes];
+
+  // Send any feedback that might still be on temporary storage.
+  if (ios::provider::IsUserFeedbackSupported()) {
+    ios::provider::UploadAllPendingUserFeedback();
+  }
+
+  // Forward the event to all ProfileControllers.
+  for (const auto& pair : _profileControllers) {
+    ProfileController* controller = pair.second;
+    [controller applicationWillEnterForeground:application
+                                  memoryHelper:memoryHelper];
+  }
+
+  base::RecordAction(base::UserMetricsAction("MobileWillEnterForeground"));
+
+  // This will be a no-op if upload already started.
+  crash_helper::UploadCrashReports();
 }
 
 - (void)application:(UIApplication*)application
@@ -708,13 +861,75 @@ SEQUENCE_CHECKER(_sequenceChecker);
   // that it can happen before Chrome has properly initialized. In that case,
   // record the list of sessions to discard and clean them once Chrome is
   // initialized.
-  if (_appState.initStage <=
-      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
-    _sceneSessionsToDiscard = [sceneSessions copy];
+  ApplicationContext* applicationContext = GetApplicationContext();
+  if (!applicationContext) {
+    if (!_sceneSessionsToDiscard) {
+      _sceneSessionsToDiscard = [sceneSessions mutableCopy];
+    } else {
+      [_sceneSessionsToDiscard unionSet:sceneSessions];
+    }
     return;
   }
 
-  [_appState application:application didDiscardSceneSessions:sceneSessions];
+  DCHECK_GE(_appState.initStage,
+            AppInitStage::kBrowserObjectsForBackgroundHandlers);
+
+  applicationContext->GetSystemIdentityManager()
+      ->ApplicationDidDiscardSceneSessions(sceneSessions);
+
+  // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
+  // support devices that do not support multi-window (and which use a constant
+  // identifier). For devices that do not support multi-window the session is
+  // saved at a constant path, so it is harmless to delete files at a path
+  // derived from -persistentIdentifier (since there won't be files deleted).
+  // For devices that do support multi-window, there is data to delete once the
+  // session is garbage collected.
+  //
+  // Thus it is always correct to use -persistentIdentifier here.
+  std::set<std::string> sessionIDs;
+  for (UISceneSession* session in sceneSessions) {
+    sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
+  }
+  sessions_storage_util::MarkSessionsForRemoval(std::move(sessionIDs));
+  crash_keys::SetConnectedScenesCount(_appState.connectedScenes.count);
+}
+
+#pragma mark Early launch
+
+// This method is the first to be called when user launches the application.
+// This performs the minimal amount of browser initialization that is needed by
+// safe mode.
+// Depending on the background tasks history, the state of the application is
+// INITIALIZATION_STAGE_BACKGROUND so this
+// step cannot be included in the `startUpBrowserToStage:` method.
+- (void)initializeUIPreSafeMode {
+  if (_userInteracted) {
+    return;
+  }
+
+  _userInteracted = YES;
+  [self saveLaunchDetailsToDefaults];
+  [_appState queueTransitionToNextInitStage];
+}
+
+// Saves the current launch details to user defaults.
+- (void)saveLaunchDetailsToDefaults {
+  PreviousSessionInfo* sessionInfo = [PreviousSessionInfo sharedInstance];
+
+  // Reset the failure count on first launch, increment it on other launches.
+  if ([sessionInfo isFirstSessionAfterUpgrade]) {
+    crash_util::ResetFailedStartupAttemptCount();
+  } else {
+    crash_util::IncrementFailedStartupAttemptCount(false);
+  }
+
+  // The startup failure count *must* be synchronized now, since the crashes it
+  // is trying to count are during startup.
+  // -[PreviousSessionInfo beginRecordingCurrentSession] calls `synchronize` on
+  // the user defaults, so leverage that to prevent calling it twice.
+
+  // Start recording info about this session.
+  [sessionInfo beginRecordingCurrentSession];
 }
 
 #pragma mark - AppStateObserver
@@ -734,12 +949,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if (self.appState.initStage >= AppInitStage::kNormalUI) {
     [self attachProfileToSceneState:sceneState];
   }
-}
-
-// Called when the first scene becomes active.
-- (void)appState:(AppState*)appState
-    firstSceneHasInitializedUI:(SceneState*)sceneState {
-  [self startUpAfterFirstWindowCreated];
 }
 
 - (void)appState:(AppState*)appState
@@ -872,6 +1081,17 @@ SEQUENCE_CHECKER(_sequenceChecker);
     [profileState removeObserver:self];
     [self recordLaunchMetrics];
   }
+}
+
+// Called when the first scene becomes active.
+- (void)profileState:(ProfileState*)appState
+    firstSceneHasInitializedUI:(SceneState*)sceneState {
+  if (_firstWindowCreated) {
+    return;
+  }
+
+  _firstWindowCreated = YES;
+  [self startUpAfterFirstWindowCreated];
 }
 
 #pragma mark - SceneStateObserver
@@ -1054,7 +1274,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 - (void)maybeContinueForegroundInitialization {
   if (self.appState.foregroundScenes.count > 0 &&
       self.appState.initStage == AppInitStage::kBrowserObjectsForUI) {
-    DCHECK(self.appState.userInteracted);
+    DCHECK(_userInteracted);
     [self startUpBrowserForegroundInitialization];
     [self.appState queueTransitionToNextInitStage];
   }

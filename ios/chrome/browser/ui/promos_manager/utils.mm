@@ -7,6 +7,7 @@
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
@@ -45,7 +46,7 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
   }
 
   // (4) The app isn't shutting down.
-  if (scene_state.profileState.appState.appIsTerminating) {
+  if (scene_state.profileState.appState.startupInformation.isTerminating) {
     return NO;
   }
 

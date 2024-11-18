@@ -69,8 +69,13 @@ source_set("profile_controller") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/device_orientation",
+    "//ios/chrome/browser/web_state_list/model:session_metrics",
+    "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
     "//ios/components/cookie_util",
+    "//ios/web/public/thread",
   ]
 
   if (ios_enable_credential_provider_extension) {

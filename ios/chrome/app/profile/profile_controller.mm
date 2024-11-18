@@ -7,9 +7,12 @@
 #import <memory>
 #import <utility>
 
+#import "base/critical_closure.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/notreached.h"
+#import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
@@ -48,11 +51,23 @@
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
+#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/components/cookie_util/cookie_util.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
+#import "net/cookies/cookie_store.h"
+#import "net/url_request/url_request_context.h"
+#import "net/url_request/url_request_context_getter.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"  // nogncheck
@@ -105,6 +120,16 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
 }
 #endif
 
+// Flushes the CookieStore on the IO thread and invokes `closure` on completion
+// on an unspecified sequence.
+void FlushCookieStoreOnIOThread(
+    scoped_refptr<net::URLRequestContextGetter> getter,
+    base::OnceClosure closure) {
+  DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  getter->GetURLRequestContext()->cookie_store()->FlushStore(
+      std::move(closure));
+}
+
 }  // namespace
 
 @interface ProfileController () <ProfileStateObserver>
@@ -121,6 +146,9 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
   // Responsible for indexing chrome links (such as bookmarks, ...) in system
   // Spotlight index for the given profile.
   SpotlightManager* _spotlightManager;
+
+  // Flag recording whether the cookies are currently being saved or not.
+  BOOL _savingCookies;
 }
 
 - (instancetype)initWithAppState:(AppState*)appState
@@ -245,21 +273,102 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
 #pragma mark AppLifetimeObserver
 
 - (void)applicationWillResignActive:(UIApplication*)application {
-  NOTREACHED();
+  // Nothing to do if the profile is not yet fully loaded.
+  if (_state.initStage < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  DCHECK(_state.profile);
+  ProfileIOS* profile = _state.profile;
+
+  // Record session metrics for the regular profile and off-the-record profile
+  // (if it exists, do not force its creation).
+  SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
+      MetricsToRecordFlags::kActivatedTabCount);
+  if (profile->HasOffTheRecordProfile()) {
+    SessionMetrics::FromProfile(profile->GetOffTheRecordProfile())
+        ->RecordAndClearSessionMetrics(
+            MetricsToRecordFlags::kActivatedTabCount);
+  }
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
-  NOTREACHED();
+  // Nothing to do if the profile is not yet fully loaded.
+  if (_state.initStage < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  DCHECK(_state.profile);
+
+  // Halt the tabs, so any outstanding requests get cleaned up, without actually
+  // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
+  for (Browser* browser :
+       BrowserListFactory::GetForProfile(_state.profile)
+           ->BrowsersOfType(BrowserList::BrowserType::kAll)) {
+    if (auto* agent = WebUsageEnablerBrowserAgent::FromBrowser(browser)) {
+      agent->SetWebUsageEnabled(false);
+    }
+  }
 }
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
-  NOTREACHED();
+  // Nothing to do if the profile is not yet fully loaded.
+  if (_state.initStage < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  DCHECK(_state.profile);
+  ProfileIOS* profile = _state.profile;
+
+  enterprise_idle::IdleServiceFactory::GetForProfile(profile)
+      ->OnApplicationWillEnterBackground();
+
+  // Save the cookies unless there is already a save in progress. This avoid
+  // posting multiple tasks if the user switch rapidly between multiple apps.
+  if (!_savingCookies) {
+    _savingCookies = YES;
+
+    // Save the cookie while ensuring the application will be given time for
+    // the operation to complete by marking it as a critical closure. Since
+    // the closure passed to FlushCookieStoreOnIOThread(...) may be invoked
+    // on an arbitrary sequence, wrap it in base::BindPostTask(...) so that
+    // it executes on the current sequence.
+    __weak ProfileController* weakSelf = self;
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FlushCookieStoreOnIOThread,
+            base::WrapRefCounted(profile->GetRequestContext()),
+            base::BindPostTask(
+                base::SequencedTaskRunner::GetCurrentDefault(),
+                base::MakeCriticalClosure("-[ProfileController saveCookies]",
+                                          base::BindOnce(^{
+                                            [weakSelf cookiesSaved];
+                                          }),
+                                          /*is_immediate=*/true))));
+  }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication*)application
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
-  NOTREACHED();
+  // Nothing to do if the profile is not yet fully loaded.
+  if (_state.initStage < ProfileInitStage::kPrepareUI) {
+    return;
+  }
+
+  DCHECK(_state.profile);
+  ProfileIOS* profile = _state.profile;
+
+  AuthenticationServiceFactory::GetForProfile(profile)
+      ->OnApplicationWillEnterForeground();
+
+  enterprise_idle::IdleServiceFactory::GetForProfile(profile)
+      ->OnApplicationWillEnterForeground();
+
+  // Send the "Chrome opened" event to the feature engagement tracker on a
+  // warm start.
+  [self sendChromeOpenedEvent];
 }
 
 - (void)application:(UIApplication*)application
@@ -298,11 +407,7 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
 
   // Send "Chrome Opened" event to the feature engagement tracker on
   // cold start.
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForProfile(profile);
-
-  tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-  [_metricsMediator notifyCredentialProviderWasUsed:tracker];
+  [self sendChromeOpenedEvent];
 
   _spotlightManager = [SpotlightManager spotlightManagerWithProfile:profile];
   ShareExtensionServiceFactory::GetForProfile(profile)->Initialize();
@@ -334,6 +439,19 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
   DCHECK(_state.profile);
   enterprise_idle::IdleServiceFactory::GetForProfile(_state.profile)
       ->OnApplicationWillEnterForeground();
+}
+
+- (void)sendChromeOpenedEvent {
+  DCHECK(_state.profile);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForProfile(_state.profile);
+
+  tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
+  [_metricsMediator notifyCredentialProviderWasUsed:tracker];
+}
+
+- (void)cookiesSaved {
+  _savingCookies = NO;
 }
 
 #pragma mark Deferred initialisation tasks scheduling
