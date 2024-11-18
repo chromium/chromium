@@ -61,7 +61,7 @@ source_set("promos_manager_scene_agent") {
   ]
 }
 
-source_set("promos_manager") {
+source_set("ui_bundled") {
   sources = [
     "promos_manager_coordinator+Testing.h",
     "promos_manager_coordinator.h",
@@ -119,7 +119,7 @@ source_set("unit_tests") {
   sources = [ "promos_manager_coordinator_unittest.mm" ]
   deps = [
     ":promos",
-    ":promos_manager",
+    ":ui_bundled",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

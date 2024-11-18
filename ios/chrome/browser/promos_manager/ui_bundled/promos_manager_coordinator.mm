@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator.h"
 
 #import <Foundation/Foundation.h>
 
@@ -38,6 +38,13 @@
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/bannered_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_coordinator+Testing.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_mediator.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_alert_provider.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
@@ -46,13 +53,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+Testing.h"
-#import "ios/chrome/browser/ui/promos_manager/promos_manager_mediator.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
-#import "ios/chrome/browser/ui/promos_manager/utils.h"
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_promo_display_handler.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -241,8 +241,9 @@
   if (handler_it != _displayHandlerPromos.end()) {
     id<StandardPromoDisplayHandler> handler = handler_it->second;
 
-    if ([handler respondsToSelector:@selector(setHandler:)])
+    if ([handler respondsToSelector:@selector(setHandler:)]) {
       handler.handler = promosManagerCommandsHandler;
+    }
 
     [handler handleDisplay];
 
@@ -259,8 +260,9 @@
   } else if (provider_it != _viewProviderPromos.end()) {
     id<StandardPromoViewProvider> provider = provider_it->second;
 
-    if ([provider respondsToSelector:@selector(setHandler:)])
+    if ([provider respondsToSelector:@selector(setHandler:)]) {
       provider.handler = promosManagerCommandsHandler;
+    }
 
     self.viewController = [provider viewController];
     self.viewController.presentationController.delegate = self;
@@ -286,8 +288,9 @@
     id<BanneredPromoViewProvider> banneredProvider =
         bannered_provider_it->second;
 
-    if ([banneredProvider respondsToSelector:@selector(setHandler:)])
+    if ([banneredProvider respondsToSelector:@selector(setHandler:)]) {
       banneredProvider.handler = promosManagerCommandsHandler;
+    }
 
     self.banneredViewController = [banneredProvider viewController];
 
@@ -312,8 +315,9 @@
   } else if (alert_provider_it != _alertProviderPromos.end()) {
     id<StandardPromoAlertProvider> alertProvider = alert_provider_it->second;
 
-    if ([alertProvider respondsToSelector:@selector(setHandler:)])
+    if ([alertProvider respondsToSelector:@selector(setHandler:)]) {
       alertProvider.handler = promosManagerCommandsHandler;
+    }
 
     DCHECK([alertProvider.title length] != 0);
     DCHECK([alertProvider.message length] != 0);
@@ -342,8 +346,9 @@
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction* action) {
                   if ([alertProvider respondsToSelector:@selector
-                                     (standardPromoAlertDefaultAction)])
+                                     (standardPromoAlertDefaultAction)]) {
                     [alertProvider standardPromoAlertDefaultAction];
+                  }
 
                   [self dismissViewControllers];
                 }];
@@ -415,8 +420,9 @@
   DCHECK(self.banneredProvider);
 
   if (![self.banneredProvider
-          respondsToSelector:@selector(standardPromoPrimaryAction)])
+          respondsToSelector:@selector(standardPromoPrimaryAction)]) {
     return;
+  }
 
   [self.banneredProvider standardPromoPrimaryAction];
 }
@@ -442,8 +448,9 @@
   DCHECK(self.banneredProvider);
 
   if (![self.banneredProvider
-          respondsToSelector:@selector(standardPromoTertiaryAction)])
+          respondsToSelector:@selector(standardPromoTertiaryAction)]) {
     return;
+  }
 
   [self.banneredProvider standardPromoTertiaryAction];
 }
@@ -453,8 +460,9 @@
   DCHECK(self.banneredProvider);
 
   if (![self.banneredProvider
-          respondsToSelector:@selector(standardPromoLearnMoreAction)])
+          respondsToSelector:@selector(standardPromoLearnMoreAction)]) {
     return;
+  }
 
   [self.banneredProvider standardPromoLearnMoreAction];
 }
@@ -470,8 +478,10 @@
 - (void)confirmationAlertPrimaryAction {
   DCHECK(self.provider);
 
-  if (![self.provider respondsToSelector:@selector(standardPromoPrimaryAction)])
+  if (![self.provider
+          respondsToSelector:@selector(standardPromoPrimaryAction)]) {
     return;
+  }
 
   [self.provider standardPromoPrimaryAction];
 }
@@ -480,8 +490,9 @@
   DCHECK(self.provider);
 
   if (![self.provider
-          respondsToSelector:@selector(standardPromoSecondaryAction)])
+          respondsToSelector:@selector(standardPromoSecondaryAction)]) {
     return;
+  }
 
   [self.provider standardPromoSecondaryAction];
 }
@@ -490,8 +501,9 @@
   DCHECK(self.provider);
 
   if (![self.provider
-          respondsToSelector:@selector(standardPromoTertiaryAction)])
+          respondsToSelector:@selector(standardPromoTertiaryAction)]) {
     return;
+  }
 
   [self.provider standardPromoTertiaryAction];
 }
@@ -500,8 +512,9 @@
   DCHECK(self.provider);
 
   if (![self.provider
-          respondsToSelector:@selector(standardPromoLearnMoreAction)])
+          respondsToSelector:@selector(standardPromoLearnMoreAction)]) {
     return;
+  }
 
   [self.provider standardPromoLearnMoreAction];
 }
@@ -611,9 +624,8 @@
   _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
       [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
 
-    _alertProviderPromos
-        [promos_manager::Promo::PostRestoreDefaultBrowserAlert] =
-            [[PostRestoreDefaultBrowserPromoProvider alloc] init];
+  _alertProviderPromos[promos_manager::Promo::PostRestoreDefaultBrowserAlert] =
+      [[PostRestoreDefaultBrowserPromoProvider alloc] init];
 
   // Post-default browser abandonment promo handler.
   if (IsPostDefaultAbandonmentPromoEnabled()) {
@@ -632,17 +644,21 @@
 - (PromoConfigsSet)promoConfigs {
   PromoConfigsSet result;
 
-  for (auto const& [promo, handler] : _displayHandlerPromos)
+  for (auto const& [promo, handler] : _displayHandlerPromos) {
     result.emplace(handler.config);
+  }
 
-  for (auto const& [promo, provider] : _viewProviderPromos)
+  for (auto const& [promo, provider] : _viewProviderPromos) {
     result.emplace(provider.config);
+  }
 
-  for (auto const& [promo, banneredProvider] : _banneredViewProviderPromos)
+  for (auto const& [promo, banneredProvider] : _banneredViewProviderPromos) {
     result.emplace(banneredProvider.config);
+  }
 
-  for (auto const& [promo, alertProvider] : _alertProviderPromos)
+  for (auto const& [promo, alertProvider] : _alertProviderPromos) {
     result.emplace(alertProvider.config);
+  }
 
   return result;
 }

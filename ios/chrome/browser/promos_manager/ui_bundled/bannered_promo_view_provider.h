@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_BANNERED_PROMO_VIEW_PROVIDER_H_
-#define IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_BANNERED_PROMO_VIEW_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_BANNERED_PROMO_VIEW_PROVIDER_H_
+#define IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_BANNERED_PROMO_VIEW_PROVIDER_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/promos_manager/promo_protocol.h"
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/promo_protocol.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_action_handler.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 // BanneredPromoViewProvider enables feature teams to simply and easily
@@ -25,4 +25,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_BANNERED_PROMO_VIEW_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_UI_BUNDLED_BANNERED_PROMO_VIEW_PROVIDER_H_

@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/promos_manager/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
-  "+ios/chrome/browser/ui/promos_manager",
+  "+ios/chrome/browser/promos_manager/ui_bundled",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/ui/search_engine_choice",
 ]

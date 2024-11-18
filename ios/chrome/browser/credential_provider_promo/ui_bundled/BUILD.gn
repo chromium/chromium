@@ -26,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/promos_manager/model:features",
     "//ios/chrome/browser/promos_manager/model:types",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/model/application_context",
@@ -34,7 +35,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
   ]

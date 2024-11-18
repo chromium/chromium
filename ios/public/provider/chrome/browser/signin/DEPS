@@ -14,7 +14,7 @@ include_rules = [
   "+ios/chrome/browser/signin/model/trusted_vault_client_backend.h",
   "+ios/chrome/browser/signin/model/trusted_vault_configuration.h",
   "+ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h",
-  "+ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h",
+  "+ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h",
 ]
 
 specific_include_rules = {

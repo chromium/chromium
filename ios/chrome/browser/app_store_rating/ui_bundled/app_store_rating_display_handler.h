@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_APP_STORE_RATING_UI_BUNDLED_APP_STORE_RATING_DISPLAY_HANDLER_H_
 #define IOS_CHROME_BROWSER_APP_STORE_RATING_UI_BUNDLED_APP_STORE_RATING_DISPLAY_HANDLER_H_
 
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
 
 // Handler for displaying the App Store Rating Promo.
 //

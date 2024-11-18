@@ -9,7 +9,7 @@ source_set("ui_bundled") {
   ]
   public_deps = [
     "//ios/chrome/browser/promos_manager/model:types",
-    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
     "//ios/chrome/common/ui/confirmation_alert",
   ]
   frameworks = [ "Foundation.framework" ]

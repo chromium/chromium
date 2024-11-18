@@ -24,6 +24,7 @@ include_rules = [
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/policy/ui_bundled",
   "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/promos_manager/ui_bundled",
   "+ios/chrome/browser/screenshot/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/sessions/model",
