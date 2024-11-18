@@ -128,6 +128,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/button_menu_item_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/menu_separator_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -889,13 +890,6 @@ void ToolsMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
 
-  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
-                                   IDS_SHOW_READING_MODE_SIDE_PANEL,
-                                   kMenuBookChromeRefreshIcon);
-  SetElementIdentifierAt(
-      GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
-      kReadingModeMenuItem);
-
   if (base::FeatureList::IsEnabled(features::kToolbarPinning) &&
       CustomizeChromePageHandler::IsSupported(
           NtpCustomBackgroundServiceFactory::GetForProfile(browser->profile()),
@@ -904,6 +898,15 @@ void ToolsMenuModel::Build(Browser* browser) {
                                      IDS_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
                                      kEditChromeRefreshIcon);
   }
+
+  AddSeparator(ui::NORMAL_SEPARATOR);
+
+  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
+                                   IDS_SHOW_READING_MODE_SIDE_PANEL,
+                                   kMenuBookChromeRefreshIcon);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
+      kReadingModeMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   if (!features::IsExtensionMenuInRootAppMenu()) {
