@@ -356,7 +356,7 @@ extensions and perform customization.
 As described in the [Useful Extensions](#useful-extensions) sections, there are
 essential extensions to help Chromium development. Follow the steps below:
 
-1. In VS Code's Command Palette (`Ctrl+P`, or `Cmd+Shift+P` in macOS),
+1. In VS Code's Command Palette (`Ctrl+Shift+P`, or `Cmd+Shift+P` in macOS),
    type `Show Recommended Extensions`, and press `Enter`.
 2. In the WORKSPACE RECOMMENDATIONS section of the EXTENSIONS sidebar, click the
    `Install Workspace Recommended Extensions` (shown as a cloud icon).
