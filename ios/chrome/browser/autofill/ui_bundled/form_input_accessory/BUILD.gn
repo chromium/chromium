@@ -34,6 +34,7 @@ source_set("form_input_accessory") {
     "//components/plus_addresses/resources/strings",
     "//components/prefs",
     "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model",
