@@ -1825,9 +1825,6 @@ extern const char kQuickAppAccessTestUIDescription[];
 extern const char kQuickDimName[];
 extern const char kQuickDimDescription[];
 
-extern const char kQuickDeleteForAndroidName[];
-extern const char kQuickDeleteForAndroidDescription[];
-
 extern const char kQuickDeleteAndroidFollowupName[];
 extern const char kQuickDeleteAndroidFollowupDescription[];
 

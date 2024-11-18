@@ -562,7 +562,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
-    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData_withQuickDeleteV2Disabled() {
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
@@ -578,10 +577,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testClearBrowsingData_withQuickDeleteV2Enabled() {
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));

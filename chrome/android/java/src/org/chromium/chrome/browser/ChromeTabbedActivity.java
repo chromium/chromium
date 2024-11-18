@@ -2937,8 +2937,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             TabModel currentModel = mTabModelSelector.getCurrentModel();
             if (!currentModel.isIncognito()) currentModel.openMostRecentlyClosedEntry();
             RecordUserAction.record("MobileTabClosedUndoShortCut");
-        } else if (id == R.id.quick_delete_menu_id
-                && QuickDeleteController.isQuickDeleteEnabled()) {
+        } else if (id == R.id.quick_delete_menu_id) {
             assert !mTabModelSelector.getCurrentModel().isIncognito()
                     : "Quick delete is not supported in Incognito.";
 

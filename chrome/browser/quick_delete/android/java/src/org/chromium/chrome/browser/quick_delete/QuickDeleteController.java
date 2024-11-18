@@ -143,16 +143,9 @@ public class QuickDeleteController {
         }
     }
 
-    /**
-     * @return True, if quick delete feature flag is enabled, false otherwise
-     */
-    public static boolean isQuickDeleteEnabled() {
-        return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
-    }
-
     /** returns True, if quick delete follow up is enabled, false otherwise */
     public static boolean isQuickDeleteFollowupEnabled() {
-        return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
+        return ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
     }
 
     /** returns True, if quick delete follow up open a new tab on empty tab switch arm is enabled */

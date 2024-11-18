@@ -318,10 +318,7 @@ public class ClearBrowsingDataFragmentTest {
      */
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testClearingEverything() throws Exception {
         setDataTypesToClear(ClearBrowsingDataFragment.getAllOptions().toArray(new Integer[0]));
 
@@ -828,7 +825,6 @@ public class ClearBrowsingDataFragmentTest {
     @Test
     @MediumTest
     @Features.DisableFeatures(ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP)
-    @Features.EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testTabsCheckbox_withQuickDeleteV2Disabled() {
         ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
@@ -840,10 +836,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testTabsCheckbox_SingleInstance_withQuickDeleteV2Enabled() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         HistogramWatcher histogramWatcher =
@@ -863,10 +856,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testTabsCheckbox_MultiInstance_withQuickDeleteV2Enabled() {
         MultiWindowUtils.setInstanceCountForTesting(3);
         HistogramWatcher histogramWatcher =
@@ -890,10 +880,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testSnackbarShown_defaultTimePeriod_withQuickDeleteV2Enabled() throws Exception {
         setDataTypesToClear(DialogOption.CLEAR_CACHE);
 
@@ -916,10 +903,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testSnackbarShown_changeTimePeriod_withQuickDeleteV2Enabled() throws Exception {
         setDataTypesToClear(DialogOption.CLEAR_CACHE);
 
@@ -945,10 +929,7 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.QUICK_DELETE_FOR_ANDROID,
-        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP
-    })
+    @Features.EnableFeatures({ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP})
     public void testTabsCheckboxHidden_WhenLaunchedFromSearch() {
         mSettingsActivityTestRule.startSettingsActivity(
                 ClearBrowsingDataFragment.createFragmentArgs(

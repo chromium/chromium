@@ -34,14 +34,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -397,7 +394,6 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "QuickDelete", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_Shown() throws IOException {
         showAppMenuAndAssertMenuShown();
         int quickDeletePosition =
@@ -409,7 +405,6 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "QuickDelete"})
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_entryFromMenuItemHistogram() throws IOException {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -427,24 +422,11 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "QuickDelete"})
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testQuickDeleteMenu_NotShownInIncognito() {
         // Hide first any shown app menu as it can interfere with this test.
         hitEnterAndAssertAppMenuDismissed();
 
         mActivityTestRule.newIncognitoTabFromMenu();
-        showAppMenuAndAssertMenuShown();
-        assertEquals(
-                -1,
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "QuickDelete"})
-    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void testQuickDeleteMenu_NotShown() throws IOException {
         showAppMenuAndAssertMenuShown();
         assertEquals(
                 -1,

@@ -3176,12 +3176,6 @@ const char kQuickAppAccessTestUIName[] = "Internal test: quick app access";
 const char kQuickAppAccessTestUIDescription[] =
     "Show an app in the quick app access area at the start of the session";
 
-const char kQuickDeleteForAndroidName[] = "Enable quick delete";
-const char kQuickDeleteForAndroidDescription[] =
-    "When enabled, a new entrypoint to Clear Browsing Data appears in the "
-    "three dots menu, allowing users to achieve their browsing data and tabs "
-    "deletion needs in a quicker and more reassuring manner.";
-
 const char kQuickDeleteAndroidFollowupName[] =
     "Followup for Quick Delete on Android";
 const char kQuickDeleteAndroidFollowupDescription[] =
