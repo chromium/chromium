@@ -154,6 +154,7 @@
 // - split_at() method.
 // - to_fixed_extent() method.
 // - get_at() method.
+// - operator=(span&&) move-assignment (helps with non-trivial InternalPtrType).
 // - operator==() comparator function.
 // - operator<=>() comparator function.
 // - operator<<() printing function.
@@ -404,6 +405,7 @@ class GSL_POINTER span {
       : UNSAFE_BUFFERS(span(s.data(), s.size())) {}
 
   constexpr span& operator=(const span& other) noexcept = default;
+  constexpr span& operator=(span&& other) noexcept = default;
 
   // [span.sub], span subviews
   template <size_t Count>
@@ -998,6 +1000,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       : data_(s.data()), size_(s.size()) {}
 
   constexpr span& operator=(const span& other) noexcept = default;
+  constexpr span& operator=(span&& other) noexcept = default;
 
   // [span.sub], span subviews
   template <size_t Count>
