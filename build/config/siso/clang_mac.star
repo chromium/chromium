@@ -177,6 +177,8 @@ def __step_config(ctx, step_config):
                 "canonicalize_dir": canonicalize_dir_for_objc,
             },
         ])
+    elif gn.args(ctx).get("use_remoteexec") == "true":
+        fail("remoteexec requires rewrapper config")
     return step_config
 
 clang = module(

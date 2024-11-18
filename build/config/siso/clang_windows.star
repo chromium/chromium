@@ -141,6 +141,8 @@ def __step_config(ctx, step_config):
                 "timeout": timeout,
             },
         ])
+    elif gn.args(ctx).get("use_remoteexec") == "true":
+        fail("remoteexec requires rewrapper config")
     return step_config
 
 clang = module(
