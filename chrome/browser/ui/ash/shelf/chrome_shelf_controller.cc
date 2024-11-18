@@ -70,7 +70,6 @@
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/browser_app_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_app_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
@@ -90,7 +89,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -300,19 +298,8 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
       std::make_unique<AppServiceAppWindowShelfController>(this);
   app_service_app_window_controller_ = app_service_controller.get();
   app_window_controllers_.emplace_back(std::move(app_service_controller));
-  if (web_app::IsWebAppsCrosapiEnabled() &&
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
-    DCHECK(proxy);
-    CHECK(proxy->BrowserAppInstanceRegistry());
-    browser_app_shelf_controller_ = std::make_unique<BrowserAppShelfController>(
-        profile, *proxy->BrowserAppInstanceRegistry(), *model_,
-        *shelf_item_factory_, *shelf_spinner_controller_);
-  } else {
-    // Create the browser monitor which will inform the shelf of status changes.
-    browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
-  }
+  // Create the browser monitor which will inform the shelf of status changes.
+  browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
 }
 
 ChromeShelfController::~ChromeShelfController() {

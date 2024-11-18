@@ -66,8 +66,6 @@ namespace sync_preferences {
 class PrefServiceSyncable;
 }
 
-class BrowserAppShelfController;
-
 // ChromeShelfController helps manage Ash's shelf for Chrome prefs and apps.
 // It helps synchronize shelf state with profile preferences and app content.
 class ChromeShelfController
@@ -476,9 +474,6 @@ class ChromeShelfController
 
   // Responsible for bridging between the shelf and sync/prefs.
   std::unique_ptr<ChromeShelfPrefs> shelf_prefs_;
-
-  // Manages shelf item for browser-based apps and Lacros.
-  std::unique_ptr<BrowserAppShelfController> browser_app_shelf_controller_;
 
   // The list of running & un-pinned applications for different users on hidden
   // desktops.
