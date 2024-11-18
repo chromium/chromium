@@ -310,7 +310,8 @@ CSSToLengthConversionData::CSSToLengthConversionData(
     const ContainerSizes& container_sizes,
     const AnchorData& anchor_data,
     float zoom,
-    Flags& flags)
+    Flags& flags,
+    const Element* element)
     : CSSLengthResolver(
           ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())),
       writing_mode_(writing_mode),
@@ -319,7 +320,8 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
       anchor_data_(anchor_data),
-      flags_(&flags) {}
+      flags_(&flags),
+      element_(element) {}
 
 float CSSToLengthConversionData::EmFontSize(float zoom) const {
   SetFlag(Flag::kEm);
@@ -514,6 +516,10 @@ void CSSToLengthConversionData::ReferenceTreeScope() const {
 
 void CSSToLengthConversionData::ReferenceAnchor() const {
   SetFlag(Flag::kAnchorRelative);
+}
+
+void CSSToLengthConversionData::ReferenceSibling() const {
+  SetFlag(Flag::kSiblingRelative);
 }
 
 }  // namespace blink

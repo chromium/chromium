@@ -30,7 +30,7 @@ CSSCustomTransformFunctionInterpolationType::MaybeConvertValue(
 
   InterpolableTransformList* interpolable =
       InterpolableTransformList::ConvertCSSValue(
-          value, CSSToLengthConversionData(),
+          value, CSSToLengthConversionData(/*element=*/nullptr),
           TransformOperations::BoxSizeDependentMatrixBlending::kDisallow);
   CHECK_EQ(interpolable->operations().size(), 1u);
   return InterpolationValue(std::move(interpolable));

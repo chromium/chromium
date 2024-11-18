@@ -261,6 +261,11 @@ bool MatchedPropertiesCache::IsStyleCacheable(
     // the 'anchor' attribute on the element.
     return false;
   }
+  if (builder.HasSiblingFunctions()) {
+    // The result of sibling-index() and sibling-count() depends on the
+    // element's position in the DOM.
+    return false;
+  }
   // Avoiding cache for ::highlight styles, and the originating styles they are
   // associated with, because the style depends on the highlight names involved
   // and they're not cached.

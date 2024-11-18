@@ -3238,7 +3238,7 @@ const CSSValue& StyleBuilderConverter::ConvertRegisteredPropertyInitialValue(
   CSSToLengthConversionData conversion_data(
       WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
       container_sizes, anchor_data,
-      /* zoom */ 1.0f, ignored_flags);
+      /* zoom */ 1.0f, ignored_flags, /*element=*/nullptr);
 
   const CSSParserContext* parser_context =
       document.ElementSheet().Contents()->ParserContext();

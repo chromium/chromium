@@ -33,7 +33,7 @@ SVGPropertyBase* SVGIntegerInterpolationType::AppliedSVGValue(
   // guaranteed to be a double.
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double value = To<InterpolableNumber>(interpolable_value)
-                     .Value(CSSToLengthConversionData());
+                     .Value(CSSToLengthConversionData(/*element=*/nullptr));
   return MakeGarbageCollected<SVGInteger>(round(value));
 }
 

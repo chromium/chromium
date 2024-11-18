@@ -88,7 +88,7 @@ TEST(CSSGradientValueTest, RepeatingRadialGradientNan) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
       std::make_unique<DummyPageHolder>();
   Document& document = dummy_page_holder->GetDocument();
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
 
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kBackgroundImage,

@@ -70,8 +70,7 @@ class TestCSSParserObserver : public CSSParserObserver {
       unsigned start_offset,
       CSSAtRuleID id,
       const Vector<CSSPropertyID, 2>& invalid_properties) override {}
-  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {
-  }
+  void ObserveNestedDeclarations(wtf_size_t insert_rule_index) override {}
 
   bool IsAtTargetLevel() const {
     return target_nesting_level_ == kEverything ||
@@ -1112,8 +1111,9 @@ TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_EQ("testFamily", parsed->GetFontFamily()->CssText());
-  ASSERT_EQ(0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-                   ->ComputeInteger(CSSToLengthConversionData()));
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
+             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
   ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
   ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
 }
@@ -1133,8 +1133,9 @@ TEST(CSSParserImplTest, FontPaletteValuesMultipleFamiliesParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_EQ("testFamily1, testFamily2", parsed->GetFontFamily()->CssText());
-  ASSERT_EQ(0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-                   ->ComputeInteger(CSSToLengthConversionData()));
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
+             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 // Font-family descriptor inside @font-palette-values should not contain generic
@@ -1155,8 +1156,9 @@ TEST(CSSParserImplTest, FontPaletteValuesGenericFamiliesNotParsing) {
   ASSERT_TRUE(parsed);
   ASSERT_EQ("--myTestPalette", parsed->GetName());
   ASSERT_FALSE(parsed->GetFontFamily());
-  ASSERT_EQ(0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
-                   ->ComputeInteger(CSSToLengthConversionData()));
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())
+             ->ComputeInteger(CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST(CSSParserImplTest, FontFeatureValuesRuleParsing) {

@@ -160,7 +160,8 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
                                                 Length::ValueRange::kAll);
     } else if (const CSSMathFunctionValue* function =
                    DynamicTo<CSSMathFunctionValue>(value)) {
-      return function->ToCalcValue(CSSToLengthConversionData());
+      return function->ToCalcValue(
+          CSSToLengthConversionData(/*element=*/nullptr));
     } else {
       NOTREACHED();
     }

@@ -78,7 +78,7 @@ static ColorParseResult ParseColor(Color& parsed_color,
     static const TextLinkColors kDefaultTextLinkColors{};
     // TODO(40946458): Don't use default length resolver here!
     const ResolveColorValueContext context{
-        .length_resolver = CSSToLengthConversionData(),
+        .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
         .text_link_colors = kDefaultTextLinkColors,
         .used_color_scheme = color_scheme,
         .color_provider = color_provider,

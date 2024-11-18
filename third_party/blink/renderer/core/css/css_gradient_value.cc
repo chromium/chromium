@@ -157,7 +157,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
       style, &style, root_style,
       CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
       container_sizes, CSSToLengthConversionData::AnchorData(),
-      style.EffectiveZoom(), ignored_flags);
+      style.EffectiveZoom(), ignored_flags, /*element=*/nullptr);
 
   scoped_refptr<Gradient> gradient;
   switch (GetClassType()) {
@@ -420,7 +420,7 @@ static const CSSValue* GetComputedStopColor(const CSSValue& color,
   const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   // TODO(40946458): Don't use default length resolver here!
   const ResolveColorValueContext context{
-      .length_resolver = CSSToLengthConversionData(),
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors(),
       .used_color_scheme = color_scheme};
   const StyleColor style_stop_color = ResolveColorValue(color, context);
@@ -874,9 +874,10 @@ bool CSSGradientValue::KnownToBeOpaque(const Document& document,
                                        const ComputedStyle& style) const {
   for (auto& stop : stops_) {
     // TODO(40946458): Don't use default length resolver here!
-    if (!stop.IsHint() && !ResolveStopColor(CSSToLengthConversionData(),
-                                            *stop.color_, document, style)
-                               .IsOpaque()) {
+    if (!stop.IsHint() &&
+        !ResolveStopColor(CSSToLengthConversionData(/*element=*/nullptr),
+                          *stop.color_, document, style)
+             .IsOpaque()) {
       return false;
     }
   }
@@ -912,8 +913,9 @@ Vector<Color> CSSGradientValue::GetStopColors(
   for (const auto& stop : stops_) {
     if (!stop.IsHint()) {
       // TODO(40946458): Don't use default length resolver here!
-      stop_colors.push_back(ResolveStopColor(CSSToLengthConversionData(),
-                                             *stop.color_, document, style));
+      stop_colors.push_back(
+          ResolveStopColor(CSSToLengthConversionData(/*element=*/nullptr),
+                           *stop.color_, document, style));
     }
   }
   return stop_colors;
@@ -1896,7 +1898,8 @@ bool CSSConstantGradientValue::KnownToBeOpaque(
     const Document& document,
     const ComputedStyle& style) const {
   // TODO(40946458): Don't use default length resolver here!
-  return ResolveStopColor(CSSToLengthConversionData(), *color_, document, style)
+  return ResolveStopColor(CSSToLengthConversionData(/*element=*/nullptr),
+                          *color_, document, style)
       .IsOpaque();
 }
 

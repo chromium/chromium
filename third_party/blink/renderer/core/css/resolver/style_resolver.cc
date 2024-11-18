@@ -450,6 +450,9 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kRchRelative)) {
     UseCounter::Count(state.GetDocument(), WebFeature::kHasRchUnits);
   }
+  if (flags & static_cast<Flags>(Flag::kSiblingRelative)) {
+    builder.SetHasSiblingFunctions();
+  }
 }
 
 }  // namespace

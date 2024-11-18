@@ -113,7 +113,7 @@ InterpolationValue CSSDisplayInterpolationType::MaybeConvertNeutral(
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
       To<InterpolableNumber>(*underlying.interpolable_value)
-          .Value(CSSToLengthConversionData());
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   EDisplay underlying_display =
       To<CSSDisplayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Display(underlying_fraction);

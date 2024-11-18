@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/dom/nth_index_cache.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
@@ -2921,6 +2922,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
       // But for now just handle the simplest case.
       return operands[1];
     }
+
     case CSSMathOperator::kInvalid:
       NOTREACHED();
   }
@@ -3503,6 +3505,9 @@ class CSSMathExpressionNodeParser {
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
       case CSSValueID::kCalcSize:
         return RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled();
+      case CSSValueID::kSiblingCount:
+      case CSSValueID::kSiblingIndex:
+        return RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled();
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return false;
@@ -3752,6 +3757,20 @@ class CSSMathExpressionNodeParser {
                                                                calculation);
   }
 
+  CSSMathExpressionNode* ParseSiblingIndexOrCount(CSSValueID function_id,
+                                                  CSSParserTokenStream& stream,
+                                                  State state) {
+    if (function_id != CSSValueID::kSiblingCount &&
+        function_id != CSSValueID::kSiblingIndex) {
+      return nullptr;
+    }
+    if (!stream.AtEnd()) {
+      // These do not take any arguments.
+      return nullptr;
+    }
+    return MakeGarbageCollected<CSSMathExpressionSiblingFunction>(function_id);
+  }
+
   CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
                                            CSSParserTokenStream& stream,
                                            State state) {
@@ -3773,6 +3792,12 @@ class CSSMathExpressionNodeParser {
               ParseCalcSize(function_id, stream, state)) {
         context_.Count(WebFeature::kCSSCalcSizeFunction);
         return calc_size;
+      }
+    }
+    if (RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled()) {
+      if (CSSMathExpressionNode* sibling_function =
+              ParseSiblingIndexOrCount(function_id, stream, state)) {
+        return sibling_function;
       }
     }
 
@@ -3970,6 +3995,11 @@ class CSSMathExpressionNodeParser {
         DCHECK(RuntimeEnabledFeatures::CSSSignRelatedFunctionsEnabled());
         return CSSMathExpressionOperation::CreateSignRelatedFunction(
             std::move(nodes), function_id);
+
+      case CSSValueID::kSiblingIndex:
+      case CSSValueID::kSiblingCount:
+        // Handled above.
+        return nullptr;
 
       // TODO(crbug.com/1284199): Support other math functions.
       default:
@@ -4471,6 +4501,49 @@ CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
 
   // TODO(pjh0718): Do simplificiation for result above.
   return result;
+}
+
+String CSSMathExpressionSiblingFunction::CustomCSSText() const {
+  return function_id_ == CSSValueID::kSiblingIndex ? "sibling-index()"
+                                                   : "sibling-count()";
+}
+
+scoped_refptr<const CalculationExpressionNode>
+CSSMathExpressionSiblingFunction::ToCalculationExpression(
+    const CSSLengthResolver& length_resolver) const {
+  return base::MakeRefCounted<CalculationExpressionNumberNode>(
+      ComputeDouble(length_resolver));
+}
+
+bool CSSMathExpressionSiblingFunction::operator==(
+    const CSSMathExpressionNode& other) const {
+  return other.IsSiblingFunction() &&
+         function_id_ ==
+             To<CSSMathExpressionSiblingFunction>(other).function_id_;
+}
+
+double CSSMathExpressionSiblingFunction::ComputeDouble(
+    const CSSLengthResolver& length_resolver) const {
+  length_resolver.ReferenceSibling();
+  const Element* element = length_resolver.GetElement();
+  NthIndexCache* nth_index_cache = element->ownerDocument()->GetNthIndexCache();
+  // TODO(crbug.com/40282719): Use flat tree siblings?
+  if (function_id_ == CSSValueID::kSiblingIndex) {
+    return nth_index_cache->NthChildIndex(const_cast<Element&>(*element),
+                                          /*filter=*/nullptr,
+                                          /*selector_checker=*/nullptr,
+                                          /*context=*/nullptr);
+  } else {
+    return nth_index_cache->NthChildIndex(const_cast<Element&>(*element),
+                                          /*filter=*/nullptr,
+                                          /*selector_checker=*/nullptr,
+                                          /*context=*/nullptr) +
+           nth_index_cache->NthLastChildIndex(const_cast<Element&>(*element),
+                                              /*filter=*/nullptr,
+                                              /*selector_checker=*/nullptr,
+                                              /*context=*/nullptr) -
+           1;
+  }
 }
 
 }  // namespace blink

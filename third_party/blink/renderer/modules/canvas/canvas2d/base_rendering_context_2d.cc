@@ -463,7 +463,8 @@ void BaseRenderingContext2D::AddLayerFilterUserCount(
 class ScopedResetCtm {
  public:
   ScopedResetCtm(const CanvasRenderingContext2DState& state,
-                 cc::PaintCanvas& canvas) : canvas_(canvas) {
+                 cc::PaintCanvas& canvas)
+      : canvas_(canvas) {
     if (!state.GetTransform().IsIdentity()) {
       ctm_to_restore_ = canvas_->getLocalToDevice();
       canvas_->save();
@@ -973,7 +974,7 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
                : kDefaultTextLinkColors;
     // TODO(40946458): Don't use default length resolver here!
     const ResolveColorValueContext context{
-        .length_resolver = CSSToLengthConversionData(),
+        .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
         .text_link_colors = text_link_colors,
         .used_color_scheme = color_scheme_,
         .color_provider = GetColorProvider(),
@@ -2820,8 +2821,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
                                        .will_read_frequently;
   if (num_readbacks_performed_ == 2 && GetCanvasRenderingContextHost() &&
       GetCanvasRenderingContextHost()->RenderingContext()) {
-    if (will_read_frequently_value == CanvasContextCreationAttributesCore::
-                                          WillReadFrequently::kUndefined) {
+    if (will_read_frequently_value ==
+        CanvasContextCreationAttributesCore::WillReadFrequently::kUndefined) {
       if (auto* execution_context = GetTopExecutionContext()) {
         const String& message =
             "Canvas2D: Multiple readback operations using getImageData are "

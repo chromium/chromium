@@ -115,7 +115,7 @@ class AnimationEffectStackTest : public PageTestBase {
     // z-index is stored as a straight number value.
     EXPECT_TRUE(typed_value->GetInterpolableValue().IsNumber());
     return To<InterpolableNumber>(&typed_value->GetInterpolableValue())
-        ->Value(CSSToLengthConversionData());
+        ->Value(CSSToLengthConversionData(/*element=*/nullptr));
   }
 
   Persistent<DocumentTimeline> timeline;

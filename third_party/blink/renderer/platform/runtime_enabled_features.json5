@@ -1274,6 +1274,11 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
+      // sibling-index() and sibling-count()
+      name: "CSSSiblingFunctions",
+      status: "experimental",
+    },
+    {
       name: "CSSSignRelatedFunctions",
       status: "experimental",
     },

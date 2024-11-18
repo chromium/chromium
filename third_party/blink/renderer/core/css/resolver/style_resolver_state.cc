@@ -58,6 +58,7 @@ StyleResolverState::StyleResolverState(
     const StyleRequest& style_request)
     : element_context_(element),
       document_(&document),
+      css_to_length_conversion_data_(&element),
       parent_style_(style_request.parent_override),
       layout_parent_style_(style_request.layout_parent_override),
       old_style_(style_recalc_context ? style_recalc_context->old_style
@@ -158,7 +159,7 @@ void StyleResolverState::UpdateLengthConversionData() {
       CSSToLengthConversionData::AnchorData(
           anchor_evaluator_, StyleBuilder().PositionAnchor(),
           StyleBuilder().PositionAreaOffsets()),
-      StyleBuilder().EffectiveZoom(), length_conversion_flags_);
+      StyleBuilder().EffectiveZoom(), length_conversion_flags_, &GetElement());
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
 }
@@ -179,9 +180,10 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
   CSSToLengthConversionData::AnchorData anchor_data(
       anchor_evaluator_, StyleBuilder().PositionAnchor(),
       StyleBuilder().PositionAreaOffsets());
-  return CSSToLengthConversionData(
-      StyleBuilder().GetWritingMode(), font_sizes, line_height_size,
-      viewport_size, container_sizes, anchor_data, 1, length_conversion_flags_);
+  return CSSToLengthConversionData(StyleBuilder().GetWritingMode(), font_sizes,
+                                   line_height_size, viewport_size,
+                                   container_sizes, anchor_data, 1,
+                                   length_conversion_flags_, &GetElement());
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() {

@@ -330,7 +330,8 @@ Timing::Delay CSSToStyleMap::MapAnimationDelayStart(StyleResolverState& state,
 Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(const CSSValue& value) {
   // Note: using default length resolver here, as this function is only
   // called from the serialization code.
-  return MapAnimationTimingDelay(CSSToLengthConversionData(), value);
+  return MapAnimationTimingDelay(CSSToLengthConversionData(/*element=*/nullptr),
+                                 value);
 }
 
 Timing::Delay CSSToStyleMap::MapAnimationDelayEnd(StyleResolverState& state,

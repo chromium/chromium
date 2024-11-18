@@ -173,6 +173,9 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   // CSSLengthResolver override.
   void ReferenceTreeScope() const override {}
   void ReferenceAnchor() const override {}
+  void ReferenceSibling() const override {}
+
+  Element* GetElement() const override { NOTREACHED(); }
 
  protected:
   static double CalculateViewportWidth(LocalFrame*);

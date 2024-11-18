@@ -102,7 +102,7 @@ class CSSToLengthConversionDataTest : public PageTestBase {
             /* position_anchor */ nullptr,
             /* position_area_offsets */ std::nullopt),
         options.data_zoom.value_or(div->GetComputedStyle()->EffectiveZoom()),
-        options.flags ? *options.flags : ignored_flags_);
+        options.flags ? *options.flags : ignored_flags_, /*element=*/nullptr);
   }
 
   CSSToLengthConversionData ConversionData() {
@@ -249,7 +249,7 @@ TEST_F(CSSToLengthConversionDataTest, Unzoomed) {
 
 TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
   // No ComputedStyle associated.
-  CSSToLengthConversionData data;
+  CSSToLengthConversionData data(/*element=*/nullptr);
 
   // Don't crash:
   ConvertPx(data, "1cqw");
@@ -350,7 +350,7 @@ TEST_F(CSSToLengthConversionDataTest, ConversionWithoutPrimaryFont) {
 
   ASSERT_FALSE(font.PrimaryFont());
 
-  CSSToLengthConversionData data;
+  CSSToLengthConversionData data(/*element=*/nullptr);
   CSSToLengthConversionData::FontSizes font_sizes(
       /* em */ 16.0f, /* rem */ 16.0f, &font, /* font_zoom */ 1.0f);
   CSSToLengthConversionData::LineHeightSize line_height_size(
@@ -538,7 +538,7 @@ TEST_F(CSSToLengthConversionDataTest, ContainerUnitsWithContainerName) {
           nullptr,
           /* position_anchor */ nullptr,
           /* position_area_offsets */ std::nullopt),
-      child->GetComputedStyle()->EffectiveZoom(), flags);
+      child->GetComputedStyle()->EffectiveZoom(), flags, /*element=*/nullptr);
 
   ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
       AtomicString("root_container"), nullptr);

@@ -27,7 +27,8 @@ FontDescription FontStyleResolver::ComputeFont(
   CSSToLengthConversionData::Flags ignored_flags = 0;
   CSSToLengthConversionData conversion_data(
       WritingMode::kHorizontalTb, font_sizes, line_height_size, viewport_size,
-      container_sizes, anchor_data, 1, ignored_flags);
+      container_sizes, anchor_data, 1, ignored_flags,
+      /*element=*/nullptr);
 
   // CSSPropertyID::kFontSize
   if (property_set.HasProperty(CSSPropertyID::kFontSize)) {

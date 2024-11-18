@@ -138,8 +138,8 @@ std::optional<Color> TryResolveAtParseTime(const CSSValue& value) {
          color_mix_value->Percentage1()->IsNumericLiteralValue()) &&
         (!color_mix_value->Percentage2() ||
          color_mix_value->Percentage2()->IsNumericLiteralValue())) {
-      return color_mix_value->Mix(*color1, *color2,
-                                  CSSToLengthConversionData());
+      return color_mix_value->Mix(
+          *color1, *color2, CSSToLengthConversionData(/*element=*/nullptr));
     }
   }
   if (auto* relative_color_value =

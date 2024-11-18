@@ -114,7 +114,7 @@ InterpolationValue CSSOverlayInterpolationType::MaybeConvertNeutral(
   // TODO(crbug.com/325821290): Avoid InterpolableNumber here.
   double underlying_fraction =
       To<InterpolableNumber>(*underlying.interpolable_value)
-          .Value(CSSToLengthConversionData());
+          .Value(CSSToLengthConversionData(/*element=*/nullptr));
   EOverlay underlying_overlay =
       To<CSSOverlayNonInterpolableValue>(*underlying.non_interpolable_value)
           .Overlay(underlying_fraction);

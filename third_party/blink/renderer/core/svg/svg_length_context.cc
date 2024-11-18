@@ -58,7 +58,8 @@ SVGLengthConversionData::SVGLengthConversionData(const Element& context,
                                     context.ParentOrShadowHostElement()),
                                 CSSToLengthConversionData::AnchorData(),
                                 1.0f,
-                                ignored_flags_) {}
+                                ignored_flags_,
+                                &context) {}
 
 SVGLengthConversionData::SVGLengthConversionData(const LayoutObject& object)
     : SVGLengthConversionData(To<Element>(*object.GetNode()),
