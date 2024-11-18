@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] e.style['width'] = "calc((anchor-size(--foo width) + anchor-size(--bar height)) / 2)" should set the property value
-  assert_equals: serialization should be canonical expected "calc(0.5 * (anchor-size(--foo width) + anchor-size(--bar height)))" but got "calc((anchor-size(--foo width) + anchor-size(--bar height)) / 2)"
-Harness: the test ran to completion.
-

@@ -318830,6 +318830,10 @@
       "3528b565fccb1d32dff6fe732c9497446e5f525e",
       []
      ],
+     "anchor-size-parse-valid-expected.txt": [
+      "e5df409fdbb8a1b1279bd841a46cc1231e1fa0ee",
+      []
+     ],
      "parsing": {
       "position-visibility-computed.tentative-expected.txt": [
        "236fd0475a9a531b9215e5be8425e210b2a654c2",
@@ -404655,14 +404659,6 @@
      "fc6bc8634586ded123fed22ca840e5d1128f7302",
      []
     ],
-    "sanitizer-names.https-expected.txt": [
-     "2672dfb32c0e5ca219a9b84d9be1ebc798a70dd9",
-     []
-    ],
-    "sanitizer-unknown.https-expected.txt": [
-     "eaebe36a18ce6be96156365c9fa8ddb413404fe0",
-     []
-    ],
     "sethtml-tree-construction.dat": [
      "31c0cde233e4744f01d23942fd73f00cbe1730fd",
      []
@@ -463972,7 +463968,7 @@
        {}
       ]
      ],
-     "popover-implicit-anchor.tentative.html": [
+     "popover-implicit-anchor.html": [
       "b6bba4534c0ed30c314101c788d9ca414dff1102",
       [
        null,
@@ -467586,6 +467582,13 @@
        {}
       ]
      ],
+     "scope-declarations.html": [
+      "aaccab9794b341890261ee96b1c711f149d77caf",
+      [
+       null,
+       {}
+      ]
+     ],
      "scope-deep.html": [
       "0e88778202fc847e447e8f3838440b2c9babbefc",
       [
@@ -467626,7 +467629,7 @@
       ]
      ],
      "scope-implicit.html": [
-      "a1c6d1c62640236ba8fbddfa11933e4f4c374557",
+      "2fff1dd1d257ad3f8da8d4471c1a01b8a79c4fac",
       [
        null,
        {}
@@ -514056,6 +514059,13 @@
      ],
      "paste-in-list-with-inline-style.tentative.html": [
       "97710e805dd635f586cd2fafe6a443bd663122f4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "paste_text_with_text_transform.html": [
+      "17d83fee288737ddb570e7b4e8852ff14a89eec0",
       [
        null,
        {}
@@ -599002,6 +599012,15 @@
        {}
       ]
      ],
+     "aria-element-reflection-labelledby.html": [
+      "9846255100ba5ab854006e301e365ab4ca5c0a6b",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "aria-element-reflection.html": [
       "e04610171b5ae20d827d6370c2005c6366d99698",
       [
@@ -613670,7 +613689,7 @@
         {}
        ]
       ],
-      "imperative-invokers.tentative.html": [
+      "imperative-invokers.html": [
        "7cda696bfa8ee68a4f4684b6be453615e8f1d74f",
        [
         null,
@@ -660700,36 +660719,15 @@
       {}
      ]
     ],
-    "sanitizer-insecure-context.html": [
-     "4b185fd3a7443bc19fcd929abf60240f47666a1c",
+    "sanitizer-names.tenative.html": [
+     "8b70d723222cb537d51cd93564151e7bc0f7305e",
      [
       null,
       {}
      ]
     ],
-    "sanitizer-names.https.html": [
-     "78f1d605a19e02fac1e760f582d80a57e7ddb0db",
-     [
-      null,
-      {}
-     ]
-    ],
-    "sanitizer-query-config.https.html": [
-     "60cba2d618bbeeaf9cd48ab3e1da0f8c8202346a",
-     [
-      null,
-      {}
-     ]
-    ],
-    "sanitizer-secure-context.https.html": [
-     "0e04e04d169a40e8a4a82ce81bb3e29cd7de83a1",
-     [
-      null,
-      {}
-     ]
-    ],
-    "sanitizer-unknown.https.html": [
-     "7b9835cb6d07e22481f19ef6fa3892b7e370a3a5",
+    "sanitizer-unknown.tentative.html": [
+     "37bb8c832274c25e6d0eca8df859b2a915943e14",
      [
       null,
       {}
@@ -699115,7 +699113,7 @@
        ]
       ],
       "audiobuffersource-duration-loop.html": [
-       "abb8983cc0b1b1306faff44239050af91b655153",
+       "fa188b68eeec27a7f2f428f3bb441464bf276129",
        [
         null,
         {}
