@@ -96,13 +96,6 @@ bool StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return false;
   if (!data.ReadPriorityHint(&out->priority_hint))
     return false;
-  if (!data.ReadRoundedClipBounds(&out->rounded_clip_bounds))
-    return false;
-  if (!data.ReadBackgroundColor(&out->background_color))
-    return false;
-  if (!data.ReadClipRect(&out->clip_rect))
-    return false;
-
   return true;
 }
 

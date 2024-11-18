@@ -103,7 +103,6 @@ bool CanBind(const std::string& interface,
   }  // namespace wl
 
 // For convenience, keep aphabetical order in this list.
-DECLARE_WAYLAND_OBJECT_TRAITS(augmented_surface)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 DECLARE_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
@@ -114,7 +113,6 @@ DECLARE_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle)
 DECLARE_WAYLAND_OBJECT_TRAITS(org_kde_kwin_idle_timeout)
 DECLARE_WAYLAND_OBJECT_TRAITS(overlay_prioritizer)
 DECLARE_WAYLAND_OBJECT_TRAITS(overlay_prioritized_surface)
-DECLARE_WAYLAND_OBJECT_TRAITS(surface_augmenter)
 DECLARE_WAYLAND_OBJECT_TRAITS(wl_buffer)
 DECLARE_WAYLAND_OBJECT_TRAITS(wl_callback)
 DECLARE_WAYLAND_OBJECT_TRAITS(wl_compositor)

@@ -110,8 +110,6 @@ namespace {
 
 constexpr float kDefaultCursorScale = 1.f;
 
-constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
-
 struct PopupPosition {
   gfx::Rect anchor_rect;
   gfx::Size size;
@@ -451,7 +449,6 @@ class WaylandWindowTest : public WaylandTest {
                                     /*supports_viewporter=*/true,
                                     /*supports_acquire_fence=*/false,
                                     /*supports_overlays=*/true,
-                                    kAugmentedSurfaceNotSupportedVersion,
                                     /*supports_single_pixel_buffer=*/true);
 
     const uint32_t buffer_id = ++buffer_id_gen_;
@@ -3583,7 +3580,6 @@ TEST_P(WaylandWindowTest, ReattachesBackgroundOnShow) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.
@@ -4109,7 +4105,7 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
         });
     wayland_subsurface->ConfigureAndShowSurface(
         subsurface_bounds, gfx::RectF(0, 0, 640, 480) /*parent_bounds_px*/,
-        std::nullopt /*clip_rect_px*/, 1.f /*buffer_scale*/, nullptr, nullptr);
+        1.f /*buffer_scale*/, nullptr, nullptr);
     connection_->Flush();
 
     PostToServerAndWait(
@@ -4157,8 +4153,6 @@ class WaylandSubsurfaceTest : public WaylandWindowTest {
 // Tests integer and non integer size/position support. Ozone/Wayland is
 // expected to ceil the bounds.
 TEST_P(WaylandSubsurfaceTest, OneWaylandSubsurfaceBoundsCeil) {
-  ASSERT_FALSE(connection_->surface_augmenter());
-
   constexpr std::array<std::array<gfx::RectF, 2>, 4> test_data = {
       {{gfx::RectF({15.12, 15.912}, {10.351, 10.742}),
         gfx::RectF({16, 16}, {11, 11})},
@@ -4180,8 +4174,8 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
   auto subsurfaces = RequestWaylandSubsurface(3);
   for (auto* subsurface : subsurfaces) {
     subsurface->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
-                                        gfx::RectF(0.f, 0.f, 800.f, 600.f),
-                                        std::nullopt, 1.f, nullptr, nullptr);
+                                        gfx::RectF(0.f, 0.f, 800.f, 600.f), 1.f,
+                                        nullptr, nullptr);
   }
   connection_->Flush();
 
@@ -4208,15 +4202,15 @@ TEST_P(WaylandSubsurfaceTest, NoDuplicateSubsurfaceRequests) {
       });
 
   // Stack subsurfaces[0] to be from bottom to top, and change its position.
-  subsurfaces[0]->ConfigureAndShowSurface(
-      gfx::RectF(0.f, 0.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, 1.f, subsurfaces[2], nullptr);
-  subsurfaces[1]->ConfigureAndShowSurface(
-      gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, 1.f, nullptr, subsurfaces[2]);
-  subsurfaces[2]->ConfigureAndShowSurface(
-      gfx::RectF(1.f, 2.f, 10.f, 20.f), gfx::RectF(0.f, 0.f, 800.f, 600.f),
-      std::nullopt, 1.f, nullptr, subsurfaces[0]);
+  subsurfaces[0]->ConfigureAndShowSurface(gfx::RectF(0.f, 0.f, 10.f, 20.f),
+                                          gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                          1.f, subsurfaces[2], nullptr);
+  subsurfaces[1]->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
+                                          gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                          1.f, nullptr, subsurfaces[2]);
+  subsurfaces[2]->ConfigureAndShowSurface(gfx::RectF(1.f, 2.f, 10.f, 20.f),
+                                          gfx::RectF(0.f, 0.f, 800.f, 600.f),
+                                          1.f, nullptr, subsurfaces[0]);
   connection_->Flush();
 
   VerifyAndClearExpectations();
@@ -4231,7 +4225,6 @@ TEST_P(WaylandWindowTest, NoDuplicateViewporterRequests) {
                                   /*supports_viewporter=*/true,
                                   /*supports_acquire_fence=*/false,
                                   /*supports_overlays=*/true,
-                                  kAugmentedSurfaceNotSupportedVersion,
                                   /*supports_single_pixel_buffer=*/true);
 
   // Setup wl_buffers.

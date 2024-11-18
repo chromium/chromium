@@ -21,7 +21,6 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/swap_result.h"
-#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -342,10 +341,8 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
         }
       }
     } else {
-      // TODO(crbug.com/40273618): Remove clip_rect when
-      // augmented_surface_set_clip_rect become supported widely enough.
       bool needs_commit = subsurface->ConfigureAndShowSurface(
-          config.bounds_rect, root_config.bounds_rect, config.clip_rect,
+          config.bounds_rect, root_config.bounds_rect,
           root_config.surface_scale_factor, nullptr, reference_above);
       auto result = ApplySurfaceConfigure(frame.get(), surface, config, true);
       // A fatal error happened. Must stop the playback and terminate the gpu
@@ -439,13 +436,11 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   surface->set_opacity(config.opacity);
   surface->set_blending(config.enable_blend);
   surface->set_overlay_priority(config.priority_hint);
-  surface->set_background_color(config.background_color);
   surface->set_contains_video(
       config.priority_hint == gfx::OverlayPriorityHint::kHardwareProtection ||
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   surface->set_color_space(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
-  surface->set_frame_trace_id(frame->trace_id);
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend
@@ -464,14 +459,13 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   // If we don't attach a released buffer, graphics freeze will occur.
   DCHECK(will_attach || !buffer_handle->released(surface));
 
-  // `damage_region`, `clip_rect` and `rounded_clip_bounds` are specified in
-  // the root surface coordinates space, the same as `bounds_rect`. To get
-  // these rect values in local surface space we need to offset the origin by
-  // the root surface's position.
-  // Note: The damage and clip rect may be enlarged if bounds_rect is sub-pixel
-  // positioned because `damage_region` and `clip_rect` is a Rect, and
-  // `bounds_rect` is a RectF. `rounded_clip_bounds` is RRectF so no need for
-  // conversion.
+  // `damage_region` is specified in the root surface coordinates space, the
+  // same as `bounds_rect`. To get these rect values in local surface space we
+  // need to offset the origin by the root surface's position.
+  //
+  // Note: The damage may be enlarged if bounds_rect is sub-pixel positioned
+  // because `damage_region` is a Rect, and `bounds_rect` is a RectF.
+  //
   // Note: There is no rotation nor scale of the coordinates compared to the
   // root window coordinates, and also, we assume that the surface is a direct
   // children of the root surface, so we can adjust the position by
@@ -480,28 +474,6 @@ std::optional<bool> WaylandFrameManager::ApplySurfaceConfigure(
   surface_damage -= config.bounds_rect.OffsetFromOrigin();
   surface->UpdateBufferDamageRegion(
       gfx::ToEnclosingRectIgnoringError(surface_damage));
-  if (config.rounded_clip_bounds) {
-    // The deprecated implementation uses root surface coordinates, so do not
-    // offset if the local coordinates rounded corners is not supported.
-    auto rounded_corners_offset =
-        (connection_->surface_augmenter() &&
-         connection_->surface_augmenter()
-             ->NeedsRoundedClipBoundsInLocalSurfaceCoordinates())
-            ? config.bounds_rect.OffsetFromOrigin()
-            : gfx::Vector2d();
-    surface->set_rounded_clip_bounds(*config.rounded_clip_bounds -
-                                     rounded_corners_offset);
-  } else {
-    surface->set_rounded_clip_bounds(gfx::RRectF());
-  }
-  if (config.clip_rect) {
-    gfx::RectF clip_rect = gfx::RectF(*config.clip_rect);
-    clip_rect -= config.bounds_rect.OffsetFromOrigin();
-    surface->set_clip_rect(clip_rect);
-  } else {
-    // Reset clip rect value when `config.clip_rect` is not set.
-    surface->set_clip_rect(std::nullopt);
-  }
 
   if (!config.access_fence_handle.is_null())
     surface->set_acquire_fence(std::move(config.access_fence_handle));

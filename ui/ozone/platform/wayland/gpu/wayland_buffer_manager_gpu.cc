@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 
-#include <surface-augmenter-client-protocol.h>
-
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -78,7 +76,6 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_viewporter,
     bool supports_acquire_fence,
     bool supports_overlays,
-    uint32_t supported_surface_augmentor_version,
     bool supports_single_pixel_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
@@ -92,17 +89,10 @@ void WaylandBufferManagerGpu::Initialize(
   supports_dmabuf_ = supports_dma_buf;
   supports_overlays_ = supports_overlays;
 
-  supports_non_backed_solid_color_buffers_ =
-      supported_surface_augmentor_version >=
-      SURFACE_AUGMENTER_CREATE_SOLID_COLOR_BUFFER_SINCE_VERSION;
-  // TODO(crbug.com/375523817): remove this.
+  // TODO(crbug.com/375523817): remove these.
+  supports_non_backed_solid_color_buffers_ = false;
   supports_subpixel_accurate_position_ = false;
-  supports_surface_background_color_ =
-      supported_surface_augmentor_version >=
-      AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION;
-  // TODO(crbug.com/375523817): remove this.
   supports_clip_rect_ = false;
-  // TODO(crbug.com/375523817): remove this.
   supports_affine_transform_ = false;
 
   // HitTestMask fix landed in https://crrev.com/c/5252908. This is required to
@@ -258,25 +248,6 @@ void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
   base::OnceClosure task = base::BindOnce(
       &WaylandBufferManagerGpu::CreateShmBasedBufferTask,
       base::Unretained(this), std::move(shm_fd), length, size, buffer_id);
-  RunOrQueueTask(std::move(task));
-}
-
-void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor4f color,
-                                                     const gfx::Size& size,
-                                                     uint32_t buf_id) {
-  DCHECK(gpu_thread_runner_);
-  if (!gpu_thread_runner_->BelongsToCurrentThread()) {
-    // Do the mojo call on the GpuMainThread.
-    gpu_thread_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&WaylandBufferManagerGpu::CreateSolidColorBuffer,
-                       base::Unretained(this), color, size, buf_id));
-    return;
-  }
-
-  base::OnceClosure task =
-      base::BindOnce(&WaylandBufferManagerGpu::CreateSolidColorBufferTask,
-                     base::Unretained(this), color, size, buf_id);
   RunOrQueueTask(std::move(task));
 }
 
@@ -552,15 +523,6 @@ void WaylandBufferManagerGpu::CreateShmBasedBufferTask(base::ScopedFD shm_fd,
 
   remote_host_->CreateShmBasedBuffer(mojo::PlatformHandle(std::move(shm_fd)),
                                      length, size, buffer_id);
-}
-
-void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor4f color,
-                                                         const gfx::Size& size,
-                                                         uint32_t buf_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-  DCHECK(remote_host_);
-
-  remote_host_->CreateSolidColorBuffer(size, color, buf_id);
 }
 
 void WaylandBufferManagerGpu::CreateSinglePixelBufferTask(SkColor4f color,

@@ -46,7 +46,6 @@ namespace ui {
 
 struct InputDevice;
 class OrgKdeKwinIdle;
-class SurfaceAugmenter;
 struct KeyboardDevice;
 struct TouchscreenDevice;
 class WaylandBufferFactory;
@@ -274,10 +273,6 @@ class WaylandConnection {
     return overlay_prioritizer_.get();
   }
 
-  SurfaceAugmenter* surface_augmenter() const {
-    return surface_augmenter_.get();
-  }
-
   SinglePixelBuffer* single_pixel_buffer() const {
     return single_pixel_buffer_.get();
   }
@@ -369,7 +364,6 @@ class WaylandConnection {
   friend class OrgKdeKwinIdle;
   friend class OverlayPrioritizer;
   friend class SinglePixelBuffer;
-  friend class SurfaceAugmenter;
   friend class ToplevelIconManager;
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
@@ -512,7 +506,6 @@ class WaylandConnection {
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;
   std::unique_ptr<ZwpIdleInhibitManager> zwp_idle_inhibit_manager_;
   std::unique_ptr<OverlayPrioritizer> overlay_prioritizer_;
-  std::unique_ptr<SurfaceAugmenter> surface_augmenter_;
   std::unique_ptr<SinglePixelBuffer> single_pixel_buffer_;
 
   // Clipboard-related objects. |clipboard_| must be declared after all

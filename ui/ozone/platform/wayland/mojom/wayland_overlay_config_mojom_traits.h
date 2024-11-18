@@ -93,21 +93,6 @@ struct StructTraits<wl::mojom::WaylandOverlayConfigDataView,
     return input.priority_hint;
   }
 
-  static const std::optional<gfx::RRectF>& rounded_clip_bounds(
-      const wl::WaylandOverlayConfig& input) {
-    return input.rounded_clip_bounds;
-  }
-
-  static const std::optional<SkColor4f>& background_color(
-      const wl::WaylandOverlayConfig& input) {
-    return input.background_color;
-  }
-
-  static const std::optional<gfx::Rect>& clip_rect(
-      const wl::WaylandOverlayConfig& input) {
-    return input.clip_rect;
-  }
-
   static bool Read(wl::mojom::WaylandOverlayConfigDataView data,
                    wl::WaylandOverlayConfig* out);
 };

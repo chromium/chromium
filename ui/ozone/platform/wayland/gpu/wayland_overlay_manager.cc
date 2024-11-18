@@ -99,16 +99,8 @@ bool WaylandOverlayManager::CanHandleCandidate(
     return false;
   }
 
-  if (candidate.background_color.has_value() &&
-      !manager_gpu_->supports_surface_background_color()) {
-    return false;
-  }
-
-  // If clipping isn't supported, reject candidates with a clip rect, unless
-  // that clip wouldn't have any effect.
-  if (!manager_gpu_->supports_clip_rect() && candidate.clip_rect &&
-      !candidate.clip_rect->Contains(
-          gfx::ToNearestRect(candidate.display_rect))) {
+  // Wayland doesn't support clip_rect, background_color.
+  if (candidate.clip_rect || candidate.background_color.has_value()) {
     return false;
   }
 

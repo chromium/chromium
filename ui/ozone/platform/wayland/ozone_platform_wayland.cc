@@ -39,7 +39,6 @@
 #include "ui/ozone/platform/wayland/gpu/wayland_overlay_manager.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_factory.h"
 #include "ui/ozone/platform/wayland/host/drm_syncobj_ioctl_wrapper.h"
-#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -402,10 +401,8 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_overlays =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
-      properties.supports_non_backed_solid_color_buffers =
-          connection_->ShouldUseOverlayDelegation() &&
-          connection_->buffer_manager_host()
-              ->SupportsNonBackedSolidColorBuffers();
+      // TODO(crbug.com/375523817): remove this.
+      properties.supports_non_backed_solid_color_buffers = false;
       properties.supports_single_pixel_buffer =
           ui::IsWaylandOverlayDelegationEnabled() &&
           connection_->buffer_manager_host()->SupportsSinglePixelBuffer();
@@ -416,12 +413,7 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.needs_background_image =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
-      properties.supports_subwindows_as_accelerated_widgets =
-          connection_->ShouldUseOverlayDelegation()
-              ? connection_->surface_augmenter() &&
-                    connection_->surface_augmenter()
-                        ->SupportsCompositingOnlySurface()
-              : true;
+      properties.supports_subwindows_as_accelerated_widgets = true;
       properties.supports_per_window_scaling =
           (connection_->UsePerSurfaceScaling() &&
            override_supports_per_window_scaling_for_test ==
@@ -438,9 +430,8 @@ class OzonePlatformWayland : public OzonePlatform,
       DCHECK(has_initialized_gpu());
       // These properties are set when the GetPlatformRuntimeProperties is
       // called on the gpu process side.
-      properties.supports_non_backed_solid_color_buffers =
-          buffer_manager_->supports_overlays() &&
-          buffer_manager_->supports_non_backed_solid_color_buffers();
+      // TODO(crbug.com/375523817): remove this.
+      properties.supports_non_backed_solid_color_buffers = false;
       properties.supports_single_pixel_buffer =
           ui::IsWaylandOverlayDelegationEnabled() &&
           buffer_manager_->supports_single_pixel_buffer();
@@ -450,7 +441,6 @@ class OzonePlatformWayland : public OzonePlatform,
           buffer_manager_->supports_viewporter();
       properties.supports_native_pixmaps =
           surface_factory_->SupportsNativePixmaps();
-      properties.supports_clip_rect = buffer_manager_->supports_clip_rect();
       properties.supports_affine_transform =
           buffer_manager_->supports_affine_transform();
       properties.supports_out_of_window_clip_rect =

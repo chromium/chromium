@@ -39,8 +39,6 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   //   |bounds_px|: The pixel bounds of this subsurface content in
   //     display::Display coordinates used by chrome.
   //   |parent_bounds_px|: Same as |bounds_px| but for the parent surface.
-  //   |clip_rect_px|: The pixel bounds of this subsurface's clip rect in
-  //     display::Display coordinates. Pass nullopt to unset the clip rect.
   //   |buffer_scale|: the scale factor of the next attached buffer.
   //   |reference_below| & |reference_above|: this subsurface is taken from the
   //     subsurface stack and inserted back to be immediately below/above the
@@ -49,7 +47,6 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   bool ConfigureAndShowSurface(
       const gfx::RectF& bounds_px,
       const gfx::RectF& parent_bounds_px,
-      const std::optional<gfx::Rect>& clip_rect_px,
       float buffer_scale,
       WaylandSubsurface* reference_below,
       WaylandSubsurface* reference_above);

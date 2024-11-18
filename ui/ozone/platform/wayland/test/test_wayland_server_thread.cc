@@ -241,13 +241,6 @@ MockWpPresentation* TestWaylandServerThread::EnsureAndGetWpPresentation() {
   return nullptr;
 }
 
-TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (surface_augmenter_.Initialize(display_.get()))
-    return &surface_augmenter_;
-  return nullptr;
-}
-
 void TestWaylandServerThread::OnClientDestroyed(wl_client* client) {
   if (!client_)
     return;

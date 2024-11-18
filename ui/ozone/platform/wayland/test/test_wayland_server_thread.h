@@ -33,7 +33,6 @@
 #include "ui/ozone/platform/wayland/test/test_overlay_prioritizer.h"
 #include "ui/ozone/platform/wayland/test/test_seat.h"
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
-#include "ui/ozone/platform/wayland/test/test_surface_augmenter.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_wp_linux_drm_syncobj.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
@@ -121,8 +120,6 @@ class TestWaylandServerThread : public base::Thread,
   // Returns WpPresentation. If it hasn't been initialized yet, initializes that
   // first and then returns.
   MockWpPresentation* EnsureAndGetWpPresentation();
-  // Initializes and returns SurfaceAugmenter.
-  TestSurfaceAugmenter* EnsureSurfaceAugmenter();
 
   template <typename T>
   T* GetObject(uint32_t id) {
@@ -235,7 +232,6 @@ class TestWaylandServerThread : public base::Thread,
   TestDataDeviceManager data_device_manager_;
   TestOutput output_;
   TestOverlayPrioritizer overlay_prioritizer_;
-  TestSurfaceAugmenter surface_augmenter_;
   TestSeat seat_;
   TestZXdgOutputManager zxdg_output_manager_;
   MockXdgShell xdg_shell_;

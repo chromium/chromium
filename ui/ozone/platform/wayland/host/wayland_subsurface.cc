@@ -4,15 +4,12 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 
-#include <surface-augmenter-client-protocol.h>
-
 #include <cstdint>
 
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
-#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -120,7 +117,6 @@ void WaylandSubsurface::CreateSubsurface() {
 bool WaylandSubsurface::ConfigureAndShowSurface(
     const gfx::RectF& bounds_px,
     const gfx::RectF& parent_bounds_px,
-    const std::optional<gfx::Rect>& clip_rect_px,
     float buffer_scale,
     WaylandSubsurface* new_below,
     WaylandSubsurface* new_above) {

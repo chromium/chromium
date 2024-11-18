@@ -197,6 +197,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
 
     // Wayland only: determines whether clip rects can be delegated via the
     // wayland protocol when no quad is out of window.
+    // TODO(crbug.com/375523817): remove this.
     bool supports_clip_rect = false;
 
     // Wayland only: determines whether non axis-aligned 2d transforms can be

@@ -97,9 +97,6 @@ class WaylandTestBase {
   void ActivateSurface(uint32_t surface_id,
                        std::optional<uint32_t> serial = std::nullopt);
 
-  // Initializes SurfaceAugmenter in |server_|.
-  void InitializeSurfaceAugmenter();
-
   // A helper method that sets up the XKB configuration for tests that require
   // it.
   // Does nothing if XkbCommon is not used.

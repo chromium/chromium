@@ -185,12 +185,6 @@ void WaylandTestBase::ActivateSurface(uint32_t surface_id,
   SendConfigureEvent(surface_id, {0, 0}, state, serial);
 }
 
-void WaylandTestBase::InitializeSurfaceAugmenter() {
-  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
-    server->EnsureSurfaceAugmenter();
-  });
-}
-
 void WaylandTestBase::MaybeSetUpXkb() {
 #if BUILDFLAG(USE_XKBCOMMON)
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

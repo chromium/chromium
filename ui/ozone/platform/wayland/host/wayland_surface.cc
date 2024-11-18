@@ -11,7 +11,6 @@
 #include <linux-drm-syncobj-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
-#include <surface-augmenter-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
 #include <memory>
@@ -36,7 +35,6 @@
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
 #include "ui/ozone/platform/wayland/host/overlay_prioritizer.h"
-#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -198,22 +196,6 @@ bool WaylandSurface::Initialize() {
     if (!log_once) {
       log_once = true;
       LOG(WARNING) << "Server doesn't support overlay_prioritizer.";
-    }
-  }
-
-  auto* surface_augmenter = connection_->surface_augmenter();
-  if (surface_augmenter && root_window() &&
-      root_window()->root_surface() != this) {
-    augmented_surface_ = surface_augmenter->CreateAugmentedSurface(surface());
-    if (!augmented_surface_) {
-      LOG(ERROR) << "Failed to create augmented_surface.";
-      return false;
-    }
-  } else {
-    static bool log_once = false;
-    if (!log_once) {
-      log_once = true;
-      LOG(WARNING) << "Server doesn't support surface_augmenter.";
     }
   }
 
@@ -691,85 +673,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     needs_commit = true;
   }
 
-  if (pending_state_.background_color != state_.background_color) {
-    DCHECK(get_augmented_surface());
-    if (augmented_surface_get_version(get_augmented_surface()) >=
-        static_cast<uint32_t>(
-            AUGMENTED_SURFACE_SET_BACKGROUND_COLOR_SINCE_VERSION)) {
-      wl_array color_data;
-      wl_array_init(&color_data);
-      if (pending_state_.background_color.has_value())
-        wl::SkColorToWlArray(pending_state_.background_color.value(),
-                             color_data);
-
-      augmented_surface_set_background_color(get_augmented_surface(),
-                                             &color_data);
-      needs_commit = true;
-
-      wl_array_release(&color_data);
-    }
-  }
-
-  if (pending_state_.rounded_clip_bounds != state_.rounded_clip_bounds) {
-    DCHECK(get_augmented_surface());
-    gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
-    rounded_clip_bounds.Scale(1.f / GetWaylandScale(pending_state_));
-
-    if (augmented_surface_get_version(get_augmented_surface()) >=
-        AUGMENTED_SURFACE_SET_ROUNDED_CORNERS_CLIP_BOUNDS_SINCE_VERSION) {
-      augmented_surface_set_rounded_corners_clip_bounds(
-          get_augmented_surface(),
-          wl_fixed_from_double(rounded_clip_bounds.rect().x()),
-          wl_fixed_from_double(rounded_clip_bounds.rect().y()),
-          wl_fixed_from_double(rounded_clip_bounds.rect().width()),
-          wl_fixed_from_double(rounded_clip_bounds.rect().height()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kUpperLeft)
-                  .x()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kUpperRight)
-                  .x()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kLowerRight)
-                  .x()),
-          wl_fixed_from_double(
-              rounded_clip_bounds
-                  .GetCornerRadii(gfx::RRectF::Corner::kLowerLeft)
-                  .x()));
-      needs_commit = true;
-    } else if (augmented_surface_get_version(get_augmented_surface()) >=
-               AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
-      // For debugging purposes, stdout uses of the old incarnation of this API.
-      // In the future, this API will get a clean up pass.
-      LOG(WARNING) << "The 'augmented_surface::set_rounded_clip_bounds' "
-                      "request has been deprecated in favor of "
-                      "augmented_surface::set_rounded_corners_clip_bounds.";
-    }
-  }
-
-  if (pending_state_.clip_rect != state_.clip_rect) {
-    DCHECK(get_augmented_surface());
-    if (connection_->surface_augmenter()
-            ->SupportsClipRectOnAugmentedSurface()) {
-      std::optional<gfx::RectF> clip_rect = pending_state_.clip_rect;
-      if (clip_rect) {
-        clip_rect->Scale(1.f / GetWaylandScale(pending_state_));
-        augmented_surface_set_clip_rect(
-            get_augmented_surface(), wl_fixed_from_double(clip_rect->x()),
-            wl_fixed_from_double(clip_rect->y()),
-            wl_fixed_from_double(clip_rect->width()),
-            wl_fixed_from_double(clip_rect->height()));
-      } else {
-        augmented_surface_set_clip_rect(get_augmented_surface(), kMinusOne,
-                                        kMinusOne, kMinusOne, kMinusOne);
-      }
-      needs_commit = true;
-    }
-  }
-
   if (content_type_ &&
       (pending_state_.contains_video != state_.contains_video)) {
     wp_content_type_v1_set_content_type(content_type_.get(),
@@ -938,23 +841,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     memcpy(dst_set_, dst_to_set, 2 * sizeof(*dst_to_set));
   }
 
-  if (pending_state_.frame_trace_id >= 0) {
-    bool is_frame_tracing_enabled;
-    TRACE_EVENT_CATEGORY_GROUP_ENABLED("viz,benchmark,graphics.pipeline",
-                                       &is_frame_tracing_enabled);
-    if (is_frame_tracing_enabled) {
-      auto* augmented_surface = get_augmented_surface();
-      if (augmented_surface &&
-          augmented_surface_get_version(augmented_surface) >=
-              AUGMENTED_SURFACE_SET_FRAME_TRACE_ID_SINCE_VERSION) {
-        augmented_surface_set_frame_trace_id(
-            augmented_surface, pending_state_.frame_trace_id >> 32,
-            pending_state_.frame_trace_id & 0xffffffff);
-      }
-    }
-    pending_state_.frame_trace_id = -1;
-  }
-
   DCHECK_LE(pending_state_.damage_px.size(), 1u);
   if (pending_state_.damage_px.empty() ||
       pending_state_.damage_px.back().IsEmpty()) {
@@ -988,14 +874,6 @@ void WaylandSurface::ForceImmediateStateApplication() {
   apply_state_immediately_ = true;
 }
 
-void WaylandSurface::EnableTrustedDamageIfPossible() {
-  if (get_augmented_surface() &&
-      augmented_surface_get_version(get_augmented_surface()) >=
-          AUGMENTED_SURFACE_SET_TRUSTED_DAMAGE_SINCE_VERSION) {
-    augmented_surface_set_trusted_damage(get_augmented_surface(), true);
-  }
-}
-
 void WaylandSurface::ExplicitRelease(
     zwp_linux_buffer_release_v1* linux_buffer_release,
     base::ScopedFD fence) {
@@ -1026,10 +904,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   viewport_px = other.viewport_px;
   opacity = other.opacity;
   use_blending = other.use_blending;
-  rounded_clip_bounds = other.rounded_clip_bounds;
   priority_hint = other.priority_hint;
-  background_color = other.background_color;
-  clip_rect = other.clip_rect;
   contains_video = other.contains_video;
   return *this;
 }

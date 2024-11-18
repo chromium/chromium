@@ -35,8 +35,6 @@ namespace {
 // and remove the rest.
 static constexpr size_t kMaxSolidColorBuffers = 12;
 
-static constexpr gfx::Size kSolidColorBufferSize{4, 4};
-
 void WaitForGpuFences(std::vector<std::unique_ptr<gfx::GpuFence>> fences) {
   for (auto& fence : fences)
     fence->Wait();
@@ -68,13 +66,9 @@ GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
     // startup.
     next_buffer_id = buffer_manager->AllocateBufferID();
     // Create wl_buffer on the browser side.
-    if (buffer_manager->supports_non_backed_solid_color_buffers()) {
-      buffer_manager->CreateSolidColorBuffer(color, kSolidColorBufferSize,
-                                             next_buffer_id);
-    } else {
-      CHECK(buffer_manager->supports_single_pixel_buffer());
-      buffer_manager->CreateSinglePixelBuffer(color, next_buffer_id);
-    }
+    CHECK(buffer_manager->supports_single_pixel_buffer());
+    buffer_manager->CreateSinglePixelBuffer(color, next_buffer_id);
+
     // Allocate a backing structure that will be used to figure out if such
     // buffer has already existed.
     inflight_solid_color_buffers_.emplace_back(

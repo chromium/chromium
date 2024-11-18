@@ -79,16 +79,6 @@ struct WaylandOverlayConfig {
 
   // Specifies the color space data of the wayland config.
   std::optional<gfx::ColorSpace> color_space;
-
-  // Specifies rounded clip bounds of the overlay if delegated composition is
-  // supported and enabled.
-  std::optional<gfx::RRectF> rounded_clip_bounds;
-
-  // Optional: background color of this overlay plane.
-  std::optional<SkColor4f> background_color;
-
-  // Optional: clip rect for this overlay.
-  std::optional<gfx::Rect> clip_rect;
 };
 
 }  // namespace wl
