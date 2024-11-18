@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/services/cros_safety/cros_safety_service.h"
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/memory/singleton.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "cloud_safety_session.h"
@@ -36,10 +39,65 @@ void CrosSafetyService::Request(
       std::move(receiver)));
 }
 
+void CrosSafetyService::GetArcSafetySessionComplete(
+    CreateOnDeviceSafetySessionCallback callback,
+    arc::mojom::GetArcSafetySessionResult result) {
+  switch (result) {
+    case arc::mojom::GetArcSafetySessionResult::kOk:
+      std::move(callback).Run(
+          cros_safety::mojom::GetOnDeviceSafetySessionResult::kOk);
+      break;
+    case arc::mojom::GetArcSafetySessionResult::kSafetyServiceNotFound:
+      std::move(callback).Run(
+          cros_safety::mojom::GetOnDeviceSafetySessionResult::
+              kHadesNotAvailable);
+      break;
+    case arc::mojom::GetArcSafetySessionResult::kBindSafetyServiceError:
+      std::move(callback).Run(
+          cros_safety::mojom::GetOnDeviceSafetySessionResult::kHadesNotReady);
+      break;
+    default:
+      LOG(ERROR) << "Unknown GetArcSafetySessionResult: " << result;
+      std::move(callback).Run(
+          cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+  }
+}
+
 void CrosSafetyService::CreateOnDeviceSafetySession(
     mojo::PendingReceiver<cros_safety::mojom::OnDeviceSafetySession> session,
     CreateOnDeviceSafetySessionCallback callback) {
-  NOTIMPLEMENTED();
+  // This function should only be called during the primary user's session.
+  CHECK(user_manager::UserManager::Get()->IsPrimaryUser(
+      user_manager::UserManager::Get()->GetActiveUser()));
+  if (!arc::IsArcAvailable() || !arc::ArcServiceManager::Get()) {
+    // TODO(crbug.com/379073760) Separate kArcDisabledByUser cases so we can
+    // inform the user to enable arc.
+    std::move(callback).Run(
+        cros_safety::mojom::GetOnDeviceSafetySessionResult::kArcNotAllowed);
+    return;
+  }
+
+  if (!arc::ArcServiceManager::Get()
+           ->arc_bridge_service()
+           ->on_device_safety()
+           ->IsConnected()) {
+    std::move(callback).Run(
+        cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+  }
+
+  auto* on_device_safety_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc::ArcServiceManager::Get()->arc_bridge_service()->on_device_safety(),
+      GetArcSafetySession);
+
+  if (!on_device_safety_instance) {
+    std::move(callback).Run(
+        cros_safety::mojom::GetOnDeviceSafetySessionResult::kGenericError);
+  }
+
+  on_device_safety_instance->GetArcSafetySession(
+      std::move(session),
+      base::BindOnce(&CrosSafetyService::GetArcSafetySessionComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CrosSafetyService::CreateCloudSafetySession(
