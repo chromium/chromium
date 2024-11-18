@@ -136,7 +136,7 @@ _BENCHMARKS = [
         name='chrome_java_sig',
         from_string='private static final Object sLock = new Object();',
         to_string=
-        'private static final Object sLock = new Object();public void NewInterfaceMethod(){}',
+        'private static final Object sLock = new Object();public void NewInterfaceMethod(){}',  # pylint: disable=line-too-long
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/ChromeApplicationImpl.java',  # pylint: disable=line-too-long
     ),
@@ -366,8 +366,8 @@ def _run_benchmark(benchmark: Benchmark, out_dir: pathlib.Path, target: str,
         with open(change_file_path, 'r') as f:
             content = f.read()
         with open(change_file_path, 'w') as f:
-            new_content = re.sub(benchmark.from_string, benchmark.to_string,
-                                 content)
+            new_content = content.replace(benchmark.from_string,
+                                          benchmark.to_string)
             assert content != new_content, (
                 f'Need to update {benchmark.from_string} in '
                 f'{benchmark.change_file}')
