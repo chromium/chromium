@@ -971,6 +971,11 @@ extern const char kSeparateProfilesForManagedAccountsDescription[];
 extern const char kSharedHighlightingIOSName[];
 extern const char kSharedHighlightingIOSDescription[];
 
+// Title and description for the flag to enable the Set Up List in the First
+// Run.
+extern const char kSetUpListInFirstRunName[];
+extern const char kSetUpListInFirstRunNameDescription[];
+
 // Title and description for the flag to enable the Share button
 // in the web context menu in iOS.
 extern const char kShareInWebContextMenuIOSName[];

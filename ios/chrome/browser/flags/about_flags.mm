@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/follow/model/follow_features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/features.h"
+#import "ios/chrome/browser/ntp/model/features.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -1228,6 +1229,21 @@ const FeatureEntry::FeatureVariation
              kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm),
          nullptr}};
 
+const FeatureEntry::FeatureParam kSetUpListInFirstRunArm1[] = {
+    {set_up_list::kSetUpListInFirstRunParam, "1"}};
+const FeatureEntry::FeatureParam kSetUpListInFirstRunArm2[] = {
+    {set_up_list::kSetUpListInFirstRunParam, "2"}};
+const FeatureEntry::FeatureParam kSetUpListInFirstRunArm3[] = {
+    {set_up_list::kSetUpListInFirstRunParam, "3"}};
+
+const FeatureEntry::FeatureVariation kSetUpListInFirstRunVariations[] = {
+    {" - Variation 1", kSetUpListInFirstRunArm1,
+     std::size(kSetUpListInFirstRunArm1), nullptr},
+    {" - Variation 2", kSetUpListInFirstRunArm2,
+     std::size(kSetUpListInFirstRunArm2), nullptr},
+    {" - Variation 3", kSetUpListInFirstRunArm3,
+     std::size(kSetUpListInFirstRunArm3), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2253,6 +2269,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          kIOSStartTimeBrowserBackgroundRemediations,
          kIOSStartTimeBrowserBackgroundRemediationsVariations,
          "IOSStartTimeStartupRemediations")},
+    {"set-up-list-in-first-run", flag_descriptions::kSetUpListInFirstRunName,
+     flag_descriptions::kSetUpListInFirstRunNameDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(set_up_list::kSetUpListInFirstRun,
+                                    kSetUpListInFirstRunVariations,
+                                    "SetUpListInFirstRun")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

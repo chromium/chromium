@@ -1092,6 +1092,10 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
+const char kSetUpListInFirstRunName[] = "Set Up List in First Run";
+const char kSetUpListInFirstRunNameDescription[] =
+    "Displays the Set Up List in the First Run.";
+
 const char kShareInWebContextMenuIOSName[] = "Share in web context menu";
 const char kShareInWebContextMenuIOSDescription[] =
     "Enables the Share button in the web context menu in iOS 16.0 and above.";

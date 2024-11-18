@@ -7921,6 +7921,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "set-up-list-in-first-run",
+    "owners": ["hiramahmood@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "settings-app-notification-settings",
     "owners": [ "yulunwu@chromium.org" ],
     "expiry_milestone": 96
