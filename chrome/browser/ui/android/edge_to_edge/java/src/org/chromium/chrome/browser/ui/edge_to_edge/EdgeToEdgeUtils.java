@@ -324,4 +324,9 @@ public class EdgeToEdgeUtils {
         sAlwaysDrawWebEdgeToEdgeForTesting = drawWebEdgeToEdge;
         ResettersForTesting.register(() -> sAlwaysDrawWebEdgeToEdgeForTesting = false);
     }
+
+    /** Whether push safe-area-insets-bottom to pages that's not using viewport-fit=cover. */
+    public static boolean pushSafeAreaInsetsForNonOptInPages() {
+        return ChromeFeatureList.sDynamicSafeAreaInsets.isEnabled();
+    }
 }

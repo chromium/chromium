@@ -57,6 +57,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -318,6 +319,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void onObservingDifferentTab_changeToWebEnabled() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
@@ -330,6 +332,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void onObservingDifferentTab_changeToWebEnabled_SetsDecor() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
@@ -342,6 +345,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void onObservingDifferentTab_viewportFitChanged() {
         // Start with web always-enabled.
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
@@ -485,6 +489,9 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS
+    })
     public void onObservingDifferentTab_simple() {
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         // For the Tab Switcher we need to switch from some non-null Tab to null.
@@ -496,11 +503,41 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
-        ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN,
-        ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE
-    })
+    @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
+    public void bottomInsetForSafeArea_noTab() {
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        assertToEdgeExpectations();
+        assertBottomInsetForSafeArea(0);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
+    public void bottomInsetForSafeArea_noBrowserControlsOnOptInPages() {
+        doReturn(false).when(mTab).isNativePage();
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+
+        assertToEdgeExpectations();
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
+    public void bottomInsetForSafeArea_hasBrowserControlsOnOptInPages() {
+        doReturn(false).when(mTab).isNativePage();
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        assertToEdgeExpectations();
+
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(1, 0);
+        assertBottomInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE)
     public void testNavigateFromKeyNativePageToNotOptedInWebPage() {
         Mockito.clearInvocations(mTab, mOsWrapper);
 
