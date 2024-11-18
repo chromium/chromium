@@ -1441,8 +1441,6 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   if (controlling_app_id) {
     controlling_app_display_mode =
         registrar.GetAppEffectiveDisplayMode(*controlling_app_id);
-    CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
-        *controlling_app_display_mode));
   }
 
   // Only proceed as below if the navigation capturing is enabled. The flag in
@@ -1453,6 +1451,13 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
           source_browser_app_id, params.url, controlling_app_id,
           controlling_app_display_mode)) {
     return AppNavigationResult::CapturingDisabled();
+  }
+
+  // Ensure that we proceed for a `controlling_app_display_mode` to be
+  // navigation captured only for the use-cases that are supported.
+  if (controlling_app_display_mode) {
+    CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
+        *controlling_app_display_mode));
   }
 
   content::WebContents* source_contents = params.source_contents;
