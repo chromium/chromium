@@ -154,8 +154,7 @@ class AudioEncoder::ImplBase
         break;
 
       auto audio_frame = std::make_unique<SenderEncodedFrame>();
-      audio_frame->dependency =
-          openscreen::cast::EncodedFrame::Dependency::kKeyFrame;
+      audio_frame->is_key_frame = true;
       audio_frame->frame_id = frame_id_;
       audio_frame->referenced_frame_id = frame_id_;
       audio_frame->rtp_timestamp = frame_rtp_timestamp_;
@@ -177,7 +176,6 @@ class AudioEncoder::ImplBase
         // by the signal duration.
         audio_frame->encoder_utilization =
             (base::TimeTicks::Now() - start_time) / frame_duration_;
-        audio_frame->encoder_bitrate = bitrate_;
         TRACE_EVENT_NESTABLE_ASYNC_END1(
             "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
             "encoder_utilization", audio_frame->encoder_utilization);

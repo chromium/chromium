@@ -82,8 +82,7 @@ class RemotingSender::SenderEncodedFrameFactory {
 
     const bool is_key_frame =
         !decoder_buffer.end_of_stream() && decoder_buffer.is_key_frame();
-    remoting_frame->dependency =
-        is_key_frame ? Dependency::kKeyFrame : Dependency::kDependent;
+    remoting_frame->is_key_frame = is_key_frame;
     remoting_frame->referenced_frame_id =
         is_key_frame ? frame_id : frame_id - 1;
     remoting_frame->reference_time = clock_->NowTicks();
@@ -250,7 +249,7 @@ void RemotingSender::TrySendFrame() {
 #if DCHECK_IS_ON()
   CHECK_GE(remoting_frame->referenced_frame_id, remoting_frame->frame_id - 1);
   if (flow_restart_pending_) {
-    CHECK_EQ(remoting_frame->dependency, Dependency::kKeyFrame);
+    CHECK(remoting_frame->is_key_frame);
     CHECK_EQ(remoting_frame->referenced_frame_id, remoting_frame->frame_id);
   } else {
     CHECK_GT(remoting_frame->frame_id, media::cast::FrameId::first());

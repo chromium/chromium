@@ -41,7 +41,7 @@ void AreEqualExceptKeyframeImpl(const media::cast::SenderEncodedFrame& frame,
                                 const media::DecoderBuffer& buffer,
                                 base::test::TaskEnvironment& environment) {
   if (buffer.is_key_frame()) {
-    EXPECT_EQ(frame.dependency, Dependency::kKeyFrame);
+    EXPECT_TRUE(frame.is_key_frame);
   }
 
   scoped_refptr<media::DecoderBuffer> received_buffer =
@@ -64,7 +64,7 @@ ACTION_P(AreEqualNotFirstFrame, buffer, env) {
 }
 
 ACTION_P(AreEqualFirstFrame, buffer, env) {
-  EXPECT_EQ(arg0->dependency, Dependency::kKeyFrame);
+  EXPECT_TRUE(arg0->is_key_frame);
   AreEqualExceptKeyframeImpl(*arg0, *buffer, *env);
   return media::cast::CastStreamingFrameDropReason::kNotDropped;
 }
