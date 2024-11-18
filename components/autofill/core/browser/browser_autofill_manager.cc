@@ -2344,7 +2344,8 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
   if (form_filler_->ShouldTriggerRefill(
           *form_structure, RefillTriggerReason::kSelectOptionsChanged)) {
     form_filler_->TriggerRefill(
-        form, {.trigger_source = AutofillTriggerSource::kSelectOptionsChanged});
+        form, {.trigger_source = AutofillTriggerSource::kSelectOptionsChanged},
+        RefillTriggerReason::kSelectOptionsChanged);
   }
 }
 
@@ -3347,7 +3348,8 @@ void BrowserAutofillManager::OnFormProcessed(
                                         RefillTriggerReason::kFormChanged)) {
     form_filler_->ScheduleRefill(
         form, form_structure,
-        {.trigger_source = AutofillTriggerSource::kFormsSeen});
+        {.trigger_source = AutofillTriggerSource::kFormsSeen},
+        RefillTriggerReason::kFormChanged);
   }
 }
 

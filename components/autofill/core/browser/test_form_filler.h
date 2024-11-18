@@ -17,7 +17,8 @@ class TestFormFiller : public FormFiller {
   // Directly calls TriggerRefill.
   void ScheduleRefill(const FormData& form,
                       const FormStructure& form_structure,
-                      const AutofillTriggerDetails& trigger_details) override;
+                      const AutofillTriggerDetails& trigger_details,
+                      RefillTriggerReason refill_trigger_reason) override;
 };
 
 }  // namespace autofill

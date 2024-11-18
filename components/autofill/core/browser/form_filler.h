@@ -175,12 +175,14 @@ class FormFiller {
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
                               const FormStructure& form_structure,
-                              const AutofillTriggerDetails& trigger_details);
+                              const AutofillTriggerDetails& trigger_details,
+                              RefillTriggerReason refill_trigger_reason);
 
   // Attempts to refill the form that was changed dynamically. Should only be
   // called if ShouldTriggerRefill returns true.
   void TriggerRefill(const FormData& form,
-                     const AutofillTriggerDetails& trigger_details);
+                     const AutofillTriggerDetails& trigger_details,
+                     RefillTriggerReason refill_trigger_reason);
 
   // This function is called by JavaScriptChangedAutofilledValue and may trigger
   // a refill in case the website used JavaScript to reformat an expiration date

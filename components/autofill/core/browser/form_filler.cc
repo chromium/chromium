@@ -814,7 +814,8 @@ bool FormFiller::ShouldTriggerRefill(
 
 void FormFiller::ScheduleRefill(const FormData& form,
                                 const FormStructure& form_structure,
-                                const AutofillTriggerDetails& trigger_details) {
+                                const AutofillTriggerDetails& trigger_details,
+                                RefillTriggerReason refill_trigger_reason) {
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
   DCHECK(filling_context != nullptr);
@@ -827,12 +828,13 @@ void FormFiller::ScheduleRefill(const FormData& form,
   filling_context->on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
-                          weak_ptr_factory_.GetWeakPtr(), form,
-                          trigger_details));
+                          weak_ptr_factory_.GetWeakPtr(), form, trigger_details,
+                          refill_trigger_reason));
 }
 
 void FormFiller::TriggerRefill(const FormData& form,
-                               const AutofillTriggerDetails& trigger_details) {
+                               const AutofillTriggerDetails& trigger_details,
+                               RefillTriggerReason refill_trigger_reason) {
   FormStructure* form_structure =
       manager_->FindCachedFormById(form.global_id());
   if (!form_structure) {
@@ -944,7 +946,8 @@ void FormFiller::MaybeTriggerRefillForExpirationDate(
         GetFillingContext(form_structure.global_id());
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
     filling_context->forced_fill_values[field.global_id()] = refill_value;
-    ScheduleRefill(form, form_structure, trigger_details);
+    ScheduleRefill(form, form_structure, trigger_details,
+                   RefillTriggerReason::kExpirationDateFormatted);
   }
 }
 
