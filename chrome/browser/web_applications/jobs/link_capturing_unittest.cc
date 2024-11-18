@@ -19,7 +19,8 @@ namespace web_app {
 namespace {
 
 class LinkCapturingJobTest : public WebAppTest,
-                             public testing::WithParamInterface<bool> {
+                             public testing::WithParamInterface<
+                                 apps::test::LinkCapturingFeatureVersion> {
  public:
   const GURL kTestAppUrl = GURL("https://example.com/index.html");
   const GURL kTestOverlappingAppUrl = GURL("https://example.com/index2.html");
@@ -27,13 +28,13 @@ class LinkCapturingJobTest : public WebAppTest,
 
   LinkCapturingJobTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            /*override_captures_by_default=*/GetParam()),
-        {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
   ~LinkCapturingJobTest() override = default;
 
-  bool LinkCapturingEnabledByDefault() const { return GetParam(); }
+  bool LinkCapturingEnabledByDefault() const {
+    return GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+  }
 
   void SetUp() override {
     WebAppTest::SetUp();
@@ -200,12 +201,17 @@ TEST_P(LinkCapturingJobTest, UninstallOverlappingRevertsToDefault) {
             provider()->registrar_unsafe().CapturesLinksInScope(app2_id));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         LinkCapturingJobTest,
-                         testing::Values(true, false),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DefaultOn" : "DefaultOff";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LinkCapturingJobTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);
 
 }  // namespace
 }  // namespace web_app
