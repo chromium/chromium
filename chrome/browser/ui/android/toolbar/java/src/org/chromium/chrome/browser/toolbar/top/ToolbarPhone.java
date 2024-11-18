@@ -120,7 +120,7 @@ public class ToolbarPhone extends ToolbarLayout
     // Finch params and default values for code cleanup.
     private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
             "remove_redundant_ntpupdate_in_lbvisualupdate";
-    private static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = true;
+    private static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = false;
     private static final String PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR =
             "remove_gts_layout_location_bar";
     private static final boolean PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL = true;
