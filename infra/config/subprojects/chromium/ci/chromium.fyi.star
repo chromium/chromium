@@ -1296,10 +1296,6 @@ ci.builder(
                 ),
             ),
             "browser_tests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
                 swarming = targets.swarming(
                     shards = 15,
                 ),
@@ -1309,12 +1305,6 @@ ci.builder(
             ),
             "components_browsertests_no_field_trial": targets.remove(
                 reason = "crbug.com/40630866",
-            ),
-            "content_browsertests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
             ),
             "interactive_ui_tests_no_field_trial": targets.remove(
                 reason = "crbug.com/40630866",

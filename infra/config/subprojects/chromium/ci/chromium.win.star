@@ -226,13 +226,6 @@ ci.builder(
                     shards = 2,
                 ),
             ),
-            "content_browsertests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
-                experiment_percentage = 100,
-            ),
             "content_shell_crash_test": targets.mixin(
                 # https://crbug.com/861730
                 experiment_percentage = 100,
@@ -435,10 +428,6 @@ ci.builder(
                 ),
             ),
             "browser_tests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
                 # Only retry the individual failed tests instead of rerunning
                 # entire shards.
                 # crbug.com/1473501
@@ -454,10 +443,6 @@ ci.builder(
                 isolate_profile_data = False,
             ),
             "content_browsertests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
                 # Only retry the individual failed tests instead of rerunning
                 # entire shards.
                 # crbug.com/1475852
@@ -538,10 +523,6 @@ ci.thin_tester(
                 ),
             ),
             "browser_tests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
                 swarming = targets.swarming(
                     # This is for slow test execution that often becomes a
                     # critical path of swarming jobs. crbug.com/868114
@@ -553,12 +534,6 @@ ci.thin_tester(
             ),
             "components_browsertests_no_field_trial": targets.remove(
                 reason = "crbug/40630866",
-            ),
-            "content_browsertests": targets.mixin(
-                # crbug.com/868082
-                args = [
-                    "--disable-features=WebRTC-H264WithOpenH264FFmpeg",
-                ],
             ),
             "interactive_ui_tests_no_field_trial": targets.remove(
                 reason = "crbug/40630866",
