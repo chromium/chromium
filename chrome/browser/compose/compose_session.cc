@@ -923,6 +923,16 @@ void ComposeSession::OpenBugReportingLink() {
 }
 
 void ComposeSession::OpenComposeLearnMorePage() {
+  if (base::FeatureList::IsEnabled(
+          optimization_guide::features::kAiSettingsPageRefresh) &&
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeProactiveNudge)) {
+    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    CHECK(browser);
+
+    chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);
+    return;
+  }
   web_contents_->OpenURL(
       content::OpenURLParams(
           GURL(kComposeLearnMorePageURL), content::Referrer(),
