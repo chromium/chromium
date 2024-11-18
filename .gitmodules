@@ -361,6 +361,12 @@
 [submodule "third_party/speedometer/v3.0"]
 	path = third_party/speedometer/v3.0
 	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+[submodule "third_party/speedometer/v2.0"]
+	path = third_party/speedometer/v2.0
+	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
+[submodule "third_party/speedometer/v2.1"]
+	path = third_party/speedometer/v2.1
+	url = https://chromium.googlesource.com/external/github.com/WebKit/Speedometer
 [submodule "third_party/ukey2/src"]
 	path = third_party/ukey2/src
 	url = https://chromium.googlesource.com/external/github.com/google/ukey2

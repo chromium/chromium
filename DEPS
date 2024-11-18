@@ -430,6 +430,14 @@ vars = {
   # and whatever else without interference from each other.
   'speedometer_3.0_revision': '8d67f28d0281ac4330f283495b7f48286654ad7d',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling Speedometer v2.0
+  # and whatever else without interference from each other.
+  'speedometer_2.0_revision': '732af0dfe867f8815e662ac637357e55f285dbbb',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling Speedometer v2.1
+  # and whatever else without interference from each other.
+  'speedometer_2.1_revision': '8bf7946e39e47c875c00767177197aea5727e84a',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling nearby
   # and whatever else without interference from each other.
   'nearby_revision': '8e87a6e51c93e7836ecdbcc0a520c7992f3ece13',
@@ -2056,6 +2064,12 @@ deps = {
 
   'src/third_party/speedometer/v3.0':
     Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_3.0_revision'),
+
+  'src/third_party/speedometer/v2.0':
+    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.0_revision'),
+
+  'src/third_party/speedometer/v2.1':
+    Var('chromium_git') + '/external/github.com/WebKit/Speedometer.git' + '@' + Var('speedometer_2.1_revision'),
 
   'src/third_party/ukey2/src':
     Var('chromium_git') + '/external/github.com/google/ukey2.git' + '@' + Var('ukey2_revision'),
