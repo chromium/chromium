@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_PROVIDER_H_
-#define IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_POST_RESTORE_SIGNIN_UI_BUNDLED_POST_RESTORE_SIGNIN_PROVIDER_H_
+#define IOS_CHROME_BROWSER_POST_RESTORE_SIGNIN_UI_BUNDLED_POST_RESTORE_SIGNIN_PROVIDER_H_
 
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
@@ -30,4 +30,4 @@ class Browser;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_POST_RESTORE_SIGNIN_POST_RESTORE_SIGNIN_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_POST_RESTORE_SIGNIN_UI_BUNDLED_POST_RESTORE_SIGNIN_PROVIDER_H_

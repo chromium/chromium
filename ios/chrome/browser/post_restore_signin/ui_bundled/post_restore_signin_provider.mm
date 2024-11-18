@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
+#import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_provider.h"
 
 #import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
@@ -14,6 +14,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/post_restore_signin/ui_bundled/metrics.h"
+#import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_view_controller.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -26,8 +28,6 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
-#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -145,16 +145,18 @@
 
 // Returns the user's pre-restore given name.
 - (NSString*)userGivenName {
-  if (!_accountInfo.has_value())
+  if (!_accountInfo.has_value()) {
     return nil;
+  }
 
   return base::SysUTF8ToNSString(_accountInfo->given_name);
 }
 
 // Returns the user's pre-restore email.
 - (NSString*)userEmail {
-  if (!_accountInfo.has_value())
+  if (!_accountInfo.has_value()) {
     return nil;
+  }
 
   return base::SysUTF8ToNSString(_accountInfo->email);
 }

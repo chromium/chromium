@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
+#import "ios/chrome/browser/post_restore_signin/ui_bundled/metrics.h"
 
 const char kIOSPostRestoreSigninDisplayedHistogram[] =
     "IOS.PostRestoreSignin.Displayed";

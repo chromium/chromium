@@ -1,4 +1,4 @@
-source_set("post_restore_signin") {
+source_set("ui_bundled") {
   sources = [
     "metrics.h",
     "metrics.mm",
@@ -17,7 +17,7 @@ source_set("post_restore_signin") {
     "//base",
     "//components/feature_engagement/public",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -46,7 +46,7 @@ source_set("unit_tests") {
     "post_restore_signin_view_controller_unittest.mm",
   ]
   deps = [
-    ":post_restore_signin",
+    ":ui_bundled",
     "//base",
     "//base/test:test_support",
     "//components/sync:test_support",

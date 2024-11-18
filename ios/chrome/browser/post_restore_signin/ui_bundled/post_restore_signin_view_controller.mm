@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
+#import "ios/chrome/browser/post_restore_signin/ui_bundled/post_restore_signin_view_controller.h"
 
 #import <Foundation/Foundation.h>
 
@@ -113,13 +113,15 @@
                                               .bottomAnchor],
   ]];
 
-  if (_userFullName != nil && _userEmail != nil)
+  if (_userFullName != nil && _userEmail != nil) {
     [self.identityControl setIdentityName:_userFullName email:_userEmail];
-  if (_userAvatar != nil)
+  }
+  if (_userAvatar != nil) {
     [self.identityControl
         setIdentityAvatar:CircularImageFromImage(
                               ios::provider::GetSigninDefaultAvatar(),
                               kAccountProfilePhotoDimension)];
+  }
 
   [super loadView];
 }
