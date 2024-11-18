@@ -6948,64 +6948,49 @@ static_library("browser") {
     }
   }
 
-  if (is_linux && use_dbus) {
+  if (is_linux) {
     sources += [
-      "dbus_memory_pressure_evaluator_linux.cc",
-      "dbus_memory_pressure_evaluator_linux.h",
-    ]
-
-    deps += [
-      "//chrome/common:chrome_features",
-      "//components/dbus/utils",
-      "//components/os_crypt/async/browser:secret_portal_key_provider",
-    ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
-    sources += [
+      "chrome_browser_main_extra_parts_linux.cc",
+      "chrome_browser_main_extra_parts_linux.h",
+      "download/download_status_updater_linux.cc",
       "first_run/upgrade_util_linux.cc",
       "first_run/upgrade_util_linux.h",
+      "fullscreen_linux.cc",
+      "icon_loader_auralinux.cc",
+      "metrics/pressure/pressure_metrics.cc",
+      "metrics/pressure/pressure_metrics.h",
+      "metrics/pressure/pressure_metrics_reporter.cc",
+      "metrics/pressure/pressure_metrics_reporter.h",
+      "obsolete_system/obsolete_system_linux.cc",
+      "shell_integration_linux.cc",
+      "shell_integration_linux.h",
+      "upgrade_detector/directory_monitor.cc",
+      "upgrade_detector/directory_monitor.h",
+      "upgrade_detector/get_installed_version_linux.cc",
     ]
-    deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
-
-    if (is_chromeos_lacros) {
-      sources += [
-        "icon_loader_chromeos.cc",
-        "shell_integration_chromeos.cc",
-      ]
-      deps += [ "//chromeos/strings:strings_grit" ]
-    } else {
-      sources += [
-        "download/download_status_updater_linux.cc",
-        "icon_loader_auralinux.cc",
-        "shell_integration_linux.cc",
-        "shell_integration_linux.h",
-        "upgrade_detector/directory_monitor.cc",
-        "upgrade_detector/directory_monitor.h",
-        "upgrade_detector/get_installed_version_linux.cc",
-      ]
-    }
-
-    if (is_linux) {
-      sources += [ "fullscreen_linux.cc" ]
-    } else if (use_ozone) {
-      sources += [ "fullscreen_ozone.cc" ]
-    }
+    deps += [
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//ui/linux:display_server_utils",
+    ]
 
     if (rtc_use_pipewire) {
       configs +=
           [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
     }
 
-    if (is_linux && use_dbus) {
+    if (use_dbus) {
       sources += [
+        "dbus_memory_pressure_evaluator_linux.cc",
+        "dbus_memory_pressure_evaluator_linux.h",
         "notifications/notification_platform_bridge_linux.cc",
         "notifications/notification_platform_bridge_linux.h",
         "platform_util_linux.cc",
       ]
       deps += [
+        "//chrome/common:chrome_features",
         "//components/dbus/thread_linux",
         "//components/dbus/utils",
+        "//components/os_crypt/async/browser:secret_portal_key_provider",
       ]
     }
   }
@@ -7123,19 +7108,6 @@ static_library("browser") {
       "metrics/chrome_metrics_service_crash_reporter.cc",
       "metrics/chrome_metrics_service_crash_reporter.h",
     ]
-  }
-
-  if (is_linux) {
-    sources += [
-      "chrome_browser_main_extra_parts_linux.cc",
-      "chrome_browser_main_extra_parts_linux.h",
-      "metrics/pressure/pressure_metrics.cc",
-      "metrics/pressure/pressure_metrics.h",
-      "metrics/pressure/pressure_metrics_reporter.cc",
-      "metrics/pressure/pressure_metrics_reporter.h",
-      "obsolete_system/obsolete_system_linux.cc",
-    ]
-    deps += [ "//ui/linux:display_server_utils" ]
   }
 
   if (use_aura) {
