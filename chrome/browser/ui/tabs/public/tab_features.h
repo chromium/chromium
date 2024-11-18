@@ -58,6 +58,7 @@ class SyncSessionsRouterTabHelper;
 namespace tabs {
 
 class TabInterface;
+class TabDialogManager;
 
 // This class owns the core controllers for features that are scoped to a given
 // tab. It can be subclassed by tests to perform dependency injection.
@@ -121,6 +122,8 @@ class TabFeatures {
   extensions::ExtensionSidePanelManager* extension_side_panel_manager() {
     return extension_side_panel_manager_.get();
   }
+
+  TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
 
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
@@ -190,6 +193,9 @@ class TabFeatures {
   // Forwards tab-related events to sync.
   std::unique_ptr<sync_sessions::SyncSessionsRouterTabHelper>
       sync_sessions_router_;
+
+  // Manages various tab modal dialogs.
+  std::unique_ptr<TabDialogManager> tab_dialog_manager_;
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;

@@ -170,6 +170,19 @@ class TabInterface {
   //   that is conceptually a TabFeature and needs access to other TabFeatures.
   virtual tabs::TabFeatures* GetTabFeatures() = 0;
 
+  // Creates and shows a widget given the delegate which should also be a
+  // DialogDelegate. Only one tab-scoped dialog widget may be shown at a time.
+  // Interrogate CanShowModalUI() to determine whether it is safe to call this
+  // function. The dialog is centered above the hosting view as obtained via
+  // GetBrowserWindowInterface() and will be shown/hidden along with the tab.
+  // Currently, the returned widget's ownership model is still dependent on
+  // ownership within the DialogDelegate. If the call-site ownership hasn't been
+  // migrated to CLIENT_OWNS_WIDGET or WIDGET_OWNS_NATIVE_WIDGET, do not hold on
+  // to the Widget as a unique_ptr.
+  // TODO(kylixrd):
+  //   (1) Move this API to the TabDialogManager on TabFeatures.
+  //   (2) Call-sites expect to own the Widget using CLIENT_OWNS_WIDGET and be
+  //       updated accordingly.
   virtual std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
       views::WidgetDelegate* delegate) = 0;
 

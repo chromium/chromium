@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -27,6 +29,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -135,6 +138,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   extension_side_panel_manager_ =
       std::make_unique<extensions::ExtensionSidePanelManager>(
           profile, &tab, side_panel_registry_.get());
+
+  tab_dialog_manager_ = std::make_unique<TabDialogManager>(&tab);
 
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);

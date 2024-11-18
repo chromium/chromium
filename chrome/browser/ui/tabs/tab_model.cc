@@ -4,21 +4,30 @@
 
 #include "chrome/browser/ui/tabs/tab_model.h"
 
+#include <memory>
+
 #include "base/check.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace tabs {
 
@@ -213,9 +222,15 @@ tabs::TabFeatures* TabModel::GetTabFeatures() {
 
 std::unique_ptr<views::Widget> TabModel::CreateAndShowTabScopedWidget(
     views::WidgetDelegate* delegate) {
-  // TODO(kylixrd): Remove the use of constrained window API.
-  return base::WrapUnique(
-      constrained_window::ShowWebModalDialogViews(delegate, GetContents()));
+  DCHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType());
+  views::Widget* host =
+      GetBrowserWindowInterface()->TopContainer()->GetWidget();
+  CHECK(host);
+  auto widget = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+      delegate, nullptr, host->GetNativeView()));
+  GetTabFeatures()->tab_dialog_manager()->ShowDialogAndBlockTabInteraction(
+      widget.get());
+  return widget;
 }
 
 bool TabModel::IsPinned() const {
