@@ -176,7 +176,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/ntp/model",
