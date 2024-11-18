@@ -138,7 +138,9 @@ public class ArchivedTabsDialogCoordinatorTest {
         mUserActionTester.tearDown();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mArchivedTabModel
+                            .getTabRemover()
+                            .forceCloseTabs(TabClosureParams.closeAllTabs().build());
                     mTabArchiveSettings.resetSettingsForTesting();
                 });
     }

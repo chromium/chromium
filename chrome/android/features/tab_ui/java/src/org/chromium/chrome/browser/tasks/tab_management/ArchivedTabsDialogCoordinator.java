@@ -132,7 +132,11 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
                 @Override
                 public void closeArchivedTabs(List<Tab> tabs) {
-                    mArchivedTabModel.closeTabs(TabClosureParams.closeTabs(tabs).build());
+                    mArchivedTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTabs(tabs).build(),
+                                    /* allowDialog= */ false);
                     RecordHistogram.recordCount1000Histogram(
                             "Tabs.CloseArchivedTabsMenuItem.TabCount", tabs.size());
                     RecordUserAction.record("Tabs.CloseArchivedTabsMenuItem");
@@ -605,12 +609,15 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 /* supportStopShowing= */ false,
                 (buttonClickResult, stopShowing) -> {
                     if (buttonClickResult == ButtonClickResult.POSITIVE) {
-                        mArchivedTabModel.closeTabs(
-                                TabClosureParams.closeTabs(
-                                                TabModelUtils.convertTabListToListOfTabs(
-                                                        mArchivedTabModel))
-                                        .allowUndo(false)
-                                        .build());
+                        mArchivedTabModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTabs(
+                                                        TabModelUtils.convertTabListToListOfTabs(
+                                                                mArchivedTabModel))
+                                                .allowUndo(false)
+                                                .build(),
+                                        /* allowDialog= */ false);
                         onConfirmRunnable.run();
                     }
                 });
