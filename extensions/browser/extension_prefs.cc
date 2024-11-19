@@ -2132,6 +2132,7 @@ void ExtensionPrefs::RegisterProfilePrefs(
       kMV2DeprecationDisabledAcknowledgedGloballyPref.name, false);
   registry->RegisterBooleanPref(
       kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name, false);
+  registry->RegisterStringPref(pref_names::kGlobalShortcutsUuid, std::string());
 }
 
 template <class ExtensionIdContainer>

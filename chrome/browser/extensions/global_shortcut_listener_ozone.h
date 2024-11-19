@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_OZONE_H_
 #define CHROME_BROWSER_EXTENSIONS_GLOBAL_SHORTCUT_LISTENER_OZONE_H_
 
+#include <memory>
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/ozone/public/platform_global_shortcut_listener.h"
@@ -27,7 +29,11 @@ class GlobalShortcutListenerOzone
     : public GlobalShortcutListener,
       public ui::PlatformGlobalShortcutListenerDelegate {
  public:
-  GlobalShortcutListenerOzone();
+  static std::unique_ptr<GlobalShortcutListener> Create();
+
+  // Clients should use Create() instead of using this constructor.
+  explicit GlobalShortcutListenerOzone(
+      base::PassKey<GlobalShortcutListenerOzone>);
 
   GlobalShortcutListenerOzone(const GlobalShortcutListenerOzone&) = delete;
   GlobalShortcutListenerOzone& operator=(const GlobalShortcutListenerOzone&) =

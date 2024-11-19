@@ -153,6 +153,12 @@ BASE_EXPORT
 std::string XdgDesktopPortalRequestPath(const std::string& sender,
                                         const std::string& token);
 
+// Returns a session path as specified in v0.9 of xdg-desktop-portal:
+// https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Session.html
+BASE_EXPORT
+std::string XdgDesktopPortalSessionPath(const std::string& sender,
+                                        const std::string& token);
+
 }  // namespace nix
 }  // namespace base
 
