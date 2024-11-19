@@ -103,6 +103,7 @@ ToolbarController::ResponsiveElementInfo::ResponsiveElementInfo(
     : overflow_id(overflow_id),
       is_section_end(is_section_end),
       observed_identifier(observed_identifier) {}
+
 ToolbarController::ResponsiveElementInfo::ResponsiveElementInfo(
     const ResponsiveElementInfo& info) = default;
 ToolbarController::ResponsiveElementInfo::~ResponsiveElementInfo() = default;
@@ -200,15 +201,18 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
   // TODO(crbug.com/40912482): Fill in observed identifier.
   // Order matters because it should match overflow menu order top to bottom.
   std::vector<ToolbarController::ResponsiveElementInfo> elements = {
-      {ToolbarController::ElementIdInfo{
-           kToolbarForwardButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
-           &vector_icons::kForwardArrowChromeRefreshIcon,
-           kToolbarForwardButtonElementId},
-       /*is_section_end=*/false},
-      {ToolbarController::ElementIdInfo{
-           kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
-           &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
-       /*is_section_end=*/true}};
+      ToolbarController::ResponsiveElementInfo(
+          ToolbarController::ElementIdInfo{
+              kToolbarForwardButtonElementId,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
+              &vector_icons::kForwardArrowChromeRefreshIcon,
+              kToolbarForwardButtonElementId},
+          /*is_section_end=*/false),
+      ToolbarController::ResponsiveElementInfo(
+          ToolbarController::ElementIdInfo{
+              kToolbarHomeButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
+              &kNavigateHomeChromeRefreshIcon, kToolbarHomeButtonElementId},
+          /*is_section_end=*/false)};
 
   // Support actions items.
   const auto* const browser_actions = browser->browser_actions();
@@ -232,37 +236,44 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
 
   elements.insert(
       elements.end(),
-      {{ToolbarController::ElementIdInfo{
-            kToolbarChromeLabsButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-            &kScienceIcon, kToolbarChromeLabsButtonElementId},
-        /*is_section_end=*/false, kToolbarChromeLabsBubbleElementId},
-       {ToolbarController::ElementIdInfo{
-            kToolbarMediaButtonElementId,
-            IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-            &kMediaToolbarButtonChromeRefreshIcon,
-            kToolbarMediaButtonElementId},
-        /*is_section_end=*/false, kToolbarMediaBubbleElementId},
-       {ToolbarController::ElementIdInfo{
-            kToolbarDownloadButtonElementId,
-            IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
-            &kDownloadToolbarButtonChromeRefreshIcon,
-            kToolbarDownloadButtonElementId},
-        /*is_section_end=*/true, kToolbarDownloadBubbleElementId},
-       {ToolbarController::ElementIdInfo{kToolbarNewTabButtonElementId,
-                                         IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
+      {ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo{kToolbarChromeLabsButtonElementId,
+                                            IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
+                                            &kScienceIcon,
+                                            kToolbarChromeLabsButtonElementId},
+           /*is_section_end=*/false, kToolbarChromeLabsBubbleElementId),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo{
+               kToolbarMediaButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+               &kMediaToolbarButtonChromeRefreshIcon,
+               kToolbarMediaButtonElementId},
+           /*is_section_end=*/false, kToolbarMediaBubbleElementId),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo{
+               kToolbarDownloadButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
+               &kDownloadToolbarButtonChromeRefreshIcon,
+               kToolbarDownloadButtonElementId},
+           /*is_section_end=*/true, kToolbarDownloadBubbleElementId),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo{kToolbarNewTabButtonElementId,
+                                            IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-                                         &kNewTabToolbarButtonIcon,
+                                            &kNewTabToolbarButtonIcon,
 #else
-                                         nullptr,
+                                            nullptr,
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-                                         kToolbarNewTabButtonElementId},
-        /*is_section_end=*/true},
-       {ToolbarController::ElementIdInfo{
-            kToolbarAvatarButtonElementId, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
-            is_incognito ? (&kIncognitoRefreshMenuIcon)
-                         : (&kUserAccountAvatarRefreshIcon),
-            kToolbarAvatarButtonElementId},
-        /*is_section_end=*/false, kToolbarAvatarBubbleElementId}});
+                                            kToolbarNewTabButtonElementId},
+           /*is_section_end=*/true),
+       ToolbarController::ResponsiveElementInfo(
+           ToolbarController::ElementIdInfo{
+               kToolbarAvatarButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
+               is_incognito ? (&kIncognitoRefreshMenuIcon)
+                            : (&kUserAccountAvatarRefreshIcon),
+               kToolbarAvatarButtonElementId},
+           /*is_section_end=*/false, kToolbarAvatarBubbleElementId)});
   return elements;
 }
 

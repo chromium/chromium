@@ -92,10 +92,11 @@ class ToolbarController : public views::MenuDelegate,
     // |=================| -> potential separator
     // | Profile         |
     // |-----------------|
-
-    ResponsiveElementInfo(absl::variant<ElementIdInfo, actions::ActionId>,
-                          bool = false,
-                          std::optional<ui::ElementIdentifier> = std::nullopt);
+    explicit ResponsiveElementInfo(
+        absl::variant<ElementIdInfo, actions::ActionId> overflow_id,
+        bool is_section_end = false,
+        std::optional<ui::ElementIdentifier> observed_identifier =
+            std::nullopt);
     ResponsiveElementInfo(const ResponsiveElementInfo&);
     ~ResponsiveElementInfo();
 
