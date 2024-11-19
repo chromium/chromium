@@ -11,6 +11,7 @@
 #include "content/test/test_content_client.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace content {
 namespace {
@@ -81,12 +82,16 @@ class WebUIDataSourceTest : public testing::Test {
   std::string request_path_;
   TestClient client_;
 
+  void CreateDataSource(std::string source_name) {
+    WebUIDataSourceImpl* source = new WebUIDataSourceImpl(source_name);
+    source->disable_load_time_data_defaults_for_testing();
+    source_ = base::WrapRefCounted(source);
+  }
+
  private:
   void SetUp() override {
     SetContentClient(&client_);
-    WebUIDataSourceImpl* source = new WebUIDataSourceImpl("host");
-    source->disable_load_time_data_defaults_for_testing();
-    source_ = base::WrapRefCounted(source);
+    CreateDataSource("host");
   }
 
   BrowserTaskEnvironment task_environment_;
@@ -447,6 +452,14 @@ TEST_F(WebUIDataSourceTest, SetCrossOriginPolicyValues) {
   EXPECT_EQ("", url_data_source->GetCrossOriginEmbedderPolicy());
   source()->OverrideCrossOriginResourcePolicy("same-origin");
   EXPECT_EQ("same-origin", url_data_source->GetCrossOriginResourcePolicy());
+}
+
+TEST_F(WebUIDataSourceTest, GetOrigin) {
+  CreateDataSource("host");
+  EXPECT_EQ(source()->GetOrigin(), url::Origin::Create(GURL("chrome://host")));
+  CreateDataSource("chrome-untrusted://host/");
+  EXPECT_EQ(source()->GetOrigin(),
+            url::Origin::Create(GURL("chrome-untrusted://host")));
 }
 
 }  // namespace content

@@ -19,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -57,7 +58,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void DisableDenyXFrameOptions() override;
   void EnableReplaceI18nInJS() override;
   std::string GetSource() override;
-  std::string GetScheme() override;
+  url::Origin GetOrigin() override;
   void SetSupportedScheme(std::string_view scheme) override;
 
   // Add the locale to the load time data defaults. May be called repeatedly.

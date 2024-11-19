@@ -76,8 +76,9 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     }
     auto* webui_data_source =
         static_cast<WebUIDataSourceImpl*>(data_source.get());
+    url::Origin origin = webui_data_source->GetOrigin();
     // We only support data sources that serve URLs of the form: chrome://*
-    if (webui_data_source->GetScheme() != kChromeUIScheme) {
+    if (origin.scheme() != kChromeUIScheme) {
       continue;
     }
     auto loader_source = blink::mojom::LocalResourceSource::New();
