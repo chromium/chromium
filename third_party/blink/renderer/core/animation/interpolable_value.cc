@@ -180,7 +180,7 @@ void InterpolableNumber::Scale(double scale) {
   }
   SetExpression(
       *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
-          expression_, NumberNode(scale), CSSMathOperator::kMultiply));
+          &AsExpression(), NumberNode(scale), CSSMathOperator::kMultiply));
 }
 
 void InterpolableNumber::Scale(const InterpolableNumber& other) {
@@ -195,7 +195,7 @@ void InterpolableNumber::Scale(const InterpolableNumber& other) {
   }
   SetExpression(
       *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
-          expression_, &other.AsExpression(), CSSMathOperator::kMultiply));
+          &AsExpression(), &other.AsExpression(), CSSMathOperator::kMultiply));
 }
 
 void InterpolableList::Scale(double scale) {
