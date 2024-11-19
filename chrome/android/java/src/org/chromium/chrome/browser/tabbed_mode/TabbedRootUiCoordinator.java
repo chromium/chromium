@@ -143,6 +143,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -205,6 +206,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier;
     private @Nullable AppHeaderCoordinator mAppHeaderCoordinator;
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
@@ -279,6 +281,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
      * @param tabContentManagerSupplier Supplies the {@link TabContentManager}.
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
+     * @param edgeToEdgeSupplier Supplies the {@link EdgeToEdgeController}.
+     * @param systemBarColorHelperSupplier Supplies the {@link SystemBarColorHelper} for the
+     *     edge-to-edge bottom chin.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param appMenuDelegate The app menu delegate.
@@ -333,6 +338,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull ObservableSupplierImpl<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull OneshotSupplierImpl<SystemBarColorHelper> systemBarColorHelperSupplier,
             @ActivityType int activityType,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
@@ -421,6 +427,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mHubManagerSupplier = hubManagerSupplier;
         mStatusBarColorController.setAllowToolbarColorOnTablets(true);
         mEdgeToEdgeControllerSupplier = edgeToEdgeSupplier;
+        mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
 
         DataSharingTabSwitcherDelegate dataSharingTabSwitcherDelegate =
@@ -1181,15 +1188,18 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @Override
     protected Destroyable createEdgeToEdgeBottomChin() {
-        return EdgeToEdgeControllerFactory.createBottomChin(
-                mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
-                mWindowAndroid.getKeyboardDelegate(),
-                mLayoutManager,
-                mLayoutManager::requestUpdate,
-                mEdgeToEdgeControllerSupplier.get(),
-                mSystemUiCoordinator.getNavigationBarColorController(),
-                mBottomControlsStacker,
-                mFullscreenManager);
+        SystemBarColorHelper bottomChinColorHelper =
+                EdgeToEdgeControllerFactory.createBottomChin(
+                        mActivity.findViewById(R.id.edge_to_edge_bottom_chin),
+                        mWindowAndroid.getKeyboardDelegate(),
+                        mLayoutManager,
+                        mLayoutManager::requestUpdate,
+                        mEdgeToEdgeControllerSupplier.get(),
+                        mSystemUiCoordinator.getNavigationBarColorController(),
+                        mBottomControlsStacker,
+                        mFullscreenManager);
+        mSystemBarColorHelperSupplier.set(bottomChinColorHelper);
+        return bottomChinColorHelper;
     }
 
     private void initTabStripTransitionCoordinator() {

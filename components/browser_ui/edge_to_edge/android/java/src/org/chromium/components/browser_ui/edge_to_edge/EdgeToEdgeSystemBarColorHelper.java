@@ -105,4 +105,8 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     WindowSystemBarColorHelper getWindowHelperForTesting() {
         return mWindowColorHelper;
     }
+
+    SystemBarColorHelper getEdgeToEdgeDelegateHelperForTesting() {
+        return mEdgeToEdgeDelegateHelperSupplier.get();
+    }
 }
