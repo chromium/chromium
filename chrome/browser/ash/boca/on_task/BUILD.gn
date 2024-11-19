@@ -95,6 +95,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "on_task_locked_session_navigation_throttle_browsertest.cc",
     "on_task_locked_session_window_tracker_browsertest.cc",
     "on_task_system_web_app_manager_impl_browsertest.cc",
   ]
