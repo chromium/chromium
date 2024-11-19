@@ -49,10 +49,9 @@ public class DisclosureNotification
     private String mCurrentScope;
 
     @Inject
-    DisclosureNotification(
-            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
+    DisclosureNotification(Resources resources, BaseCustomTabActivity activity) {
         mResources = resources;
-        mModel = model;
+        mModel = activity.getTrustedWebActivityModel();
 
         mModel.addObserver(this);
         activity.getLifecycleDispatcher().register(this);

@@ -51,9 +51,8 @@ public class DisclosureInfobarTest {
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
         when(mActivity.getSnackbarManager()).thenReturn(mSnackbarManager);
-        mInfobar =
-                new DisclosureInfobar(
-                        RuntimeEnvironment.application.getResources(), mModel, mActivity);
+        when(mActivity.getTrustedWebActivityModel()).thenReturn(mModel);
+        mInfobar = new DisclosureInfobar(RuntimeEnvironment.application.getResources(), mActivity);
     }
 
     @Test

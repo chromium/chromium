@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_EVENTS_CALLBACK;
 import static org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel.DISCLOSURE_STATE;
@@ -78,13 +77,12 @@ public class WebappDisclosureControllerTest {
         BrowserServicesIntentDataProvider intentDataProvider =
                 new WebApkIntentDataProviderBuilder(webApkPackageName, "https://pwa.rocks/")
                         .build();
-        when(mActivity.getIntentDataProvider()).thenReturn(intentDataProvider);
-        when(mActivity.getLifecycleDispatcher())
-                .thenReturn(mock(ActivityLifecycleDispatcher.class));
-        when(mActivity.getCurrentPageVerifier()).thenReturn(mCurrentPageVerifier);
-        when(mActivity.getWebappDeferredStartupWithStorageHandler())
-                .thenReturn(mock(WebappDeferredStartupWithStorageHandler.class));
-        return new WebappDisclosureController(mModel, mActivity);
+        return new WebappDisclosureController(
+                mModel,
+                mock(ActivityLifecycleDispatcher.class),
+                mCurrentPageVerifier,
+                intentDataProvider,
+                mock(WebappDeferredStartupWithStorageHandler.class));
     }
 
     private WebappDataStorage registerStorageForWebApk(String packageName) {

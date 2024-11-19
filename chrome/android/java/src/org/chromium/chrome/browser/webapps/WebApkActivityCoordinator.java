@@ -12,7 +12,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -32,10 +31,7 @@ public class WebApkActivityCoordinator implements DestroyObserver {
 
     @Inject
     public WebApkActivityCoordinator(
-            WebappDisclosureController unused_disclosureController,
-            DisclosureInfobar unused_disclosureInfobar,
-            WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
-            BaseCustomTabActivity activity) {
+            DisclosureInfobar unused_disclosureInfobar, BaseCustomTabActivity activity) {
         // The unused_ params are present just to initialize them.
 
         mIntentDataProvider = activity.getIntentDataProvider();

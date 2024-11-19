@@ -11,7 +11,6 @@ import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
-import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -32,7 +31,6 @@ public class TrustedWebActivityCoordinator {
     @Inject
     public TrustedWebActivityCoordinator(
             SharedActivityCoordinator sharedActivityCoordinator,
-            TrustedWebActivityDisclosureController unused_disclosureController,
             DisclosureUiPicker unused_disclosureUiPicker,
             BaseCustomTabActivity activity) {
         // We don't need to do anything with the unused_ classes above, we just need to resolve them

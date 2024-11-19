@@ -42,15 +42,18 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
+import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityOpenTimeRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHomescreenVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
+import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
@@ -96,6 +99,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
+import org.chromium.chrome.browser.webapps.WebApkActivityLifecycleUmaTracker;
 import org.chromium.chrome.browser.webapps.WebApkUpdateManager;
 import org.chromium.chrome.browser.webapps.WebappActionsNotificationManager;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
@@ -152,6 +156,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabTabPersistencePolicy mCustomTabTabPersistencePolicy;
     private WebApkUpdateManager mWebApkUpdateManager;
     private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
+    private TrustedWebActivityModel mTrustedWebActivityModel;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -467,10 +472,30 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (intentDataProvider.isWebApkActivity()) {
             component.resolveWebApkActivityCoordinator();
+            new WebApkActivityLifecycleUmaTracker(
+                    this,
+                    getIntentDataProvider(),
+                    getSplashControllerSupplier(),
+                    getLegacyTabStartupMetricsTracker(),
+                    getStartupMetricsTracker(),
+                    this::getSavedInstanceState,
+                    getWebappDeferredStartupWithStorageHandler(),
+                    getLifecycleDispatcher());
+            new WebappDisclosureController(
+                    getTrustedWebActivityModel(),
+                    getLifecycleDispatcher(),
+                    getCurrentPageVerifier(),
+                    getIntentDataProvider(),
+                    getWebappDeferredStartupWithStorageHandler());
         }
 
         if (mIntentDataProvider.isTrustedWebActivity()) {
             mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
+            new TrustedWebActivityDisclosureController(
+                    getTrustedWebActivityModel(),
+                    getLifecycleDispatcher(),
+                    getCurrentPageVerifier(),
+                    getClientPackageNameProvider());
         }
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
@@ -1211,5 +1236,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                     new WebappDeferredStartupWithStorageHandler(this, getIntentDataProvider());
         }
         return mWebappDeferredStartupWithStorageHandler;
+    }
+
+    public TrustedWebActivityModel getTrustedWebActivityModel() {
+        if (mTrustedWebActivityModel == null) {
+            mTrustedWebActivityModel = new TrustedWebActivityModel();
+        }
+        return mTrustedWebActivityModel;
     }
 }

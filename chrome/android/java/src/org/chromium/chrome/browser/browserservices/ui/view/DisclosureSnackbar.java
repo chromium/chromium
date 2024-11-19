@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -39,9 +38,8 @@ public class DisclosureSnackbar extends DisclosureInfobar {
     private boolean mShown;
 
     @Inject
-    DisclosureSnackbar(
-            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
-        super(resources, model, activity);
+    DisclosureSnackbar(Resources resources, BaseCustomTabActivity activity) {
+        super(resources, activity);
         mResources = resources;
     }
 

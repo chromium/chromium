@@ -55,11 +55,10 @@ public class DisclosureInfobar
             };
 
     @Inject
-    DisclosureInfobar(
-            Resources resources, TrustedWebActivityModel model, BaseCustomTabActivity activity) {
+    DisclosureInfobar(Resources resources, BaseCustomTabActivity activity) {
         mResources = resources;
         mSnackbarManager = activity::getSnackbarManager;
-        mModel = model;
+        mModel = activity.getTrustedWebActivityModel();
         mModel.addObserver(this);
         activity.getLifecycleDispatcher().register(this);
     }

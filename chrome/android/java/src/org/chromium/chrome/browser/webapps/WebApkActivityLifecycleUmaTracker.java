@@ -20,19 +20,15 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.WebApkSplashscreenMetrics;
 
-import javax.inject.Inject;
-
 /** Handles recording user metrics for WebAPK activities. */
-@ActivityScope
 public class WebApkActivityLifecycleUmaTracker
         implements ActivityStateListener, InflationObserver, PauseResumeWithNativeObserver {
     private final Activity mActivity;
@@ -45,32 +41,37 @@ public class WebApkActivityLifecycleUmaTracker
     /** The start time that the activity becomes focused in milliseconds since boot. */
     private long mStartTime;
 
-    @Inject
-    public WebApkActivityLifecycleUmaTracker(BaseCustomTabActivity activity) {
+    public WebApkActivityLifecycleUmaTracker(
+            Activity activity,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Supplier<SplashController> splashController,
+            LegacyTabStartupMetricsTracker legacyTabStartupMetricsTracker,
+            StartupMetricsTracker startupMetricsTracker,
+            Supplier<Bundle> savedInstanceStateSupplier,
+            WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mSplashController = activity.getSplashControllerSupplier();
-        mLegacyTabStartupMetricsTracker = activity.getLegacyTabStartupMetricsTracker();
-        mStartupMetricsTracker = activity.getStartupMetricsTracker();
-        mSavedInstanceStateSupplier = activity::getSavedInstanceState;
+        mIntentDataProvider = intentDataProvider;
+        mSplashController = splashController;
+        mLegacyTabStartupMetricsTracker = legacyTabStartupMetricsTracker;
+        mStartupMetricsTracker = startupMetricsTracker;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
 
         // Add UMA recording task at the front of the deferred startup queue as it has a higher
         // priority than other deferred startup tasks like checking for a WebAPK update.
-        activity.getWebappDeferredStartupWithStorageHandler()
-                .addTaskToFront(
-                        (storage, didCreateStorage) -> {
-                            if (activity.getLifecycleDispatcher()
-                                    .isActivityFinishingOrDestroyed()) {
-                                return;
-                            }
+        webappDeferredStartupWithStorageHandler.addTaskToFront(
+                (storage, didCreateStorage) -> {
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) {
+                        return;
+                    }
 
-                            WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
-                            WebApkUmaRecorder.recordShellApkVersion(
-                                    webApkExtras.shellApkVersion, webApkExtras.distributor);
-                        });
+                    WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+                    WebApkUmaRecorder.recordShellApkVersion(
+                            webApkExtras.shellApkVersion, webApkExtras.distributor);
+                });
     }
 
     @Override

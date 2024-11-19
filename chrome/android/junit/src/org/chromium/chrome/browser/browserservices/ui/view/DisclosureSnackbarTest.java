@@ -48,7 +48,8 @@ public class DisclosureSnackbarTest {
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
         when(mActivity.getSnackbarManager()).thenReturn(mSnackbarManager);
-        new DisclosureSnackbar(RuntimeEnvironment.application.getResources(), mModel, mActivity);
+        when(mActivity.getTrustedWebActivityModel()).thenReturn(mModel);
+        new DisclosureSnackbar(RuntimeEnvironment.application.getResources(), mActivity);
     }
 
     @Test
