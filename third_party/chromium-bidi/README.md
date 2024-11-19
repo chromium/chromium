@@ -252,8 +252,13 @@ npm run unit
 
 ### E2E tests
 
-The E2E tests are written using Python, in order to learn how to eventually do
-this in web-platform-tests.
+The e2e tests serve the following purposes:
+
+1. Brief checks of the scenarios (the detailed check is done in WPT)
+2. Test Chromium-specific behavior nuances
+3. Add a simple setup for engaging the specific command
+
+The E2E tests are written using Python, in order to more-or-less align with the web-platform-tests.
 
 #### Installation
 
@@ -540,3 +545,76 @@ third_party/bidimapper/roll_bidmapper
    Commit the changes (if any), and upload the new patch to the CL.
 
 5. Add appropriate reviewers or comment the CL link on the PR.
+
+## Adding new command
+
+Want to add a shiny new command to WebDriver BiDi for Chromium? Here's the playbook:
+
+### Prerequisites
+
+#### Specification
+
+The WebDriver BiDi [module](https://w3c.github.io/webdriver-bidi/#protocol-modules), [command](https://w3c.github.io/webdriver-bidi/#commands), or [event](https://w3c.github.io/webdriver-bidi/#events) must be specified either in the [WebDriver BiDi specification](https://w3c.github.io/webdriver-bidi) or as an extension in a separate specification (e.g., the [Permissions specification](https://www.w3.org/TR/permissions/#automation-webdriver-bidi)). The specification should include the command's type definitions in valid [CDDL](https://datatracker.ietf.org/doc/html/rfc8610) format.
+
+#### WPT wdspec tests
+
+You'll need tests to prove your command works as expected. These tests should be written using [WPT wdspec](https://web-platform-tests.org/writing-tests/wdspec.html) and submitted along with the spec itself. Don't forget to roll the WPT repo into the Mapper ([dependabot](https://github.com/GoogleChromeLabs/chromium-bidi/network/updates/10663151/jobs) can help, and you will likely need to tweak some expectations afterward).
+
+#### CDP implementation
+
+Make sure Chromium already has the CDP methods your command will rely on.
+
+### Update CDDL types
+
+1. If your command lives in a separate spec, add a link to that spec in the ["Build WebDriverBiDi types"](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/.github/workflows/update-bidi-types.yml#L27) GitHub action (check out the ["bluetooth" pull request](https://github.com/GoogleChromeLabs/chromium-bidi/pull/2585) for an example).
+2. Run the ["Update WebdriverBiDi types"](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/update-bidi-types.yml) GitHub action. This will create a pull request with your new types. If you added a command, this PR will have a failing check complaining about a non-exhaustive switch statement:
+   > error: Switch is not exhaustive. Cases not matched: "{NEW_COMMAND_NAME}" @typescript-eslint/switch-exhaustiveness-check
+3. Update the created pull request. Add your new command to [`CommandProcessor.#processCommand`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L140). For now, just have it throw an UnknownErrorException (see the [example](https://github.com/GoogleChromeLabs/chromium-bidi/pull/2647/files#diff-7f06ce28b8514fd75b759d217bff9f5a471b657bcf78bd893cc291c7945c1cacR169) for how to do this).
+
+```typescript
+case '{NEW_COMMAND_NAME}':
+  throw new UnknownErrorException(
+    `Method ${command.method} is not implemented.`,
+  );
+```
+
+4. Merge it! Standard PR process: create, review, merge.
+
+### Implement the new command
+
+[`CommandProcessor.#processCommand`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L140) handles parsing parameters and running your command.
+
+#### (only if the new command has non-empty parameters) parse command parameters
+
+If your command has parameters, update the [`BidiCommandParameterParser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/BidiParser.ts#L31) and implement the parsing logic in [`BidiNoOpParser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/BidiNoOpParser.ts#L209), [`BidiParser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiTab/BidiParser.ts#L182) and [`protocol-parser`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/protocol-parser/protocol-parser.ts#L386). Look at the [example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/BidiParser.ts#L97) for guidance.
+
+#### Implement the new command
+
+Write the core logic for your command in the appropriate domain processor. Again, [example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/modules/permissions/PermissionsProcessor.ts#L32) is your friend.
+
+#### Call the domain processor's method
+
+Call your new domain processor method from `CommandProcessor.#processCommand`, passing in the parsed parameters. [Example](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L313).
+
+#### Add e2e tests
+
+Write end-to-end tests for your command, including the happy path and any edge cases that might trip things up. Focus on testing the code in the mapper.
+
+#### Update WPT expectations
+
+Your WPT tests will probably fail now.
+
+> Tests with unexpected results: PASS [expected FAIL] ...
+
+Update the expectations in a draft PR with the "update-expectations" label. This will trigger an automated PR "test: update the expectations for PR" that you'll need to merge to your branch.
+
+#### Merge it!
+
+Mark your PR as ready, get it reviewed, and merge it in.
+
+### Roll in ChromeDriver
+
+This bit usually involves the core devs:
+
+1. [Release](#automatic-release) your changes.
+2. [Roll the changes into ChromeDriver](#roll-into-chromium).
