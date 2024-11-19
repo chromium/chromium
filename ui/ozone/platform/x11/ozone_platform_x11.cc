@@ -17,7 +17,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
@@ -52,7 +51,7 @@
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #else
@@ -134,7 +133,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<InputMethod> CreateInputMethod(
       ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget) override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return std::make_unique<ash::InputMethodAsh>(ime_key_event_dispatcher);
 #else
     return std::make_unique<InputMethodAuraLinux>(ime_key_event_dispatcher);
@@ -171,7 +170,7 @@ class OzonePlatformX11 : public OzonePlatform,
   }
 
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return std::make_unique<OSExchangeDataProviderNonBacked>();
 #else
     return std::make_unique<OSExchangeDataProviderX11>();

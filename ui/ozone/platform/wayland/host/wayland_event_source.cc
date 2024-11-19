@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"

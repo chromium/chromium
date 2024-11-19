@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/x11/device_data_manager_x11.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
@@ -54,7 +53,7 @@ void InitButtonEvent(x11::Event* event,
                              });
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Initializes the passed-in x11::Event.
 void InitKeyEvent(x11::Event* event,
                   bool is_press,
@@ -494,7 +493,7 @@ TEST_F(EventsXTest, DisableMouse) {
   EXPECT_EQ(ui::EventType::kMousePressed, ui::EventTypeFromXEvent(*xev));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
   x11::KeyButMask state_to_be_fabricated[] = {
       {},

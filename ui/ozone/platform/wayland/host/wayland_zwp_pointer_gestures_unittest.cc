@@ -5,7 +5,6 @@
 #include <pointer-gestures-unstable-v1-server-protocol.h>
 #include <wayland-util.h>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"

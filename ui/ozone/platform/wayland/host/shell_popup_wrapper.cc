@@ -13,7 +13,6 @@
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"

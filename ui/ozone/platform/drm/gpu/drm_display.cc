@@ -18,7 +18,6 @@
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
 #include "ui/display/types/display_snapshot.h"
@@ -197,7 +196,7 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
 
   SkColorSpacePrimaries output_primaries =
       display_snapshot.color_info().edid_primaries;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not allow display_snapshot and connector property state to go out of
   // sync. HDR capability is determined in
   // gfx::DisplayUtil::GetColorSpaceFromEdid

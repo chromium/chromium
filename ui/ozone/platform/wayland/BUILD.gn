@@ -242,7 +242,6 @@ source_set("wayland") {
   deps = [
     ":common",
     "//base",
-    "//build:chromeos_buildflags",
     "//build/config/linux/dbus:buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
@@ -592,7 +591,6 @@ source_set("wayland_unittests") {
     ":test_support",
     ":wayland",
     "mojom:test_interfaces",
-    "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//testing/gmock",

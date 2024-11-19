@@ -34,7 +34,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"

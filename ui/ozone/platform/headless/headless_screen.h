@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display_list.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/ozone/public/platform_screen.h"
