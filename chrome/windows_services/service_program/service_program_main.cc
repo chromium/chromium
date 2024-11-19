@@ -6,6 +6,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/strings/utf_string_conversions.h"
@@ -54,6 +55,9 @@ int ServiceProgramMain(ServiceDelegate& delegate) {
 
   // Create the global WRL::Module instance.
   CreateWrlModule();
+
+  // Register an empty FeatureList so that queries on it do not fail.
+  base::FeatureList::SetInstance(std::make_unique<base::FeatureList>());
 
   // Run the COM service.
   Service service(delegate);

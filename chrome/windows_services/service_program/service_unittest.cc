@@ -227,7 +227,7 @@ TEST_F(ServiceTest, TwoRequests) {
 // happening in the same instance of the service as a previous request, while
 // some are handled in a separate instance of the service. This is a regression
 // test against https://crbug.com/375097840.
-TEST_F(ServiceTest, DISABLED_RapidReuse) {
+TEST_F(ServiceTest, RapidReuse) {
   // A call to the service may fail with CO_E_SERVER_EXEC_FAILURE after a 120s
   // timeout. Extend the default run loop timeout so that the test doesn't exit
   // prematurely in this case. The test timeout should also be extended at
