@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "components/sync_bookmarks/bookmark_model_view.h"
 
 namespace bookmarks {
 class BookmarkModel;
@@ -36,9 +35,9 @@ class LocalBookmarkToAccountMerger {
   void MoveAndMerge();
 
  private:
-  // Represents a pair of bookmarks, one in the source model and one in the
-  // destination one, that have been matched by UUID. They are guaranteed to
-  // have the same type and URL (if applicable).
+  // Represents a pair of bookmarks, one in local storage one in account
+  // storage, that have been matched by UUID. They are guaranteed to have the
+  // same type and URL (if applicable).
   struct GuidMatch {
     raw_ptr<const bookmarks::BookmarkNode> local_node = nullptr;
     raw_ptr<const bookmarks::BookmarkNode> account_node = nullptr;
@@ -47,14 +46,15 @@ class LocalBookmarkToAccountMerger {
   // Computes bookmark pairs that should be matched by UUID. Note that matches
   // may be incompatible, that is, if only one of the two is a folder.
   static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
-  FindGuidMatches(const BookmarkModelView* local_model,
-                  const BookmarkModelView* account_model);
+  FindGuidMatches(const bookmarks::BookmarkModel* model);
 
-  // Merges a local and a account subtrees. The input nodes are two equivalent
-  // local and remote nodes. This method tries to recursively match their
-  // children.
-  void MergeSubtree(const bookmarks::BookmarkNode* local_subtree_root,
-                    const bookmarks::BookmarkNode* account_subtree_root);
+  // Ensures that all descendants under `local_subtree_root` have a copy among
+  // account nodes (under `account_subtree_root` or otherwise). It does so by
+  // copying nodes from local to account as required, which excludes the case
+  // where a local node has a matching account node (by UUID or similarity).
+  void CopyOrMergeDescendants(
+      const bookmarks::BookmarkNode* local_subtree_root,
+      const bookmarks::BookmarkNode* account_subtree_root);
 
   // Updates `account_node` to hold the same semantics as `local_node`, which
   // excludes the UUID (remains unchanged). `account_node` must not be a
@@ -82,8 +82,7 @@ class LocalBookmarkToAccountMerger {
   const bookmarks::BookmarkNode* FindMatchingAccountNodeByUuid(
       const bookmarks::BookmarkNode* local_node) const;
 
-  BookmarkModelViewUsingLocalOrSyncableNodes local_model_view_;
-  BookmarkModelViewUsingAccountNodes account_model_view_;
+  const raw_ptr<bookmarks::BookmarkModel> model_;
   std::unordered_map<base::Uuid, GuidMatch, base::UuidHash> uuid_to_match_map_;
 };
 
