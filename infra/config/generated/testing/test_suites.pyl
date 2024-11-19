@@ -660,7 +660,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 1,
+          'shards': 2,
         },
       },
     },
@@ -752,7 +752,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 4,
+          'shards': 9,
         },
       },
     },
@@ -977,7 +977,7 @@
         'test': 'headless_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
-          'shards': 4,
+          'shards': 9,
         },
       },
       'telemetry_gpu_unittests': {
