@@ -1723,7 +1723,7 @@ inline const CSSMathExpressionOperation* DynamicToCalcSize(
 inline bool CanArithmeticOperationBeSimplified(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side) {
-  return !left_side->IsOperation() && !right_side->IsOperation();
+  return left_side->IsNumericLiteral() && right_side->IsNumericLiteral();
 }
 
 }  // namespace
