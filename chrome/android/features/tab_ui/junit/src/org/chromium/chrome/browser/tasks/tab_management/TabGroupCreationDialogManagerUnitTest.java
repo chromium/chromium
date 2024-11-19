@@ -10,6 +10,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.components.feature_engagement.FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE;
+
 import android.app.Activity;
 
 import org.junit.Before;
@@ -28,13 +30,10 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -43,11 +42,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupCreationDialogManagerUnitTest {
-    private static final String TAB1_TITLE = "Tab1";
     private static final int TAB1_ID = 456;
-    private static final int COLOR_1 = TabGroupColorId.BLUE;
-    private static final String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE =
-            FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -59,19 +54,16 @@ public class TabGroupCreationDialogManagerUnitTest {
     @Mock private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
 
-    private Activity mActivity;
     private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
-    private Tab mTab1;
 
     @Before
     public void setUp() {
         TrackerFactory.setTrackerForTests(mTracker);
 
-        mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(
-                        mActivity, mModalDialogManager, mOnTabGroupCreation);
+                        activity, mModalDialogManager, mOnTabGroupCreation);
 
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mProfile).when(mTabModel).getProfile();

@@ -9,15 +9,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -35,14 +31,10 @@ import java.util.List;
 public class ColorPickerMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ColorPickerContainer mContainerView;
-
     private Activity mActivity;
     private ColorPickerMediator mMediator;
     private List<Integer> mColorIds;
     private List<PropertyModel> mColorItems = new ArrayList<>();
-
-    @Captor ArgumentCaptor<List<FrameLayout>> mColorViewsCaptor;
 
     @Before
     public void setUp() {

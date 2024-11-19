@@ -35,7 +35,6 @@ import java.util.List;
 /** Unit tests for {@link MessageCardProviderMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageCardProviderMediatorUnitTest {
-    private static final int SUGGESTED_TAB_COUNT = 2;
     private static final int TESTING_ACTION = -1;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
