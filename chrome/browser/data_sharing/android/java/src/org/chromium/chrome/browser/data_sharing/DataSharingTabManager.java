@@ -282,7 +282,10 @@ public class DataSharingTabManager {
                     new DataSharingStringConfig.Builder()
                             .setResourceId(
                                     DataSharingStringConfig.StringKey.JOIN_TITLE,
-                                    R.plurals.collaboration_preview_dialog_title)
+                                    R.plurals.collaboration_preview_dialog_title_multiple)
+                            .setResourceId(
+                                    DataSharingStringConfig.StringKey.JOIN_TITLE,
+                                    R.string.collaboration_preview_dialog_title_single)
                             .setResourceId(
                                     DataSharingStringConfig.StringKey.JOIN_DESCRIPTION,
                                     R.string.collaboration_preview_dialog_body)

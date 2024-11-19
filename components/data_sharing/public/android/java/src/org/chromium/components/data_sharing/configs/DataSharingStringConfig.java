@@ -100,5 +100,6 @@ public class DataSharingStringConfig {
         public static final int LEAVE_GROUP_MESSAGE = 17;
         public static final int STOP_SHARING_TITLE = 18;
         public static final int STOP_SHARING_MESSAGE = 19;
+        public static final int JOIN_TITLE_SINGLE = 20;
     }
 }

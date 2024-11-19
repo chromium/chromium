@@ -6690,12 +6690,14 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <!-- Data Sharing Owner Delete Group -->
 
       <!-- Data Sharing Preview Dialog -->
-      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE" desc="The title for the dialog that shows a preview of a tab group.">
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE_SINGLE" desc="The title for the dialog that shows a preview of a tab group with a single member.">
+        Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph>
+      </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TITLE_MULTIPLE" desc="The title for the dialog that shows a preview of a tab group with multiple members.">
 
         {NUM_OTHER_MEMBERS, plural,
-          =0 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph>}
-          =1 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and # other}
-          other {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and # others}
+          =1 {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and <ph name="NUMBER_OF_OTHER_MEMBERS">%2$d<ex>1</ex></ph> other}
+          other {Join tab group with <ph name="OWNER_FIRST_NAME">%1$s<ex>Ali</ex></ph> and <ph name="NUMBER_OF_OTHER_MEMBERS">%2$d<ex>1</ex></ph> others}
         }
       </message>
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_CONFIRM" desc="A button that allows a user to join a shared group.">
