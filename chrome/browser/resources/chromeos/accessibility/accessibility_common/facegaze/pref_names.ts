@@ -15,6 +15,9 @@ export enum PrefNames {
   GESTURE_TO_CONFIDENCE = 'settings.a11y.face_gaze.gestures_to_confidence',
   GESTURE_TO_KEY_COMBO = 'settings.a11y.face_gaze.gestures_to_key_combos',
   GESTURE_TO_MACRO = 'settings.a11y.face_gaze.gestures_to_macros',
+  PRECISION_CLICK = 'settings.a11y.face_gaze.precision_click',
+  PRECISION_CLICK_SPEED_FACTOR =
+      'settings.a11y.face_gaze.precision_click_speed_factor',
   SPD_DOWN = 'settings.a11y.face_gaze.cursor_speed_down',
   SPD_LEFT = 'settings.a11y.face_gaze.cursor_speed_left',
   SPD_RIGHT = 'settings.a11y.face_gaze.cursor_speed_right',

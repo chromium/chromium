@@ -32,6 +32,10 @@ class Config {
     this.cursorControlEnabled = true;
     /** @type {boolean} */
     this.actionsEnabled = true;
+    /** @type {boolean} */
+    this.precisionEnabled = false;
+    /** @type {number|undefined} */
+    this.precisionSpeedFactor = undefined;
   }
 
   /**
@@ -78,6 +82,16 @@ class Config {
   /** @return {!Config} */
   withVelocityThreshold() {
     this.useVelocityThreshold = true;
+    return this;
+  }
+
+  /**
+   * @param {number} speedFactor
+   * @return {!Config}
+   */
+  withPrecisionEnabled(speedFactor) {
+    this.precisionEnabled = true;
+    this.precisionSpeedFactor = speedFactor;
     return this;
   }
 
@@ -362,6 +376,12 @@ FaceGazeTestBase = class extends E2ETestBase {
 
     await this.setPref(PrefNames.ACTIONS_ENABLED, config.actionsEnabled);
     assertEquals(faceGaze.actionsEnabled_, config.actionsEnabled);
+
+    if (config.precisionEnabled) {
+      await this.setPref(PrefNames.PRECISION_CLICK, true);
+      await this.setPref(
+          PrefNames.PRECISION_CLICK_SPEED_FACTOR, config.precisionSpeedFactor);
+    }
 
     if (config.cursorControlEnabled) {
       // The MouseController gets constructed and started before this test

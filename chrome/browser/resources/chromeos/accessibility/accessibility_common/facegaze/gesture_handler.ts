@@ -185,16 +185,23 @@ export class GestureHandler {
     // Construct macros from all the macro names.
     const result: Macro[] = [];
     for (const [macroName, gesture] of macroNames) {
-      const macro = this.macroFromName_(macroName, gesture);
-      if (macro) {
+      const initialMacro = this.macroFromName_(macroName, gesture);
+      if (!initialMacro) {
+        continue;
+      }
+
+      const macros: Macro[] = this.handlePrecisionClick_(initialMacro);
+      for (const macro of macros) {
         result.push(macro);
         const displayText = BubbleController.getDisplayText(gesture, macro);
-        displayStrings.push(displayText);
+        if (displayText) {
+          displayStrings.push(displayText);
+        }
         if (macro.triggersAtActionStartAndEnd()) {
           // Cache this macro to be run a second time later,
           // e.g. for key release.
           this.macrosToCompleteLater_.set(
-              gesture, {macro: macro, displayText: displayText});
+              gesture, {macro: macro, displayText: displayText!});
         }
       }
     }
@@ -414,6 +421,55 @@ export class GestureHandler {
       const keyCombination = JSON.parse(keyCombinationAsString as string);
       this.gesturesToKeyCombos_.set(gesture as FacialGesture, keyCombination);
     }
+  }
+
+  // Handles precision click. If precision click is enabled, three things can
+  // happen:
+  // 1. If precision mode is inactive and the original macro is anything other
+  // than a click type, then this should return the original macro.
+  // 2. If precision mode is inactive and the original macro is a click type,
+  // then this should return a TOGGLE_PRECISION_CLICK so that precision click is
+  // started.
+  // 3. If precision mode is active, then this should return both the original
+  // macro and a TOGGLE_PRECISION_CLICK macro so that the macro is performed and
+  // precision click is ended.
+  private handlePrecisionClick_(macro: Macro): Macro[] {
+    if (!this.mouseController_.usePrecision()) {
+      return [macro];
+    }
+
+    // This method excludes MOUSE_CLICK_LEFT_LONG because that is a two-step
+    // click, whereas all other clicks are instantaneous.
+    const isClickMacro = () => {
+      const name = macro.getName();
+      if (name === MacroName.MOUSE_CLICK_LEFT ||
+          name === MacroName.MOUSE_CLICK_LEFT_DOUBLE ||
+          name === MacroName.MOUSE_CLICK_LEFT_TRIPLE ||
+          name === MacroName.MOUSE_CLICK_RIGHT) {
+        return true;
+      }
+
+      return false;
+    };
+
+    const result = [];
+    if (!this.mouseController_.isPrecisionActive()) {
+      result.push(
+          isClickMacro() ? new CustomCallbackMacro(
+                               MacroName.TOGGLE_PRECISION_CLICK,
+                               () => this.mouseController_.togglePrecision(),
+                               /*toggleDirection=*/ ToggleDirection.ON) :
+                           macro);
+    } else {
+      result.push(
+          macro,
+          new CustomCallbackMacro(
+              MacroName.TOGGLE_PRECISION_CLICK,
+              () => this.mouseController_.togglePrecision(),
+              /*toggleDirection=*/ ToggleDirection.OFF));
+    }
+
+    return result;
   }
 }
 

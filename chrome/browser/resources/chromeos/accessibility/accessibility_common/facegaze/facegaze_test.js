@@ -2702,3 +2702,325 @@ AX_TEST_F(
       assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
       this.assertNumMouseEvents(4);
     });
+
+AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseEvents', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withBindings(gestureToMacroName, gestureToConfidence)
+                     .withRepeatDelayMs(0)
+                     .withPrecisionEnabled(/*speedFactor=*/ 50);
+  await this.configureFaceGaze(config);
+
+  // Start precision click by performing gesture assigned to left click.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+  // Ensure no mouse events were sent.
+  assertEquals(this.getMouseEvents().length, 0);
+
+  // Perform the gesture again to left-click.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+  const mouseEvents = this.getMouseEvents();
+  assertEquals(mouseEvents.length, 2);
+  this.assertMousePress(mouseEvents[0]);
+  this.assertMouseRelease(mouseEvents[1]);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
+      mouseEvents[0].mouseButton);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT,
+      mouseEvents[1].mouseButton);
+});
+
+AX_TEST_F('FaceGazeTest', 'PrecisionClickBubbleText', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withBindings(gestureToMacroName, gestureToConfidence)
+                     .withRepeatDelayMs(0)
+                     .withPrecisionEnabled(/*speedFactor=*/ 50);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Start precision click by performing gesture assigned to left click.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+  assertEquals(
+      'Start precision click (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // FaceGaze should display important messages about the state after the
+  // timeout has elapsed.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Precision click active, mouse speed reduced',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Perform the gesture again to left-click.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+  assertEquals(
+      'Left-click the mouse (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F('FaceGazeTest', 'PrecisionClickMouseMovement', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(true)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
+                     .withRepeatDelayMs(0)
+                     .withPrecisionEnabled(/*speedFactor=*/ 50);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  // Update the head position by 0.1 in each direction. Notice there is a
+  // significant delta in each direction.
+  let result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.11, 0.21);
+  this.processFaceLandmarkerResult(result);
+  this.assertLatestCursorPosition({x: 360, y: 560});
+
+  // Start precision click by performing gesture assigned to left click.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+  // Update the head position by the same delta. Notice that the cursor delta in
+  // each direction is cut in half (due to the precision speed factor).
+  result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.12, 0.22);
+  this.processFaceLandmarkerResult(result);
+  this.assertLatestCursorPosition({x: 240, y: 640});
+});
+
+AX_TEST_F(
+    'FaceGazeTest', 'TurnOffActionsDuringPrecisionClick', async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withBindings(gestureToMacroName, gestureToConfidence)
+                         .withPrecisionEnabled(/*speedFactor=*/ 50);
+      await this.configureFaceGaze(config);
+
+      // Start precision click by performing gesture assigned to left click.
+      const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result, false);
+      assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+      this.triggerBubbleControllerTimeout();
+      assertEquals(
+          'Precision click active, mouse speed reduced',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Turn off actions via pref.
+      await this.setPref(PrefNames.ACTIONS_ENABLED, false);
+
+      // Ensure precision click is automatically toggled off.
+      assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+      assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'TurnOffCursorControlDuringPrecisionClick',
+    async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withBindings(gestureToMacroName, gestureToConfidence)
+                         .withPrecisionEnabled(/*speedFactor=*/ 50);
+      await this.configureFaceGaze(config);
+
+      // Start precision click by performing gesture assigned to left click.
+      const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result, false);
+      assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+      this.triggerBubbleControllerTimeout();
+      assertEquals(
+          'Precision click active, mouse speed reduced',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Turn off cursor control via pref.
+      await this.setPref(PrefNames.CURSOR_CONTROL_ENABLED, false);
+
+      // Ensure precision click is automatically toggled off.
+      assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+      assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+    });
+
+AX_TEST_F('FaceGazeTest', 'PrecisionClickAndScrollMode', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.TOGGLE_SCROLL_MODE);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.6)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(true)
+                     .withBindings(gestureToMacroName, gestureToConfidence)
+                     .withPrecisionEnabled(/*speedFactor=*/ 50);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  // Start precision click by performing gesture assigned to left click.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+  assertEquals(
+      'Start precision click (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Precision click active, mouse speed reduced',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Toggle scroll mode on. This should automatically stop precision click.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+  assertTrue(this.getScrollModeController().active());
+  assertEquals(
+      'Enter scroll mode (Raise eyebrows)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Only the scroll mode state message should be present.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Scroll mode active. Raise eyebrows to exit. Other gestures ' +
+          'temporarily unavailable.',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F(
+    'FaceGazeTest', 'OtherGesturesDontStartPrecisionClick', async function() {
+      const gestureToMacroName =
+          new Map()
+              .set(FacialGesture.JAW_OPEN, MacroName.RESET_CURSOR)
+              .set(FacialGesture.BROW_INNER_UP, MacroName.TOGGLE_DICTATION);
+      const gestureToConfidence = new Map()
+                                      .set(FacialGesture.JAW_OPEN, 0.6)
+                                      .set(FacialGesture.BROW_INNER_UP, 0.6);
+      const config = new Config()
+                         .withBindings(gestureToMacroName, gestureToConfidence)
+                         .withRepeatDelayMs(0)
+                         .withPrecisionEnabled(/*speedFactor=*/ 50);
+      await this.configureFaceGaze(config);
+
+      let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result, false);
+      assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+      result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+      this.processFaceLandmarkerResult(result, false);
+      assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+    });
+
+AX_TEST_F('FaceGazeTest', 'PrecisionRightClickBubbleText', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withBindings(gestureToMacroName, gestureToConfidence)
+                     .withRepeatDelayMs(0)
+                     .withPrecisionEnabled(/*speedFactor=*/ 50);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Start precision click by performing gesture assigned to right click.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+  assertEquals(
+      'Start precision click (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // FaceGaze should display important messages about the state after the
+  // timeout has elapsed.
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Precision click active, mouse speed reduced',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Perform the gesture again to right-click.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+  assertEquals(
+      'Right-click the mouse (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F('FaceGazeTest', 'PrecisionRightClickMouseEvents', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_RIGHT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withBindings(gestureToMacroName, gestureToConfidence)
+                     .withRepeatDelayMs(0)
+                     .withPrecisionEnabled(/*speedFactor=*/ 50);
+  await this.configureFaceGaze(config);
+
+  // Start precision click by performing gesture assigned to right click.
+  let result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertTrue(this.getFaceGaze().mouseController_.isPrecisionActive());
+  // Ensure no mouse events were sent.
+  assertEquals(this.getMouseEvents().length, 0);
+
+  // Perform the gesture again to right-click.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result, false);
+  assertFalse(this.getFaceGaze().mouseController_.isPrecisionActive());
+
+  const mouseEvents = this.getMouseEvents();
+  assertEquals(mouseEvents.length, 2);
+  this.assertMousePress(mouseEvents[0]);
+  this.assertMouseRelease(mouseEvents[1]);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
+      mouseEvents[0].mouseButton);
+  assertEquals(
+      chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
+      mouseEvents[1].mouseButton);
+});

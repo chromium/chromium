@@ -73,6 +73,12 @@ export class MouseController {
   private bubbleController_: BubbleController;
   private longClickActive_ = false;
 
+  // Precision-related members.
+  private usePrecision_ = false;
+  private precisionActive_ = false;
+  private precisionSpeedFactor_ =
+      MouseController.DEFAULT_PRECISION_SPEED_FACTOR;
+
   constructor(bubbleController: BubbleController) {
     this.bubbleController_ = bubbleController;
     this.onMouseMovedHandler_ = new EventHandler(
@@ -114,6 +120,25 @@ export class MouseController {
 
   isLongClickActive(): boolean {
     return this.longClickActive_;
+  }
+
+  usePrecision(): boolean {
+    return this.usePrecision_;
+  }
+
+  isPrecisionActive(): boolean {
+    return this.precisionActive_;
+  }
+
+  togglePrecision(): void {
+    if (!this.usePrecision_) {
+      return;
+    }
+
+    this.precisionActive_ = !this.precisionActive_;
+    if (!this.precisionActive_) {
+      this.bubbleController_.resetBubble();
+    }
   }
 
   async start(): Promise<void> {
@@ -327,6 +352,11 @@ export class MouseController {
           this.mouseLocation_.x, this.mouseLocation_.y);
       this.longClickActive_ = false;
     }
+
+    if (this.precisionActive_) {
+      this.togglePrecision();
+    }
+
     if (this.mouseInterval_ !== -1) {
       clearInterval(this.mouseInterval_);
       this.mouseInterval_ = -1;
@@ -448,15 +478,31 @@ export class MouseController {
    * to get to the edges of the screens.
    */
   private asymmetryScale_(vel: FloatingPoint2D): FloatingPoint2D {
+    // If precision mode is active, reduce the mouse speed.
+    const precisionClickMultiplier = (100 - this.precisionSpeedFactor_) / 100;
+
+    const spdRight = this.usePrecision_ && this.precisionActive_ ?
+        this.spdRight_ * precisionClickMultiplier :
+        this.spdRight_;
+    const spdLeft = this.usePrecision_ && this.precisionActive_ ?
+        this.spdLeft_ * precisionClickMultiplier :
+        this.spdLeft_;
+    const spdDown = this.usePrecision_ && this.precisionActive_ ?
+        this.spdDown_ * precisionClickMultiplier :
+        this.spdDown_;
+    const spdUp = this.usePrecision_ && this.precisionActive_ ?
+        this.spdUp_ * precisionClickMultiplier :
+        this.spdUp_;
+
     if (vel.x > 0) {
-      vel.x *= this.spdRight_;
+      vel.x *= spdRight;
     } else {
-      vel.x *= this.spdLeft_;
+      vel.x *= spdLeft;
     }
     if (vel.y > 0) {
-      vel.y *= this.spdDown_;
+      vel.y *= spdDown;
     } else {
-      vel.y *= this.spdUp_;
+      vel.y *= spdUp;
     }
     return vel;
   }
@@ -487,7 +533,9 @@ export class MouseController {
   }
 
   private exceedsVelocityThreshold_(velocity: number): boolean {
-    if (!this.useVelocityThreshold_) {
+    if (!this.useVelocityThreshold_ ||
+        (this.usePrecision_ && this.precisionActive_)) {
+      // Do not use velocity threshold during a precision click.
       return true;
     }
 
@@ -495,7 +543,9 @@ export class MouseController {
   }
 
   private applyVelocityThreshold_(velocity: number): number {
-    if (!this.useVelocityThreshold_) {
+    if (!this.useVelocityThreshold_ ||
+        (this.usePrecision_ && this.precisionActive_)) {
+      // Do not apply velocity threshold during a precision click.
       return velocity;
     }
 
@@ -558,6 +608,14 @@ export class MouseController {
         threshold / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;
     this.calcVelocityThreshold_();
   }
+
+  precisionClickChanged(usePrecision: boolean): void {
+    this.usePrecision_ = usePrecision;
+  }
+
+  precisionSpeedFactorChanged(speedFactor: number): void {
+    this.precisionSpeedFactor_ = speedFactor;
+  }
 }
 
 export namespace MouseController {
@@ -596,6 +654,7 @@ export namespace MouseController {
   export const DEFAULT_MOUSE_SPEED = 10;
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
   export const DEFAULT_BUFFER_SIZE = 7;
+  export const DEFAULT_PRECISION_SPEED_FACTOR = 50;
   export const DEFAULT_VELOCITY_FACTOR = 0.45;
 
   export function calculateRotationFromFacialTransformationMatrix(

@@ -51,6 +51,7 @@ export class FaceGaze {
             this.gestureHandler_.getGestureForDictation() :
             undefined,
         heldMacros: this.gestureHandler_.getHeldMacroDisplayStrings(),
+        precision: this.mouseController_.isPrecisionActive(),
       };
     });
 
@@ -148,6 +149,12 @@ export class FaceGaze {
         case PrefNames.GESTURE_TO_MACRO:
           this.gestureHandler_.gesturesToMacrosChanged(pref.value);
           break;
+        case PrefNames.PRECISION_CLICK:
+          this.mouseController_.precisionClickChanged(pref.value);
+          break;
+        case PrefNames.PRECISION_CLICK_SPEED_FACTOR:
+          this.mouseController_.precisionSpeedFactorChanged(pref.value);
+          break;
         case PrefNames.SPD_UP:
           this.mouseController_.speedUpChanged(pref.value);
           break;
@@ -202,6 +209,10 @@ export class FaceGaze {
 
       if (this.mouseController_.isLongClickActive()) {
         this.mouseController_.toggleLongClick();
+      }
+
+      if (this.mouseController_.isPrecisionActive()) {
+        this.mouseController_.togglePrecision();
       }
     }
   }
