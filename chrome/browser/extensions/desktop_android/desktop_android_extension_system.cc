@@ -155,6 +155,12 @@ bool DesktopAndroidExtensionSystem::AddExtension(
   return true;
 }
 
+void DesktopAndroidExtensionSystem::DisableExtension(
+    const std::string& extension_id,
+    int disable_reasons) {
+  registrar_->DisableExtension(extension_id, disable_reasons);
+}
+
 void DesktopAndroidExtensionSystem::InitForRegularProfile(
     bool extensions_enabled) {
   registrar_delegate_ =

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -13,6 +14,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_paths.h"
 
 namespace extensions {
@@ -96,6 +98,16 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
       loader.LoadExtension(extension_path);
   last_loaded_extension_id_ = extension->id();
   return extension.get();
+}
+
+void ExtensionPlatformBrowserTest::DisableExtension(
+    const std::string& extension_id,
+    int disable_reasons) {
+  DesktopAndroidExtensionSystem* extension_system =
+      static_cast<DesktopAndroidExtensionSystem*>(
+          ExtensionSystem::Get(profile()));
+  ASSERT_TRUE(extension_system);
+  extension_system->DisableExtension(extension_id, disable_reasons);
 }
 
 content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents() {

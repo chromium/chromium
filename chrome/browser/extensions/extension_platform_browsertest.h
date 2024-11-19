@@ -42,6 +42,8 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
+  void DisableExtension(const std::string& extension_id, int disable_reasons);
+
   // Returns the WebContents of the currently active tab.
   // Note that when the test first launches, this will be the same as the
   // default tab's web_contents(). However, if the test creates new tabs and

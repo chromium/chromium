@@ -380,6 +380,11 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   return extension.get();
 }
 
+void ExtensionBrowserTest::DisableExtension(const std::string& extension_id,
+                                            int disable_reasons) {
+  extension_service()->DisableExtension(extension_id, disable_reasons);
+}
+
 const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
     const base::FilePath& path,
     const base::FilePath::CharType* manifest_relative_path) {
