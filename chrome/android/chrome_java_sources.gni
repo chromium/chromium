@@ -557,7 +557,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/dependency_injection/ChromeActivityCommonsModule.java",
   "java/src/org/chromium/chrome/browser/dependency_injection/ChromeActivityComponent.java",
   "java/src/org/chromium/chrome/browser/dependency_injection/ChromeAppComponent.java",
-  "java/src/org/chromium/chrome/browser/dependency_injection/ChromeCommonQualifiers.java",
   "java/src/org/chromium/chrome/browser/desktop_site/DesktopSiteSettingsIphController.java",
   "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
   "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",

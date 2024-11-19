@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -97,7 +96,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CloseButtonNavigator closeButtonNavigator;
     @Mock public ToolbarManager toolbarManager;
     @Mock public ChromeBrowserInitializer browserInitializer;
-    @Mock public TabModelInitializer tabModelInitializer;
     @Mock public WebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     @Mock public ProfileProvider profileProvider;
@@ -159,6 +157,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier =
                 new ObservableSupplierImpl(compositorViewHolder);
         when(activity.getCompositorViewHolderSupplier()).thenReturn(compositorViewHolderSupplier);
+        when(activity.areTabModelsInitialized()).thenReturn(true);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -170,11 +169,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabActivityTabController createTabController() {
         return new CustomTabActivityTabController(
-                activity,
-                () -> customTabDelegateFactory,
-                tabPersistencePolicy,
-                tabFactory,
-                tabModelInitializer);
+                activity, () -> customTabDelegateFactory, tabPersistencePolicy, tabFactory);
     }
 
     public CustomTabActivityNavigationController createNavigationController(

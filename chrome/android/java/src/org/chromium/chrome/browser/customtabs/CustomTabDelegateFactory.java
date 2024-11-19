@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -73,7 +71,6 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned by a {@link
@@ -363,7 +360,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            @Named(ACTIVITY_TYPE) @ActivityType int activityType,
+            @ActivityType int activityType,
             Supplier<BottomSheetController> bottomSheetController,
             AuthTabVerifier authTabVerifier,
             boolean contextMenuEnabled,
@@ -394,10 +391,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     }
 
     @Inject
-    public CustomTabDelegateFactory(
-            BaseCustomTabActivity activity,
-            Supplier<ShareDelegate> shareDelegateSupplier,
-            @Named(ACTIVITY_TYPE) @ActivityType int activityType) {
+    public CustomTabDelegateFactory(BaseCustomTabActivity activity) {
         this(
                 activity,
                 activity.getIntentDataProvider().shouldEnableUrlBarHiding(),
@@ -416,8 +410,8 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activity.getCompositorViewHolderSupplier(),
                 activity.getModalDialogManagerSupplier(),
                 activity::getSnackbarManager,
-                shareDelegateSupplier,
-                activityType,
+                activity.getShareDelegateSupplier(),
+                activity.getActivityType(),
                 activity.getBottomSheetController(),
                 activity.getAuthTabVerifier(),
                 !activity.getIntentDataProvider().isAuthTab(),

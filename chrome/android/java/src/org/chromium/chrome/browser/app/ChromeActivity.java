@@ -495,7 +495,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         // Create component before calling super to give its members a chance to catch
         // onPreInflationStartup event.
-        mComponent = createComponent();
+        mComponent = createComponent(new ChromeActivityCommonsModule(this));
 
         // Create the orchestrator that manages Tab models and persistence
         mTabModelOrchestrator = createTabModelOrchestrator();
@@ -564,25 +564,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /** Subclasses must create a {@link RootUiCoordinator}. */
     protected abstract RootUiCoordinator createRootUiCoordinator();
 
-    private C createComponent() {
-        ChromeActivityCommonsModule commonsModule =
-                new ChromeActivityCommonsModule(
-                        this,
-                        mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
-                        getShareDelegateSupplier(),
-                        /* tabModelInitializer= */ this,
-                        getActivityType());
-
-        return createComponent(commonsModule);
-    }
-
     /**
      * Override this to create a component that represents a richer dependency graph for a
      * particular subclass of ChromeActivity. The specialized component should be activity-scoped
-     * and include all modules for ChromeActivityComponent, such as
-     * {@link ChromeActivityCommonsModule}, along with any additional modules.
+     * and include all modules for ChromeActivityComponent, such as {@link
+     * ChromeActivityCommonsModule}, along with any additional modules.
      *
-     * You may immediately resolve some of the classes belonging to the component in this method.
+     * <p>You may immediately resolve some of the classes belonging to the component in this method.
      */
     @SuppressWarnings("unchecked")
     protected C createComponent(ChromeActivityCommonsModule commonsModule) {
