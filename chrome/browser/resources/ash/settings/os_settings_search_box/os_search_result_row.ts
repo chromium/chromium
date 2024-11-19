@@ -668,7 +668,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   private getResultIcon_(): string {
     const isRevampEnabled = isRevampWayfindingEnabled();
     if (isPersonalizationSearchResult(this.searchResult)) {
-      return isRevampEnabled ? 'os-settings:personalization-revamp' :
+      return isRevampEnabled ? 'os-settings:personalization' :
                                'os-settings:paint-brush';
     }
 
@@ -793,12 +793,12 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:
-        return isRevampEnabled ? 'os-settings:personalization-revamp' :
+        return isRevampEnabled ? 'os-settings:personalization' :
                                  'os-settings:paint-brush';
       case SearchResultIcon.kPenguin:
         return 'os-settings:crostini-mascot';
       case SearchResultIcon.kPersonalization:
-        return 'os-settings:personalization';
+        return 'os-settings:personalization-menu';
       case SearchResultIcon.kPhone:
         return isRevampEnabled ?
             'os-settings:connected-devices-android-phone' :
