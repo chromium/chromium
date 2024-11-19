@@ -486,6 +486,7 @@ void Shelf::CreateShelfWidget(aura::Window* root) {
   // of this function.
   hotseat_widget()->InitializeAccessibilityProperties();
   desk_button_widget()->InitializeAccessibleProperties();
+  status_area_widget_->InitializeTrayButtonsAccessibleNavFocus();
 }
 
 void Shelf::ShutdownShelfWidget() {

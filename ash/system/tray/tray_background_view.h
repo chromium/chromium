@@ -99,6 +99,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // VirtualKeyboardModel::Observer:
   void OnVirtualKeyboardVisibilityChanged() override;
 
+  // Updates PreviousFocus and NextFocus accessibility properties for the
+  // TrayBackgroundView.
+  void UpdateAccessibleNavFocus(Shelf* shelf);
+
   // Returns the associated tray bubble view, if one exists. Otherwise returns
   // nullptr.
   virtual TrayBubbleView* GetBubbleView();

@@ -303,6 +303,8 @@ TrayBackgroundView::TrayBackgroundView(
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
   layer()->SetOpacity(0.0f);
+
+  UpdateAccessibleNavFocus(shelf);
 }
 
 void TrayBackgroundView::AddTrayBackgroundViewObserver(Observer* observer) {
@@ -595,15 +597,6 @@ void TrayBackgroundView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(crbug.com/325137417): Remove this once the accessible name is set in
   // the cache as soon as the name is updated.
   GetViewAccessibility().SetName(GetAccessibleNameForTray());
-
-  if (LockScreen::HasInstance()) {
-    GetViewAccessibility().SetNextFocus(LockScreen::Get()->widget());
-  }
-
-  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-  ShelfWidget* shelf_widget = shelf->shelf_widget();
-  GetViewAccessibility().SetPreviousFocus(shelf_widget->hotseat_widget());
-  GetViewAccessibility().SetNextFocus(shelf_widget->navigation_widget());
 }
 
 void TrayBackgroundView::ChildPreferredSizeChanged(views::View* child) {
@@ -629,6 +622,17 @@ void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {
   if (GetVisible() != GetEffectiveVisibility()) {
     views::View::SetVisible(GetEffectiveVisibility());
   }
+}
+
+void TrayBackgroundView::UpdateAccessibleNavFocus(Shelf* shelf) {
+  if (!shelf || !shelf->shelf_widget()) {
+    return;
+  }
+
+  GetViewAccessibility().SetPreviousFocus(
+      shelf->shelf_widget()->hotseat_widget());
+  GetViewAccessibility().SetNextFocus(
+      shelf->shelf_widget()->navigation_widget());
 }
 
 TrayBubbleView* TrayBackgroundView::GetBubbleView() {
