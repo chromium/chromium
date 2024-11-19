@@ -2984,8 +2984,14 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
   if (!web_app_provider) {
     return false;
   }
-  auto app_id = web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
-      origin.GetURL());
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  auto app_id = web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+      origin.GetURL(),
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
   // correctness.
   auto has_actively_installed_app =
