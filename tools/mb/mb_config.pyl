@@ -138,8 +138,6 @@
     },
 
     'client.v8.chromium': {
-      'Linux - Future': 'v8_future_release_bot_reclient',
-      'Linux - Future (dbg)': 'v8_future_debug_bot_reclient',
       'Linux V8 API Stability': 'release_bot_reclient',
     },
 
@@ -651,14 +649,6 @@
     'release_trybot_reclient_siso': [
       'release_trybot_reclient', 'use_siso',
     ],
-
-    'v8_future_debug_bot_reclient': [
-      'v8_future', 'debug_bot_reclient',
-    ],
-
-    'v8_future_release_bot_reclient': [
-      'v8_future', 'release_bot_reclient',
-    ],
   },
 
   # This is a dict mapping a given 'mixin' name to a dict of settings that
@@ -1100,10 +1090,6 @@
 
     'v8_enable_debugging_features': {
       'gn_args': 'v8_enable_debugging_features=true',
-    },
-
-    'v8_future': {
-      'gn_args': 'v8_enable_future=true',
     },
 
     'v8_pointer_compression': {
