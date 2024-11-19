@@ -603,22 +603,11 @@ void ParentPermissionDialogView::CreateContents() {
 }
 
 void ParentPermissionDialogView::ShowDialog() {
-  if (is_showing_) {
+  if (is_showing_)
     return;
-  }
 
   is_showing_ = true;
   LoadParentEmailAddresses();
-
-  if (parent_permission_email_addresses_.empty()) {
-    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
-    CloseDialog();
-    // Record metrics.
-    supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
-        SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
-            kNoParentError);
-    return;
-  }
 
   supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
       SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
@@ -691,6 +680,8 @@ void ParentPermissionDialogView::ShowDialogInternal() {
 }
 
 void ParentPermissionDialogView::LoadParentEmailAddresses() {
+  // Get the parents' email addresses.  There can be a max of 2 parent email
+  // addresses, the primary and the secondary.
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(params_->profile);
 
@@ -703,6 +694,13 @@ void ParentPermissionDialogView::LoadParentEmailAddresses() {
       base::UTF8ToUTF16(service->GetSecondCustodianEmailAddress());
   if (!secondary_parent_email.empty())
     parent_permission_email_addresses_.push_back(secondary_parent_email);
+
+  if (parent_permission_email_addresses_.empty()) {
+    supervised_user_metrics_recorder_.RecordParentPermissionDialogUmaMetrics(
+        SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
+            kNoParentError);
+    SendResultOnce(ParentPermissionDialog::Result::kParentPermissionFailed);
+  }
 }
 
 void ParentPermissionDialogView::CloseWithReason(
