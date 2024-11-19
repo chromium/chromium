@@ -1256,7 +1256,6 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   // vertex opacity.
   float vertex_opacity[4] = {1.f, 1.0f, 1.0f, 1.f};
   dict->Set("vertex_opacity", FloatArrayToList(vertex_opacity));
-  dict->Set("y_flipped", draw_quad->y_flipped);
   dict->Set("nearest_neighbor", draw_quad->nearest_neighbor);
   dict->Set("secure_output_only", draw_quad->secure_output_only);
   dict->Set("protected_video_type",
@@ -1456,7 +1455,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
   // vertex opacity.
   const base::Value::List* vertex_opacity = dict.FindList("vertex_opacity");
   const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
-  std::optional<bool> y_flipped = dict.FindBool("y_flipped");
   std::optional<bool> nearest_neighbor = dict.FindBool("nearest_neighbor");
   std::optional<bool> secure_output_only = dict.FindBool("secure_output_only");
   const std::string* protected_video_type =
@@ -1465,9 +1463,8 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       dict.FindDict("resource_size_in_pixels");
 
   if (!premultiplied_alpha || !uv_top_left || !uv_bottom_right ||
-      !vertex_opacity || !y_flipped || !nearest_neighbor ||
-      !secure_output_only || !protected_video_type ||
-      !resource_size_in_pixels) {
+      !vertex_opacity || !nearest_neighbor || !secure_output_only ||
+      !protected_video_type || !resource_size_in_pixels) {
     return false;
   }
   int protected_video_type_index =
@@ -1493,7 +1490,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       t_background_color, nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
 
-  draw_quad->y_flipped = y_flipped.value();
   draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 
   gfx::Rect t_damage_rect;

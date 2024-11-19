@@ -850,8 +850,7 @@
             "width": 21,
             "x": 0,
             "y": 717
-         },
-         "y_flipped": false
+         }
       }, {
          "background_color": 0,
          "material": "kTextureContent",
@@ -886,8 +885,7 @@
             "width": 21,
             "x": 0,
             "y": 0
-         },
-         "y_flipped": false
+         }
       }, {
          "force_anti_aliasing_off": false,
          "is_premultiplied": true,
