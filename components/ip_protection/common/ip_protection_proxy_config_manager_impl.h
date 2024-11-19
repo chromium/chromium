@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
@@ -27,7 +27,7 @@ class IpProtectionProxyConfigManagerImpl
  public:
   explicit IpProtectionProxyConfigManagerImpl(
       IpProtectionCore* core,
-      IpProtectionConfigGetter& config_getter,
+      scoped_refptr<IpProtectionConfigGetter> config_getter,
       bool disable_proxy_refreshing_for_testing = false);
   ~IpProtectionProxyConfigManagerImpl() override;
 
@@ -95,7 +95,7 @@ class IpProtectionProxyConfigManagerImpl
   const raw_ptr<IpProtectionCore> ip_protection_core_;
 
   // Source of proxy list, when needed.
-  raw_ref<IpProtectionConfigGetter> config_getter_;
+  scoped_refptr<IpProtectionConfigGetter> config_getter_;
 
   // The last time this instance began refreshing the proxy list successfully.
   base::Time last_successful_proxy_list_refresh_;

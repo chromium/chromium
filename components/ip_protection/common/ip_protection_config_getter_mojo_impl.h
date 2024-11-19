@@ -18,13 +18,15 @@ class IpProtectionConfigGetterMojoImpl final : public IpProtectionConfigGetter {
  public:
   explicit IpProtectionConfigGetterMojoImpl(
       mojo::PendingRemote<ip_protection::mojom::CoreHost> config_getter);
-  ~IpProtectionConfigGetterMojoImpl() override;
 
   void TryGetAuthTokens(uint32_t batch_size,
                         ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   void GetProxyConfig(GetProxyConfigCallback callback) override;
   bool IsAvailable() override;
+
+ protected:
+  ~IpProtectionConfigGetterMojoImpl() override;
 
  private:
   void OnGotProxyList(

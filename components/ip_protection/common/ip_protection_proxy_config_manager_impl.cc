@@ -52,7 +52,7 @@ void RecordTelemetry(
 
 IpProtectionProxyConfigManagerImpl::IpProtectionProxyConfigManagerImpl(
     IpProtectionCore* core,
-    IpProtectionConfigGetter& config_getter,
+    scoped_refptr<IpProtectionConfigGetter> config_getter,
     bool disable_proxy_refreshing_for_testing)
     : ip_protection_core_(core),
       config_getter_(config_getter),

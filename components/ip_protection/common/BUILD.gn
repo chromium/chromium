@@ -56,26 +56,6 @@ source_set("ip_protection_config_http_unittest") {
   ]
 }
 
-source_set("ip_protection_control") {
-  sources = [ "ip_protection_control.h" ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-  ]
-}
-
-source_set("ip_protection_control_mojo") {
-  sources = [
-    "ip_protection_control_mojo.cc",
-    "ip_protection_control_mojo.h",
-  ]
-  public_deps = [
-    ":ip_protection_control",
-    "//mojo/public/cpp/bindings",
-    "//services/network/public/mojom",
-  ]
-}
-
 source_set("ip_protection_core") {
   sources = [ "ip_protection_core.h" ]
   public_deps = [
@@ -107,7 +87,6 @@ source_set("ip_protection_core_impl") {
   ]
   public_deps = [
     ":ip_protection_config_getter",
-    ":ip_protection_control",
     ":ip_protection_core",
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager",
@@ -128,6 +107,36 @@ source_set("ip_protection_core_impl_unittest") {
   sources = [ "ip_protection_core_impl_unittest.cc" ]
   deps = [
     ":ip_protection_core_impl",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_manager",
+    ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_token_manager",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_core_impl_mojo") {
+  sources = [
+    "ip_protection_core_impl_mojo.cc",
+    "ip_protection_core_impl_mojo.h",
+  ]
+  public_deps = [
+    ":ip_protection_core_impl",
+    ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_token_manager_impl",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("ip_protection_core_impl_mojo_unittest") {
+  testonly = true
+  sources = [ "ip_protection_core_impl_mojo_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_impl_mojo",
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_manager",
     ":ip_protection_proxy_config_manager_impl",

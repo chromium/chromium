@@ -42,7 +42,7 @@ constexpr char kDefaultGeo[] = "EARTH";
 
 IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
     IpProtectionCore* core,
-    IpProtectionConfigGetter* config_getter,
+    scoped_refptr<IpProtectionConfigGetter> config_getter,
     ProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),

@@ -9,16 +9,16 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 // Interface used by the network service to get the IP Protection configuration
 // (authentication tokens + proxy list).
-class IpProtectionConfigGetter {
+class IpProtectionConfigGetter
+    : public base::RefCounted<IpProtectionConfigGetter> {
  public:
-  virtual ~IpProtectionConfigGetter() = default;
-
   using TryGetAuthTokensCallback =
       base::OnceCallback<void(std::optional<std::vector<BlindSignedAuthToken>>,
                               std::optional<::base::Time>)>;
@@ -62,6 +62,10 @@ class IpProtectionConfigGetter {
 
   // Checks if the getter is available for use after construction.
   virtual bool IsAvailable() = 0;
+
+ protected:
+  friend class base::RefCounted<IpProtectionConfigGetter>;
+  virtual ~IpProtectionConfigGetter() = default;
 };
 }  // namespace ip_protection
 

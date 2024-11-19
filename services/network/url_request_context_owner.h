@@ -9,7 +9,6 @@
 #include <optional>
 
 #include "base/component_export.h"
-#include "components/ip_protection/common/ip_protection_control_mojo.h"
 
 class PrefService;
 
@@ -24,9 +23,7 @@ struct COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextOwner {
   URLRequestContextOwner();
   URLRequestContextOwner(
       std::unique_ptr<PrefService> pref_service,
-      std::unique_ptr<net::URLRequestContext> url_request_context,
-      std::unique_ptr<ip_protection::IpProtectionControlMojo>
-          ip_protection_control_mojo);
+      std::unique_ptr<net::URLRequestContext> url_request_context);
   ~URLRequestContextOwner();
   URLRequestContextOwner(URLRequestContextOwner&& other);
   URLRequestContextOwner& operator=(URLRequestContextOwner&& other);
@@ -35,15 +32,6 @@ struct COMPONENT_EXPORT(NETWORK_SERVICE) URLRequestContextOwner {
   std::unique_ptr<PrefService> pref_service;
 
   std::unique_ptr<net::URLRequestContext> url_request_context;
-
-  // `IpProtectionControlMojo` calls into `IpProtectionCoreImpl` so we need to
-  // ensure it is destroyed before `IpProtectionCoreImpl` is destroyed. The
-  // lifetime of `IpProtectionCoreImpl` is tied to the lifetime of
-  // `IpProtectionProxyDelegate` which itself is tied to the lifetime of
-  // `URLRequestContext`, so we just need to ensure `IpProtectionControlMojo`
-  // is destroyed before `URLRequestContext` is destroyed.
-  std::unique_ptr<ip_protection::IpProtectionControlMojo>
-      ip_protection_control_mojo;
 };
 
 }  // namespace network

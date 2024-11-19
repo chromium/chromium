@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,7 +29,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
  public:
   explicit IpProtectionTokenManagerImpl(
       IpProtectionCore* core,
-      IpProtectionConfigGetter* config_getter,
+      scoped_refptr<IpProtectionConfigGetter> config_getter,
       ProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
   ~IpProtectionTokenManagerImpl() override;
@@ -115,7 +116,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   std::map<std::string, std::deque<BlindSignedAuthToken>> cache_by_geo_;
 
   // Source of proxy list, when needed.
-  raw_ptr<IpProtectionConfigGetter> config_getter_;
+  scoped_refptr<IpProtectionConfigGetter> config_getter_;
 
   // The proxy layer which the cache of tokens will be used for.
   ProxyLayer proxy_layer_;
