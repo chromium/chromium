@@ -332,6 +332,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
     &kUmaBackgroundSessions,
+    &kUpdateCompositorForSurfaceControl,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
@@ -1042,6 +1043,11 @@ BASE_FEATURE(kTabResumptionModuleAndroid,
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 BASE_FEATURE(kUmaBackgroundSessions,
              "UMABackgroundSessions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Actively update the compositor surface when surface control is enabled.
+BASE_FEATURE(kUpdateCompositorForSurfaceControl,
+             "UpdateCompositorForSurfaceControl",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and

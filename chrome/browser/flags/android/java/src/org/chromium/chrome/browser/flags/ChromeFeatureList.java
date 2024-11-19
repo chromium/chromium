@@ -537,6 +537,8 @@ public abstract class ChromeFeatureList {
     public static final String UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING =
             "UnifiedPasswordManagerLocalPasswordsMigrationWarning";
     public static final String UNO_PHASE_2_FOLLOW_UP = "UnoPhase2FollowUp";
+    public static final String UPDATE_COMPOSTIROR_FOR_SURFACE_CONTROL =
+            "UpdateCompositorForSurfaceControl";
     public static final String USE_ALTERNATE_HISTORY_SYNC_ILLUSTRATION =
             "UseAlternateHistorySyncIllustration";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
