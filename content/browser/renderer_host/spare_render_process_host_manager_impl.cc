@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
@@ -18,6 +19,9 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+
+using SpareProcessMaybeTakeAction =
+    content::RenderProcessHostImpl::SpareProcessMaybeTakeAction;
 
 namespace {
 
@@ -42,6 +46,36 @@ content::NoSpareRendererReason MapToNoSpareRendererReason(
     case content::SpareRendererDispatchResult::kProcessHostDestroyed:
       return content::NoSpareRendererReason::kProcessHostDestroyed;
   }
+}
+
+std::string GetCategorizedSpareProcessMaybeTakeTimeUMAName(
+    SpareProcessMaybeTakeAction action) {
+  std::string action_name;
+  switch (action) {
+    case SpareProcessMaybeTakeAction::kNoSparePresent:
+      action_name = "NoSparePresent";
+      break;
+    case SpareProcessMaybeTakeAction::kMismatchedBrowserContext:
+      action_name = "MismatchedBrowserContext";
+      break;
+    case SpareProcessMaybeTakeAction::kMismatchedStoragePartition:
+      action_name = "MismatchedStoragePartition";
+      break;
+    case SpareProcessMaybeTakeAction::kRefusedByEmbedder:
+      action_name = "RefusedByEmbedder";
+      break;
+    case SpareProcessMaybeTakeAction::kSpareTaken:
+      action_name = "SpareTaken";
+      break;
+    case SpareProcessMaybeTakeAction::kRefusedBySiteInstance:
+      action_name = "RefusedBySiteInstance";
+      break;
+    case SpareProcessMaybeTakeAction::kRefusedForPdfContent:
+      action_name = "RefusedForPdfContent";
+      break;
+  }
+  return base::StrCat(
+      {"BrowserRenderProcessHost.SpareProcessMaybeTakeTime.", action_name});
 }
 
 }  // namespace
@@ -192,6 +226,8 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
 
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
 
+  // Start the timer to track how long it takes for a spare renderer to be used.
+  spare_renderer_maybe_take_timer_ = std::make_unique<base::ElapsedTimer>();
   RenderProcessHost* new_spare_rph =
       RenderProcessHostImpl::CreateRenderProcessHost(
           browser_context, nullptr /* site_instance */);
@@ -312,8 +348,6 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       browser_context->GetStoragePartition(site_instance);
 
   // GetSpare UMA metrics.
-  using SpareProcessMaybeTakeAction =
-      RenderProcessHostImpl::SpareProcessMaybeTakeAction;
   SpareProcessMaybeTakeAction action =
       SpareProcessMaybeTakeAction::kNoSparePresent;
 
@@ -341,6 +375,14 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
     base::UmaHistogramEnumeration(
         "BrowserRenderProcessHost.NoSparePresentReason",
         no_spare_renderer_reason_);
+  }
+  if (spare_renderer_maybe_take_timer_) {
+    auto maybe_take_time = spare_renderer_maybe_take_timer_->Elapsed();
+    base::UmaHistogramLongTimes(
+        "BrowserRenderProcessHost.SpareProcessMaybeTakeTime", maybe_take_time);
+    base::UmaHistogramLongTimes(
+        GetCategorizedSpareProcessMaybeTakeTimeUMAName(action),
+        maybe_take_time);
   }
 
   // Decide whether to take or drop the spare process.
@@ -438,6 +480,12 @@ void SpareRenderProcessHostManagerImpl::CleanupSpares(
   if (dispatch_result.has_value()) {
     no_spare_renderer_reason_ =
         MapToNoSpareRendererReason(dispatch_result.value());
+    // The timer is not reset during the timeout to collect data about
+    // when the spare renderers will be used without timeout. The data
+    // will be used to set an appropriate timeout value.
+    if (dispatch_result.value() != SpareRendererDispatchResult::kTimeout) {
+      spare_renderer_maybe_take_timer_.reset();
+    }
   }
 }
 

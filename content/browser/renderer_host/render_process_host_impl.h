@@ -537,8 +537,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static void NotifySpareManagerAboutRecentlyUsedSiteInstance(
       SiteInstance* site_instance);
 
-  // This enum backs a histogram, so do not change the order of entries or
-  // remove entries and update enums.xml if adding new entries.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(SpareProcessMaybeTakeAction)
   enum class SpareProcessMaybeTakeAction {
     kNoSparePresent = 0,
     kMismatchedBrowserContext = 1,
@@ -549,6 +551,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kRefusedForPdfContent = 6,
     kMaxValue = kRefusedForPdfContent
   };
+  // LINT.ThenChange(tools/metrics/histograms/metadata/browser/histograms.xml:SpareProcessMaybeTakeAction)
 
   // Please keep in sync with "RenderProcessHostDelayShutdownReason" in
   // tools/metrics/histograms/metadata/browser/enums.xml. These values should

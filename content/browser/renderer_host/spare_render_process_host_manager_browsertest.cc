@@ -221,6 +221,10 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
       SpareRendererDispatchResult::kUsed, 1);
   histogram_tester.ExpectTotalCount(
       "BrowserRenderProcessHost.NoSparePresentReason", 0);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeTime.SpareTaken", 1);
 
   // The old spare render process host should no longer be available.
   if (!spare_manager.GetSpares().empty()) {
@@ -271,6 +275,13 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   histogram_tester.ExpectUniqueSample(
       "BrowserRenderProcessHost.NoSparePresentReason",
       NoSpareRendererReason::kTimeout, 1);
+  // The base::ElapsedTimer will record the wall time rather than the time
+  // elapsed in the TestMockTimeTaskRunner. We can only verify the sample
+  // count.
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "BrowserRenderProcessHost.SpareProcessMaybeTakeTime.NoSparePresent", 1);
 }
 
 // Verifies that creating a spare renderer without a timeout

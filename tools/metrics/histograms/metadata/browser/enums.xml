@@ -379,6 +379,8 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
+
 <enum name="SpareProcessMaybeTakeAction">
   <int value="0" label="NoSparePresent"/>
   <int value="1" label="MismatchedBrowserContext"/>
@@ -397,6 +399,8 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="6" label="RefusedForPdfContent"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_process_host_impl.h:SpareProcessMaybeTakeAction) -->
 
 <!-- LINT.IfChange(SpareProcessRefusedByEmbedderReason) -->
 

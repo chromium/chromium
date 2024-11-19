@@ -41,6 +41,20 @@ chromium-metrics-reviews@google.com.
   <variant name="WebView"/>
 </variants>
 
+<!-- LINT.IfChange(SpareProcessMaybeTakeAction) -->
+
+<variants name="SpareProcessMaybeTakeAction">
+  <variant name="MismatchedBrowserContext"/>
+  <variant name="MismatchedStoragePartition"/>
+  <variant name="NoSparePresent"/>
+  <variant name="RefusedByEmbedder"/>
+  <variant name="RefusedBySiteInstance"/>
+  <variant name="RefusedForPdfContent"/>
+  <variant name="SpareTaken"/>
+</variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareProcessMaybeTakeAction) -->
+
 <variants name="TabSwitchingType">
   <variant name="" summary="Aggregation of all tab states."/>
   <variant name=".NoSavedFrames_Loaded"
@@ -1271,6 +1285,34 @@ chromium-metrics-reviews@google.com.
     Records what happens when an attempt is made to use a spare
     RenderProcessHost - logs that either the attempt succeeded or why it failed.
   </summary>
+</histogram>
+
+<histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeTime"
+    units="seconds" expires_after="2025-04-13">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the time elapsed from the creation of a spare renderer to the point
+    when the browser tries to take a spare renderer. The UMA is recorded each
+    time when the browser tries to take a spare renderer. The timer will not be
+    reset if the spare renderer timeouts and will be recorded even if the spare
+    renderer is no longer present. The behavior is designed to collect data
+    about the appropriate value of the spare renderer timeout.
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowserRenderProcessHost.SpareProcessMaybeTakeTime.{SpareProcessMaybeTakeAction}"
+    units="seconds" expires_after="2025-04-13">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Categorize the BrowserRenderProcessHost.SpareProcessMaybeTakeTime by the
+    SpareProcessMaybeTakeAction. The UMA is recorded each time when the browser
+    try to take a spare renderer.
+  </summary>
+  <token key="SpareProcessMaybeTakeAction"
+      variants="SpareProcessMaybeTakeAction"/>
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.SpareProcessRefusedByEmbedderReason"
