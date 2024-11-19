@@ -221,7 +221,10 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
 
     // If the start index of the next word is not equal to the end index of this
     // word, it is a text separator.
-    int text_separator_index = translated_proto_word.end();
+    int text_separator_index =
+        translated_proto_word.end() == translated_line.end()
+            ? -1
+            : translated_proto_word.end();
     if (i + 1 < translated_line.word_size()) {
       const auto& next_translated_proto_word = translated_line.word()[i + 1];
       if (text_separator_index == next_translated_proto_word.start()) {
