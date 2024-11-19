@@ -706,9 +706,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // loading. Therefore, to avoid displaying an empty side panel, wait for
     // Google Docs to finish loading.
     if (!IsGoogleDocs() || model_.page_finished_loading()) {
-      ExecuteJavaScript("chrome.readingMode.showEmpty();");
-      base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
-                                    ReadAnythingEmptyState::kEmptyStateShown);
+      DrawEmptyState();
     }
   }
 
@@ -736,11 +734,15 @@ bool ReadAnythingAppController::PostProcessSelection() {
   // Note post `model_.PostProcessSelection` returns true if a draw is required.
   if (model_.PostProcessSelection()) {
     did_draw = true;
-    // TODO(b/40927698): When Read Aloud is playing and content is selected
-    // in the main panel, don't re-draw with the updated selection until
-    // Read Aloud is paused.
-    bool should_recompute_display_nodes = !model_.content_node_ids().empty();
-    Draw(should_recompute_display_nodes);
+    if (model_.is_empty()) {
+      DrawEmptyState();
+    } else {
+      // TODO(b/40927698): When Read Aloud is playing and content is selected
+      // in the main panel, don't re-draw with the updated selection until
+      // Read Aloud is paused.
+      bool should_recompute_display_nodes = !model_.content_node_ids().empty();
+      Draw(should_recompute_display_nodes);
+    }
   }
   // Skip drawing the selection in the side panel if the selection originally
   // came from there.
@@ -768,6 +770,12 @@ void ReadAnythingAppController::DrawSelection() {
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
   ExecuteJavaScript("chrome.readingMode.updateSelection();");
+}
+
+void ReadAnythingAppController::DrawEmptyState() {
+  ExecuteJavaScript("chrome.readingMode.showEmpty();");
+  base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
+                                ReadAnythingEmptyState::kEmptyStateShown);
 }
 
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(

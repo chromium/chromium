@@ -258,6 +258,7 @@ class ReadAnythingAppController
   void Distill();
   void Draw(bool recompute_display_nodes);
   void DrawSelection();
+  void DrawEmptyState();
 
   void ExecuteJavaScript(const std::string& script);
 
