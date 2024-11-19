@@ -447,10 +447,6 @@ class BrowserAutofillManager : public AutofillManager {
     base::TimeTicks form_submitted_timestamp;
   };
 
-  // Triggers the possible import of submitted data at submission time.
-  void MaybeImportFromSubmittedForm(const FormStructure& form_structure,
-                                    bool autofill_ai_shows_bubble);
-
   // Method containing logic to be run in `OnFormSubmittedImpl()` after any
   // import attempts of the submitted form occurred.
   void OnFormSubmittedAfterImport(const FormData& form,
