@@ -149,13 +149,13 @@ const base::FeatureParam<std::string>
 // drivers to pick most optimal layout.
 BASE_FEATURE(kUseHardwareBufferUsageFlagsFromVulkan,
              "UseHardwareBufferUsageFlagsFromVulkan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Same as above (and depends on it) and allows using extra usage even if we use
 // USAGE_COMPOSER_OVERLAY.
 BASE_FEATURE(kAllowHardwareBufferUsageFlagsFromVulkanForScanout,
              "AllowHardwareBufferUsageFlagsFromVulkanForScanout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif
 
