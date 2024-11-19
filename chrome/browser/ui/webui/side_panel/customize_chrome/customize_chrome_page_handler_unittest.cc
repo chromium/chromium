@@ -842,57 +842,87 @@ class CustomizeChromePageHandlerWithModulesTest
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
   std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
   bool managed;
-  bool visible;
   EXPECT_CALL(mock_page_, SetModulesSettings)
-      .Times(2)
+      .Times(1)
       .WillRepeatedly(
-          Invoke([&modules_settings, &managed, &visible](
+          Invoke([&modules_settings, &managed](
                      std::vector<side_panel::mojom::ModuleSettingsPtr>
                          modules_settings_arg,
                      bool managed_arg, bool visible_arg) {
             modules_settings = std::move(modules_settings_arg);
             managed = managed_arg;
-            visible = visible_arg;
           }));
 
   const std::string kTabResumptionId(
       ntp_modules::kMostRelevantTabResumptionModuleId);
   profile().GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
-  auto disabled_module_ids = base::Value::List();
-  disabled_module_ids.Append(kTabResumptionId);
-  profile().GetPrefs()->SetList(prefs::kNtpDisabledModules,
-                                std::move(disabled_module_ids));
   mock_page_.FlushForTesting();
 
-  EXPECT_TRUE(visible);
   EXPECT_FALSE(managed);
   EXPECT_EQ(1u, modules_settings.size());
-  EXPECT_EQ(kTabResumptionId, modules_settings[0]->id);
-  EXPECT_FALSE(modules_settings[0]->enabled);
-}
-
-TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible) {
-  profile().GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, false);
-  handler().SetModulesVisible(true);
-
-  EXPECT_CALL(mock_page_, SetModulesSettings).Times(2);
-  mock_page_.FlushForTesting();
-
-  EXPECT_TRUE(profile().GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
+  const auto& tab_resumption_settings = modules_settings[0];
+  EXPECT_EQ(ntp_modules::kMostRelevantTabResumptionModuleId,
+            tab_resumption_settings->id);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_NTP_TAB_RESUMPTION_TITLE),
+            tab_resumption_settings->name);
+  EXPECT_TRUE(tab_resumption_settings->enabled);
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
-  const std::string kDriveModuleId(ntp_modules::kDriveModuleId);
-  handler().SetModuleDisabled(kDriveModuleId, true);
-  const auto& disabled_module_ids =
-      profile().GetPrefs()->GetList(prefs::kNtpDisabledModules);
+  std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
+  EXPECT_CALL(mock_page_, SetModulesSettings)
+      .Times(1)
+      .WillRepeatedly(Invoke(
+          [&modules_settings](std::vector<side_panel::mojom::ModuleSettingsPtr>
+                                  modules_settings_arg,
+                              bool managed_arg, bool visible_arg) {
+            modules_settings = std::move(modules_settings_arg);
+          }));
 
-  EXPECT_CALL(mock_page_, SetModulesSettings).Times(1);
+  const std::string kTabResumptionId(
+      ntp_modules::kMostRelevantTabResumptionModuleId);
+  handler().SetModuleDisabled(kTabResumptionId, true);
   mock_page_.FlushForTesting();
 
-  EXPECT_EQ(1u, disabled_module_ids.size());
-  EXPECT_EQ(kDriveModuleId, disabled_module_ids.front().GetString());
+  EXPECT_EQ(1u, modules_settings.size());
+  const auto& tab_resumption_settings = modules_settings[0];
+  EXPECT_EQ(kTabResumptionId, tab_resumption_settings->id);
+  EXPECT_FALSE(tab_resumption_settings->enabled);
+  const auto& disabled_module_ids =
+      profile().GetPrefs()->GetList(prefs::kNtpDisabledModules);
+  EXPECT_EQ(kTabResumptionId, disabled_module_ids.front().GetString());
 }
+
+class CustomizeChromePageHandlerWithModulesVisibilityTest
+    : public CustomizeChromePageHandlerWithModulesTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool ModulesVisible() const { return GetParam(); }
+};
+
+TEST_P(CustomizeChromePageHandlerWithModulesVisibilityTest, SetModulesVisible) {
+  std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
+  bool visible;
+  EXPECT_CALL(mock_page_, SetModulesSettings)
+      .Times(1)
+      .WillRepeatedly(
+          Invoke([&modules_settings, &visible](
+                     std::vector<side_panel::mojom::ModuleSettingsPtr>
+                         modules_settings_arg,
+                     bool managed_arg, bool visible_arg) {
+            modules_settings = std::move(modules_settings_arg);
+            visible = visible_arg;
+          }));
+
+  handler().SetModulesVisible(ModulesVisible());
+  mock_page_.FlushForTesting();
+
+  EXPECT_EQ(ModulesVisible(), visible);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CustomizeChromePageHandlerWithModulesVisibilityTest,
+                         ::testing::Bool());
 
 class CustomizeChromePageHandlerWithTemplateURLServiceTest
     : public CustomizeChromePageHandlerTest {
