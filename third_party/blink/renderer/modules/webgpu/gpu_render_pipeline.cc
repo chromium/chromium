@@ -393,6 +393,50 @@ GPURenderPipeline* GPURenderPipeline::Create(
   OwnedRenderPipelineDescriptor dawn_desc_info;
   ConvertToDawnType(isolate, device, webgpu_desc, &dawn_desc_info,
                     PassThroughException(isolate));
+
+  // TODO(376924407): Remove WebGPUOneComponentVertexFormats and the check here
+  // once the feature is safely landed.
+  if (!RuntimeEnabledFeatures::WebGPUOneComponentVertexFormatsEnabled()) {
+    const wgpu::VertexState& vertex = dawn_desc_info.dawn_desc.vertex;
+    // SAFETY: WebGPU works on the C equivalent of spans.
+    const auto buffers =
+        UNSAFE_BUFFERS(base::span<const wgpu::VertexBufferLayout>(
+            vertex.buffers, vertex.bufferCount));
+    for (const auto& buffer : buffers) {
+      if (buffer.stepMode == wgpu::VertexStepMode::VertexBufferNotUsed) {
+        continue;
+      }
+
+      // SAFETY: WebGPU works on the C equivalent of spans.
+      const auto attributes =
+          UNSAFE_BUFFERS(base::span<const wgpu::VertexAttribute>(
+              buffer.attributes, buffer.attributeCount));
+      for (const auto& attribute : attributes) {
+        switch (attribute.format) {
+          case wgpu::VertexFormat::Unorm8:
+          case wgpu::VertexFormat::Snorm8:
+          case wgpu::VertexFormat::Uint8:
+          case wgpu::VertexFormat::Sint8:
+          case wgpu::VertexFormat::Unorm16:
+          case wgpu::VertexFormat::Snorm16:
+          case wgpu::VertexFormat::Uint16:
+          case wgpu::VertexFormat::Sint16:
+          case wgpu::VertexFormat::Float16:
+          case wgpu::VertexFormat::Unorm8x4BGRA: {
+            ExceptionState exception_state(isolate);
+            exception_state.ThrowTypeError(
+                "Vertex format requires the WebGPUOneComponentVertexFormats "
+                "Blink feature.");
+            return nullptr;
+          }
+
+          default:
+            continue;
+        }
+      }
+    }
+  }
+
   if (isolate->HasPendingException()) {
     return nullptr;
   }
