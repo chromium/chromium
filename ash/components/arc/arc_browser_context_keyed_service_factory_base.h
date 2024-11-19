@@ -117,7 +117,7 @@ class ArcBrowserContextKeyedServiceFactoryBase
   ~ArcBrowserContextKeyedServiceFactoryBase() override = default;
 
   // BrowserContextKeyedServiceFactory override:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
     auto* arc_service_manager = arc::ArcServiceManager::Get();
 
@@ -132,7 +132,8 @@ class ArcBrowserContextKeyedServiceFactoryBase
       return nullptr;
     }
 
-    return new Service(context, arc_service_manager->arc_bridge_service());
+    return std::make_unique<Service>(context,
+                                     arc_service_manager->arc_bridge_service());
   }
 };
 
