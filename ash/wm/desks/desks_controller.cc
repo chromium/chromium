@@ -1175,13 +1175,14 @@ void DesksController::SendToDeskAtIndex(aura::Window* window, int desk_index) {
 void DesksController::CaptureActiveDeskAsSavedDesk(
     GetDeskTemplateCallback callback,
     DeskTemplateType template_type,
-    aura::Window* root_window_to_show) const {
+    aura::Window* root_window_to_show,
+    const base::flat_set<std::string>& coral_app_id_allowlist) const {
   DCHECK(current_account_id_.is_valid());
 
   restore_data_collector_.CaptureActiveDeskAsSavedDesk(
       std::move(callback), template_type,
       base::UTF16ToUTF8(active_desk_->name()), root_window_to_show,
-      current_account_id_);
+      current_account_id_, coral_app_id_allowlist);
 }
 
 Desk* DesksController::CreateNewDeskForSavedDesk(

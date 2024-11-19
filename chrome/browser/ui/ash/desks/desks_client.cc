@@ -414,7 +414,7 @@ void DesksClient::CaptureActiveDesk(
           },
           std::move(callback)),
       template_type,
-      /*root_window_to_show=*/nullptr);
+      /*root_window_to_show=*/nullptr, /*coral_app_id_allowlist=*/{});
 }
 
 void DesksClient::DeleteDeskTemplate(const base::Uuid& template_uuid,

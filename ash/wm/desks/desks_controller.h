@@ -338,10 +338,14 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Captures the active desk and returns it as a saved desk (of type
   // `template_type`) containing necessary information that can be used to
   // create a same desk via provided `callback`, `root_window_to_show` is used
-  // to determine which monitor to show saved desk related dialog.
-  void CaptureActiveDeskAsSavedDesk(GetDeskTemplateCallback callback,
-                                    DeskTemplateType template_type,
-                                    aura::Window* root_window_to_show) const;
+  // to determine which monitor to show saved desk related dialog. If the
+  // `template_type` is coral, then we only want a subset of the apps on the
+  // active desk, defined by `coral_app_id_allowlist`.
+  void CaptureActiveDeskAsSavedDesk(
+      GetDeskTemplateCallback callback,
+      DeskTemplateType template_type,
+      aura::Window* root_window_to_show,
+      const base::flat_set<std::string>& coral_app_id_allowlist) const;
 
   // Creates a new desk and optionally activates it depending on
   // `template_type`. If `customized_desk_name` is provided, desk name will be

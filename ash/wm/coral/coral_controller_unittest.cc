@@ -9,6 +9,7 @@
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/toast/toast_manager_impl.h"
@@ -305,6 +306,56 @@ TEST_F(CoralSavedGroupTest, SaveBrowserInGroup) {
   EXPECT_THAT(browser_extra_info.urls,
               testing::ElementsAre(GURL("https://google.com/"),
                                    GURL("https://youtube.com/")));
+}
+
+// Tests saving a group that has a couple apps in it.
+TEST_F(CoralSavedGroupTest, SaveAppsInGroup) {
+  // Create some windows with app ids.
+  auto window1 = CreateAppWindow();
+  auto window2 = CreateAppWindow();
+  auto window3 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey, std::string("window1_app_id"));
+  window2->SetProperty(kAppIDKey, std::string("window2_app_id"));
+  window3->SetProperty(kAppIDKey, std::string("window3_app_id"));
+
+  // Simulate having app launch info for these windows.
+  static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
+      ->set_app_ids_with_app_launch_info(
+          {"window1_app_id", "window2_app_id", "window3_app_id"});
+
+  // Prepare a coral response with two of the windows.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(CreateTestGroup(
+      {{"Window1", "window1_app_id"}, {"Window2", "window2_app_id"}},
+      "saved group"));
+  OverrideTestResponse(std::move(test_groups));
+
+  // Enter overview and click on the save as group menu item.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  views::MenuItemView* save_as_group_item = GetSaveAsGroupMenuItem();
+  LeftClickOn(save_as_group_item);
+
+  // Verify the desk model entry name and type.
+  const desks_storage::DeskModel::GetAllEntriesResult& result =
+      desk_model()->GetAllEntries();
+  ASSERT_EQ(result.entries.size(), 1u);
+  const DeskTemplate* coral_template = result.entries[0];
+  // TODO(crbug.com/365839564): This should be the name of the group, not the
+  // desk.
+  EXPECT_EQ(coral_template->template_name(), u"Desk 1");
+  EXPECT_EQ(coral_template->type(), DeskTemplateType::kCoral);
+
+  // Verify that the desk model entry browser info matches our fake coral
+  // response.
+  const app_restore::RestoreData* restore_data =
+      coral_template->desk_restore_data();
+  ASSERT_TRUE(restore_data);
+  const app_restore::RestoreData::AppIdToLaunchList& launch_list =
+      restore_data->app_id_to_launch_list();
+  EXPECT_TRUE(launch_list.contains("window1_app_id"));
+  EXPECT_TRUE(launch_list.contains("window2_app_id"));
+  EXPECT_FALSE(launch_list.contains("window3_app_id"));
 }
 
 TEST_F(CoralSavedGroupTest, MaxCoralSavedGroupLimit) {
