@@ -368,7 +368,14 @@ void WebSocketConnection::SendHandshakeResponse() {
 
   Read();
 
-  handler_->OnHandshakeComplete();
+  // A nullptr check is performed because the connection may have been closed
+  // within Read().
+  if (handler_) {
+    handler_->OnHandshakeComplete();
+  } else {
+    DVLOG(2)
+        << "Handler is null after starting Read. Connection likely closed.";
+  }
 }
 
 scoped_refptr<IOBufferWithSize> CreateTextFrame(std::string_view message) {
