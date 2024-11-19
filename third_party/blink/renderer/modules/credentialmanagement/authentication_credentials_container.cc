@@ -1263,8 +1263,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   if (IsDigitalIdentityCredentialType(*options) &&
       RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
           resolver->GetExecutionContext())) {
-    DiscoverDigitalIdentityCredentialFromExternalSource(
-        resolver, exception_state, *options);
+    DiscoverDigitalIdentityCredentialFromExternalSource(resolver, *options,
+                                                        exception_state);
     return promise;
   }
 

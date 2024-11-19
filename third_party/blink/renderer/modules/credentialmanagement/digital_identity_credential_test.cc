@@ -117,7 +117,7 @@ TEST_F(DigitalIdentityCredentialTest, IdentityDigitalCredentialUseCounter) {
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
           script_state);
   DiscoverDigitalIdentityCredentialFromExternalSource(
-      resolver, context.GetExceptionState(), *CreateValidOptions());
+      resolver, *CreateValidOptions(), context.GetExceptionState());
 
   test::RunPendingTasks();
 

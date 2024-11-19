@@ -22,11 +22,14 @@ class ExceptionState;
 MODULES_EXPORT bool IsDigitalIdentityCredentialType(
     const CredentialRequestOptions& options);
 
-// Requests the digital-identity credential specified by `options`.
+// Requests the digital-identity credential specified by `options`. Credentials
+// are stored in external wallets, and not stored in the browser. Therefore, the
+// browser will forward the request to the underlying platform to handle the
+// communication with external sources.
 MODULES_EXPORT void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    ExceptionState& expection_state,
-    const CredentialRequestOptions& options);
+    const CredentialRequestOptions& options,
+    ExceptionState& expection_state);
 
 }  // namespace blink
 

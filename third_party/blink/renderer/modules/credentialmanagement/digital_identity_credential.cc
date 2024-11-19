@@ -150,8 +150,8 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
 
 void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    ExceptionState& exception_state,
-    const CredentialRequestOptions& options) {
+    const CredentialRequestOptions& options,
+    ExceptionState& exception_state) {
   CHECK(IsDigitalIdentityCredentialType(options));
   CHECK(RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
       resolver->GetExecutionContext()));
