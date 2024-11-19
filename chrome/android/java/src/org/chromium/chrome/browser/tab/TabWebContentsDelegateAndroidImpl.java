@@ -439,7 +439,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public Bitmap maybeCopyContentAreaAsBitmapSync() {
-        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab);
+        return NativePageBitmapCapturer.maybeCaptureNativeViewSync(mTab, getTopControlsHeight());
     }
 
     @Override
