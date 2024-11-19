@@ -9,12 +9,13 @@ use crc32fast::Hasher as Crc32;
 use super::zlib::ZlibStream;
 use crate::chunk::{self, ChunkType, IDAT, IEND, IHDR};
 use crate::common::{
-    AnimationControl, BitDepth, BlendOp, ColorType, DisposeOp, FrameControl, Info, ParameterError,
-    ParameterErrorKind, PixelDimensions, ScaledFloat, SourceChromaticities, Unit,
+    AnimationControl, BitDepth, BlendOp, ColorType, ContentLightLevelInfo, DisposeOp, FrameControl,
+    Info, MasteringDisplayColorVolume, ParameterError, ParameterErrorKind, PixelDimensions,
+    ScaledFloat, SourceChromaticities, Unit,
 };
 use crate::text_metadata::{ITXtChunk, TEXtChunk, TextDecodingError, ZTXtChunk};
 use crate::traits::ReadBytesExt;
-use crate::Limits;
+use crate::{CodingIndependentCodePoints, Limits};
 
 /// TODO check if these size are reasonable
 pub const CHUNK_BUFFER_SIZE: usize = 32 * 1024;
@@ -960,6 +961,9 @@ impl StreamingDecoder {
             chunk::fcTL => self.parse_fctl(),
             chunk::cHRM => self.parse_chrm(),
             chunk::sRGB => self.parse_srgb(),
+            chunk::cICP => Ok(self.parse_cicp()),
+            chunk::mDCv => Ok(self.parse_mdcv()),
+            chunk::cLLi => Ok(self.parse_clli()),
             chunk::iCCP if !self.decode_options.ignore_iccp_chunk => self.parse_iccp(),
             chunk::tEXt if !self.decode_options.ignore_text_chunk => self.parse_text(),
             chunk::zTXt if !self.decode_options.ignore_text_chunk => self.parse_ztxt(),
@@ -1271,6 +1275,130 @@ impl StreamingDecoder {
             info.source_chromaticities = Some(crate::srgb::substitute_chromaticities());
             Ok(Decoded::Nothing)
         }
+    }
+
+    // NOTE: This function cannot return `DecodingError` and handles parsing
+    // errors or spec violations as-if the chunk was missing.  See
+    // https://github.com/image-rs/image-png/issues/525 for more discussion.
+    fn parse_cicp(&mut self) -> Decoded {
+        fn parse(mut buf: &[u8]) -> Result<CodingIndependentCodePoints, std::io::Error> {
+            let color_primaries: u8 = buf.read_be()?;
+            let transfer_function: u8 = buf.read_be()?;
+            let matrix_coefficients: u8 = buf.read_be()?;
+            let is_video_full_range_image = {
+                let flag: u8 = buf.read_be()?;
+                match flag {
+                    0 => false,
+                    1 => true,
+                    _ => {
+                        return Err(std::io::ErrorKind::InvalidData.into());
+                    }
+                }
+            };
+
+            // RGB is currently the only supported color model in PNG, and as
+            // such Matrix Coefficients shall be set to 0.
+            if matrix_coefficients != 0 {
+                return Err(std::io::ErrorKind::InvalidData.into());
+            }
+
+            if !buf.is_empty() {
+                return Err(std::io::ErrorKind::InvalidData.into());
+            }
+
+            Ok(CodingIndependentCodePoints {
+                color_primaries,
+                transfer_function,
+                matrix_coefficients,
+                is_video_full_range_image,
+            })
+        }
+
+        // The spec requires that the cICP chunk MUST come before the PLTE and IDAT chunks.
+        // Additionally, we ignore a second, duplicated cICP chunk (if any).
+        let info = self.info.as_mut().unwrap();
+        let is_before_plte_and_idat = !self.have_idat && info.palette.is_none();
+        if is_before_plte_and_idat && info.coding_independent_code_points.is_none() {
+            info.coding_independent_code_points = parse(&self.current_chunk.raw_bytes[..]).ok();
+        }
+
+        Decoded::Nothing
+    }
+
+    // NOTE: This function cannot return `DecodingError` and handles parsing
+    // errors or spec violations as-if the chunk was missing.  See
+    // https://github.com/image-rs/image-png/issues/525 for more discussion.
+    fn parse_mdcv(&mut self) -> Decoded {
+        fn parse(mut buf: &[u8]) -> Result<MasteringDisplayColorVolume, std::io::Error> {
+            let red_x: u16 = buf.read_be()?;
+            let red_y: u16 = buf.read_be()?;
+            let green_x: u16 = buf.read_be()?;
+            let green_y: u16 = buf.read_be()?;
+            let blue_x: u16 = buf.read_be()?;
+            let blue_y: u16 = buf.read_be()?;
+            let white_x: u16 = buf.read_be()?;
+            let white_y: u16 = buf.read_be()?;
+            fn scale(chunk: u16) -> ScaledFloat {
+                // `ScaledFloat::SCALING` is hardcoded to 100_000, which works
+                // well for the `cHRM` chunk where the spec says that "a value
+                // of 0.3127 would be stored as the integer 31270".  In the
+                // `mDCv` chunk the spec says that "0.708, 0.292)" is stored as
+                // "{ 35400, 14600 }", using a scaling factor of 50_000, so we
+                // multiply by 2 before converting.
+                ScaledFloat::from_scaled((chunk as u32) * 2)
+            }
+            let chromaticities = SourceChromaticities {
+                white: (scale(white_x), scale(white_y)),
+                red: (scale(red_x), scale(red_y)),
+                green: (scale(green_x), scale(green_y)),
+                blue: (scale(blue_x), scale(blue_y)),
+            };
+            let max_luminance: u32 = buf.read_be()?;
+            let min_luminance: u32 = buf.read_be()?;
+            if !buf.is_empty() {
+                return Err(std::io::ErrorKind::InvalidData.into());
+            }
+            Ok(MasteringDisplayColorVolume {
+                chromaticities,
+                max_luminance,
+                min_luminance,
+            })
+        }
+
+        // The spec requires that the mDCv chunk MUST come before the PLTE and IDAT chunks.
+        // Additionally, we ignore a second, duplicated mDCv chunk (if any).
+        let info = self.info.as_mut().unwrap();
+        let is_before_plte_and_idat = !self.have_idat && info.palette.is_none();
+        if is_before_plte_and_idat && info.mastering_display_color_volume.is_none() {
+            info.mastering_display_color_volume = parse(&self.current_chunk.raw_bytes[..]).ok();
+        }
+
+        Decoded::Nothing
+    }
+
+    // NOTE: This function cannot return `DecodingError` and handles parsing
+    // errors or spec violations as-if the chunk was missing.  See
+    // https://github.com/image-rs/image-png/issues/525 for more discussion.
+    fn parse_clli(&mut self) -> Decoded {
+        fn parse(mut buf: &[u8]) -> Result<ContentLightLevelInfo, std::io::Error> {
+            let max_content_light_level: u32 = buf.read_be()?;
+            let max_frame_average_light_level: u32 = buf.read_be()?;
+            if !buf.is_empty() {
+                return Err(std::io::ErrorKind::InvalidData.into());
+            }
+            Ok(ContentLightLevelInfo {
+                max_content_light_level,
+                max_frame_average_light_level,
+            })
+        }
+
+        // We ignore a second, duplicated cLLi chunk (if any).
+        let info = self.info.as_mut().unwrap();
+        if info.content_light_level.is_none() {
+            info.content_light_level = parse(&self.current_chunk.raw_bytes[..]).ok();
+        }
+
+        Decoded::Nothing
     }
 
     fn parse_iccp(&mut self) -> Result<Decoded, DecodingError> {

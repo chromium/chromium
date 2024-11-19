@@ -470,6 +470,95 @@ impl SrgbRenderingIntent {
     }
 }
 
+/// Coding-independent code points (cICP) specify the color space (primaries),
+/// transfer function, matrix coefficients and scaling factor of the image using
+/// the code points specified in [ITU-T-H.273](https://www.itu.int/rec/T-REC-H.273).
+///
+/// See https://www.w3.org/TR/png-3/#cICP-chunk for more details.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct CodingIndependentCodePoints {
+    /// Id number of the color primaries defined in
+    /// [ITU-T-H.273](https://www.itu.int/rec/T-REC-H.273) in "Table 2 -
+    /// Interpretation of colour primaries (ColourPrimaries) value".
+    pub color_primaries: u8,
+
+    /// Id number of the transfer characteristics defined in
+    /// [ITU-T-H.273](https://www.itu.int/rec/T-REC-H.273) in "Table 3 -
+    /// Interpretation of transfer characteristics (TransferCharacteristics)
+    /// value".
+    pub transfer_function: u8,
+
+    /// Id number of the matrix coefficients defined in
+    /// [ITU-T-H.273](https://www.itu.int/rec/T-REC-H.273) in "Table 4 -
+    /// Interpretation of matrix coefficients (MatrixCoefficients) value".
+    ///
+    /// This field is included to faithfully replicate the base
+    /// [ITU-T-H.273](https://www.itu.int/rec/T-REC-H.273) specification, but matrix coefficients
+    /// will always be set to 0, because RGB is currently the only supported color mode in PNG.
+    pub matrix_coefficients: u8,
+
+    /// Whether the image is
+    /// [a full range image](https://www.w3.org/TR/png-3/#dfn-full-range-image)
+    /// or
+    /// [a narrow range image](https://www.w3.org/TR/png-3/#dfn-narrow-range-image).
+    ///
+    /// This field is included to faithfully replicate the base
+    /// [ITU-T-H.273](https://www.itu.int/rec/T-REC-H.273) specification, but it has limited
+    /// practical application to PNG images, because narrow-range images are [quite
+    /// rare](https://github.com/w3c/png/issues/312#issuecomment-2327349614) in practice.
+    pub is_video_full_range_image: bool,
+}
+
+/// Mastering Display Color Volume (mDCv) used at the point of content creation,
+/// as specified in [SMPTE-ST-2086](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8353899).
+///
+/// See https://www.w3.org/TR/png-3/#mDCv-chunk for more details.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct MasteringDisplayColorVolume {
+    /// Mastering display chromaticities.
+    pub chromaticities: SourceChromaticities,
+
+    /// Mastering display maximum luminance.
+    ///
+    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
+    /// is set to `10000000` then it indicates 1000 cd/m^2.
+    pub max_luminance: u32,
+
+    /// Mastering display minimum luminance.
+    ///
+    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
+    /// is set to `10000000` then it indicates 1000 cd/m^2.
+    pub min_luminance: u32,
+}
+
+/// Content light level information of HDR content.
+///
+/// See https://www.w3.org/TR/png-3/#cLLi-chunk for more details.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ContentLightLevelInfo {
+    /// Maximum Content Light Level indicates the maximum light level of any
+    /// single pixel (in cd/m^2, also known as nits) of the entire playback
+    /// sequence.
+    ///
+    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
+    /// is set to `10000000` then it indicates 1000 cd/m^2.
+    ///
+    /// A value of zero means that the value is unknown or not currently calculable.
+    pub max_content_light_level: u32,
+
+    /// Maximum Frame Average Light Level indicates the maximum value of the
+    /// frame average light level (in cd/m^2, also known as nits) of the entire
+    /// playback sequence. It is calculated by first averaging the decoded
+    /// luminance values of all the pixels in each frame, and then using the
+    /// value for the frame with the highest value.
+    ///
+    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
+    /// is set to `10000000` then it indicates 1000 cd/m^2.
+    ///
+    /// A value of zero means that the value is unknown or not currently calculable.
+    pub max_frame_average_light_level: u32,
+}
+
 /// PNG info struct
 #[derive(Clone, Debug)]
 #[non_exhaustive]
@@ -507,6 +596,14 @@ pub struct Info<'a> {
     pub srgb: Option<SrgbRenderingIntent>,
     /// The ICC profile for the image.
     pub icc_profile: Option<Cow<'a, [u8]>>,
+    /// The coding-independent code points for video signal type identification of the image.
+    pub coding_independent_code_points: Option<CodingIndependentCodePoints>,
+    /// The mastering display color volume for the image.
+    pub mastering_display_color_volume: Option<MasteringDisplayColorVolume>,
+    /// The content light information for the image.
+    pub content_light_level: Option<ContentLightLevelInfo>,
+    /// The EXIF metadata for the image.
+    pub exif_metadata: Option<Cow<'a, [u8]>>,
     /// tEXt field
     pub uncompressed_latin1_text: Vec<TEXtChunk>,
     /// zTXt field
@@ -537,6 +634,10 @@ impl Default for Info<'_> {
             source_chromaticities: None,
             srgb: None,
             icc_profile: None,
+            coding_independent_code_points: None,
+            mastering_display_color_volume: None,
+            content_light_level: None,
+            exif_metadata: None,
             uncompressed_latin1_text: Vec::new(),
             compressed_latin1_text: Vec::new(),
             utf8_text: Vec::new(),
@@ -631,6 +732,7 @@ impl Info<'_> {
         data[9] = self.color_type as u8;
         data[12] = self.interlaced as u8;
         encoder::write_chunk(&mut w, chunk::IHDR, &data)?;
+
         // Encode the pHYs chunk
         if let Some(pd) = self.pixel_dims {
             let mut phys_data = [0; 9];
@@ -641,14 +743,6 @@ impl Info<'_> {
                 Unit::Unspecified => phys_data[8] = 0,
             }
             encoder::write_chunk(&mut w, chunk::pHYs, &phys_data)?;
-        }
-
-        if let Some(p) = &self.palette {
-            encoder::write_chunk(&mut w, chunk::PLTE, p)?;
-        };
-
-        if let Some(t) = &self.trns {
-            encoder::write_chunk(&mut w, chunk::tRNS, t)?;
         }
 
         // If specified, the sRGB information overrides the source gamma and chromaticities.
@@ -665,9 +759,27 @@ impl Info<'_> {
             if let Some(chrms) = self.source_chromaticities {
                 chrms.encode(&mut w)?;
             }
+            if let Some(iccp) = &self.icc_profile {
+                encoder::write_chunk(&mut w, chunk::iCCP, iccp)?;
+            }
         }
+
+        if let Some(exif) = &self.exif_metadata {
+            encoder::write_chunk(&mut w, chunk::eXIf, exif)?;
+        }
+
         if let Some(actl) = self.animation_control {
             actl.encode(&mut w)?;
+        }
+
+        // The position of the PLTE chunk is important, it must come before the tRNS chunk and after
+        // many of the other metadata chunks.
+        if let Some(p) = &self.palette {
+            encoder::write_chunk(&mut w, chunk::PLTE, p)?;
+        };
+
+        if let Some(t) = &self.trns {
+            encoder::write_chunk(&mut w, chunk::tRNS, t)?;
         }
 
         for text_chunk in &self.uncompressed_latin1_text {

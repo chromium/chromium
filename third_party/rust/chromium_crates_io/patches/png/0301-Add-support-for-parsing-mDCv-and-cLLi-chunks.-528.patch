@@ -1,0 +1,225 @@
+From 6016c9bee0fbd6244ebe49ed19a25094898c8001 Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <anforowicz@users.noreply.github.com>
+Date: Wed, 30 Oct 2024 20:45:18 -0700
+Subject: [PATCH 301/302] Add support for parsing `mDCv` and `cLLi` chunks.
+ (#528)
+
+---
+ Cargo.toml                 |   1 +
+ src/chunk.rs               |   4 ++
+ src/common.rs              |  56 +++++++++++++++++++
+ src/decoder/stream.rs      | 108 ++++++++++++++++++++++++++++++++++++-
+ tests/bugfixes/cicp_pq.png | Bin 0 -> 191 bytes
+ tests/results.txt          |   1 +
+ tests/results_alpha.txt    |   1 +
+ tests/results_identity.txt |   1 +
+ 8 files changed, 170 insertions(+), 2 deletions(-)
+ create mode 100644 tests/bugfixes/cicp_pq.png
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/chunk.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/chunk.rs
+index 3908313..34a088f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/chunk.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/chunk.rs
+@@ -35,6 +35,10 @@ pub const gAMA: ChunkType = ChunkType(*b"gAMA");
+ pub const sRGB: ChunkType = ChunkType(*b"sRGB");
+ /// ICC profile chunk
+ pub const iCCP: ChunkType = ChunkType(*b"iCCP");
++/// Mastering Display Color Volume chunk
++pub const mDCv: ChunkType = ChunkType(*b"mDCv");
++/// Content Light Level Information chunk
++pub const cLLi: ChunkType = ChunkType(*b"cLLi");
+ /// EXIF metadata chunk
+ pub const eXIf: ChunkType = ChunkType(*b"eXIf");
+ /// Latin-1 uncompressed textual data
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs
+index 259a2b1..4c06e3b 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs
+@@ -470,6 +470,56 @@ impl SrgbRenderingIntent {
+     }
+ }
+ 
++/// Mastering Display Color Volume (mDCv) used at the point of content creation,
++/// as specified in [SMPTE-ST-2086](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8353899).
++///
++/// See https://www.w3.org/TR/png-3/#mDCv-chunk for more details.
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub struct MasteringDisplayColorVolume {
++    /// Mastering display chromaticities.
++    pub chromaticities: SourceChromaticities,
++
++    /// Mastering display maximum luminance.
++    ///
++    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
++    /// is set to `10000000` then it indicates 1000 cd/m^2.
++    pub max_luminance: u32,
++
++    /// Mastering display minimum luminance.
++    ///
++    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
++    /// is set to `10000000` then it indicates 1000 cd/m^2.
++    pub min_luminance: u32,
++}
++
++/// Content light level information of HDR content.
++///
++/// See https://www.w3.org/TR/png-3/#cLLi-chunk for more details.
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub struct ContentLightLevelInfo {
++    /// Maximum Content Light Level indicates the maximum light level of any
++    /// single pixel (in cd/m^2, also known as nits) of the entire playback
++    /// sequence.
++    ///
++    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
++    /// is set to `10000000` then it indicates 1000 cd/m^2.
++    ///
++    /// A value of zero means that the value is unknown or not currently calculable.
++    pub max_content_light_level: u32,
++
++    /// Maximum Frame Average Light Level indicates the maximum value of the
++    /// frame average light level (in cd/m^2, also known as nits) of the entire
++    /// playback sequence. It is calculated by first averaging the decoded
++    /// luminance values of all the pixels in each frame, and then using the
++    /// value for the frame with the highest value.
++    ///
++    /// The value is expressed in units of 0.0001 cd/m^2 - for example if this field
++    /// is set to `10000000` then it indicates 1000 cd/m^2.
++    ///
++    /// A value of zero means that the value is unknown or not currently calculable.
++    pub max_frame_average_light_level: u32,
++}
++
+ /// PNG info struct
+ #[derive(Clone, Debug)]
+ #[non_exhaustive]
+@@ -507,6 +557,10 @@ pub struct Info<'a> {
+     pub srgb: Option<SrgbRenderingIntent>,
+     /// The ICC profile for the image.
+     pub icc_profile: Option<Cow<'a, [u8]>>,
++    /// The mastering display color volume for the image.
++    pub mastering_display_color_volume: Option<MasteringDisplayColorVolume>,
++    /// The content light information for the image.
++    pub content_light_level: Option<ContentLightLevelInfo>,
+     /// The EXIF metadata for the image.
+     pub exif_metadata: Option<Cow<'a, [u8]>>,
+     /// tEXt field
+@@ -539,6 +593,8 @@ impl Default for Info<'_> {
+             source_chromaticities: None,
+             srgb: None,
+             icc_profile: None,
++            mastering_display_color_volume: None,
++            content_light_level: None,
+             exif_metadata: None,
+             uncompressed_latin1_text: Vec::new(),
+             compressed_latin1_text: Vec::new(),
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+index 5c21a5a..68de12d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+@@ -9,8 +9,9 @@ use crc32fast::Hasher as Crc32;
+ use super::zlib::ZlibStream;
+ use crate::chunk::{self, ChunkType, IDAT, IEND, IHDR};
+ use crate::common::{
+-    AnimationControl, BitDepth, BlendOp, ColorType, DisposeOp, FrameControl, Info, ParameterError,
+-    ParameterErrorKind, PixelDimensions, ScaledFloat, SourceChromaticities, Unit,
++    AnimationControl, BitDepth, BlendOp, ColorType, ContentLightLevelInfo, DisposeOp, FrameControl,
++    Info, MasteringDisplayColorVolume, ParameterError, ParameterErrorKind, PixelDimensions,
++    ScaledFloat, SourceChromaticities, Unit,
+ };
+ use crate::text_metadata::{ITXtChunk, TEXtChunk, TextDecodingError, ZTXtChunk};
+ use crate::traits::ReadBytesExt;
+@@ -958,6 +959,8 @@ impl StreamingDecoder {
+             chunk::fcTL => self.parse_fctl(),
+             chunk::cHRM => self.parse_chrm(),
+             chunk::sRGB => self.parse_srgb(),
++            chunk::mDCv => Ok(self.parse_mdcv()),
++            chunk::cLLi => Ok(self.parse_clli()),
+             chunk::iCCP if !self.decode_options.ignore_iccp_chunk => self.parse_iccp(),
+             chunk::tEXt if !self.decode_options.ignore_text_chunk => self.parse_text(),
+             chunk::zTXt if !self.decode_options.ignore_text_chunk => self.parse_ztxt(),
+@@ -1271,6 +1274,82 @@ impl StreamingDecoder {
+         }
+     }
+ 
++    // NOTE: This function cannot return `DecodingError` and handles parsing
++    // errors or spec violations as-if the chunk was missing.  See
++    // https://github.com/image-rs/image-png/issues/525 for more discussion.
++    fn parse_mdcv(&mut self) -> Decoded {
++        fn parse(mut buf: &[u8]) -> Result<MasteringDisplayColorVolume, std::io::Error> {
++            let red_x: u16 = buf.read_be()?;
++            let red_y: u16 = buf.read_be()?;
++            let green_x: u16 = buf.read_be()?;
++            let green_y: u16 = buf.read_be()?;
++            let blue_x: u16 = buf.read_be()?;
++            let blue_y: u16 = buf.read_be()?;
++            let white_x: u16 = buf.read_be()?;
++            let white_y: u16 = buf.read_be()?;
++            fn scale(chunk: u16) -> ScaledFloat {
++                // `ScaledFloat::SCALING` is hardcoded to 100_000, which works
++                // well for the `cHRM` chunk where the spec says that "a value
++                // of 0.3127 would be stored as the integer 31270".  In the
++                // `mDCv` chunk the spec says that "0.708, 0.292)" is stored as
++                // "{ 35400, 14600 }", using a scaling factor of 50_000, so we
++                // multiply by 2 before converting.
++                ScaledFloat::from_scaled((chunk as u32) * 2)
++            }
++            let chromaticities = SourceChromaticities {
++                white: (scale(white_x), scale(white_y)),
++                red: (scale(red_x), scale(red_y)),
++                green: (scale(green_x), scale(green_y)),
++                blue: (scale(blue_x), scale(blue_y)),
++            };
++            let max_luminance: u32 = buf.read_be()?;
++            let min_luminance: u32 = buf.read_be()?;
++            if !buf.is_empty() {
++                return Err(std::io::ErrorKind::InvalidData.into());
++            }
++            Ok(MasteringDisplayColorVolume {
++                chromaticities,
++                max_luminance,
++                min_luminance,
++            })
++        }
++
++        // The spec requires that the mDCv chunk MUST come before the PLTE and IDAT chunks.
++        // Additionally, we ignore a second, duplicated mDCv chunk (if any).
++        let info = self.info.as_mut().unwrap();
++        let is_before_plte_and_idat = !self.have_idat && info.palette.is_none();
++        if is_before_plte_and_idat && info.mastering_display_color_volume.is_none() {
++            info.mastering_display_color_volume = parse(&self.current_chunk.raw_bytes[..]).ok();
++        }
++
++        Decoded::Nothing
++    }
++
++    // NOTE: This function cannot return `DecodingError` and handles parsing
++    // errors or spec violations as-if the chunk was missing.  See
++    // https://github.com/image-rs/image-png/issues/525 for more discussion.
++    fn parse_clli(&mut self) -> Decoded {
++        fn parse(mut buf: &[u8]) -> Result<ContentLightLevelInfo, std::io::Error> {
++            let max_content_light_level: u32 = buf.read_be()?;
++            let max_frame_average_light_level: u32 = buf.read_be()?;
++            if !buf.is_empty() {
++                return Err(std::io::ErrorKind::InvalidData.into());
++            }
++            Ok(ContentLightLevelInfo {
++                max_content_light_level,
++                max_frame_average_light_level,
++            })
++        }
++
++        // We ignore a second, duplicated cLLi chunk (if any).
++        let info = self.info.as_mut().unwrap();
++        if info.content_light_level.is_none() {
++            info.content_light_level = parse(&self.current_chunk.raw_bytes[..]).ok();
++        }
++
++        Decoded::Nothing
++    }
++
+     fn parse_iccp(&mut self) -> Result<Decoded, DecodingError> {
+         if self.have_idat {
+             Err(DecodingError::Format(
+-- 
+2.47.0.199.ga7371fff76-goog
+
