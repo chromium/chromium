@@ -246,6 +246,8 @@
     case SigninCoordinatorResultCanceledByUser:
       [self runCompletionWithSigninResult:result completionInfo:nil];
       break;
+    case SigninCoordinatorUINotAvailable:
+      NOTREACHED();
   }
 }
 
@@ -313,6 +315,10 @@
     case SigninCoordinatorResultCanceledByUser:
       [self runCompletionWithSigninResult:result completionInfo:nil];
       break;
+    case SigninCoordinatorUINotAvailable:
+      // InstantSigninCoordinator presents its child coordinators directly and
+      // does not use `ShowSigninCommand`.
+      NOTREACHED();
   }
 }
 
