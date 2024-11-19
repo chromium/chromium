@@ -8178,7 +8178,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2669" label="OffscreenCanvasTransferToImageBitmap"/>
   <int value="2670" label="OffscreenCanvasIsPointInPath"/>
   <int value="2671" label="OffscreenCanvasIsPointInStroke"/>
-  <int value="2672" label="OffscreenCanvasMeasureText"/>
+  <int value="2672" label="OBSOLETE_OffscreenCanvasMeasureText"/>
   <int value="2673" label="OffscreenCanvasGetImageData"/>
   <int value="2674"
       label="V8SVGTextContentElement_GetComputedTextLength_Method"/>
@@ -10905,6 +10905,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5194" label="V8Element_GetAnimations_Method"/>
   <int value="5195" label="CSSCalcSizeFunction"/>
   <int value="5196" label="MoveEvent"/>
+  <int value="5197" label="Canvas2DDrawText"/>
+  <int value="5198" label="Canvas2DMeasureText"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

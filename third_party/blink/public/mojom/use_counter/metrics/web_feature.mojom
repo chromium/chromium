@@ -2021,7 +2021,7 @@ enum WebFeature {
   kOffscreenCanvasTransferToImageBitmap = 2669,
   kOffscreenCanvasIsPointInPath = 2670,
   kOffscreenCanvasIsPointInStroke = 2671,
-  kOffscreenCanvasMeasureText = 2672,
+  kOBSOLETE_OffscreenCanvasMeasureText = 2672,
   kOffscreenCanvasGetImageData = 2673,
   kV8SVGTextContentElement_GetComputedTextLength_Method = 2674,
   kV8SVGTextContentElement_GetEndPositionOfChar_Method = 2675,
@@ -4568,6 +4568,8 @@ enum WebFeature {
   kV8Element_GetAnimations_Method = 5194,
   kCSSCalcSizeFunction = 5195,
   kMoveEvent = 5196,
+  kCanvas2DDrawText = 5197,
+  kCanvas2DMeasureText = 5198,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
