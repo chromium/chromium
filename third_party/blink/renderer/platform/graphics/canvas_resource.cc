@@ -66,7 +66,8 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
       size_(size),
       sk_color_type_(sk_color_type),
       sk_alpha_type_(sk_alpha_type),
-      sk_color_space_(std::move(sk_color_space)),
+      color_space_(sk_color_space ? gfx::ColorSpace(*sk_color_space)
+                                  : gfx::ColorSpace::CreateSRGB()),
       filter_quality_(filter_quality) {}
 
 CanvasResource::~CanvasResource() {}
@@ -238,7 +239,8 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   return SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                           sk_color_type_, sk_alpha_type_, sk_color_space_);
+                           sk_color_type_, sk_alpha_type_,
+                           color_space_.ToSkColorSpace());
 }
 
 viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
@@ -246,9 +248,7 @@ viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
-  SkColorSpace* color_space = sk_color_space_.get();
-  return color_space ? gfx::ColorSpace(*color_space)
-                     : gfx::ColorSpace::CreateSRGB();
+  return color_space_;
 }
 
 // CanvasResourceSharedBitmap

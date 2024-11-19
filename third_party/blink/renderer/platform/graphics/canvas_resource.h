@@ -264,7 +264,7 @@ class PLATFORM_EXPORT CanvasResource
   gfx::Size size_;
   SkColorType sk_color_type_;
   SkAlphaType sk_alpha_type_;
-  sk_sp<SkColorSpace> sk_color_space_;
+  gfx::ColorSpace color_space_;
   cc::PaintFlags::FilterQuality filter_quality_;
   LastUnrefCallback last_unref_callback_;
 };
