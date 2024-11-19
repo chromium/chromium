@@ -2443,6 +2443,13 @@ bool DesksController::MoveWindowFromSourceDeskTo(
   if (is_floated) {
     Shell::Get()->float_controller()->OnMovingFloatedWindowToDesk(
         window, source_desk, target_desk, target_root);
+    // Append item for the floating `window` to overview when the target desk is
+    // the `active_desk_`.
+    if (in_overview && target_desk == active_desk_) {
+      overview_controller->overview_session()->AppendItem(window,
+                                                          /*reposition=*/true,
+                                                          /*animate=*/true);
+    }
   } else {
     source_desk->MoveWindowToDesk(window, target_desk, target_root,
                                   /*unminimize=*/true);
