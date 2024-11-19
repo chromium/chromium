@@ -64,14 +64,19 @@ if (use_remoteexec) {
       "Either use_reclient or use_siso needs to be true to enable remote executions")
 }
 
+# Siso native also uses rewrapper cfg file
+# to get remote platform property.
+use_reclient_cfgs = use_reclient || (use_siso && use_remoteexec &&
+                                     (host_os == "win" || host_os == "mac"))
+
 declare_args() {
   # Set to the path of the RBE reclient configuration files.
   # Configuration file selection based on operating system.
-  if (!use_reclient) {
+  if (!use_reclient_cfgs) {
     reclient_cc_cfg_file = ""
     reclient_py_cfg_file = ""
     reclient_py_large_cfg_file = ""
-  } else if (host_os == "linux") {
+  } else if (use_reclient && host_os == "linux") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_linux.cfg"
     reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
@@ -116,7 +121,7 @@ declare_args() {
   }
 }
 
-if (use_reclient && current_toolchain == default_toolchain) {
+if (use_reclient_cfgs && current_toolchain == default_toolchain) {
   # Check existence of reclient configs and show user friendly error message if
   # it doesn't.
   exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
