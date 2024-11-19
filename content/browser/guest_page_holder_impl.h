@@ -5,10 +5,13 @@
 #ifndef CONTENT_BROWSER_GUEST_PAGE_HOLDER_IMPL_H_
 #define CONTENT_BROWSER_GUEST_PAGE_HOLDER_IMPL_H_
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/guest_page_holder.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -75,8 +78,11 @@ class GuestPageHolderImpl : public GuestPageHolder,
   // If the `render_frame_host` is within a guest, returns the guest's
   // associated GuestPageHolder. Will return null if `render_frame_host`
   // is not within a guest.
-  static GuestPageHolderImpl* FromRenderFrameHost(
+  CONTENT_EXPORT static GuestPageHolderImpl* FromRenderFrameHost(
       RenderFrameHostImpl& render_frame_host);
+
+  CONTENT_EXPORT base::CallbackListSubscription
+  RegisterLoadStopCallbackForTesting(base::RepeatingClosure callback);
 
  private:
   const raw_ref<WebContentsImpl> owner_web_contents_;
@@ -84,17 +90,20 @@ class GuestPageHolderImpl : public GuestPageHolder,
   base::WeakPtr<GuestPageHolder::Delegate> delegate_;
 
   std::unique_ptr<ForwardingAudioStreamFactory> audio_stream_factory_;
+  bool audio_muted_ = false;
+
+  blink::RendererPreferences renderer_preferences_;
+
+  base::RepeatingClosureList load_stop_callbacks_for_testing_;
 
   // The outer FrameTreeNode is not known until the guest is attached.
   FrameTreeNodeId outer_frame_tree_node_id_;
 
   // This FrameTree contains the guest page. It has the type
   // `FrameTree::Type::kGuest`.
+  // Note that the destruction of this tree may call back into this object, so
+  // the destruction order of this tree matters relative to some other members.
   FrameTree frame_tree_;
-
-  bool audio_muted_ = false;
-
-  blink::RendererPreferences renderer_preferences_;
 };
 
 }  // namespace content
