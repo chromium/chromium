@@ -88,10 +88,16 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
 
   // We cannot install if we are in scope of an installed crafted app, no matter
   // the user display type.
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<AppId> non_diy_app_id =
-      provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
+      provider->registrar_unsafe().FindBestAppWithUrlInScope(
           start_url,
-          /*window_only=*/false, /*exclude_diy_apps=*/true);
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          },
+          {.include_open_in_browser_tab = true, .include_diy = false});
   if (non_diy_app_id) {
     return true;
   }
