@@ -854,6 +854,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWindowCaptureAllowedByOrigins,
     prefs::kWindowCaptureAllowedByOrigins,
     base::Value::Type::LIST },
+  { key::kPasswordManagerPasskeysEnabled,
+    password_manager::prefs::kCredentialsEnablePasskeys,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_ANDROID)
   { key::kAlternateErrorPagesEnabled,
     embedder_support::kAlternateErrorPagesEnabled,

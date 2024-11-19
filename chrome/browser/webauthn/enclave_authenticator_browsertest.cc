@@ -2737,6 +2737,35 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
 }
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_NoGpmCreationIfPasswordManagerPasskeysDisabled \
+  DISABLED_NoGpmCreationIfPasswordManagerPasskeysDisabled
+#else
+#define MAYBE_NoGpmCreationIfPasswordManagerPasskeysDisabled \
+  NoGpmCreationIfPasswordManagerPasskeysDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
+                       MAYBE_NoGpmCreationIfPasswordManagerPasskeysDisabled) {
+  EnableUVKeySupport();
+  CheckRegistrationStateNotRequested();
+
+  browser()->profile()->GetPrefs()->SetBoolean(
+      password_manager::prefs::kCredentialsEnablePasskeys, false);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_TRUE(
+      base::ranges::none_of(dialog_model()->mechanisms, [](const auto& m) {
+        return absl::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Enclave>(m.type);
+      }));
+  EXPECT_FALSE(request_delegate()->enclave_controller_for_testing());
+}
+
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
                        EnrollAndCreate) {
   EnableUVKeySupport();

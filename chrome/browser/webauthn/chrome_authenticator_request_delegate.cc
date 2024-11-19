@@ -1099,8 +1099,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     // Creating credentials in GPM can be disabled by policy, but get() is
     // always allowed.
     if (request_type == device::FidoRequestType::kGetAssertion ||
-        profile->GetPrefs()->GetBoolean(
-            password_manager::prefs::kCredentialsEnableService)) {
+        (profile->GetPrefs()->GetBoolean(
+             password_manager::prefs::kCredentialsEnableService) &&
+         profile->GetPrefs()->GetBoolean(
+             password_manager::prefs::kCredentialsEnablePasskeys))) {
       auto* const identity_manager =
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
       const auto consent = signin::ConsentLevel::kSignin;
