@@ -91,11 +91,10 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
       return;
     }
 
-    aura::Window* frame_window = GetWidget()->GetNativeWindow();
+    aura::Window* window = GetWidget()->GetNativeWindow();
 
-    const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
-    frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                              corner_radius);
+    const int corner_radius = chromeos::GetWindowCornerRadius(window);
+    window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
 
     if (draw_frame()) {
       SetFrameCornerRadius(corner_radius);
@@ -111,7 +110,7 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
     // Windows in ChromeOS are rounded for certain window states. If these
     // states change, we need to update the rounded corners accordingly. See
     // `chromeos::ShouldWindowHaveRoundedCorners()` for more details.
-    if (chromeos::CanPropertyEffectFrameRadius(key)) {
+    if (chromeos::CanPropertyEffectWindowRadius(key)) {
       UpdateWindowRoundedCorners();
     }
   }

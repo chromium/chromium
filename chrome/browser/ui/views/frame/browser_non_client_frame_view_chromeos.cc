@@ -684,10 +684,10 @@ void BrowserNonClientFrameViewChromeOS::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  // Frames in chromeOS have rounded frames for certain window states. If these
+  // ChromeOS has rounded windows for certain window states. If these
   // states changes, we need to update the rounded corners accordingly. See
-  // `chromeos::GetFrameCornerRadius()` for more details.
-  if (chromeos::CanPropertyEffectFrameRadius(key)) {
+  // `chromeos::GetWindowCornerRadius()` for more details.
+  if (chromeos::CanPropertyEffectWindowRadius(key)) {
     UpdateWindowRoundedCorners();
   }
 
@@ -993,11 +993,10 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
 void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
   DCHECK(GetWidget());
 
-  aura::Window* frame_window = GetWidget()->GetNativeWindow();
+  aura::Window* window = GetWidget()->GetNativeWindow();
 
-  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
-  frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                            corner_radius);
+  const int corner_radius = chromeos::GetWindowCornerRadius(window);
+  window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
 
   if (frame_header_) {
     frame_header_->SetHeaderCornerRadius(corner_radius);

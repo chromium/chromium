@@ -32,11 +32,10 @@ void PictureInPictureBrowserFrameViewAsh::UpdateWindowRoundedCorners() {
     return;
   }
 
-  aura::Window* frame_window = GetWidget()->GetNativeWindow();
-  const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  const int corner_radius = chromeos::GetWindowCornerRadius(window);
 
-  frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                            corner_radius);
+  window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
 
   const gfx::RoundedCornersF radii(corner_radius, corner_radius, 0, 0);
   top_bar_container_view()->SetPaintToLayer();
@@ -50,7 +49,7 @@ void PictureInPictureBrowserFrameViewAsh::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (chromeos::CanPropertyEffectFrameRadius(key)) {
+  if (chromeos::CanPropertyEffectWindowRadius(key)) {
     UpdateWindowRoundedCorners();
   }
 }
