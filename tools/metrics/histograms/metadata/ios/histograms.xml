@@ -1104,28 +1104,25 @@ chromium-metrics-reviews@google.com.
     default browser promo.
   </summary>
   <token key="PromoAction">
-    <variant name="Accepted"/>
     <variant name="Appear"/>
     <variant name="Cancel"/>
     <variant name="Dismiss"/>
+    <variant name="PrimaryAction"/>
   </token>
   <token key="PromoStat">
-    <variant name="ActiveDayCount"
-        summary="Represents number days user has been active within last
-                 valid period"/>
-    <variant name="AutofillUseCount"
+    <variant name="AutofllUseCount"
         summary="Represents number of times user used autofill suggestions."/>
     <variant name="BookmarkUseCount"
         summary="Represents number of times user used bookmarks or bookmark
                  manager."/>
     <variant name="ChromeColdStartCount"
         summary="Represents number of time Chrome cold starts"/>
-    <variant name="ChromeOpenIndirectlyCount"
+    <variant name="ChromeIndirectStartCount"
         summary="Represents number of time Chrome indirect (by widget or
                  external url) starts"/>
     <variant name="ChromeWarmStartCount"
         summary="Represents number of time Chrome warm starts"/>
-    <variant name="LastPromoNumDays"
+    <variant name="LastPromoInteractionNumDays"
         summary="Represents number of days since last default browser promo
                  was displayed"/>
     <variant name="OmniboxClipboardUseCount"
