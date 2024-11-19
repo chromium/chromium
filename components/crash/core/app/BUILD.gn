@@ -204,6 +204,8 @@ if (is_win) {
       "crash_export_thunks.h",
     ]
 
+    defines = [ "CRASH_IMPLEMENTATION" ]
+
     deps = [
       ":app",
       "//base",

@@ -2755,6 +2755,7 @@ if (!is_android) {
       "../browser/enterprise/connectors/reporting/crash_reporting_context_browsertest.cc",
       "../browser/enterprise/util/managed_browser_utils_browsertest.cc",
       "../browser/enterprise/watermark/watermark_browsertest.cc",
+      "../browser/error_reporting/crash_client_upload_info_browsertest.cc",
       "../browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api_browsertest.cc",
       "../browser/fast_shutdown_browsertest.cc",
       "../browser/favicon/content_favicon_driver_browsertest.cc",

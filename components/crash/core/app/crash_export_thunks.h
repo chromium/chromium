@@ -13,8 +13,9 @@
 #include "build/build_config.h"
 
 namespace crash_reporter {
+struct ProductInfo;
 struct Report;
-}
+}  // namespace crash_reporter
 
 extern "C" {
 
@@ -51,6 +52,15 @@ int CrashForException_ExportThunk(EXCEPTION_POINTERS* info);
 // crash_reporter::GetCrashReporterClient()->GetCollectStatsConsent(), but it's
 // not enforced to avoid blocking startup code on synchronizing them.
 void SetUploadConsent_ExportThunk(bool consent);
+
+// Returns the current upload consent state.
+// This function is used by JS Error reporting which lives in chrome.dll.
+bool GetUploadConsent_ExportThunk();
+
+// Returns a textual description of the product info (product name, version,
+// etc.) to include in the crash report.
+// This function is used by JS Error reporting which lives in chrome.dll.
+void GetProductInfo_ExportThunk(crash_reporter::ProductInfo* product_info);
 
 // Injects a thread into a remote process to dump state when there is no crash.
 // |process| that represents serialized crash keys sent from the browser.

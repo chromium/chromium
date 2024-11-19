@@ -161,23 +161,10 @@ ChromeJsErrorReportProcessor::CheckConsentAndRedact(
   return error_report;
 }
 
-struct ChromeJsErrorReportProcessor::PlatformInfo {
-  std::string product_name;
-  std::string version;
-  std::string channel;
-};
-
-ChromeJsErrorReportProcessor::PlatformInfo
-ChromeJsErrorReportProcessor::GetPlatformInfo() {
-  PlatformInfo info;
-
-  // TODO(crbug.com/40146362): Get correct product_name for non-POSIX
-  // platforms.
-#if BUILDFLAG(IS_POSIX)
-  crash_reporter::GetClientProductNameAndVersion(&info.product_name,
-                                                 &info.version, &info.channel);
-#endif
-  return info;
+crash_reporter::ProductInfo ChromeJsErrorReportProcessor::GetProductInfo() {
+  crash_reporter::ProductInfo product_info;
+  crash_reporter::GetClientProductInfo(&product_info);
+  return product_info;
 }
 
 variations::ExperimentListInfo
@@ -206,27 +193,24 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     return;
   }
 
-  const auto platform = GetPlatformInfo();
+  const crash_reporter::ProductInfo product_info = GetProductInfo();
   const GURL source(error_report->url);
-  const auto product = error_report->product.empty() ? platform.product_name
-                                                     : error_report->product;
-  const auto version =
-      error_report->version.empty() ? platform.version : error_report->version;
+  const std::string product_name = error_report->product.empty()
+                                       ? product_info.product_name
+                                       : error_report->product;
+  const std::string version = error_report->version.empty()
+                                  ? product_info.version
+                                  : error_report->version;
 
   ParameterMap params;
-  params["prod"] = base::EscapeQueryParamValue(product, /*use_plus=*/false);
+  params["prod"] =
+      base::EscapeQueryParamValue(product_name, /*use_plus=*/false);
   params["ver"] = base::EscapeQueryParamValue(version, /*use_plus=*/false);
   params["type"] = "JavascriptError";
   params["error_message"] = TruncateErrorMessage(error_report->message);
   params["browser"] = "Chrome";
-  params["browser_version"] = platform.version;
-  params["channel"] = platform.channel;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int64_t build_time =
-      (base::GetBuildTime() - base::Time::UnixEpoch()).InMilliseconds();
-  params["build_time_millis"] = base::NumberToString(build_time);
-#endif
-
+  params["browser_version"] = product_info.version;
+  params["channel"] = product_info.channel;
 #if BUILDFLAG(IS_CHROMEOS)
   // base::SysInfo::OperatingSystemName() returns "Linux" on ChromeOS devices.
   params["os"] = "ChromeOS";
@@ -251,12 +235,15 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   params["full_url"] = source.spec();
   params["url"] = source.path();
   params["src"] = source.spec();
-  if (error_report->line_number)
+  if (error_report->line_number) {
     params["line"] = base::NumberToString(*error_report->line_number);
-  if (error_report->column_number)
+  }
+  if (error_report->column_number) {
     params["column"] = base::NumberToString(*error_report->column_number);
-  if (error_report->debug_id)
+  }
+  if (error_report->debug_id) {
     params["debug_id"] = std::move(*error_report->debug_id);
+  }
   // TODO(crbug.com/40146362): Chrome crashes have "Process uptime" and "Process
   // type" fields, eventually consider using that for process uptime.
   params["browser_process_uptime_ms"] =
@@ -266,13 +253,16 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   if (error_report->window_type.has_value()) {
     std::string window_type =
         MapWindowTypeToString(error_report->window_type.value());
-    if (window_type != kNoBrowserNoWindow)
+    if (window_type != kNoBrowserNoWindow) {
       params["window_type"] = window_type;
+    }
   }
-  if (error_report->app_locale)
+  if (error_report->app_locale) {
     params["app_locale"] = std::move(*error_report->app_locale);
-  if (error_report->page_url)
+  }
+  if (error_report->page_url) {
     params["page_url"] = std::move(*error_report->page_url);
+  }
   AddExperimentIds(params);
 
   SendReport(std::move(params), std::move(error_report->stack_trace),

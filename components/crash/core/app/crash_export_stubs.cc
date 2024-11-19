@@ -27,6 +27,12 @@ int CrashForException_ExportThunk(EXCEPTION_POINTERS* info) {
 
 void SetUploadConsent_ExportThunk(bool consent) {}
 
+bool GetUploadConsent_ExportThunk() {
+  return true;
+}
+
+void GetProductInfo_ExportThunk(crash_reporter::ProductInfo* product_info) {}
+
 HANDLE InjectDumpForHungInput_ExportThunk(HANDLE process) {
   return nullptr;
 }

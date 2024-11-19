@@ -19,6 +19,15 @@ class FilePath;
 
 namespace crash_reporter {
 
+struct ProductInfo {
+  ProductInfo();
+  ~ProductInfo();
+
+  std::string product_name;
+  std::string version;
+  std::string channel;
+};
+
 class CrashReporterClient;
 
 // Setter and getter for the client.  The client should be set early, before any
@@ -28,20 +37,20 @@ void SetCrashReporterClient(CrashReporterClient* client);
 
 #if defined(CRASH_IMPLEMENTATION)
 // The components's embedder API should only be used by the component.
+// WARNING: do not use this outside of the component.
+// On Windows, the CrashReporterClient lives in chrome_elf.dll. Unless you are
+// in chrome_elf.dll, this function will returns nullptr. If you want to access
+// the client data from outside of the component, use functions in
+// crash_export_thunks.h (Windows-only) or client_upload_info.h (all platforms).
 CrashReporterClient* GetCrashReporterClient();
 #endif
 
 // Interface that the embedder implements.
 class CrashReporterClient {
  public:
-  struct ProductInfo {
-    ProductInfo();
-    ~ProductInfo();
-
-    std::string product_name;
-    std::string version;
-    std::string channel;
-  };
+  // Type alias for subclasses outside of crash_reporter to reference
+  // ProductInfo without needing to include the crash_reporter:: prefix.
+  using ProductInfo = crash_reporter::ProductInfo;
 
   CrashReporterClient();
   virtual ~CrashReporterClient();

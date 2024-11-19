@@ -1066,7 +1066,7 @@ void HandleCrashDump(const BreakpadInfo& info) {
 
   MimeWriter writer(temp_file_fd, mime_boundary);
   {
-    crash_reporter::CrashReporterClient::ProductInfo product_info;
+    crash_reporter::ProductInfo product_info;
     GetCrashReporterClient()->GetProductInfo(&product_info);
 
     writer.AddBoundary();
