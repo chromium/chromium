@@ -115,10 +115,10 @@ def capitalize(value):
   return value[0].upper() + value[1:]
 
 
-def escape_class_name(fully_qualified_class):
-  """Returns an escaped string concatenating the Java package and class."""
-  escaped = fully_qualified_class.replace('_', '_1')
-  return escaped.replace('/', '_').replace('$', '_00024')
+def jni_mangle(name):
+  """Performs JNI mangling on the given name."""
+  # https://docs.oracle.com/javase/1.5.0/docs/guide/jni/spec/design.html#wp615
+  return name.replace('_', '_1').replace('/', '_').replace('$', '_00024')
 
 
 @contextlib.contextmanager

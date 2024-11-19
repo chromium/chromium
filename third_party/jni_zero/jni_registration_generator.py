@@ -291,7 +291,7 @@ def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
   swaps = {}
   for match in java_function_call_re.finditer(java_functions_string):
     java_name = match.group(1)
-    cpp_full_name = 'Java_' + common.escape_class_name(java_name)
+    cpp_full_name = 'Java_' + common.jni_mangle(java_name)
     switch_num = method_to_switch_num[cpp_full_name]
     replace_location = java_functions_string.find(
         _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN, match.end())
@@ -329,8 +329,7 @@ ${CASES}
   for signature, cases in sorted(signature_to_cpp_calls.items()):
     param_strings, _ = _GetMultiplexingParamsList(signature.param_types)
     java_class_name = short_gen_jni_class.to_cpp()
-    java_function_name = common.escape_class_name(
-        _GetMultiplexProxyName(signature))
+    java_function_name = common.jni_mangle(_GetMultiplexProxyName(signature))
     proxy_function_name = f'{java_class_name}_{java_function_name}'
     all_cases = '\n'.join(cases)
     if len(cases) > 1:
@@ -508,7 +507,7 @@ def _GetProxyKMethodArrayEntry(jni_obj, native, gen_jni_class, *,
     class_name = gen_jni_class.to_cpp()
     sorted_signature = native.proxy_signature.with_params_reordered()
     name = _GetMultiplexProxyName(sorted_signature)
-    stub_name = f'Java_{class_name}_' + common.escape_class_name(name)
+    stub_name = f'Java_{class_name}_' + common.jni_mangle(name)
     multipliexed_signature = _CreateMultiplexedSignature(sorted_signature)
     jni_descriptor = multipliexed_signature.to_descriptor()
   elif use_proxy_hash:

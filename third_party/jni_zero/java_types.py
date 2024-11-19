@@ -127,7 +127,7 @@ class JavaClass:
     return type_resolver.contextualize(self)
 
   def to_cpp(self):
-    return common.escape_class_name(self.full_name_with_slashes)
+    return common.jni_mangle(self.full_name_with_slashes)
 
   def as_type(self):
     return JavaType(java_class=self)
@@ -150,6 +150,9 @@ class JavaType:
   java_class: Optional[JavaClass] = None
   converted_type: Optional[str] = dataclasses.field(default=None, compare=False)
   nullable: bool = True
+
+  def __post_init__(self):
+    assert (self.java_class is None) != (self.primitive_name is None), self
 
   @staticmethod
   def from_descriptor(descriptor):

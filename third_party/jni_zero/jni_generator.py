@@ -270,11 +270,11 @@ class JniObject:
     """Return the name of the stub function for a native method."""
     if native.is_proxy:
       if self.options.use_proxy_hash:
-        method_name = common.escape_class_name(native.hashed_proxy_name)
+        method_name = common.jni_mangle(native.hashed_proxy_name)
       else:
-        method_name = common.escape_class_name(native.proxy_name)
+        method_name = common.jni_mangle(native.proxy_name)
       if self.per_file_natives:
-        return 'Java_' + common.escape_class_name(
+        return 'Java_' + common.jni_mangle(
             f'{self.java_class.full_name_with_slashes}Jni/native{common.capitalize(native.name)}'
         )
       elif self.options.enable_jni_multiplexing:

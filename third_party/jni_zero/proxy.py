@@ -57,7 +57,7 @@ def create_hashed_method_name(non_hashed_name, is_test_only):
 
 def create_method_names(java_class, method_name, is_test_only):
   """Returns the method name used in GEN_JNI (both hashed an non-hashed)."""
-  proxy_name = common.escape_class_name(
+  proxy_name = common.jni_mangle(
       f'{java_class.full_name_with_slashes}/{method_name}')
   hashed_proxy_name = create_hashed_method_name(proxy_name, is_test_only)
   return proxy_name, hashed_proxy_name
