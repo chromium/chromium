@@ -73,6 +73,8 @@ class StringBuilder:
 
   @contextlib.contextmanager
   def section(self, section_title):
+    if not ''.join(self._sb[-2:]).endswith('\n\n'):
+      self('\n')
     self(f'// {section_title}\n')
     yield
     self('\n')
