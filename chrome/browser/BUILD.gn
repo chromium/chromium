@@ -3810,6 +3810,7 @@ static_library("browser") {
       "new_tab_page/modules/file_suggestion/drive_service_factory.h",
       "new_tab_page/modules/file_suggestion/drive_suggestion_handler.cc",
       "new_tab_page/modules/file_suggestion/drive_suggestion_handler.h",
+      "new_tab_page/modules/modules_constants.h",
       "new_tab_page/modules/modules_switches.cc",
       "new_tab_page/modules/modules_switches.h",
       "new_tab_page/modules/modules_util.h",

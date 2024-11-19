@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -143,7 +144,7 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdNames_DummyModules) {
 
 const char kSampleUserEmail[] = "user@gmail.com";
 const std::vector<std::pair<const std::string, int>> kSampleModules = {
-    {"drive", IDS_NTP_MODULES_DRIVE_NAME}};
+    {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
 
 TEST_F(NewTabPageModulesTest, HasModulesEnabled_SignedInAccount) {
   signin::IdentityTestEnvironment identity_test_env;

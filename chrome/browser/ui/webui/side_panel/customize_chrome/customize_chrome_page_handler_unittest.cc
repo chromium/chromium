@@ -22,6 +22,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -267,7 +268,8 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         .Times(1)
         .WillOnce(SaveArg<0>(&ntp_custom_background_service_observer_));
     const std::vector<std::pair<const std::string, int>> module_id_names = {
-        {"tab_resumption", IDS_NTP_TAB_RESUMPTION_TITLE}};
+        {ntp_modules::kMostRelevantTabResumptionModuleId,
+         IDS_NTP_TAB_RESUMPTION_TITLE}};
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
@@ -852,7 +854,8 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
             visible = visible_arg;
           }));
 
-  constexpr char kTabResumptionId[] = "tab_resumption";
+  const std::string kTabResumptionId(
+      ntp_modules::kMostRelevantTabResumptionModuleId);
   profile().GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
   auto disabled_module_ids = base::Value::List();
   disabled_module_ids.Append(kTabResumptionId);
@@ -878,7 +881,7 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible) {
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
-  const std::string kDriveModuleId = "drive";
+  const std::string kDriveModuleId(ntp_modules::kDriveModuleId);
   handler().SetModuleDisabled(kDriveModuleId, true);
   const auto& disabled_module_ids =
       profile().GetPrefs()->GetList(prefs::kNtpDisabledModules);
