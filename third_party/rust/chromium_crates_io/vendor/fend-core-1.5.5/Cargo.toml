@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "fend-core"
-version = "1.5.3"
+version = "1.5.5"
 build = false
 autobins = false
 autoexamples = false

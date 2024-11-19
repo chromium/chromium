@@ -65,7 +65,7 @@ impl Value {
 			(Self::Base(a), Self::Base(b)) => c(a == b),
 			(Self::Fn(a1, a2, a3), Self::Fn(b1, b2, b3)) => c(a1 == b1
 				&& a2.compare(b2, ctx, int)?
-				&& compare_option_arc_scope(a3, b3, ctx, int)?),
+				&& compare_option_arc_scope(a3.as_ref(), b3.as_ref(), ctx, int)?),
 			(Self::Object(a), Self::Object(b)) => {
 				if a.len() != b.len() {
 					return Ok(None);

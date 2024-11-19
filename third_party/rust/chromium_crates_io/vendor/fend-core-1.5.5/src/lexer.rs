@@ -830,7 +830,7 @@ fn parse_date(input: &str) -> FResult<(Date, &str)> {
 	Ok((res, result_remaining))
 }
 
-impl<'a, 'b, I: Interrupt> Lexer<'a, 'b, I> {
+impl<I: Interrupt> Lexer<'_, '_, I> {
 	fn next_token(&mut self) -> FResult<Option<Token>> {
 		skip_whitespace_and_comments(&mut self.input);
 		let (ch, following) = {
@@ -895,7 +895,7 @@ impl<'a, 'b, I: Interrupt> Lexer<'a, 'b, I> {
 	}
 }
 
-impl<'a, I: Interrupt> Iterator for Lexer<'a, '_, I> {
+impl<I: Interrupt> Iterator for Lexer<'_, '_, I> {
 	type Item = FResult<Token>;
 
 	fn next(&mut self) -> Option<Self::Item> {

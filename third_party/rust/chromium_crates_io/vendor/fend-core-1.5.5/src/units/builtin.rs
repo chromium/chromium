@@ -60,7 +60,7 @@ const BITS_AND_BYTES: &[UnitTuple] = &[
 ];
 
 const STANDARD_PREFIXES: &[UnitTuple] = &[
-	("quecca", "", "lp@1e30", ""),
+	("quetta", "", "lp@1e30", ""),
 	("ronna", "", "lp@1e27", ""),
 	("yotta", "", "lp@1e24", ""),
 	("zetta", "", "lp@1e21", ""),
@@ -129,14 +129,22 @@ const NUMBER_WORDS: &[UnitTuple] = &[
 	("five", "", "=5", ""),
 	("quintuple", "", "=5", ""),
 	("six", "", "=6", ""),
+	("sextuple", "", "=6", ""),
 	("seven", "", "=7", ""),
+	("septuple", "", "=7", ""),
 	("eight", "", "=8", ""),
+	("octuple", "", "=8", ""),
 	("nine", "", "=9", ""),
+	("nonuple", "", "=9", ""),
 	("ten", "", "=10", ""),
+	("decuple", "", "=10", ""),
 	("eleven", "", "=11", ""),
+	("undecuple", "", "=11", ""),
 	("twelve", "", "=12", ""),
+	("duodecuple", "", "=12", ""),
 	("dozen", "", "=12", ""),
 	("thirteen", "", "=13", ""),
+	("tredecuple", "", "=13", ""),
 	("bakersdozen", "", "=13", ""),
 	("fourteen", "", "=14", ""),
 	("fifteen", "", "=15", ""),
@@ -509,8 +517,42 @@ const COMMON_PHYSICAL_UNITS: &[UnitTuple] = &[
 	("inHg", "", "l@25.4 mmHg", "inch of mercury"),
 	("bar", "", "l@1e5 Pa", "about 1 atmosphere"),
 	("diopter", "", "l@/m", "reciprocal of focal length"),
-	("sqm", "", "=m^2", ""),
+	// sqx:
+	("sqnm", "", "=nm^2", ""),
+	("squm", "", "=um^2", ""),
+	("sqµm", "", "=µm^2", ""),
 	("sqmm", "", "=mm^2", ""),
+	("sqcm", "", "=cm^2", ""),
+	("sqdm", "", "=cm^2", ""),
+	("sqm", "", "=m^2", ""),
+	("sqkm", "", "=km^2", ""),
+	// cbx:
+	("cbnm", "", "=nm^3", ""),
+	("cbum", "", "=um^3", ""),
+	("cbµm", "", "=µm^3", ""),
+	("cbmm", "", "=mm^3", ""),
+	("cbcm", "", "=cm^3", ""),
+	("cbdm", "", "=cm^3", ""),
+	("cbm", "", "=m^3", ""),
+	("cbkm", "", "=km^3", ""),
+	// x2:
+	("nm2", "", "=nm^2", ""),
+	("um2", "", "=um^2", ""),
+	("µm2", "", "=µm^2", ""),
+	("mm2", "", "=mm^2", ""),
+	("cm2", "", "=cm^2", ""),
+	("dm2", "", "=cm^2", ""),
+	("m2", "", "=m^2", ""),
+	("km2", "", "=km^2", ""),
+	// x3:
+	("nm3", "", "=nm^3", ""),
+	("um3", "", "=um^3", ""),
+	("µm3", "", "=µm^3", ""),
+	("mm3", "", "=mm^3", ""),
+	("cm3", "", "=cm^3", ""),
+	("dm3", "", "=cm^3", ""),
+	("m3", "", "=m^3", ""),
+	("km3", "", "=km^3", ""),
 	("gongjin", "", "l@1 kilogram", ""),
 	(
 		"toe",
@@ -523,6 +565,10 @@ const COMMON_PHYSICAL_UNITS: &[UnitTuple] = &[
 	// TODO remove these compatibility units
 	("lightyear", "lightyears", "light_year", ""),
 	("light", "", "c", ""),
+	("at", "at", "s@kgf/cm^2", "technical atmosphere"),
+	("Torr", "Torr", "s@101325/760 Pascals", ""),
+	("katal", "", "l@mol/second", "catalytic activity"),
+	("kat", "", "s@katal", ""),
 ];
 
 const CGS_UNITS: &[UnitTuple] = &[
@@ -552,6 +598,8 @@ const CGS_UNITS: &[UnitTuple] = &[
 	("G", "", "gauss", ""),
 	("Mx", "", "maxwell", ""),
 	("ph", "", "phot", ""),
+	("gf", "", "s@g force", ""),
+	("pond", "", "l@gf", ""),
 ];
 
 const IMPERIAL_UNITS: &[UnitTuple] = &[
@@ -688,6 +736,18 @@ const IMPERIAL_ABBREVIATIONS: &[UnitTuple] = &[
 	("fur", "furs", "furlong", ""),
 	("fir", "firs", "firkin", ""),
 	("ftn", "ftns", "fortnight", ""),
+	("sqyd", "", "=yd^2", ""),
+	("sqft", "", "=ft^2", ""),
+	("sqmi", "", "=mi^2", ""),
+	("cbyd", "", "=yd^3", ""),
+	("cbft", "", "=ft^3", ""),
+	("cbmi", "", "=mi^3", ""),
+	("yd2", "", "=yd^2", ""),
+	("ft2", "", "=ft^2", ""),
+	("mi2", "", "=mi^2", ""),
+	("yd3", "", "=yd^3", ""),
+	("ft3", "", "=ft^3", ""),
+	("mi3", "", "=mi^3", ""),
 ];
 
 const NAUTICAL_UNITS: &[UnitTuple] = &[
@@ -780,6 +840,8 @@ const SHORT_PREFIXES: &[(&str, &str)] = &[
 	("Ei", "sp@exbi"),
 	("Zi", "sp@zebi"),
 	("Yi", "sp@yobi"),
+	("Q", "sp@quetta"),
+	("R", "sp@ronna"),
 	("Y", "sp@yotta"),
 	("Z", "sp@zetta"),
 	("E", "sp@exa"),
@@ -802,6 +864,8 @@ const SHORT_PREFIXES: &[(&str, &str)] = &[
 	("a", "sp@atto"),
 	("z", "sp@zepto"),
 	("y", "sp@yocto"),
+	("r", "sp@ronto"),
+	("q", "sp@quecto"),
 ];
 
 #[allow(clippy::too_many_lines)]

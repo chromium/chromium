@@ -42,7 +42,11 @@ fn expr_unit<I: Interrupt>(
 		let Some(exchange_rate_fn) = &context.get_exchange_rate else {
 			return Err(FendError::NoExchangeRatesAvailable);
 		};
-		let one_base_in_currency = exchange_rate_fn.relative_to_base_currency(&singular)?;
+		let one_base_in_currency = exchange_rate_fn
+			.relative_to_base_currency(&singular)
+			.map_err(|e| {
+				FendError::Wrap(format!("failed to retrieve {singular} exchange rate"), e)
+			})?;
 		let value = evaluate_to_value(
 			format!("(1/{one_base_in_currency}) BASE_CURRENCY").as_str(),
 			None,

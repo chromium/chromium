@@ -431,7 +431,7 @@ impl ops::Neg for ContinuedFraction {
 	}
 }
 
-impl<'a> IntoIterator for &'a ContinuedFraction {
+impl IntoIterator for &ContinuedFraction {
 	type Item = BigUint;
 
 	type IntoIter = Box<dyn Iterator<Item = Self::Item>>;

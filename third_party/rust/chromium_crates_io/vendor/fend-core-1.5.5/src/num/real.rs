@@ -282,16 +282,16 @@ impl Real {
 		let mut override_exact = true;
 
 		let rat = match &self.pattern {
-			Pattern::Simple(f) => f.clone(),
+			Pattern::Simple(f) => f,
 			Pattern::Pi(f) => {
 				if pi {
-					f.clone()
+					f
 				} else {
 					override_exact = false;
 					if style == FormattingStyle::Auto {
 						style = FormattingStyle::DecimalPlaces(10);
 					}
-					self.clone().approximate(int)?
+					&self.clone().approximate(int)?
 				}
 			}
 		};

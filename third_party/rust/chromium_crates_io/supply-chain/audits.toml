@@ -1040,6 +1040,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.5.2 -> 1.5.3"
 notes = "No new unsafe, fs, net."
 
+[[audits.fend-core]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.5.3 -> 1.5.5"
+
 [[audits.flate2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

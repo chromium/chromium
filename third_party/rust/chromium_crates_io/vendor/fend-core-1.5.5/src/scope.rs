@@ -21,7 +21,8 @@ impl ScopeValue {
 	) -> FResult<bool> {
 		let Self::LazyVariable(a1, a2) = self;
 		let Self::LazyVariable(b1, b2) = other;
-		Ok(a1.compare(b1, ctx, int)? && compare_option_arc_scope(a2, b2, ctx, int)?)
+		Ok(a1.compare(b1, ctx, int)?
+			&& compare_option_arc_scope(a2.as_ref(), b2.as_ref(), ctx, int)?)
 	}
 
 	fn eval<I: Interrupt>(
@@ -73,8 +74,8 @@ pub(crate) struct Scope {
 }
 
 pub(crate) fn compare_option_arc_scope<I: Interrupt>(
-	a: &Option<Arc<Scope>>,
-	b: &Option<Arc<Scope>>,
+	a: Option<&Arc<Scope>>,
+	b: Option<&Arc<Scope>>,
 	ctx: &mut Context,
 	int: &I,
 ) -> FResult<bool> {
@@ -94,7 +95,7 @@ impl Scope {
 	) -> FResult<bool> {
 		Ok(self.ident == other.ident
 			&& self.value.compare(&other.value, ctx, int)?
-			&& compare_option_arc_scope(&self.inner, &other.inner, ctx, int)?)
+			&& compare_option_arc_scope(self.inner.as_ref(), other.inner.as_ref(), ctx, int)?)
 	}
 
 	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {

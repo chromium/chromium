@@ -606,7 +606,7 @@ fn evaluate_as<I: Interrupt>(
 					Err(FendError::ExpectedAString)
 				};
 			}
-			"string" => {
+			"string" | "text" => {
 				return Ok(Value::String(
 					evaluate(a, scope, attrs, context, int)?
 						.format_to_plain_string(0, attrs, context, int)?

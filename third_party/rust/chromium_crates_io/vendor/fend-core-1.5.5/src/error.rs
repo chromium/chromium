@@ -16,7 +16,7 @@ pub(crate) enum FendError {
 	ZeroToThePowerOfZero,
 	FactorialComplex,
 	DeserializationError,
-	Wrap(Box<dyn error::Error + Send + Sync + 'static>),
+	Wrap(String, Box<dyn error::Error + Send + Sync + 'static>),
 	NoExchangeRatesAvailable,
 	OutOfRange {
 		value: Box<dyn crate::format::DisplayDebug>,
@@ -227,7 +227,7 @@ impl fmt::Display for FendError {
 				)
 			}
 			Self::FormattingError(_) => write!(f, "error during formatting"),
-			Self::Wrap(e) => write!(f, "{e}"),
+			Self::Wrap(e, _) => write!(f, "{e}"),
 			Self::ExpectedADateLiteral => write!(f, "Expected a date literal, e.g. @1970-01-01"),
 			Self::NonExistentDate {
 				year,
@@ -251,7 +251,7 @@ impl error::Error for FendError {
 		match self {
 			Self::FormattingError(e) => Some(e),
 			Self::IoError(e) => Some(e),
-			Self::Wrap(e) => Some(e.as_ref()),
+			Self::Wrap(_, e) => Some(e.as_ref()),
 			_ => None,
 		}
 	}
@@ -266,12 +266,6 @@ impl From<fmt::Error> for FendError {
 impl From<io::Error> for FendError {
 	fn from(e: io::Error) -> Self {
 		Self::IoError(e)
-	}
-}
-
-impl From<Box<dyn error::Error + Send + Sync + 'static>> for FendError {
-	fn from(e: Box<dyn error::Error + Send + Sync + 'static>) -> Self {
-		Self::Wrap(e)
 	}
 }
 

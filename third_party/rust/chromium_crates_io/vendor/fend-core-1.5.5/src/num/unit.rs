@@ -834,11 +834,16 @@ impl Value {
 			UseParentheses::IfComplex
 		};
 		let mut formatted_value = String::new();
+		let format = if !self.exact && self.format == FormattingStyle::Auto {
+			FormattingStyle::DecimalPlaces(10)
+		} else {
+			self.format
+		};
 		let mut exact = self
 			.value
 			.format(
 				self.exact,
-				self.format,
+				format,
 				self.base,
 				use_parentheses,
 				&mut formatted_value,
@@ -1266,12 +1271,13 @@ impl Unit {
 		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<String> {
-		let from_base_units: Vec<_> = hash
+		let mut from_base_units: Vec<_> = hash
 			.into_iter()
 			.map(|(base_unit, exponent)| {
 				UnitExponent::new(NamedUnit::new_from_base(base_unit), exponent)
 			})
 			.collect();
+		from_base_units.sort_by(|a, b| a.unit.singular_name.cmp(&b.unit.singular_name));
 		Ok(Self {
 			components: from_base_units,
 		}

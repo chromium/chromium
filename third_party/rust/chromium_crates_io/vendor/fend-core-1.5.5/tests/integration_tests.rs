@@ -6078,3 +6078,36 @@ fn european_formatting() {
 		"approx. 0,9320390859"
 	);
 }
+
+#[test]
+fn kilopond() {
+	test_eval("kilopond to N", "9.80665 N");
+	test_eval("megapond to N", "9806.65 N");
+	test_eval("gf to N", "0.00980665 N");
+	expect_error("GF to N", Some("cannot convert from GF to N: units 'ampere^2 second^4 kilogram^-1 meter^-2' and 'kilogram meter / second^2' are incompatible"));
+}
+
+#[derive(Debug)]
+struct TestError(Box<dyn std::error::Error + Send + Sync + 'static>);
+
+impl std::fmt::Display for TestError {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "my error")
+	}
+}
+
+impl std::error::Error for TestError {
+	fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+		Some(self.0.as_ref())
+	}
+}
+
+#[test]
+fn test_nested_exchange_rate_error() {
+	let mut context = Context::new();
+	context.set_exchange_rate_handler_v1(|_: &str| Err(TestError("inner error".into()).into()));
+	assert_eq!(
+		evaluate("usd to eur", &mut context).unwrap_err(),
+		"failed to retrieve EUR exchange rate: my error: inner error",
+	);
+}

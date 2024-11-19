@@ -254,9 +254,7 @@ impl Complex {
 		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Exact<Formatted>> {
-		let style = if !exact && style == FormattingStyle::Auto {
-			FormattingStyle::DecimalPlaces(10)
-		} else if !self.imag.is_zero() && style == FormattingStyle::Auto {
+		let style = if !self.imag.is_zero() && style == FormattingStyle::Auto {
 			FormattingStyle::Exact
 		} else {
 			style

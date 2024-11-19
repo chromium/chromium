@@ -635,15 +635,12 @@ impl BigRat {
 			MaxDigitsToPrint::DecimalPlaces(n)
 		} else if let FormattingStyle::SignificantFigures(sf) = style {
 			let num_digits_of_int_part = formatted_integer_part.value.num_digits();
-			let dp = if sf > num_digits_of_int_part {
-				// we want more significant figures than what was printed
-				// in the int component
-				sf - num_digits_of_int_part
-			} else {
-				// no more digits, we already exhausted the number of significant
-				// figures
-				0
-			};
+			// reduce decimal places by however many digits we already printed
+			// in the integer portion
+			//
+			// saturate to zero in case we already exhausted all digits and
+			// shouldn't print any decimal places
+			let dp = sf.saturating_sub(num_digits_of_int_part);
 			if integer_part == 0.into() {
 				// if the integer part is 0, we don't want leading zeroes
 				// after the decimal point to affect the number of non-zero

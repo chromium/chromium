@@ -141,7 +141,7 @@ pub(crate) struct FormattedExponent<'a> {
 	number: Option<complex::Formatted>,
 }
 
-impl<'a> fmt::Display for FormattedExponent<'a> {
+impl fmt::Display for FormattedExponent<'_> {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
 		write!(f, "{}{}", self.prefix, self.name)?;
 		if let Some(number) = &self.number {

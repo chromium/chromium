@@ -40,6 +40,8 @@ mod serialize;
 mod units;
 mod value;
 
+use std::error::Error;
+use std::fmt::Write;
 use std::sync::Arc;
 use std::{collections::HashMap, fmt, io};
 
@@ -436,7 +438,15 @@ fn evaluate_with_interrupt_internal(
 	}
 	let (result, is_unit, attrs) = match eval::evaluate_to_spans(input, None, context, int) {
 		Ok(value) => value,
-		Err(e) => return Err(e.to_string()),
+		Err(e) => {
+			let mut error: &dyn Error = &e;
+			let mut s = error.to_string();
+			while let Some(inner) = error.source() {
+				write!(&mut s, ": {inner}").unwrap();
+				error = inner;
+			}
+			return Err(s);
+		}
 	};
 	let mut plain_result = String::new();
 	for s in &result {
