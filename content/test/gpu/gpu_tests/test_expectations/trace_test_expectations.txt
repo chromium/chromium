@@ -220,6 +220,9 @@ crbug.com/371949935 [ graphite-enabled no-clang-coverage qualcomm-0x41333430 rel
 crbug.com/371949935 [ linux renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ mac ] TraceTest_ViewTransitionsCapture [ Failure ]
 
+# Mac potential crash without a stack trace
+crbug.com/379737179 [ mac amd-0x679e angle-metal graphite-enabled ] TraceTest_RenderPasses [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
