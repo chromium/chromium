@@ -622,6 +622,7 @@
         "AIWriterAPI",
         "LanguageDetectionAPI",
         "TranslationAPIEntryPoint",
+        "TranslationAPI",
       ]
     },
     {

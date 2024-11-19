@@ -5,6 +5,7 @@ interface AI
     getter languageModel
     getter rewriter
     getter summarizer
+    getter translator
     getter writer
     method constructor
 interface AICreateMonitor : EventTarget

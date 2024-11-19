@@ -10,6 +10,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter languageModel
 [Worker]     getter rewriter
 [Worker]     getter summarizer
+[Worker]     getter translator
 [Worker]     getter writer
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
