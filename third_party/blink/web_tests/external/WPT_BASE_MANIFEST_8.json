@@ -369192,7 +369192,7 @@
      []
     ],
     "META.yml": [
-     "437da600931424b63054ca0c0c8e87b56b284167",
+     "c0756cf85af90b4b35cfd2daafa52f6136f091dc",
      []
     ],
     "README.md": [
@@ -439472,6 +439472,44 @@
      ]
     },
     "translator": {
+     "ai_translator_bad_input.tentative.https.window.js": [
+      "8a9e4ff5377a00793eb806b4a62c85ad9fa14f8e",
+      [
+       "ai/translator/ai_translator_bad_input.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "translator.create without options do not crash"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "ai_translator_translate.tentative.https.window.js": [
+      "fe0f2d245eb371ec7c79082e8a31dea3372bd45f",
+      [
+       "ai/translator/ai_translator_translate.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Translate from English to Japanese"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "translator_translate.tentative.window.js": [
       "cfa6654e8ce5973364b8b43f512ee80f2dee0405",
       [
@@ -474207,6 +474245,13 @@
        ],
        "gap-decorations-color-valid.html": [
         "e8fd4df36151f7713d9065978ed83b955a735906",
+        [
+         null,
+         {}
+        ]
+       ],
+       "gap-decorations-width-computed.html": [
+        "49ebb0f6be0184402b464650dc5fcc938a30d89d",
         [
          null,
          {}
@@ -612806,11 +612851,12 @@
         ]
        ],
        "dialog-closedby.tentative.html": [
-        "8b365073b9c2b2a84437e6228d4d4794d40bfea4",
+        "cb72b701a0c602d318b9444b83ab314adfb2fcd7",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
@@ -612933,20 +612979,22 @@
         ]
        ],
        "dialog-popover-closedby-complex.tentative.html": [
-        "f254c4d9f7fa2fde8702463b6041771e565f3133",
+        "aa45ecaad4ff8a619b9f9e8686084052cc411acb",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
        "dialog-popover-closedby-simple.tentative.html": [
-        "1658e200bb597627dada5ba0158a326e3e4ed949",
+        "f1d78e1ebcda6aacf7a3e586635d793f25d3d1b9",
         [
          null,
          {
-          "testdriver": true
+          "testdriver": true,
+          "timeout": "long"
          }
         ]
        ],
