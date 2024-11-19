@@ -343,7 +343,7 @@ FaceGazeTestBase = class extends E2ETestBase {
 
     // Increase the bubble controller timeout to avoid flaky behavior when
     // asserting the text content of the bubble.
-    BubbleController.CLEAR_BUBBLE_TIMEOUT_MS = 100 * 1000;
+    BubbleController.RESET_BUBBLE_TIMEOUT_MS = 100 * 1000;
 
     faceGaze.mouseController_.setLandmarkWeightsForTesting(
         config.useLandmarkWeights);
