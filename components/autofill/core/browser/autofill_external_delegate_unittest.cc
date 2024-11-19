@@ -280,10 +280,6 @@ class MockAutofillClient : public TestAutofillClient {
               ShowEditAddressProfileDialog,
               (const AutofillProfile&, AddressProfileSavePromptCallback),
               (override));
-  MOCK_METHOD(void,
-              ShowDeleteAddressProfileDialog,
-              (const AutofillProfile&, AddressProfileDeleteDialogCallback),
-              (override));
 
 #if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.
@@ -731,61 +727,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 0});
   DestroyAutofillDriver();
-}
-
-// Test that the delete dialog is not shown if there's no Autofill profile with
-// the provided GUID.
-TEST_F(AutofillExternalDelegateUnitTest,
-       ShowDeleteDialogForNonexistingProfile) {
-  IssueOnQuery();
-
-  const std::string guid = base::Uuid().AsLowercaseString();
-  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog).Times(0);
-  auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::Guid(guid);
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-// Test that the delete dialog is shown for the GUID identifying existing
-// Autofill profile.
-TEST_F(AutofillExternalDelegateUnitTest, ShowDeleteDialog) {
-  IssueOnQuery();
-
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _));
-  auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-// Test the situation when AutofillExternalDelegate is destroyed before the
-// AddressDataManager observer is notified that all tasks have been processed.
-TEST_F(AutofillExternalDelegateUnitTest,
-       UserOpensDeleteDialogTwiceBeforeProfileIsDeleted) {
-  IssueOnQuery();
-
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowDeleteAddressProfileDialog(profile, _))
-      .Times(2)
-      .WillRepeatedly([](auto profile, auto delete_dialog_callback) {
-        std::move(delete_dialog_callback).Run(/*user_accepted_delete=*/true);
-      });
-  // ADM observer must be added only once.
-  // Autofill profile can be deleted both times.
-  EXPECT_CALL(address_data_manager(), RemoveProfile(profile.guid())).Times(2);
-  auto suggestion = Suggestion(SuggestionType::kDeleteAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
 }
 
 // Test that our external delegate called the virtual methods at the right time.

@@ -107,9 +107,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ShowEditAddressProfileDialog(
       const autofill::AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) override;
-  void ShowDeleteAddressProfileDialog(
-      const autofill::AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;

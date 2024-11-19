@@ -206,16 +206,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // determined by passed `guid`.
   void ShowEditAddressProfileDialog(const std::string& guid);
 
-  // Shows the delete address profile dialog to the user. The Autofill profile
-  // to delete is determined by the passed `guid`.
-  void ShowDeleteAddressProfileDialog(const std::string& guid);
-
   // Triggered when the user closes the address editor dialog.
   void OnAddressEditorClosed(AutofillClient::AddressPromptUserDecision decision,
                              base::optional_ref<const AutofillProfile> profile);
-
-  // Triggered when the user closes the delete address profile dialog.
-  void OnDeleteDialogClosed(const std::string& guid, bool user_accepted_delete);
 
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,

@@ -105,9 +105,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) override;
-  void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;

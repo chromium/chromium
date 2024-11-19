@@ -140,9 +140,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowEditAddressProfileDialog(
       const AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) override;
-  void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,

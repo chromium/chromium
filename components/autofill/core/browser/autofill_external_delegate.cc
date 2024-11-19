@@ -748,7 +748,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kComposeSavedStateNotification:
     case SuggestionType::kCreateNewPlusAddress:
     case SuggestionType::kDatalistEntry:
-    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kEditAddressProfile:
@@ -784,6 +783,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kFillPassword:
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kDeleteAddressProfile:
       NOTREACHED();  // Should be handled elsewhere.
   }
 }
@@ -804,7 +804,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kFillFullEmail:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kEditAddressProfile:
-    case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kDevtoolsTestAddressEntry:
       DidAcceptAddressSuggestion(suggestion, metadata);
       break;
@@ -971,6 +970,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kDeleteAddressProfile:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -1150,20 +1150,6 @@ void AutofillExternalDelegate::ShowEditAddressProfileDialog(
   }
 }
 
-void AutofillExternalDelegate::ShowDeleteAddressProfileDialog(
-    const std::string& guid) {
-  const AutofillProfile* profile = manager_->client()
-                                       .GetPersonalDataManager()
-                                       ->address_data_manager()
-                                       .GetProfileByGUID(guid);
-  if (profile) {
-    manager_->client().ShowDeleteAddressProfileDialog(
-        *profile,
-        base::BindOnce(&AutofillExternalDelegate::OnDeleteDialogClosed,
-                       GetWeakPtr(), guid));
-  }
-}
-
 void AutofillExternalDelegate::OnAddressEditorClosed(
     AutofillClient::AddressPromptUserDecision decision,
     base::optional_ref<const AutofillProfile> edited_profile) {
@@ -1175,21 +1161,6 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     }
     CHECK(edited_profile.has_value());
     adm.UpdateProfile(edited_profile.value());
-    return;
-  }
-  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
-                                                      GetReopenTriggerSource());
-}
-
-void AutofillExternalDelegate::OnDeleteDialogClosed(const std::string& guid,
-                                                    bool user_accepted_delete) {
-  if (user_accepted_delete) {
-    AddressDataManager& adm =
-        manager_->client().GetPersonalDataManager()->address_data_manager();
-    if (!adm_observation_.IsObserving()) {
-      adm_observation_.Observe(&adm);
-    }
-    adm.RemoveProfile(guid);
     return;
   }
   manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
@@ -1569,10 +1540,6 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       break;
     case SuggestionType::kEditAddressProfile:
       ShowEditAddressProfileDialog(
-          suggestion.GetPayload<Suggestion::Guid>().value());
-      break;
-    case SuggestionType::kDeleteAddressProfile:
-      ShowDeleteAddressProfileDialog(
           suggestion.GetPayload<Suggestion::Guid>().value());
       break;
     case SuggestionType::kDevtoolsTestAddressEntry: {

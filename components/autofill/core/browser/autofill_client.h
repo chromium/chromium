@@ -383,12 +383,6 @@ class AutofillClient {
       const AutofillProfile& profile,
       AddressProfileSavePromptCallback on_user_decision_callback) = 0;
 
-  // Show a delete address profile dialog asking if users want to proceed with
-  // deletion.
-  virtual void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileDeleteDialogCallback delete_dialog_callback) = 0;
-
   // Shows the offer-to-save (or update) address profile bubble. If
   // `original_profile` is nullptr, this renders a save prompt. Otherwise, it
   // renders an update prompt where `original_profile` is the address profile

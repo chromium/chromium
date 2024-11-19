@@ -187,12 +187,6 @@ void AndroidAutofillClient::ShowEditAddressProfileDialog(
   NOTREACHED();
 }
 
-void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED();
-}
-
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,

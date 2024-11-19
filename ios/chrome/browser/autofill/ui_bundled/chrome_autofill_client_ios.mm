@@ -323,12 +323,6 @@ void ChromeAutofillClientIOS::ShowEditAddressProfileDialog(
   NOTREACHED();
 }
 
-void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED();
-}
-
 AutofillClient::SuggestionUiSessionId
 ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,

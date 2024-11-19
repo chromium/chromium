@@ -280,11 +280,6 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::AddressProfileSavePromptCallback
           on_user_decision_callback) override {}
 
-  void ShowDeleteAddressProfileDialog(
-      const AutofillProfile& profile,
-      AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
-      override {}
-
   AutofillClient::SuggestionUiSessionId ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override {
