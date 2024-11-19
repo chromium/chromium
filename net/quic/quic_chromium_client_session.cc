@@ -388,10 +388,13 @@ void LogProbeResultToHistogram(MigrationCause cause, bool success) {
 }
 
 void LogSessionCreationInitiatorToHistogram(
-    MultiplexedSessionCreationInitiator session_creation) {
-  base::UmaHistogramEnumeration(
-      "Net.QuicSession.GoogleSearch.SessionCreationInitiator",
-      session_creation);
+    MultiplexedSessionCreationInitiator session_creation,
+    bool is_used) {
+  std::string histogram_name =
+      base::StrCat({"Net.QuicSession.GoogleSearch.SessionCreationInitiator",
+                    is_used ? ".Used" : ".Unused"});
+
+  base::UmaHistogramEnumeration(histogram_name, session_creation);
 }
 
 }  // namespace
@@ -1088,8 +1091,9 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
 
-  if (num_total_streams_ > 0 && IsGoogleHostWithAlpnH3(session_key_.host())) {
-    LogSessionCreationInitiatorToHistogram(session_creation_initiator_);
+  if (IsGoogleHostWithAlpnH3(session_key_.host())) {
+    LogSessionCreationInitiatorToHistogram(session_creation_initiator_,
+                                           num_total_streams_ > 0);
   }
 
   if (!OneRttKeysAvailable()) {
