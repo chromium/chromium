@@ -22,6 +22,22 @@ class BrowserContext;
 class SiteInstanceImpl;
 class RenderProcessHost;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SpareRendererDispatchResult)
+enum class SpareRendererDispatchResult {
+  kUsed = 0,
+  kTimeout,
+  kOverridden,
+  kDestroyedNotEnabled,
+  kDestroyedProcessLimit,
+  kProcessExited,
+  kProcessHostDestroyed,
+  kMaxValue = kProcessHostDestroyed
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareRendererDispatchResult)
+
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
       public RenderProcessHostObserver {
@@ -87,7 +103,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
                                 std::optional<base::TimeDelta> delay);
 
   // Gracefully remove and cleanup all existing spare RenderProcessHost.
-  void CleanupSpares();
+  //
+  // Passing std::nullopt as dispatch_result is for test only.
+  void CleanupSpares(
+      std::optional<SpareRendererDispatchResult> dispatch_result);
 
   void SetDeferTimerTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -95,7 +114,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
  private:
   // Release ownership of a spare renderer. Called when the spare has either
   // been 1) claimed to be used in a navigation or 2) shutdown somewhere else.
-  void ReleaseSpare(RenderProcessHost* host);
+  void ReleaseSpare(RenderProcessHost* host,
+                    SpareRendererDispatchResult dispatch_result);
 
   // RenderProcessHostObserver:
   void RenderProcessReady(RenderProcessHost* host) override;

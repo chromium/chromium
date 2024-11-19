@@ -19,6 +19,13 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 
+namespace {
+
+constexpr char kSpareRendererDispatchResultUmaName[] =
+    "BrowserRenderProcessHost.SpareRendererDispatchResult";
+
+}  // namespace
+
 namespace content {
 
 SpareRenderProcessHostManagerImpl::SpareRenderProcessHostManagerImpl() =
@@ -45,7 +52,8 @@ void SpareRenderProcessHostManagerImpl::StartDestroyTimer(
   deferred_destroy_timer_.Start(
       FROM_HERE, timeout.value(),
       base::BindOnce(&SpareRenderProcessHostManagerImpl::CleanupSpares,
-                     base::Unretained(this)));
+                     base::Unretained(this),
+                     SpareRendererDispatchResult::kTimeout));
 }
 
 bool SpareRenderProcessHostManagerImpl::DestroyTimerWillFireBefore(
@@ -82,7 +90,7 @@ std::vector<int> SpareRenderProcessHostManagerImpl::GetSpareIds() {
 }
 
 void SpareRenderProcessHostManagerImpl::CleanupSparesForTesting() {
-  CleanupSpares();
+  CleanupSpares(std::nullopt);
 }
 
 void SpareRenderProcessHostManagerImpl::WarmupSpare(
@@ -117,7 +125,7 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   }
 
   bool had_spare_renderer = !!spare_rph;
-  CleanupSpares();
+  CleanupSpares(SpareRendererDispatchResult::kOverridden);
   UMA_HISTOGRAM_BOOLEAN(
       "BrowserRenderProcessHost.SpareProcessEvictedOtherSpare",
       had_spare_renderer);
@@ -324,18 +332,18 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
 
     DCHECK_EQ(SpareProcessMaybeTakeAction::kSpareTaken, action);
     returned_process = next_spare_rph;
-    ReleaseSpare(next_spare_rph);
+    ReleaseSpare(next_spare_rph, SpareRendererDispatchResult::kUsed);
   } else if (!RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     // If the spare shouldn't be kept around, then discard it as soon as we
     // find that the current spare was mismatched.
-    CleanupSpares();
+    CleanupSpares(SpareRendererDispatchResult::kDestroyedNotEnabled);
   } else if (RenderProcessHostImpl::GetProcessCountForLimit() >=
              RenderProcessHostImpl::GetMaxRendererProcessCount()) {
     // Drop all spares if we are at a process limit and the spare wasn't taken.
     // This helps avoid process reuse.
     // TODO(pmonette): Only cleanup n spares, where n is the count of processes
     // that is over the limit.
-    CleanupSpares();
+    CleanupSpares(SpareRendererDispatchResult::kDestroyedProcessLimit);
   }
 
   return returned_process;
@@ -370,17 +378,22 @@ void SpareRenderProcessHostManagerImpl::PrepareForFutureRequests(
   } else {
     // Discard the ignored (probably non-matching) spares so as not to waste
     // resources.
-    CleanupSpares();
+    CleanupSpares(SpareRendererDispatchResult::kDestroyedNotEnabled);
   }
 }
 
-void SpareRenderProcessHostManagerImpl::CleanupSpares() {
+void SpareRenderProcessHostManagerImpl::CleanupSpares(
+    std::optional<SpareRendererDispatchResult> dispatch_result) {
   std::vector<RenderProcessHost*> spare_rphs = std::move(spare_rphs_);
 
   // Stop the destroy timer since it is no longer required.
   deferred_destroy_timer_.Stop();
 
   for (RenderProcessHost* spare_rph : spare_rphs) {
+    if (dispatch_result.has_value()) {
+      base::UmaHistogramEnumeration(kSpareRendererDispatchResultUmaName,
+                                    dispatch_result.value());
+    }
     // Stop observing the process, to avoid getting notifications as a
     // consequence of the Cleanup call below - such notification could call
     // back into CleanupSpare leading to stack overflow.
@@ -403,9 +416,13 @@ void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
   deferred_destroy_timer_.SetTaskRunner(task_runner);
 }
 
-void SpareRenderProcessHostManagerImpl::ReleaseSpare(RenderProcessHost* host) {
+void SpareRenderProcessHostManagerImpl::ReleaseSpare(
+    RenderProcessHost* host,
+    SpareRendererDispatchResult dispatch_result) {
   // Erase while intentionally preserving the order of the other elements.
   size_t removed = std::erase(spare_rphs_, host);
+  base::UmaHistogramEnumeration(kSpareRendererDispatchResultUmaName,
+                                dispatch_result);
   CHECK_EQ(removed, 1u);
   host->RemoveObserver(this);
   for (auto& observer : observer_list_) {
@@ -430,7 +447,7 @@ void SpareRenderProcessHostManagerImpl::RenderProcessReady(
 void SpareRenderProcessHostManagerImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  ReleaseSpare(host);
+  ReleaseSpare(host, SpareRendererDispatchResult::kProcessExited);
 
   // Make sure the RenderProcessHost object gets destroyed.
   if (!host->AreRefCountsDisabled()) {
@@ -444,7 +461,7 @@ void SpareRenderProcessHostManagerImpl::RenderProcessExited(
 
 void SpareRenderProcessHostManagerImpl::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
-  ReleaseSpare(host);
+  ReleaseSpare(host, SpareRendererDispatchResult::kProcessHostDestroyed);
 }
 
 }  // namespace content
