@@ -32,6 +32,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -39,6 +40,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -54,11 +56,14 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Unit tests for {@link ImageDescriptionsDialog} */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
+public class ImageDescriptionsDialogTest {
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock private ImageDescriptionsControllerDelegate mDelegate;
 
@@ -79,7 +84,8 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUpTest();
+        mActivityTestRule.launchActivity(null);
+
         MockitoAnnotations.initMocks(this);
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
@@ -91,7 +97,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppModalPresenter = new AppModalPresenter(getActivity());
+                    mAppModalPresenter = new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
                             new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
@@ -119,7 +125,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
                     mManager.writeBoolean(
                             ChromePreferenceKeys.IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN, false);
                     mController.onImageDescriptionsMenuItemSelected(
-                            getActivity(), mModalDialogManager, mWebContents);
+                            mActivityTestRule.getActivity(), mModalDialogManager, mWebContents);
                 });
     }
 
@@ -130,7 +136,7 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
                             .thenReturn(false);
                     mManager.writeInt(ChromePreferenceKeys.IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT, 5);
                     mController.onImageDescriptionsMenuItemSelected(
-                            getActivity(), mModalDialogManager, mWebContents);
+                            mActivityTestRule.getActivity(), mModalDialogManager, mWebContents);
                 });
     }
 
@@ -382,7 +388,14 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         verify(mDelegate, times(1)).getImageDescriptionsJustOnce(false, mWebContents);
 
         onView(withText(R.string.image_descriptions_toast_just_once))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -417,7 +430,14 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         verify(mDelegate, times(1)).getImageDescriptionsJustOnce(true, mWebContents);
 
         onView(withText(R.string.image_descriptions_toast_just_once))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -456,7 +476,14 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
 
         onView(withText(R.string.image_descriptions_toast_on))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -486,7 +513,14 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
 
         onView(withText(R.string.image_descriptions_toast_on))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -517,7 +551,14 @@ public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
         verify(mDelegate, never()).getImageDescriptionsJustOnce(anyBoolean(), any());
 
         onView(withText(R.string.image_descriptions_toast_on_no_wifi))
-                .inRoot(withDecorView(not(is(getActivity().getWindow().getDecorView()))))
+                .inRoot(
+                        withDecorView(
+                                not(
+                                        is(
+                                                mActivityTestRule
+                                                        .getActivity()
+                                                        .getWindow()
+                                                        .getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 }

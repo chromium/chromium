@@ -10,6 +10,10 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,10 +23,12 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageActionsHandler;
@@ -34,7 +40,7 @@ import org.chromium.components.messages.MessageBannerView;
 import org.chromium.components.messages.MessageBannerViewBinder;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.url.GURL;
 
@@ -44,10 +50,17 @@ import java.util.List;
 /** Tests for MerchantTrustMessageView. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class MerchantTrustMessageViewTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -65,43 +78,44 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
 
     @Mock private MessageActionsHandler mMockActionHandler;
 
-    private Activity mActivity;
     private MessageBannerView mMessageBannerView;
     private LayoutParams mParams;
     private MerchantInfo mMerchantInfo =
             new MerchantInfo(3.51234f, 1640, new GURL("http://dummy/url"), false, 0f, false, false);
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        mActivity = getActivity();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() {
         mMessageBannerView =
                 (MessageBannerView)
-                        LayoutInflater.from(mActivity)
+                        LayoutInflater.from(sActivity)
                                 .inflate(R.layout.message_banner_view, null, false);
         mParams =
                 new LayoutParams(
                         LayoutParams.MATCH_PARENT,
-                        mActivity
+                        sActivity
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.message_banner_height));
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
-        super.tearDownTest();
     }
 
     private void createModelAndSetView(MerchantInfo merchantInfo) {
         PropertyModel propertyModel =
                 MerchantTrustMessageViewModel.create(
-                        mActivity, merchantInfo, "fake_url", mMockActionHandler);
+                        sActivity, merchantInfo, "fake_url", mMockActionHandler);
         PropertyModelChangeProcessor.create(
                 propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivity.setContentView(mMessageBannerView, mParams);
+                    sActivity.setContentView(mMessageBannerView, mParams);
                 });
     }
 

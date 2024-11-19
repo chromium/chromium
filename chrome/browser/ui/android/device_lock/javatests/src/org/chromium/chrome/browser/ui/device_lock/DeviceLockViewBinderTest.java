@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PR
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.SOURCE;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -25,10 +26,15 @@ import android.widget.LinearLayout;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -38,14 +44,20 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link DeviceLockViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
+public class DeviceLockViewBinderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private AtomicBoolean mCreateDeviceLockButtonClicked = new AtomicBoolean();
     private AtomicBoolean mGoToOSSettingsButtonClicked = new AtomicBoolean();
     private AtomicBoolean mUserUnderstandsButtonClicked = new AtomicBoolean();
@@ -55,17 +67,20 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
     private PropertyModel mViewModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
-        ViewGroup view = new LinearLayout(getActivity());
+    @Before
+    public void setUp() {
+        ViewGroup view = new LinearLayout(sActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(view);
+                    sActivity.setContentView(view);
 
-                    mView = DeviceLockView.create(getActivity().getLayoutInflater());
+                    mView = DeviceLockView.create(sActivity.getLayoutInflater());
                     view.addView(mView);
 
                     mViewModel =
@@ -92,10 +107,9 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mModelChangeProcessor::destroy);
-        super.tearDownTest();
     }
 
     @Test
@@ -108,21 +122,21 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
         assertEquals(
                 "The title text should match the version for a pre-existing device lock.",
-                getActivity().getResources().getString(R.string.device_lock_existing_lock_title),
+                sActivity.getResources().getString(R.string.device_lock_existing_lock_title),
                 mView.getTitle().getText());
         assertEquals(
                 "The description text should match the version for a pre-existing device lock.",
-                getActivity()
+                sActivity
                         .getResources()
                         .getString(R.string.device_lock_existing_lock_description_for_signin),
                 mView.getDescription().getText());
         assertEquals(
                 "The notice text should match the version for a pre-existing device lock..",
-                getActivity().getResources().getString(R.string.device_lock_notice),
+                sActivity.getResources().getString(R.string.device_lock_notice),
                 mView.getNoticeText().getText());
         assertEquals(
                 "The continue button text should match the version for a pre-existing device lock.",
-                getActivity().getResources().getString(R.string.got_it),
+                sActivity.getResources().getString(R.string.got_it),
                 mView.getContinueButton().getText());
         assertEquals(
                 "The continue button should always be visible.",
@@ -142,19 +156,19 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
 
         assertEquals(
                 "The title text should match the version for creating a device lock.",
-                getActivity().getResources().getString(R.string.device_lock_title),
+                sActivity.getResources().getString(R.string.device_lock_title),
                 mView.getTitle().getText());
         assertEquals(
                 "The description text should match the version for creating a " + "device lock.",
-                getActivity().getResources().getString(R.string.device_lock_description),
+                sActivity.getResources().getString(R.string.device_lock_description),
                 mView.getDescription().getText());
         assertEquals(
                 "The notice text should match the version for creating a device lock.",
-                getActivity().getResources().getString(R.string.device_lock_creation_notice),
+                sActivity.getResources().getString(R.string.device_lock_creation_notice),
                 mView.getNoticeText().getText());
         assertEquals(
                 "The continue button should match the version for creating a device lock.",
-                getActivity().getResources().getString(R.string.device_lock_create_lock_button),
+                sActivity.getResources().getString(R.string.device_lock_create_lock_button),
                 mView.getContinueButton().getText());
         assertEquals(
                 "The continue button should always be visible.",
@@ -207,7 +221,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals(
                 "The dismiss button should show fre dismissal text when in the sign in flow.",
                 mView.getDismissButton().getText(),
-                getActivity().getResources().getString(R.string.signin_fre_dismiss_button));
+                sActivity.getResources().getString(R.string.signin_fre_dismiss_button));
     }
 
     @Test
@@ -220,7 +234,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals(
                 "The dismiss button should show 'not now' text when in the sign in flow.",
                 mView.getDismissButton().getText(),
-                getActivity().getResources().getString(R.string.dialog_not_now));
+                sActivity.getResources().getString(R.string.dialog_not_now));
     }
 
     @Test
@@ -232,7 +246,7 @@ public class DeviceLockViewBinderTest extends BlankUiTestActivityTestCase {
         assertEquals(
                 "The dismiss button should show 'no thanks' text when not in the sign in flow.",
                 mView.getDismissButton().getText(),
-                getActivity().getResources().getString(R.string.no_thanks));
+                sActivity.getResources().getString(R.string.no_thanks));
     }
 
     @Test

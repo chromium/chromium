@@ -22,18 +22,22 @@ import android.widget.FrameLayout;
 import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -43,9 +47,15 @@ import java.util.Locale;
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase {
+public class ShrinkExpandAnimatorRenderTest {
     private static final int ANIMATION_STEPS = 5;
     private static final int SEARCH_BOX_HEIGHT = 50;
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -53,35 +63,41 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
                     .build();
 
-    public ShrinkExpandAnimatorRenderTest() {
-        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(false);
-        mRenderTestRule.setNightModeEnabled(false);
-    }
-
     private FrameLayout mRootView;
     private ShrinkExpandImageView mView;
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
     public void setUp() throws Exception {
-        Activity activity = getActivity();
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(false);
+        mRenderTestRule.setNightModeEnabled(false);
 
         CallbackHelper onFirstLayout = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mRootView = new FrameLayout(activity);
-                    activity.setContentView(
+                    mRootView = new FrameLayout(sActivity);
+                    sActivity.setContentView(
                             mRootView,
                             new ViewGroup.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.MATCH_PARENT));
 
-                    mView = new ShrinkExpandImageView(activity);
+                    mView = new ShrinkExpandImageView(sActivity);
                     mRootView.addView(mView);
                     mView.runOnNextLayout(onFirstLayout::notifyCalled);
                 });
 
         // Ensure layout has completed so getWidth() and getHeight() are non-zero.
         onFirstLayout.waitForOnly();
+    }
+
+    @After
+    public void tearDown() {
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
     }
 
     @Test

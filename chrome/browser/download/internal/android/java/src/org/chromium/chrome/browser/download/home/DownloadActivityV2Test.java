@@ -39,6 +39,9 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,6 +55,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -79,7 +83,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -92,7 +96,13 @@ import java.util.List;
 /** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
+public class DownloadActivityV2Test {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static BlankUiTestActivity sActivity;
+
     @Mock private Tracker mTracker;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
@@ -133,9 +143,13 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         };
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
@@ -179,7 +193,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         .setIsSeparateActivity(true)
                         .build();
 
-        mAppModalPresenter = new AppModalPresenter(getActivity());
+        mAppModalPresenter = new AppModalPresenter(sActivity);
 
         mModalDialogManager =
                 new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
@@ -191,7 +205,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
         mDownloadCoordinator =
                 new DownloadManagerCoordinatorImpl(
-                        getActivity(),
+                        sActivity,
                         config,
                         isPrefetchEnabledSupplier,
                         settingsNavigation,
@@ -201,10 +215,10 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         faviconProvider,
                         mStubbedOfflineContentProvider,
                         mDiscardableReferencePool);
-        getActivity().setContentView(mDownloadCoordinator.getView());
+        sActivity.setContentView(mDownloadCoordinator.getView());
         BackPressHelper.create(
-                getActivity(),
-                getActivity().getOnBackPressedDispatcher(),
+                sActivity,
+                sActivity.getOnBackPressedDispatcher(),
                 mDownloadCoordinator.getBackPressHandlers(),
                 SecondaryActivity.DOWNLOAD);
 
@@ -492,7 +506,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+                    DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
                     toolbar.getMenu()
                             .performIdentifierAction(R.id.selection_mode_delete_menu_id, 0);
                 });
@@ -566,7 +580,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                     setUpUi();
                 });
 
-        final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+        final DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -597,7 +611,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                     setUpUi();
                 });
 
-        final DownloadHomeToolbar toolbar = getActivity().findViewById(R.id.download_toolbar);
+        final DownloadHomeToolbar toolbar = sActivity.findViewById(R.id.download_toolbar);
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -614,8 +628,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         var backPressRecorder =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
-        ThreadUtils.runOnUiThreadBlocking(
-                getActivity().getOnBackPressedDispatcher()::onBackPressed);
+        ThreadUtils.runOnUiThreadBlocking(sActivity.getOnBackPressedDispatcher()::onBackPressed);
         backPressRecorder.assertExpected();
         onView(withId(R.id.search_text)).check(matches(isDisplayed()));
 
@@ -623,8 +636,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
         var backPressRecorder2 =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
-        ThreadUtils.runOnUiThreadBlocking(
-                getActivity().getOnBackPressedDispatcher()::onBackPressed);
+        ThreadUtils.runOnUiThreadBlocking(sActivity.getOnBackPressedDispatcher()::onBackPressed);
         backPressRecorder2.assertExpected();
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
@@ -713,7 +725,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 .perform(ViewActions.click());
 
         if (expectErrorMsgId != -1) {
-            onView(withText(getActivity().getResources().getString(expectErrorMsgId)))
+            onView(withText(sActivity.getResources().getString(expectErrorMsgId)))
                     .check(matches(isDisplayed()));
         }
     }
