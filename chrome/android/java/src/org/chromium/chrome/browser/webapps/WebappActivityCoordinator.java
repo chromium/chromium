@@ -38,15 +38,14 @@ public class WebappActivityCoordinator
     @Inject
     public WebappActivityCoordinator(
             SharedActivityCoordinator unused_sharedActivityCoordinator,
-            BaseCustomTabActivity activity,
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler) {
+            BaseCustomTabActivity activity) {
         // We don't need to do anything with the _unused params. We just need to resolve it so that
         // it starts working.
 
         mIntentDataProvider = activity.getIntentDataProvider();
         mWebappInfo = WebappInfo.create(mIntentDataProvider);
         mActivity = activity;
-        mDeferredStartupWithStorageHandler = deferredStartupWithStorageHandler;
+        mDeferredStartupWithStorageHandler = activity.getWebappDeferredStartupWithStorageHandler();
 
         mDeferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {

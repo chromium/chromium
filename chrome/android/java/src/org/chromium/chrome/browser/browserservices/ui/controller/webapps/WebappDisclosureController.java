@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.DisclosureContr
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
-import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 
@@ -33,9 +32,7 @@ public class WebappDisclosureController extends DisclosureController {
 
     @Inject
     public WebappDisclosureController(
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            TrustedWebActivityModel model,
-            BaseCustomTabActivity activity) {
+            TrustedWebActivityModel model, BaseCustomTabActivity activity) {
         super(
                 model,
                 activity.getLifecycleDispatcher(),
@@ -43,12 +40,16 @@ public class WebappDisclosureController extends DisclosureController {
                 activity.getIntentDataProvider().getClientPackageName());
         mIntentDataProvider = activity.getIntentDataProvider();
 
-        deferredStartupWithStorageHandler.addTask(
-                (storage, didCreateStorage) -> {
-                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
+        activity.getWebappDeferredStartupWithStorageHandler()
+                .addTask(
+                        (storage, didCreateStorage) -> {
+                            if (activity.getLifecycleDispatcher()
+                                    .isActivityFinishingOrDestroyed()) {
+                                return;
+                            }
 
-                    onDeferredStartupWithStorage(storage, didCreateStorage);
-                });
+                            onDeferredStartupWithStorage(storage, didCreateStorage);
+                        });
     }
 
     void onDeferredStartupWithStorage(

@@ -142,10 +142,8 @@ public class CustomTabActivityNavigationController
 
     @Inject
     public CustomTabActivityNavigationController(
-            CustomTabActivityTabController tabController,
-            CloseButtonNavigator closeButtonNavigator,
-            BaseCustomTabActivity activity) {
-        mTabController = tabController;
+            CloseButtonNavigator closeButtonNavigator, BaseCustomTabActivity activity) {
+        mTabController = activity.getCustomTabActivityTabController();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = activity.getIntentDataProvider();
         mCustomTabObserver = activity.getCustomTabObserver();

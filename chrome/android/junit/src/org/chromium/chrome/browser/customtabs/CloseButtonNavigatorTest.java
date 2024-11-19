@@ -95,8 +95,8 @@ public class CloseButtonNavigatorTest {
                 };
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
-        mCloseButtonNavigator =
-                new CloseButtonNavigator(mTabController, mMinimizationManagerHolder, mActivity);
+        when(mActivity.getCustomTabActivityTabController()).thenReturn(mTabController);
+        mCloseButtonNavigator = new CloseButtonNavigator(mMinimizationManagerHolder, mActivity);
 
         // Set up our mTabs to act as the mock tab model:
         // - mTabController.closeTab removes the top tab.

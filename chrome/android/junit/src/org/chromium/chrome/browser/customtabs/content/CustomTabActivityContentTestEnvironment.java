@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -96,6 +97,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CloseButtonNavigator closeButtonNavigator;
     @Mock public ToolbarManager toolbarManager;
     @Mock public ChromeBrowserInitializer browserInitializer;
+    @Mock public TabModelInitializer tabModelInitializer;
     @Mock public WebContents webContents;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     @Mock public ProfileProvider profileProvider;
@@ -171,14 +173,34 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public CustomTabActivityTabController createTabController() {
-        return new CustomTabActivityTabController(activity);
+        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
+        profileProviderSupplier.set(profileProvider);
+
+        return new CustomTabActivityTabController(
+                activity,
+                profileProviderSupplier,
+                customTabDelegateFactory,
+                intentDataProvider,
+                tabObserverRegistrar,
+                () -> compositorViewHolder,
+                tabPersistencePolicy,
+                tabFactory,
+                customTabObserver,
+                navigationEventObserver,
+                activityTabProvider,
+                tabProvider,
+                () -> activity.getSavedInstanceState(),
+                activity.getWindowAndroid(),
+                tabModelInitializer,
+                cipherFactory,
+                lifecycleDispatcher);
     }
 
     public CustomTabActivityNavigationController createNavigationController(
             CustomTabActivityTabController tabController) {
+        when(activity.getCustomTabActivityTabController()).thenReturn(tabController);
         CustomTabActivityNavigationController controller =
-                new CustomTabActivityNavigationController(
-                        tabController, closeButtonNavigator, activity);
+                new CustomTabActivityNavigationController(closeButtonNavigator, activity);
         return controller;
     }
 

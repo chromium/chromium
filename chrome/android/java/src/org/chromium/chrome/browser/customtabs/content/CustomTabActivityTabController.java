@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabCookiesFetcher;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -45,7 +44,7 @@ import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
 import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -71,10 +70,7 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /** Creates a new Tab or retrieves an existing Tab for the CustomTabActivity, and initializes it. */
-@ActivityScope
 public class CustomTabActivityTabController implements PauseResumeWithNativeObserver, Destroyable {
     // For CustomTabs.WebContentsStateOnLaunch, see histograms.xml. Append only.
     @IntDef({
@@ -94,7 +90,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final Supplier<CustomTabDelegateFactory> mCustomTabDelegateFactory;
+    private final CustomTabDelegateFactory mCustomTabDelegateFactory;
     private final AppCompatActivity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
@@ -114,29 +110,45 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final Intent mIntent;
     private CookiesFetcher mCookiesFetcher;
 
-    @Inject
-    public CustomTabActivityTabController(BaseCustomTabActivity activity) {
-        mProfileProviderSupplier = activity.getProfileProviderSupplier();
-        mCustomTabDelegateFactory = activity::getCustomTabDelegateFactory;
+    public CustomTabActivityTabController(
+            AppCompatActivity activity,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            CustomTabDelegateFactory customTabDelegateFactory,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            TabObserverRegistrar tabObserverRegistrar,
+            Supplier<CompositorViewHolder> compositorViewHolder,
+            CustomTabTabPersistencePolicy tabPersistencePolicy,
+            CustomTabActivityTabFactory tabFactory,
+            CustomTabObserver customTabObserver,
+            CustomTabNavigationEventObserver tabNavigationEventObserver,
+            ActivityTabProvider activityTabProvider,
+            CustomTabActivityTabProvider tabProvider,
+            Supplier<Bundle> savedInstanceStateSupplier,
+            ActivityWindowAndroid windowAndroid,
+            TabModelInitializer tabModelInitializer,
+            CipherFactory cipherFactory,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mTabObserverRegistrar = activity.getTabObserverRegistrar();
-        mCompositorViewHolder = activity.getCompositorViewHolderSupplier();
-        mTabPersistencePolicy = activity.getCustomTabTabPersistencePolicy();
-        mTabFactory = activity.getCustomTabActivityTabFactory();
-        mCustomTabObserver = activity.getCustomTabObserver();
-        mTabNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
-        mActivityTabProvider = activity.getActivityTabProvider();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        mSavedInstanceStateSupplier = activity::getSavedInstanceState;
-        mWindowAndroid = activity.getWindowAndroid();
-        mTabModelInitializer = activity;
-        mCipherFactory = activity.getCipherFactory();
+        mProfileProviderSupplier = profileProviderSupplier;
+        mCustomTabDelegateFactory = customTabDelegateFactory;
+        mIntentDataProvider = intentDataProvider;
+        mTabObserverRegistrar = tabObserverRegistrar;
+        mCompositorViewHolder = compositorViewHolder;
+        mTabPersistencePolicy = tabPersistencePolicy;
+        mTabFactory = tabFactory;
+        mCustomTabObserver = customTabObserver;
+        mTabNavigationEventObserver = tabNavigationEventObserver;
+        mActivityTabProvider = activityTabProvider;
+        mTabProvider = tabProvider;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mWindowAndroid = windowAndroid;
+        mTabModelInitializer = tabModelInitializer;
+        mCipherFactory = cipherFactory;
 
         mSession = mIntentDataProvider.getSession();
         mIntent = mIntentDataProvider.getIntent();
 
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     /**
@@ -347,7 +359,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                             ReparentingDelegateFactory.createReparentingTaskDelegate(
                                     mCompositorViewHolder.get(),
                                     mWindowAndroid,
-                                    mCustomTabDelegateFactory.get()),
+                                    mCustomTabDelegateFactory),
                             (params == null ? null : params.getFinalizeCallback()));
         }
 
@@ -410,7 +422,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             ReparentingTask.from(tab)
                     .finish(
                             ReparentingDelegateFactory.createReparentingTaskDelegate(
-                                    null, mWindowAndroid, mCustomTabDelegateFactory.get()),
+                                    null, mWindowAndroid, mCustomTabDelegateFactory),
                             null);
 
             tab.getWebContents().updateWebContentsVisibility(Visibility.VISIBLE);
@@ -422,7 +434,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
                                     .setAppId(
                                             CustomTabsConnection.getInstance()
                                                     .getClientPackageNameForSession(mSession));
-            tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory.get(), tabCallback);
+            tab = mTabFactory.createTab(webContents, mCustomTabDelegateFactory, tabCallback);
         }
 
         initializeTab(tab, false);

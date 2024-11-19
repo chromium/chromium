@@ -10,7 +10,6 @@ import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.Trusted
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -29,8 +28,6 @@ import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 @ActivityScope
 public interface BaseCustomTabActivityComponent extends ChromeActivityComponent {
     CustomTabActivityNavigationController resolveNavigationController();
-
-    CustomTabActivityTabController resolveTabController();
 
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
 

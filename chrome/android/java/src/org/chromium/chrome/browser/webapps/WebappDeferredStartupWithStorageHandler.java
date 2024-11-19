@@ -9,21 +9,17 @@ import android.app.Activity;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 /**
- * Requests {@link WebappDataStorage} during deferred startup. For WebAPKs only, creates
- * {@link WebappDataStorage} if the WebAPK is not registered. Runs tasks once the
- * {@link WebappDataStorage} has been fetched (and perhaps also created).
+ * Requests {@link WebappDataStorage} during deferred startup. For WebAPKs only, creates {@link
+ * WebappDataStorage} if the WebAPK is not registered. Runs tasks once the {@link WebappDataStorage}
+ * has been fetched (and perhaps also created).
  */
-@ActivityScope
 public class WebappDeferredStartupWithStorageHandler {
     /** Interface for deferred startup task callbacks. */
     public interface Task {
@@ -41,12 +37,12 @@ public class WebappDeferredStartupWithStorageHandler {
     private final boolean mIsWebApk;
     private final List<Task> mDeferredWithStorageTasks = new ArrayList<>();
 
-    @Inject
-    public WebappDeferredStartupWithStorageHandler(BaseCustomTabActivity activity) {
+    public WebappDeferredStartupWithStorageHandler(
+            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
         mActivity = activity;
-        WebappExtras webappExtras = activity.getIntentDataProvider().getWebappExtras();
+        WebappExtras webappExtras = intentDataProvider.getWebappExtras();
         mWebappId = (webappExtras != null) ? webappExtras.id : null;
-        mIsWebApk = activity.getIntentDataProvider().isWebApkActivity();
+        mIsWebApk = intentDataProvider.isWebApkActivity();
     }
 
     /** Invoked to add deferred startup task to queue. */

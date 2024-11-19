@@ -50,10 +50,9 @@ public class CloseButtonNavigator {
 
     @Inject
     public CloseButtonNavigator(
-            CustomTabActivityTabController tabController,
             CustomTabMinimizationManagerHolder minimizationManagerHolder,
             BaseCustomTabActivity activity) {
-        mTabController = tabController;
+        mTabController = activity.getCustomTabActivityTabController();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mButtonClosesChildTab = activity.getIntentDataProvider().isWebappOrWebApkActivity();
         mMinimizationManagerHolder = minimizationManagerHolder;

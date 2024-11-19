@@ -32,7 +32,6 @@ public class WebApkActivityCoordinator implements DestroyObserver {
 
     @Inject
     public WebApkActivityCoordinator(
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             WebappDisclosureController unused_disclosureController,
             DisclosureInfobar unused_disclosureInfobar,
             WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
@@ -42,12 +41,16 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         mIntentDataProvider = activity.getIntentDataProvider();
         mWebApkUpdateManager = activity::getWebApkUpdateManager;
 
-        deferredStartupWithStorageHandler.addTask(
-                (storage, didCreateStorage) -> {
-                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
+        activity.getWebappDeferredStartupWithStorageHandler()
+                .addTask(
+                        (storage, didCreateStorage) -> {
+                            if (activity.getLifecycleDispatcher()
+                                    .isActivityFinishingOrDestroyed()) {
+                                return;
+                            }
 
-                    onDeferredStartupWithStorage(storage, didCreateStorage);
-                });
+                            onDeferredStartupWithStorage(storage, didCreateStorage);
+                        });
         activity.getLifecycleDispatcher().register(this);
     }
 

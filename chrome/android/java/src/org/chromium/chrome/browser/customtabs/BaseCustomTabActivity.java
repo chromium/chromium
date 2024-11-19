@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
 import org.chromium.chrome.browser.webapps.WebApkUpdateManager;
 import org.chromium.chrome.browser.webapps.WebappActionsNotificationManager;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
+import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -119,7 +120,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabDelegateFactory mDelegateFactory;
     protected CustomTabToolbarCoordinator mToolbarCoordinator;
     protected CustomTabActivityNavigationController mNavigationController;
-    protected CustomTabActivityTabController mTabController;
+    private CustomTabActivityTabController mTabController;
     protected CustomTabActivityTabProvider mTabProvider;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     private CustomTabActivityTabFactory mTabFactory;
@@ -150,6 +151,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabBottomBarDelegate mCustomTabBottomBarDelegate;
     private CustomTabTabPersistencePolicy mCustomTabTabPersistencePolicy;
     private WebApkUpdateManager mWebApkUpdateManager;
+    private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -296,7 +298,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         () -> mToolbarCoordinator,
                         () -> mIntentDataProvider,
                         mBackPressManager,
-                        () -> mTabController,
+                        () -> getCustomTabActivityTabController(),
                         () -> mMinimizationManagerHolder.getMinimizationManager(),
                         () -> getCustomTabFeatureOverridesManager(),
                         getBaseChromeLayout(),
@@ -325,7 +327,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     public boolean shouldAllocateChildConnection() {
-        return mTabController.shouldAllocateChildConnection();
+        return getCustomTabActivityTabController().shouldAllocateChildConnection();
     }
 
     @Override
@@ -403,9 +405,28 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getCompositorViewHolderSupplier(),
                         getCipherFactory());
 
+        mTabController =
+                new CustomTabActivityTabController(
+                        this,
+                        getProfileProviderSupplier(),
+                        getCustomTabDelegateFactory(),
+                        getIntentDataProvider(),
+                        getTabObserverRegistrar(),
+                        getCompositorViewHolderSupplier(),
+                        getCustomTabTabPersistencePolicy(),
+                        getCustomTabActivityTabFactory(),
+                        getCustomTabObserver(),
+                        getCustomTabNavigationEventObserver(),
+                        getActivityTabProvider(),
+                        getCustomTabActivityTabProvider(),
+                        this::getSavedInstanceState,
+                        getWindowAndroid(),
+                        this,
+                        getCipherFactory(),
+                        getLifecycleDispatcher());
+
         mToolbarCoordinator = component.resolveToolbarCoordinator();
         mNavigationController = component.resolveNavigationController();
-        mTabController = component.resolveTabController();
 
         mCustomTabIntentHandler = component.resolveIntentHandler();
 
@@ -433,7 +454,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (intentDataProvider.isWebappOrWebApkActivity()) {
             mWebappActivityCoordinator = component.resolveWebappActivityCoordinator();
-            new WebappActionsNotificationManager(this);
+            new WebappActionsNotificationManager(
+                    getCustomTabActivityTabProvider(),
+                    getIntentDataProvider(),
+                    getLifecycleDispatcher());
             new WebappSplashController(
                     this,
                     getSplashController(),
@@ -562,7 +586,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getTopUiThemeColorProvider(),
                 getLifecycleDispatcher());
 
-        mTabController.setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
+        getCustomTabActivityTabController()
+                .setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
 
         if (mIntentDataProvider.isPartialCustomTab()) {
             @AnimRes
@@ -612,8 +637,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                     () -> CustomTabsConnection.createSpareWebContents(profile));
         }
 
-        if (mTabController != null) {
-            mTabController.destroy();
+        if (getCustomTabActivityTabController() != null) {
+            getCustomTabActivityTabController().destroy();
         }
 
         super.onDestroyInternal();
@@ -648,7 +673,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         // TODO(pkotwicz): Determine whether finishing tab initialization in initializeState() has a
         // positive performance impact.
         if (getIntentDataProvider().isWebappOrWebApkActivity()) {
-            mTabController.finishNativeInitialization();
+            getCustomTabActivityTabController().finishNativeInitialization();
         }
     }
 
@@ -666,7 +691,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                             });
         }
         if (!getIntentDataProvider().isWebappOrWebApkActivity()) {
-            mTabController.finishNativeInitialization();
+            getCustomTabActivityTabController().finishNativeInitialization();
         }
 
         super.finishNativeInitialization();
@@ -1174,5 +1199,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabActivityTabFactory getCustomTabActivityTabFactory() {
         return mTabFactory;
+    }
+
+    public CustomTabActivityTabController getCustomTabActivityTabController() {
+        return mTabController;
+    }
+
+    public WebappDeferredStartupWithStorageHandler getWebappDeferredStartupWithStorageHandler() {
+        if (mWebappDeferredStartupWithStorageHandler == null) {
+            mWebappDeferredStartupWithStorageHandler =
+                    new WebappDeferredStartupWithStorageHandler(this, getIntentDataProvider());
+        }
+        return mWebappDeferredStartupWithStorageHandler;
     }
 }

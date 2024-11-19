@@ -46,9 +46,7 @@ public class WebApkActivityLifecycleUmaTracker
     private long mStartTime;
 
     @Inject
-    public WebApkActivityLifecycleUmaTracker(
-            BaseCustomTabActivity activity,
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler) {
+    public WebApkActivityLifecycleUmaTracker(BaseCustomTabActivity activity) {
         mActivity = activity;
         mIntentDataProvider = activity.getIntentDataProvider();
         mSplashController = activity.getSplashControllerSupplier();
@@ -61,14 +59,18 @@ public class WebApkActivityLifecycleUmaTracker
 
         // Add UMA recording task at the front of the deferred startup queue as it has a higher
         // priority than other deferred startup tasks like checking for a WebAPK update.
-        deferredStartupWithStorageHandler.addTaskToFront(
-                (storage, didCreateStorage) -> {
-                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
+        activity.getWebappDeferredStartupWithStorageHandler()
+                .addTaskToFront(
+                        (storage, didCreateStorage) -> {
+                            if (activity.getLifecycleDispatcher()
+                                    .isActivityFinishingOrDestroyed()) {
+                                return;
+                            }
 
-                    WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
-                    WebApkUmaRecorder.recordShellApkVersion(
-                            webApkExtras.shellApkVersion, webApkExtras.distributor);
-                });
+                            WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+                            WebApkUmaRecorder.recordShellApkVersion(
+                                    webApkExtras.shellApkVersion, webApkExtras.distributor);
+                        });
     }
 
     @Override
