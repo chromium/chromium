@@ -22,6 +22,7 @@ import android.webkit.WebViewDatabase;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.WebViewChromium.ApiCall;
 
@@ -82,6 +83,20 @@ public class WebViewChromiumAwInit {
 
     public static class WebViewStartUpDiagnostics {
         private Long mTotalTimeUiThreadChromiumInitMillis;
+        private Long mMaxTimePerTaskUiThreadChromiumInitMillis;
+        private Throwable mSynchronousChromiumInitLocation;
+
+        public Long getTotalTimeUiThreadChromiumInitMillis() {
+            return mTotalTimeUiThreadChromiumInitMillis;
+        }
+
+        public Long getMaxTimePerTaskUiThreadChromiumInitMillis() {
+            return mMaxTimePerTaskUiThreadChromiumInitMillis;
+        }
+
+        public @Nullable Throwable getSynchronousChromiumInitLocationOrNull() {
+            return mSynchronousChromiumInitLocation;
+        }
 
         private void setTotalTimeUiThreadChromiumInitMillis(Long time) {
             // The setter should only be called once.
@@ -89,8 +104,16 @@ public class WebViewChromiumAwInit {
             mTotalTimeUiThreadChromiumInitMillis = time;
         }
 
-        public Long getTotalTimeUiThreadChromiumInitMillis() {
-            return mTotalTimeUiThreadChromiumInitMillis;
+        private void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
+            // The setter should only be called once.
+            assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
+            mMaxTimePerTaskUiThreadChromiumInitMillis = time;
+        }
+
+        private void setSynchronousChromiumInitLocation(Throwable t) {
+            // The setter should only be called once.
+            assert (mSynchronousChromiumInitLocation == null);
+            mSynchronousChromiumInitLocation = t;
         }
     }
 
@@ -343,6 +366,10 @@ public class WebViewChromiumAwInit {
         }
 
         long totalTimeTaken = SystemClock.uptimeMillis() - startTime;
+        mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTaken);
+        // Currently `startUpChromium` is not split into multiple tasks, therefore we consider
+        // `startUpChromium` as a single task.
+        mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(totalTimeTaken);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.Startup.CreationTime.InitReason", callSite, CallSite.COUNT);
         RecordHistogram.recordTimesHistogram(
@@ -352,7 +379,6 @@ public class WebViewChromiumAwInit {
                 totalTimeTaken,
                 /* callSite= */ callSite,
                 /* fromUIThread= */ triggeredFromUIThread);
-        mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTaken);
     }
 
     /**
@@ -456,6 +482,10 @@ public class WebViewChromiumAwInit {
         }
 
         if (ThreadUtils.runningOnUiThread()) {
+            mWebViewStartUpDiagnostics.setSynchronousChromiumInitLocation(
+                    new Throwable(
+                            "Location where Chromium init was started synchronously on the UI"
+                                    + " thread"));
             // If we are currently running on the UI thread then we must do init now. If there was
             // already a task posted to the UI thread from another thread to do it, it will just
             // no-op when it runs.
@@ -671,7 +701,7 @@ public class WebViewChromiumAwInit {
 
     // Starts up WebView asynchronously.
     // MUST NOT be called on the UI thread.
-    // The callback will be called on the UI thread.
+    // The callback can either be called synchronously or on the UI thread.
     public void startUpWebView(@NonNull WebViewStartUpCallback callback) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException(

@@ -597,6 +597,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                     new SupportLibStartUpResult();
                             supportLibResult.setTotalTimeInUiThreadMillis(
                                     result.getTotalTimeUiThreadChromiumInitMillis());
+                            supportLibResult.setMaxTimePerTaskInUiThreadMillis(
+                                    result.getMaxTimePerTaskUiThreadChromiumInitMillis());
+                            Throwable syncChromiumInitLocation =
+                                    result.getSynchronousChromiumInitLocationOrNull();
+                            if (syncChromiumInitLocation != null) {
+                                supportLibResult.addBlockingStartUpLocation(
+                                        syncChromiumInitLocation);
+                            }
                             webViewStartUpCallback.onSuccess(
                                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                             supportLibResult));

@@ -4,7 +4,13 @@
 
 package org.chromium.support_lib_boundary;
 
+import java.util.List;
+
 /** Boundary interface for WebViewStartUpResult. */
 public interface WebViewStartUpResultBoundaryInterface {
     Long getTotalTimeInUiThreadMillis();
+
+    Long getMaxTimePerTaskInUiThreadMillis();
+
+    List<Throwable> getBlockingStartUpLocations();
 }
