@@ -80,6 +80,9 @@ specific_include_rules = {
   'HistoricalTabSaverImpl\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
   ],
+  'InterceptNavigationDelegateClientImpl.java': [
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParams.java",
+  ],
   'RedirectHandlerTabHelper\.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/LaunchIntentDispatcher.java",

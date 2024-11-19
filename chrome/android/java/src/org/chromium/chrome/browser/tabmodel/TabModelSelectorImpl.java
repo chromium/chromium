@@ -239,7 +239,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
             @Override
             public void onCloseContents(Tab tab) {
-                closeTab(tab);
+                tryCloseTab(
+                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
             }
         };
     }

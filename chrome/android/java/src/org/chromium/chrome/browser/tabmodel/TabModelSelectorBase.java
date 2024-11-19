@@ -276,7 +276,14 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public boolean closeTab(Tab tab) {
+    public boolean tryCloseTab(@NonNull TabClosureParams tabClosureParams, boolean allowDialog) {
+        if (tabClosureParams.tabs == null
+                || tabClosureParams.tabs.size() != 1
+                || tabClosureParams.tabCloseType != TabCloseType.SINGLE) {
+            assert false : "Invalid tab closure params received for tryCloseTab.";
+            return false;
+        }
+        Tab tab = tabClosureParams.tabs.get(0);
         boolean isClosing = tab.isClosing() && !tab.isDestroyed();
         for (int i = 0; i < getModels().size(); i++) {
             TabModel model = mTabModelInternals.get(i);
@@ -289,7 +296,8 @@ public abstract class TabModelSelectorBase
                     return true;
                 }
             } else if (model.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
-                return model.closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+                model.getTabRemover().closeTabs(tabClosureParams, allowDialog);
+                return true;
             }
         }
 

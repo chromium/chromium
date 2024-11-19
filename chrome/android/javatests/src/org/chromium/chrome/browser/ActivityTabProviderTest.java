@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -234,7 +235,11 @@ public class ActivityTabProviderTest {
         int callCount = mActivityTabChangedHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    selector.closeTab(getModelSelectedTab());
+                    selector.tryCloseTab(
+                            TabClosureParams.closeTab(getModelSelectedTab())
+                                    .allowUndo(false)
+                                    .build(),
+                            /* allowDialog= */ false);
                 });
         mActivityTabChangedHelper.waitForCallback(callCount);
 
@@ -273,7 +278,11 @@ public class ActivityTabProviderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivity.getTabModelSelector().closeTab(startingTab);
+                    mActivity
+                            .getTabModelSelector()
+                            .tryCloseTab(
+                                    TabClosureParams.closeTab(startingTab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                 });
 
         assertEquals("The activity tab should not have changed.", activityTabBefore, mActivityTab);

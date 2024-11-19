@@ -132,11 +132,17 @@ public interface TabModelSelector {
 
     /**
      * Searches through all children models for the specified Tab and closes the tab if it exists.
+     * If the tab is pending closure it will be committed.
      *
-     * @param tab the non-null tab to close
-     * @return true if the tab was found
+     * <p>Note: this method should ONLY be used when either the tab model or closing state of the
+     * tab are hard to discern. Prefer to use {@code
+     * getModel(isIncognito).getTabRemover().closeTabs()}.
+     *
+     * @param tabClosureParams A {@link TabClosureParams} for a single tab.
+     * @param allowDialog Whether to show a tab removal dialog see {@link TabRemover}
+     * @return true if the tab was found and closed.
      */
-    boolean closeTab(Tab tab);
+    boolean tryCloseTab(@NonNull TabClosureParams tabClosureParams, boolean allowDialog);
 
     /** Get total tab count across all tab models */
     int getTotalTabCount();
