@@ -24,7 +24,7 @@ const makeFileViewer = async (launchFile) => {
   return element;
 };
 
-var launchFinishedPromise = new Promise(resolve => {
+var launchFinishedPromise = new Promise((resolve, reject) => {
   window.addEventListener("load", () => {
     window.launchQueue.setConsumer(async (launchParams) => {
       console.log("Launched with: ", launchParams);
@@ -32,6 +32,7 @@ var launchFinishedPromise = new Promise(resolve => {
       if (!launchParams.files.length) {
         viewersContainer.innerText =
           "Oh poo, no files. Consider granting the permission next time!";
+        reject(new Error('No files found in launchParams.'));
         return;
       }
 
