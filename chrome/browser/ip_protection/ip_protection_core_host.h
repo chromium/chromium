@@ -52,7 +52,8 @@ class IpProtectionCoreHost
     : public KeyedService,
       public ip_protection::mojom::CoreHost,
       public signin::IdentityManager::Observer,
-      public privacy_sandbox::TrackingProtectionSettingsObserver {
+      public privacy_sandbox::TrackingProtectionSettingsObserver,
+      public ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate {
  public:
   IpProtectionCoreHost(
       signin::IdentityManager* identity_manager,
@@ -62,20 +63,25 @@ class IpProtectionCoreHost
 
   ~IpProtectionCoreHost() override;
 
-  // IpProtectionConfigGetter:
+  // CoreHost implementation:
 
   // Get a batch of blind-signed auth tokens. It is forbidden for two calls to
   // this method for the same proxy layer to be outstanding at the same time.
   void TryGetAuthTokens(uint32_t batch_size,
                         ip_protection::mojom::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
-  // Get the list of IP Protection proxies.
   void GetProxyConfig(GetProxyConfigCallback callback) override;
 
   static bool CanIpProtectionBeEnabled();
 
   // Checks if IP Protection is disabled via user settings.
   bool IsIpProtectionEnabled();
+
+  // IpProtectionProxyConfigDirectFetcher::Delegate implementation.
+  bool IsProxyConfigFetchEnabled() override;
+  void AuthenticateRequest(std::unique_ptr<network::ResourceRequest>,
+                           ip_protection::IpProtectionProxyConfigDirectFetcher::
+                               Delegate::AuthenticateRequestCallback) override;
 
   // Add bidirectional pipes to a new network service.
   void AddNetworkService(
@@ -145,11 +151,6 @@ class IpProtectionCoreHost
   std::optional<base::TimeDelta> CalculateBackoff(
       ip_protection::TryGetAuthTokensResult result);
 
-  void AuthenticateCallback(
-      std::unique_ptr<network::ResourceRequest>,
-      ip_protection::IpProtectionProxyConfigDirectFetcher::
-          AuthenticateDoneCallback);
-
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
   // `TryGetAuthTokens()` and `GetProxyConfig()`.
   using RequestOAuthTokenCallback =
@@ -178,12 +179,15 @@ class IpProtectionCoreHost
 
   void OnRequestOAuthTokenCompletedForGetProxyConfig(
       std::unique_ptr<network::ResourceRequest> resource_request,
-      ip_protection::IpProtectionProxyConfigDirectFetcher::
-          AuthenticateDoneCallback callback,
+      ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate::
+          AuthenticateRequestCallback callback,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
-  void ClearOAuthTokenProblemBackoff();
+  // The status of the account has changed, either becoming available or
+  // becoming unavailable. This is a signal to reset various timeouts (if
+  // available) or extend them (if not).
+  void AccountStatusChanged(bool account_available);
 
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.

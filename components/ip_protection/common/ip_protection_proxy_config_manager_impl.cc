@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
@@ -52,10 +53,10 @@ void RecordTelemetry(
 
 IpProtectionProxyConfigManagerImpl::IpProtectionProxyConfigManagerImpl(
     IpProtectionCore* core,
-    scoped_refptr<IpProtectionConfigGetter> config_getter,
+    std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher,
     bool disable_proxy_refreshing_for_testing)
     : ip_protection_core_(core),
-      config_getter_(config_getter),
+      fetcher_(std::move(fetcher)),
       proxy_list_min_age_(
           net::features::kIpPrivacyProxyListMinFetchInterval.Get()),
       proxy_list_refresh_interval_(
@@ -115,7 +116,7 @@ void IpProtectionProxyConfigManagerImpl::RefreshProxyList() {
   last_successful_proxy_list_refresh_ = base::Time::Now();
   const base::TimeTicks refresh_start_time_for_metrics = base::TimeTicks::Now();
 
-  config_getter_->GetProxyConfig(base::BindOnce(
+  fetcher_->GetProxyConfig(base::BindOnce(
       &IpProtectionProxyConfigManagerImpl::OnGotProxyList,
       weak_ptr_factory_.GetWeakPtr(), refresh_start_time_for_metrics));
 }

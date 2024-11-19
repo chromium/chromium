@@ -77,8 +77,7 @@ void AwIpProtectionCoreHost::SetUp() {
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
             ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
-            base::BindRepeating(&AwIpProtectionCoreHost::AuthenticateCallback,
-                                weak_ptr_factory_.GetWeakPtr()));
+            this);
   }
 }
 
@@ -97,9 +96,7 @@ void AwIpProtectionCoreHost::SetUpForTesting(
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(url_loader_factory),
-          ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
-          base::BindRepeating(&AwIpProtectionCoreHost::AuthenticateCallback,
-                              weak_ptr_factory_.GetWeakPtr()));
+          ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding, this);
 }
 
 void AwIpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
@@ -114,13 +111,22 @@ void AwIpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
     return;
   }
 
-  ip_protection_proxy_config_fetcher_->GetProxyConfig(std::move(callback));
+  ip_protection_proxy_config_fetcher_->GetProxyConfig(base::BindOnce(
+      // Convert the mojo style callback, which takes `const
+      // std::optional<..>&`, to the preferred style, passing `std::optional` by
+      // value.
+      [](GetProxyConfigCallback callback,
+         std::optional<std::vector<::net::ProxyChain>> proxy_chain,
+         std::optional<ip_protection::GeoHint> geo_hint) {
+        std::move(callback).Run(proxy_chain, geo_hint);
+      },
+      std::move(callback)));
 }
 
-void AwIpProtectionCoreHost::AuthenticateCallback(
+void AwIpProtectionCoreHost::AuthenticateRequest(
     std::unique_ptr<network::ResourceRequest> resource_request,
-    ip_protection::IpProtectionProxyConfigDirectFetcher::
-        AuthenticateDoneCallback callback) {
+    ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate::
+        AuthenticateRequestCallback callback) {
   google_apis::AddAPIKeyToRequest(
       *resource_request,
       google_apis::GetAPIKey(version_info::android::GetChannel()));
@@ -337,6 +343,10 @@ bool AwIpProtectionCoreHost::IsIpProtectionEnabled() {
     return false;
   }
   return CanIpProtectionBeEnabled();
+}
+
+bool AwIpProtectionCoreHost::IsProxyConfigFetchEnabled() {
+    return IsIpProtectionEnabled();
 }
 
 }  // namespace android_webview

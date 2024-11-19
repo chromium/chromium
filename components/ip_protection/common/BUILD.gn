@@ -126,6 +126,7 @@ source_set("ip_protection_core_impl_mojo") {
   public_deps = [
     ":ip_protection_core_impl",
     ":ip_protection_proxy_config_manager_impl",
+    ":ip_protection_proxy_config_mojo_fetcher",
     ":ip_protection_token_manager_impl",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
@@ -200,6 +201,39 @@ source_set("ip_protection_proxy_config_direct_fetcher_unittest") {
   ]
 }
 
+source_set("ip_protection_proxy_config_mojo_fetcher") {
+  sources = [
+    "ip_protection_proxy_config_mojo_fetcher.cc",
+    "ip_protection_proxy_config_mojo_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_fetcher",
+    "//base",
+    "//components/ip_protection:get_proxy_config_proto",
+    "//components/ip_protection/mojom",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("ip_protection_proxy_config_mojo_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_proxy_config_mojo_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_config_mojo_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("ip_protection_proxy_config_fetcher") {
   sources = [
     "ip_protection_proxy_config_fetcher.cc",
@@ -222,9 +256,9 @@ source_set("ip_protection_proxy_config_manager_impl") {
     "ip_protection_proxy_config_manager_impl.h",
   ]
   public_deps = [
-    ":ip_protection_config_getter",
     ":ip_protection_core",
     ":ip_protection_data_types",
+    ":ip_protection_proxy_config_fetcher",
     ":ip_protection_proxy_config_manager",
     "//base",
     "//net",
@@ -330,6 +364,7 @@ source_set("ip_protection_token_fetcher") {
     "ip_protection_token_fetcher.h",
   ]
   public_deps = [
+    ":ip_protection_core_host_helper",
     "//base",
     "//third_party/abseil-cpp:absl",
   ]

@@ -15,6 +15,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager_impl.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_mojo_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
 #include "net/base/features.h"
@@ -53,7 +54,8 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
           config_getter->IsAvailable()
               ? std::make_unique<IpProtectionProxyConfigManagerImpl>(
                     this,
-                    config_getter)
+                    std::make_unique<IpProtectionProxyConfigMojoFetcher>(
+                        config_getter))
               : nullptr,
           config_getter->IsAvailable()
               ? MakeTokenManagerMap(this, config_getter)

@@ -49,16 +49,17 @@ namespace android_webview {
 // TODO(b/346997109): Refactor AwIpProtectionCoreHost to reduce code
 // duplication once a common implementation of IpProtectionConfigGetter is
 // added.
-class AwIpProtectionCoreHost : public KeyedService,
-                               public ip_protection::mojom::CoreHost {
+class AwIpProtectionCoreHost
+    : public KeyedService,
+      public ip_protection::mojom::CoreHost,
+      public ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate {
  public:
   explicit AwIpProtectionCoreHost(AwBrowserContext* aw_browser_context);
 
   ~AwIpProtectionCoreHost() override;
 
   AwIpProtectionCoreHost(const AwIpProtectionCoreHost&) = delete;
-  AwIpProtectionCoreHost& operator=(const AwIpProtectionCoreHost&) =
-      delete;
+  AwIpProtectionCoreHost& operator=(const AwIpProtectionCoreHost&) = delete;
 
   // IpProtectionConfigGetter:
   // Get a batch of blind-signed auth tokens.
@@ -78,13 +79,18 @@ class AwIpProtectionCoreHost : public KeyedService,
   // once.
   void Shutdown() override;
 
-  static AwIpProtectionCoreHost* Get(
-      AwBrowserContext* aw_browser_context);
+  static AwIpProtectionCoreHost* Get(AwBrowserContext* aw_browser_context);
 
   static bool CanIpProtectionBeEnabled();
 
   // Checks if IP Protection is disabled.
   bool IsIpProtectionEnabled();
+
+  // IpProtectionProxyConfigDirectFetcher::Delegate implementation.
+  bool IsProxyConfigFetchEnabled() override;
+  void AuthenticateRequest(std::unique_ptr<network::ResourceRequest>,
+                           ip_protection::IpProtectionProxyConfigDirectFetcher::
+                               Delegate::AuthenticateRequestCallback) override;
 
   // Binds Mojo interfaces to be passed to a new network service.
   void AddNetworkService(
@@ -128,11 +134,6 @@ class AwIpProtectionCoreHost : public KeyedService,
   // `last_try_get_auth_tokens_..` fields, and updates those fields.
   std::optional<base::TimeDelta> CalculateBackoff(
       ip_protection::TryGetAuthTokensAndroidResult result);
-
-  void AuthenticateCallback(
-      std::unique_ptr<network::ResourceRequest>,
-      ip_protection::IpProtectionProxyConfigDirectFetcher::
-          AuthenticateDoneCallback);
 
   // Injected browser context.
   raw_ptr<AwBrowserContext> aw_browser_context_;

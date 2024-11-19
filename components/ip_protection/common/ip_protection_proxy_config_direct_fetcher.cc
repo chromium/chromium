@@ -71,15 +71,18 @@ constexpr char kProtobufContentType[] = "application/x-protobuf";
 IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string service_type,
-    AuthenticateCallback authenticate_callback) {
+    Delegate* delegate)
+    : delegate_(delegate) {
   CHECK(url_loader_factory);
   ip_protection_proxy_config_retriever_ =
       std::make_unique<IpProtectionProxyConfigDirectFetcher::Retriever>(
-          url_loader_factory, service_type, std::move(authenticate_callback));
+          url_loader_factory, service_type, delegate);
 }
 
 IpProtectionProxyConfigDirectFetcher::IpProtectionProxyConfigDirectFetcher(
-    std::unique_ptr<Retriever> retriever) {
+    std::unique_ptr<Retriever> retriever,
+    Delegate* delegate)
+    : delegate_(delegate) {
   ip_protection_proxy_config_retriever_ = std::move(retriever);
 }
 
@@ -88,9 +91,30 @@ IpProtectionProxyConfigDirectFetcher::~IpProtectionProxyConfigDirectFetcher() =
 
 void IpProtectionProxyConfigDirectFetcher::GetProxyConfig(
     GetProxyConfigCallback callback) {
+  // If IP Protection is disabled via user settings then don't attempt to get a
+  // proxy list.
+  // TODO(crbug.com/41494110): Ideally the enabled/disabled status would be
+  // handled above the level of the fetcher (in managers or core), but for the
+  // moment it is handled here.
+  if (!delegate_->IsProxyConfigFetchEnabled()) {
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
+
+  // If we are not able to call `RetrieveProxyConfig` yet, return early.
+  if (no_get_proxy_config_until_ > base::Time::Now()) {
+    std::move(callback).Run(std::nullopt, std::nullopt);
+    return;
+  }
+
   ip_protection_proxy_config_retriever_->RetrieveProxyConfig(base::BindOnce(
       &IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted,
       base::Unretained(this), std::move(callback)));
+}
+
+void IpProtectionProxyConfigDirectFetcher::ClearBackoffTimer() {
+  no_get_proxy_config_until_ = base::Time();
+  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
 }
 
 void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
@@ -113,7 +137,7 @@ void IpProtectionProxyConfigDirectFetcher::OnGetProxyConfigCompleted(
   }
 
   // Cancel any backoff on success.
-  ClearNoGetProxyConfigUntilTime();
+  ClearBackoffTimer();
 
   std::vector<net::ProxyChain> proxy_list =
       GetProxyListFromProxyConfigResponse(response.value());
@@ -224,13 +248,13 @@ net::ProxyChain IpProtectionProxyConfigDirectFetcher::MakeChainForTesting(
 IpProtectionProxyConfigDirectFetcher::Retriever::Retriever(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string service_type,
-    AuthenticateCallback authenticate_callback)
+    Delegate* delegate)
     : url_loader_factory_(std::move(url_loader_factory)),
       ip_protection_server_url_(net::features::kIpPrivacyTokenServer.Get()),
       ip_protection_server_get_proxy_config_path_(
           net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()),
       service_type_(std::move(service_type)),
-      authenticate_callback_(std::move(authenticate_callback)) {
+      delegate_(delegate) {
   CHECK(url_loader_factory_);
 }
 
@@ -239,8 +263,8 @@ IpProtectionProxyConfigDirectFetcher::Retriever::~Retriever() = default;
 void IpProtectionProxyConfigDirectFetcher::Retriever::RetrieveProxyConfig(
     RetrieveCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (authenticate_callback_) {
-    authenticate_callback_.Run(
+  if (delegate_) {
+    delegate_->AuthenticateRequest(
         std::move(resource_request),
         base::BindOnce(&IpProtectionProxyConfigDirectFetcher::Retriever::
                            OnAuthenticatedResourceRequest,
@@ -325,8 +349,10 @@ void IpProtectionProxyConfigDirectFetcher::Retriever::OnGetProxyConfigCompleted(
   std::move(callback).Run(std::move(response_proto));
 }
 
-void IpProtectionProxyConfigDirectFetcher::ClearNoGetProxyConfigUntilTime() {
-  no_get_proxy_config_until_ = base::Time();
-  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
+void IpProtectionProxyConfigDirectFetcher::AccountStatusChanged(
+    bool account_available) {
+  if (account_available) {
+    ClearBackoffTimer();
+  }
 }
 }  // namespace ip_protection

@@ -87,9 +87,7 @@ void IpProtectionCoreHost::SetUp() {
     ip_protection_proxy_config_fetcher_ =
         std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
             url_loader_factory_.get(),
-            ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding,
-            base::BindRepeating(&IpProtectionCoreHost::AuthenticateCallback,
-                                weak_ptr_factory_.GetWeakPtr()));
+            ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding, this);
   }
 }
 
@@ -111,9 +109,7 @@ void IpProtectionCoreHost::SetUpForTesting(
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(url_loader_factory),
-          ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding,
-          base::BindRepeating(&IpProtectionCoreHost::AuthenticateCallback,
-                              weak_ptr_factory_.GetWeakPtr()));
+          ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding, this);
 }
 
 IpProtectionCoreHost::~IpProtectionCoreHost() = default;
@@ -183,36 +179,22 @@ void IpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
   }
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // If IP Protection is disabled via user settings then don't attempt to get a
-  // proxy list.
-  // TODO(crbug.com/41494110): We don't currently prevent GetProxyConfig
-  // calls from being made from the network service once the user has disabled
-  // the feature, so for now we will fail all of these requests here (and rely
-  // on rate-limiting by the network service to prevent the browser process from
-  // being flooded with messages). We are currently planning to move the
-  // GetProxyConfig calls to be made in the network service directly, so once
-  // that happens it should obviate the need for a long-term solution here. If
-  // that plan changes, though, we should implement a way for these requests to
-  // stop being made.
-  if (!IsIpProtectionEnabled()) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
-    return;
-  }
-
-  // If we are not able to call `GetProxyConfig` yet, return early.
-  if (ip_protection_proxy_config_fetcher_->GetNoGetProxyConfigUntilTime() >
-      base::Time::Now()) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
-    return;
-  }
-
-  ip_protection_proxy_config_fetcher_->GetProxyConfig(std::move(callback));
+  ip_protection_proxy_config_fetcher_->GetProxyConfig(base::BindOnce(
+      // Convert the mojo style callback, which takes `const
+      // std::optional<..>&`, to the preferred style, passing `std::optional` by
+      // value.
+      [](GetProxyConfigCallback callback,
+         std::optional<std::vector<::net::ProxyChain>> proxy_chain,
+         std::optional<ip_protection::GeoHint> geo_hint) {
+        std::move(callback).Run(proxy_chain, geo_hint);
+      },
+      std::move(callback)));
 }
 
-void IpProtectionCoreHost::AuthenticateCallback(
+void IpProtectionCoreHost::AuthenticateRequest(
     std::unique_ptr<network::ResourceRequest> resource_request,
-    ip_protection::IpProtectionProxyConfigDirectFetcher::
-        AuthenticateDoneCallback callback) {
+    ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate::
+        AuthenticateRequestCallback callback) {
   // Apply either an OAuth token (which must be fetched) or an API key to the
   // request.
   if (net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
@@ -306,8 +288,8 @@ void IpProtectionCoreHost::OnRequestOAuthTokenCompletedForTryGetAuthTokens(
 
 void IpProtectionCoreHost::OnRequestOAuthTokenCompletedForGetProxyConfig(
     std::unique_ptr<network::ResourceRequest> resource_request,
-    ip_protection::IpProtectionProxyConfigDirectFetcher::
-        AuthenticateDoneCallback callback,
+    ip_protection::IpProtectionProxyConfigDirectFetcher::Delegate::
+        AuthenticateRequestCallback callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -550,16 +532,22 @@ void IpProtectionCoreHost::AddNetworkService(
   // they are eventually cleaned up.
 }
 
-void IpProtectionCoreHost::ClearOAuthTokenProblemBackoff() {
+void IpProtectionCoreHost::AccountStatusChanged(bool account_available) {
+  if (ip_protection_proxy_config_fetcher_) {
+    ip_protection_proxy_config_fetcher_->AccountStatusChanged(
+        account_available);
+  }
+
   // End the backoff period if it was caused by account-related issues. Also,
   // tell the `IpProtectionConfigCache()` in the Network Service so that it
   // will begin making token requests.
-  if (last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
-    last_try_get_auth_tokens_backoff_.reset();
-    InvalidateNetworkContextTryAgainAfterTime();
-  }
-  if (ip_protection_proxy_config_fetcher_) {
-    ip_protection_proxy_config_fetcher_->ClearNoGetProxyConfigUntilTime();
+  if (account_available) {
+    if (last_try_get_auth_tokens_backoff_ == base::TimeDelta::Max()) {
+      last_try_get_auth_tokens_backoff_.reset();
+      InvalidateNetworkContextTryAgainAfterTime();
+    }
+  } else {
+    last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
   }
 }
 
@@ -572,13 +560,14 @@ void IpProtectionCoreHost::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
       // Account information is now available, so resume making requests for
       // the OAuth token.
-      ClearOAuthTokenProblemBackoff();
+      AccountStatusChanged(true);
       break;
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
       // No need to tell the Network Service - it will find out the next time
       // it calls `TryGetAuthTokens()`.
+      AccountStatusChanged(false);
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -596,11 +585,11 @@ void IpProtectionCoreHost::OnErrorStateOfRefreshTokenUpdatedForAccount(
   // again. To handle this, watch for these error events and treat them the
   // same way we do login/logout events.
   if (error.state() == GoogleServiceAuthError::State::NONE) {
-    ClearOAuthTokenProblemBackoff();
+    AccountStatusChanged(true);
     return;
   }
   if (error.IsPersistentError()) {
-    last_try_get_auth_tokens_backoff_ = base::TimeDelta::Max();
+    AccountStatusChanged(false);
     return;
   }
 }
@@ -645,12 +634,18 @@ bool IpProtectionCoreHost::IsIpProtectionEnabled() {
   return tracking_protection_settings_->IsIpProtectionEnabled();
 }
 
+bool IpProtectionCoreHost::IsProxyConfigFetchEnabled() {
+  return IsIpProtectionEnabled();
+}
+
 void IpProtectionCoreHost::OnIpProtectionEnabledChanged() {
   if (is_shutting_down_) {
     return;
   }
 
-  ClearOAuthTokenProblemBackoff();
+  if (IsIpProtectionEnabled()) {
+    AccountStatusChanged(true);
+  }
 
   for (auto& ipp_control : remotes_) {
     ipp_control->SetIpProtectionEnabled(IsIpProtectionEnabled());

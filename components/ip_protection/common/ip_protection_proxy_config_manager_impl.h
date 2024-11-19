@@ -12,22 +12,21 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/common/ip_protection_proxy_config_fetcher.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "net/base/proxy_chain.h"
 
 namespace ip_protection {
 
-// An implementation of IpProtectionProxyConfigManager that populates itself
-// using a passed in IpProtectionConfigGetter pointer from the cache.
+// The production implementation of IpProtectionProxyConfigManager.
 class IpProtectionProxyConfigManagerImpl
     : public IpProtectionProxyConfigManager {
  public:
   explicit IpProtectionProxyConfigManagerImpl(
       IpProtectionCore* core,
-      scoped_refptr<IpProtectionConfigGetter> config_getter,
+      std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher,
       bool disable_proxy_refreshing_for_testing = false);
   ~IpProtectionProxyConfigManagerImpl() override;
 
@@ -80,7 +79,7 @@ class IpProtectionProxyConfigManagerImpl
   // Current geo of the proxy list.
   std::string current_geo_id_ = "";
 
-  // True if an invocation of `config_getter_.GetProxyConfig()` is
+  // True if an invocation of `fetcher_.GetProxyConfig()` is
   // outstanding.
   bool fetching_proxy_list_ = false;
 
@@ -95,7 +94,7 @@ class IpProtectionProxyConfigManagerImpl
   const raw_ptr<IpProtectionCore> ip_protection_core_;
 
   // Source of proxy list, when needed.
-  scoped_refptr<IpProtectionConfigGetter> config_getter_;
+  std::unique_ptr<IpProtectionProxyConfigFetcher> fetcher_;
 
   // The last time this instance began refreshing the proxy list successfully.
   base::Time last_successful_proxy_list_refresh_;
