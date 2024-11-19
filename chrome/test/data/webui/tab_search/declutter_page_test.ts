@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DeclutterPageElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {getAnnouncerInstance, TabSearchApiProxyImpl, TIMEOUT_MS} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -60,6 +61,11 @@ suite('DeclutterPageTest', () => {
   });
 
   test('Excludes from stale tabs', async () => {
+    const announcement = 'Announcement';
+    loadTimeData.overrideValues({
+      a11yTabExcludedFromList: announcement,
+    });
+
     await declutterPageSetup();
     assertEquals(0, testApiProxy.getCallCount('excludeFromStaleTabs'));
 
@@ -73,6 +79,12 @@ suite('DeclutterPageTest', () => {
 
     const [tabId] = await testApiProxy.whenCalled('excludeFromStaleTabs');
     assertEquals(staleTabElement.data.tab.tabId, tabId);
+
+    await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
+    const announcer = getAnnouncerInstance();
+    assertEquals(
+        announcement,
+        announcer.shadowRoot!.querySelector('#messages')!.textContent);
   });
 
   test('Shows tab list on nonzero stale tabs', async () => {

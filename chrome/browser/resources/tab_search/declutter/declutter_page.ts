@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 import '../tab_search_item.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -233,13 +234,20 @@ export class DeclutterPageElement extends CrLitElement {
     e.stopPropagation();
   }
 
-  protected onStaleTabRemove_(e: Event) {
+  protected onStaleTabExclude_(e: Event) {
     const tabData = (e.currentTarget as TabSearchItemElement).data;
     this.apiProxy_.excludeFromStaleTabs(tabData.tab.tabId);
+    this.announceTabExcluded_();
   }
 
-  protected onDuplicateTabRemove_(_e: Event) {
+  protected onDuplicateTabExclude_(_e: Event) {
+    this.announceTabExcluded_();
     // TODO(crbug.com/376739583): Implement this along with api proxy call
+  }
+
+  private announceTabExcluded_() {
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('a11yTabExcludedFromList'));
   }
 
   protected getDuplicateTabDataList_(this: DeclutterPageElement) {

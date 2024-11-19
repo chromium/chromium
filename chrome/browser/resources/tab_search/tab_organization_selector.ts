@@ -113,13 +113,19 @@ export class TabOrganizationSelectorElement extends CrLitElement {
           break;
         case TabOrganizationFeature.kSelector:
           if (this.prevSelectedState_ ===
-              TabOrganizationFeature.kAutoTabGroups) {
+                  TabOrganizationFeature.kAutoTabGroups ||
+              this.disableDeclutter_) {
             this.$.autoTabGroupsButton.focus();
           } else {
             this.$.declutterButton.focus();
           }
           break;
       }
+    } else if (
+        changedPrivateProperties.has('disableDeclutter_') &&
+        this.selectedState_ === TabOrganizationFeature.kDeclutter &&
+        this.disableDeclutter_) {
+      this.$.autoTabGroupsButton.focus();
     }
   }
 

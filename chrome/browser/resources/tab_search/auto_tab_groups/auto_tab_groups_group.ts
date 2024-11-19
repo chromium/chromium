@@ -11,6 +11,7 @@ import './auto_tab_groups_new_badge.js';
 import './auto_tab_groups_results_actions.js';
 import '../tab_search_item.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -235,6 +236,8 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     const index = getEventTargetIndex(e);
     const tab = this.tabs[index];
     this.fire('remove-tab', {organizationId: this.organizationId, tab});
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('a11yTabExcludedFromGroup'));
   }
 
   protected onTabFocus_(e: Event) {
