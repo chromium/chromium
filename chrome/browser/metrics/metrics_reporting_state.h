@@ -34,6 +34,9 @@ enum class ChangeMetricsReportingStateCalledFrom {
 
   // Called on ChromeOS from Lacros on initialization to initialize state.
   kCrosMetricsInitializedFromAsh,
+
+  // Called on ChromeOS pre-consent metrics. This happens once per powerwash.
+  kCrosMetricsPreConsent,
 };
 
 // Changes metrics reporting state without caring about the success of the

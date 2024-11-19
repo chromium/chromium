@@ -62,6 +62,7 @@ class FirstRunMasterPrefsVariationsSeedTest;
 namespace metrics {
 class ChromeOSPerUserMetricsBrowserTestBase;
 class UkmConsentParamBrowserTest;
+class CrOSPreConsentMetricsManagerTest;
 }  // namespace metrics
 
 namespace safe_browsing {
@@ -211,6 +212,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class metrics::ChromeOSPerUserMetricsBrowserTestBase;
   friend class SampledOutClientIdSavedBrowserTest;
   friend class MetricsInternalsUIBrowserTestWithLog;
+  friend class metrics::CrOSPreConsentMetricsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServicesManagerClientTest,

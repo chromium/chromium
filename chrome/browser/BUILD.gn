@@ -4641,6 +4641,8 @@ static_library("browser") {
       "metrics/chromeos_system_profile_provider.h",
       "metrics/cros_healthd_metrics_provider.cc",
       "metrics/cros_healthd_metrics_provider.h",
+      "metrics/cros_pre_consent_metrics_manager.cc",
+      "metrics/cros_pre_consent_metrics_manager.h",
       "metrics/enrollment_status.h",
       "metrics/family_user_metrics_provider.cc",
       "metrics/family_user_metrics_provider.h",

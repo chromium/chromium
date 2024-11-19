@@ -1414,6 +1414,11 @@ source_set("platform_browser_tests") {
     sources += [ "../browser/enterprise/remote_commands/user_remote_commands_service_browsertest.cc" ]
   }
 
+  if (is_chromeos) {
+    sources +=
+        [ "../browser/metrics/cros_pre_consent_metrics_manager_browsertest.cc" ]
+  }
+
   if (enable_extensions) {
     deps += [ "//chrome/browser/extensions" ]
   }

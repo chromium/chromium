@@ -2050,6 +2050,11 @@ BASE_FEATURE(kOobePersonalizedOnboarding,
              "OobePersonalizedOnboarding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Pre-consent metrics functionality is enabled during OOBE.
+BASE_FEATURE(kOobePreConsentMetrics,
+             "OobePreConsentMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Consumer Software Screen will be shown during OOBE.
 BASE_FEATURE(kOobeSoftwareUpdate,
              "OobeSoftwareUpdate",
@@ -4234,6 +4239,10 @@ bool IsOobeCrosEventsEnabled() {
 
 bool IsOobePersonalizedOnboardingEnabled() {
   return base::FeatureList::IsEnabled(kOobePersonalizedOnboarding);
+}
+
+bool IsOobePreConsentMetricsEnabled() {
+  return base::FeatureList::IsEnabled(kOobePreConsentMetrics);
 }
 
 bool IsOobeSoftwareUpdateEnabled() {

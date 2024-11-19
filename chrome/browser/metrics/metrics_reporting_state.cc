@@ -115,7 +115,9 @@ void ChangeMetricsReportingStateWithReply(
       (called_from ==
        ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange) ||
       (called_from ==
-       ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsCreated);
+       ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsCreated) ||
+      (called_from ==
+       ChangeMetricsReportingStateCalledFrom::kCrosMetricsPreConsent);
   if (IsMetricsReportingPolicyManaged() && !is_chrome_os) {
     if (!callback_fn.is_null()) {
       const bool metrics_enabled =
