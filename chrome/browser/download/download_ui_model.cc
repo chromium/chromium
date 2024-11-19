@@ -417,6 +417,10 @@ int64_t DownloadUIModel::GetTotalBytes() const {
   return 0;
 }
 
+int64_t DownloadUIModel::GetUploadedBytes() const {
+  return 0;
+}
+
 int DownloadUIModel::PercentComplete() const {
   return -1;
 }

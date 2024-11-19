@@ -58,6 +58,7 @@ class DownloadItemModel : public DownloadUIModel,
   std::u16string GetTabProgressStatusText() const override;
   int64_t GetCompletedBytes() const override;
   int64_t GetTotalBytes() const override;
+  int64_t GetUploadedBytes() const override;
   int PercentComplete() const override;
   bool IsDangerous() const override;
   bool MightBeMalicious() const override;

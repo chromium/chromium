@@ -291,6 +291,10 @@ int64_t DownloadItemModel::GetTotalBytes() const {
                                    : download_->GetTotalBytes();
 }
 
+int64_t DownloadItemModel::GetUploadedBytes() const {
+  return download_->GetUploadedBytes();
+}
+
 // TODO(asanka,rdsmith): Once 'open' moves exclusively to the
 //     ChromeDownloadManagerDelegate, we should calculate the percentage here
 //     instead of calling into the DownloadItem.
