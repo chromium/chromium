@@ -89,6 +89,21 @@ std::u16string ToU16String(const StringView& s) {
 
   return ToU16String(s.Characters16(), s.length());
 }
+
+template <typename DestChar, typename SrcChar>
+void CopyAndReplace(base::span<DestChar> dest,
+                    base::span<const SrcChar> src,
+                    DestChar old_char,
+                    DestChar new_char) {
+  for (size_t i = 0; i < src.size(); ++i) {
+    DestChar ch = src[i];
+    if (ch == old_char) {
+      ch = new_char;
+    }
+    dest[i] = ch;
+  }
+}
+
 }  // namespace
 
 void* StringImpl::operator new(size_t size) {
@@ -1276,48 +1291,26 @@ scoped_refptr<StringImpl> StringImpl::Replace(UChar old_c, UChar new_c) {
   if (Find(old_c) == kNotFound)
     return this;
 
-  wtf_size_t i;
   if (Is8Bit()) {
     if (new_c <= 0xff) {
-      LChar* data;
-      LChar old_char = static_cast<LChar>(old_c);
-      LChar new_char = static_cast<LChar>(new_c);
-
-      scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-
-      for (i = 0; i != length_; ++i) {
-        LChar ch = Characters8()[i];
-        if (ch == old_char)
-          ch = new_char;
-        data[i] = ch;
-      }
+      base::span<LChar> data8;
+      scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data8);
+      CopyAndReplace(data8, Span8(), static_cast<LChar>(old_c),
+                     static_cast<LChar>(new_c));
       return new_impl;
     }
 
     // There is the possibility we need to up convert from 8 to 16 bit,
     // create a 16 bit string for the result.
-    UChar* data;
-    scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-
-    for (i = 0; i != length_; ++i) {
-      UChar ch = Characters8()[i];
-      if (ch == old_c)
-        ch = new_c;
-      data[i] = ch;
-    }
-
+    base::span<UChar> data16;
+    scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data16);
+    CopyAndReplace(data16, Span8(), old_c, new_c);
     return new_impl;
   }
 
-  UChar* data;
-  scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
-
-  for (i = 0; i != length_; ++i) {
-    UChar ch = Characters16()[i];
-    if (ch == old_c)
-      ch = new_c;
-    data[i] = ch;
-  }
+  base::span<UChar> data16;
+  scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data16);
+  CopyAndReplace(data16, Span16(), old_c, new_c);
   return new_impl;
 }
 
