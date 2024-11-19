@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_group.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
@@ -177,6 +178,7 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
   }
 
   pool_->ProcessPendingRequestsInGroups();
+  MaybeComplete();
 }
 
 void HttpStreamPool::Group::AddIdleStreamSocket(
@@ -188,6 +190,7 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
+  MaybeComplete();
 }
 
 std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
@@ -274,8 +277,13 @@ HttpStreamPool::Group::GetPriorityIfStalledByPoolLimit() const {
 void HttpStreamPool::Group::FlushWithError(
     int error,
     std::string_view net_log_close_reason_utf8) {
+  // Refresh() may delete this. Get a weak pointer to this and call CancelJobs()
+  // only when this is still alive.
+  base::WeakPtr<Group> weak_this = weak_ptr_factory_.GetWeakPtr();
   Refresh(net_log_close_reason_utf8);
-  CancelJobs(error);
+  if (weak_this) {
+    CancelJobs(error);
+  }
 }
 
 void HttpStreamPool::Group::Refresh(
@@ -290,6 +298,11 @@ void HttpStreamPool::Group::Refresh(
 void HttpStreamPool::Group::CloseIdleStreams(
     std::string_view net_log_close_reason_utf8) {
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
+  // Use PostTask since MaybeComplete() may delete `this`, and this method could
+  // be called while iterating all groups.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HttpStreamPool::Group::CancelJobs(int error) {
@@ -356,7 +369,7 @@ void HttpStreamPool::Group::EnsureAttemptManager() {
 }
 
 void HttpStreamPool::Group::MaybeComplete() {
-  if (ActiveStreamSocketCount() > 0) {
+  if (ActiveStreamSocketCount() > 0 || attempt_manager_) {
     return;
   }
 

@@ -2002,8 +2002,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   // Release the HttpStream, the underlying StreamSocket should not be pooled
   // as an idle stream since the generation is different.
   stream.reset();
-  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
-  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_FALSE(pool().GetGroupForTesting(requester.GetStreamKey()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SSLConfigForServersChanged) {

@@ -364,6 +364,11 @@ HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroupForTesting(
   return GetOrCreateGroup(stream_key);
 }
 
+HttpStreamPool::Group* HttpStreamPool::GetGroupForTesting(
+    const HttpStreamKey& stream_key) {
+  return GetGroup(stream_key);
+}
+
 HttpStreamPool::Group& HttpStreamPool::GetOrCreateGroup(
     const HttpStreamKey& stream_key,
     std::optional<QuicSessionAliasKey> quic_session_alias_key) {

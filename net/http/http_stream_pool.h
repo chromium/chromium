@@ -229,6 +229,8 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   Group& GetOrCreateGroupForTesting(const HttpStreamKey& stream_key);
 
+  Group* GetGroupForTesting(const HttpStreamKey& stream_key);
+
   HttpNetworkSession* http_network_session() const {
     return http_network_session_;
   }
@@ -255,15 +257,15 @@ class NET_EXPORT_PRIVATE HttpStreamPool
     max_stream_sockets_per_group_ = max_stream_sockets_per_group;
   }
 
-  Group& GetOrCreateGroup(
-      const HttpStreamKey& stream_key,
-      std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
-
   size_t JobControllerCountForTesting() const {
     return job_controllers_.size();
   }
 
  private:
+  Group& GetOrCreateGroup(
+      const HttpStreamKey& stream_key,
+      std::optional<QuicSessionAliasKey> quic_session_alias_key = std::nullopt);
+
   Group* GetGroup(const HttpStreamKey& stream_key);
 
   // Searches for a group that has the highest priority pending request and
