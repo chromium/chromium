@@ -16,7 +16,6 @@
 #include "base/rand_util.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
-#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -78,9 +77,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       image_decoder_(std::make_unique<ImageDecoderImpl>()),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
-      module_id_names_(
-          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
-                                 profile_)),
+      module_id_details_(
+          ntp::MakeModuleIdDetails(NewTabPageUI::IsManagedProfile(profile_),
+                                   profile_)),
       page_factory_receiver_(this),
       id_(RandInt64()) {
   const bool wallpaper_search_enabled =
@@ -253,7 +252,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
   source->AddBoolean(
       "modulesEnabled",
-      ntp::HasModulesEnabled(module_id_names_,
+      ntp::HasModulesEnabled(module_id_details_,
                              IdentityManagerFactory::GetForProfile(profile_)));
 
   source->AddBoolean("showDeviceThemeToggle",
@@ -398,7 +397,7 @@ void CustomizeChromeUI::CreatePageHandler(
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
-      module_id_names_);
+      module_id_details_);
   if (section_.has_value()) {
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();

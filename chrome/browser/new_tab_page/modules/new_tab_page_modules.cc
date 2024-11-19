@@ -25,10 +25,9 @@
 
 namespace ntp {
 
-const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
-    bool is_managed_profile,
-    Profile* profile) {
-  std::vector<std::pair<const std::string, int>> details;
+const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
+                                                      Profile* profile) {
+  std::vector<ModuleIdDetail> details;
 
   if (IsGoogleCalendarModuleEnabled(is_managed_profile)) {
     details.emplace_back(ntp_modules::kGoogleCalendarModuleId,
@@ -81,10 +80,9 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
   return details;
 }
 
-bool HasModulesEnabled(
-    std::vector<std::pair<const std::string, int>> module_id_names,
-    signin::IdentityManager* identity_manager) {
-  return !module_id_names.empty() &&
+bool HasModulesEnabled(const std::vector<ModuleIdDetail> module_id_details,
+                       signin::IdentityManager* identity_manager) {
+  return !module_id_details.empty() &&
          !base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad) &&
          (base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kSignedOutNtpModulesSwitch) ||

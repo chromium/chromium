@@ -23,6 +23,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -267,13 +268,13 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     EXPECT_CALL(mock_ntp_custom_background_service_, AddObserver)
         .Times(1)
         .WillOnce(SaveArg<0>(&ntp_custom_background_service_observer_));
-    const std::vector<std::pair<const std::string, int>> module_id_names = {
+    const std::vector<ntp::ModuleIdDetail> module_id_details = {
         {ntp_modules::kMostRelevantTabResumptionModuleId,
          IDS_NTP_TAB_RESUMPTION_TITLE}};
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
-        web_contents_, module_id_names, mock_open_url_callback_.Get());
+        web_contents_, module_id_details, mock_open_url_callback_.Get());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);

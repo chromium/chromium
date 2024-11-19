@@ -27,7 +27,6 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion_handler.h"
-#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
@@ -496,9 +495,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
       navigation_start_time_(base::Time::Now()),
-      module_id_names_(
-          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
-                                 profile_)) {
+      module_id_details_(
+          ntp::MakeModuleIdDetails(NewTabPageUI::IsManagedProfile(profile_),
+                                   profile_)) {
   auto* source = CreateAndAddNewTabPageUiHtmlSource(profile_);
   bool wallpaper_search_button_enabled =
       base::FeatureList::IsEnabled(ntp_features::kNtpWallpaperSearchButton) &&
@@ -740,7 +739,7 @@ void NewTabPageUI::CreatePageHandler(
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile_),
       web_contents(), std::make_unique<NewTabPageFeaturePromoHelper>(),
-      navigation_start_time_, &module_id_names_, side_panel_controller);
+      navigation_start_time_, &module_id_details_, side_panel_controller);
 }
 
 void NewTabPageUI::CreateBrowserCommandHandler(
@@ -862,7 +861,7 @@ void NewTabPageUI::OnLoad() {
              navigation_start_time_.InMillisecondsFSinceUnixEpoch());
   update.Set(
       "modulesEnabled",
-      ntp::HasModulesEnabled(module_id_names_,
+      ntp::HasModulesEnabled(module_id_details_,
                              IdentityManagerFactory::GetForProfile(profile_)));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));

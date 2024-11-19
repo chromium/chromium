@@ -474,7 +474,7 @@ NewTabPageHandler::NewTabPageHandler(
     std::unique_ptr<NewTabPageFeaturePromoHelper>
         customize_chrome_feature_promo_helper,
     const base::Time& ntp_navigation_start_time,
-    const std::vector<std::pair<const std::string, int>>* module_id_names,
+    const std::vector<ntp::ModuleIdDetail>* module_id_details,
     customize_chrome::SidePanelController*
         customize_chrome_side_panel_controller)
     : SettingsEnabledObserver(
@@ -491,7 +491,7 @@ NewTabPageHandler::NewTabPageHandler(
       web_contents_(web_contents),
       feature_promo_helper_(std::move(customize_chrome_feature_promo_helper)),
       ntp_navigation_start_time_(ntp_navigation_start_time),
-      module_id_names_(module_id_names),
+      module_id_details_(module_id_details),
       logger_(profile,
               GURL(chrome::kChromeUINewTabPageURL),
               ntp_navigation_start_time),
@@ -837,10 +837,11 @@ void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
 
 void NewTabPageHandler::GetModulesIdNames(GetModulesIdNamesCallback callback) {
   std::vector<new_tab_page::mojom::ModuleIdNamePtr> modules_details;
-  for (const auto& id_name_pair : *module_id_names_) {
+  for (const auto& module_id_detail : *module_id_details_) {
     auto module_id_name = new_tab_page::mojom::ModuleIdName::New();
-    module_id_name->id = id_name_pair.first;
-    module_id_name->name = l10n_util::GetStringUTF8(id_name_pair.second);
+    module_id_name->id = module_id_detail.id_;
+    module_id_name->name =
+        l10n_util::GetStringUTF8(module_id_detail.name_message_id_);
     modules_details.push_back(std::move(module_id_name));
   }
 

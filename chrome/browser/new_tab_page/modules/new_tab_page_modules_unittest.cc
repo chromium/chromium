@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/new_tab_page/modules/modules_constants.h"
 #include "chrome/browser/new_tab_page/modules/modules_switches.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/modules/test_support.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,7 +61,7 @@ class NewTabPageModulesTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_SingleModuleEnabled) {
   const std::vector<base::test::FeatureRef>& some_module_features = {
       ntp_features::kNtpFeedModule,
       ntp_features::kNtpMostRelevantTabResumptionModule};
@@ -71,14 +72,14 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdNames_SingleModuleEnabled) {
         /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
             some_module_features, {feature}));
 
-    const std::vector<std::pair<const std::string, int>> module_id_names =
-        ntp::MakeModuleIdNames(/*is_managed_profile=*/false,
-                               /*profile=*/&profile());
-    ASSERT_EQ(1u, module_id_names.size());
+    const std::vector<ntp::ModuleIdDetail> module_id_details =
+        ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
+                                 /*profile=*/&profile());
+    ASSERT_EQ(1u, module_id_details.size());
   }
 }
 
-TEST_F(NewTabPageModulesTest, MakeModuleIdNames_WithDriveModule) {
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_WithDriveModule) {
   base::test::ScopedFeatureList features;
   const std::vector<base::test::FeatureRef>& enabled_features = {
       ntp_features::kNtpDriveModule};
@@ -88,13 +89,13 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdNames_WithDriveModule) {
           ntp::kAllModuleFeatures, enabled_features));
   SetSyncEnabled(true);
 
-  const std::vector<std::pair<const std::string, int>> module_id_names =
-      ntp::MakeModuleIdNames(/*is_managed_profile=*/true,
-                             /*profile=*/&profile());
-  ASSERT_EQ(1u, module_id_names.size());
+  const std::vector<ntp::ModuleIdDetail> module_id_details =
+      ntp::MakeModuleIdDetails(/*is_managed_profile=*/true,
+                               /*profile=*/&profile());
+  ASSERT_EQ(1u, module_id_details.size());
 }
 
-TEST_F(NewTabPageModulesTest, MakeModuleIdNames_Managed) {
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_Managed) {
   base::test::ScopedFeatureList features;
   const std::vector<base::test::FeatureRef>& enabled_features = {
       ntp_features::kNtpCalendarModule,
@@ -105,13 +106,13 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdNames_Managed) {
       /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
           ntp::kAllModuleFeatures, enabled_features));
 
-  const std::vector<std::pair<const std::string, int>> module_id_names =
-      ntp::MakeModuleIdNames(/*is_managed_profile=*/true,
-                             /*profile=*/&profile());
-  ASSERT_EQ(2u, module_id_names.size());
+  const std::vector<ntp::ModuleIdDetail> module_id_details =
+      ntp::MakeModuleIdDetails(/*is_managed_profile=*/true,
+                               /*profile=*/&profile());
+  ASSERT_EQ(2u, module_id_details.size());
 }
 
-TEST_F(NewTabPageModulesTest, MakeModuleIdNames_NotManaged) {
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_NotManaged) {
   base::test::ScopedFeatureList features;
   const std::vector<base::test::FeatureRef>& enabled_features = {
       ntp_features::kNtpCalendarModule,
@@ -122,28 +123,28 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdNames_NotManaged) {
       /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
           ntp::kAllModuleFeatures, enabled_features));
 
-  const std::vector<std::pair<const std::string, int>> module_id_names =
-      ntp::MakeModuleIdNames(/*is_managed_profile=*/false,
-                             /*profile=*/&profile());
-  ASSERT_EQ(0u, module_id_names.size());
+  const std::vector<ntp::ModuleIdDetail> module_id_details =
+      ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
+                               /*profile=*/&profile());
+  ASSERT_EQ(0u, module_id_details.size());
 }
 
 #if !defined(OFFICIAL_BUILD)
-TEST_F(NewTabPageModulesTest, MakeModuleIdNames_DummyModules) {
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_DummyModules) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{ntp_features::kNtpDummyModules},
       /*disabled_features=*/ntp::kAllModuleFeatures);
 
-  const std::vector<std::pair<const std::string, int>> module_id_names =
-      ntp::MakeModuleIdNames(/*is_managed_profile=*/false,
-                             /*profile=*/&profile());
-  ASSERT_EQ(1u, module_id_names.size());
+  const std::vector<ntp::ModuleIdDetail> module_id_details =
+      ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
+                               /*profile=*/&profile());
+  ASSERT_EQ(1u, module_id_details.size());
 }
 #endif
 
 const char kSampleUserEmail[] = "user@gmail.com";
-const std::vector<std::pair<const std::string, int>> kSampleModules = {
+const std::vector<ntp::ModuleIdDetail> kSampleModules = {
     {ntp_modules::kDriveModuleId, IDS_NTP_MODULES_DRIVE_NAME}};
 
 TEST_F(NewTabPageModulesTest, HasModulesEnabled_SignedInAccount) {
