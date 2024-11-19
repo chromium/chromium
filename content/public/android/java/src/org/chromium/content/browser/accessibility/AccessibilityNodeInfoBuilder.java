@@ -571,61 +571,62 @@ public class AccessibilityNodeInfoBuilder {
             int[] suggestionStarts,
             int[] suggestionEnds,
             String[] suggestions) {
-        CharSequence charSequence = text;
-        if (annotateAsLink) {
+
+        boolean needsSpannable =
+                annotateAsLink
+                        || (!language.isEmpty() && !language.equals(mDelegate.getLanguageTag()))
+                        || (suggestionStarts != null && suggestionStarts.length > 0);
+
+        if (needsSpannable) {
             SpannableString spannable = new SpannableString(text);
-            spannable.setSpan(new URLSpan(targetUrl), 0, spannable.length(), 0);
-            charSequence = spannable;
-        }
-        if (!language.isEmpty() && !language.equals(mDelegate.getLanguageTag())) {
-            SpannableString spannable;
-            if (charSequence instanceof SpannableString) {
-                spannable = (SpannableString) charSequence;
-            } else {
-                spannable = new SpannableString(charSequence);
+            if (annotateAsLink) {
+                spannable.setSpan(new URLSpan(targetUrl), 0, spannable.length(), 0);
             }
-            Locale locale = Locale.forLanguageTag(language);
-            spannable.setSpan(new LocaleSpan(locale), 0, spannable.length(), 0);
-            charSequence = spannable;
-        }
-
-        if (suggestionStarts != null && suggestionStarts.length > 0) {
-            assert suggestionEnds != null;
-            assert suggestionEnds.length == suggestionStarts.length;
-            assert suggestions != null;
-            assert suggestions.length == suggestionStarts.length;
-
-            SpannableString spannable;
-            if (charSequence instanceof SpannableString) {
-                spannable = (SpannableString) charSequence;
-            } else {
-                spannable = new SpannableString(charSequence);
+            if (!language.isEmpty() && !language.equals(mDelegate.getLanguageTag())) {
+                Locale locale = Locale.forLanguageTag(language);
+                spannable.setSpan(new LocaleSpan(locale), 0, spannable.length(), 0);
+            }
+            if (suggestionStarts != null && suggestionStarts.length > 0) {
+                addSuggestionSpans(spannable, suggestionStarts, suggestionEnds, suggestions);
             }
 
-            int spannableLen = spannable.length();
-            for (int i = 0; i < suggestionStarts.length; i++) {
-                int start = suggestionStarts[i];
-                int end = suggestionEnds[i];
-                // Ignore any spans outside the range of the spannable string.
-                if (start < 0
-                        || start > spannableLen
-                        || end < 0
-                        || end > spannableLen
-                        || start > end) {
-                    continue;
-                }
-
-                String[] suggestionArray = new String[1];
-                suggestionArray[0] = suggestions[i];
-                int flags = SuggestionSpan.FLAG_MISSPELLED;
-                SuggestionSpan suggestionSpan =
-                        new SuggestionSpan(mDelegate.getContext(), suggestionArray, flags);
-                spannable.setSpan(suggestionSpan, start, end, 0);
-            }
-            charSequence = spannable;
+            return spannable;
         }
 
-        return charSequence;
+        // TODO(mschillaci): Consider if we can remove the `needsSpannable` check above and always
+        // return a SpannableString instead of sometimes a String without a performance impact.
+        return text;
+    }
+
+    private void addSuggestionSpans(
+            SpannableString spannable,
+            int[] suggestionStarts,
+            int[] suggestionEnds,
+            String[] suggestions) {
+        assert suggestionEnds != null;
+        assert suggestionEnds.length == suggestionStarts.length;
+        assert suggestions != null;
+        assert suggestions.length == suggestionStarts.length;
+
+        int spannableLength = spannable.length();
+        for (int i = 0; i < suggestionStarts.length; i++) {
+            int start = suggestionStarts[i];
+            int end = suggestionEnds[i];
+            // Ignore any spans outside the range of the spannable string.
+            if (start < 0
+                    || start > spannableLength
+                    || end < 0
+                    || end > spannableLength
+                    || start > end) {
+                continue;
+            }
+
+            int flags = SuggestionSpan.FLAG_MISSPELLED;
+            SuggestionSpan suggestionSpan =
+                    new SuggestionSpan(
+                            mDelegate.getContext(), new String[] {suggestions[i]}, flags);
+            spannable.setSpan(suggestionSpan, start, end, 0);
+        }
     }
 
     public static void convertWebRectToAndroidCoordinates(
