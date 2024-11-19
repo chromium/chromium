@@ -341,10 +341,10 @@ void ChromeAppSorting::OnExtensionMoved(
   InstallTracker::Get(browser_context_)->OnAppsReordered(moved_extension_id);
 }
 
-// TODO(crbug.com/379136842): Verify and reduce the allowed states called within
-// IsInstallState() if needed.
 syncer::StringOrdinal ChromeAppSorting::GetAppLaunchOrdinal(
     const ExtensionId& extension_id) const {
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
   if (web_app_registrar_ &&
       web_app_registrar_->IsInstallState(
           extension_id,
@@ -377,6 +377,8 @@ void ChromeAppSorting::SetAppLaunchOrdinal(
       extension_id, page_ordinal, GetAppLaunchOrdinal(extension_id));
   AddOrdinalMapping(extension_id, page_ordinal, new_app_launch_ordinal);
 
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
   if (web_app_registrar_ &&
       web_app_registrar_->IsInstallState(
           extension_id,
@@ -446,6 +448,8 @@ syncer::StringOrdinal ChromeAppSorting::GetNaturalAppPageOrdinal() const {
 
 syncer::StringOrdinal ChromeAppSorting::GetPageOrdinal(
     const ExtensionId& extension_id) const {
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
   if (web_app_registrar_ &&
       web_app_registrar_->IsInstallState(
           extension_id,
@@ -475,6 +479,8 @@ void ChromeAppSorting::SetPageOrdinal(
       extension_id, GetPageOrdinal(extension_id), app_launch_ordinal);
   AddOrdinalMapping(extension_id, new_page_ordinal, app_launch_ordinal);
 
+  // TODO(crbug.com/379136842): Verify and reduce the allowed states called
+  // within IsInstallState() if needed.
   if (web_app_registrar_ &&
       web_app_registrar_->IsInstallState(
           extension_id,
