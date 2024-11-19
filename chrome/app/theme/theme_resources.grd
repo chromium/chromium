@@ -167,9 +167,7 @@
               <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="${branding_path_component}/linux/product_logo_32_dev.png" />
             </then>
             <else> <!-- not is_linux -->
-              <if expr="not is_android">
-                <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/product_logo_16.png" />
-              </if> <!-- not is_android -->
+              <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_16" file="${branding_path_component}/product_logo_16.png" />
               <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_BETA" file="${branding_path_component}/product_logo_32_beta.png" />
               <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_32_DEV" file="${branding_path_component}/product_logo_32_dev.png" />
             </else>
