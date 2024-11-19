@@ -1597,6 +1597,11 @@ BASE_FEATURE(kCastStreamingExponentialVideoBitrateAlgorithm,
              "CastStreamingExponentialVideoBitrateAlgorithm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/282984511): Remove after M151.
+BASE_FEATURE(kCastStreamingMediaVideoEncoder,
+             "CastStreamingMediaVideoEncoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCastStreamingPerformanceOverlay,
              "CastStreamingPerformanceOverlay",
              base::FEATURE_DISABLED_BY_DEFAULT);

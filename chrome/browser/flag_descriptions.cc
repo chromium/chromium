@@ -2093,6 +2093,12 @@ const char kCastStreamingHardwareVp9Description[] =
     "supported by the platform (regardless of recommendation). If disabled, "
     "hardware VP9 encoding will never be used.";
 
+const char kCastStreamingMediaVideoEncoderName[] =
+    "Toggles using the media::VideoEncoder implementation for Cast Streaming";
+const char kCastStreamingMediaVideoEncoderDescription[] =
+    "When enabled, the media base VideoEncoder implementation is used instead "
+    "of the media cast implementation.";
+
 const char kCastStreamingPerformanceOverlayName[] =
     "Toggle a performance metrics overlay while Cast Streaming";
 const char kCastStreamingPerformanceOverlayDescription[] =

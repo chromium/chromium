@@ -5385,6 +5385,11 @@ const FeatureEntry kFeatureEntries[] = {
          switches::kCastStreamingForceEnableHardwareVp9,
          switches::kCastStreamingForceDisableHardwareVp9)},
 
+    {"cast-streaming-media-video-encoder",
+     flag_descriptions::kCastStreamingMediaVideoEncoderName,
+     flag_descriptions::kCastStreamingMediaVideoEncoderDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kCastStreamingMediaVideoEncoder)},
+
     {"cast-streaming-performance-overlay",
      flag_descriptions::kCastStreamingPerformanceOverlayName,
      flag_descriptions::kCastStreamingPerformanceOverlayDescription, kOsDesktop,

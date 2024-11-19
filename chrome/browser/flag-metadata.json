@@ -1269,6 +1269,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "cast-streaming-media-video-encoder",
+    "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "cast-streaming-performance-overlay",
     "owners": [ "jophba@chromium.org", "openscreen-eng@chromium.org" ],
     "expiry_milestone": 140
