@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -151,7 +152,13 @@ WebAppBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
 
 std::optional<webapps::AppId>
 WebAppBrowserTestBase::FindAppWithUrlInScope(const GURL& url) {
-  return provider().registrar_unsafe().FindAppWithUrlInScope(url);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  return provider().registrar_unsafe().FindBestAppWithUrlInScope(
+      url, {
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           });
 }
 
 Browser* WebAppBrowserTestBase::OpenPopupAndWait(
