@@ -1234,7 +1234,10 @@ public class NewTabPage
 
         mTabModelSelector
                 .getModel(false)
-                .closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
         if (mHomeSurfaceTracker != null) {
             // Updates the mHomeSurfaceTracker since the Tab of the NTP is closed.
             mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);

@@ -227,11 +227,13 @@ public class ToolbarSwipeLayout extends Layout {
                     && !lastTab.canGoForward()) {
                 mTabModelSelector
                         .getModel(lastTab.isIncognito())
+                        .getTabRemover()
                         .closeTabs(
                                 TabClosureParams.closeTab(lastTab)
                                         .recommendedNextTab(tab)
                                         .allowUndo(false)
-                                        .build());
+                                        .build(),
+                                /* allowDialog= */ false);
             }
 
             mIsSwitchToStaticTab = false;

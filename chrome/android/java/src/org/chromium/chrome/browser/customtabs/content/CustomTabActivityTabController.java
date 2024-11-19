@@ -180,7 +180,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     public void closeTab() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
         Tab currentTab = mTabProvider.getTab();
-        model.closeTabs(TabClosureParams.closeTab(currentTab).allowUndo(false).build());
+        model.getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(currentTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
     }
 
     public boolean onlyOneTabRemaining() {

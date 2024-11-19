@@ -679,7 +679,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         mTabModelSelectorSupplier
                                                 .get()
                                                 .getCurrentModel()
-                                                .closeTabs(TabClosureParams.closeTab(tab).build());
+                                                .getTabRemover()
+                                                .closeTabs(
+                                                        TabClosureParams.closeTab(tab).build(),
+                                                        /* allowDialog= */ false);
                                         break;
                                     case ActionType.EXIT_APP:
                                         mSendToBackground.onResult(tab);

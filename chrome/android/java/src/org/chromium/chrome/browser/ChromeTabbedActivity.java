@@ -471,9 +471,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         return;
                     }
 
-                    getTabModelSelector()
-                            .getModel(true)
-                            .closeTabs(TabClosureParams.closeAllTabs().build());
+                    terminateIncognitoSession();
                 }
 
                 @Override
@@ -2804,7 +2802,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void terminateIncognitoSession() {
-        getTabModelSelector().getModel(true).closeTabs(TabClosureParams.closeAllTabs().build());
+        getTabModelSelector()
+                .getModel(true)
+                .getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
     }
 
     @Override
@@ -2882,7 +2883,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.close_tab) {
-            getCurrentTabModel().closeTabs(TabClosureParams.closeTab(currentTab).build());
+            getCurrentTabModel()
+                    .getTabRemover()
+                    .closeTabs(
+                            TabClosureParams.closeTab(currentTab).build(), /* allowDialog= */ true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
             // Close both incognito and normal tabs.
@@ -3135,23 +3139,29 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             // This seems improbable; however, crbug/1463397 suggests otherwise. If
                             // this happens, remain on the current tab and close the tab in the
                             // other model.
-                            tabToCloseModel.closeTabs(
-                                    TabClosureParams.closeTab(tabToClose)
-                                            .uponExit(true)
-                                            .allowUndo(false)
-                                            .build());
+                            tabToCloseModel
+                                    .getTabRemover()
+                                    .closeTabs(
+                                            TabClosureParams.closeTab(tabToClose)
+                                                    .uponExit(true)
+                                                    .allowUndo(false)
+                                                    .build(),
+                                            /* allowDialog= */ false);
                             return;
                         }
 
                         Tab nextTab =
                                 currentModel.getNextTabIfClosed(
                                         tabToClose.getId(), /* uponExit= */ true);
-                        tabToCloseModel.closeTabs(
-                                TabClosureParams.closeTab(tabToClose)
-                                        .recommendedNextTab(nextTab)
-                                        .uponExit(true)
-                                        .allowUndo(false)
-                                        .build());
+                        tabToCloseModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tabToClose)
+                                                .recommendedNextTab(nextTab)
+                                                .uponExit(true)
+                                                .allowUndo(false)
+                                                .build(),
+                                        /* allowDialog= */ false);
                     },
                     CLOSE_TAB_ON_MINIMIZE_DELAY_MS);
         }
