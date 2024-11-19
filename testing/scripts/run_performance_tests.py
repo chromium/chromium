@@ -708,7 +708,11 @@ class CrossbenchTest(object):
   CHROME_BROWSER = '--browser=%s'
   ANDROID_HJSON = '{browser:"%s", driver:{type:"Android", adb_bin:"%s"}}'
   STORY_LABEL = 'default'
-  BENCHMARK_FILESERVERS = {'speedometer_3.0': 'third_party/speedometer/v3.0'}
+  BENCHMARK_FILESERVERS = {
+      'speedometer_3.0': 'third_party/speedometer/v3.0',
+      'speedometer_2.1': 'third_party/speedometer/v2.1',
+      'speedometer_2.0': 'third_party/speedometer/v2.0'
+  }
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
@@ -760,8 +764,7 @@ class CrossbenchTest(object):
     if wpr_arg and '=' in wpr_arg:
       wpr_name = wpr_arg.split('=', 1)[1]
     else:
-      # TODO: Use update_wpr library when it supports Crossbench archive files.
-      wpr_name = 'crossbench_android_speedometer_3.0_000.wprgo'
+      raise ValueError('The archive file path is missing!')
     archive = str(PAGE_SETS_DATA / wpr_name)
     if (wpr_go := fetch_binary_path('wpr_go')) is None:
       raise ValueError(f'wpr_go not found: {wpr_go}')
