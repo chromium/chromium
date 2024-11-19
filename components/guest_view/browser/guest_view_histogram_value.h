@@ -16,9 +16,7 @@ enum class GuestViewHistogramValue {
   // An invalid type, used for testing only.
   kInvalid = 0,
 
-  // The <webview> tag, used by webui and platform apps. Note: This is also
-  // used for <controlledframe> tags, since they are built on top of webview's
-  // implementation.
+  // The <webview> tag, used by webui and platform apps.
   kWebView,
 
   // A guestview used by the PDF viewer and Quick Office.
@@ -31,7 +29,11 @@ enum class GuestViewHistogramValue {
   // A guestview used to embed platform app content inside other platform apps.
   kAppView,
 
-  kMaxValue = kAppView,
+  // The <controlledframe> tag, which is exposed to IsolatedContexts (usually
+  // Isolated Web Apps).
+  kControlledFrame,
+
+  kMaxValue = kControlledFrame,
 };
 
 }  // namespace guest_view

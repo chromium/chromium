@@ -68,8 +68,7 @@ class GuestView : public GuestViewBase {
  protected:
   explicit GuestView(content::RenderFrameHost* owner_rfh)
       : GuestViewBase(owner_rfh) {
-    base::UmaHistogramEnumeration("GuestView.GuestViewCreated",
-                                  T::HistogramValue);
+    LogUsage();
   }
   ~GuestView() override = default;
 
@@ -89,6 +88,15 @@ class GuestView : public GuestViewBase {
       return nullptr;
 
     return static_cast<T*>(guest);
+  }
+
+  void LogUsage() {
+    GuestViewHistogramValue value = T::HistogramValue;
+    if (value == GuestViewHistogramValue::kWebView &&
+        IsOwnedByControlledFrameEmbedder()) {
+      value = GuestViewHistogramValue::kControlledFrame;
+    }
+    base::UmaHistogramEnumeration("GuestView.GuestViewCreated", value);
   }
 };
 

@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/controlled_frame/controlled_frame_test_base.h"
@@ -852,6 +853,22 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage) {
       "<controlledframe>: "
       "The object has already navigated, so its partition cannot be changed.",
       console_observer.GetMessageAt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
+  base::HistogramTester histogram_tester;
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+
+  // We should have created a Controlled Frame, and should not have records for
+  // any other guest view type (`ExpectUniqueSample` guarantees both of these).
+  histogram_tester.ExpectUniqueSample(
+      "GuestView.GuestViewCreated",
+      guest_view::GuestViewHistogramValue::kControlledFrame, 1);
 }
 
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {

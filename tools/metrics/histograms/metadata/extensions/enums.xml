@@ -3286,6 +3286,7 @@ Called by update_extension_permission.py.-->
   <int value="2" label="mime handler view"/>
   <int value="3" label="extension options"/>
   <int value="4" label="app view"/>
+  <int value="5" label="controlled frame"/>
 </enum>
 
 <enum name="HostPermissionsAccess">
