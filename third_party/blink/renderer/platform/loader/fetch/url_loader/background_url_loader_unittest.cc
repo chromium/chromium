@@ -74,13 +74,6 @@ struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
-template <>
-struct CrossThreadCopier<SegmentedBuffer> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = SegmentedBuffer;
-  static Type Copy(Type&& value) { return std::move(value); }
-};
-
 }  // namespace WTF
 
 namespace blink {
