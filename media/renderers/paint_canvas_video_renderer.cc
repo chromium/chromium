@@ -48,7 +48,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
-#include "media/renderers/video_frame_shared_image_cache.h"
+#include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -1519,7 +1519,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     return false;
   }
 
-  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
+  if (!internals::IsPixelFormatSupportedForYuvSharedImageConversion(
+          *video_frame)) {
     return false;
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
@@ -1567,10 +1568,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   dest_holder.mailbox = yuv_cache_.rgb_shared_image->mailbox();
   dest_holder.texture_target = GL_TEXTURE_2D;
   dest_holder.sync_token = token;
-  VideoFrameYUVConverter yuv_converter;
-  yuv_converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
-                                     dest_holder, /*use_visible_rect=*/false,
-                                     yuv_cache_.yuv_shared_image.get());
+  internals::ConvertYuvVideoFrameToRgbSharedImage(
+      video_frame.get(), raster_context_provider, dest_holder,
+      /*use_visible_rect=*/false, yuv_cache_.yuv_shared_image.get());
 
   gpu::SyncToken post_conversion_sync_token;
   source_ri->GenUnverifiedSyncTokenCHROMIUM(
@@ -1835,7 +1835,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
 bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
     const VideoFrame& video_frame) {
   return video_frame.HasSharedImage() ||
-         VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame);
+         internals::IsPixelFormatSupportedForYuvSharedImageConversion(
+             video_frame);
 }
 
 gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
@@ -1857,10 +1858,10 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
                         source_rect.height());
   } else {
     // TODO(vasilyt): Add caching support
-    VideoFrameYUVConverter converter;
-    converter.ConvertYUVVideoFrame(video_frame.get(), raster_context_provider,
-                                   destination, use_visible_rect,
-                                   /*shared_image_cache=*/nullptr);
+    internals::ConvertYuvVideoFrameToRgbSharedImage(
+        video_frame.get(), raster_context_provider, destination,
+        use_visible_rect,
+        /*shared_image_cache=*/nullptr);
   }
 
   gpu::SyncToken sync_token;

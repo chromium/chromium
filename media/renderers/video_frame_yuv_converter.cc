@@ -21,18 +21,15 @@
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-namespace media {
+namespace media::internals {
 
-VideoFrameYUVConverter::VideoFrameYUVConverter() = default;
-VideoFrameYUVConverter::~VideoFrameYUVConverter() = default;
-
-bool VideoFrameYUVConverter::IsVideoFrameFormatSupported(
+bool IsPixelFormatSupportedForYuvSharedImageConversion(
     const VideoFrame& video_frame) {
   return std::get<0>(VideoPixelFormatToSkiaValues(video_frame.format())) !=
          SkYUVAInfo::PlaneConfig::kUnknown;
 }
 
-void VideoFrameYUVConverter::ConvertYUVVideoFrame(
+void ConvertYuvVideoFrameToRgbSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
@@ -40,7 +37,7 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
     VideoFrameSharedImageCache* shared_image_cache) {
   CHECK(video_frame);
   CHECK(!video_frame->HasSharedImage());
-  DCHECK(IsVideoFrameFormatSupported(*video_frame))
+  DCHECK(IsPixelFormatSupportedForYuvSharedImageConversion(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
   DCHECK(!video_frame->coded_size().IsEmpty())
       << "|video_frame| must have an area > 0";
@@ -104,4 +101,4 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
                       source_rect.width(), source_rect.height());
 }
 
-}  // namespace media
+}  // namespace media::internals

@@ -23,7 +23,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_transformation.h"
-#include "media/renderers/video_frame_yuv_converter.h"
+#include "media/renderers/video_frame_shared_image_cache.h"
 
 namespace gfx {
 class RectF;
