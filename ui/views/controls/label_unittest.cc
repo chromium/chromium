@@ -676,6 +676,86 @@ TEST_F(LabelTest, TooltipProperty) {
   label()->SetTooltipText(std::u16string());
 }
 
+TEST_F(LabelTest, TooltipPropertyAccessibility) {
+  label()->SetText(u"My cool string.");
+  ui::AXNodeData ax_data;
+
+  // Initially, label has no bounds, its text does not fit, and therefore its
+  // text should be returned as the tooltip text.
+  // Since the tooltip text should be the same as the name, we shouldn't be
+  // using it for the accessible description.
+  EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_FALSE(
+      ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  EXPECT_EQ(label()->GetText(),
+            ax_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // When set, custom tooltip text should be returned instead of the label's
+  // text. The tooltip text should be used for the accessible description.
+  std::u16string tooltip_text(u"The tooltip!");
+  ax_data = ui::AXNodeData();
+  label()->SetTooltipText(tooltip_text);
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_EQ(tooltip_text, ax_data.GetString16Attribute(
+                              ax::mojom::StringAttribute::kDescription));
+
+  // While tooltip handling is disabled, GetTooltipText() should fail.
+  label()->SetHandlesTooltips(false);
+  ax_data = ui::AXNodeData();
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  EXPECT_FALSE(
+      ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+  label()->SetHandlesTooltips(true);
+
+  // When the tooltip text is set to an empty string, the original behavior is
+  // restored, and the accessible description should be cleared since the
+  // accessible name would be the same as the tooltip text.
+  label()->SetTooltipText(std::u16string());
+  ax_data = ui::AXNodeData();
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_EQ(label()->GetText(), label()->GetTooltipText(gfx::Point()));
+  EXPECT_FALSE(
+      ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+
+  // Verify that explicitly set tooltip text is shown. It should become the
+  // accessible description.
+  label()->SetTooltipText(tooltip_text);
+  ax_data = ui::AXNodeData();
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_EQ(tooltip_text, label()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip_text, ax_data.GetString16Attribute(
+                              ax::mojom::StringAttribute::kDescription));
+
+  // Clear out the explicitly set tooltip text. We now should not have a
+  // description.
+  label()->SetTooltipText(std::u16string());
+  ax_data = ui::AXNodeData();
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_FALSE(
+      ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+
+  ax_data = ui::AXNodeData();
+  label()->SetTooltipText(tooltip_text);
+
+  // Make the label obscured and there is no tooltip.
+  label()->SetObscured(true);
+  EXPECT_TRUE(label()->GetTooltipText(gfx::Point()).empty());
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_FALSE(
+      ax_data.HasStringAttribute(ax::mojom::StringAttribute::kDescription));
+
+  // Unobscuring should restore the tooltip.
+  label()->SetObscured(false);
+  EXPECT_FALSE(label()->GetTooltipText(gfx::Point()).empty());
+  ax_data = ui::AXNodeData();
+  label()->GetViewAccessibility().GetAccessibleNodeData(&ax_data);
+  EXPECT_EQ(tooltip_text, ax_data.GetString16Attribute(
+                              ax::mojom::StringAttribute::kDescription));
+}
+
 TEST_F(LabelTest, Accessibility) {
   const std::u16string accessible_name = u"A11y text.";
 

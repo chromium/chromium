@@ -246,12 +246,15 @@ class VIEWS_EXPORT Label : public View,
   gfx::ElideBehavior GetElideBehavior() const;
   void SetElideBehavior(gfx::ElideBehavior elide_behavior);
 
-  // Gets/Sets the tooltip text.  Default behavior for a label (single-line) is
-  // to show the full text if it is wider than its bounds.  Calling this
-  // overrides the default behavior and lets you set a custom tooltip.  To
-  // revert to default behavior, call this with an empty string.
+  // Gets/Sets the custom local tooltip text.  Default behavior for a label
+  // (single-line) is to show the full text if it is wider than its bounds.
+  // Calling this overrides the default behavior and lets you set a custom
+  // tooltip.  To revert to default behavior, call this with an empty string.
   std::u16string GetTooltipText() const;
   void SetTooltipText(const std::u16string& tooltip_text);
+
+  // Updates the tooltip text cached on the View.
+  void UpdateTooltipText();
 
   // Get or set whether this label can act as a tooltip handler; the default is
   // true.  Set to false whenever an ancestor view should handle tooltips
@@ -531,7 +534,7 @@ class VIEWS_EXPORT Label : public View,
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
   size_t max_lines_ = 0;
-  std::u16string tooltip_text_;
+  std::u16string custom_tooltip_text_;
   bool handles_tooltips_ = true;
   // Whether to collapse the label when it's not visible.
   bool collapse_when_hidden_ = false;

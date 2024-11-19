@@ -1011,6 +1011,37 @@ TEST_F(ButtonTest, AccessibleRole) {
             ax::mojom::Role::kCheckBox);
 }
 
+// Verify that when there is no accessible name, the tooltip text is used as the
+// name.
+TEST_F(ButtonTest, SetTooltipTextAccessibleName) {
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
+  button()->SetTooltipText(test_tooltip_text);
+  button()->SetAccessibleName(std::u16string());
+  EXPECT_EQ(test_tooltip_text, button()->GetTooltipText(gfx::Point()));
+  ui::AXNodeData data;
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
+}
+
+// Verify that the tooltip text will be used as the accessible description.
+TEST_F(ButtonTest, SetTooltipTextAccessibleDescription) {
+  std::u16string test_tooltip_text = u"Test Tooltip Text";
+  std::u16string test_name = u"Test Name";
+  button()->SetTooltipText(test_tooltip_text);
+  button()->SetAccessibleName(test_name);
+  EXPECT_EQ(test_tooltip_text, button()->GetTooltipText(gfx::Point()));
+  ui::AXNodeData data;
+  button()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  const std::string& name =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_EQ(test_name, base::ASCIIToUTF16(name));
+  const std::string& description =
+      data.GetStringAttribute(ax::mojom::StringAttribute::kDescription);
+  EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(description));
+}
+
 TEST_F(ButtonTest, AccessibleCheckedState) {
   ui::AXNodeData data;
   event_generator()->MoveMouseTo(button()->GetBoundsInScreen().CenterPoint());

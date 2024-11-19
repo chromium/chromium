@@ -2002,8 +2002,21 @@ FocusTraversable* View::GetPaneFocusTraversable() {
 
 // Tooltips --------------------------------------------------------------------
 
+void View::SetCachedTooltipText(const std::u16string& text) {
+  if (cached_tooltip_text_ == text) {
+    return;
+  }
+
+  cached_tooltip_text_ = text;
+  TooltipTextChanged();
+}
+
 std::u16string View::GetTooltipText(const gfx::Point& p) const {
   return std::u16string();
+}
+
+const std::u16string& View::GetCachedTooltipText() const {
+  return cached_tooltip_text_;
 }
 
 // Context menus ---------------------------------------------------------------
@@ -2660,6 +2673,9 @@ void View::TooltipTextChanged() {
   if (widget && widget->GetTooltipManager()) {
     widget->GetTooltipManager()->TooltipTextChanged(this);
   }
+
+  GetViewAccessibility().OnTooltipTextChanged();
+  OnPropertyChanged(&cached_tooltip_text_, kPropertyEffectsNone);
 }
 
 void View::UpdateTooltipForFocus() {
