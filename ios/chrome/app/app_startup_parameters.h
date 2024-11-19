@@ -127,12 +127,10 @@ class GURL;
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
                     applicationMode:(ApplicationModeForTabOpening)mode
-               forceApplicationMode:(BOOL)forceApplicationMode
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
-             applicationMode:(ApplicationModeForTabOpening)mode
-        forceApplicationMode:(BOOL)forceApplicationMode;
+             applicationMode:(ApplicationModeForTabOpening)mode;
 
 // Initiate the request for application mode if needed and invoke `block` when
 // the it becomes `kAvailable`.

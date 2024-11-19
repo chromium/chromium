@@ -173,8 +173,7 @@ TEST_F(URLOpenerTest, HandleOpenURL) {
 
           ChromeAppStartupParameters* params =
               [ChromeAppStartupParameters startupParametersWithURL:testUrl
-                                                 sourceApplication:nil
-                                              forceApplicationMode:NO];
+                                                 sourceApplication:nil];
 
           // Action.
           BOOL result = [URLOpener openURL:urlOpenerParams

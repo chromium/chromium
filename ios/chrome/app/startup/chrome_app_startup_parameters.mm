@@ -235,12 +235,10 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                   declaredSourceApp:(NSString*)declaredSourceApp
                     secureSourceApp:(NSString*)secureSourceApp
                         completeURL:(NSURL*)completeURL
-                    applicationMode:(ApplicationModeForTabOpening)mode
-               forceApplicationMode:(BOOL)forceApplicationMode {
+                    applicationMode:(ApplicationModeForTabOpening)mode {
   self = [super initWithExternalURL:externalURL
                         completeURL:net::GURLWithNSURL(completeURL)
-                    applicationMode:mode
-               forceApplicationMode:forceApplicationMode];
+                    applicationMode:mode];
   if (self) {
     _declaredSourceApp = [declaredSourceApp copy];
     _secureSourceApp = [secureSourceApp copy];
@@ -249,8 +247,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 }
 
 + (instancetype)startupParametersWithURL:(NSURL*)completeURL
-                       sourceApplication:(NSString*)appID
-                    forceApplicationMode:(BOOL)forceApplicationMode {
+                       sourceApplication:(NSString*)appID {
   GURL parsedURL = net::GURLWithNSURL(completeURL);
 
   if (!parsedURL.is_valid() || parsedURL.scheme().length() == 0) {
@@ -303,12 +300,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
           base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
       ChromeAppStartupParameters* appStartupParameters =
           [[ChromeAppStartupParameters alloc]
-               initWithExternalURL:URL
-                 declaredSourceApp:appID
-                   secureSourceApp:sourceWidget
-                       completeURL:completeURL
-                   applicationMode:ApplicationModeForTabOpening::NORMAL
-              forceApplicationMode:forceApplicationMode];
+              initWithExternalURL:URL
+                declaredSourceApp:appID
+                  secureSourceApp:sourceWidget
+                      completeURL:completeURL
+                  applicationMode:ApplicationModeForTabOpening::NORMAL];
       appStartupParameters.openedViaWidgetScheme = YES;
       return appStartupParameters;
     }
@@ -321,8 +317,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                     index:0
                                       URL:nil
                         sourceApplication:appID
-                  secureSourceApplication:sourceWidget
-                     forceApplicationMode:forceApplicationMode];
+                  secureSourceApplication:sourceWidget];
     appStartupParameters.openedViaWidgetScheme = YES;
     return appStartupParameters;
 
@@ -343,8 +338,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                 MOBILE_SESSION_START_ACTION_COUNT);
       return [ChromeAppStartupParameters
           startupParametersForExtensionCommandWithURL:completeURL
-                                    sourceApplication:appID
-                                 forceApplicationMode:forceApplicationMode];
+                                    sourceApplication:appID];
     }
 
     if (![action isEqualToString:@"/open"]) {
@@ -371,12 +365,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
     ChromeAppStartupParameters* startupParameters =
         [[ChromeAppStartupParameters alloc]
-             initWithExternalURL:URLQueryParam
-               declaredSourceApp:appID
-                 secureSourceApp:nil
-                     completeURL:completeURL
-                 applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-            forceApplicationMode:forceApplicationMode];
+            initWithExternalURL:URLQueryParam
+              declaredSourceApp:appID
+                secureSourceApp:nil
+                    completeURL:completeURL
+                applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
     // postOpeningAction can only be NO_ACTION or SHOW_DEFAULT_BROWSER_SETTINGS
     // (these are the only values returned by `XCallbackPoaToPostOpeningAction`)
     // so this assignment should not DCHECK, no matter what the URL is.
@@ -391,10 +384,8 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     base::UmaHistogramEnumeration(kAppLaunchSource,
                                   AppLaunchSource::EXTERNAL_ACTION);
 
-    return
-        [self startupParametersForExternalActionWithAppID:appID
-                                              completeURL:completeURL
-                                     forceApplicationMode:forceApplicationMode];
+    return [self startupParametersForExternalActionWithAppID:appID
+                                                 completeURL:completeURL];
   } else if (parsedURL.SchemeIsFile()) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,
@@ -410,12 +401,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     if (!externalURL.is_valid())
       return nil;
     return [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:externalURL
-           declaredSourceApp:appID
-             secureSourceApp:nil
-                 completeURL:completeURL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:externalURL
+          declaredSourceApp:appID
+            secureSourceApp:nil
+                completeURL:completeURL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
   } else {
     GURL externalURL = parsedURL;
     BOOL openedViaSpecificScheme = NO;
@@ -459,12 +449,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     if (!externalURL.is_valid())
       return nil;
     ChromeAppStartupParameters* params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:externalURL
-           declaredSourceApp:appID
-             secureSourceApp:nil
-                 completeURL:completeURL
-             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:externalURL
+          declaredSourceApp:appID
+            secureSourceApp:nil
+                completeURL:completeURL
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
     params.openedWithURL = YES;
     params.openedViaFirstPartyScheme =
         openedViaSpecificScheme && CallerAppIsFirstParty(params.callerApp);
@@ -483,24 +472,21 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 + (ChromeAppStartupParameters*)
     startupParametersForExternalActionWithAppID:(NSString*)appID
                                     completeURL:(NSURL*)completeURL
-                                    externalURL:(const GURL&)externalURL
-                           forceApplicationMode:(BOOL)forceApplicationMode {
+                                    externalURL:(const GURL&)externalURL {
   return [[ChromeAppStartupParameters alloc]
-       initWithExternalURL:externalURL
-         declaredSourceApp:appID
-           secureSourceApp:nil
-               completeURL:completeURL
-           applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-      forceApplicationMode:forceApplicationMode];
+      initWithExternalURL:externalURL
+        declaredSourceApp:appID
+          secureSourceApp:nil
+              completeURL:completeURL
+          applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
 }
 
 // Returns the correct startup parameters for a given external action passed as
 // path to the external action "scheme". Returns nil (no-op) if the action is
 // not recognized.
 + (instancetype)startupParametersForExternalActionWithAppID:(NSString*)appID
-                                                completeURL:(NSURL*)completeURL
-                                       forceApplicationMode:
-                                           (BOOL)forceApplicationMode {
+                                                completeURL:
+                                                    (NSURL*)completeURL {
   ChromeAppStartupParameters* params;
   IOSExternalAction action;
   NSString* path;
@@ -519,8 +505,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     params = [self
         startupParametersForExternalActionWithAppID:appID
                                         completeURL:completeURL
-                                        externalURL:GURL(kChromeUINewTabURL)
-                               forceApplicationMode:forceApplicationMode];
+                                        externalURL:GURL(kChromeUINewTabURL)];
   } else if ([path isEqualToString:kExternalActionDefaultBrowserSettings]) {
     base::RecordAction(base::UserMetricsAction(
         "MobileExternalActionURLOpenedWithDefaultBrowserSettings"));
@@ -532,15 +517,12 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
       params = [self
           startupParametersForExternalActionWithAppID:appID
                                           completeURL:completeURL
-                                          externalURL:GURL(kChromeUINewTabURL)
-                                 forceApplicationMode:forceApplicationMode];
+                                          externalURL:GURL(kChromeUINewTabURL)];
     } else {
       action = IOSExternalAction::ACTION_DEFAULT_BROWSER_SETTINGS;
-      params = [self
-          startupParametersForExternalActionWithAppID:appID
-                                          completeURL:completeURL
-                                          externalURL:GURL()
-                                 forceApplicationMode:forceApplicationMode];
+      params = [self startupParametersForExternalActionWithAppID:appID
+                                                     completeURL:completeURL
+                                                     externalURL:GURL()];
       params.postOpeningAction = EXTERNAL_ACTION_SHOW_BROWSER_SETTINGS;
     }
   } else {
@@ -554,9 +536,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 }
 
 + (instancetype)startupParametersForExtensionCommandWithURL:(NSURL*)URL
-                                          sourceApplication:(NSString*)appID
-                                       forceApplicationMode:
-                                           (BOOL)forceApplicationMode {
+                                          sourceApplication:(NSString*)appID {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
 
   NSString* commandDictionaryPreference =
@@ -614,15 +594,13 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   UMA_HISTOGRAM_COUNTS_100(kApplicationGroupCommandDelay, delay);
   if (delay > kAppGroupTriggersVoiceSearchTimeout)
     return nil;
-  return [ChromeAppStartupParameters
-      startupParametersForCommand:command
-                 withExternalText:externalText
-                     externalData:externalData
-                            index:index
-                              URL:URL
-                sourceApplication:appID
-          secureSourceApplication:commandCaller
-             forceApplicationMode:forceApplicationMode];
+  return [ChromeAppStartupParameters startupParametersForCommand:command
+                                                withExternalText:externalText
+                                                    externalData:externalData
+                                                           index:index
+                                                             URL:URL
+                                               sourceApplication:appID
+                                         secureSourceApplication:commandCaller];
 }
 
 + (instancetype)startupParametersForCommand:(NSString*)command
@@ -631,8 +609,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                       index:(NSNumber*)index
                                         URL:(NSURL*)URL
                           sourceApplication:(NSString*)appID
-                    secureSourceApplication:(NSString*)secureAppID
-                       forceApplicationMode:(BOOL)forceApplicationMode {
+                    secureSourceApplication:(NSString*)secureAppID {
   SearchExtensionAction action = ACTION_NO_ACTION;
   ChromeAppStartupParameters* params = nil;
 
@@ -640,12 +617,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
           isEqualToString:base::SysUTF8ToNSString(
                               app_group::kChromeAppGroupVoiceSearchCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:START_VOICE_SEARCH];
     action = ACTION_NEW_VOICE_SEARCH;
   }
@@ -653,12 +629,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if ([command isEqualToString:base::SysUTF8ToNSString(
                                    app_group::kChromeAppGroupNewTabCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     action = ACTION_NO_ACTION;
   }
 
@@ -666,12 +641,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
           isEqualToString:base::SysUTF8ToNSString(
                               app_group::kChromeAppGroupFocusOmniboxCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:FOCUS_OMNIBOX];
     action = ACTION_NEW_SEARCH;
   }
@@ -684,12 +658,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     if (!externalGURL.is_valid() || !externalGURL.SchemeIsHTTPOrHTTPS())
       return nil;
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:externalGURL
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:externalGURL
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
     action = ACTION_OPEN_URL;
   }
 
@@ -701,12 +674,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     }
 
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
 
     params.textQuery = externalText;
 
@@ -721,12 +693,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     }
 
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
 
     params.imageSearchData = externalData;
 
@@ -737,12 +708,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
           isEqualToString:base::SysUTF8ToNSString(
                               app_group::kChromeAppGroupQRScannerCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:START_QR_CODE_SCANNER];
 
     action = ACTION_NEW_QR_CODE_SEARCH;
@@ -751,12 +721,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   if ([command isEqualToString:base::SysUTF8ToNSString(
                                    app_group::kChromeAppGroupLensCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL()
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL()
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:START_LENS_FROM_HOME_SCREEN_WIDGET];
     action = ACTION_LENS;
   }
@@ -765,12 +734,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                    base::SysUTF8ToNSString(
                        app_group::kChromeAppGroupIncognitoSearchCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL(kChromeUINewTabURL)
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::INCOGNITO
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL(kChromeUINewTabURL)
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::INCOGNITO];
     [params setPostOpeningAction:FOCUS_OMNIBOX];
     action = ACTION_NEW_INCOGNITO_SEARCH;
   }
@@ -779,12 +747,11 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                    base::SysUTF8ToNSString(
                        app_group::kChromeAppGroupSearchPasswordsCommand)]) {
     params = [[ChromeAppStartupParameters alloc]
-         initWithExternalURL:GURL()
-           declaredSourceApp:appID
-             secureSourceApp:secureAppID
-                 completeURL:URL
-             applicationMode:ApplicationModeForTabOpening::NORMAL
-        forceApplicationMode:forceApplicationMode];
+        initWithExternalURL:GURL()
+          declaredSourceApp:appID
+            secureSourceApp:secureAppID
+                completeURL:URL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:SEARCH_PASSWORDS];
     action = ACTION_NO_ACTION;
   }

@@ -17,10 +17,6 @@
   std::vector<GURL> _URLs;
   ApplicationModeRequestStatus _applicationModeRequestStatus;
 
-  // Whether the application mode is forced or not (for example incognito mode
-  // or regular mode were forced based on the profile prefs).
-  BOOL _forceApplicationMode;
-
   // An array of blocks to execute once the `applicationMode` is available.
   NSMutableArray<AppModeRequestBlock>* _pendingBlocks;
 }
@@ -43,32 +39,27 @@
 
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                         completeURL:(const GURL&)completeURL
-                    applicationMode:(ApplicationModeForTabOpening)mode
-               forceApplicationMode:(BOOL)forceApplicationMode {
+                    applicationMode:(ApplicationModeForTabOpening)mode {
   self = [super init];
   if (self) {
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
     _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
-    _forceApplicationMode = forceApplicationMode;
   }
   return self;
 }
 
 - (instancetype)initWithURLs:(const std::vector<GURL>&)URLs
-             applicationMode:(ApplicationModeForTabOpening)mode
-        forceApplicationMode:(BOOL)forceApplicationMode {
+             applicationMode:(ApplicationModeForTabOpening)mode {
   if (URLs.empty()) {
     self = [self initWithExternalURL:GURL(kChromeUINewTabURL)
                          completeURL:GURL(kChromeUINewTabURL)
-                     applicationMode:mode
-                forceApplicationMode:forceApplicationMode];
+                     applicationMode:mode];
   } else {
     self = [self initWithExternalURL:URLs.front()
                          completeURL:URLs.front()
-                     applicationMode:mode
-                forceApplicationMode:forceApplicationMode];
+                     applicationMode:mode];
   }
 
   if (self) {

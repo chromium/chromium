@@ -21,8 +21,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       stringWithFormat:@"googlechrome://ChromeExternalAction/%s", str.c_str()];
   NSURL* url = [NSURL URLWithString:formatted_string];
   [ChromeAppStartupParameters startupParametersWithURL:url
-                                     sourceApplication:nil
-                                  forceApplicationMode:NO];
+                                     sourceApplication:nil];
 
   return 0;
 }
