@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,7 +25,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 
 /** Class that holds the {@link CustomTabMinimizationManager}. */
@@ -48,13 +45,12 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     @Inject
     public CustomTabMinimizationManagerHolder(
             BaseCustomTabActivity activity,
-            Provider<CustomTabActivityNavigationController> navigationController,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+            Provider<CustomTabActivityNavigationController> navigationController) {
         mActivity = activity;
         mNavigationController = navigationController;
         mActivityTabProvider = activity.getActivityTabProvider();
         mIntentDataProvider = activity.getIntentDataProvider();
-        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mSavedInstanceStateSupplier = activity::getSavedInstanceState;
         mLifecycleDispatcher = activity.getLifecycleDispatcher();
         mFeatureOverridesManager = activity.getCustomTabFeatureOverridesManager();
 

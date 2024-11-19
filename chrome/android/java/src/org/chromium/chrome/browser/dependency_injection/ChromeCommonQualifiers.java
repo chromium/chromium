@@ -12,6 +12,5 @@ public interface ChromeCommonQualifiers {
     String ACTIVITY_CONTEXT = "ACTIVITY_CONTEXT";
     String APP_CONTEXT = "APP_CONTEXT";
 
-    String SAVED_INSTANCE_SUPPLIER = "SAVED_INSTANCE_SUPPLIER";
     String ACTIVITY_TYPE = "ACTIVITY_TYPE";
 }

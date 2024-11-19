@@ -174,7 +174,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 () -> customTabDelegateFactory,
                 tabPersistencePolicy,
                 tabFactory,
-                () -> activity.getSavedInstanceState(),
                 tabModelInitializer);
     }
 

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -37,7 +35,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /** Handles recording User Metrics for Custom Tab Activity. */
 @ActivityScope
@@ -132,12 +129,10 @@ public class CustomTabActivityLifecycleUmaTracker
     }
 
     @Inject
-    public CustomTabActivityLifecycleUmaTracker(
-            BaseCustomTabActivity activity,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+    public CustomTabActivityLifecycleUmaTracker(BaseCustomTabActivity activity) {
         mIntentDataProvider = activity.getIntentDataProvider();
         mActivity = activity;
-        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mSavedInstanceStateSupplier = activity::getSavedInstanceState;
 
         activity.getLifecycleDispatcher().register(this);
     }

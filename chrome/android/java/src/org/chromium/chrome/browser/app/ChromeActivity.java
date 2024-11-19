@@ -214,7 +214,6 @@ import org.chromium.components.webapps.pwa_universal_install.PwaUniversalInstall
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
@@ -569,12 +568,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeActivityCommonsModule commonsModule =
                 new ChromeActivityCommonsModule(
                         this,
-                        ScreenOrientationProvider.getInstance(),
-                        this::getLegacyTabStartupMetricsTracker,
-                        this::getStartupMetricsTracker,
-                        /* compositorViewHolderInitializer= */ this,
-                        getModalDialogManagerSupplier(),
-                        this::getSavedInstanceState,
                         mManualFillingComponentSupplier.get().getBottomInsetSupplier(),
                         getShareDelegateSupplier(),
                         /* tabModelInitializer= */ this,

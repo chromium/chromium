@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -76,7 +74,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /** Creates a new Tab or retrieves an existing Tab for the CustomTabActivity, and initializes it. */
 @ActivityScope
@@ -125,7 +122,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             CustomTabTabPersistencePolicy persistencePolicy,
             CustomTabActivityTabFactory tabFactory,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             TabModelInitializer tabModelInitializer) {
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
         mCustomTabDelegateFactory = customTabDelegateFactory;
@@ -139,7 +135,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mTabNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
         mActivityTabProvider = activity.getActivityTabProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+        mSavedInstanceStateSupplier = activity::getSavedInstanceState;
         mWindowAndroid = activity.getWindowAndroid();
         mTabModelInitializer = tabModelInitializer;
         mCipherFactory = activity.getCipherFactory();

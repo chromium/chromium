@@ -97,6 +97,10 @@ specific_include_rules = {
   "WebApkUpdateManager\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
+  # TODO(https://crbug.com/377144584): Temporary while unwinding dagger dependencies.
+  "CustomTabTabPersistencePolicy\.java": [
+    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  ],
 
   # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
   # new code should rely on acceptable dependency aquisition patterns.

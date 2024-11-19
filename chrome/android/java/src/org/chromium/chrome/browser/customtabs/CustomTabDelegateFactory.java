@@ -396,7 +396,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     @Inject
     public CustomTabDelegateFactory(
             BaseCustomTabActivity activity,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType) {
         this(
@@ -415,7 +414,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activity,
                 activity.getTabModelSelectorSupplier(),
                 activity.getCompositorViewHolderSupplier(),
-                modalDialogManagerSupplier,
+                activity.getModalDialogManagerSupplier(),
                 activity::getSnackbarManager,
                 shareDelegateSupplier,
                 activityType,

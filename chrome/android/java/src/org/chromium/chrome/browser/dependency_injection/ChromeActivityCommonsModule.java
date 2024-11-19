@@ -6,12 +6,10 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_TYPE;
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.SAVED_INSTANCE_SUPPLIER;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,14 +19,9 @@ import dagger.Provides;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
-import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
-import org.chromium.content_public.browser.ScreenOrientationProvider;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import javax.inject.Named;
 
@@ -36,12 +29,6 @@ import javax.inject.Named;
 @Module
 public class ChromeActivityCommonsModule {
     private final ChromeActivity mActivity;
-    private final ScreenOrientationProvider mScreenOrientationProvider;
-    private final Supplier<LegacyTabStartupMetricsTracker> mLegacyTabStartupMetricsTrackerSupplier;
-    private final Supplier<StartupMetricsTracker> mStartupMetricsTrackerSupplier;
-    private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
-    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final TabModelInitializer mTabModelInitializer;
@@ -49,23 +36,11 @@ public class ChromeActivityCommonsModule {
 
     public ChromeActivityCommonsModule(
             ChromeActivity activity,
-            ScreenOrientationProvider screenOrientationProvider,
-            Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
-            Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
-            CompositorViewHolder.Initializer compositorViewHolderInitializer,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<Bundle> savedInstanceStateSupplier,
             ObservableSupplier<Integer> autofillUiBottomInsetSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
-        mScreenOrientationProvider = screenOrientationProvider;
-        mLegacyTabStartupMetricsTrackerSupplier = legacyTabStartupMetricsTrackerSupplier;
-        mStartupMetricsTrackerSupplier = startupMetricsTrackerSupplier;
-        mCompositorViewHolderInitializer = compositorViewHolderInitializer;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabModelInitializer = tabModelInitializer;
@@ -96,37 +71,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public Resources provideResources() {
         return mActivity.getResources();
-    }
-
-    @Provides
-    public ScreenOrientationProvider provideScreenOrientationProvider() {
-        return mScreenOrientationProvider;
-    }
-
-    @Provides
-    public LegacyTabStartupMetricsTracker provideLegacyTabStartupMetricsTracker() {
-        return mLegacyTabStartupMetricsTrackerSupplier.get();
-    }
-
-    @Provides
-    public StartupMetricsTracker provideStartupMetricsTracker() {
-        return mStartupMetricsTrackerSupplier.get();
-    }
-
-    @Provides
-    public CompositorViewHolder.Initializer provideCompositorViewHolderInitializer() {
-        return mCompositorViewHolderInitializer;
-    }
-
-    @Provides
-    public Supplier<ModalDialogManager> provideModalDialogManagerSupplier() {
-        return mModalDialogManagerSupplier;
-    }
-
-    @Provides
-    @Named(SAVED_INSTANCE_SUPPLIER)
-    public Supplier<Bundle> savedInstanceStateSupplier() {
-        return mSavedInstanceStateSupplier;
     }
 
     @Provides
