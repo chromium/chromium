@@ -2043,9 +2043,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kClientCertificateManagementAllowed,
     prefs::kClientCertificateManagementAllowed,
     base::Value::Type::INTEGER },
-  { key::kCACertificateManagementAllowed,
-    prefs::kCACertificateManagementAllowed,
-    base::Value::Type::INTEGER },
   { key::kDataLeakPreventionReportingEnabled,
     policy_prefs::kDlpReportingEnabled,
     base::Value::Type::BOOLEAN },
@@ -2288,6 +2285,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCAHintCertificates,
     prefs::kCAHintCertificates,
     base::Value::Type::LIST },
+#if !BUILDFLAG(IS_ANDROID)
+  { key::kCACertificateManagementAllowed,
+    prefs::kCACertificateManagementAllowed,
+    base::Value::Type::INTEGER },
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   { key::kCAPlatformIntegrationEnabled,
     prefs::kCAPlatformIntegrationEnabled,

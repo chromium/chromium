@@ -1304,12 +1304,6 @@ void CertificatesHandler::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kClientCertificateManagementAllowed,
       static_cast<int>(ClientCertificateManagementPermission::kAll));
-
-  // Allow users to manage all CA certificates by default. This can be
-  // overridden by enterprise policy.
-  registry->RegisterIntegerPref(
-      prefs::kCACertificateManagementAllowed,
-      static_cast<int>(CACertificateManagementPermission::kAll));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

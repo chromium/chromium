@@ -11,6 +11,7 @@
 #include "chrome/browser/net/server_certificate_database_service.h"
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -21,6 +22,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom-forward.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 class FakeCertificateManagerPage
@@ -172,6 +177,33 @@ TEST_F(UserCertSourcesUnitTest, TestImportCertificate) {
       chrome_browser_server_certificate_database::
           CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(UserCertSourcesUnitTest, TestImportCertificateNotAllowedByPref) {
+  ASSERT_EQ(GetAllCertsFromDB().size(), 0u);
+  ui::FakeSelectFileDialog::Factory* factory =
+      ui::FakeSelectFileDialog::RegisterFactory();
+  base::test::TestFuture<void> select_file_dialog_opened_waiter;
+  factory->SetOpenCallback(
+      select_file_dialog_opened_waiter.GetRepeatingCallback());
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+      import_future;
+  UserCertSource source(
+      "",
+      chrome_browser_server_certificate_database::
+          CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED,
+      profile(), nullptr);
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetInteger(prefs::kCACertificateManagementAllowed,
+                    static_cast<int>(CACertificateManagementPermission::kNone));
+  source.ImportCertificate(web_contents()->GetWeakPtr(),
+                           import_future.GetCallback());
+  certificate_manager_v2::mojom::ActionResultPtr import_result =
+      import_future.Take();
+  EXPECT_TRUE(import_result->is_error());
+  EXPECT_EQ(GetAllCertsFromDB().size(), 0u);
+}
+#endif  //  !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UserCertSourcesUnitTest, TestImportNonExistantCertificate) {
   ASSERT_EQ(GetAllCertsFromDB().size(), 0u);
@@ -343,3 +375,49 @@ TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateConfirmationRejected) {
       GetAllCertsFromDB();
   EXPECT_EQ(remaining_certs.size(), 2u);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(UserCertSourcesUnitTest, TestDeleteCertificateNotAllowedByPref) {
+  std::vector<std::unique_ptr<net::CertBuilder>> test_cert_builder_1 =
+      net::CertBuilder::CreateSimpleChain(1);
+  scoped_refptr<net::X509Certificate> test_cert_1 =
+      test_cert_builder_1[0]->GetX509Certificate();
+  AddCertToDB(test_cert_1);
+  std::vector<std::unique_ptr<net::CertBuilder>> test_cert_builder_2 =
+      net::CertBuilder::CreateSimpleChain(1);
+  scoped_refptr<net::X509Certificate> test_cert_2 =
+      test_cert_builder_2[0]->GetX509Certificate();
+  AddCertToDB(test_cert_2);
+
+  mojo::Remote<certificate_manager_v2::mojom::CertificateManagerPage>
+      fake_page_remote;
+  std::unique_ptr<FakeCertificateManagerPage> fake_page =
+      std::make_unique<FakeCertificateManagerPage>(
+          fake_page_remote.BindNewPipeAndPassReceiver());
+  fake_page->SetConfirmationResult(true);
+  UserCertSource source(
+      "",
+      chrome_browser_server_certificate_database::
+          CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED,
+      profile(), &fake_page_remote);
+
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetInteger(prefs::kCACertificateManagementAllowed,
+                    static_cast<int>(CACertificateManagementPermission::kNone));
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+      delete_future;
+  source.DeleteCertificate("",
+                           base::ToLowerASCII(base::HexEncode(
+                               net::X509Certificate::CalculateFingerprint256(
+                                   test_cert_1->cert_buffer())
+                                   .data)),
+                           delete_future.GetCallback());
+  certificate_manager_v2::mojom::ActionResultPtr delete_result =
+      delete_future.Take();
+  EXPECT_TRUE(delete_result->is_error());
+
+  std::vector<net::ServerCertificateDatabase::CertInformation> remaining_certs =
+      GetAllCertsFromDB();
+  EXPECT_EQ(remaining_certs.size(), 2u);
+}
+#endif  //  !BUILDFLAG(IS_ANDROID)
