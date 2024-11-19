@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -1250,4 +1252,34 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupHeaderAccessibleState) {
   ui::AXNodeData data;
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kEditable));
+}
+
+class TabStripSaveBrowsertest : public TabStripBrowsertest {
+ public:
+  TabStripSaveBrowsertest() {
+    scoped_feature_list_.InitWithFeatures(
+        {tab_groups::kTabGroupsSaveV2,
+         data_sharing::features::kDataSharingFeature},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabStripSaveBrowsertest, AttentionIndicatorIsShown) {
+  AppendTab();
+  AppendTab();
+
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
+
+  auto* group_header = tab_strip()->group_header(group);
+
+  group_header->SetTabGroupNeedsAttention(true);
+  EXPECT_TRUE(group_header->attention_indicator_->GetVisible());
+
+  group_header->SetTabGroupNeedsAttention(false);
+  EXPECT_FALSE(group_header->attention_indicator_->GetVisible());
 }

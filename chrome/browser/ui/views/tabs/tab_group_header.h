@@ -82,10 +82,18 @@ class TabGroupHeader : public TabSlotView,
   // Removes {editor_bubble_tracker_} from observing the widget.
   void RemoveObserverFromWidget(views::Widget* widget);
 
+  // Enables or disables attention indicator on a tab group. This
+  // function no-ops if the tab group is currently expanded.
+  void SetTabGroupNeedsAttention(bool needs_attention);
+
+  // Returns whether the attention indicator should be shown.
+  bool GetShowingAttentionIndicator();
+
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(TabStripBrowsertest,
                            TabGroupHeaderAccessibleProperties);
+  FRIEND_TEST_ALL_PREFIXES(TabStripSaveBrowsertest, AttentionIndicatorIsShown);
 
   // Calculate the width for this View.
   int GetDesiredWidth() const;
@@ -96,6 +104,7 @@ class TabGroupHeader : public TabSlotView,
 
   void UpdateTitleView();
   void UpdateSyncIconView();
+  void UpdateAttentionIndicatorView();
 
   // Creates a squircle (cross between a square and a circle).
   void CreateHeaderWithoutTitle();
@@ -118,6 +127,10 @@ class TabGroupHeader : public TabSlotView,
   // the tabstrip.
   const raw_ptr<views::ImageView> sync_icon_;
 
+  // The circle indicator rendered after the title when a tab group has
+  // needs_attention_ set to true.
+  const raw_ptr<views::ImageView> attention_indicator_;
+
   const raw_ref<const TabGroupStyle> group_style_;
   const raw_ptr<const TabStyle> tab_style_;
 
@@ -134,6 +147,9 @@ class TabGroupHeader : public TabSlotView,
   // `TabSlotController::IsGroupCollapsed()`, then the collapsed state has
   // changed in the model and we need to react to that.
   bool is_collapsed_;
+
+  // Determines if the tab group should show the attention indicator.
+  bool needs_attention_ = false;
 
   // Tracks whether our editor bubble is open. At most one can be open
   // at once.

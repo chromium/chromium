@@ -187,6 +187,11 @@ class TabStrip : public views::View,
   // Invoked when a tab needs to show UI that it needs the user's attention.
   void SetTabNeedsAttention(int model_index, bool attention);
 
+  // Invoked when a tab group needs to show UI that it needs the user's
+  // attention.
+  void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& id,
+                                 bool attention);
+
   // Returns the TabGroupHeader with ID |id|.
   TabGroupHeader* group_header(const tab_groups::TabGroupId& id) const {
     return tab_container_->GetGroupViews(id)->header();
