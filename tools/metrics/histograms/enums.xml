@@ -578,12 +578,16 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="8" label="Uninstalled by migration"/>
 </enum>
 
+<!-- LINT.IfChange(AppStreamLaunchEntryPoint) -->
+
 <enum name="AppStreamLaunchEntryPoint">
   <int value="0" label="Launched from full apps list"/>
   <int value="1" label="Launched from a notification"/>
   <int value="2" label="Launched from recent apps in Phone Hub"/>
   <int value="3" label="Unknown launch entrypoint."/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/eche_app_ui/mojom/eche_app.mojom:AppStreamLaunchEntryPoint) -->
 
 <enum name="AppType">
   <int value="0" label="Unknown"/>
@@ -2890,6 +2894,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="TapThenHold"/>
 </enum>
 
+<!-- LINT.IfChange(ConnectionFailReason) -->
+
 <enum name="ConnectionFailReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="No signaling response and no signaling request"/>
@@ -2900,6 +2906,8 @@ Called by update_net_error_codes.py.-->
   <int value="6" label="Devices are on different Wi-Fi networks"/>
   <int value="7" label="Phone is on cellular"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/eche/eche_tray.h:ConnectionFailReason) -->
 
 <enum name="ConnectivityDetectorConnectionState">
   <int value="0" label="Initial state or connection state can't be evaluated"/>
@@ -27895,6 +27903,8 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="kAckedOther"/>
 </enum>
 
+<!-- LINT.IfChange(OnboardingUserActionMetric) -->
+
 <enum name="OnboardingUserActionMetric">
   <int value="0" label="Unknown"/>
   <int value="1" label="Onboarding is started by user action"/>
@@ -27910,6 +27920,8 @@ Called by update_net_error_codes.py.-->
   <int value="9"
       label="The permission request is delivered to phone's Exo package"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/eche_app_ui/apps_access_manager.h:OnboardingUserActionMetric) -->
 
 <enum name="OpenDownloadDialogEvent">
   <int value="0" label="Dialog shown"/>
@@ -30997,6 +31009,8 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="kNoCookie"/>
 </enum>
 
+<!-- LINT.IfChange(SecureChannelConnectionAttemptFailureReason) -->
+
 <enum name="SecureChannelConnectionAttemptFailureReason">
   <int value="0" label="Authentication error"/>
   <int value="1" label="Could not generate advertisement"/>
@@ -31016,6 +31030,8 @@ Called by update_net_error_codes.py.-->
   <int value="15"
       label="Connection was intentionally cancelled due to a status change"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom:SecureChannelConnectionAttemptFailureReason) -->
 
 <enum name="SecurityDomainId">
   <int value="0" label="Invalid"/>
@@ -32565,12 +32581,16 @@ Called by update_net_error_codes.py.-->
              profiling started"/>
 </enum>
 
+<!-- LINT.IfChange(EcheStreamStatus) -->
+
 <enum name="StreamState">
   <int value="0" label="Unknown"/>
   <int value="1" label="Eche is setting up video streaming"/>
   <int value="2" label="Video streaming is set up and started"/>
   <int value="3" label="Video streaming is stopped"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/webui/eche_app_ui/mojom//eche_app.mojom:EcheStreamStatus) -->
 
 <enum name="SubresourceFilterActions2">
   <int value="0" label="UI Shown"/>

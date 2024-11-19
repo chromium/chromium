@@ -145,13 +145,17 @@ interface NotificationGenerator {
 
 // Enum representing the video streaming status from browser. Numerical
 // values should not be changed because they must stay in sync with value on
-// Eche web app code.
+// Eche web app code. Keep in sync with the StreamStatus UMA enum defined in
+// //tools/metrics/histograms/enums.xml.
+//
+// LINT.IfChange(EcheStreamStatus)
 enum StreamStatus {
     kStreamStatusUnknown,      // Initial state, not trigger anything yet
     kStreamStatusInitializing, // Eche browser is setting up video streaming
     kStreamStatusStarted,      // Video streaming is set up and started
     kStreamStatusStopped,      // Video streaming is stopped
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:EcheStreamStatus)
 
 // Interface to notify the video streaming status from Eche browser to Eche
 // SWA native code.
@@ -232,8 +236,10 @@ interface KeyboardLayoutObserver {
 };
 
 // Enum representing what EntryPoint was used to launch the eche app stream.
-// Keep in sync with AppStreamLaunchEntryPoint in
-// tools/metrics/histograms/enums.xml
+// Keep in sync with the AppStreamLaunchEntryPoint UMA enum defined in
+// //tools/metrics/histograms/enums.xml.
+//
+// LINT.IfChange(AppStreamLaunchEntryPoint)
 enum AppStreamLaunchEntryPoint {
   APPS_LIST = 0,    // App stream was launched from the full apps list.
   NOTIFICATION = 1, // App stream was launched from a notification.
@@ -243,3 +249,4 @@ enum AppStreamLaunchEntryPoint {
   // value should have been set.
   UNKNOWN = 3,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AppStreamLaunchEntryPoint)

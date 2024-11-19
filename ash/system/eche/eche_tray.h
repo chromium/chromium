@@ -84,7 +84,10 @@ class ASH_EXPORT EcheTray
   // TODO(b/226687249): Move to ash/webui/eche_app_ui if dependency cycle error
   // is fixed. Enum representing the connection fail reason. These values are
   // persisted to logs. Entries should not be renumbered and numeric values
-  // should never be reused.
+  // should never be reused. Keep in sync with the ConnectionFailReason UMA enum
+  // defined in //tools/metrics/histograms/enums.xml.
+  //
+  // LINT.IfChange(ConnectionFailReason)
   enum class ConnectionFailReason {
     // Initial state.
     kUnknown = 0,
@@ -120,6 +123,7 @@ class ASH_EXPORT EcheTray
 
     kMaxValue = kConnectionFailRemoteDeviceOnCellular,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ConnectionFailReason)
 
   using GracefulCloseCallback = base::OnceCallback<void()>;
   using GracefulGoBackCallback = base::RepeatingCallback<void()>;
