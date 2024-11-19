@@ -428,6 +428,12 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kAtomicsWaitAsync:
       webdx_feature = WebDXFeature::kAtomicsWaitAsync;
       break;
+    case v8::Isolate::kLocaleInfoObsoletedGetters:
+      webdx_feature = WebDXFeature::kLocaleInfoObsoletedGetters;
+      break;
+    case v8::Isolate::kLocaleInfoFunctions:
+      webdx_feature = WebDXFeature::kLocaleInfoFunctions;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

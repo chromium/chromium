@@ -34018,6 +34018,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="240" label="PromiseWithresolvers"/>
   <int value="241" label="TransferableArraybuffer"/>
   <int value="242" label="AtomicsWaitAsync"/>
+  <int value="243" label="LocaleInfoObsoletedGetters"/>
+  <int value="244" label="LocaleInfoFunctions"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
