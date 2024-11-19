@@ -165,9 +165,19 @@ Element* ClipboardCommands::FindEventTargetForClipboardEvent(
   //  "Set target to be the element that contains the start of the selection in
   //   document order, or the body element if there is no selection or cursor."
   // We treat hidden selections as "no selection or cursor".
+  //  "if the context is not editable, then set target to the focused node,
+  //   or the body element if no node has focus."
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
-      frame.Selection().IsHidden())
+      frame.Selection().IsHidden()) {
+    if (RuntimeEnabledFeatures::
+            ClipboardEventTargetCanBeFocusedElementEnabled()) {
+      Element* focusedElement = frame.GetDocument()->FocusedElement();
+      if (focusedElement && !IsEditable(*focusedElement)) {
+        return focusedElement;
+      }
+    }
     return frame.Selection().GetDocument().body();
+  }
 
   return FindEventTargetFrom(
       frame, frame.Selection().ComputeVisibleSelectionInDOMTree());

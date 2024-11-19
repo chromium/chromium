@@ -760,6 +760,13 @@
       name: "ClickToCapturedPointer",
       status: "experimental",
     },
+    // This ensures that clipboard event fires on a target node which is
+    // focused in case no visible selection is present.
+    // crbug.com/40735783
+    {
+      name: "ClipboardEventTargetCanBeFocusedElement",
+      status: "stable",
+    },
     {
       // Support ClipboardItemData of Promise<DOMString> type according to spec
       // https://w3c.github.io/clipboard-apis/#typedefdef-clipboarditemdata

@@ -34,8 +34,7 @@ testClipboardEvent = function(eventName, selectedElement) {
   testRunner.execCommand(eventName);
   assert_equals(selectionHitCount, 1, `The carret is hidden in the <textarea> so the <textarea> should not receive an ${eventName}-event.`)
   assert_equals(documentHitCount, 2, `The document should receive one ${eventName}-event.`)
-  assert_equals(lastTarget, document.body, `The document should be the ${eventName}-event's target.`)
-
+  assert_equals(lastTarget, checkbox, `The checkbox should be the ${eventName}-event's target.`)
   checkbox.blur();
   testRunner.execCommand(eventName);
   assert_equals(selectionHitCount, 1, `The carret is hidden in the <textarea> so the <textarea> should not receive an ${eventName}-event.`)
