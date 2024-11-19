@@ -44,6 +44,11 @@ chromium-metrics-reviews@google.com.
   <variant name="FirstRecordSlowerThan1s" summary="more than or equal to 1s"/>
 </variants>
 
+<variants name="HostType">
+  <variant name="" summary="non Google Hosts"/>
+  <variant name=".GoogleHost" summary="Google Host"/>
+</variants>
+
 <variants name="NetworkTransactionBlockedHostType">
   <variant name=""/>
   <variant name="GoogleHost"/>
@@ -1294,6 +1299,103 @@ chromium-metrics-reviews@google.com.
     set of Google hosts expected to have HTTPS DNS metadata, if the query type
     requests the HTTPS record.
   </summary>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseStale.ExpiredBy{HostType}" units="ms"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a stale (expired or old-network) DNS entry for {HostType} from
+    the host cache, how long past the expiration time it is. This is recorded
+    each time an erase happens, when clearing the host cache or evicting the
+    entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseStale.NetworkChanges{HostType}"
+    units="changes" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a stale (expired or old-network) DNS entry for {HostType} from
+    the host cache how many network changes happened between setting and erasing
+    it. This is recorded each time an erase happens, when clearing the host
+    cache or evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseStale.StaleHits{HostType}" units="hits"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a stale (expired or old-network) DNS entry for {HostType} from
+    the host cache how many hits it received while stale. This is recorded each
+    time an erase happens, when clearing the host cache or evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.EraseValid.ValidFor{HostType}" units="ms"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When erasing a valid DNS entry for {HostType} from the host cache, for how
+    much longer it would have remained valid. This is recorded each time an
+    erase happens, when clearing the host cache or evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.Erase{HostType}" enum="EraseReason"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The reason for erasing a DNS entry for {HostType} from the host cache. This
+    is recorded each time an erase happens, when clearing the host cache or
+    evicting the entry.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.LookupStale.ExpiredBy{HostType}" units="ms"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When looking up a stale DNS entry for {HostType} in the host cache, how long
+    past the expiration time it is. This is recorded at the end of each DNS
+    entry lookup.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.LookupStale.NetworkChanges{HostType}"
+    units="changes" expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    When looking up a stale DNS entry for {HostType} in the host cache, how many
+    network changes happened between setting it and looking it up. This is
+    recorded at the end of each DNS entry lookup.
+  </summary>
+  <token key="HostType" variants="HostType"/>
+</histogram>
+
+<histogram name="Net.DNS.HostCache.Lookup{HostType}" enum="LookupOutcome"
+    expires_after="2025-03-02">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The outcome of looking up a DNS entry for {HostType} in the host cache. This
+    is recorded at the end of each DNS entry lookup.
+  </summary>
+  <token key="HostType" variants="HostType"/>
 </histogram>
 
 <histogram name="Net.DNS.HTTPSSVC.RecordHttps.{secure}.ExpectNoerror.DnsRcode"
