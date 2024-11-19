@@ -2696,12 +2696,12 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/plugins-and-mimetypes.html [ Crash Timeout ]
-[ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Timeout ]
-[ Win10.20h2 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Timeout ]
-[ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-invalid_integrity_header.tentative.html [ Crash Timeout ]
-[ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-parse_error.tentative.html [ Crash Timeout ]
-[ Mac13 ] external/wpt/webrtc/RTCPeerConnection-removeTrack.https.html [ Timeout ]
+crbug.com/379779778 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/plugins-and-mimetypes.html [ Crash Timeout ]
+crbug.com/379768238 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-accepted.https.html [ Timeout ]
+crbug.com/379768238 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Crash Timeout ]
+crbug.com/379768238 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-invalid_integrity_header.tentative.html [ Crash Timeout ]
+crbug.com/379768238 [ Win10.20h2 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-parse_error.tentative.html [ Crash Timeout ]
+crbug.com/379779804 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-removeTrack.https.html [ Timeout ]
 crbug.com/379519393 [ Mac13 ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/nothing-captured.html [ Failure ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-answer.html [ Timeout ]
 crbug.com/379418921 [ Mac15 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription.html [ Timeout ]
