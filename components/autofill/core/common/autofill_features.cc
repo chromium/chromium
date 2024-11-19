@@ -196,6 +196,13 @@ BASE_FEATURE(kAutofillAddressFieldSwapping,
              "AutofillAddressFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, Autofill will try to reuse the result of previous form
+// extractions in subsequent functions that needs the form extracted, provided
+// we have guarantees that in the meantime the form couldn't have changed.
+BASE_FEATURE(kAutofillOptimizeFormExtraction,
+             "AutofillOptimizeFormExtraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Resets the autofill state of a field when JavaScript modifies its value.
 // Also resets the AutofillState of the blink element to kAutofilled if the
 // change was only a reformatting (inserting whitespaces and special

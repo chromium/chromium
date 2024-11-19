@@ -31,6 +31,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/a11y_utils.h"
 #include "components/autofill/content/renderer/form_autofill_issues.h"
@@ -296,6 +297,24 @@ gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
 }
 
 }  // namespace
+
+OptionalForm::OptionalForm() = default;
+OptionalForm::OptionalForm(const OptionalForm&) = default;
+OptionalForm::OptionalForm(std::nullopt_t) {}
+OptionalForm::OptionalForm(base::optional_ref<FormData> form LIFETIME_BOUND)
+    : form_(form) {}
+OptionalForm::OptionalForm(FormData& form) : form_(form) {}
+OptionalForm::~OptionalForm() = default;
+
+const FormData& OptionalForm::operator*() const LIFETIME_BOUND {
+  CHECK(has_value());
+  return *form_;
+}
+
+bool OptionalForm::has_value() const {
+  return form_.has_value() && base::FeatureList::IsEnabled(
+                                  features::kAutofillOptimizeFormExtraction);
+}
 
 // During prerendering, we do not want the renderer to send messages to the
 // corresponding driver. Since we use a channel associated interface, we still

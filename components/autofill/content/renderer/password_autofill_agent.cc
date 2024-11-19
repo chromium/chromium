@@ -893,7 +893,7 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
 
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
     const WebInputElement& element,
-    base::optional_ref<FormData> extracted_form) {
+    OptionalForm extracted_form) {
   NotifyPasswordManagerAboutFieldModification(element);
 
   InformBrowserAboutUserInput(form_util::GetOwningForm(element), element,
@@ -1962,7 +1962,7 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
 void PasswordAutofillAgent::InformBrowserAboutUserInput(
     const WebFormElement& form,
     const WebInputElement& element,
-    base::optional_ref<FormData> extracted_form) {
+    OptionalForm extracted_form) {
   DCHECK(form || element);
   if (!FrameCanAccessPasswordManager())
     return;
@@ -1976,10 +1976,10 @@ void PasswordAutofillAgent::InformBrowserAboutUserInput(
     }
   };
   if (extracted_form) {
-    ProcessFormDataAfterCreation(*extracted_form, form,
-                                 &username_detector_cache_,
+    FormData form_copy = *extracted_form;
+    ProcessFormDataAfterCreation(form_copy, form, &username_detector_cache_,
                                  &button_titles_cache_);
-    maybe_inform_browser(*extracted_form);
+    maybe_inform_browser(std::move(form_copy));
   } else if (std::optional<FormData> owned_form =
                  GetFormDataFromWebForm(form)) {
     maybe_inform_browser(*owned_form);

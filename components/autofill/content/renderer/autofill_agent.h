@@ -55,6 +55,30 @@ namespace autofill {
 class PasswordAutofillAgent;
 class PasswordGenerationAgent;
 
+// Helper class that ensures dereferencing `form_` always returns null when
+// `kAutofillOptimizeFormExtraction` is disabled.
+// TODO(crbug.com/40947729): Remove when `kAutofillOptimizeFormExtraction`
+// launches,
+class OptionalForm {
+ public:
+  OptionalForm();
+  OptionalForm(const OptionalForm&);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  OptionalForm(std::nullopt_t);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  OptionalForm(base::optional_ref<FormData> form LIFETIME_BOUND);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  OptionalForm(FormData& form);
+  ~OptionalForm();
+
+  const FormData& operator*() const LIFETIME_BOUND;
+  explicit operator bool() const { return has_value(); }
+  bool has_value() const;
+
+ private:
+  base::optional_ref<FormData> form_;
+};
+
 // AutofillAgent deals with Autofill related communications between Blink and
 // the browser.
 //
