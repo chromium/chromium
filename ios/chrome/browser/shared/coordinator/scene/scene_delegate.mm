@@ -105,6 +105,7 @@ void SyncBreadcrumbsLog() {
 
 - (void)sceneDidDisconnect:(UIScene*)scene {
   CHECK(_sceneState);
+  [self.sceneState setRootViewController:nil makeKeyAndVisible:NO];
   self.sceneState.activationLevel = SceneActivationLevelDisconnected;
   _sceneState = nil;
   // Setting the level to Disconnected had the side effect of tearing down the
