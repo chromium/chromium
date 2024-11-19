@@ -62,8 +62,6 @@ export interface TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
-  setTabSearchSection(section: TabSearchSection): void;
-
   setOrganizationFeature(feature: TabOrganizationFeature): void;
 
   startTabGroupTutorial(): void;
@@ -189,10 +187,6 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.handler.saveRecentlyClosedExpandedPref(expanded);
-  }
-
-  setTabSearchSection(section: TabSearchSection) {
-    this.handler.setTabSearchSection(section);
   }
 
   setOrganizationFeature(feature: TabOrganizationFeature) {

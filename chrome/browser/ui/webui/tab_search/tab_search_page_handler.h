@@ -108,8 +108,6 @@ class TabSearchPageHandler
   void RejectSession(int32_t session_id) override;
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
-  void SetTabSearchSection(
-      tab_search::mojom::TabSearchSection section) override;
   void SetOrganizationFeature(
       tab_search::mojom::TabOrganizationFeature feature) override;
   void StartTabGroupTutorial() override;
