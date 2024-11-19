@@ -280,6 +280,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     ShowErrorScreen();
     return;
   }
+  LogInitiatePurchaseActionAttempt();
   purchase_action_start_time_ = base::TimeTicks::Now();
   GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,

@@ -193,6 +193,24 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Attempt"
+    enum="BooleanAttempted" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a request is sent to to payments platform (client) which
+    faciliates the payment. It should never log a false case. [Frequency] Logged
+    at most once per {FacilitatedPaymentsType} flow. [Trigger] User selects a
+    payment instrument from the list of options shown in the
+    {FacilitatedPaymentsType} UI and the backend returns the instruction to
+    trigger the purchase action flow in GMSCore.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>

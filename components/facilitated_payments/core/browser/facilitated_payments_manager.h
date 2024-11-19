@@ -196,6 +196,8 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnPurchaseActionResult_UiPromptDismissed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           LogInitiatePurchaseActionAttempt);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            LogInitiatePurchaseActionResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiClientInitializedLazily);
