@@ -1912,10 +1912,8 @@ inline void HTMLTokenizer::AddToPossibleEndTag(LChar cc) {
 }
 
 inline bool HTMLTokenizer::IsAppropriateEndTag() {
-  if (buffered_end_tag_name_.size() != appropriate_end_tag_name_.size())
-    return false;
-
-  return Equal(buffered_end_tag_name_.data(), appropriate_end_tag_name_);
+  return base::span(buffered_end_tag_name_) ==
+         base::span(appropriate_end_tag_name_);
 }
 
 inline void HTMLTokenizer::ParseError() {
