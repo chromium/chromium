@@ -193,6 +193,7 @@ external/wpt/css/*
 -external/wpt/css/css-flexbox/overflow-auto-005.html
 -external/wpt/css/css-flexbox/scrollbars*
 -external/wpt/css/css-fonts/cjk-kerning.html
+-external/wpt/css/css-fonts/downloadable-font-in-iframe-print.html
 -external/wpt/css/css-fonts/fallback-url-to-local.html
 -external/wpt/css/css-fonts/font-display/font-display-change.html
 -external/wpt/css/css-fonts/font-display/font-display.html
@@ -291,6 +292,7 @@ external/wpt/css/*
 -external/wpt/css/css-position/position-absolute-crash-chrome-001.html
 -external/wpt/css/css-position/position-absolute-iframe-print-001.sub.html
 -external/wpt/css/css-position/position-absolute-iframe-print-002.sub.html
+-external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html
 -external/wpt/css/css-position/position-fixed-scroll-overlap.html
 -external/wpt/css/css-position/sticky/*
 -external/wpt/css/css-properties-values-api/animation/*
