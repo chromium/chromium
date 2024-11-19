@@ -55,8 +55,10 @@ const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
   // TODO(crbug.com/377888363): Add conditional display logic.
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpMicrosoftAuthenticationModule)) {
-    details.emplace_back(ntp_modules::kMicrosoftAuthenticationModuleId,
-                         IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME);
+    details.emplace_back(
+        ntp_modules::kMicrosoftAuthenticationModuleId,
+        IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME,
+        IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION);
   }
 
   if (base::FeatureList::IsEnabled(

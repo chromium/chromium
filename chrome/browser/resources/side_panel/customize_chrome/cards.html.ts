@@ -27,7 +27,9 @@ export function getHtml(this: CardsElement) {
         <cr-checkbox class="card-checkbox label-first" data-index="${index}"
             ?checked="${item.enabled}" ?disabled="${this.managedByPolicy_}"
             title="${item.name}" @change="${this.onCardCheckboxChange_}">
-          <div class="card-name">${item.name}</div>
+          <customize-chrome-button-label class="card-label" label="${item.name}"
+              label-description="${item.description}">
+          </customize-chrome-button-label>
         </cr-checkbox>
       </div>
     `)}

@@ -4,6 +4,7 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
 
+import type {ButtonLabelElement} from 'chrome://customize-chrome-side-panel.top-chrome/button_label.js';
 import type {CardsElement} from 'chrome://customize-chrome-side-panel.top-chrome/cards.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {CustomizeChromePageRemote, ModuleSettings} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
@@ -61,10 +62,11 @@ suite('CardsTest', () => {
     const elements: HTMLElement[] = Array.from(
         customizeCards.shadowRoot!.querySelectorAll<HTMLElement>('.card'));
     return Object.freeze(new Map(elements.map(cardEl => {
-      const cardNameEl = cardEl.querySelector('.card-name, .card-option-name');
+      const cardNameEl =
+          cardEl.querySelector<ButtonLabelElement>('.card-label');
       assertTrue(!!cardNameEl);
-      assertNotEquals(null, cardNameEl.textContent);
-      return [cardNameEl.textContent!, cardEl];
+      assertNotEquals(null, cardNameEl.label);
+      return [cardNameEl.label, cardEl];
     })));
   }
 
@@ -83,9 +85,19 @@ suite('CardsTest', () => {
           // Arrange & Act.
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', enabled: true},
-                {id: 'bar', name: 'bar name', enabled: true},
-                {id: 'baz', name: 'baz name', enabled: false},
+                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'bar',
+                  name: 'bar name',
+                  description: 'bar description',
+                  enabled: true,
+                },
+                {
+                  id: 'baz',
+                  name: 'baz name',
+                  description: null,
+                  enabled: false,
+                },
               ],
               /*modulesManaged=*/ false,
               /*modulesVisible=*/ visible);
@@ -111,8 +123,13 @@ suite('CardsTest', () => {
     test(`toggling 'Show cards' ${toggleState} shows correctly`, async () => {
       await setupTest(
           [
-            {id: 'foo', name: 'foo name', enabled: true},
-            {id: 'bar', name: 'bar name', enabled: false},
+            {
+              id: 'foo',
+              name: 'foo name',
+              description: 'foo description',
+              enabled: true,
+            },
+            {id: 'bar', name: 'bar name', description: null, enabled: false},
           ],
           /*modulesManaged=*/ false,
           /*modulesVisible=*/ visible);
@@ -135,8 +152,13 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', enabled: true},
-                {id: 'bar', name: 'bar name', enabled: false},
+                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'bar',
+                  name: 'bar name',
+                  description: 'bar description',
+                  enabled: false,
+                },
               ],
               /*modulesManaged=*/ false,
               /*modulesVisible=*/ visible);
@@ -160,8 +182,13 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', enabled: true},
-                {id: 'bar', name: 'bar name', enabled: false},
+                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'bar',
+                  name: 'bar name',
+                  description: 'bar description',
+                  enabled: false,
+                },
               ],
               /*modulesManaged=*/ true,
               /*modulesVisible=*/ visible);
@@ -180,8 +207,13 @@ suite('CardsTest', () => {
         async () => {
           await setupTest(
               [
-                {id: 'foo', name: 'foo name', enabled: true},
-                {id: 'bar', name: 'bar name', enabled: false},
+                {id: 'foo', name: 'foo name', description: null, enabled: true},
+                {
+                  id: 'bar',
+                  name: 'bar name',
+                  description: 'bar description',
+                  enabled: false,
+                },
               ],
               /*modulesManaged=*/ true,
               /*modulesVisible=*/ visible);
@@ -205,7 +237,7 @@ suite('CardsTest', () => {
     // Arrange & Act.
     await setupTest(
         [
-          {id: 'foo', name: 'foo name', enabled: true},
+          {id: 'foo', name: 'foo name', description: null, enabled: true},
         ],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
@@ -241,7 +273,7 @@ suite('CardsTest', () => {
     // Arrange & Act.
     await setupTest(
         [
-          {id: 'foo', name: 'foo name', enabled: true},
+          {id: 'foo', name: 'foo name', description: null, enabled: true},
         ],
         /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
@@ -285,7 +317,8 @@ suite('CardsTest', () => {
 
     // Act (initialize).
     callbackRouterRemote.setModulesSettings(
-        [{id: 'foo', name: 'Foo', enabled: true}], /*modulesManaged=*/ false,
+        [{id: 'foo', name: 'Foo', description: null, enabled: true}],
+        /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
     await callbackRouterRemote.$.flushForTesting();
 
@@ -294,7 +327,8 @@ suite('CardsTest', () => {
 
     // Act (update).
     callbackRouterRemote.setModulesSettings(
-        [{id: 'bar', name: 'Bar', enabled: true}], /*modulesManaged=*/ false,
+        [{id: 'bar', name: 'Bar', description: null, enabled: true}],
+        /*modulesManaged=*/ false,
         /*modulesVisible=*/ true);
     await callbackRouterRemote.$.flushForTesting();
 

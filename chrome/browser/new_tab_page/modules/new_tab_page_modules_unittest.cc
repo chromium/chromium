@@ -61,7 +61,33 @@ class NewTabPageModulesTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_SingleModuleEnabled) {
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_PopulatesStructCorrectly) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{ntp_features::kNtpMicrosoftAuthenticationModule,
+                            ntp_features::kNtpMostRelevantTabResumptionModule},
+      /*disabled_features=*/{});
+
+  const std::vector<ntp::ModuleIdDetail> module_id_details =
+      ntp::MakeModuleIdDetails(/*is_managed_profile=*/false,
+                               /*profile=*/&profile());
+  EXPECT_EQ(2u, module_id_details.size());
+  const auto& microsoft_auth_details = module_id_details[0];
+  EXPECT_EQ(ntp_modules::kMicrosoftAuthenticationModuleId,
+            microsoft_auth_details.id_);
+  EXPECT_EQ(IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME,
+            microsoft_auth_details.name_message_id_);
+  EXPECT_EQ(IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION,
+            microsoft_auth_details.description_message_id_);
+  const auto& tab_resumption_details = module_id_details[1];
+  EXPECT_EQ(ntp_modules::kMostRelevantTabResumptionModuleId,
+            tab_resumption_details.id_);
+  EXPECT_EQ(IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_TITLE,
+            tab_resumption_details.name_message_id_);
+  EXPECT_EQ(std::nullopt, tab_resumption_details.description_message_id_);
+}
+
+TEST_F(NewTabPageModulesTest, MakeModuleIdDetails_OnlyPopulatesEnabledModules) {
   const std::vector<base::test::FeatureRef>& some_module_features = {
       ntp_features::kNtpFeedModule,
       ntp_features::kNtpMostRelevantTabResumptionModule};

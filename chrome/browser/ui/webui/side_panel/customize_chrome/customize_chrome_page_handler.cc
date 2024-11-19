@@ -484,6 +484,11 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
     module_settings->id = module_id_detail.id_;
     module_settings->name =
         l10n_util::GetStringUTF8(module_id_detail.name_message_id_);
+    auto description_message_id = module_id_detail.description_message_id_;
+    if (description_message_id.has_value()) {
+      module_settings->description =
+          l10n_util::GetStringUTF8(description_message_id.value());
+    }
     module_settings->enabled =
         !base::Contains(disabled_module_ids, module_settings->id);
     modules_settings.push_back(std::move(module_settings));

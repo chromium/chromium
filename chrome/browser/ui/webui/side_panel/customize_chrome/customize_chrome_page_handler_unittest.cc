@@ -270,7 +270,10 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         .WillOnce(SaveArg<0>(&ntp_custom_background_service_observer_));
     const std::vector<ntp::ModuleIdDetail> module_id_details = {
         {ntp_modules::kMostRelevantTabResumptionModuleId,
-         IDS_NTP_TAB_RESUMPTION_TITLE}};
+         IDS_NTP_TAB_RESUMPTION_TITLE},
+        {ntp_modules::kMicrosoftAuthenticationModuleId,
+         IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME,
+         IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION}};
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
@@ -853,19 +856,68 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesSettings) {
             managed = managed_arg;
           }));
 
-  const std::string kTabResumptionId(
-      ntp_modules::kMostRelevantTabResumptionModuleId);
   profile().GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, true);
   mock_page_.FlushForTesting();
 
   EXPECT_FALSE(managed);
-  EXPECT_EQ(1u, modules_settings.size());
+  EXPECT_EQ(2u, modules_settings.size());
   const auto& tab_resumption_settings = modules_settings[0];
   EXPECT_EQ(ntp_modules::kMostRelevantTabResumptionModuleId,
             tab_resumption_settings->id);
   EXPECT_EQ(l10n_util::GetStringUTF8(IDS_NTP_TAB_RESUMPTION_TITLE),
             tab_resumption_settings->name);
+  EXPECT_EQ(std::nullopt, tab_resumption_settings->description);
   EXPECT_TRUE(tab_resumption_settings->enabled);
+  const auto& microsoft_auth_settings = modules_settings[1];
+  EXPECT_EQ(ntp_modules::kMicrosoftAuthenticationModuleId,
+            microsoft_auth_settings->id);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF8(IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME),
+      microsoft_auth_settings->name);
+  EXPECT_EQ(l10n_util::GetStringUTF8(
+                IDS_NTP_MICROSOFT_AUTHENTICATION_SIDE_PANEL_DESCRIPTION),
+            microsoft_auth_settings->description);
+  EXPECT_TRUE(microsoft_auth_settings->enabled);
+}
+
+TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_True) {
+  std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
+  bool visible;
+  EXPECT_CALL(mock_page_, SetModulesSettings)
+      .Times(1)
+      .WillRepeatedly(
+          Invoke([&modules_settings, &visible](
+                     std::vector<side_panel::mojom::ModuleSettingsPtr>
+                         modules_settings_arg,
+                     bool managed_arg, bool visible_arg) {
+            modules_settings = std::move(modules_settings_arg);
+            visible = visible_arg;
+          }));
+
+  handler().SetModulesVisible(true);
+  mock_page_.FlushForTesting();
+
+  EXPECT_TRUE(visible);
+}
+
+TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModulesVisible_False) {
+  std::vector<side_panel::mojom::ModuleSettingsPtr> modules_settings;
+  bool visible;
+  EXPECT_CALL(mock_page_, SetModulesSettings)
+      .Times(1)
+      .WillRepeatedly(
+          Invoke([&modules_settings, &visible](
+                     std::vector<side_panel::mojom::ModuleSettingsPtr>
+                         modules_settings_arg,
+                     bool managed_arg, bool visible_arg) {
+            modules_settings = std::move(modules_settings_arg);
+            visible = visible_arg;
+          }));
+
+  handler().SetModulesVisible(false);
+  mock_page_.FlushForTesting();
+
+  EXPECT_FALSE(visible);
 }
 
 TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
@@ -884,13 +936,17 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
   handler().SetModuleDisabled(kTabResumptionId, true);
   mock_page_.FlushForTesting();
 
-  EXPECT_EQ(1u, modules_settings.size());
+  EXPECT_EQ(2u, modules_settings.size());
   const auto& tab_resumption_settings = modules_settings[0];
   EXPECT_EQ(kTabResumptionId, tab_resumption_settings->id);
   EXPECT_FALSE(tab_resumption_settings->enabled);
   const auto& disabled_module_ids =
       profile().GetPrefs()->GetList(prefs::kNtpDisabledModules);
   EXPECT_EQ(kTabResumptionId, disabled_module_ids.front().GetString());
+  const auto& microsoft_auth_settings = modules_settings[1];
+  EXPECT_EQ(ntp_modules::kMicrosoftAuthenticationModuleId,
+            microsoft_auth_settings->id);
+  EXPECT_TRUE(microsoft_auth_settings->enabled);
 }
 
 class CustomizeChromePageHandlerWithModulesVisibilityTest

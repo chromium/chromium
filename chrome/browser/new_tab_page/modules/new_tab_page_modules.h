@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_NEW_TAB_PAGE_MODULES_NEW_TAB_PAGE_MODULES_H_
 #define CHROME_BROWSER_NEW_TAB_PAGE_MODULES_NEW_TAB_PAGE_MODULES_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,9 +21,16 @@ namespace ntp {
 struct ModuleIdDetail {
   ModuleIdDetail(const char* id, int name_message_id)
       : id_(id), name_message_id_(name_message_id) {}
+  ModuleIdDetail(const char* id,
+                 int name_message_id,
+                 int description_message_id)
+      : id_(id),
+        name_message_id_(name_message_id),
+        description_message_id_(description_message_id) {}
 
   std::string id_;
   int name_message_id_;
+  std::optional<int> description_message_id_;
 };
 
 const std::vector<ModuleIdDetail> MakeModuleIdDetails(bool is_managed_profile,
