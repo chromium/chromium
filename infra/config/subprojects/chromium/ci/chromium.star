@@ -687,7 +687,8 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
@@ -740,7 +741,8 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     # TODO(crbug.com/335863313): Enable when verified.
     gardener_rotations = args.ignore_default(None),
@@ -796,7 +798,8 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     # TODO(crbug.com/346263463): Enable tree-closing when the builder no
     # longer flakily fails compile.
@@ -842,7 +845,8 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win|rel",
@@ -893,7 +897,8 @@ ci.builder(
         additional_compile_targets = "all",
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win|off",
