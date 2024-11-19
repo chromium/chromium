@@ -30,10 +30,6 @@ const char kOnDeviceModelChromeVersion[] =
 const char kOnDeviceModelCrashCount[] =
     "optimization_guide.on_device.model_crash_count";
 
-// Preference where number of timeouts of on device model is stored.
-const char kOnDeviceModelTimeoutCount[] =
-    "optimization_guide.on_device.timeout_count";
-
 const char kOnDeviceModelValidationResult[] =
     "optimization_guide.on_device.model_validation_result";
 
@@ -91,7 +87,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(localstate::kOnDeviceModelChromeVersion,
                                std::string());
   registry->RegisterIntegerPref(localstate::kOnDeviceModelCrashCount, 0);
-  registry->RegisterIntegerPref(localstate::kOnDeviceModelTimeoutCount, 0);
   registry->RegisterIntegerPref(localstate::kOnDevicePerformanceClass, 0);
   registry->RegisterStringPref(localstate::kOnDevicePerformanceClassVersion,
                                std::string());

@@ -157,7 +157,6 @@ class OnDeviceModelServiceController
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetModelRemote()
         override;
     void OnResponseCompleted() override;
-    void OnSessionTimedOut() override;
 
    private:
     ModelBasedCapabilityKey feature_;

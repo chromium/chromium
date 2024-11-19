@@ -114,13 +114,6 @@ struct SessionConfigParams {
   // How the execution of this feature should be configured.
   ExecutionMode execution_mode = ExecutionMode::kDefault;
 
-  // The amount of time to wait before the initial response is received from the
-  // on device model. If unset, a default value will be used.
-  //
-  // If `execution_mode` allows, model execution will fall back to the server
-  // instead of failing entirely when this timeout is reached.
-  std::optional<base::TimeDelta> on_device_execution_timeout;
-
   enum class LoggingMode {
     // Enable logging if it's enabled for ModelBasedCapability.
     kDefault,
