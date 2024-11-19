@@ -326,8 +326,10 @@ fyi_reclient_staging_builder(
         ],
     ),
     builderless = True,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 and add ssd=True after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_ANY,
+    ssd = None,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
 )
@@ -358,8 +360,10 @@ fyi_reclient_test_builder(
         ],
     ),
     builderless = True,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 and add ssd=True after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_ANY,
+    ssd = None,
     console_view_category = "win",
     execution_timeout = 5 * time.hour,
     reclient_rewrapper_env = {
@@ -554,8 +558,10 @@ ci.builder(
         ),
     },
     builderless = True,
-    cores = 32,
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 and add ssd=True after bot migration.
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "detcross",
@@ -597,8 +603,10 @@ ci.builder(
         ],
     ),
     builderless = True,
-    cores = 32,
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 and add ssd=True after bot migration.
+    ssd = None,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "compcross",
