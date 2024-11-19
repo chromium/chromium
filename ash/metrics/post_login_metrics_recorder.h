@@ -64,6 +64,7 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
       base::TimeTicks ts,
       const cc::FrameSequenceMetrics::CustomReportData& data) override;
   void OnArcUiReady(base::TimeTicks ts) override;
+  void OnDeferredTasksStarted(base::TimeTicks ts) override;
   void OnShelfIconsLoadedAndSessionRestoreDone(base::TimeTicks ts) override;
   void OnShelfAnimationAndCompositorAnimationDone(base::TimeTicks ts) override;
 

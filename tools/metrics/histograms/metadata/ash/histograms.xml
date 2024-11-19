@@ -5668,6 +5668,18 @@ chromium-metrics-reviews@google.com.
   <token key="RestoreMode" variants="RestoreMode"/>
 </histogram>
 
+<histogram name="Ash.LoginPerf.{RestoreMode}.DeferredTasksStarted" units="ms"
+    expires_after="2025-05-18">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>junis@google.com</owner>
+  <owner>cros-sw-perf@google.org</owner>
+  <summary>
+    The duration between primary user is logged in and when deferred task runner
+    is triggered.
+  </summary>
+  <token key="RestoreMode" variants="RestoreMode"/>
+</histogram>
+
 <histogram
     name="Ash.LoginPerf.{RestoreMode}.PostLoginAnimation.Duration.{TabletOrClamshellMode}"
     units="ms" expires_after="2025-04-06">

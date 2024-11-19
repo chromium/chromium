@@ -287,6 +287,26 @@ TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportBootTimeLogin3) {
   histogram_tester_->ExpectTimeBucketCount(kBootTimeLogin3, duration, 1);
 }
 
+TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportDeferredTasksStarted) {
+  const bool auto_restore = GetParam();
+
+  const std::string kLoginPerfDeferredTasksStarted =
+      auto_restore ? "Ash.LoginPerf.AutoRestore.DeferredTasksStarted"
+                   : "Ash.LoginPerf.ManualRestore.DeferredTasksStarted";
+
+  histogram_tester_->ExpectTotalCount(kLoginPerfDeferredTasksStarted, 0);
+
+  const base::TimeTicks origin = base::TimeTicks::Now();
+  const base::TimeDelta duration = base::Milliseconds(100);  // not real
+  metrics_recorder_->OnAuthSuccess(origin);
+  metrics_recorder_->OnSessionRestoreDataLoaded(origin, auto_restore);
+  metrics_recorder_->OnDeferredTasksStarted(origin + duration);
+
+  histogram_tester_->ExpectTotalCount(kLoginPerfDeferredTasksStarted, 1);
+  histogram_tester_->ExpectTimeBucketCount(kLoginPerfDeferredTasksStarted,
+                                           duration, 1);
+}
+
 TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportTotalDuration) {
   const bool auto_restore = GetParam();
 
