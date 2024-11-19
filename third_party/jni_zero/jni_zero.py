@@ -80,6 +80,7 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
 
 def _add_codegen_args(parser, *, is_final=False, is_javap=False):
   group = parser.add_argument_group(title='Codegen Options')
+  mode_group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--module-name',
       help='Only look at natives annotated with a specific module name.')
@@ -113,21 +114,22 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')
-    group.add_argument('--per-file-natives', action='store_true')
+    mode_group.add_argument('--per-file-natives', action='store_true')
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',
                        action='store_true',
                        help='Do not check that no exceptions were thrown.')
   else:
-    group.add_argument(
+    mode_group.add_argument(
         '--use-proxy-hash',
         action='store_true',
         help='Enables hashing of the native declaration for methods in '
         'a @NativeMethods interface')
-    group.add_argument('--enable-jni-multiplexing',
-                       action='store_true',
-                       help='Enables JNI multiplexing for Java native methods')
+    mode_group.add_argument(
+        '--enable-jni-multiplexing',
+        action='store_true',
+        help='Enables JNI multiplexing for Java native methods')
     group.add_argument(
         '--package-prefix',
         help='Adds a prefix to the classes fully qualified-name. Effectively '

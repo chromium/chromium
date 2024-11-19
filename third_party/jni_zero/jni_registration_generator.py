@@ -723,8 +723,6 @@ def main(parser, args):
     parser.error('--remove-uncalled-methods requires --native-sources-file.')
   if args.priority_java_sources_file and not args.enable_jni_multiplexing:
     parser.error('--priority-java-sources is only for multiplexing.')
-  if args.enable_jni_multiplexing and args.use_proxy_hash:
-    parser.error('--enable-jni-multiplexing cannot work with --use-proxy-hash.')
 
   java_sources = _ParseSourceList(args.java_sources_file)
   if args.native_sources_file:
