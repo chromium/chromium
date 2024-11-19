@@ -28,8 +28,6 @@ static_library("shelf") {
     "arc_playstore_shortcut_shelf_item_controller.h",
     "arc_shelf_spinner_item_controller.cc",
     "arc_shelf_spinner_item_controller.h",
-    "browser_app_shelf_item_controller.cc",
-    "browser_app_shelf_item_controller.h",
     "browser_shortcut_shelf_item_controller.cc",
     "browser_shortcut_shelf_item_controller.h",
     "browser_status_monitor.cc",
