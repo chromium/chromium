@@ -27,6 +27,8 @@ static_library("skyvault") {
     "migration_coordinator.h",
     "migration_notification_manager.cc",
     "migration_notification_manager.h",
+    "odfs_file_deleter.cc",
+    "odfs_file_deleter.h",
     "odfs_skyvault_uploader.cc",
     "odfs_skyvault_uploader.h",
     "policy_utils.cc",

@@ -723,6 +723,10 @@ class ASH_EXPORT CaptureModeController
   // otherwise.
   CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
 
+  // Deletes the `path` on `blocking_task_runner_` if local or calls delegate to
+  // remove it if remote.
+  void DeleteFileAsync(const base::FilePath& path);
+
   // The ID of this object as a client of the video conference manager.
   const base::UnguessableToken vc_client_id_ = base::UnguessableToken::Create();
 

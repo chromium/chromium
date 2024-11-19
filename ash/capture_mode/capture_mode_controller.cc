@@ -227,21 +227,6 @@ base::FilePath SaveFile(scoped_refptr<base::RefCountedMemory> data,
                     SelectFilePathForCapturedFile(current_path, fallback_path));
 }
 
-void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                     const base::FilePath& path,
-                     OnFileDeletedCallback callback) {
-  task_runner->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&base::DeleteFile, path),
-      callback ? base::BindOnce(std::move(callback), path)
-               : base::BindOnce(
-                     [](const base::FilePath& path, bool success) {
-                       // TODO(afakhry): Show toast?
-                       if (!success)
-                         LOG(ERROR) << "Failed to delete the file: " << path;
-                     },
-                     path));
-}
-
 // Called when the "Share to YouTube" button is pressed to
 // open the YouTube share video page.
 void OnShareToYouTubeButtonPressed() {
@@ -1156,7 +1141,7 @@ bool CaptureModeController::IsLinuxFilesPath(const base::FilePath& path) const {
 
 bool CaptureModeController::IsRootOneDriveFilesPath(
     const base::FilePath& path) const {
-  return path == delegate_->GetOneDriveMountPointPath();
+  return path == delegate_->GetOneDriveVirtualPath();
 }
 
 std::unique_ptr<AshWebView> CaptureModeController::CreateSearchResultsView()
@@ -2126,8 +2111,7 @@ void CaptureModeController::HandleNotificationClicked(
             break;
           case GameDashboardVideoNotificationButtonIndex::
               kButtonDeleteGameVideo:
-            DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                            std::move(on_file_deleted_callback_for_test_));
+            DeleteFileAsync(screen_capture_path);
             break;
           default:
             NOTREACHED();
@@ -2135,8 +2119,7 @@ void CaptureModeController::HandleNotificationClicked(
       } else {
         CHECK_EQ(VideoNotificationButtonIndex::kButtonDeleteVideo,
                  button_index_value);
-        DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                        std::move(on_file_deleted_callback_for_test_));
+        DeleteFileAsync(screen_capture_path);
       }
     } else {
       CHECK_EQ(type, CaptureModeType::kImage);
@@ -2147,8 +2130,7 @@ void CaptureModeController::HandleNotificationClicked(
               CaptureQuickAction::kBacklight);
           break;
         case ScreenshotNotificationButtonIndex::kButtonDelete:
-          DeleteFileAsync(blocking_task_runner_, screen_capture_path,
-                          std::move(on_file_deleted_callback_for_test_));
+          DeleteFileAsync(screen_capture_path);
           RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
           break;
         default:
@@ -2579,8 +2561,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
     message_center::MessageCenter::Get()->RemoveNotification(
         kScreenCaptureNotificationId, /*by_user=*/false);
 
-    DeleteFileAsync(blocking_task_runner_, video_file_path,
-                    std::move(on_file_deleted_callback_for_test_));
+    DeleteFileAsync(video_file_path);
     OnVideoFileFinalized(/*should_delete_file=*/true, video_thumbnail);
   } else {
     if (!success) {
@@ -2721,7 +2702,7 @@ CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
     if (drive_root_path.IsParent(dir_path))
       return CaptureModeSaveToLocation::kDriveFolder;
   }
-  base::FilePath one_drive_mount_path = delegate_->GetOneDriveMountPointPath();
+  base::FilePath one_drive_mount_path = delegate_->GetOneDriveVirtualPath();
   if (!one_drive_mount_path.empty()) {
     if (dir_path == one_drive_mount_path) {
       return CaptureModeSaveToLocation::kOneDrive;
@@ -2741,6 +2722,27 @@ CaptureModeBehavior* CaptureModeController::GetBehavior(
   }
 
   return behavior.get();
+}
+
+void CaptureModeController::DeleteFileAsync(const base::FilePath& path) {
+  OnFileDeletedCallback callback =
+      on_file_deleted_callback_for_test_
+          ? std::move(on_file_deleted_callback_for_test_)
+          : base::BindOnce([](const base::FilePath& path, bool success) {
+              // TODO(afakhry): Show toast?
+              if (!success) {
+                LOG(ERROR) << "Failed to delete the file: " << path;
+              }
+            });
+  const base::FilePath onedrive_path = delegate_->GetOneDriveMountPointPath();
+  if (onedrive_path.IsParent(path)) {
+    delegate_->DeleteRemoteFile(path,
+                                base::BindOnce(std::move(callback), path));
+    return;
+  }
+  blocking_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::DeleteFile, path),
+      base::BindOnce(std::move(callback), path));
 }
 
 }  // namespace ash

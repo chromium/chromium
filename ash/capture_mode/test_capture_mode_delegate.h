@@ -123,6 +123,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   base::FilePath GetAndroidFilesPath() const override;
   base::FilePath GetLinuxFilesPath() const override;
   base::FilePath GetOneDriveMountPointPath() const override;
+  base::FilePath GetOneDriveVirtualPath() const override;
   PolicyCapturePath GetPolicyCapturePath() const override;
   void ConnectToVideoSourceProvider(
       mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
@@ -157,6 +158,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
                             const gfx::Rect& region,
                             const std::string& text,
                             ash::OnSearchUrlFetchedCallback callback) override;
+  void DeleteRemoteFile(const base::FilePath& path,
+                        base::OnceCallback<void(bool)> callback) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;

@@ -180,6 +180,9 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Gets the OneDrive mount point. Returns empty if OneDrive is not mounted.
   virtual base::FilePath GetOneDriveMountPointPath() const = 0;
 
+  // Gets the OneDrive virtual path indicating that files should be saved there.
+  virtual base::FilePath GetOneDriveVirtualPath() const = 0;
+
   // Returns the path to save files if policy set by admin.
   virtual PolicyCapturePath GetPolicyCapturePath() const = 0;
 
@@ -261,6 +264,10 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
       const gfx::Rect& region,
       const std::string& text,
       ash::OnSearchUrlFetchedCallback callback) = 0;
+
+  // Deletes the remote file under `path` and calls `callback` with result.
+  virtual void DeleteRemoteFile(const base::FilePath& path,
+                                base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace ash
