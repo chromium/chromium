@@ -331,6 +331,10 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
       return PasswordStoreBackendErrorType::kAuthErrorUnresolvable;
     case AndroidBackendAPIErrorCode::kKeyRetrievalRequired:
       return PasswordStoreBackendErrorType::kKeyRetrievalRequired;
+    case AndroidBackendAPIErrorCode::kEmptySecurityDomain:
+      return PasswordStoreBackendErrorType::kEmptySecurityDomain;
+    case AndroidBackendAPIErrorCode::kIrretrievableSecurityDomain:
+      return PasswordStoreBackendErrorType::kIrretrievableSecurityDomain;
     case AndroidBackendAPIErrorCode::kNetworkError:
     case AndroidBackendAPIErrorCode::kInternalError:
     case AndroidBackendAPIErrorCode::kDeveloperError:

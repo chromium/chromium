@@ -2263,7 +2263,13 @@ INSTANTIATE_TEST_SUITE_P(
          std::make_pair(AndroidBackendAPIErrorCode::kAuthErrorUnresolvable,
                         PasswordStoreBackendErrorType::kAuthErrorUnresolvable),
          std::make_pair(AndroidBackendAPIErrorCode::kKeyRetrievalRequired,
-                        PasswordStoreBackendErrorType::kKeyRetrievalRequired)}),
+                        PasswordStoreBackendErrorType::kKeyRetrievalRequired),
+         std::make_pair(AndroidBackendAPIErrorCode::kEmptySecurityDomain,
+                        PasswordStoreBackendErrorType::kEmptySecurityDomain),
+         std::make_pair(
+             AndroidBackendAPIErrorCode::kIrretrievableSecurityDomain,
+             PasswordStoreBackendErrorType::kIrretrievableSecurityDomain)}),
+
     [](const ::testing::TestParamInfo<
         std::pair<AndroidBackendAPIErrorCode, PasswordStoreBackendErrorType>>&
            info) {

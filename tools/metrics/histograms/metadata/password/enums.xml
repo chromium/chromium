@@ -1411,6 +1411,8 @@ chromium-metrics-reviews@google.com.
   <int value="11016" label="EXTERNAL_API_EXCEPTION"/>
   <int value="11017" label="EXTERNAL_INVALID_LOCAL_KEYS"/>
   <int value="11018" label="DATABASE_ERROR"/>
+  <int value="11019" label="EMPTY_SECURITY_DOMAIN"/>
+  <int value="11020" label="IRRETRIEVABLE_SECURITY_DOMAIN"/>
   <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
   <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
   <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
@@ -1476,6 +1478,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kKeyRetrievalRequired"/>
   <int value="5" label="kGMSCoreOutdatedSavingDisabled"/>
   <int value="6" label="kGMSCoreOutdatedSavingPossible"/>
+  <int value="7" label="kEmptySecurityDomain"/>
+  <int value="8" label="kIrretrievableSecurityDomain"/>
 </enum>
 
 <enum name="PasswordSubmissionEvent">

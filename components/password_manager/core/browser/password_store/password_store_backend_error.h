@@ -38,7 +38,12 @@ enum class PasswordStoreBackendErrorType {
   kGMSCoreOutdatedSavingDisabled = 5,
   // Credentials are saved only on device due to an outdated GMSCore version.
   kGMSCoreOutdatedSavingPossible = 6,
-  kMaxValue = kGMSCoreOutdatedSavingPossible,
+  // Used on Android.
+  kEmptySecurityDomain = 7,
+  // Used on Android.
+  kIrretrievableSecurityDomain = 8,
+
+  kMaxValue = kIrretrievableSecurityDomain,
 };
 
 struct PasswordStoreBackendError {

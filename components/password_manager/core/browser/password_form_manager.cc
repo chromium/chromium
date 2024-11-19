@@ -137,6 +137,8 @@ std::optional<PasswordStoreBackendError> GetErrorForErrorMessage(
       PasswordStoreBackendErrorType::kAuthErrorResolvable,
       PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
       PasswordStoreBackendErrorType::kKeyRetrievalRequired,
+      PasswordStoreBackendErrorType::kEmptySecurityDomain,
+      PasswordStoreBackendErrorType::kIrretrievableSecurityDomain,
   };
 
   if (account_store_backend_error.has_value() &&

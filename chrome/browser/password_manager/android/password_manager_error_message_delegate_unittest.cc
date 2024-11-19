@@ -427,3 +427,52 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
           {kErrorMessageDismissalReasonHistogramName, "KeyRetrievalRequired"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }
+
+// Tests that the key retrieval flow starts when the user clicks the action
+// button and that the metrics are recorded correctly.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       StartTrustedVaultKeyRetrievalFlowForEmptySecurityDomain) {
+  base::HistogramTester histogram_tester;
+
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::kEmptySecurityDomain);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kErrorMessageDismissalReasonHistogramName, "EmptySecurityDomain"}),
+      messages::DismissReason::PRIMARY_ACTION, 1);
+}
+
+// Tests that the key retrieval flow starts when the user clicks the action
+// button and that the metrics are recorded correctly.
+TEST_F(PasswordManagerErrorMessageDelegateTest,
+       StartTrustedVaultKeyRetrievalFlowForIrretrievableSecurityDomain) {
+  base::HistogramTester histogram_tester;
+
+  DisplayMessageAndExpectEnqueued(
+      password_manager::ErrorMessageFlowType::kSaveFlow,
+      password_manager::PasswordStoreBackendErrorType::
+          kIrretrievableSecurityDomain);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+
+  EXPECT_CALL(*helper_bridge(),
+              StartTrustedVaultKeyRetrievalFlow(web_contents()));
+  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
+
+  // The message needs to be dismissed manually in tests. In production code
+  // this happens automatically, but on the java side.
+  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kErrorMessageDismissalReasonHistogramName,
+                    "IrretrievableSecurityDomain"}),
+      messages::DismissReason::PRIMARY_ACTION, 1);
+}
