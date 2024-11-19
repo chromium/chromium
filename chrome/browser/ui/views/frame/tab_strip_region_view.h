@@ -125,18 +125,14 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   void AdjustViewBoundsRect(View* view, int offset);
 
   raw_ptr<const Profile> profile_ = nullptr;
-  raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
-      nullptr;
-  raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
-  raw_ptr<TabStrip, AcrossTasksDanglingUntriaged> tab_strip_ = nullptr;
-  raw_ptr<TabStripScrollContainer, DanglingUntriaged>
-      tab_strip_scroll_container_ = nullptr;
-  raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;
-  raw_ptr<TabSearchContainer, DanglingUntriaged> tab_search_container_ =
-      nullptr;
-  raw_ptr<ProductSpecificationsButton, DanglingUntriaged>
-      product_specifications_button_ = nullptr;
-  raw_ptr<GlicButton, DanglingUntriaged> glic_button_ = nullptr;
+  raw_ptr<views::View> tab_strip_container_ = nullptr;
+  raw_ptr<views::View> reserved_grab_handle_space_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<TabStripScrollContainer> tab_strip_scroll_container_ = nullptr;
+  raw_ptr<views::Button> new_tab_button_ = nullptr;
+  raw_ptr<TabSearchContainer> tab_search_container_ = nullptr;
+  raw_ptr<ProductSpecificationsButton> product_specifications_button_ = nullptr;
+  raw_ptr<GlicButton> glic_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents
