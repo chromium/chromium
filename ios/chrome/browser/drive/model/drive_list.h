@@ -50,6 +50,12 @@ struct DriveItem {
   NSDate* shared_with_me_time = nil;
   // Identifier of the item's parent folder.
   NSString* parent_identifier = nil;
+  // Whether the item is a shortcut.
+  bool is_shortcut = false;
+  // If the item is a shortcut, the identifier of the target.
+  NSString* shortcut_target_identifier = nil;
+  // If the item is a shortcut, the MIME type of the target.
+  NSString* shortcut_target_mime_type = nil;
   // Whether the item is a shared drive.
   bool is_shared_drive = false;
   // Whether the item is a folder.
@@ -63,6 +69,8 @@ struct DriveItem {
   // If this is a file which cannot be downloaded directly, then it can only be
   // exported to a different MIME type.
   bool can_download = false;
+  // If this item is a file, the MD5 checksum of that file.
+  NSString* md5_checksum = nil;
 };
 
 // std::hash specialization for DriveItem.
