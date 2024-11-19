@@ -851,6 +851,12 @@ class AutocompleteMediator
     public void onTextChanged(@NonNull String textWithoutAutocomplete) {
         if (mShouldPreventOmniboxAutocomplete) return;
 
+        // Always re-set the list's final state when we're about to request new suggestions.
+        // This avoids a problem, where the property does not get an explicit update that the list
+        // is final, which, in turn, may suppress certain functionality from getting invoked if the
+        // subsequent push is immediately `final`.
+        mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
+
         mAutocompleteInput.setUserText(textWithoutAutocomplete);
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
