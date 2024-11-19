@@ -208,6 +208,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
 
   visibility = [
     ":tflite_benchmark",
+    "//components/optimization_guide/internal/*",
     "//services/webnn/*",
     "//third_party/mediapipe/*",
   ]
@@ -795,7 +796,6 @@ tflite_static_library("tflite") {
     "//third_party/fft2d",
     "//third_party/fp16",
     "//third_party/neon_2_sse",
-    "//third_party/ruy",
   ]
 
   conditional_deps = [
@@ -820,11 +820,13 @@ tflite_static_library("tflite") {
     ":tflite_public_headers",
     "//third_party/flatbuffers",
     "//third_party/gemmlowp",
+    "//third_party/ruy",
   ]
 
   configs_to_remove = [ "//build/config/compiler:chromium_code" ]
   configs_to_add = [
     "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
     "//third_party/eigen3:eigen_includes",
     ":tflite_flags",
   ]
