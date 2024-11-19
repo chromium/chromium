@@ -13,14 +13,6 @@ import tempfile
 import textwrap
 import zipfile
 
-_FILE_DIR = os.path.dirname(__file__)
-_CHROMIUM_SRC = os.path.join(_FILE_DIR, os.pardir, os.pardir)
-_BUILD_ANDROID_GYP = os.path.join(_CHROMIUM_SRC, 'build', 'android', 'gyp')
-
-# Item 0 of sys.path is the directory of the main file; item 1 is PYTHONPATH
-# (if set); item 2 is system libraries.
-sys.path.insert(1, _BUILD_ANDROID_GYP)
-
 from codegen import called_by_native_header
 from codegen import convert_type
 from codegen import header_common
