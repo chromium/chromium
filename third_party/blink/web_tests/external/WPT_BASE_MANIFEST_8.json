@@ -110399,6 +110399,19 @@
         {}
        ]
       ],
+      "descriptor-calc.html": [
+       "201f6ef78cf5cc0f97233c894f75c8e80553f33e",
+       [
+        null,
+        [
+         [
+          "/css/css-counter-styles/counter-style-at-rule/descriptor-calc-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "descriptor-fallback-invalid.html": [
        "e19d9d649a03dfb15e3d15d506c9029e7cbfe725",
        [
@@ -325029,6 +325042,10 @@
        "a558ce29e6c2b0a2fd13238e9887b0e9bd169938",
        []
       ],
+      "descriptor-calc-ref.html": [
+       "99085c1acda1ddefd73d1b20693cb405f5294e70",
+       []
+      ],
       "descriptor-fallback-invalid-ref.html": [
        "4b1c78b204d7ac483dc6804f9745d1820c19dc06",
        []
@@ -483074,7 +483091,7 @@
      ],
      "parsing": {
       "highlight-pseudos-search-text.tentative.html": [
-       "c870125bbc83097342c13ea62e1f9cf7b5629e57",
+       "9b9a1f10fb182f9806dacfdaae81afa9be4121e7",
        [
         null,
         {}
@@ -509613,7 +509630,7 @@
         ]
        ],
        "live-range-updates.html": [
-        "9f8c4d99c1600beaf284743c5c10949a35816b71",
+        "7f73b37e6a8231ca8c01884bb11a974156e392ef",
         [
          null,
          {}
@@ -509703,7 +509720,7 @@
         ]
        ],
        "selection-preserve.html": [
-        "8739209b620562caf8aeb49110c3e3ef5a7a059a",
+        "cb49e19d72978e4ec7e97a7077f96b36779191e0",
         [
          null,
          {
@@ -664189,7 +664206,7 @@
      ]
     ],
     "scroll-to-text-fragment.html": [
-     "7af9bdba4c1e3df2fb559adc27f9a87cc8052ac0",
+     "8a0fa17a8c590282a47b2fcd10f3fb30277bd77e",
      [
       null,
       {
