@@ -52,7 +52,7 @@ std::string CollaborationId(
       syncService->GetGroup(tabGroup->tab_group_id());
   if (savedTabGroup.has_value() &&
       savedTabGroup->collaboration_id().has_value()) {
-    return savedTabGroup->collaboration_id().value();
+    return savedTabGroup->collaboration_id()->value();
   }
   return "";
 }

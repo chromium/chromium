@@ -33,7 +33,7 @@ MATCHER_P2(HasSpecificsSharedTab, title, url, "") {
 
 MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.color() == color &&
-         arg.collaboration_id() == collaboration_id;
+         arg.collaboration_id() == CollaborationId(collaboration_id);
 }
 
 MATCHER_P2(HasTabMetadata, title, url, "") {

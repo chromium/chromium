@@ -233,7 +233,7 @@ void FakeTabGroupSyncService::MakeTabGroupShared(
   std::optional<int> index = GetIndexOf(local_group_id);
   CHECK(index.has_value());
   SavedTabGroup& group = groups_[index.value()];
-  group.SetCollaborationId(std::string(collaboration_id));
+  group.SetCollaborationId(CollaborationId(std::string(collaboration_id)));
 }
 
 std::vector<SavedTabGroup> FakeTabGroupSyncService::GetAllGroups() const {

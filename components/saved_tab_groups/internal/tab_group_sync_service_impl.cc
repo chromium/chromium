@@ -499,8 +499,8 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
 
   // Make a deep copy of the group without fields which are not used in shared
   // tab groups, and without migration of local IDs.
-  SavedTabGroup shared_group =
-      saved_group->CloneAsSharedTabGroup(std::string(collaboration_id));
+  SavedTabGroup shared_group = saved_group->CloneAsSharedTabGroup(
+      CollaborationId(std::string(collaboration_id)));
   for (auto& tab : shared_group.saved_tabs()) {
     UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_,
                            stats::TitleSanitizationType::kShareTabGroup);
@@ -519,8 +519,8 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
     std::string_view collaboration_id) {
-  model_->MakeTabGroupSharedForTesting(local_group_id,
-                                       std::string(collaboration_id));
+  model_->MakeTabGroupSharedForTesting(
+      local_group_id, CollaborationId(std::string(collaboration_id)));
 }
 
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() const {
@@ -800,8 +800,10 @@ void TabGroupSyncServiceImpl::HandleTabGroupAdded(const base::Uuid& guid,
   }
 
   if (saved_tab_group->collaboration_id()) {
-    std::string collaboration_id = saved_tab_group->collaboration_id().value();
-    if (!collaboration_finder_->IsCollaborationAvailable(collaboration_id)) {
+    const CollaborationId& collaboration_id =
+        saved_tab_group->collaboration_id().value();
+    if (!collaboration_finder_->IsCollaborationAvailable(
+            collaboration_id.value())) {
       shared_tab_groups_waiting_for_collaboration_.emplace_back(
           collaboration_id, guid, source);
       return;

@@ -7,6 +7,7 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -188,7 +189,7 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
 TEST(SavedTabGroupTest, AddTabFromSyncUsesPositionAsIndexForSharedGroup) {
   // Create a shared group and 2 tabs.
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
 
   SavedTabGroupTab tab_0 = CreateDefaultSavedTabGroupTab(group.saved_guid());
   tab_0.SetPosition(0);

@@ -506,7 +506,7 @@ TEST_P(SavedTabGroupModelTest, MoveElement) {
 TEST_P(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
   SavedTabGroup shared_group =
       saved_tab_group_model_->Get(id_1_)->CloneAsSharedTabGroup(
-          "collaboration");
+          CollaborationId("collaboration"));
   saved_tab_group_model_->AddedLocally(shared_group);
 
   ASSERT_TRUE(shared_group.is_shared_tab_group());

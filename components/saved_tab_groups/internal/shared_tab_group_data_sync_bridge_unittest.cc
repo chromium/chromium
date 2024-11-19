@@ -695,7 +695,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group_to_delete(u"title", tab_groups::TabGroupColorId::kBlue,
                                 /*urls=*/{}, /*position=*/std::nullopt);
-  group_to_delete.SetCollaborationId("collaboration");
+  group_to_delete.SetCollaborationId(CollaborationId("collaboration"));
   group_to_delete.AddTabLocally(SavedTabGroupTab(
       GURL("https://website.com"), u"Website Title",
       group_to_delete.saved_guid(), /*position=*/std::nullopt));
@@ -703,7 +703,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   model()->AddedLocally(SavedTabGroup(u"title 2",
                                       tab_groups::TabGroupColorId::kGrey,
                                       /*urls=*/{}, /*position=*/std::nullopt)
-                            .SetCollaborationId("collaboration 2"));
+                            .SetCollaborationId(CollaborationId("collaboration 2")));
   ASSERT_EQ(model()->Count(), 2);
 
   ApplySingleEntityChange(syncer::EntityChange::CreateDelete(
@@ -721,7 +721,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"group title", tab_groups::TabGroupColorId::kBlue,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab_to_delete(GURL("https://google.com/1"), u"title 1",
                                  group.saved_guid(), /*position=*/std::nullopt);
   group.AddTabLocally(tab_to_delete);
@@ -781,7 +781,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -808,7 +808,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnGroupDataForCommit) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -833,7 +833,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -861,7 +861,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -892,7 +892,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   group.SetOriginatingSavedTabGroupGuid(kOriginatingSavedTabGroupGuid);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
@@ -933,7 +933,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {
                       /*urls=*/{}, /*position=*/std::nullopt,
                       /*saved_guid=*/base::Uuid::GenerateRandomV4(),
                       test::GenerateRandomTabGroupID());
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -968,7 +968,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewLocalTab) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
 
@@ -999,7 +999,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalTab) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab_to_remove =
@@ -1023,7 +1023,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedLocalTab) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab_to_update = test::CreateSavedTabGroupTab(
@@ -1057,7 +1057,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncRemovedLocalGroup) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -1088,7 +1088,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReloadDataOnBrowserRestart) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -1166,7 +1166,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -1212,7 +1212,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   model()->AddedLocally(group);
 
   // Add the first tab to the group.
@@ -1237,7 +1237,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   group.AddTabLocally(tab);
@@ -1274,7 +1274,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   group.AddTabLocally(tab);
@@ -1311,7 +1311,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId("collaboration");
+  group.SetCollaborationId(CollaborationId("collaboration"));
   SavedTabGroupTab tab_before = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab before", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab_after = test::CreateSavedTabGroupTab(
@@ -1351,7 +1351,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,
        ShouldUpdateUniquePositionOnLocalMove) {
-  const std::string kCollaborationId = "collaboration";
+  const CollaborationId kCollaborationId("collaboration");
   ASSERT_TRUE(InitializeBridgeAndModel());
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
@@ -1396,7 +1396,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldUpdatePositionOnRemoteUpdate) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
 
   // Create 3 local tabs to test all the cases of remote updates: insertion to
   // the beginning, to the end and in the middle.
@@ -1482,7 +1482,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
 
   // Create 3 local tabs and update only 2 of them (but without any moves).
   for (size_t i = 0; i < 3; ++i) {
@@ -1535,7 +1535,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
 
   // Create 3 local tabs to have the following states during one update: tab 0
   // is deleted, tab 1 is moved, tab 2 stays intact.
@@ -1588,7 +1588,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldAssignLocalGroupId) {
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   group.AddTabLocally(test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
   model()->AddedLocally(group);
@@ -1627,7 +1627,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   group.AddTabLocally(test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
   model()->AddedLocally(group);
@@ -1718,7 +1718,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   SavedTabGroupTab tab = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0);
   group.AddTabLocally(tab);
@@ -1767,7 +1767,7 @@ TEST_P(SharedTabGroupDataSyncBridgeRemoteUpdateOrderTest,
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
-  group.SetCollaborationId(kCollaborationId.value());
+  group.SetCollaborationId(kCollaborationId);
   model()->AddedLocally(group);
 
   // Generate remote tabs and then shuffle them.

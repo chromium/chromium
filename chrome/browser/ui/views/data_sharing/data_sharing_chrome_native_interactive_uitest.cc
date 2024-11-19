@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  std::string fake_collab_id = "fake_collab_id";
+  tab_groups::CollaborationId fake_collab_id("fake_collab_id");
   group->SetCollaborationId(fake_collab_id);
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
           browser()->profile());
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_service->GetGroup(group_id);
-  group->SetCollaborationId(fake_collab_id);
+  group->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
   tab_group_service->RemoveGroup(group->saved_guid());
   tab_group_service->AddGroup(group.value());
 
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
       tab_group_service->GetGroup(local_group_id);
 
   // Mock up a shared group.
-  group_copy->SetCollaborationId(fake_collab_id);
+  group_copy->SetCollaborationId(tab_groups::CollaborationId(fake_collab_id));
 
   RunTestSequence(
       SaveGroupLeaveEditorBubbleOpen(local_group_id),

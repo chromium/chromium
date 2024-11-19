@@ -94,7 +94,7 @@ class SavedTabGroupModel {
   // the collaboration_id on the group. It is up to callers to ensure the
   // updated group is retrieved from the service before use.
   void MakeTabGroupSharedForTesting(const LocalTabGroupID& local_group_id,
-                                    std::string collaboration_id);
+                                    CollaborationId collaboration_id);
 
   // Pin SavedTabGroup if it's unpinned. Unpin SavedTabGroup if it's pinned.
   void TogglePinState(base::Uuid id);

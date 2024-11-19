@@ -45,7 +45,7 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(
       // people info.
       url = net::AppendQueryParameter(url, kQueryParamFlow, kFlowManage);
       url = net::AppendQueryParameter(url, kQueryParamGroupId,
-                                      saved_group->collaboration_id().value());
+                                      saved_group->collaboration_id()->value());
     } else {
       // Return share flow url which requires a local group id to later
       // associate with the collaboration_id returned by WebUI.

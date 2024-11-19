@@ -308,7 +308,7 @@ NSString* GetTabGroupCollabID(const TabGroup* tab_group,
         sync_service->GetGroup(tab_group->tab_group_id());
     if (saved_group.has_value() &&
         saved_group->collaboration_id().has_value()) {
-      return base::SysUTF8ToNSString(saved_group->collaboration_id().value());
+      return base::SysUTF8ToNSString(saved_group->collaboration_id()->value());
     }
   }
   return nil;

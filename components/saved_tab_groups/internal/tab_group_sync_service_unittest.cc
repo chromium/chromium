@@ -910,19 +910,19 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 3u);
 
   // Create shared tab group 4 for which collaboration ID isn't yet available.
-  std::string collaboration_id_1 = "foo_1";
+  CollaborationId collaboration_id_1("foo_1");
   SavedTabGroup group_4 = test::CreateTestSavedTabGroup();
   group_4.SetCollaborationId(collaboration_id_1);
   ON_CALL(*collaboration_finder_,
-          IsCollaborationAvailable(Eq(collaboration_id_1)))
+          IsCollaborationAvailable(Eq(collaboration_id_1.value())))
       .WillByDefault(testing::Return(false));
 
   // Create shared tab group 5 for which collaboration ID is already available.
-  std::string collaboration_id_2 = "foo_2";
+  CollaborationId collaboration_id_2("foo_2");
   SavedTabGroup group_5 = test::CreateTestSavedTabGroup();
   group_5.SetCollaborationId(collaboration_id_2);
   ON_CALL(*collaboration_finder_,
-          IsCollaborationAvailable(Eq(collaboration_id_2)))
+          IsCollaborationAvailable(Eq(collaboration_id_2.value())))
       .WillByDefault(testing::Return(true));
 
   // Add both the groups to model from sync. Observers won't be notified for
@@ -954,9 +954,9 @@ TEST_F(TabGroupSyncServiceTest, SharedTabGroupAddedWillWaitForCollaboration) {
       .Times(1);
 
   ON_CALL(*collaboration_finder_,
-          IsCollaborationAvailable(Eq(collaboration_id_1)))
+          IsCollaborationAvailable(Eq(collaboration_id_1.value())))
       .WillByDefault(testing::Return(true));
-  tab_group_sync_service_->OnCollaborationAvailable(collaboration_id_1);
+  tab_group_sync_service_->OnCollaborationAvailable(collaboration_id_1.value());
   WaitForPostedTasks();
   EXPECT_EQ(tab_group_sync_service_->GetAllGroups().size(), 5u);
 }
@@ -1383,7 +1383,7 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
   ASSERT_TRUE(shared_group.has_value());
   EXPECT_NE(shared_group->saved_guid(), group_1_.saved_guid());
   EXPECT_TRUE(shared_group->saved_guid().is_valid());
-  EXPECT_EQ(shared_group->collaboration_id(), "collaboration");
+  EXPECT_EQ(shared_group->collaboration_id(), CollaborationId("collaboration"));
   EXPECT_EQ(shared_group->originating_saved_tab_group_guid(),
             originating_group->saved_guid());
   EXPECT_EQ(shared_group->local_group_id(), local_group_id_1_);
@@ -1606,8 +1606,8 @@ TEST_F(EmptyTabGroupSyncServiceTest,
 
   tab_group_sync_service_->SetIsInitializedForTesting(false);
 
-  std::string collaboration_id_1 = "foo";
-  std::string collaboration_id_2 = "bar";
+  CollaborationId collaboration_id_1("foo");
+  CollaborationId collaboration_id_2("bar");
 
   SavedTabGroup saved_tab_group(test::CreateTestSavedTabGroup());
 
