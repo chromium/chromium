@@ -4815,6 +4815,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_TITLE" desc="Title for the Send Tab To Self modal dialog that chooses the device to which the current tab will be sent. [iOS only]">
         Send webpage
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_LONG_DESCRIPTION" desc="The description for the Set Up List item that encourages users to select the position of their address bar.">
+        Pick the position of your address bar that works best for you.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_SHORT_DESCRIPTION" desc="The description for the Set Up List item that encourages users to select the position of their address bar (used when the Set Up List is in compact mode).">
+        Select the position that works best for you.
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_ADDRESS_BAR_TITLE" desc="The title of the Set Up List item that encourages users to select the position of their address bar.">
+        Choose Address Bar Position
+      </message>
+      <message name="IDS_IOS_SET_UP_LIST_DOCK_CHROME_LONG_DESCRIPTION" desc="Description for the Set Up List item that encourages the user to add Chrome to their iOS dock.">
+        Get faster access from your Home Screen.
+      </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure you're saving your current password for this site.
       </message>
