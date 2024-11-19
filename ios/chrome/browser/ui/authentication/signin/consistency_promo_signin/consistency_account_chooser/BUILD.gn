@@ -21,6 +21,7 @@ source_set("consistency_account_chooser") {
     "identity_item_configurator.mm",
   ]
   deps = [
+    "//components/signin/public/identity_manager/objc",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",

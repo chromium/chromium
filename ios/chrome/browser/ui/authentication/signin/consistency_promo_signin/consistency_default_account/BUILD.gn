@@ -16,6 +16,7 @@ source_set("consistency_default_account") {
   ]
   deps = [
     "//components/prefs",
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",

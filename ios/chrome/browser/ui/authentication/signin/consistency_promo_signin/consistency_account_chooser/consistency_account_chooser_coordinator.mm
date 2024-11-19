@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_view_controller.h"
@@ -36,6 +37,8 @@
       base::UserMetricsAction("Signin_BottomSheet_IdentityChooser_Opened"));
   self.mediator = [[ConsistencyAccountChooserMediator alloc]
       initWithSelectedIdentity:selectedIdentity
+               identityManager:IdentityManagerFactory::GetForProfile(
+                                   self.browser->GetProfile())
          accountManagerService:ChromeAccountManagerServiceFactory::
                                    GetForProfile(self.browser->GetProfile())];
 
@@ -76,8 +79,9 @@
       ChromeAccountManagerServiceFactory::GetForProfile(
           self.browser->GetProfile());
 
-  id<SystemIdentity> identity = accountManagerService->GetIdentityWithGaiaID(
-      base::SysNSStringToUTF8(gaiaID));
+  id<SystemIdentity> identity =
+      accountManagerService->GetIdentityOnDeviceWithGaiaID(
+          base::SysNSStringToUTF8(gaiaID));
   DCHECK(identity);
   self.mediator.selectedIdentity = identity;
   [self.delegate consistencyAccountChooserCoordinatorIdentitySelected:self];

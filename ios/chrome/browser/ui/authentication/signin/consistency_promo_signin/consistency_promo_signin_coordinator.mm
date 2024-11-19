@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_presentation_controller.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_slide_transition_animator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -72,14 +74,19 @@
                               browser:(Browser*)browser
                           accessPoint:(signin_metrics::AccessPoint)accessPoint {
   ProfileIOS* profile = browser->GetProfile();
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  if (!accountManagerService->HasIdentities() &&
-      accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
-    RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
-        accessPoint);
-    return nil;
+  if (accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(profile);
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
+    bool hasIdentities = [signin::GetIdentitiesOnDevice(
+                             identityManager, accountManagerService) count] > 0;
+    if (!hasIdentities) {
+      RecordConsistencyPromoUserAction(
+          signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
+          accessPoint);
+      return nil;
+    }
   }
   return [[ConsistencyPromoSigninCoordinator alloc]
       initWithBaseViewController:viewController
@@ -290,6 +297,8 @@
 
 // Starts the sign-in flow.
 - (void)startSignIn {
+  // TODO(crbug.com/375605482): If `self.selectedIdentity` is assigned to a
+  // different profile, switch to that profile instead of signing in.
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.selectedIdentity
