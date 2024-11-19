@@ -183,12 +183,19 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
       existing_credit_card =
           payments_data_manager().GetCreditCardByGUID(card.guid());
       break;
-    case FormDataImporter::CreditCardImportType::kServerCard:
     case FormDataImporter::CreditCardImportType::kDuplicateLocalServerCard:
       // Payments autofill shows the server card suggestion in the duplicate
       // case. Thus, set `exsting_credit_card` in the same way server cards are
       // set.
-      if (is_credit_card_upstream_enabled) {
+    case FormDataImporter::CreditCardImportType::kServerCard:
+      // Offering CVC save for card info retrieval cards would be a bad user
+      // experience because users would not be able to use the saved CVC, since
+      // the card has a dynamic CVC that would be retrieved from the Payments
+      // servers.
+      if (is_credit_card_upstream_enabled &&
+          card.card_info_retrieval_enrollment_state() !=
+              CreditCard::CardInfoRetrievalEnrollmentState::
+                  kRetrievalEnrolled) {
         existing_credit_card =
             payments_data_manager().GetCreditCardByInstrumentId(
                 card.instrument_id());

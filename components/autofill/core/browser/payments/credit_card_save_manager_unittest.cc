@@ -5676,6 +5676,23 @@ TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveWithSameCvc) {
       card, CreditCardImportType(), IsCreditCardUpstreamEnabled()));
 }
 
+// Tests that we should not offer CVC save for card info retrieval enrolled
+// cards.
+TEST_P(SaveCvcTest, ShouldNotOfferCvcSaveForCardInfoRetrievalEnrolled) {
+  if (CreditCardImportType() ==
+      FormDataImporter::CreditCardImportType::kLocalCard) {
+    GTEST_SKIP() << "This test should not run on local cards.";
+  }
+  CreditCard server_card = test::WithCvc(test::GetMaskedServerCard(), u"123");
+  server_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
+
+  // We should not offer CVC save for card info retrieval enrolled cards.
+  EXPECT_FALSE(credit_card_save_manager_->ShouldOfferCvcSave(
+      server_card, CreditCardImportType(), IsCreditCardUpstreamEnabled()));
+}
+
 // Tests that we should OfferCvcLocalSave with expected input.
 TEST_P(SaveCvcTest, ShouldOfferCvcLocalSave) {
   prefs::SetPaymentCvcStorage(autofill_client_.GetPrefs(),
