@@ -20,7 +20,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   NSString* formatted_string = [NSString stringWithFormat:@"%s", str.c_str()];
   NSURL* url = [NSURL URLWithString:formatted_string];
   [ChromeAppStartupParameters startupParametersWithURL:url
-                                     sourceApplication:nil];
+                                     sourceApplication:nil
+                                  forceApplicationMode:NO];
 
   return 0;
 }

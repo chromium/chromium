@@ -40,15 +40,26 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                 initStage:(ProfileInitStage)initStage {
   NSURL* URL = options.URL;
   NSString* sourceApplication = options.sourceApplication;
-
-  ChromeAppStartupParameters* params =
-      [ChromeAppStartupParameters startupParametersWithURL:URL
-                                         sourceApplication:sourceApplication];
+  ChromeAppStartupParameters* params;
 
   if (IsIncognitoModeDisabled(prefService)) {
+    params =
+        [ChromeAppStartupParameters startupParametersWithURL:URL
+                                           sourceApplication:sourceApplication
+                                        forceApplicationMode:YES];
     params.applicationMode = ApplicationModeForTabOpening::NORMAL;
+
   } else if (IsIncognitoModeForced(prefService)) {
+    params =
+        [ChromeAppStartupParameters startupParametersWithURL:URL
+                                           sourceApplication:sourceApplication
+                                        forceApplicationMode:YES];
     params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+  } else {
+    params =
+        [ChromeAppStartupParameters startupParametersWithURL:URL
+                                           sourceApplication:sourceApplication
+                                        forceApplicationMode:NO];
   }
 
   MobileSessionCallerApp callerApp = [params callerApp];
