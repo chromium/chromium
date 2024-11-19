@@ -225,7 +225,7 @@ chrome.test.loadScript(scriptUrl).then(function() {
 
 }  // namespace
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class AutomationApiTest : public ExtensionApiTest {
  public:

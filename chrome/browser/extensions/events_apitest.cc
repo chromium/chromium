@@ -42,7 +42,7 @@ namespace extensions {
 
 namespace {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Events) {
   ASSERT_TRUE(RunExtensionTest("events")) << message_;

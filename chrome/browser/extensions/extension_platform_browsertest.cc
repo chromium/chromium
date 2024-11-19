@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,15 +18,26 @@
 namespace extensions {
 namespace {
 
+using ContextType = extensions::browser_test_util::ContextType;
+
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
+}
+
+bool IsMV3AllowedContextType(ContextType context_type) {
+  return context_type == ContextType::kServiceWorker ||
+         context_type == ContextType::kFromManifest ||
+         context_type == ContextType::kNone;
 }
 
 }  // namespace
 
 ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
-    : context_type_(context_type) {}
+    : context_type_(context_type) {
+  EXPECT_TRUE(IsMV3AllowedContextType(context_type_));
+  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+}
 
 ExtensionPlatformBrowserTest::~ExtensionPlatformBrowserTest() = default;
 
@@ -59,6 +71,13 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
     const LoadOptions& options) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
+  base::FilePath extension_path;
+  if (!extensions::browser_test_util::ModifyExtensionIfNeeded(
+          options, context_type_, GetTestPreCount(), temp_dir_.GetPath(), path,
+          &extension_path)) {
+    return nullptr;
+  }
+
   PlatformTestExtensionLoader loader(profile());
   loader.set_allow_incognito_access(options.allow_in_incognito);
   loader.set_allow_file_access(options.allow_file_access);
@@ -73,7 +92,8 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
   // wait_for_registration_stored option.
   CHECK(!options.wait_for_registration_stored);
 
-  scoped_refptr<const Extension> extension = loader.LoadExtension(path);
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(extension_path);
   last_loaded_extension_id_ = extension->id();
   return extension.get();
 }

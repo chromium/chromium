@@ -30,7 +30,7 @@ namespace {
 // TODO(crbug.com/40909770): Create test cases where we test "failures" like
 // events not acking.
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 using EventMetricsBrowserTest = ExtensionBrowserTest;
 using service_worker_test_utils::TestServiceWorkerTaskQueueObserver;
 

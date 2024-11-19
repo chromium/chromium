@@ -30,7 +30,7 @@ include_rules = [
   "+chrome/browser/extensions/component_loader.h",
   "+chrome/browser/extensions/error_console",
   "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/extensions/extension_browser_test_util.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/prefs",

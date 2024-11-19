@@ -61,7 +61,7 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionsPushMessagingNotificationManagerTest
     : public ExtensionServiceTestWithInstall,

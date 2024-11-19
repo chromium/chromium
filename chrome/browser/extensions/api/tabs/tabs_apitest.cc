@@ -33,7 +33,7 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:

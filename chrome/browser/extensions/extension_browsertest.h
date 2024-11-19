@@ -16,6 +16,7 @@
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -57,27 +58,8 @@ class WindowController;
 class ExtensionBrowserTest : public InProcessBrowserTest,
                              public ExtensionRegistryObserver {
  public:
-  // Different types of extension's lazy background contexts used in some tests.
-  enum class ContextType {
-    // TODO(crbug.com:/1241220): Get rid of this value when we can use
-    // std::optional in the LoadOptions struct.
-    // No specific context type.
-    kNone,
-    // A non-persistent background page/JS based extension.
-    kEventPage,
-    // A Service Worker based extension.
-    kServiceWorker,
-    // A Service Worker based extension that uses MV2.
-    kServiceWorkerMV2,
-    // An extension with a persistent background page.
-    kPersistentBackground,
-    // Use the value from the manifest. This is used when the test
-    // has been parameterized but the particular extension should
-    // be loaded without using the parameterized type. Typically,
-    // this is used when a test loads another extension that is
-    // not parameterized.
-    kFromManifest,
-  };
+  using ContextType = extensions::browser_test_util::ContextType;
+  using LoadOptions = extensions::browser_test_util::LoadOptions;
 
   ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
   ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
@@ -87,51 +69,11 @@ class ExtensionBrowserTest : public InProcessBrowserTest,
                          const Extension* extension) override;
   void OnShutdown(ExtensionRegistry* registry) override;
 
-  static bool IsServiceWorkerContext(ContextType context_type) {
-    return context_type == ContextType::kServiceWorker ||
-           context_type == ContextType::kServiceWorkerMV2;
-  }
-
   bool IsContextTypeForServiceWorker() const {
     return IsServiceWorkerContext(context_type_);
   }
 
  protected:
-  struct LoadOptions {
-    // Allows the extension to run in incognito mode.
-    bool allow_in_incognito = false;
-
-    // Allows file access for the extension.
-    bool allow_file_access = false;
-
-    // Doesn't fail when the loaded manifest has warnings (should only be used
-    // when testing deprecated features).
-    bool ignore_manifest_warnings = false;
-
-    // Waits for extension renderers to fully load.
-    bool wait_for_renderers = true;
-
-    // An optional install param.
-    const char* install_param = nullptr;
-
-    // If this is a Service Worker-based extension, wait for the
-    // Service Worker's registration to be stored before returning.
-    bool wait_for_registration_stored = false;
-
-    // Loads the extension with location COMPONENT.
-    bool load_as_component = false;
-
-    // Changes the "manifest_version" manifest key to 3. Note as of now, this
-    // doesn't make any other changes to convert the extension to MV3 other than
-    // changing the integer value in the manifest.
-    bool load_as_manifest_version_3 = false;
-
-    // Used to force loading the extension with a particular background type.
-    // Currently this only support loading an extension as using a service
-    // worker.
-    ContextType context_type = ContextType::kNone;
-  };
-
   explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
 
@@ -391,12 +333,6 @@ class ExtensionBrowserTest : public InProcessBrowserTest,
   const ContextType context_type_;
 
  private:
-  // Modifies extension at `input_path` as dictated by `options`. On success,
-  // returns true and populates `out_path`. On failure, false is returned.
-  bool ModifyExtensionIfNeeded(const LoadOptions& options,
-                               const base::FilePath& input_path,
-                               base::FilePath* out_path);
-
   // Temporary directory for testing.
   base::ScopedTempDir temp_dir_;
 

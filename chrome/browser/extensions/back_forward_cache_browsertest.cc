@@ -35,7 +35,7 @@
 
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 struct TestParams {
   bool enable_disconnect_message_port_on_bfcache;

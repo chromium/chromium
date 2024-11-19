@@ -44,3 +44,16 @@ void AndroidBrowserTest::PostRunTestOnMainThread() {
   // Run any shutdown events from closing tabs.
   content::RunAllPendingInMessageLoop();
 }
+
+// static
+size_t AndroidBrowserTest::GetTestPreCount() {
+  constexpr std::string_view kPreTestPrefix = "PRE_";
+  std::string_view test_name =
+      testing::UnitTest::GetInstance()->current_test_info()->name();
+  size_t count = 0;
+  while (base::StartsWith(test_name, kPreTestPrefix)) {
+    ++count;
+    test_name = test_name.substr(kPreTestPrefix.size());
+  }
+  return count;
+}

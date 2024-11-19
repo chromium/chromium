@@ -312,7 +312,7 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
   base::RunLoop loop_runner_;
 };
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class TtsApiTest : public ExtensionApiTest,
                    public testing::WithParamInterface<ContextType> {

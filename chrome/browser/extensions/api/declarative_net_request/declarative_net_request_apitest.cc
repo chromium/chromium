@@ -24,7 +24,7 @@
 
 namespace {
 
-using ContextType = extensions::ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 using extensions::ScopedCurrentChannel;
 
 class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
