@@ -612,6 +612,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
   Migration_RunTypedTest<kMacMethods>("accessibility-disclosure-level.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityColumnCount) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-column-count.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityRowCount) {
+  Migration_RunTypedTest<kMacMethods>("accessibility-row-count.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityColumnIndexRange) {
   Migration_RunTypedTest<kMacMethods>("accessibility-column-index-range.html");

@@ -273,12 +273,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   dispatch_once(&onceToken, ^{
     dict = @{
+      @"accessibilityColumnCount" : NSAccessibilityColumnCountAttribute,
       @"accessibilityColumnIndexRange" :
           NSAccessibilityColumnIndexRangeAttribute,
       @"accessibilityDisclosedByRow" : NSAccessibilityDisclosedByRowAttribute,
       @"accessibilityDisclosedRows" : NSAccessibilityDisclosedRowsAttribute,
       @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
       @"accessibilityIndex" : NSAccessibilityIndexAttribute,
+      @"accessibilityRowCount" : NSAccessibilityRowCountAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
@@ -2629,6 +2631,44 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     }
   }
   return [ret count] ? ret : nil;
+}
+
+- (NSInteger)accessibilityColumnCount {
+  if (![self instanceActive]) {
+    return NSNotFound;
+  }
+
+  if (!ui::IsTableLike(_node->GetRole())) {
+    return NSNotFound;
+  }
+
+  ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
+  DCHECK(delegate);
+  std::optional<int> count = delegate->GetTableColCount();
+  if (count.has_value()) {
+    return *count;
+  }
+
+  return -1;
+}
+
+- (NSInteger)accessibilityRowCount {
+  if (![self instanceActive]) {
+    return NSNotFound;
+  }
+
+  if (!ui::IsTableLike(_node->GetRole())) {
+    return NSNotFound;
+  }
+
+  ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
+  DCHECK(delegate);
+  std::optional<int> count = delegate->GetTableRowCount();
+  if (count.has_value()) {
+    return *count;
+  }
+
+  return -1;
 }
 
 - (NSArray*)accessibilityRows {

@@ -385,8 +385,9 @@ TEST_P(AXPlatformNodeCocoaTest, TestCocoaActionListLayout) {
 // Tests that the correct methods are enabled based on migration mode.
 TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* array = @[
-    @"accessibilityDisclosedByRow", @"accessibilityDisclosedRows",
-    @"accessibilityDisclosureLevel", @"accessibilityIndex",
+    @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
+    @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
+    @"accessibilityIndex", @"accessibilityRowCount",
     @"accessibilitySortDirection", @"isAccessibilityDisclosed",
     @"isAccessibilityExpanded", @"isAccessibilityFocused"
   ];
@@ -703,6 +704,31 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityIndexOnRowsAndColumns) {
   EXPECT_TRUE(
       [[child accessibilityRole] isEqualToString:NSAccessibilityGroupRole]);
   EXPECT_EQ([child accessibilityIndex], NSNotFound);
+}
+
+// `accessibilityRowCount` and `accessibilityColumnCount` on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowAndColumnCount) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+    ++++++4 kCell
+    ++++5 kRow
+    ++++++6 kCell
+    ++++++7 kCell
+    ++++8 kRow
+    ++++++9 kCell
+    ++++++10 kCell
+  )HTML"));
+  Init(update);
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  EXPECT_EQ([table accessibilityColumnCount], 2U);
+  EXPECT_EQ([table accessibilityRowCount], 3U);
+
+  // These attributes are only supported on the table/grid.
+  AXPlatformNodeCocoa* row = GetCocoaNode(2);
+  EXPECT_EQ([row accessibilityColumnCount], NSNotFound);
+  EXPECT_EQ([row accessibilityRowCount], NSNotFound);
 }
 
 }  // namespace ui
