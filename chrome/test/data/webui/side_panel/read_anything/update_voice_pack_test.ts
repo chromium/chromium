@@ -383,7 +383,6 @@ suite('UpdateVoicePack', () => {
       'with flag switches to newly available voices if it\'s for the current language',
       async () => {
         const lang = 'en-us';
-        chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = lang;
         app.enabledLangs = [lang];
         chrome.readingMode.getStoredVoice = () => '';
@@ -401,7 +400,6 @@ suite('UpdateVoicePack', () => {
       'with flag does not switch to newly available voices if it\'s not for the current language',
       () => {
         const installedLang = 'en-us';
-        chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = 'pt-br';
         app.enabledLangs = [chrome.readingMode.baseLanguageForSpeech];
         const currentVoice = createSpeechSynthesisVoice({

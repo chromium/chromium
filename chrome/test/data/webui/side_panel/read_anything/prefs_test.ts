@@ -164,6 +164,7 @@ suite('PrefsTest', () => {
 
     suite('populates enabled languages', () => {
       const langs = ['si', 'km', 'th'];
+      const locales = ['si-lk', 'km-kh', 'th-th'];
 
       setup(() => {
         createAndSetVoices(app, speechSynthesis, [
@@ -178,7 +179,7 @@ suite('PrefsTest', () => {
 
         app.restoreSettingsFromPrefs();
 
-        assertArrayEquals(app.enabledLangs, langs);
+        assertArrayEquals(app.enabledLangs, langs.concat(locales));
       });
 
       test('with browser lang', () => {
@@ -186,7 +187,7 @@ suite('PrefsTest', () => {
 
         app.restoreSettingsFromPrefs();
 
-        assertArrayEquals(app.enabledLangs, [langs[1]!]);
+        assertArrayEquals(app.enabledLangs, [langs[1], locales[1]]);
       });
     });
 

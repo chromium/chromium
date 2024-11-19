@@ -5106,12 +5106,6 @@ const char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
 const char kReadAnythingReadAloudDescription[] =
     "Enables the experimental Read Aloud feature in Reading Mode.";
 
-const char kReadAloudAutoVoiceSwitchingName[] =
-    "Reading Mode Automatic Voice Switching";
-const char kReadAloudAutoVoiceSwitchingDescription[] =
-    "Enables the experimental Reading Mode feature that automatically chooses "
-    "the best voice in Read Aloud using page language.";
-
 const char kReadAnythingReadAloudPhraseHighlightingName[] =
     "Reading Mode Read Aloud Phrase Highlighting";
 const char kReadAnythingReadAloudPhraseHighlightingDescription[] =

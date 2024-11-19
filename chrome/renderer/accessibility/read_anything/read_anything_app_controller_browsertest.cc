@@ -750,8 +750,7 @@ TEST_F(ReadAnythingAppControllerTest, OnLanguagePrefChange) {
   ASSERT_FALSE(base::Contains(EnabledLanguages(), disabled_lang));
 }
 
-TEST_F(ReadAnythingAppControllerTest,
-       GetStoredVoice_NoAutoSwitching_ReturnsLatestVoice) {
+TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_ReturnsLatestVoice) {
   std::string current_lang = "it-IT";
   std::string current_voice = "Italian voice 3";
   std::string previous_voice = "Dutch voice 1";
@@ -764,9 +763,8 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(GetStoredVoice(), current_voice);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ReadAnythingAppControllerTest,
-       GetStoredVoice_NoAutoSwitching_ReturnsLatestVoiceRegardlessOfLang) {
+       GetStoredVoice_ReturnsPreferredVoiceForLang) {
   std::string current_lang = "it-IT";
   std::string other_lang = "de-DE";
   std::string current_voice = "Italian voice 3";
@@ -777,9 +775,12 @@ TEST_F(ReadAnythingAppControllerTest,
   OnVoiceChange(current_voice, other_lang);
 
   EXPECT_CALL(page_handler_, OnVoiceChange).Times(2);
-  ASSERT_EQ(GetStoredVoice(), current_voice);
+
+  // Even though the current language is Italian, the preferred voice for
+  // Italian was selected as the Dutch voice, so this is the voice that should
+  // be used.
+  ASSERT_EQ(GetStoredVoice(), previous_voice);
 }
-#endif  // !IS_CHROMEOS_ASH
 
 TEST_F(ReadAnythingAppControllerTest, GetStoredVoice_NoVoices_ReturnsEmpty) {
   scoped_feature_list_.InitWithFeatures({features::kReadAnythingReadAloud}, {});

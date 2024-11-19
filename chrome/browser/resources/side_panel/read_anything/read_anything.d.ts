@@ -65,9 +65,6 @@ declare namespace chrome {
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
-    // Whether the automatic voice switching feature flag is enabled.
-    let isAutoVoiceSwitchingEnabled: boolean;
-
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 

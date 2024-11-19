@@ -221,7 +221,6 @@ class ReadAnythingAppController
   bool IsGoogleDocs() const;
   bool IsReadAloudEnabled() const;
   bool IsChromeOsAsh() const;
-  bool IsAutoVoiceSwitchingEnabled() const;
   bool IsPhraseHighlightingEnabled() const;
   void OnLetterSpacingChange(int value);
   void OnLineSpacingChange(int value);

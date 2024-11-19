@@ -2389,10 +2389,6 @@ export class AppElement extends AppElementBase {
   }
 
   private autoSwitchVoice_(lang: string) {
-    if (!chrome.readingMode.isAutoVoiceSwitchingEnabled) {
-      return;
-    }
-
     // Only enable this language if it has available voices and is the current
     // language. Otherwise switch to a default voice if nothing is selected.
     const availableLang =

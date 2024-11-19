@@ -854,8 +854,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
       .SetProperty("isChromeOsAsh", &ReadAnythingAppController::IsChromeOsAsh)
-      .SetProperty("isAutoVoiceSwitchingEnabled",
-                   &ReadAnythingAppController::IsAutoVoiceSwitchingEnabled)
       .SetProperty("baseLanguageForSpeech",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetProperty("requiresDistillation",
@@ -1024,15 +1022,9 @@ double ReadAnythingAppController::SpeechRate() const {
 }
 
 std::string ReadAnythingAppController::GetStoredVoice() const {
-  if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-    std::string lang = model_.base_language_code();
-    if (read_aloud_model_.voices().contains(lang)) {
-      return *read_aloud_model_.voices().FindString(lang);
-    }
-  } else {
-    if (!read_aloud_model_.voices().empty()) {
-      return read_aloud_model_.voices().begin()->second.GetString();
-    }
+  std::string lang = model_.base_language_code();
+  if (read_aloud_model_.voices().contains(lang)) {
+    return *read_aloud_model_.voices().FindString(lang);
   }
 
   return string_constants::kReadAnythingPlaceholderVoiceName;
@@ -1271,10 +1263,6 @@ bool ReadAnythingAppController::IsChromeOsAsh() const {
 #else
   return false;
 #endif
-}
-
-bool ReadAnythingAppController::IsAutoVoiceSwitchingEnabled() const {
-  return features::IsReadAloudAutoVoiceSwitchingEnabled();
 }
 
 bool ReadAnythingAppController::IsGoogleDocs() const {
