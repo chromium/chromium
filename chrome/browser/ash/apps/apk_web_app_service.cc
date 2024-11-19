@@ -266,8 +266,15 @@ std::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
   if (!web_app_provider) {
     return std::nullopt;
   }
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   std::optional<webapps::AppId> app_id =
-      web_app_provider->registrar_unsafe().FindAppWithUrlInScope(url);
+      web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          url,
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          });
   if (!app_id) {
     return std::nullopt;
   }
