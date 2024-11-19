@@ -27,21 +27,28 @@ namespace web_app {
 
 class IwaUpdateDiscoveryTaskParams {
  public:
-  IwaUpdateDiscoveryTaskParams(const GURL& update_manifest_url,
-                               const UpdateChannel& update_channel,
-                               const IsolatedWebAppUrlInfo& url_info,
-                               bool dev_mode);
+  IwaUpdateDiscoveryTaskParams(
+      const GURL& update_manifest_url,
+      const UpdateChannel& update_channel,
+      const std::optional<base::Version>& pinned_version,
+      const IsolatedWebAppUrlInfo& url_info,
+      bool dev_mode);
 
   IwaUpdateDiscoveryTaskParams(IwaUpdateDiscoveryTaskParams&& other);
+  ~IwaUpdateDiscoveryTaskParams();
 
   const GURL& update_manifest_url() const { return update_manifest_url_; }
   const UpdateChannel& update_channel() const { return update_channel_; }
+  const std::optional<base::Version>& pinned_version() const {
+    return pinned_version_;
+  }
   const IsolatedWebAppUrlInfo& url_info() const { return url_info_; }
   bool dev_mode() const { return dev_mode_; }
 
  private:
   GURL update_manifest_url_;
   UpdateChannel update_channel_;
+  std::optional<base::Version> pinned_version_;
   IsolatedWebAppUrlInfo url_info_;
   bool dev_mode_;
 };

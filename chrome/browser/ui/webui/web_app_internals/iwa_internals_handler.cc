@@ -163,11 +163,15 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
 
     // Some older installs might not have the `update_channel` field set -- in
     // this case we fall back to the `default` channel.
+    // For now, we do not enable setting pinned_version field via iwa internals.
+    // By not setting `pinned_version` argument, discovery task defaults to
+    // searching for the latest available version on current update channel.
     provider_->iwa_update_manager().DiscoverUpdatesForApp(
         url_info, *isolation_data.update_manifest_url(),
         /*update_channel=*/
         isolation_data.update_channel().value_or(
             UpdateChannel::default_channel()),
+        /*pinned_version=*/std::nullopt,
         /*dev_mode=*/true);
   }
 
