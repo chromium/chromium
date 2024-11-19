@@ -117,8 +117,9 @@ class CAPTURE_EXPORT FileVideoCaptureDevice : public VideoCaptureDevice {
   // The system time when we receive the first frame.
   base::TimeTicks first_ref_time_;
 
-  // Whether GpuMemoryBuffer-based video capture buffer is enabled or not.
-  bool video_capture_use_gmb_ = false;
+  // Whether GpuMemoryBuffer or MappableSI based video capture buffer is enabled
+  // or not.
+  bool video_capture_use_mappable_buffer_ = false;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 
   // Guards the below variables from concurrent access between methods running
