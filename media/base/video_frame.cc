@@ -620,9 +620,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    int32_t y_stride,
-    int32_t u_stride,
-    int32_t v_stride,
+    size_t y_stride,
+    size_t u_stride,
+    size_t v_stride,
     const uint8_t* y_data,
     const uint8_t* u_data,
     const uint8_t* v_data,
@@ -698,10 +698,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    int32_t y_stride,
-    int32_t u_stride,
-    int32_t v_stride,
-    int32_t a_stride,
+    size_t y_stride,
+    size_t u_stride,
+    size_t v_stride,
+    size_t a_stride,
     const uint8_t* y_data,
     const uint8_t* u_data,
     const uint8_t* v_data,
@@ -745,9 +745,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    int32_t y_stride,
-    int32_t u_stride,
-    int32_t v_stride,
+    size_t y_stride,
+    size_t u_stride,
+    size_t v_stride,
     base::span<const uint8_t> y_data,
     base::span<const uint8_t> u_data,
     base::span<const uint8_t> v_data,
@@ -786,8 +786,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    int32_t y_stride,
-    int32_t uv_stride,
+    size_t y_stride,
+    size_t uv_stride,
     const uint8_t* y_data,
     const uint8_t* uv_data,
     base::TimeDelta timestamp) {
@@ -828,10 +828,10 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    int32_t y_stride,
-    int32_t u_stride,
-    int32_t v_stride,
-    int32_t a_stride,
+    size_t y_stride,
+    size_t u_stride,
+    size_t v_stride,
+    size_t a_stride,
     base::span<const uint8_t> y_data,
     base::span<const uint8_t> u_data,
     base::span<const uint8_t> v_data,
@@ -973,7 +973,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   const size_t num_planes = IOSurfaceGetPlaneCount(io_surface.get());
   const gfx::Size size(IOSurfaceGetWidth(io_surface.get()),
                        IOSurfaceGetHeight(io_surface.get()));
-  std::vector<int32_t> strides;
+  std::vector<size_t> strides;
   for (size_t i = 0; i < num_planes; ++i)
     strides.push_back(IOSurfaceGetBytesPerRowOfPlane(io_surface.get(), i));
   std::optional<VideoFrameLayout> layout =
@@ -1283,9 +1283,9 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
 }
 
 // static
-std::vector<int32_t> VideoFrame::ComputeStrides(VideoPixelFormat format,
-                                                const gfx::Size& coded_size) {
-  std::vector<int32_t> strides;
+std::vector<size_t> VideoFrame::ComputeStrides(VideoPixelFormat format,
+                                               const gfx::Size& coded_size) {
+  std::vector<size_t> strides;
   const size_t num_planes = NumPlanes(format);
   if (num_planes == 1) {
     strides.push_back(RowBytes(0, format, coded_size.width()));
@@ -1966,7 +1966,7 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize(
     const size_t height =
         base::bits::AlignUp(Rows(plane, format, layout.coded_size().height()),
                             kFrameAddressAlignment);
-    const size_t width = std::abs(layout.planes()[plane].stride);
+    const size_t width = layout.planes()[plane].stride;
     plane_size[plane] = width * height;
   }
 
@@ -1977,8 +1977,7 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize(
     // put_h264_chroma_mc4_ssse3().
     DCHECK(IsValidPlane(format, Plane::kU));
     DCHECK(Plane::kU < num_planes);
-    plane_size.back() +=
-        std::abs(layout.planes()[Plane::kU].stride) + kFrameSizePadding;
+    plane_size.back() += layout.planes()[Plane::kU].stride + kFrameSizePadding;
   }
 
   // If a plane size from layout is larger than what was calculated above,

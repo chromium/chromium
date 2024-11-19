@@ -101,8 +101,7 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
   uint32_t plane_offsets_[cdm::kMaxPlanes];
 
   // Array of strides for each plane, typically greater or equal to the width
-  // of the surface divided by the horizontal sampling period.  Note that
-  // strides can be negative.
+  // of the surface divided by the horizontal sampling period.
   uint32_t strides_[cdm::kMaxPlanes];
 
   // Presentation timestamp in microseconds.

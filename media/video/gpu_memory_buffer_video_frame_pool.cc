@@ -387,7 +387,8 @@ void CopyRowsToP010Buffer(int first_row,
   DCHECK_NE(dest_stride_uv, 0);
   DCHECK_EQ(0, first_row % 2);
   DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
-  DCHECK_LE(width * 2, source_frame->stride(VideoFrame::Plane::kY));
+  DCHECK_LE(static_cast<size_t>(width * 2),
+            source_frame->stride(VideoFrame::Plane::kY));
 
   const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
       source_frame->visible_data(VideoFrame::Plane::kY) +
@@ -475,7 +476,8 @@ void CopyRowsToNV12Buffer(int first_row,
         dest_uv + first_row / 2 * dest_stride_uv, dest_stride_uv,
         bytes_per_row_y, rows_y);
   } else {
-    DCHECK_LE(width * 2, source_frame->stride(VideoFrame::Plane::kY));
+    DCHECK_LE(static_cast<size_t>(width * 2),
+              source_frame->stride(VideoFrame::Plane::kY));
 
     const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
         source_frame->visible_data(VideoFrame::Plane::kY) +

@@ -113,7 +113,7 @@ TEST_F(VideoFrameStructTraitsTest, MappableVideoFrame) {
         frame = media::VideoFrame::CreateFrame(format, kCodedSize, kVisibleRect,
                                                kNaturalSize, kTimestamp);
       } else {
-        std::vector<int32_t> strides =
+        std::vector<size_t> strides =
             VideoFrame::ComputeStrides(format, kCodedSize);
         size_t aggregate_size = 0;
         size_t sizes[3] = {};
@@ -172,10 +172,7 @@ TEST_F(VideoFrameStructTraitsTest, InterleavedPlanes) {
 
   scoped_refptr<media::VideoFrame> frame;
 
-  std::vector<size_t> strides(media::VideoFrameLayout::NumPlanes(format));
-  std::ranges::transform(
-      VideoFrame::ComputeStrides(format, kCodedSize), strides.begin(),
-      &base::checked_cast<size_t, base::internal::CheckOnFailure, int32_t>);
+  std::vector<size_t> strides = VideoFrame::ComputeStrides(format, kCodedSize);
   ASSERT_EQ(strides[1], strides[2]);
 
   size_t aggregate_size = 0;

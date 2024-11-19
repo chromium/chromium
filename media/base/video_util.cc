@@ -835,7 +835,7 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
 
   auto coded_size = gfx::Size(sk_image->width(), sk_image->height());
   auto layout = VideoFrameLayout::CreateWithStrides(
-      format, coded_size, std::vector<int32_t>(1, pm.rowBytes()));
+      format, coded_size, std::vector<size_t>(1, pm.rowBytes()));
   if (!layout)
     return nullptr;
 
