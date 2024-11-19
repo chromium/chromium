@@ -1,0 +1,102 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++table
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++columnHeader name='Animal'
+++++++++++++++staticText name='Animal'
+++++++++++++++++inlineTextBox name='Animal'
+++++++++++++columnHeader name='Furry?'
+++++++++++++++staticText name='Furry?'
+++++++++++++++++inlineTextBox name='Furry?'
+++++++++++row
+++++++++++++cell name='Cats'
+++++++++++++++radioButton setSize=3 posInSet=1 checkedState=false
+++++++++++++++staticText name='Cats'
+++++++++++++++++inlineTextBox name='Cats'
+++++++++++++cell name='Yes'
+++++++++++++++staticText name='Yes'
+++++++++++++++++inlineTextBox name='Yes'
+++++++++++row
+++++++++++++cell name='Birds'
+++++++++++++++radioButton setSize=3 posInSet=2 checkedState=false
+++++++++++++++staticText name='Birds'
+++++++++++++++++inlineTextBox name='Birds'
+++++++++++++cell name='Sometimes'
+++++++++++++++staticText name='Sometimes'
+++++++++++++++++inlineTextBox name='Sometimes'
+++++++++++row
+++++++++++++cell name='Dogs'
+++++++++++++++radioButton setSize=3 posInSet=3 checkedState=false
+++++++++++++++staticText name='Dogs'
+++++++++++++++++inlineTextBox name='Dogs'
+++++++++++++cell name='No'
+++++++++++++++staticText name='No'
+++++++++++++++++inlineTextBox name='No'
+++++++layoutTable
+++++++++genericContainer ignored
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Animal'
+++++++++++++++staticText name='Animal'
+++++++++++++++++inlineTextBox name='Animal'
+++++++++++++layoutTableCell name='Furry?'
+++++++++++++++staticText name='Furry?'
+++++++++++++++++inlineTextBox name='Furry?'
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Avocado'
+++++++++++++++radioButton setSize=3 posInSet=1 checkedState=false
+++++++++++++++staticText name='Avocado'
+++++++++++++++++inlineTextBox name='Avocado'
+++++++++++++layoutTableCell name='Yes'
+++++++++++++++staticText name='Yes'
+++++++++++++++++inlineTextBox name='Yes'
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Brussels sprouts'
+++++++++++++++radioButton setSize=3 posInSet=2 checkedState=false
+++++++++++++++staticText name='Brussels sprouts'
+++++++++++++++++inlineTextBox name='Brussels sprouts'
+++++++++++++layoutTableCell name='Sometimes'
+++++++++++++++staticText name='Sometimes'
+++++++++++++++++inlineTextBox name='Sometimes'
+++++++++++layoutTableRow
+++++++++++++layoutTableCell name='Turnips'
+++++++++++++++radioButton setSize=3 posInSet=3 checkedState=false
+++++++++++++++staticText name='Turnips'
+++++++++++++++++inlineTextBox name='Turnips'
+++++++++++++layoutTableCell name='No'
+++++++++++++++staticText name='No'
+++++++++++++++++inlineTextBox name='No'
+++++++grid
+++++++++rowGroup ignored
+++++++++++row name='Travel mode Convenient?'
+++++++++++++columnHeader name='Travel mode'
+++++++++++++++staticText name='Travel mode'
+++++++++++++++++inlineTextBox name='Travel mode'
+++++++++++++columnHeader name='Convenient?'
+++++++++++++++staticText name='Convenient?'
+++++++++++++++++inlineTextBox name='Convenient?'
+++++++++++row name='Train Yes'
+++++++++++++gridCell name='Train'
+++++++++++++++radioButton setSize=3 posInSet=1 checkedState=false
+++++++++++++++staticText name='Train'
+++++++++++++++++inlineTextBox name='Train'
+++++++++++++gridCell name='Yes'
+++++++++++++++staticText name='Yes'
+++++++++++++++++inlineTextBox name='Yes'
+++++++++++row name='Bicycle Sometimes'
+++++++++++++gridCell name='Bicycle'
+++++++++++++++radioButton setSize=3 posInSet=2 checkedState=false
+++++++++++++++staticText name='Bicycle'
+++++++++++++++++inlineTextBox name='Bicycle'
+++++++++++++gridCell name='Sometimes'
+++++++++++++++staticText name='Sometimes'
+++++++++++++++++inlineTextBox name='Sometimes'
+++++++++++row name='Air No'
+++++++++++++gridCell name='Air'
+++++++++++++++radioButton setSize=3 posInSet=3 checkedState=false
+++++++++++++++staticText name='Air'
+++++++++++++++++inlineTextBox name='Air'
+++++++++++++gridCell name='No'
+++++++++++++++staticText name='No'
+++++++++++++++++inlineTextBox name='No'

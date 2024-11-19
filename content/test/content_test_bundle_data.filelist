@@ -5259,6 +5259,8 @@ data/accessibility/html/table-thead-tbody-tfoot-expected-win.txt
 data/accessibility/html/table-thead-tbody-tfoot.html
 data/accessibility/html/table-with-pseudo-elements-expected-blink.txt
 data/accessibility/html/table-with-pseudo-elements.html
+data/accessibility/html/table-with-radio-buttons-expected-blink.txt
+data/accessibility/html/table-with-radio-buttons.html
 data/accessibility/html/text-align-expected-android-assist-data.txt
 data/accessibility/html/text-align-expected-android-external.txt
 data/accessibility/html/text-align-expected-android.txt
