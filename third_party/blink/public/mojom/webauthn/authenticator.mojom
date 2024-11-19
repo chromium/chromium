@@ -564,6 +564,8 @@ struct PublicKeyCredentialCreationOptions {
 
   // https://w3c.github.io/webauthn/#dom-publickeycredentialcreationoptionsjson-attestationformats
   array<string> attestation_formats;
+
+  bool is_conditional = false;
 };
 
 // See https://w3c.github.io/webauthn/#enumdef-attestationconveyancepreference

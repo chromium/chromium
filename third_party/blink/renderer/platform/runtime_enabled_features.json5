@@ -4752,6 +4752,13 @@
       name: "WebAuthenticationClientCapabilities",
       status: "experimental",
     },
+    // https://w3c.github.io/webauthn/#dom-clientcapability-conditionalcreate
+    {
+      name: "WebAuthenticationConditionalCreate",
+      status: "test",
+      base_feature: "none",
+      public: true,
+    },
     // Methods for deserializing WebAuthn requests from JSON/serializing
     // responses into JSON.
     // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson

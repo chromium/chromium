@@ -215,6 +215,7 @@ std::ostream& operator<<(std::ostream& os,
   constexpr auto kStepNames = base::MakeFixedFlatMap<Step, std::string_view>({
       {Step::kNotStarted, "kNotStarted"},
       {Step::kPasskeyAutofill, "kPasskeyAutofill"},
+      {Step::kPasskeyUpgrade, "kPasskeyUpgrade"},
       {Step::kMechanismSelection, "kMechanismSelection"},
       {Step::kErrorNoAvailableTransports, "kErrorNoAvailableTransports"},
       {Step::kErrorNoPasskeys, "kErrorNoPasskeys"},

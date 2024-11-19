@@ -4942,6 +4942,8 @@ static_library("ui") {
       "webauthn/passkey_saved_confirmation_controller.h",
       "webauthn/passkey_updated_confirmation_controller.cc",
       "webauthn/passkey_updated_confirmation_controller.h",
+      "webauthn/passkey_upgrade_request_controller.cc",
+      "webauthn/passkey_upgrade_request_controller.h",
       "webauthn/sheet_models.cc",
       "webauthn/sheet_models.h",
       "webauthn/transport_hover_list_model.cc",

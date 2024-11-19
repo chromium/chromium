@@ -982,6 +982,13 @@ void AuthenticatorCommonImpl::MakeCredential(
 
   if (options->is_payment_credential_creation) {
     req_state_->mode = AuthenticationRequestMode::kPayment;
+  } else if (options->is_conditional) {
+    if (!base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade)) {
+      // The renderer runtime flag should enforce this.
+      mojo::ReportBadMessage("kWebAuthnPasskeyUpgrade flag must be enabled");
+      return;
+    }
+    req_state_->mode = AuthenticationRequestMode::kPasskeyUpgrade;
   } else {
     req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
@@ -1206,8 +1213,12 @@ void AuthenticatorCommonImpl::ContinueMakeCredentialAfterRpIdCheck(
         {*cred_protect_request, options->enforce_protection_policy}};
   }
 
-  auto ui_presentation =
-      disable_ui_ ? UIPresentation::kDisabled : UIPresentation::kModal;
+  auto ui_presentation = UIPresentation::kModal;
+  if (disable_ui_) {
+    ui_presentation = UIPresentation::kDisabled;
+  } else if (options->is_conditional) {
+    ui_presentation = UIPresentation::kPasskeyUpgrade;
+  }
   req_state_->request_delegate->SetUIPresentation(ui_presentation);
 
   // Assemble clientDataJSON.
