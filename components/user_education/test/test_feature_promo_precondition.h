@@ -14,6 +14,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_education::test {
 
@@ -69,6 +70,17 @@ class TestPreconditionListProvider : public PreconditionListProvider {
   // Mutable so that it can be cleared out during calls to `GetPreconditions()`.
   mutable std::optional<raw_ptr<const FeaturePromoSpecification>>
       next_query_spec_;
+};
+
+class MockPreconditionListProvider : public PreconditionListProvider {
+ public:
+  MockPreconditionListProvider();
+  ~MockPreconditionListProvider() override;
+
+  MOCK_METHOD(FeaturePromoPreconditionList,
+              GetPreconditions,
+              (const FeaturePromoSpecification& spec),
+              (const, override));
 };
 
 }  // namespace user_education::test

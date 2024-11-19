@@ -82,7 +82,7 @@ class FeaturePromoQueueSet {
   // entry that is eligible to show, or null if none is found.
   //
   // Entries that are returned are removed from the queue.
-  std::optional<FeaturePromoParams> UpdateAndGetNextEligiblePromo();
+  std::optional<EligibleFeaturePromo> UpdateAndGetNextEligiblePromo();
 
   // Fails all promos in the queue with the given `failure_reason`.
   void FailAll(FeaturePromoResult::Failure failure_reason);

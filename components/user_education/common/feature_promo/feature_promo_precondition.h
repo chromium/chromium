@@ -18,6 +18,11 @@
 
 namespace user_education {
 
+namespace internal {
+class FeaturePromoQueueCachedDataTest;
+class FeaturePromoQueueSetCachedDataTest;
+}  // namespace internal
+
 // Represents a single precondition for promos. Derive specific preconditions
 // from this class.
 class FeaturePromoPrecondition {
@@ -111,6 +116,8 @@ class FeaturePromoPreconditionBase : public FeaturePromoPrecondition {
                            GetAfterExtractCachedDataFails);
   FRIEND_TEST_ALL_PREFIXES(FeaturePromoPreconditionTest,
                            FeaturePromoPreconditionList_ExtractCachedData);
+  friend internal::FeaturePromoQueueCachedDataTest;
+  friend internal::FeaturePromoQueueSetCachedDataTest;
 
   const Identifier identifier_;
   FeaturePromoResult::Failure failure_;

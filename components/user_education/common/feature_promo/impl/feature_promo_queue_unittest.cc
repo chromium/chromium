@@ -15,12 +15,15 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/impl/precondition_data.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/test/test_feature_promo_precondition.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
+#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education::internal {
 
@@ -100,7 +103,7 @@ class FeaturePromoQueueTest : public testing::Test {
     return queue.IdentifyNextEligiblePromo();
   }
 
-  static std::optional<FeaturePromoParams> GetNextEligiblePromo(
+  static std::optional<EligibleFeaturePromo> GetNextEligiblePromo(
       FeaturePromoQueue& queue) {
     return queue.GetNextEligiblePromo();
   }
@@ -124,7 +127,7 @@ class FeaturePromoQueueTest : public testing::Test {
     if (index) {
       ASSERT_TRUE(result.has_value());
       const base::Feature* const expected = promo_specs_[*index].feature();
-      const base::Feature* const actual = &*result->feature;
+      const base::Feature* const actual = &*result->promo_params.feature;
       EXPECT_EQ(expected, actual) << "Expected feature " << expected->name
                                   << " but got " << actual->name;
     } else {
@@ -148,6 +151,9 @@ class FeaturePromoQueueTest : public testing::Test {
   test::TestPreconditionListProvider& wait_for() { return wait_for_provider_; }
   const FeaturePromoSpecification& promo_spec(int which) const {
     return promo_specs_[which];
+  }
+  const UserEducationTimeProvider& time_provider() const {
+    return time_provider_;
   }
 
  private:
@@ -321,19 +327,19 @@ TEST_F(FeaturePromoQueueTest, GetNextEligiblePromo) {
   EXPECT_EQ(&kTestFeature1, IdentifyNextEligiblePromo(queue));
   const auto promo1 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo1.has_value());
-  EXPECT_EQ(&kTestFeature1, &promo1->feature.get());
+  EXPECT_EQ(&kTestFeature1, &promo1->promo_params.feature.get());
   EXPECT_EQ(2U, queue.queued_count());
 
   EXPECT_EQ(&kTestFeature2, IdentifyNextEligiblePromo(queue));
   const auto promo2 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo2.has_value());
-  EXPECT_EQ(&kTestFeature2, &promo2->feature.get());
+  EXPECT_EQ(&kTestFeature2, &promo2->promo_params.feature.get());
   EXPECT_EQ(1U, queue.queued_count());
 
   EXPECT_EQ(&kTestFeature3, IdentifyNextEligiblePromo(queue));
   const auto promo3 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo3.has_value());
-  EXPECT_EQ(&kTestFeature3, &promo3->feature.get());
+  EXPECT_EQ(&kTestFeature3, &promo3->promo_params.feature.get());
   EXPECT_EQ(0U, queue.queued_count());
 
   EXPECT_EQ(std::nullopt, GetNextEligiblePromo(queue));
@@ -354,13 +360,13 @@ TEST_F(FeaturePromoQueueTest, GetNextEligiblePromoSkipsWaitFor) {
   EXPECT_EQ(&kTestFeature2, IdentifyNextEligiblePromo(queue));
   const auto promo2 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo2.has_value());
-  EXPECT_EQ(&kTestFeature2, &promo2->feature.get());
+  EXPECT_EQ(&kTestFeature2, &promo2->promo_params.feature.get());
   EXPECT_EQ(2U, queue.queued_count());
 
   EXPECT_EQ(&kTestFeature3, IdentifyNextEligiblePromo(queue));
   const auto promo3 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo3.has_value());
-  EXPECT_EQ(&kTestFeature3, &promo3->feature.get());
+  EXPECT_EQ(&kTestFeature3, &promo3->promo_params.feature.get());
   EXPECT_EQ(1U, queue.queued_count());
 
   EXPECT_EQ(nullptr, IdentifyNextEligiblePromo(queue));
@@ -528,6 +534,67 @@ TEST_F(FeaturePromoQueueTest,
   required().SetForFeature(kTestFeature2, kPrecond1, false);
   IdentifyAndCheckNextPromo(queue, 2);
   EXPECT_FALSE(queue.is_empty());
+}
+
+class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
+ public:
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(int, kIntegerValue);
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::string, kStringValue);
+
+  FeaturePromoQueueCachedDataTest() = default;
+  ~FeaturePromoQueueCachedDataTest() override = default;
+
+  template <typename T, typename U>
+  static std::unique_ptr<CachingFeaturePromoPrecondition> CreatePrecondition(
+      FeaturePromoPrecondition::Identifier id,
+      FeaturePromoResult::Failure failure,
+      std::string name,
+      ui::TypedIdentifier<T> key,
+      U data) {
+    auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
+        kPrecond1, kFailure1, kPrecond1Name, true);
+    precond->InitCache(key);
+    precond->GetCachedData(key) = std::forward<U>(data);
+    return precond;
+  }
+};
+
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(FeaturePromoQueueCachedDataTest,
+                                    int,
+                                    kIntegerValue);
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(FeaturePromoQueueCachedDataTest,
+                                    std::string,
+                                    kStringValue);
+
+TEST_F(FeaturePromoQueueCachedDataTest, ExtractsCachedData) {
+  test::MockPreconditionListProvider required_preconditions;
+  test::MockPreconditionListProvider wait_for_preconditions;
+
+  EXPECT_CALL(required_preconditions, GetPreconditions)
+      .WillRepeatedly([](const FeaturePromoSpecification&) {
+        FeaturePromoPreconditionList list;
+        list.AddPrecondition(CreatePrecondition(
+            kPrecond1, kFailure1, kPrecond1Name, kIntegerValue, 2));
+        return list;
+      });
+  EXPECT_CALL(wait_for_preconditions, GetPreconditions)
+      .WillRepeatedly([](const FeaturePromoSpecification&) {
+        FeaturePromoPreconditionList list;
+        list.AddPrecondition(CreatePrecondition(
+            kPrecond2, kFailure2, kPrecond2Name, kStringValue, "foo"));
+        return list;
+      });
+
+  FeaturePromoQueue queue(required_preconditions, wait_for_preconditions,
+                          time_provider(), base::Seconds(10));
+  queue.TryToQueue(promo_spec(0), {kTestFeature1});
+  auto result = queue.UpdateAndGetNextEligiblePromo();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(&kTestFeature1, &*result->promo_params.feature);
+  EXPECT_EQ(2, *PreconditionData::Get(result->cached_data, kIntegerValue));
+  EXPECT_EQ("foo", *PreconditionData::Get(result->cached_data, kStringValue));
+
+  EXPECT_FALSE(queue.UpdateAndGetNextEligiblePromo().has_value());
 }
 
 }  // namespace user_education::internal

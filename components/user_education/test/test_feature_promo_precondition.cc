@@ -138,4 +138,7 @@ FeaturePromoPreconditionList TestPreconditionListProvider::GetPreconditions(
   return result;
 }
 
+MockPreconditionListProvider::MockPreconditionListProvider() = default;
+MockPreconditionListProvider::~MockPreconditionListProvider() = default;
+
 }  // namespace user_education::test
