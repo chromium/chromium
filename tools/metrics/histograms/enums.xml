@@ -32758,11 +32758,12 @@ Called by update_net_error_codes.py.-->
 
 <enum name="TracingFinalizationDisallowedReason">
   <int value="0" label="Incognito profile launched"/>
-  <int value="1" label="Default profile not loaded"/>
-  <int value="2" label="Crash metrics not loaded"/>
-  <int value="3" label="Last session crashed"/>
-  <int value="4" label="Metrics reporting disabled"/>
-  <int value="5" label="Recently uploaded another trace"/>
+  <int value="1" label="Default profile not loaded (obsolete)"/>
+  <int value="2" label="Crash metrics not loaded (obsolete)"/>
+  <int value="3" label="Last session crashed (obsolete)"/>
+  <int value="4" label="Metrics reporting disabled (obsolete)"/>
+  <int value="5" label="Recently uploaded another trace (obsolete)"/>
+  <int value="6" label="Last session did not end (obsolete)"/>
 </enum>
 
 <enum name="TriggerHelpUIResult">

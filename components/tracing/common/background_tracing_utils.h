@@ -22,13 +22,13 @@ BASE_DECLARE_FEATURE(kTracingTriggers);
 // src/tools/metrics/histograms/enums.xml.
 enum class TracingFinalizationDisallowedReason {
   kIncognitoLaunched = 0,
-  kProfileNotLoaded = 1,
-  kCrashMetricsNotLoaded = 2,
-  kLastSessionCrashed = 3,
-  kMetricsReportingDisabled = 4,
-  kTraceUploadedRecently = 5,
-  kLastTracingSessionDidNotEnd = 6,
-  kMaxValue = kLastTracingSessionDidNotEnd
+  //  kProfileNotLoaded = 1, Obsolete
+  //  kCrashMetricsNotLoaded = 2, Obsolete
+  //  kLastSessionCrashed = 3, Obsolete
+  //  kMetricsReportingDisabled = 4, Obsolete
+  //  kTraceUploadedRecently = 5, Obsolete
+  //  kLastTracingSessionDidNotEnd = 6, Obsolete as of Nov'2024.
+  kMaxValue = kIncognitoLaunched
 };
 
 COMPONENT_EXPORT(BACKGROUND_TRACING_UTILS)

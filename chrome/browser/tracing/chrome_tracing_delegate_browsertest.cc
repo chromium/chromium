@@ -161,17 +161,6 @@ void SetSessionState(base::Value::Dict dict) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
-                       BackgroundTracingUnexpectedSessionEnd) {
-  base::Value::Dict dict;
-  dict.Set("state", static_cast<int>(tracing::BackgroundTracingState::STARTED));
-  SetSessionState(std::move(dict));
-  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
-
-  EXPECT_FALSE(
-      StartScenario(content::BackgroundTracingManager::NO_DATA_FILTERING));
-}
-
-IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        BackgroundTracingSessionRanLong) {
   base::Value::Dict dict;
   dict.Set("state",

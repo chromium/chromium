@@ -148,7 +148,6 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool ChromeTracingDelegate::IsActionAllowed(
-    BackgroundScenarioAction action,
     bool requires_anonymized_data) const {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
@@ -163,18 +162,6 @@ bool ChromeTracingDelegate::IsActionAllowed(
     return false;
   }
 
-  BackgroundTracingStateManager& state =
-      BackgroundTracingStateManager::GetInstance();
-
-  // Don't start a new trace if the previous trace did not end.
-  if (action == BackgroundScenarioAction::kStartTracing &&
-      state.DidLastSessionEndUnexpectedly()) {
-    tracing::RecordDisallowedMetric(
-        tracing::TracingFinalizationDisallowedReason::
-            kLastTracingSessionDidNotEnd);
-    return false;
-  }
-
   return true;
 }
 
@@ -183,8 +170,7 @@ bool ChromeTracingDelegate::OnBackgroundTracingActive(
   BackgroundTracingStateManager& state =
       BackgroundTracingStateManager::GetInstance();
 
-  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing,
-                       requires_anonymized_data)) {
+  if (!IsActionAllowed(requires_anonymized_data)) {
     return false;
   }
 
@@ -199,8 +185,7 @@ void ChromeTracingDelegate::OnBackgroundTracingIdle() {
 }
 
 bool ChromeTracingDelegate::CanFinalizeTrace(bool requires_anonymized_data) {
-  return IsActionAllowed(BackgroundScenarioAction::kUploadTrace,
-                         requires_anonymized_data);
+  return IsActionAllowed(requires_anonymized_data);
 }
 
 bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {

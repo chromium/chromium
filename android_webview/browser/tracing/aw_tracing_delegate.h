@@ -30,8 +30,6 @@ class AwTracingDelegate : public content::TracingDelegate {
   void OnBackgroundTracingIdle() override;
 
  private:
-  bool IsAllowedToStartScenario() const;
-
   std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
 };
 

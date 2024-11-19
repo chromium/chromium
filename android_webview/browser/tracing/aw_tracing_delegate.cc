@@ -17,15 +17,6 @@
 
 namespace android_webview {
 
-bool IsBackgroundTracingCommandLine() {
-  auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode ==
-          tracing::BackgroundTracingSetupMode::kFromProtoConfigFile) {
-    return true;
-  }
-  return false;
-}
-
 AwTracingDelegate::AwTracingDelegate()
     : state_manager_(tracing::BackgroundTracingStateManager::CreateInstance(
           AwBrowserProcess::GetInstance()->local_state())) {}
@@ -39,35 +30,10 @@ void AwTracingDelegate::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(tracing::kBackgroundTracingSessionState);
 }
 
-bool AwTracingDelegate::IsAllowedToStartScenario() const {
-  // If the background tracing is specified on the command-line, we allow
-  // any scenario to be traced and uploaded.
-  if (IsBackgroundTracingCommandLine()) {
-    return true;
-  }
-
-  tracing::BackgroundTracingStateManager& state =
-      tracing::BackgroundTracingStateManager::GetInstance();
-
-  // Don't start a new trace if the previous trace did not end.
-  if (state.DidLastSessionEndUnexpectedly()) {
-    tracing::RecordDisallowedMetric(
-        tracing::TracingFinalizationDisallowedReason::
-            kLastTracingSessionDidNotEnd);
-    return false;
-  }
-
-  return true;
-}
-
 bool AwTracingDelegate::OnBackgroundTracingActive(
     bool requires_anonymized_data) {
   tracing::BackgroundTracingStateManager& state =
       tracing::BackgroundTracingStateManager::GetInstance();
-
-  if (!IsAllowedToStartScenario()) {
-    return false;
-  }
 
   state.OnTracingStarted();
   return true;
