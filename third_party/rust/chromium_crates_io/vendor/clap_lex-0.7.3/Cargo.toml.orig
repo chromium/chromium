@@ -1,6 +1,6 @@
 [package]
 name = "clap_lex"
-version = "0.7.2"
+version = "0.7.3"
 description = "Minimal, flexible command line parser"
 categories = ["command-line-interface"]
 keywords = [

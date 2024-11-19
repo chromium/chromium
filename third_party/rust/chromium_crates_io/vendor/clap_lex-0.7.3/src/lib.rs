@@ -133,7 +133,11 @@ pub struct RawArgs {
 impl RawArgs {
     //// Create an argument list to parse
     ///
+    /// <div class="warning">
+    ///
     /// **NOTE:** The argument returned will be the current binary.
+    ///
+    /// </div>
     ///
     /// # Example
     ///
@@ -362,14 +366,22 @@ impl<'s> ParsedArg<'s> {
 
     /// Treat as a value
     ///
+    /// <div class="warning">
+    ///
     /// **NOTE:** May return a flag or an escape.
+    ///
+    /// </div>
     pub fn to_value_os(&self) -> &OsStr {
         self.inner
     }
 
     /// Treat as a value
     ///
+    /// <div class="warning">
+    ///
     /// **NOTE:** May return a flag or an escape.
+    ///
+    /// </div>
     pub fn to_value(&self) -> Result<&str, &OsStr> {
         self.inner.to_str().ok_or(self.inner)
     }

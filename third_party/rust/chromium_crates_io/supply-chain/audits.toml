@@ -700,6 +700,11 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.7.1 -> 0.7.2"
 notes = "No `.rs` changes in the delta."
 
+[[audits.clap_lex]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.7.2 -> 0.7.3"
+
 [[audits.codespan-reporting]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

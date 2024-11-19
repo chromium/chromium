@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_lex"
-version = "0.7.2"
+version = "0.7.3"
 build = false
 include = [
     "build.rs",
@@ -127,7 +127,6 @@ let_and_return = "allow"
 linkedlist = "warn"
 lossy_float_literal = "warn"
 macro_use_imports = "warn"
-match_wildcard_for_single_variants = "warn"
 mem_forget = "warn"
 multiple_bound_locations = "allow"
 mutex_integer = "warn"
@@ -147,13 +146,17 @@ string_add_assign = "warn"
 string_lit_as_bytes = "warn"
 todo = "warn"
 trait_duplication_in_bounds = "warn"
+uninlined_format_args = "warn"
 verbose_file_reads = "warn"
 zero_sized_map_values = "warn"
 
 [lints.rust]
-rust_2018_idioms = "warn"
 unreachable_pub = "warn"
 unsafe_op_in_unsafe_fn = "warn"
 unused_lifetimes = "warn"
 unused_macro_rules = "warn"
 unused_qualifications = "warn"
+
+[lints.rust.rust_2018_idioms]
+level = "warn"
+priority = -1
