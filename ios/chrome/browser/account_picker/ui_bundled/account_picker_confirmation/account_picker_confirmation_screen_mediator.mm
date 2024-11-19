@@ -8,15 +8,18 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
+#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_consumer.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
-#import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
 @interface AccountPickerConfirmationScreenMediator () <
-    ChromeAccountManagerServiceObserver> {
+    ChromeAccountManagerServiceObserver,
+    IdentityManagerObserverBridgeDelegate> {
 }
 
 @end
@@ -28,6 +31,8 @@
       _accountManagerServiceObserver;
   // Identity manager.
   raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   // Account picker configuration.
   __strong AccountPickerConfiguration* _configuration;
   // Avatar of selected identity.
@@ -40,13 +45,16 @@
                   identityManager:(signin::IdentityManager*)identityManager
                     configuration:(AccountPickerConfiguration*)configuration {
   if ((self = [super init])) {
-    DCHECK(accountManagerService);
-    DCHECK(identityManager);
+    CHECK(accountManagerService);
+    CHECK(identityManager);
     _accountManagerService = accountManagerService;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
     _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
     _configuration = configuration;
   }
   return self;
@@ -59,6 +67,7 @@
 
 - (void)disconnect {
   _identityManager = nullptr;
+  _identityManagerObserver.reset();
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
 }
@@ -83,11 +92,12 @@
 // Updates the default identity, or hide the default identity if there isn't
 // one present on the device.
 - (void)selectSelectedIdentity {
-  if (!_accountManagerService) {
+  if (!_accountManagerService || !_identityManager) {
     return;
   }
 
-  id<SystemIdentity> identity = _accountManagerService->GetDefaultIdentity();
+  id<SystemIdentity> identity = signin::GetDefaultIdentityOnDevice(
+      _identityManager, _accountManagerService);
 
   // If the user is signed-in, present the signed-in account.
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -119,22 +129,58 @@
                                      avatar:avatar];
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityListChanged {
+- (void)handleIdentityListChanged {
   [self selectSelectedIdentity];
 }
 
-- (void)identityUpdated:(id<SystemIdentity>)identity {
+- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([_selectedIdentity isEqual:identity]) {
     [self updateSelectedIdentityUI];
   }
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated:identity];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
+}
+
+#pragma mark -  IdentityManagerObserver
+
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  id<SystemIdentity> identity =
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  [self handleIdentityUpdated:identity];
 }
 
 @end
