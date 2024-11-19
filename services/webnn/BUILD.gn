@@ -48,6 +48,7 @@ source_set("tflite_graph_builder") {
 
 source_set("webnn_switches") {
   sources = [ "webnn_switches.h" ]
+  deps = [ ":buildflags" ]
 }
 
 component("webnn_service") {

@@ -254,6 +254,7 @@ source_set("browser") {
     "//services/viz/privileged/mojom",
     "//services/viz/public/cpp/gpu",
     "//services/viz/public/mojom",
+    "//services/webnn:buildflags",
     "//services/webnn:webnn_service",
     "//services/webnn:webnn_switches",
     "//services/webnn/public/mojom",

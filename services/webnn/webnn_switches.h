@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_WEBNN_SWITCHES_H_
 
 #include "build/build_config.h"
+#include "services/webnn/buildflags.h"
 
 namespace switches {
 
@@ -16,6 +17,14 @@ namespace switches {
 // Usage: --no-sandbox --webnn-coreml-dump-model=/tmp/CoreMLModels
 inline constexpr char kWebNNCoreMlDumpModel[] = "webnn-coreml-dump-model";
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(WEBNN_USE_TFLITE)
+// Save the generated TFLite model file to the folder specified by
+// --webnn-tflite-dump-model. Note, the folder needs to be accessible from the
+// GPU process sandbox or --no-sandbox must be used.
+// Usage: --no-sandbox --webnn-tflite-dump-model=/tmp/tflite_models
+inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 }  // namespace switches
 

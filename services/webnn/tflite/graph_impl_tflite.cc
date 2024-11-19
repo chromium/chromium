@@ -4,10 +4,14 @@
 
 #include "services/webnn/tflite/graph_impl_tflite.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -28,6 +32,7 @@
 #include "services/webnn/tflite/tensor_impl_tflite.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_switches.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/stderr_reporter.h"
@@ -40,6 +45,24 @@
 namespace webnn::tflite {
 
 namespace {
+
+void DumpModelToFile(const flatbuffers::DetachedBuffer& model_content) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(
+          [](std::vector<uint8_t> data) {
+            static uint64_t dump_count = 0;
+            base::FilePath dump_directory =
+                base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+                    switches::kWebNNTfliteDumpModel);
+            base::FilePath dump_path = dump_directory.AppendASCII(
+                base::StringPrintf("model%d.tflite", dump_count++));
+            base::WriteFile(dump_path, data);
+          },
+          base::ToVector(model_content)));
+}
 
 std::string_view TfLiteStatusToString(TfLiteStatus status) {
   switch (status) {
@@ -102,6 +125,11 @@ class GraphImplTflite::ComputeResources {
       return base::unexpected(
           mojom::Error::New(mojom::Error::Code::kUnknownError,
                             "Unable to build flatbuffer model"));
+    }
+
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNTfliteDumpModel)) {
+      DumpModelToFile(self->model_content_);
     }
 
     OpResolver op_resolver(context->options());
