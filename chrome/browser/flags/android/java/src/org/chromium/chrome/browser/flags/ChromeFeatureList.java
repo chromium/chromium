@@ -397,6 +397,8 @@ public abstract class ChromeFeatureList {
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PLUS_ADDRESS_ANDROID_OPEN_GMS_CORE_MANAGEMENT_PAGE =
             "PlusAddressAndroidOpenGmsCoreManagementPage";
+    public static final String POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND =
+            "PowerSavingModeBroadcastReceiverInBackground";
     public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
             "PrefetchBrowserInitiatedTriggers";
     public static final String PRERENDER2 = "Prerender2";
@@ -665,6 +667,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2, false);
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
+    public static final CachedFlag sPowerSavingModeBroadcastReceiverInBackground =
+            newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, false);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
@@ -789,6 +793,7 @@ public abstract class ChromeFeatureList {
                     sMultiInstanceApplicationStatusCleanup,
                     sNavBarColorMatchesTabBackground,
                     sNewTabPageAndroidTriggerForPrerender2,
+                    sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,
                     sPriceInsights,
                     sOptimizationGuidePushNotifications,

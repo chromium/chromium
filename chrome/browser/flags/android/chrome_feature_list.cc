@@ -278,6 +278,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNotificationTrampoline,
     &kTinkerTankBottomSheet,
     &kPageAnnotationsService,
+    &kPowerSavingModeBroadcastReceiverInBackground,
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
     &kPwaRestoreUi,
@@ -821,6 +822,10 @@ BASE_FEATURE(kNotificationTrampoline,
 
 BASE_FEATURE(kPageAnnotationsService,
              "PageAnnotationsService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPowerSavingModeBroadcastReceiverInBackground,
+             "PowerSavingModeBroadcastReceiverInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPreconnectOnTabCreation,
