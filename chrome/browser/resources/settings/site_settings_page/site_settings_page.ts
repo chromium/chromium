@@ -443,23 +443,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsZoomLevels',
       icon: 'privacy:zoom-in',
     },
-  ];
-  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
-      loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
-    categoryList.push({
-      route: routes.TRACKING_PROTECTION,
-      id: Id.COOKIES,
-      label: 'trackingProtectionLinkRowLabel',
-      icon: 'settings:visibility-off',
-    });
-  } else {
-    categoryList.push({
+    {
       route: routes.COOKIES,
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
       icon: 'privacy:cookie',
-    });
-  }
+    },
+  ];
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));
   return categoryItemMap;
 }

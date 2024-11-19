@@ -150,7 +150,6 @@ suite('SiteSettingsPage', function() {
     // This test verifies the Tracking Protection rewind label.
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: true,
-      isTrackingProtectionUxEnabled: false,
     });
     setupPage();
     const cookiesLinkRow = getCookiesLinkRow();
@@ -188,34 +187,6 @@ suite('SiteSettingsPage', function() {
     await flushTasks();
     assertEquals(
         loadTimeData.getString('thirdPartyCookiesLinkRowSublabelEnabled'),
-        cookiesLinkRow.subLabel);
-  });
-
-  test('TrackingProtectionLinkRowSubLabel', async function() {
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: true,
-      isTrackingProtectionUxEnabled: true,
-    });
-    setupPage();
-    const cookiesLinkRow = getCookiesLinkRow();
-    assertEquals(
-        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
-        cookiesLinkRow.subLabel);
-
-    // Even if cookie controls mode changes, sub-label stays the same.
-    page.set(
-        'prefs.profile.cookie_controls_mode.value',
-        CookieControlsMode.BLOCK_THIRD_PARTY);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
-        cookiesLinkRow.subLabel);
-
-    page.set(
-        'prefs.profile.cookie_controls_mode.value', CookieControlsMode.OFF);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('trackingProtectionLinkRowSubLabel'),
         cookiesLinkRow.subLabel);
   });
 
