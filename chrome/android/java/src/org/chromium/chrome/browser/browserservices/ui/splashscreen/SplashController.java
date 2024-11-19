@@ -21,11 +21,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -34,10 +34,7 @@ import org.chromium.url.GURL;
 
 import java.lang.reflect.Method;
 
-import javax.inject.Inject;
-
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
-@ActivityScope
 public class SplashController extends CustomTabTabObserver
         implements InflationObserver, DestroyObserver {
     private static class SingleShotOnDrawListener implements ViewTreeObserver.OnDrawListener {
@@ -100,21 +97,27 @@ public class SplashController extends CustomTabTabObserver
 
     private ObserverList<SplashscreenObserver> mObservers;
 
-    @Inject
-    public SplashController(BaseCustomTabActivity activity) {
+    public SplashController(
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            TabObserverRegistrar tabObserverRegistrar,
+            TwaFinishHandler finishHandler,
+            CustomTabActivityTabProvider tabProvider,
+            Supplier<CompositorViewHolder> compositorViewHolder,
+            CustomTabOrientationController customTabOrientationController) {
         mActivity = activity;
-        mLifecycleDispatcher = activity.getLifecycleDispatcher();
-        mTabObserverRegistrar = activity.getTabObserverRegistrar();
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mTabObserverRegistrar = tabObserverRegistrar;
         mObservers = new ObserverList<>();
-        mFinishHandler = activity.getTwaFinishHandler();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        mCompositorViewHolder = activity.getCompositorViewHolderSupplier();
+        mFinishHandler = finishHandler;
+        mTabProvider = tabProvider;
+        mCompositorViewHolder = compositorViewHolder;
 
         mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
 
-        activity.getCustomTabOrientationController()
-                .delayOrientationRequestsIfNeeded(this, mIsWindowInitiallyTranslucent);
+        customTabOrientationController.delayOrientationRequestsIfNeeded(
+                this, mIsWindowInitiallyTranslucent);
 
         mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerActivityTabObserver(this);

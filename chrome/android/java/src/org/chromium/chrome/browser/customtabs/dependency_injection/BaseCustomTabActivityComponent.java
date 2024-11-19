@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 
 import dagger.Subcomponent;
 
-import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
@@ -70,6 +69,4 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     // For testing
     CustomTabTabPersistencePolicy resolveTabPersistencePolicy();
-
-    SplashController resolveSplashController();
 }

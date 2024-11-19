@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
-import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -40,7 +39,6 @@ public class WebappActivityCoordinator
     public WebappActivityCoordinator(
             SharedActivityCoordinator unused_sharedActivityCoordinator,
             BaseCustomTabActivity activity,
-            WebappSplashController unused_splashController,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler) {
         // We don't need to do anything with the _unused params. We just need to resolve it so that
         // it starts working.

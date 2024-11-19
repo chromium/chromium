@@ -37,7 +37,7 @@ public class WebApkActivityLifecycleUmaTracker
         implements ActivityStateListener, InflationObserver, PauseResumeWithNativeObserver {
     private final Activity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final SplashController mSplashController;
+    private final Supplier<SplashController> mSplashController;
     private final LegacyTabStartupMetricsTracker mLegacyTabStartupMetricsTracker;
     private final StartupMetricsTracker mStartupMetricsTracker;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
@@ -48,11 +48,10 @@ public class WebApkActivityLifecycleUmaTracker
     @Inject
     public WebApkActivityLifecycleUmaTracker(
             BaseCustomTabActivity activity,
-            SplashController splashController,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler) {
         mActivity = activity;
         mIntentDataProvider = activity.getIntentDataProvider();
-        mSplashController = splashController;
+        mSplashController = activity.getSplashControllerSupplier();
         mLegacyTabStartupMetricsTracker = activity.getLegacyTabStartupMetricsTracker();
         mStartupMetricsTracker = activity.getStartupMetricsTracker();
         mSavedInstanceStateSupplier = activity::getSavedInstanceState;
@@ -91,10 +90,13 @@ public class WebApkActivityLifecycleUmaTracker
             if (mSavedInstanceStateSupplier.get() == null) {
                 Intent intent = mActivity.getIntent();
                 // Splash observers are removed once the splash screen is hidden.
-                mSplashController.addObserver(
-                        new WebApkSplashscreenMetrics(
-                                WebappIntentUtils.getWebApkShellLaunchTime(intent),
-                                WebappIntentUtils.getNewStyleWebApkSplashShownTime(intent)));
+                mSplashController
+                        .get()
+                        .addObserver(
+                                new WebApkSplashscreenMetrics(
+                                        WebappIntentUtils.getWebApkShellLaunchTime(intent),
+                                        WebappIntentUtils.getNewStyleWebApkSplashShownTime(
+                                                intent)));
             }
         }
     }

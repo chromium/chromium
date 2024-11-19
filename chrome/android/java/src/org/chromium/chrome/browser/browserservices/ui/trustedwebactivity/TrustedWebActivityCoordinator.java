@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
-import dagger.Lazy;
-
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -36,7 +34,6 @@ public class TrustedWebActivityCoordinator {
             SharedActivityCoordinator sharedActivityCoordinator,
             TrustedWebActivityDisclosureController unused_disclosureController,
             DisclosureUiPicker unused_disclosureUiPicker,
-            Lazy<TwaSplashController> splashController,
             BaseCustomTabActivity activity) {
         // We don't need to do anything with the unused_ classes above, we just need to resolve them
         // so they start working.
@@ -44,22 +41,17 @@ public class TrustedWebActivityCoordinator {
         mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
 
-        initSplashScreen(splashController, activity.getIntentDataProvider());
+        BrowserServicesIntentDataProvider intentDataProvider = activity.getIntentDataProvider();
 
-        mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
-    }
-
-    private void initSplashScreen(
-            Lazy<TwaSplashController> splashController,
-            BrowserServicesIntentDataProvider intentDataProvider) {
         boolean showSplashScreen =
                 TwaSplashController.intentIsForTwaWithSplashScreen(intentDataProvider.getIntent());
-
         if (showSplashScreen) {
-            splashController.get();
+            new TwaSplashController(
+                    activity, activity.getSplashControllerSupplier(), intentDataProvider);
         }
-
         TrustedWebActivityUmaRecorder.recordSplashScreenUsage(showSplashScreen);
+
+        mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
     }
 
     private void onVerificationUpdate() {

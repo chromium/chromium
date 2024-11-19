@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactiv
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHomescreenVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
+import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
+import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
@@ -142,6 +144,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabOrientationController mCustomTabOrientationController;
     private ImmersiveModeController mImmersiveModeController;
     private CustomTabToolbarColorController mCustomTabToolbarColorController;
+    private SplashController mSplashController;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -377,6 +380,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         if (intentDataProvider.isWebappOrWebApkActivity()) {
             mWebappActivityCoordinator = component.resolveWebappActivityCoordinator();
             new WebappActionsNotificationManager(this);
+            new WebappSplashController(
+                    this,
+                    getSplashController(),
+                    getTabObserverRegistrar(),
+                    getIntentDataProvider());
         }
 
         if (intentDataProvider.isWebApkActivity()) {
@@ -1051,5 +1059,24 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                             mRootUiCoordinator.getStatusBarColorController());
         }
         return mStatusBarColorProvider;
+    }
+
+    private SplashController getSplashController() {
+        if (mSplashController == null) {
+            mSplashController =
+                    new SplashController(
+                            this,
+                            getLifecycleDispatcher(),
+                            getTabObserverRegistrar(),
+                            getTwaFinishHandler(),
+                            getCustomTabActivityTabProvider(),
+                            getCompositorViewHolderSupplier(),
+                            getCustomTabOrientationController());
+        }
+        return mSplashController;
+    }
+
+    public Supplier<SplashController> getSplashControllerSupplier() {
+        return this::getSplashController;
     }
 }
