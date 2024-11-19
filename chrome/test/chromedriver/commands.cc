@@ -345,13 +345,13 @@ void ExecuteSessionCommandOnSessionThread(
         } else if (status.code() == kTargetDetached) {
           // Some commands, like clicking a button or link which closes the
           // window, may result in a kTargetDetached error code.
-          std::list<std::string> web_view_ids;
-          Status status_tmp = session->chrome->GetWebViewIds(
-              &web_view_ids, session->w3c_compliant);
+          std::list<std::string> tab_view_ids;
+          Status status_tmp = session->chrome->GetTopLevelWebViewIds(
+              &tab_view_ids, session->w3c_compliant);
           if (status_tmp.IsError()) {
             status.AddDetails("failed to check if window was closed: " +
                               status_tmp.message());
-          } else if (!base::Contains(web_view_ids, session->window)) {
+          } else if (!base::Contains(tab_view_ids, session->window)) {
             status = Status(kOk);
           }
         }

@@ -196,6 +196,8 @@ source_set("automation_client_lib") {
     "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",
     "chrome/status.h",
+    "chrome/tab_tracker.cc",
+    "chrome/tab_tracker.h",
     "chrome/target_utils.cc",
     "chrome/target_utils.h",
     "chrome/ui_events.cc",

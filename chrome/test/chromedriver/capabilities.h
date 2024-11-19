@@ -105,6 +105,9 @@ struct Capabilities {
   Status Parse(const base::Value::Dict& desired_caps,
                bool w3c_compliant = true);
 
+  // Migrate capabilities to maintain backward compatibility.
+  Status MigrateCapabilities();
+
   //
   // W3C defined capabilities
   //
@@ -150,6 +153,8 @@ struct Capabilities {
   bool android_keep_app_data_dir = false;
 
   int android_devtools_port = 0;
+
+  bool enable_extension_targets = false;
 
   base::FilePath binary;
 

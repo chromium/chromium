@@ -12,8 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
+#include "chrome/test/chromedriver/chrome/web_view_info.h"
 
 struct BrowserInfo;
 class DevToolsClient;
@@ -29,6 +31,7 @@ struct MouseEvent;
 class PageLoadStrategy;
 class Status;
 class CastTracker;
+class PageTracker;
 
 class WebViewImpl : public WebView {
  public:
@@ -37,9 +40,20 @@ class WebViewImpl : public WebView {
       const bool w3c_compliant,
       const BrowserInfo* browser_info,
       std::unique_ptr<DevToolsClient> client);
+  static std::unique_ptr<WebViewImpl> CreateTabTargetWebView(
+      const std::string& id,
+      const bool w3c_compliant,
+      const BrowserInfo* browser_info,
+      std::unique_ptr<DevToolsClient> client,
+      std::optional<MobileDevice> mobile_device,
+      std::string page_load_strategy,
+      bool autoaccept_beforeunload,
+      raw_ptr<std::vector<std::unique_ptr<DevToolsEventListener>>>
+          devtools_listeners);
   static std::unique_ptr<WebViewImpl> CreateTopLevelWebView(
       const std::string& id,
       const bool w3c_compliant,
+      const WebViewImpl* tab,
       const BrowserInfo* browser_info,
       std::unique_ptr<DevToolsClient> client,
       std::optional<MobileDevice> mobile_device,
@@ -48,17 +62,34 @@ class WebViewImpl : public WebView {
   WebViewImpl(const std::string& id,
               const bool w3c_compliant,
               const WebViewImpl* parent,
+              const WebViewImpl* tab,
               const BrowserInfo* browser_info,
               std::unique_ptr<DevToolsClient> client,
               std::optional<MobileDevice> mobile_device,
               std::string page_load_strategy,
               bool autoaccept_beforeunload);
+  WebViewImpl(const std::string& id,
+              const bool w3c_compliant,
+              const BrowserInfo* browser_info,
+              std::unique_ptr<DevToolsClient> client,
+              bool is_tab,
+              std::optional<MobileDevice> mobile_device,
+              std::string page_load_strategy,
+              bool autoaccept_beforeunload,
+              raw_ptr<std::vector<std::unique_ptr<DevToolsEventListener>>>
+                  devtools_listeners);
+
   ~WebViewImpl() override;
   std::unique_ptr<WebViewImpl> CreateChild(const std::string& session_id,
                                            const std::string& target_id) const;
+  std::unique_ptr<WebViewImpl> CreatePageWithinTab(
+      const std::string& session_id,
+      const std::string& target_id,
+      WebViewInfo::Type page_type);
 
   // Overridden from WebView:
   bool IsServiceWorker() const override;
+  bool IsTab() const override;
   std::string GetId() override;
   std::string GetSessionId() override;
   bool WasCrashed() override;
@@ -144,8 +175,10 @@ class WebViewImpl : public WebView {
   Status WaitForPendingNavigations(const std::string& frame_id,
                                    const Timeout& timeout,
                                    bool stop_load_on_timeout) override;
-  Status IsPendingNavigation(const Timeout* timeout,
-                             bool* is_pending) const override;
+  Status IsPendingNavigation(const Timeout* timeout, bool* is_pending) override;
+  Status WaitForPendingActivePage(const Timeout& timeout) override;
+  Status IsNotPendingActivePage(const Timeout* timeout,
+                                bool* is_not_pending) const override;
   MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
       const override;
   Status OverrideGeolocation(const Geoposition& geoposition) override;
@@ -177,11 +210,15 @@ class WebViewImpl : public WebView {
   bool IsNonBlocking() const override;
   Status GetFedCmTracker(FedCmTracker** out_tracker) override;
   FrameTracker* GetFrameTracker() const override;
+  PageTracker* GetPageTracker() const override;
   std::unique_ptr<base::Value> GetCastSinks() override;
   std::unique_ptr<base::Value> GetCastIssueMessage() override;
   void SetFrame(const std::string& new_frame_id) override;
 
   const WebViewImpl* GetParent() const;
+  const WebViewImpl* GetTab() const;
+  std::string GetTabId() override;
+  Status GetActivePage(WebView** web_view) override;
   bool Lock();
   void Unlock();
   bool IsLocked() const;
@@ -264,10 +301,12 @@ class WebViewImpl : public WebView {
   bool is_locked_;
   bool is_detached_;
   raw_ptr<const WebViewImpl> parent_;
+  raw_ptr<const WebViewImpl> tab_;
   // Many trackers hold pointers to DevToolsClient, so client_ must be declared
   // before the trackers, to ensured trackers are destructed before client_.
   std::unique_ptr<DevToolsClient> client_;
   std::unique_ptr<FrameTracker> frame_tracker_;
+  std::unique_ptr<PageTracker> page_tracker_;
   std::unique_ptr<PageLoadStrategy> navigation_tracker_;
   std::unique_ptr<MobileEmulationOverrideManager>
       mobile_emulation_override_manager_;
@@ -279,7 +318,16 @@ class WebViewImpl : public WebView {
   std::unique_ptr<HeapSnapshotTaker> heap_snapshot_taker_;
   std::unique_ptr<CastTracker> cast_tracker_;
   std::unique_ptr<FedCmTracker> fedcm_tracker_;
+
+  // Initialization values kept for handing over to newly created
+  // top-level pages within tabs.
+  raw_ptr<std::vector<std::unique_ptr<DevToolsEventListener>>>
+      devtools_listeners_;
+  std::optional<MobileDevice> tab_mobile_device_;
+  std::string tab_page_load_strategy_;
+
   bool is_service_worker_;
+  bool is_tab_target_;
   bool autoaccept_beforeunload_ = false;
 };
 

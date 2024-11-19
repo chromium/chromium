@@ -43,7 +43,7 @@ class Chrome {
 
   virtual bool HasCrashedWebView() = 0;
 
-  // Return number of opened WebViews without updating the internal maps
+  // Return number of opened tabs without updating the internal maps
   // it's needed for BiDi to prevent trying to attach to sessions when
   // classic commands are not used.
   virtual Status GetWebViewCount(size_t* web_view_count,
@@ -53,19 +53,25 @@ class Chrome {
   virtual Status GetWebViewIdForFirstTab(std::string* web_view_id,
                                          bool w3c_compliant) = 0;
 
-  // Return ids of opened WebViews. The list is not guaranteed to be in the same
-  // order as those WebViews are opened, if two or more new windows are opened
-  // between two calls of this method.
-  virtual Status GetWebViewIds(std::list<std::string>* web_view_ids,
-                               bool w3c_compliant) = 0;
+  // Return ids of opened Tab WebViews. The list is not guaranteed to be in the
+  // same order as those WebViews are opened, if two or more new windows are
+  // opened between two calls of this method.
+  virtual Status GetTopLevelWebViewIds(std::list<std::string>* tab_view_ids,
+                                       bool w3c_compliant) = 0;
 
   // Return the WebView for the given id.
   virtual Status GetWebViewById(const std::string& id, WebView** web_view) = 0;
+
+  // Return the WebView of the active page, given a Tab/Page's id.
+  virtual Status GetActivePageByWebViewId(const std::string& id,
+                                          WebView** web_view,
+                                          bool wait_for_page) = 0;
 
   // Makes new window or tab.
   virtual Status NewWindow(const std::string& target_id,
                            WindowType type,
                            bool is_background,
+                           bool w3c_compliant,
                            std::string* window_handle) = 0;
 
   // Gets the rect of the specified WebView

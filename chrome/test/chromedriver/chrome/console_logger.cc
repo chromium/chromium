@@ -37,6 +37,10 @@ ConsoleLogger::ConsoleLogger(Log* log)
     : log_(log) {}
 
 Status ConsoleLogger::OnConnected(DevToolsClient* client) {
+  if (client->IsTabTarget()) {
+    // Tab targets do not support the commands ConsoleLogger needs.
+    return Status(kOk);
+  }
   base::Value::Dict params;
   Status status = client->SendCommand("Log.enable", params);
   if (status.IsError()) {

@@ -78,26 +78,28 @@ class SocketDecoratorTest : public IntegrationTest {
   }
 };
 
-Status AttachToFirstPage(DevToolsClient& browser_client,
-                         Timeout& timeout,
-                         std::unique_ptr<DevToolsClient>& client) {
-  Status status = target_utils::WaitForPage(browser_client, timeout);
+Status AttachToFirstTab(DevToolsClient& browser_client,
+                        Timeout& timeout,
+                        std::unique_ptr<DevToolsClient>& client) {
+  Status status = target_utils::WaitForTab(browser_client, timeout);
   if (status.IsError()) {
     return status;
   }
   WebViewsInfo views_info;
-  status = target_utils::GetWebViewsInfo(browser_client, &timeout, views_info);
+  status =
+      target_utils::GetTopLevelViewsInfo(browser_client, &timeout, views_info);
   if (status.IsError()) {
     return status;
   }
-  const WebViewInfo* view_info = views_info.FindFirst(WebViewInfo::kPage);
+
+  const WebViewInfo* view_info = views_info.FindFirst(WebViewInfo::kTab);
   if (view_info == nullptr) {
     return Status{kNoSuchWindow, "first tab not found"};
   }
-  return target_utils::AttachToPageTarget(browser_client, view_info->id,
-                                          &timeout, client);
-}
 
+  return target_utils::AttachToPageOrTabTarget(browser_client, view_info->id,
+                                               &timeout, client, true);
+}
 class PageCrashTest : public SocketDecoratorTest,
                       public testing::WithParamInterface<int> {
  public:
@@ -117,17 +119,21 @@ TEST_P(PageCrashTest, WaitForNavigation) {
   for (int skip_count = GetParam(); skip_count < GetParam() + kSkipTestStep;
        ++skip_count) {
     std::unique_ptr<DevToolsClient> client;
-    ASSERT_TRUE(StatusOk(AttachToFirstPage(*browser_client_, timeout, client)));
-    WebViewImpl web_view(client->GetId(), true, nullptr, &browser_info_,
-                         std::move(client), std::nullopt,
-                         PageLoadStrategy::kNormal, true);
-    web_view.AttachTo(browser_client_.get());
-    socket->SetSessionId(web_view.GetSessionId());
+    ASSERT_TRUE(StatusOk(AttachToFirstTab(*browser_client_, timeout, client)));
+    WebViewImpl tab_view(client->GetId(), true, &browser_info_,
+                         std::move(client), true, std::nullopt,
+                         PageLoadStrategy::kNormal, true, nullptr);
+    tab_view.AttachTo(browser_client_.get());
+    ASSERT_TRUE(StatusOk(tab_view.WaitForPendingActivePage(timeout)));
 
-    web_view.Load(away_url.spec(), &timeout);
+    WebView* page_view = nullptr;
+    ASSERT_TRUE(StatusOk(tab_view.GetActivePage(&page_view)));
+    socket->SetSessionId(page_view->GetSessionId());
+
+    page_view->Load(away_url.spec(), &timeout);
 
     socket->SetSkipCount(skip_count);
-    Status status = web_view.WaitForPendingNavigations("", timeout, false);
+    Status status = page_view->WaitForPendingNavigations("", timeout, false);
     const bool is_saturated = socket->IsSaturated();
 
     socket->SetSkipCount(1'000'000'000);
@@ -136,7 +142,7 @@ TEST_P(PageCrashTest, WaitForNavigation) {
     ASSERT_TRUE(StatusOk(browser_client_->SendCommand("Target.createTarget",
                                                       std::move(params))));
     params = base::Value::Dict();
-    params.Set("targetId", web_view.GetId());
+    params.Set("targetId", tab_view.GetId());
     ASSERT_TRUE(StatusOk(
         browser_client_->SendCommand("Target.closeTarget", std::move(params))));
 
@@ -175,15 +181,20 @@ TEST_P(BrowserCrashTest, WaitForNavigation) {
   GURL away_url = http_server_.http_url().Resolve("away.html");
 
   std::unique_ptr<DevToolsClient> client;
-  ASSERT_TRUE(StatusOk(AttachToFirstPage(*browser_client_, timeout, client)));
-  WebViewImpl web_view(client->GetId(), true, nullptr, &browser_info_,
-                       std::move(client), std::nullopt,
-                       PageLoadStrategy::kNormal, true);
-  web_view.AttachTo(browser_client_.get());
-  web_view.Load(away_url.spec(), &timeout);
+  ASSERT_TRUE(StatusOk(AttachToFirstTab(*browser_client_, timeout, client)));
+  WebViewImpl tab_view(client->GetId(), true, &browser_info_, std::move(client),
+                       true, std::nullopt, PageLoadStrategy::kNormal, true,
+                       nullptr);
+  tab_view.AttachTo(browser_client_.get());
+  ASSERT_TRUE(StatusOk(tab_view.WaitForPendingActivePage(timeout)));
+
+  WebView* page_view = nullptr;
+  ASSERT_TRUE(StatusOk(tab_view.GetActivePage(&page_view)));
+
+  page_view->Load(away_url.spec(), &timeout);
 
   socket->SetSkipCount(GetParam());
-  Status status = web_view.WaitForPendingNavigations("", timeout, false);
+  Status status = page_view->WaitForPendingNavigations("", timeout, false);
 
   if (socket->IsSaturated()) {
     // It can happen that the injected command has not taken effect before the

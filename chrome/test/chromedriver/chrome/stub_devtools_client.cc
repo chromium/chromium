@@ -44,6 +44,10 @@ bool StubDevToolsClient::IsConnected() const {
   return is_connected_;
 }
 
+bool StubDevToolsClient::IsTabTarget() const {
+  return is_tab_;
+}
+
 bool StubDevToolsClient::WasCrashed() {
   return false;
 }

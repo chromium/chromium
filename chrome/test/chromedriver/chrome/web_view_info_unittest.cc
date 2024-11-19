@@ -55,7 +55,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("service_worker", WebViewInfo::kServiceWorker),
         std::make_pair("shared_worker", WebViewInfo::kSharedWorker),
         std::make_pair("webview", WebViewInfo::kWebView),
-        std::make_pair("worker", WebViewInfo::kWorker)));
+        std::make_pair("worker", WebViewInfo::kWorker),
+        std::make_pair("tab", WebViewInfo::kTab)));
 
 class ParseUnsupportedTypeTest : public testing::TestWithParam<std::string> {
  public:

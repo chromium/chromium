@@ -48,6 +48,7 @@
 #include "chrome/test/chromedriver/chrome/network_conditions_override_manager.h"
 #include "chrome/test/chromedriver/chrome/non_blocking_navigation_tracker.h"
 #include "chrome/test/chromedriver/chrome/page_load_strategy.h"
+#include "chrome/test/chromedriver/chrome/page_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
@@ -427,16 +428,33 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateServiceWorkerWebView(
       id, w3c_compliant, nullptr, browser_info, std::move(client)));
 }
 
-std::unique_ptr<WebViewImpl> WebViewImpl::CreateTopLevelWebView(
+std::unique_ptr<WebViewImpl> WebViewImpl::CreateTabTargetWebView(
     const std::string& id,
     const bool w3c_compliant,
     const BrowserInfo* browser_info,
     std::unique_ptr<DevToolsClient> client,
     std::optional<MobileDevice> mobile_device,
     std::string page_load_strategy,
+    bool autoaccept_beforeunload,
+    raw_ptr<std::vector<std::unique_ptr<DevToolsEventListener>>>
+        devtools_listeners) {
+  return std::make_unique<WebViewImpl>(
+      id, w3c_compliant, browser_info, std::move(client),
+      /*is_tab_target=*/true, mobile_device, page_load_strategy,
+      autoaccept_beforeunload, devtools_listeners);
+}
+
+std::unique_ptr<WebViewImpl> WebViewImpl::CreateTopLevelWebView(
+    const std::string& id,
+    const bool w3c_compliant,
+    const WebViewImpl* tab,
+    const BrowserInfo* browser_info,
+    std::unique_ptr<DevToolsClient> client,
+    std::optional<MobileDevice> mobile_device,
+    std::string page_load_strategy,
     bool autoaccept_beforeunload) {
   return std::make_unique<WebViewImpl>(
-      id, w3c_compliant, nullptr, browser_info, std::move(client),
+      id, w3c_compliant, nullptr, tab, browser_info, std::move(client),
       std::move(mobile_device), page_load_strategy, autoaccept_beforeunload);
 }
 
@@ -451,19 +469,56 @@ WebViewImpl::WebViewImpl(const std::string& id,
       is_locked_(false),
       is_detached_(false),
       parent_(parent),
+      tab_(nullptr),
       client_(std::move(client)),
       frame_tracker_(nullptr),
       mobile_emulation_override_manager_(nullptr),
       geolocation_override_manager_(nullptr),
       network_conditions_override_manager_(nullptr),
       heap_snapshot_taker_(nullptr),
-      is_service_worker_(true) {
+      is_service_worker_(true),
+      is_tab_target_(false) {
+  client_->SetOwner(this);
+}
+
+WebViewImpl::WebViewImpl(
+    const std::string& id,
+    const bool w3c_compliant,
+    const BrowserInfo* browser_info,
+    std::unique_ptr<DevToolsClient> client,
+    bool is_tab_target,
+    std::optional<MobileDevice> mobile_device,
+    std::string page_load_strategy,
+    bool autoaccept_beforeunload,
+    raw_ptr<std::vector<std::unique_ptr<DevToolsEventListener>>>
+        devtools_listeners)
+    : id_(id),
+      w3c_compliant_(w3c_compliant),
+      browser_info_(browser_info),
+      is_locked_(false),
+      is_detached_(false),
+      parent_(nullptr),
+      tab_(nullptr),
+      client_(std::move(client)),
+      frame_tracker_(nullptr),
+      page_tracker_(new PageTracker(client_.get(), this)),
+      mobile_emulation_override_manager_(nullptr),
+      geolocation_override_manager_(nullptr),
+      network_conditions_override_manager_(nullptr),
+      heap_snapshot_taker_(nullptr),
+      devtools_listeners_(devtools_listeners),
+      tab_mobile_device_(mobile_device),
+      tab_page_load_strategy_(page_load_strategy),
+      is_service_worker_(false),
+      is_tab_target_(is_tab_target),
+      autoaccept_beforeunload_(autoaccept_beforeunload) {
   client_->SetOwner(this);
 }
 
 WebViewImpl::WebViewImpl(const std::string& id,
                          const bool w3c_compliant,
                          const WebViewImpl* parent,
+                         const WebViewImpl* tab,
                          const BrowserInfo* browser_info,
                          std::unique_ptr<DevToolsClient> client,
                          std::optional<MobileDevice> mobile_device,
@@ -475,6 +530,7 @@ WebViewImpl::WebViewImpl(const std::string& id,
       is_locked_(false),
       is_detached_(false),
       parent_(parent),
+      tab_(tab),
       client_(std::move(client)),
       frame_tracker_(new FrameTracker(client_.get(), this)),
       mobile_emulation_override_manager_(
@@ -486,7 +542,9 @@ WebViewImpl::WebViewImpl(const std::string& id,
       network_conditions_override_manager_(
           new NetworkConditionsOverrideManager(client_.get())),
       heap_snapshot_taker_(new HeapSnapshotTaker(client_.get())),
+      devtools_listeners_(nullptr),
       is_service_worker_(false),
+      is_tab_target_(false),
       autoaccept_beforeunload_(autoaccept_beforeunload) {
   client_->SetAutoAcceptBeforeunload(autoaccept_beforeunload_);
   // Downloading in headless mode requires the setting of
@@ -529,6 +587,72 @@ bool WebViewImpl::IsServiceWorker() const {
   return is_service_worker_;
 }
 
+bool WebViewImpl::IsTab() const {
+  return is_tab_target_;
+}
+
+std::unique_ptr<WebViewImpl> WebViewImpl::CreatePageWithinTab(
+    const std::string& session_id,
+    const std::string& target_id,
+    WebViewInfo::Type page_type) {
+  std::unique_ptr<DevToolsClientImpl> child_client =
+      std::make_unique<DevToolsClientImpl>(target_id, session_id);
+  child_client->SetMainPage(true);
+  if (devtools_listeners_ != nullptr) {
+    for (const auto& listener : *devtools_listeners_.get()) {
+      child_client->AddListener(listener.get());
+    }
+  }
+
+  std::optional<MobileDevice> mobile_device = tab_mobile_device_;
+  if (page_type == WebViewInfo::Type::kBackgroundPage) {
+    // Apps and extensions don't work on Android, so it doesn't make
+    // sense to provide mobile_device in mobile emulation mode, and can
+    // also potentially crash the renderer, for more details see:
+    // https://code.google.com/p/chromedriver/issues/detail?id=1205
+    mobile_device.reset();
+  }
+
+  std::unique_ptr<WebViewImpl> child = CreateTopLevelWebView(
+      target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
+      mobile_device, tab_page_load_strategy_, autoaccept_beforeunload_);
+
+  const WebViewImpl* root_view = this;
+  while (root_view->parent_ != nullptr) {
+    root_view = root_view->parent_;
+  }
+
+  PageLoadStrategy* navigation_tracker = root_view->navigation_tracker_.get();
+  if (navigation_tracker && !navigation_tracker->IsNonBlocking()) {
+    // Find Navigation Tracker for the top of the WebViewImpl hierarchy
+    child->client_->AddListener(navigation_tracker);
+  }
+  return child;
+}
+
+std::string WebViewImpl::GetTabId() {
+  return GetTab()->id_;
+}
+
+const WebViewImpl* WebViewImpl::GetTab() const {
+  const WebViewImpl* root_view = this;
+  while (root_view->parent_ != nullptr) {
+    root_view = root_view->parent_;
+  }
+
+  // If we reached top level page.
+  if (root_view->tab_ != nullptr) {
+    return root_view->tab_;
+  }
+
+  // This webview is the tab itself.
+  return root_view;
+}
+
+Status WebViewImpl::GetActivePage(WebView** web_view) {
+  return GetTab()->GetPageTracker()->GetActivePage(web_view);
+}
+
 std::unique_ptr<WebViewImpl> WebViewImpl::CreateChild(
     const std::string& session_id,
     const std::string& target_id) const {
@@ -539,8 +663,8 @@ std::unique_ptr<WebViewImpl> WebViewImpl::CreateChild(
   std::unique_ptr<DevToolsClientImpl> child_client =
       std::make_unique<DevToolsClientImpl>(session_id, session_id);
   std::unique_ptr<WebViewImpl> child = std::make_unique<WebViewImpl>(
-      target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
-      std::nullopt, "", autoaccept_beforeunload_);
+      target_id, w3c_compliant_, this, tab_, browser_info_,
+      std::move(child_client), std::nullopt, "", autoaccept_beforeunload_);
   const WebViewImpl* root_view = this;
   while (root_view->parent_ != nullptr) {
     root_view = root_view->parent_;
@@ -1515,6 +1639,11 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
     keep_waiting = status.code() == kNoSuchExecutionContext ||
                    status.code() == kAbortedByNavigation;
   }
+  // if (status.code() == kTargetDetached) {
+  //   // TODO: Verify if this is okay to return Ok on target detached.
+  //   // probably need to check that it's part of an activation here.
+  //   return status;
+  // }
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
     navigation_tracker_->set_timed_out(true);
@@ -1541,11 +1670,69 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
   return status;
 }
 
+Status WebViewImpl::WaitForPendingActivePage(const Timeout& timeout) {
+  // This function should not be called for non-tab WebViews
+  if (!is_tab_target_) {
+    return Status(kUnknownError,
+                  "Call WaitForActivePage only on the parent WebView");
+  }
+  const auto not_pending_active_page =
+      base::BindRepeating(&WebViewImpl::IsNotPendingActivePage,
+                          base::Unretained(this), base::Unretained(&timeout));
+  // If the target associated with the current view or its ancestor is detached
+  // while we are waiting for the pending navigation we don't want deleting the
+  // current WebView because we are executing the code in its method. Instead we
+  // lock the WebView with target holder and only label the view as detached.
+  WebViewImplHolder target_holder(this);
+  bool keep_waiting = true;
+  Status status{kOk};
+  while (keep_waiting) {
+    status = client_->HandleEventsUntil(not_pending_active_page, timeout);
+    keep_waiting = status.code() == kNoSuchExecutionContext ||
+                   status.code() == kAbortedByNavigation;
+  }
+  return status;
+}
+
+Status WebViewImpl::IsNotPendingActivePage(const Timeout* timeout,
+                                           bool* is_not_pending) const {
+  if (page_tracker_) {
+    bool is_pending = false;
+    Status status = page_tracker_->IsPendingActivePage(timeout, &is_pending);
+    *is_not_pending = !is_pending;
+    return status;
+  }
+  if (!parent_) {
+    *is_not_pending = false;
+    return Status(kOk);
+  }
+  return parent_->IsNotPendingActivePage(timeout, is_not_pending);
+}
+
 Status WebViewImpl::IsPendingNavigation(const Timeout* timeout,
-                                        bool* is_pending) const {
-  if (navigation_tracker_)
+                                        bool* is_pending) {
+  if (navigation_tracker_) {
     return navigation_tracker_->IsPendingNavigation(timeout, is_pending);
-  return parent_->IsPendingNavigation(timeout, is_pending);
+  }
+
+  bool not_pending_active_page = true;
+  Status status =
+      GetTab()->IsNotPendingActivePage(timeout, &not_pending_active_page);
+  if (status.IsError()) {
+    return status;
+  }
+
+  if (!not_pending_active_page) {
+    *is_pending = true;
+    return Status(kOk);
+  }
+
+  WebView* active_page = nullptr;
+  status = GetActivePage(&active_page);
+  if (status.IsError()) {
+    return status;
+  }
+  return active_page->IsPendingNavigation(timeout, is_pending);
 }
 
 MobileEmulationOverrideManager* WebViewImpl::GetMobileEmulationOverrideManager()
@@ -1919,8 +2106,14 @@ Status WebViewImpl::IsNotPendingNavigation(const std::string& frame_id,
   bool is_pending = false;
   Status status =
       navigation_tracker_->IsPendingNavigation(timeout, &is_pending);
-  if (status.IsError())
+  if (status.IsError()) {
+    if (status.code() == kTargetDetached) {
+      // Special case handling: During MPArch activation, the frame is detached.
+      *is_not_pending = !is_pending;
+      return Status(kOk);
+    }
     return status;
+  }
   // An alert may block the pending navigation.
   if (client_->IsDialogOpen()) {
     std::string alert_text;
@@ -1955,6 +2148,10 @@ Status WebViewImpl::GetFedCmTracker(FedCmTracker** out_tracker) {
 
 FrameTracker* WebViewImpl::GetFrameTracker() const {
   return frame_tracker_.get();
+}
+
+PageTracker* WebViewImpl::GetPageTracker() const {
+  return page_tracker_.get();
 }
 
 const WebViewImpl* WebViewImpl::GetParent() const {
@@ -2384,12 +2581,28 @@ WebViewImplHolder::WebViewImplHolder(WebViewImpl* web_view) {
   // deleted while still in use. Inside |items_|, each web view must appear
   // before its parent. This ensures the destructor unlocks the web views in
   // the right order.
+
+  // Get hold of the tab this frame belongs to.
+  raw_ptr<WebViewImpl> tab_view = nullptr;
+  if (web_view != nullptr) {
+    tab_view = const_cast<WebViewImpl*>(web_view->GetTab());
+  }
+
+  // Walk up the web_view parents and lock each.
   while (web_view != nullptr) {
     Item item;
     item.web_view = web_view;
     item.was_locked = web_view->Lock();
     items_.push_back(item);
     web_view = const_cast<WebViewImpl*>(web_view->GetParent());
+  }
+
+  // Finally, lock the tab view.
+  if (tab_view) {
+    Item item;
+    item.web_view = tab_view;
+    item.was_locked = tab_view->Lock();
+    items_.push_back(item);
   }
 }
 
@@ -2406,6 +2619,13 @@ WebViewImplHolder::~WebViewImplHolder() {
       item.web_view = nullptr;
       web_view->GetParent()->GetFrameTracker()->DeleteTargetForFrame(
           web_view->GetId());
+    } else {
+      item.web_view = nullptr;
+      if (const WebView* tab_view = web_view->GetTab()) {
+        PageTracker* page_tracker = tab_view->GetPageTracker();
+        CHECK(page_tracker != nullptr);
+        page_tracker->DeletePage(web_view->GetId());
+      }
     }
   }
 }

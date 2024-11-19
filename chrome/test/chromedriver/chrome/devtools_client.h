@@ -123,6 +123,8 @@ class DevToolsClient {
 
   virtual bool IsMainPage() const = 0;
 
+  virtual bool IsTabTarget() const = 0;
+
   virtual Status SendRaw(const std::string& message) = 0;
 
   virtual bool HasMessageForAnySession() const = 0;

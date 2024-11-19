@@ -31,8 +31,8 @@ Status StubChrome::GetWebViewIdForFirstTab(std::string* web_view_id,
   return Status(kOk);
 }
 
-Status StubChrome::GetWebViewIds(std::list<std::string>* web_view_ids,
-                                 bool w3c_compliant) {
+Status StubChrome::GetTopLevelWebViewIds(std::list<std::string>* tab_view_ids,
+                                         bool w3c_compliant) {
   return Status(kOk);
 }
 
@@ -40,9 +40,16 @@ Status StubChrome::GetWebViewById(const std::string& id, WebView** web_view) {
   return Status(kOk);
 }
 
+Status StubChrome::GetActivePageByWebViewId(const std::string& id,
+                                            WebView** web_view,
+                                            bool wait_for_page) {
+  return Status(kOk);
+}
+
 Status StubChrome::NewWindow(const std::string& target_id,
                              WindowType type,
                              bool is_background,
+                             bool w3c_compliant,
                              std::string* window_handle) {
   return Status(kOk);
 }

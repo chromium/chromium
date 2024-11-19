@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_chrome.h"
 #include "chrome/test/chromedriver/chrome/stub_web_view.h"
@@ -35,8 +36,10 @@ void SaveTo(std::string* dest, std::string value) {
 
 class MockChrome : public StubChrome {
  public:
-  MockChrome() : web_view_("1") {}
-  ~MockChrome() override {}
+  MockChrome() : web_view_("1") {
+    web_view_.SetupChildView(std::make_unique<StubWebView>("child"));
+  }
+  ~MockChrome() override = default;
 
   Status GetWebViewById(const std::string& id, WebView** web_view) override {
     if (id == web_view_.GetId()) {

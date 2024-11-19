@@ -131,8 +131,8 @@ TEST(NavigationTracker, FrameLoadStartStop) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
@@ -158,8 +158,8 @@ TEST(NavigationTracker, FrameLoadStartStartStop) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
@@ -186,8 +186,8 @@ TEST(NavigationTracker, MultipleFramesLoad) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
@@ -238,8 +238,8 @@ TEST(NavigationTracker, NavigationScheduledForOtherFrame) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, NavigationTracker::kNotLoading,
                             &web_view);
@@ -416,8 +416,8 @@ TEST(NavigationTracker, UnknownStateFailsToDetermineState) {
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<FailToEvalScriptDevToolsClient>();
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
@@ -433,8 +433,8 @@ TEST(NavigationTracker, UnknownStatePageNotLoadAtAll) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           true, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
@@ -460,8 +460,8 @@ TEST(NavigationTracker, UnknownStateForcesStartReceivesStop) {
       std::make_unique<DeterminingLoadStateDevToolsClient>(
           false, true, std::string(), &dict);
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 
@@ -559,8 +559,8 @@ TEST(NavigationTracker, TargetClosedInIsPendingNavigation) {
   std::unique_ptr<DevToolsClient> client_uptr =
       std::make_unique<TargetClosedDevToolsClient>();
   DevToolsClient* client_ptr = client_uptr.get();
-  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, &browser_info,
-                       std::move(client_uptr), std::nullopt,
+  WebViewImpl web_view(client_ptr->GetId(), true, nullptr, nullptr,
+                       &browser_info, std::move(client_uptr), std::nullopt,
                        PageLoadStrategy::kNormal, true);
   NavigationTracker tracker(client_ptr, &web_view);
 

@@ -4211,6 +4211,24 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         'done=arguments[0]; setTimeout(() => {done();}, 1); window.close()')
     self.WaitForCondition(self._sessionIsOver)
 
+  def testPrerenderActivation(self):
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/prerender.html'))
+    old_window_handle = self._driver.GetCurrentWindowHandle()
+    self._driver.FindElement('css selector', '#link').Click()
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.GetCurrentWindowHandle() != old_window_handle))
+    new_window_handle = self._driver.GetCurrentWindowHandle()
+    self.assertNotEqual(None, new_window_handle)
+    self.assertNotEqual(old_window_handle, new_window_handle)
+    self.assertTrue(self._driver.ExecuteScript("""
+        return (
+          document.prerendering ||
+          self.performance?.getEntriesByType?.
+            ('navigation')[0]?.activationStart > 0
+        );
+      """))
+
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):
     self._driver1 = self.CreateDriver()
@@ -6127,6 +6145,8 @@ class ChromeDownloadDirTest(ChromeDriverBaseTest):
     download_dir = self.CreateTempDir()
     download_name = os.path.join(download_dir, 'a_red_dot.png')
     driver = self.CreateDriver(download_dir=download_dir)
+    new_window = driver.NewWindow(window_type='tab')
+    driver.SwitchToWindow(new_window['handle'])
     driver.Load(ChromeDriverTest.GetHttpUrlForFile(
         '/chromedriver/download.html'))
     driver.FindElement('css selector', '#red-dot').Click()
@@ -6156,6 +6176,8 @@ class ChromeDownloadDirTest(ChromeDriverBaseTest):
         '/abc.csv', self.RespondWithCsvFile)
     download_dir = self.CreateTempDir()
     driver = self.CreateDriver(download_dir=download_dir)
+    new_window = driver.NewWindow(window_type='tab')
+    driver.SwitchToWindow(new_window['handle'])
     original_url = driver.GetCurrentUrl()
     driver.Load(ChromeDriverTest.GetHttpUrlForFile('/abc.csv'))
     self.WaitForFileToDownload(os.path.join(download_dir, 'abc.csv'))
@@ -6379,6 +6401,42 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # experiment that disallows MV2 extensions.
     # This test can be removed entirely when support for MV2 extensions is
     # removed.
+    driver = self.CreateDriver(
+        # Chrome Extension inspection requires enable_extension_targets = True.
+        enable_extension_targets = True,
+        chrome_extensions=[self._PackExtension(crx)],
+        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
+    handles = driver.GetWindowHandles()
+    for handle in handles:
+      driver.SwitchToWindow(handle)
+      if driver.GetCurrentUrl() == 'chrome-extension://' \
+          'nibbphkelpaohebejnbojjalikodckih/_generated_background_page.html':
+        self.assertEqual(42, driver.ExecuteScript('return magic;'))
+        return
+    self.fail("couldn't find generated background page for test extension")
+
+  def testCannotInspectExtensionTargetsWithoutSwitch(self):
+    crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
+    # Chrome Extension inspection requires enable_extension_targets = True.
+    # This test exercises inspection of an extension background page, which
+    # is only valid for manifest V2 extensions. Explicitly disable the
+    # experiment that disallows MV2 extensions.
+    driver = self.CreateDriver(
+        chrome_extensions=[self._PackExtension(crx)],
+        chrome_switches=['disable-features=ExtensionManifestV2Disabled'])
+    handles = driver.GetWindowHandles()
+    for handle in handles:
+      driver.SwitchToWindow(handle)
+      self.assertFalse(driver.GetCurrentUrl().startswith("chrome-extension://"))
+
+  def testCanInspectExtensionTargetsWithMigratedSwitch(self):
+    crx = os.path.join(_TEST_DATA_DIR, 'ext_bg_page.crx')
+    # Chrome Extension inspection requires enable_extension_targets = True.
+    # We migrate experimental_options={'windowTypes': ['background_page']} to
+    # the new switch.
+    # This test exercises inspection of an extension background page, which
+    # is only valid for manifest V2 extensions. Explicitly disable the
+    # experiment that disallows MV2 extensions.
     driver = self.CreateDriver(
         chrome_extensions=[self._PackExtension(crx)],
         experimental_options={'windowTypes': ['background_page']},
@@ -8094,6 +8152,54 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
         'return document.getElementsByTagName("div")[0];')
     self.assertRegex(div._id, _ELEMENT_REF_REGEX,
                      msg='Element id format is incorrect')
+
+  def testPrerenderActivation(self):
+    self._http_server.SetDataForPath('/main.html', bytes("""
+        <!DOCTYPE html>
+        <html>
+          <head />
+          <body>
+            <a id="link" href="prerendered.html">navigate</a>
+          </body>
+        </html>
+      """, 'utf-8'))
+    self._http_server.SetDataForPath('/prerendered.html', bytes("""
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <a href="main.html">Back</a>
+          </body>
+        </html>
+    """, 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile('/main.html'))
+    #
+    self._driver.ExecuteScript("""
+        const script = document.createElement('script');
+        script.type = 'speculationrules';
+        script.innerText = `
+          {
+            "prerender": [
+              {"source": "list", "urls": ["prerendered.html"]}
+            ]
+          }
+        `;
+        document.head.append(script);
+      """)
+    old_window_handle = self._driver.GetCurrentWindowHandle()
+    self._driver.FindElement('css selector', '#link').Click()
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.GetCurrentWindowHandle() != old_window_handle))
+    new_window_handle = self._driver.GetCurrentWindowHandle()
+    self.assertNotEqual(None, new_window_handle)
+    self.assertNotEqual(old_window_handle, new_window_handle)
+    self.assertTrue(self._driver.ExecuteScript("""
+        return (
+          document.prerendering ||
+          self.performance?.getEntriesByType?.
+            ('navigation')[0]?.activationStart > 0
+        );
+      """))
 
   def testCompareClassicAndBidiIds(self):
     conn = self.createWebSocketConnection()

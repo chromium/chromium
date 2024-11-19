@@ -48,6 +48,8 @@ enum StatusCode {
   // This error differs from all other errors and is intended to be used in the
   // unit tests.
   kTestError,
+  // An active page not found
+  kNoActivePage,
 };
 
 // Represents a WebDriver status, which may be an error or ok.

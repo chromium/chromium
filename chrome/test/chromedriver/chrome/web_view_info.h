@@ -27,6 +27,7 @@ struct WebViewInfo {
     kSharedWorker,
     kWebView,
     kWorker,
+    kTab,
   };
 
   WebViewInfo(const std::string& id,
@@ -38,6 +39,7 @@ struct WebViewInfo {
 
   bool IsFrontend() const;
   bool IsInactiveBackgroundPage() const;
+  bool IsExtensionTarget() const;
 
   static Status ParseType(const std::string& data, WebViewInfo::Type& type);
 

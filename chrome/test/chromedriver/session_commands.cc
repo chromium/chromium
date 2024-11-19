@@ -362,13 +362,14 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     status = session->GetTargetWindow(&web_view);
     if (status.IsError())
       return status;
-    session->bidi_mapper_web_view_id = session->window;
+    session->bidi_mapper_web_view_id = web_view->GetId();
 
     // Create a new tab because the default one will be occupied by the
     // mapper. The new tab is activated and focused.
     std::string web_view_id;
-    status = session->chrome->NewWindow(
-        session->window, Chrome::WindowType::kTab, false, &web_view_id);
+    status =
+        session->chrome->NewWindow(session->window, Chrome::WindowType::kTab,
+                                   false, session->w3c_compliant, &web_view_id);
 
     if (status.IsError()) {
       return status;
@@ -788,8 +789,8 @@ Status ExecuteClose(Session* session,
                     const base::Value::Dict& params,
                     std::unique_ptr<base::Value>* value) {
   std::list<std::string> web_view_ids;
-  Status status = session->chrome->GetWebViewIds(&web_view_ids,
-                                                 session->w3c_compliant);
+  Status status = session->chrome->GetTopLevelWebViewIds(
+      &web_view_ids, session->w3c_compliant);
   if (status.IsError())
     return status;
   bool is_last_web_view = web_view_ids.size() == 1u;
@@ -841,7 +842,7 @@ Status ExecuteClose(Session* session,
     }
   }
 
-  status = session->chrome->CloseWebView(web_view->GetId());
+  status = session->chrome->CloseWebView(web_view->GetTabId());
   if (status.IsError())
     return status;
 
@@ -863,26 +864,36 @@ Status ExecuteClose(Session* session,
 Status ExecuteGetWindowHandles(Session* session,
                                const base::Value::Dict& params,
                                std::unique_ptr<base::Value>* value) {
-  std::list<std::string> web_view_ids;
-  Status status = session->chrome->GetWebViewIds(&web_view_ids,
-                                                 session->w3c_compliant);
+  std::list<std::string> tab_view_ids;
+  Status status = session->chrome->GetTopLevelWebViewIds(
+      &tab_view_ids, session->w3c_compliant);
   if (status.IsError()) {
     return status;
   }
 
+  base::Value::List window_ids;
+  for (std::list<std::string>::const_iterator it = tab_view_ids.begin();
+       it != tab_view_ids.end(); ++it) {
+    WebView* page = nullptr;
+    status = session->chrome->GetActivePageByWebViewId(*it, &page,
+                                                       /*wait_for_page=*/false);
+    if (status.IsError()) {
+      if (status.code() == kNoActivePage) {
+        continue;
+      }
+      return status;
+    }
+    CHECK(page != nullptr);
+    window_ids.Append(page->GetId());
+  }
+
   if (session->web_socket_url) {
-    auto it =
-        base::ranges::find(web_view_ids, session->bidi_mapper_web_view_id);
-    if (it != web_view_ids.end()) {
-      web_view_ids.erase(it);
+    auto it = base::ranges::find(window_ids, session->bidi_mapper_web_view_id);
+    if (it != window_ids.end()) {
+      window_ids.erase(it);
     }
   }
 
-  base::Value::List window_ids;
-  for (std::list<std::string>::const_iterator it = web_view_ids.begin();
-       it != web_view_ids.end(); ++it) {
-    window_ids.Append(*it);
-  }
   *value = std::make_unique<base::Value>(std::move(window_ids));
   return Status(kOk);
 }
@@ -901,19 +912,35 @@ Status ExecuteSwitchToWindow(Session* session,
       return Status(kInvalidArgument, "'name' must be a string");
   }
 
-  std::list<std::string> web_view_ids;
-  Status status = session->chrome->GetWebViewIds(&web_view_ids,
-                                                 session->w3c_compliant);
+  std::list<std::string> tab_view_ids;
+  Status status = session->chrome->GetTopLevelWebViewIds(
+      &tab_view_ids, session->w3c_compliant);
   if (status.IsError())
     return status;
 
+  // Find active web page view for each tab.
+  std::unordered_map<std::string, WebView*> tab_to_active_webview;
+  for (auto& tab_id : tab_view_ids) {
+    WebView* active_page = nullptr;
+    status = session->chrome->GetActivePageByWebViewId(tab_id, &active_page,
+                                                       /*wait_for_page=*/false);
+    if (status.IsError()) {
+      if (status.code() == kNoActivePage) {
+        continue;
+      }
+      return status;
+    }
+    tab_to_active_webview[tab_id] = active_page;
+  }
+
+  WebView* web_view = nullptr;
   std::string web_view_id;
   bool found = false;
-  // Check if any web_view matches |name|.
-  for (std::list<std::string>::const_iterator it = web_view_ids.begin();
-       it != web_view_ids.end(); ++it) {
-    if (*it == *name) {
-      web_view_id = *name;
+  // Check if any tab_view or web_view matches |name|.
+  for (auto& it : tab_to_active_webview) {
+    if (it.first == *name || it.second->GetId() == *name) {
+      web_view = it.second;
+      web_view_id = it.first;
       found = true;
       break;
     }
@@ -922,23 +949,17 @@ Status ExecuteSwitchToWindow(Session* session,
     // Check if any of the tab window names match |name|.
     const char* kGetWindowNameScript = "function() { return window.name; }";
     base::Value::List args;
-    for (std::list<std::string>::const_iterator it = web_view_ids.begin();
-         it != web_view_ids.end(); ++it) {
+    for (auto& it : tab_to_active_webview) {
       std::unique_ptr<base::Value> result;
-      WebView* web_view;
-      status = session->chrome->GetWebViewById(*it, &web_view);
-      // `CallFunction(...)` below may remove web views that detach during this
-      // loop. In that case, continue searching.
-      if (status.IsError())
-        continue;
-      status = web_view->CallFunction(
-          std::string(), kGetWindowNameScript, args, &result);
+      status = it.second->CallFunction(std::string(), kGetWindowNameScript,
+                                       args, &result);
       if (status.IsError())
         return status;
       if (!result->is_string())
         return Status(kUnknownError, "failed to get window name");
       if (result->GetString() == *name) {
-        web_view_id = *it;
+        web_view = it.second;
+        web_view_id = it.first;
         found = true;
         break;
       }
@@ -952,12 +973,6 @@ Status ExecuteSwitchToWindow(Session* session,
       session->overridden_network_conditions ||
       session->headless_download_directory ||
       session->chrome->IsMobileEmulationEnabled()) {
-    // Connect to new window to apply session configuration
-    WebView* web_view;
-    status = session->chrome->GetWebViewById(web_view_id, &web_view);
-    if (status.IsError())
-      return status;
-
     // apply type specific configurations:
     if (session->overridden_geoposition) {
       status = web_view->OverrideGeolocation(*session->overridden_geoposition);
@@ -1451,19 +1466,24 @@ Status ExecuteSetNetworkConnection(Session* session,
   // Applies overridden network connection to all WebViews of the session
   // to ensure that network emulation is applied on a per-session basis
   // rather than the just to the current WebView.
-  std::list<std::string> web_view_ids;
-  status = session->chrome->GetWebViewIds(&web_view_ids,
-                                          session->w3c_compliant);
+  std::list<std::string> tab_view_ids;
+  status = session->chrome->GetTopLevelWebViewIds(&tab_view_ids,
+                                                  session->w3c_compliant);
   if (status.IsError())
     return status;
 
-  for (std::string web_view_id : web_view_ids) {
+  for (std::string tab_view_id : tab_view_ids) {
     WebView* web_view;
-    status = session->chrome->GetWebViewById(web_view_id, &web_view);
-    if (status.IsError())
+    status = session->chrome->GetActivePageByWebViewId(tab_view_id, &web_view,
+                                                       /*wait_for_page=*/false);
+    if (status.IsError()) {
+      if (status.code() == kNoActivePage) {
+        continue;
+      }
       return status;
+    }
     web_view->OverrideNetworkConditions(
-      *session->overridden_network_conditions);
+        *session->overridden_network_conditions);
   }
 
   *value = std::make_unique<base::Value>(*connection_type);
@@ -1771,8 +1791,8 @@ Status ForwardBidiCommand(Session* session,
   }
 
   WebView* web_view = nullptr;
-  Status status = session->chrome->GetWebViewById(
-      session->bidi_mapper_web_view_id, &web_view);
+  Status status = session->chrome->GetActivePageByWebViewId(
+      session->bidi_mapper_web_view_id, &web_view, /*wait_for_page=*/false);
   if (status.IsError()) {
     return status;
   }

@@ -188,6 +188,13 @@ void StubSyncWebSocket::EnqueueHandshakeResponse(int cmd_id,
     } else {
       return;
     }
+  } else if (method == "Target.setAutoAttach") {
+    EXPECT_FALSE(handshake_target_set_autoattach_handled_);
+    if (!handshake_target_set_autoattach_handled_) {
+      handshake_target_set_autoattach_handled_ = true;
+    } else {
+      return;
+    }
   } else {
     // Unexpected handshake command
     VLOG(0) << "unexpected handshake method: " << method;
@@ -195,7 +202,8 @@ void StubSyncWebSocket::EnqueueHandshakeResponse(int cmd_id,
   }
 
   connect_complete_ =
-      handshake_add_script_handled_ && handshake_runtime_eval_handled_;
+      handshake_target_set_autoattach_handled_ ||
+      (handshake_add_script_handled_ && handshake_runtime_eval_handled_);
 
   base::Value::Dict response;
   response.Set("id", cmd_id);

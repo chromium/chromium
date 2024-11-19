@@ -27,6 +27,7 @@ struct KeyEvent;
 struct MouseEvent;
 struct NetworkConditions;
 struct TouchEvent;
+class PageTracker;
 
 struct CallFunctionOptions {
   bool include_shadow_root = false;
@@ -40,6 +41,7 @@ class WebView {
   virtual ~WebView() = default;
 
   virtual bool IsServiceWorker() const = 0;
+  virtual bool IsTab() const = 0;
 
   // Return the id for this WebView.
   virtual std::string GetId() = 0;
@@ -214,7 +216,14 @@ class WebView {
 
   // Returns whether the current frame is pending navigation.
   virtual Status IsPendingNavigation(const Timeout* timeout,
-                                     bool* is_pending) const = 0;
+                                     bool* is_pending) = 0;
+
+  // Waits until the tab acquires an active page.
+  virtual Status WaitForPendingActivePage(const Timeout& timeout) = 0;
+
+  // Returns whether the current tab is pending acquisition of an active page.
+  virtual Status IsNotPendingActivePage(const Timeout* timeout,
+                                        bool* is_not_pending) const = 0;
 
   // Returns the MobileEmulationOverrideManager.
   virtual MobileEmulationOverrideManager* GetMobileEmulationOverrideManager()
@@ -272,6 +281,10 @@ class WebView {
   virtual bool IsNonBlocking() const = 0;
 
   virtual FrameTracker* GetFrameTracker() const = 0;
+  virtual PageTracker* GetPageTracker() const = 0;
+  virtual std::string GetTabId() = 0;
+
+  virtual Status GetActivePage(WebView** web_view) = 0;
 
   // On success, sets *tracker to the FedCmTracker.
   virtual Status GetFedCmTracker(FedCmTracker** out_tracker) = 0;

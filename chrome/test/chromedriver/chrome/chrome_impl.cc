@@ -22,8 +22,8 @@
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
-#include "chrome/test/chromedriver/chrome/page_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
+#include "chrome/test/chromedriver/chrome/tab_tracker.h"
 #include "chrome/test/chromedriver/chrome/target_utils.h"
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
@@ -96,8 +96,8 @@ bool ChromeImpl::HasCrashedWebView() {
 Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
                                            bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
-                                                nullptr, views_info);
+  Status status = target_utils::GetTopLevelViewsInfo(
+      *devtools_websocket_client_, nullptr, views_info);
   if (status.IsError())
     return status;
   do {
@@ -107,7 +107,7 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
     return status;
   for (int i = views_info.GetSize() - 1; i >= 0; --i) {
     const WebViewInfo& view = views_info.Get(i);
-    if (view.type == WebViewInfo::kPage) {
+    if (view.type == WebViewInfo::kTab) {
       *web_view_id = view.id;
       return Status(kOk);
     }
@@ -117,8 +117,8 @@ Status ChromeImpl::GetWebViewIdForFirstTab(std::string* web_view_id,
 
 Status ChromeImpl::GetWebViewCount(size_t* web_view_count, bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
-                                                nullptr, views_info);
+  Status status = target_utils::GetTopLevelViewsInfo(
+      *devtools_websocket_client_, nullptr, views_info);
   if (status.IsError()) {
     return status;
   }
@@ -128,11 +128,11 @@ Status ChromeImpl::GetWebViewCount(size_t* web_view_count, bool w3c_compliant) {
   return Status(kOk);
 }
 
-Status ChromeImpl::GetWebViewIds(std::list<std::string>* web_view_ids,
-                                 bool w3c_compliant) {
+Status ChromeImpl::GetTopLevelWebViewIds(std::list<std::string>* web_view_ids,
+                                         bool w3c_compliant) {
   WebViewsInfo views_info;
-  Status status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
-                                                nullptr, views_info);
+  Status status = target_utils::GetTopLevelViewsInfo(
+      *devtools_websocket_client_, nullptr, views_info);
   if (status.IsError()) {
     return status;
   }
@@ -170,45 +170,64 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
   // Check for newly-opened web views.
   for (size_t i = 0; i < views_info.GetSize(); ++i) {
     const WebViewInfo& view = views_info.Get(i);
-    if (IsBrowserWindow(view)) {
-      bool found = false;
-      for (const auto& web_view : web_views_) {
-        if (web_view->GetId() == view.id) {
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        std::unique_ptr<DevToolsClient> client;
-        Status status = target_utils::AttachToPageTarget(
-            *devtools_websocket_client_, view.id, nullptr, client);
-        // This web view may have closed itself between when it was returned by
-        // `Target.getTargets` and when `chromedriver` attempted to attach to
-        // it. In that case, ignore this web view. See crbug.com/1506833 for an
-        // example of this race.
-        if (status.code() == kNoSuchWindow) {
-          continue;
-        } else if (status.IsError()) {
-          return status;
-        }
+    if (!IsBrowserWindow(view)) {
+      continue;
+    }
 
-        for (const auto& listener : devtools_event_listeners_)
-          client->AddListener(listener.get());
-        // OnConnected will fire when DevToolsClient connects later.
-        CHECK(!page_load_strategy_.empty());
-        if (view.type == WebViewInfo::kServiceWorker) {
-          web_views_.push_back(WebViewImpl::CreateServiceWorkerWebView(
-              view.id, w3c_compliant, &browser_info_, std::move(client)));
-        } else {
-          web_views_.push_back(WebViewImpl::CreateTopLevelWebView(
-              view.id, w3c_compliant, &browser_info_, std::move(client),
-              mobile_device_, page_load_strategy_, autoaccept_beforeunload_));
-        }
-        status = web_views_.back()->AttachTo(devtools_websocket_client_.get());
-        if (status.IsError()) {
-          return status;
-        }
+    // Skip over extension targets if not enabled.
+    if (view.IsExtensionTarget() && !enable_extension_targets_) {
+      continue;
+    }
+
+    // Check if we already attached to this target.
+    auto found = base::ranges::find(web_views_, view.id, &WebViewImpl::GetId);
+    if (found != web_views_.end()) {
+      continue;
+    }
+
+    std::unique_ptr<DevToolsClient> client;
+    Status status = target_utils::AttachToPageOrTabTarget(
+        *devtools_websocket_client_, view.id, nullptr, client,
+        view.type == WebViewInfo::kTab);
+    // This web view may have closed itself between when it was returned by
+    // `Target.getTargets` and when `chromedriver` attempted to attach to
+    // it. In that case, ignore this web view. See crbug.com/1506833 for an
+    // example of this race.
+    if (status.code() == kNoSuchWindow) {
+      continue;
+    } else if (status.IsError()) {
+      return status;
+    }
+
+    for (const auto& listener : devtools_event_listeners_) {
+      client->AddListener(listener.get());
+    }
+    // OnConnected will fire when DevToolsClient connects later.
+    CHECK(!page_load_strategy_.empty());
+    if (view.type == WebViewInfo::kServiceWorker) {
+      web_views_.push_back(WebViewImpl::CreateServiceWorkerWebView(
+          view.id, w3c_compliant, &browser_info_, std::move(client)));
+    } else if (view.type == WebViewInfo::kTab) {
+      web_views_.push_back(WebViewImpl::CreateTabTargetWebView(
+          view.id, w3c_compliant, &browser_info_, std::move(client),
+          mobile_device_, page_load_strategy_, autoaccept_beforeunload_,
+          &devtools_event_listeners_));
+    } else {
+      std::optional<MobileDevice> mobile_device = mobile_device_;
+      if (view.type == WebViewInfo::Type::kApp) {
+        // Apps and extensions don't work on Android, so it doesn't make
+        // sense to provide mobile_device in mobile emulation mode, and can
+        // also potentially crash the renderer, for more details see:
+        // https://code.google.com/p/chromedriver/issues/detail?id=1205
+        mobile_device.reset();
       }
+      web_views_.push_back(WebViewImpl::CreateTopLevelWebView(
+          view.id, w3c_compliant, nullptr, &browser_info_, std::move(client),
+          mobile_device, page_load_strategy_, autoaccept_beforeunload_));
+    }
+    status = web_views_.back()->AttachTo(devtools_websocket_client_.get());
+    if (status.IsError()) {
+      return status;
     }
   }
 
@@ -221,16 +240,52 @@ Status ChromeImpl::GetWebViewById(const std::string& id, WebView** web_view) {
       *web_view = view.get();
       return Status(kOk);
     }
+    WebView* active_page = nullptr;
+    if (!view->GetActivePage(&active_page).IsError()) {
+      if (active_page->GetId() == id) {
+        *web_view = active_page;
+        return Status(kOk);
+      }
+    }
   }
   return Status(kUnknownError, "web view not found");
+}
+
+Status ChromeImpl::GetActivePageByWebViewId(const std::string& id,
+                                            WebView** active_page_view,
+                                            bool wait_for_page) {
+  WebView* web_view = nullptr;
+  Status status = GetWebViewById(id, &web_view);
+  if (status.IsError()) {
+    return status;
+  }
+  if (web_view->IsTab()) {
+    if (wait_for_page) {
+      Timeout timeout;
+      status = web_view->WaitForPendingActivePage(timeout);
+      if (status.IsError()) {
+        return status;
+      }
+    }
+    status = web_view->GetActivePage(&web_view);
+    if (status.IsError()) {
+      return status;
+    }
+  }
+  *active_page_view = web_view;
+  return Status(kOk);
 }
 
 Status ChromeImpl::NewWindow(const std::string& target_id,
                              WindowType type,
                              bool is_background,
+                             bool w3c_compliant,
                              std::string* window_handle) {
-  internal::Window window;
-  Status status = GetWindow(target_id, window);
+  // https://w3c.github.io/webdriver/#dfn-new-window
+  // If session's current top-level browsing context is no longer open, return
+  // error with error code no such window.
+  WebView* tab = nullptr;
+  Status status = GetWebViewById(target_id, &tab);
   if (status.IsError())
     return Status(kNoSuchWindow);
 
@@ -242,6 +297,7 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
     // browser context automatically.
   }
   params.Set("background", is_background);
+  params.Set("forTab", true);  // Request a tab id be returned.
   base::Value::Dict result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
       "Target.createTarget", params, &result);
@@ -251,17 +307,45 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
   const std::string* target_id_str = result.FindString("targetId");
   if (!target_id_str)
     return Status(kUnknownError, "no targetId from createTarget");
-  *window_handle = *target_id_str;
+
+  // Refresh ChromeDriver's internal tab list to capture the newly created
+  // tab.
+  std::list<std::string> tab_view_ids;
+  status = GetTopLevelWebViewIds(&tab_view_ids, w3c_compliant);
+  if (status.IsError()) {
+    return status;
+  }
+
+  WebView* new_page = nullptr;
+  status = GetActivePageByWebViewId(*target_id_str, &new_page,
+                                    /*wait_for_page=*/true);
+  if (status.IsError()) {
+    return status;
+  }
+
+  *window_handle = new_page->GetId();
 
   return Status(kOk);
 }
 
-Status ChromeImpl::GetWindow(const std::string& target_id,
+Status ChromeImpl::GetWindow(const std::string& tab_target_id,
                              internal::Window& window) {
+  // TODO: This tab->page->window lookup is to work around a bug in Headless
+  // implementation in acquiring WebContents against a tab target id.
+  // Once Headless's BrowserHandler::GetWindowForTarget matches that of
+  // content shell, we should be able to call GetWindow directly on tab target's
+  // id.
+  WebView* page = nullptr;
+  Status status =
+      GetActivePageByWebViewId(tab_target_id, &page, /*wait_for_page=*/true);
+  if (status.IsError()) {
+    return status;
+  }
+
   base::Value::Dict params;
-  params.Set("targetId", target_id);
+  params.Set("targetId", page->GetId());
   base::Value::Dict result;
-  Status status = devtools_websocket_client_->SendCommandAndGetResult(
+  status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowForTarget", params, &result);
   if (status.IsError())
     return status;
@@ -421,7 +505,8 @@ Status ChromeImpl::SetWindowBounds(
     // the correct values.
     // But do not run when headless. see https://crbug.com/1049336
     WebView* web_view;
-    status = GetWebViewById(target_id, &web_view);
+    status =
+        GetActivePageByWebViewId(target_id, &web_view, /*wait_for_page=*/false);
     if (status.IsError())
       return status;
 
@@ -609,8 +694,8 @@ Status ChromeImpl::CloseTarget(const std::string& id) {
   Timeout timeout(base::Seconds(20));
   while (!timeout.IsExpired()) {
     WebViewsInfo views_info;
-    status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
-                                           &timeout, views_info);
+    status = target_utils::GetTopLevelViewsInfo(*devtools_websocket_client_,
+                                                &timeout, views_info);
     if (status.code() == kDisconnected)  // The closed target has gone
       return Status(kOk);
     if (status.IsError())
@@ -714,16 +799,18 @@ ChromeImpl::ChromeImpl(BrowserInfo browser_info,
                            devtools_event_listeners,
                        std::optional<MobileDevice> mobile_device,
                        std::string page_load_strategy,
-                       bool autoaccept_beforeunload)
+                       bool autoaccept_beforeunload,
+                       bool enable_extension_targets)
     : mobile_device_(std::move(mobile_device)),
       browser_info_(std::move(browser_info)),
       window_types_(std::move(window_types)),
       devtools_websocket_client_(std::move(websocket_client)),
       autoaccept_beforeunload_(autoaccept_beforeunload),
       devtools_event_listeners_(std::move(devtools_event_listeners)),
-      page_load_strategy_(page_load_strategy) {
-  window_types_.insert(WebViewInfo::kPage);
+      page_load_strategy_(page_load_strategy),
+      enable_extension_targets_(enable_extension_targets) {
+  window_types_.insert(WebViewInfo::kTab);
   window_types_.insert(WebViewInfo::kApp);
-  page_tracker_ = std::make_unique<PageTracker>(
-      devtools_websocket_client_.get(), &web_views_);
+  tab_tracker_ = std::make_unique<TabTracker>(devtools_websocket_client_.get(),
+                                              &web_views_);
 }
