@@ -410,11 +410,6 @@ class WebAppRegistrar {
   // `FindBestAppWithUrlInScope`.
   std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
-  // Finds all apps that are installed under `outer_scope`.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindAllAppsNestedInUrl`.
-  std::vector<webapps::AppId> FindAppsInScope(const GURL& outer_scope) const;
-
   // Returns the app id of an installed app in the registry with the longest
   // scope that is a prefix of |url|, if any. If |window_only| is specified,
   // only apps that open in app windows will be considered. If

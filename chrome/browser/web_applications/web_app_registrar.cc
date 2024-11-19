@@ -492,15 +492,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
            });
 }
 
-std::vector<webapps::AppId> WebAppRegistrar::FindAppsInScope(
-    const GURL& scope) const {
-  return FindAllAppsNestedInUrl(
-      scope, {
-                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-             });
-}
-
 std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
     const GURL& url,
     bool window_only,
