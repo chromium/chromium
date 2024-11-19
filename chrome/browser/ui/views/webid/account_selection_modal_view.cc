@@ -164,25 +164,13 @@ AccountSelectionModalView::AccountSelectionModalView(
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
 
-void AccountSelectionModalView::UpdateDialogPosition() {
-  constrained_window::UpdateWebContentsModalDialogPosition(
-      GetWidget(), web_modal::WebContentsModalDialogManager::FromWebContents(
-                       web_contents_.get())
-                       ->delegate()
-                       ->GetWebContentsModalDialogHost());
-
-  if (accessibility_state_utils::IsScreenReaderEnabled()) {
-    GetInitiallyFocusedView()->RequestFocus();
-  }
-}
-
 void AccountSelectionModalView::InitDialogWidget() {
   if (!web_contents_) {
     return;
   }
 
   if (dialog_widget_) {
-    UpdateDialogPosition();
+    owner_->UpdateDialogPosition();
     return;
   }
 
@@ -198,16 +186,11 @@ void AccountSelectionModalView::InitDialogWidget() {
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 
   widget->Show();
-  DidShowWidget();
-  UpdateDialogPosition();
-
   dialog_widget_ = widget->GetWeakPtr();
 
   // TODO(https://crbug.com/377803489): Get rid of this and move all of
   // InitDialogWidget() into FedCmAccountSelectionView.
-  if (owner_) {
-    owner_->PostWidgetCreate(widget);
-  }
+  owner_->PostWidgetCreate(widget);
 }
 
 std::unique_ptr<views::View>
@@ -901,26 +884,8 @@ void AccountSelectionModalView::ReplaceButtonWithSpinner(
   button->SetBgColorIdOverride(button_color);
 }
 
-void AccountSelectionModalView::CloseDialog() {
-  if (!dialog_widget_) {
-    return;
-  }
-
-  CancelDialog();
-  dialog_widget_.reset();
-  scoped_ignore_input_events_.reset();
-}
-
 std::string AccountSelectionModalView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
-}
-
-void AccountSelectionModalView::DidShowWidget() {
-  scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents(std::nullopt);
-}
-
-void AccountSelectionModalView::DidHideWidget() {
-  scoped_ignore_input_events_.reset();
 }
 
 std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {

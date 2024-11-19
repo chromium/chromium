@@ -6,11 +6,14 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
+#include "chrome/browser/ui/views/webid/fake_delegate.h"
+#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -27,6 +30,26 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+
+namespace {
+class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
+ public:
+  FakeFedCmAccountSelectionView(
+      AccountSelectionView::Delegate* delegate,
+      tabs::TabInterface* tab,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : FedCmAccountSelectionView(delegate, tab),
+        url_loader_factory_(url_loader_factory) {}
+
+ private:
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
+      override {
+    return url_loader_factory_;
+  }
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+};
+}  // namespace
 
 class AccountSelectionModalViewTest : public DialogBrowserTest,
                                       public AccountSelectionViewTestBase {
@@ -55,10 +78,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       return;
     }
 
-    dialog_ = new AccountSelectionModalView(
-        kRpETLDPlusOne, kIdpETLDPlusOne, blink::mojom::RpContext::kSignIn,
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        shared_url_loader_factory(), /*observer=*/nullptr);
+    delegate_ = std::make_unique<FakeDelegate>(
+        browser()->GetActiveTabInterface()->GetContents());
+    account_selection_view_ = std::make_unique<FakeFedCmAccountSelectionView>(
+        delegate_.get(), browser()->GetActiveTabInterface(),
+        test_shared_url_loader_factory_);
+    account_selection_view_->ShowLoadingDialog(
+        base::UTF16ToASCII(kRpETLDPlusOne), base::UTF16ToASCII(kIdpETLDPlusOne),
+        blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
+    dialog_ = static_cast<AccountSelectionModalView*>(
+        account_selection_view_->account_selection_view());
 
     // Loading dialog is always shown first. All other dialogs reuse the header
     // of this loading dialog.
@@ -104,11 +133,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kAccountSuffix, idp_data_,
         content::IdentityRequestAccount::LoginState::kSignUp));
     dialog_->ShowVerifyingSheet(*account, kTitleSignIn);
-  }
-
-  void CreateAndShowLoadingDialog() {
-    CreateAccountSelectionModal();
-    dialog_->ShowLoadingDialog();
   }
 
   IdentityRequestAccountPtr CreateSingleAccount(
@@ -494,7 +518,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   }
 
   void TestLoadingDialog() {
-    CreateAndShowLoadingDialog();
     // Order: Header, placeholder account chooser, button row
     std::vector<std::string> expected_class_names = {"View", "View", "View"};
     EXPECT_THAT(GetChildClassNames(dialog()),
@@ -652,12 +675,14 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
   bool expect_visible_body_label_{true};
   bool should_focus_title_{true};
   ui::ImageModel idp_brand_icon_;
-  raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
-  std::vector<IdentityRequestAccountPtr> account_list_;
-  IdentityProviderDataPtr idp_data_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  std::unique_ptr<FakeDelegate> delegate_;
+  std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
+  raw_ptr<AccountSelectionModalView, DanglingUntriaged> dialog_;
+  std::vector<IdentityRequestAccountPtr> account_list_;
+  IdentityProviderDataPtr idp_data_;
 };
 
 // Tests that the single account dialog is rendered correctly.

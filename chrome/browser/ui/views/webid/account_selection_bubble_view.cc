@@ -493,21 +493,8 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
   PreferredSizeChanged();
 }
 
-void AccountSelectionBubbleView::CloseDialog() {
-  if (!dialog_widget_) {
-    return;
-  }
-
-  CancelDialog();
-  dialog_widget_.reset();
-}
-
 std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_);
-}
-
-void AccountSelectionBubbleView::UpdateDialogPosition() {
-  dialog_widget_->SetBounds(GetBubbleBounds());
 }
 
 void AccountSelectionBubbleView::OnAnchorBoundsChanged() {

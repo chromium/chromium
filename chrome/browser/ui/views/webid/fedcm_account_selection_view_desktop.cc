@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -90,7 +91,10 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
 
   input_protector_->VisibilityChanged(true);
   GetDialogWidget()->Show();
-  account_selection_view_->DidShowWidget();
+  if (dialog_type_ == DialogType::MODAL) {
+    scoped_ignore_input_events_ =
+        tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+  }
   // An active widget would steal the focus when displayed, this would lead
   // to some unexpected consequences. e.g.
   //   1. links/buttons from the web contents area would require two clicks,
@@ -334,8 +338,7 @@ bool FedCmAccountSelectionView::Show(
        *popup_window_state_ ==
            PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp)) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
-    if (tab_->IsInForeground() &&
-        account_selection_view_->CanFitInWebContents()) {
+    if (tab_->IsInForeground() && CanFitInWebContents()) {
       ShowDialogWidget();
       if (accounts_displayed_callback_) {
         std::move(accounts_displayed_callback_).Run();
@@ -420,8 +423,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 
   if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
-    if (tab_->IsInForeground() &&
-        account_selection_view_->CanFitInWebContents()) {
+    if (tab_->IsInForeground() && CanFitInWebContents()) {
       ShowDialogWidget();
     }
   }
@@ -479,8 +481,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  if (tab_->IsInForeground() &&
-      account_selection_view_->CanFitInWebContents()) {
+  if (tab_->IsInForeground() && CanFitInWebContents()) {
     ShowDialogWidget();
   }
   // Else:
@@ -587,19 +588,17 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
 
   if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
     dialog_type_ = DialogType::MODAL;
-    return new AccountSelectionModalView(
-        rp_for_display, idp_title, rp_context, web_contents,
-        SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
-        this);
+    return new AccountSelectionModalView(rp_for_display, idp_title, rp_context,
+                                         web_contents, GetURLLoaderFactory(),
+                                         this);
   }
 
   dialog_type_ = DialogType::BUBBLE;
   views::View* anchor_view = tab_->GetBrowserWindowInterface()->GetWebView();
 
-  return new AccountSelectionBubbleView(
-      rp_for_display, idp_title, rp_context, web_contents, anchor_view,
-      SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory(),
-      this);
+  return new AccountSelectionBubbleView(rp_for_display, idp_title, rp_context,
+                                        web_contents, anchor_view,
+                                        GetURLLoaderFactory(), this);
 }
 
 void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
@@ -869,10 +868,56 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
 }
 
 void FedCmAccountSelectionView::PostWidgetCreate(views::Widget* widget) {
+  UpdateDialogPosition();
+  if (dialog_type_ == DialogType::MODAL) {
+    scoped_ignore_input_events_ =
+        tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+  }
   widget->AddObserver(this);
   pip_occlusion_observation_ =
       std::make_unique<ScopedPictureInPictureOcclusionObservation>(this);
   pip_occlusion_observation_->Observe(widget);
+}
+
+bool FedCmAccountSelectionView::CanFitInWebContents() {
+  content::WebContents* web_contents = account_selection_view_->web_contents();
+  views::Widget* dialog_widget =
+      account_selection_view_->GetDialogWidget().get();
+  CHECK(web_contents && dialog_widget);
+
+  gfx::Size web_contents_size = web_contents->GetSize();
+  gfx::Size preferred_bubble_size =
+      dialog_widget->GetContentsView()->GetPreferredSize();
+
+  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
+  // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
+  // to the bubble widget.
+  return preferred_bubble_size.width() <
+             (web_contents_size.width() - kRightMargin) &&
+         preferred_bubble_size.height() <
+             (web_contents_size.height() - kTopMargin);
+}
+
+void FedCmAccountSelectionView::UpdateDialogPosition() {
+  if (dialog_type_ == DialogType::BUBBLE) {
+    auto* bubble =
+        static_cast<AccountSelectionBubbleView*>(account_selection_view_);
+    GetDialogWidget()->SetBounds(bubble->GetBubbleBounds());
+  } else {
+    auto* modal =
+        static_cast<AccountSelectionModalView*>(account_selection_view_);
+
+    constrained_window::UpdateWebContentsModalDialogPosition(
+        GetDialogWidget().get(),
+        web_modal::WebContentsModalDialogManager::FromWebContents(
+            account_selection_view_->web_contents())
+            ->delegate()
+            ->GetWebContentsModalDialogHost());
+
+    if (accessibility_state_utils::IsScreenReaderEnabled()) {
+      modal->GetInitiallyFocusedView()->RequestFocus();
+    }
+  }
 }
 
 void FedCmAccountSelectionView::WillDiscardContents(
@@ -1053,14 +1098,23 @@ FedCmAccountSelectionView::GetDialogType() {
   return dialog_type_;
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+FedCmAccountSelectionView::GetURLLoaderFactory() {
+  return SystemNetworkContextManager::GetInstance()
+      ->GetSharedURLLoaderFactory();
+}
+
 void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
   if (!account_selection_view_) {
     return;
   }
   if (GetDialogWidget()) {
     GetDialogWidget()->RemoveObserver(this);
+    GetDialogWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kCancelButtonClicked);
+    account_selection_view_->ResetWidget();
+    scoped_ignore_input_events_.reset();
   }
-  account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;
 }
 
@@ -1083,13 +1137,13 @@ void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
 
   // Use default dialog positioning behavior for modals.
   if (GetDialogType() == DialogType::MODAL) {
-    account_selection_view_->UpdateDialogPosition();
+    UpdateDialogPosition();
     return;
   }
 
-  if (account_selection_view_->CanFitInWebContents()) {
+  if (CanFitInWebContents()) {
     if (!GetDialogWidget()->IsVisible() && tab_->IsInForeground()) {
-      account_selection_view_->UpdateDialogPosition();
+      UpdateDialogPosition();
       ShowDialogWidget();
     }
     return;
@@ -1109,15 +1163,14 @@ bool FedCmAccountSelectionView::ShouldShowDialogWidget() {
   // TODO(crbug.com/340368623): Figure out what to do when active flow modal
   // cannot fit in web contents.
   return tab_ && tab_->IsInForeground() &&
-         (account_selection_view_->CanFitInWebContents() ||
-          GetDialogType() == DialogType::MODAL);
+         (CanFitInWebContents() || GetDialogType() == DialogType::MODAL);
 }
 
 void FedCmAccountSelectionView::UpdateAndShowDialogWidget() {
   // We need to update the dialog's position in case the window was resized
   // while it was not visible. The dialog position is already being updated
   // automatically if the window was resized while it is visible.
-  account_selection_view_->UpdateDialogPosition();
+  UpdateDialogPosition();
   ShowDialogWidget();
   if (accounts_displayed_callback_) {
     std::move(accounts_displayed_callback_).Run();
@@ -1131,7 +1184,7 @@ void FedCmAccountSelectionView::HideDialogWidget() {
   // views::Widget from being shown during focus traversal.
   // TODO(crbug.com/40239995): fix the issue on Mac.
   GetDialogWidget()->Hide();
-  account_selection_view_->DidHideWidget();
+  scoped_ignore_input_events_.reset();
   GetDialogWidget()->widget_delegate()->SetCanActivate(false);
   // TODO(crbug.com/331166928): This is only null in one test. Fix the test to
   // match production.

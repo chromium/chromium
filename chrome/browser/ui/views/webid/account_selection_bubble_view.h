@@ -80,20 +80,16 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
 
   void ShowLoadingDialog() override;
 
-  void CloseDialog() override;
-
-  void UpdateDialogPosition() override;
-
   void OnAnchorBoundsChanged() override;
 
   std::string GetDialogTitle() const override;
 
+  // views::BubbleDialogDelegateView:
+  gfx::Rect GetBubbleBounds() override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,
                            WebContentsLargeEnoughToFitDialog);
-
-  // views::BubbleDialogDelegateView:
-  gfx::Rect GetBubbleBounds() override;
 
   // Returns a View containing the logo of the identity provider. Creates the
   // `header_icon_view_` if `has_idp_icon` is true.

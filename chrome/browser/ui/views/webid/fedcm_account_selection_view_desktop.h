@@ -62,7 +62,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     // FedCM dialog inherits a modal dialog, which is typically shown in the
     // middle of the browser overlapping the line of death. The user can switch
     // tabs but cannot interact with web contents.
-    MODAL
+    MODAL,
   };
 
   FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
@@ -171,6 +171,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // InitDialogWidget() into this class.
   void PostWidgetCreate(views::Widget* widget);
 
+  // Public for testing.
+  AccountSelectionViewBase* account_selection_view() {
+    return account_selection_view_.get();
+  }
+
+  // Whether the dialog can fit in the web contents at its preferred size.
+  // Virtual and public for testing.
+  virtual bool CanFitInWebContents();
+
+  // Updates the position of the dialog. Used when the contents of the dialog
+  // has changed or when the widget which the dialog is anchored on has been
+  // resized.
+  // Virtual for testing.
+  virtual void UpdateDialogPosition();
+
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
@@ -188,6 +203,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Gets the type of dialog shown. Virtual for testing purposes.
   virtual DialogType GetDialogType();
+
+  // Virtual for testing.
+  virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -466,6 +484,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
+
+  // Disable events to the tab contents if and only if the modal widget is
+  // showing.
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

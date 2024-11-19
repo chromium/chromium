@@ -1281,40 +1281,6 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
                   GURL(u"https://idp-example.com/more-details"));
 }
 
-// Tests that CanFitInWebContents returns true when the web contents is large
-// enough to fit the bubble and bubble bounds computed are contained within the
-// web contents' bounds.
-TEST_F(AccountSelectionBubbleViewTest, WebContentsLargeEnoughToFitDialog) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expect_idp_brand_icon_in_header=*/true);
-  EXPECT_TRUE(dialog()->CanFitInWebContents());
-  EXPECT_TRUE(
-      web_contents()->GetViewBounds().Contains(dialog_->GetBubbleBounds()));
-}
-
-// Tests that CanFitInWebContents returns false when the web contents is too
-// small to fit the bubble. We do not test GetBubbleBounds here because the
-// bubble would be hidden so GetBubbleBounds is not relevant.
-TEST_F(AccountSelectionBubbleViewTest, WebContentsTooSmallToFitDialog) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expect_idp_brand_icon_in_header=*/true);
-
-  // Web contents is too small, vertically.
-  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/1000,
-                                   /*height=*/10));
-  EXPECT_FALSE(dialog()->CanFitInWebContents());
-
-  // Web contents is too small, horizontally.
-  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
-                                   /*height=*/1000));
-  EXPECT_FALSE(dialog()->CanFitInWebContents());
-
-  // Web contents is too small, both vertically and horizontally.
-  web_contents()->Resize(gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/10,
-                                   /*height=*/10));
-  EXPECT_FALSE(dialog()->CanFitInWebContents());
-}
-
 // Tests crash scenario from crbug.com/341240034.
 TEST_F(AccountSelectionBubbleViewTest, BoundsChangedAfterWebContentsDestroyed) {
   TestSingleAccount(kTitleSignIn,

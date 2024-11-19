@@ -261,9 +261,6 @@ class AccountSelectionViewBase {
   // Updates the FedCM dialog to show the "loading" sheet.
   virtual void ShowLoadingDialog() = 0;
 
-  // Closes the dialog, without dismissing the FedCM API.
-  virtual void CloseDialog() = 0;
-
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;
 
@@ -277,20 +274,10 @@ class AccountSelectionViewBase {
   // Returns the network traffic annotation tag for FedCM.
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
 
-  // Updates the position of the dialog. Used when the contents of the dialog
-  // has changed or when the widget which the dialog is anchored on has been
-  // resized.
-  virtual void UpdateDialogPosition() = 0;
+  // Immediately resets the widget pointer.
+  void ResetWidget();
 
-  // Whether the dialog can fit in the web contents at its preferred size.
-  // Virtual for testing purposes.
-  virtual bool CanFitInWebContents();
-
-  // Temporary logic to disable interactions with the tab's WebContents for the
-  // modal dialog.
-  // TODO(https://crbug.com/377803489): Remove this.
-  virtual void DidShowWidget();
-  virtual void DidHideWidget();
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  protected:
   void SetLabelProperties(views::Label* label);

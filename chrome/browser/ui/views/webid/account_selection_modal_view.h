@@ -79,13 +79,7 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   void ShowLoadingDialog() override;
 
-  void CloseDialog() override;
-
-  void UpdateDialogPosition() override;
-
   std::string GetDialogTitle() const override;
-  void DidShowWidget() override;
-  void DidHideWidget() override;
 
   // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
@@ -224,10 +218,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // Whether the title has been announced for accessibility.
   bool has_announced_title_{false};
-
-  // Disable events when widget is showing.
-  std::optional<content::WebContents::ScopedIgnoreInputEvents>
-      scoped_ignore_input_events_;
 
   // The announcement that should be made upon view focus, if screen reader is
   // turned on.

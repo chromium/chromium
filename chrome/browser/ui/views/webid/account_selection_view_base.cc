@@ -836,21 +836,6 @@ AccountSelectionViewBase::GetTrafficAnnotation() {
   return kTrafficAnnotation;
 }
 
-bool AccountSelectionViewBase::CanFitInWebContents() {
-  CHECK(web_contents_ && dialog_widget_);
-
-  gfx::Size web_contents_size = web_contents_->GetSize();
-  gfx::Size preferred_bubble_size =
-      dialog_widget_->GetContentsView()->GetPreferredSize();
-
-  // TODO(crbug.com/340368623): Figure out what to do when button flow modal
-  // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
-  // to the bubble widget.
-  return preferred_bubble_size.width() <
-             (web_contents_size.width() - kRightMargin) &&
-         preferred_bubble_size.height() <
-             (web_contents_size.height() - kTopMargin);
+void AccountSelectionViewBase::ResetWidget() {
+  dialog_widget_.reset();
 }
-
-void AccountSelectionViewBase::DidShowWidget() {}
-void AccountSelectionViewBase::DidHideWidget() {}

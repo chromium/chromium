@@ -141,17 +141,12 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
   std::string GetDialogTitle() const override { return std::string(); }
 
   void InitDialogWidget() override {}
-  void CloseDialog() override {}
   base::WeakPtr<views::Widget> GetDialogWidget() override {
     return dialog_widget_->GetWeakPtr();
   }
-  void UpdateDialogPosition() override { dialog_position_updated_ = true; }
-  bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
 
   bool show_back_button_{false};
   bool is_choose_an_account_{false};
-  bool dialog_position_updated_{false};
-  bool can_fit_in_web_contents_{true};
   std::optional<SheetType> sheet_type_;
   std::vector<std::string> account_ids_;
   raw_ptr<views::Widget> dialog_widget_;
@@ -221,6 +216,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   size_t num_dialogs_{0u};
 
   MOCK_METHOD(void, MaybeResetAccountSelectionView, (), (override));
+  bool can_fit_in_web_contents_{true};
+  bool dialog_position_updated_{false};
 
  protected:
   AccountSelectionViewBase* CreateAccountSelectionView(
@@ -240,6 +237,9 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   FedCmAccountSelectionView::DialogType GetDialogType() override {
     return dialog_type_;
   }
+
+  bool CanFitInWebContents() override { return can_fit_in_web_contents_; }
+  void UpdateDialogPosition() override { dialog_position_updated_ = true; }
 
  private:
   raw_ptr<TestAccountSelectionView> account_selection_view_;
@@ -2248,13 +2248,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate that the web contents is too small to fit the dialog, hiding the
   // dialog.
-  account_selection_view_->can_fit_in_web_contents_ = false;
+  controller->can_fit_in_web_contents_ = false;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate that the web contents is big enough to fit the dialog, showing the
   // dialog.
-  account_selection_view_->can_fit_in_web_contents_ = true;
+  controller->can_fit_in_web_contents_ = true;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }
@@ -2274,7 +2274,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user resizing the window, making the web contents too small to fit
   // the dialog. The dialog should remain hidden.
-  account_selection_view_->can_fit_in_web_contents_ = false;
+  controller->can_fit_in_web_contents_ = false;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
@@ -2286,13 +2286,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user resizing the window, making the web contents is big enough to
   // fit the dialog. The dialog should now be visible.
-  account_selection_view_->can_fit_in_web_contents_ = true;
+  controller->can_fit_in_web_contents_ = true;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_TRUE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents too small to fit
   // the dialog. The dialog should be hidden.
-  account_selection_view_->can_fit_in_web_contents_ = false;
+  controller->can_fit_in_web_contents_ = false;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/false);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
@@ -2303,7 +2303,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user resizing the window, making the web contents big enough to fit
   // the dialog. The dialog should remain hidden because the user is on a
   // different tab.
-  account_selection_view_->can_fit_in_web_contents_ = true;
+  controller->can_fit_in_web_contents_ = true;
   controller->PrimaryMainFrameWasResized(/*width_changed=*/false);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
@@ -2323,13 +2323,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user changing tabs, hiding the dialog.
   TabWillEnterBackground(controller.get());
-  EXPECT_FALSE(account_selection_view_->dialog_position_updated_);
+  EXPECT_FALSE(controller->dialog_position_updated_);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user changing back to the tab containing the dialog, updating the
   // dialog position.
   TabForegrounded(controller.get());
-  EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
+  EXPECT_TRUE(controller->dialog_position_updated_);
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }
 
@@ -2444,7 +2444,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
 
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
-  EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
+  EXPECT_TRUE(controller->dialog_position_updated_);
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }
 
