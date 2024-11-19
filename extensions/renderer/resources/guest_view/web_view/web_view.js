@@ -10,11 +10,11 @@ var $Element = require('safeMethods').SafeMethods.$Element;
 var GuestView = require('guestView').GuestView;
 var GuestViewContainer = require('guestViewContainer').GuestViewContainer;
 var GuestViewInternalNatives = requireNative('guest_view_internal');
+var tagLogMessage = require('guestViewConstants').tagLogMessage;
 var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewAttributes = require('webViewAttributes').WebViewAttributes;
 var WebViewEvents = require('webViewEvents').WebViewEvents;
 var WebViewInternal = getInternalApi('webViewInternal');
-var tagLogMessage = require('webViewConstants').tagLogMessage;
 
 // Represents the internal state of <webview>.
 function WebViewImpl(webviewElement) {

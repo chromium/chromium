@@ -12,13 +12,13 @@ var DeclarativeWebRequestSchema =
 var GuestViewEvents = require('guestViewEvents').GuestViewEvents;
 var GuestViewInternalNatives = requireNative('guest_view_internal');
 var IdGenerator = requireNative('id_generator');
+var tagLogMessage = require('guestViewConstants').tagLogMessage;
 var WebRequestEvent = require('webRequestEvent').WebRequestEvent;
 var WebRequestSchema =
     requireNative('schema_registry').GetSchema('webRequest');
 var WebViewActionRequests =
     require('webViewActionRequests').WebViewActionRequests;
 var WebViewConstants = require('webViewConstants').WebViewConstants;
-var tagLogMessage = require('webViewConstants').tagLogMessage;
 
 var WebRequestMessageEvent = CreateEvent('webViewInternal.onMessage');
 

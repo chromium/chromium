@@ -7,9 +7,9 @@
 var $Element = require('safeMethods').SafeMethods.$Element;
 var $MutationObserver = require('safeMethods').SafeMethods.$MutationObserver;
 var GuestViewAttributes = require('guestViewAttributes').GuestViewAttributes;
+var tagLogMessage = require('guestViewConstants').tagLogMessage;
 var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewInternal = getInternalApi('webViewInternal');
-var tagLogMessage = require('webViewConstants').tagLogMessage;
 
 // -----------------------------------------------------------------------------
 // AllowScalingAttribute object.
