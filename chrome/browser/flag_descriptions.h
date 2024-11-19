@@ -1975,6 +1975,9 @@ extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[];
 extern const char kSegmentationSurveyPageName[];
 extern const char kSegmentationSurveyPageDescription[];
 
+extern const char kServiceWorkerAutoPreloadName[];
+extern const char kServiceWorkerAutoPreloadDescription[];
+
 extern const char kSharedZstdName[];
 extern const char kSharedZstdDescription[];
 

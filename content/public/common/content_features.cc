@@ -952,6 +952,19 @@ constexpr base::FeatureParam<double> kProcessPerSiteMainFrameTotalMemoryLimit{
     &kProcessPerSiteUpToMainFrameThreshold,
     "ProcessPerSiteMainFrameTotalMemoryLimit", 2 * 1024 * 1024 * 1024u};
 
+// Enables auto preloading for fetch requests before invoking the fetch handler
+// in ServiceWorker. The fetch request inside the fetch handler is resolved with
+// this preload response. If the fetch handler result is fallback, uses this
+// preload request as a fallback network request.
+//
+// Unlike navigation preload, this preloading is applied to subresources. Also,
+// it doesn't require a developer opt-in.
+//
+// crbug.com/1472634 for more details.
+BASE_FEATURE(kServiceWorkerAutoPreload,
+             "ServiceWorkerAutoPreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ServiceWorker static routing API.
 // https://github.com/WICG/service-worker-static-routing-api
 BASE_FEATURE(kServiceWorkerStaticRouter,

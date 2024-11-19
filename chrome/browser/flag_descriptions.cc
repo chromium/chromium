@@ -3472,6 +3472,12 @@ const char kSegmentationSurveyPageName[] =
 const char kSegmentationSurveyPageDescription[] =
     "Enable internals page for survey and fetching model";
 
+const char kServiceWorkerAutoPreloadName[] = "ServiceWorkerAutoPreload";
+const char kServiceWorkerAutoPreloadDescription[] =
+    "Dispatches a preload request for navigation before starting the service "
+    "worker. See "
+    "https://github.com/explainers-by-googlers/service-worker-auto-preload";
+
 const char kSharedZstdName[] = "Shared Zstd";
 const char kSharedZstdDescription[] =
     "Enables compression dictionary transport with Zstandard (aka Shared "
