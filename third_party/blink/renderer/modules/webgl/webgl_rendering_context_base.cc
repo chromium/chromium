@@ -1916,10 +1916,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
   // As the resource provider is not accelerated, we don't need an accelerated
   // image.
-  const bool flip_y = GetDrawingBuffer()->IsOriginTopLeft() !=
-                      resource_provider->IsOriginTopLeft();
   scoped_refptr<StaticBitmapImage> image =
-      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(flip_y);
+      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage();
 
   if (!image || !image->PaintImageForCurrentFrame())
     return false;

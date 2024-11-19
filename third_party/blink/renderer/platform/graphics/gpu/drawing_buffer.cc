@@ -498,7 +498,7 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
 }
 
 scoped_refptr<StaticBitmapImage>
-DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
+DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
   ScopedStateRestorer scoped_state_restorer(this);
 
   if (CheckForDestructionAndChangeAndResolveIfNeeded(kDontDiscard) ==
@@ -512,13 +512,11 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
   ReadFramebufferIntoBitmapPixels(static_cast<uint8_t*>(bitmap.getPixels()));
   auto sk_image = SkImages::RasterFromBitmap(bitmap);
 
-  bool origin_top_left =
-      flip_y ? opengl_flip_y_extension_ : !opengl_flip_y_extension_;
-
+  // GL Framebuffer is bottom-left origin by default and the
+  // mesa_framebuffer_flip_y extension doesn't affect glReadPixels, so
+  // `ReadFramebufferIntoBitmapPixels` always returns bottom left images.
   return sk_image ? UnacceleratedStaticBitmapImage::Create(
-                        sk_image, origin_top_left
-                                      ? ImageOrientationEnum::kOriginTopLeft
-                                      : ImageOrientationEnum::kOriginBottomLeft)
+                        sk_image, ImageOrientationEnum::kOriginBottomLeft)
                   : nullptr;
 }
 

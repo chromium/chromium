@@ -267,8 +267,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // a copy of the contents of the front buffer. This is only meant to be used
   // for unaccelerated canvases as for accelerated contexts there are better
   // ways to get a copy of the internal contents.
-  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage(
-      bool flip_y = false);
+  scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage();
 
   bool CopyToPlatformTexture(gpu::gles2::GLES2Interface*,
                              GLenum dst_target,
