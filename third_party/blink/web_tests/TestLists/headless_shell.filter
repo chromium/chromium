@@ -355,6 +355,7 @@ external/wpt/css/*
 -external/wpt/css/css-tables/tentative/table-quirks.html
 -external/wpt/css/css-text/boundary-shaping/boundary-shaping-010.html
 -external/wpt/css/css-text-decor/invalidation/text-decoration-thickness.html
+-external/wpt/css/css-text-decor/text-decoration-subelements-002.html
 -external/wpt/css/css-text-decor/text-underline-offset-overline-vertical.html
 -external/wpt/css/css-text-decor/text-shadow/standards-decor-noblur-2.html
 -external/wpt/css/css-text-decor/text-shadow/svg-fill-opacity.html
