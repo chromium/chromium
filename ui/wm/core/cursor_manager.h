@@ -69,6 +69,7 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const override;
   bool ShouldHideCursorOnTouchEvent(const ui::TouchEvent& event) const override;
   gfx::Size GetSystemCursorSize() const override;
+  void UpdateSystemCursorVisibilityForTest(bool visible) override;
 
  private:
   // Overridden from NativeCursorManagerDelegate:
@@ -77,6 +78,7 @@ class COMPONENT_EXPORT(UI_WM) CursorManager
   void CommitCursorSize(ui::CursorSize cursor_size) override;
   void CommitMouseEventsEnabled(bool enabled) override;
   void CommitSystemCursorSize(const gfx::Size& cursor_size) override;
+  void CommitSystemCursorVisibility(bool visible) override;
 
   void SetCursorImpl(gfx::NativeCursor cursor, bool forced);
 

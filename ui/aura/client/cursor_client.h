@@ -99,6 +99,9 @@ class AURA_EXPORT CursorClient {
   // Returns the OS cursor size in DIP.
   virtual gfx::Size GetSystemCursorSize() const = 0;
 
+  // Updates the system cursor visibility for testing purposes.
+  virtual void UpdateSystemCursorVisibilityForTest(bool visible) {}
+
  protected:
   virtual ~CursorClient() {}
 };

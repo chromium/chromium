@@ -32,6 +32,9 @@ class VIEWS_EXPORT DesktopNativeCursorManagerWin
 
   void InitCursorSizeObserver(
       wm::NativeCursorManagerDelegate* delegate) override;
+  void InitSystemCursorVisibilityObserver(
+      wm::NativeCursorManagerDelegate* delegate) override;
+  void OnSystemCursorVisibilityChanged(bool visible);
 
  private:
   // Retrieve and report the cursor size to cursor manager.
@@ -40,6 +43,9 @@ class VIEWS_EXPORT DesktopNativeCursorManagerWin
 
   base::win::RegKey hkcu_cursor_regkey_;
   gfx::Size system_cursor_size_;
+
+  // Whether the cursor is visible from GetCursorInfo().
+  bool system_cursor_visible_ = true;
 };
 
 }  // namespace views
