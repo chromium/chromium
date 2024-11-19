@@ -69,6 +69,9 @@ const uint8_t kPublicKey[] = {
 // avoid duplicating storage space.
 constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 
+// The maximum size of an uncompressed seed at 50 MiB.
+constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Number of attempts to send the safe seed from Chrome to CrOS platforms before
 // giving up.
@@ -633,6 +636,13 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(SeedType seed_type,
       }
       compressed_data = decoded_data;
       break;
+  }
+  // A corrupt seed could result in a very large buffer being allocated which
+  // could crash the process.
+  if (compression::GetUncompressedSize(compressed_data) >
+      kMaxUncompressedSeedSize) {
+    ClearPrefs(seed_type);
+    return LoadSeedResult::kExceedsUncompressedSizeLimit;
   }
   if (!compression::GzipUncompress(compressed_data, seed_data)) {
     ClearPrefs(seed_type);

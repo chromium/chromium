@@ -561,8 +561,57 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_IdenticalToSafeSeed) {
   EXPECT_EQ(base64_seed_signature, loaded_base64_seed_signature);
 }
 
-// TODO(crbug.com/378694758): Add a new test, LoadSeed_InvalidGzipUncompression,
-// when invalid gzip uncompression is resolved.
+TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_CorruptGzip) {
+  // Loading a corrupted compressed seed should return false.
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  std::string compressed_seed = Gzip("seed data");
+  // Flip some bits to corrupt the data
+  compressed_seed[5] ^= 0xFF;
+  compressed_seed[10] ^= 0xFF;
+  seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
+      compressed_seed, base::Base64Encode(compressed_seed));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_base64_seed_signature;
+  ASSERT_FALSE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
+                                   &loaded_base64_seed_signature));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample("Variations.SeedLoadResult",
+                                      LoadSeedResult::kCorruptGzip, 1);
+  CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
+  CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+}
+
+TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ExceedsUncompressedSizeLimit) {
+  // Loading a seed that exceeds the uncompressed size should return false.
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  // 51MiB of uncompressed data to exceed 50MiB limit.
+  const std::string compressed_seed = Gzip(std::string(51 * 1024 * 1024, 'A'));
+  seed_store.GetSeedReaderWriterForTesting()->StoreValidatedSeed(
+      compressed_seed, base::Base64Encode(compressed_seed));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_base64_seed_signature;
+  ASSERT_FALSE(seed_store.LoadSeed(&loaded_seed, &loaded_seed_data,
+                                   &loaded_base64_seed_signature));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample(
+      "Variations.SeedLoadResult",
+      LoadSeedResult::kExceedsUncompressedSizeLimit, 1);
+  CheckRegularSeedAndSeedPrefsAreCleared(prefs_, seed_store);
+  CheckSafeSeedAndSeedPrefsAreSet(prefs_, seed_store);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          LoadSeedDataControlAndDefaultGroupsTest,
                          ::testing::Values(kControlGroup,
@@ -573,7 +622,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // they don't use base64 encoding.
 TEST_P(LoadSeedDataControlAndDefaultGroupsTest,
        LoadSeed_Base64DecodingFailure) {
-  // Loading an invalid seed should return false.
+  // Loading a non-base64-encoded seed should return false.
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
@@ -1060,9 +1109,78 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_EmptySeed) {
                                       LoadSeedResult::kEmpty, 1);
 }
 
-// TODO(crbug.com/378694758): Add a new test,
-// LoadSafeSeed_InvalidGzipUncompression, when invalid gzip uncompression is
-// resolved.
+TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_CorruptGzip) {
+  // Loading a corrupted compressed safe seed should return false.
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  std::string compressed_seed = Gzip("seed data");
+  // Flip some bits to corrupt the data
+  compressed_seed[5] ^= 0xFF;
+  compressed_seed[10] ^= 0xFF;
+  seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeed(
+      compressed_seed, base::Base64Encode(compressed_seed));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+  ASSERT_FALSE(seed_store.LoadSafeSeed(&loaded_seed, client_state.get()));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample("Variations.SafeMode.LoadSafeSeed.Result",
+                                      LoadSeedResult::kCorruptGzip, 1);
+  CheckSafeSeedAndSeedPrefsAreCleared(prefs_, seed_store);
+  CheckRegularSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Moreover, loading an invalid seed should leave the |client_state|
+  // unmodified.
+  std::unique_ptr<ClientFilterableState> original_state =
+      CreateTestClientFilterableState();
+  EXPECT_EQ(original_state->locale, client_state->locale);
+  EXPECT_EQ(original_state->reference_date, client_state->reference_date);
+  EXPECT_EQ(original_state->session_consistency_country,
+            client_state->session_consistency_country);
+  EXPECT_EQ(original_state->permanent_consistency_country,
+            client_state->permanent_consistency_country);
+}
+
+TEST_P(LoadSafeSeedDataAllGroupsTest,
+       LoadSafeSeed_ExceedsUncompressedSizeLimit) {
+  // Loading a safe seed that exceeds the uncompressed size should return false.
+  TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
+  SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
+  // 51MiB of uncompressed data to exceed 50MiB limit.
+  const std::string compressed_seed = Gzip(std::string(51 * 1024 * 1024, 'A'));
+  seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeed(
+      compressed_seed, base::Base64Encode(compressed_seed));
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+  ASSERT_FALSE(seed_store.LoadSafeSeed(&loaded_seed, client_state.get()));
+
+  // Verify metrics and prefs.
+  histogram_tester.ExpectUniqueSample(
+      "Variations.SafeMode.LoadSafeSeed.Result",
+      LoadSeedResult::kExceedsUncompressedSizeLimit, 1);
+  CheckSafeSeedAndSeedPrefsAreCleared(prefs_, seed_store);
+  CheckRegularSeedAndSeedPrefsAreSet(prefs_, seed_store);
+
+  // Moreover, loading an invalid seed should leave the |client_state|
+  // unmodified.
+  std::unique_ptr<ClientFilterableState> original_state =
+      CreateTestClientFilterableState();
+  EXPECT_EQ(original_state->locale, client_state->locale);
+  EXPECT_EQ(original_state->reference_date, client_state->reference_date);
+  EXPECT_EQ(original_state->session_consistency_country,
+            client_state->session_consistency_country);
+  EXPECT_EQ(original_state->permanent_consistency_country,
+            client_state->permanent_consistency_country);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          LoadSafeSeedDataControlAndDefaultGroupsTest,
                          ::testing::Values(kControlGroup,
@@ -1073,7 +1191,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // they don't use base64 encoding.
 TEST_P(LoadSafeSeedDataControlAndDefaultGroupsTest,
        LoadSafeSeed_Base64DecodingFailure) {
-  // Attempt to load a corrupted safe seed.
+  // Loading a non-base64-encoded safe seed should return false.
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial), GetParam());
   SetAllSeedsAndSeedPrefsToNonDefaultValues(&prefs_, seed_store);
@@ -1827,17 +1945,7 @@ TEST_P(VariationsSeedStoreTestAllGroups,
   EXPECT_EQ("123", seed_store.GetLatestSerialNumber());
 }
 
-// TODO(crbug.com/378694758): Add coverage for all groups when invalid gzip
-// uncompression resolved.
-class VariationsSeedStoreTestControlAndDefaultGroup
-    : public VariationsSeedStoreTestAllGroups {};
-INSTANTIATE_TEST_SUITE_P(All,
-                         VariationsSeedStoreTestControlAndDefaultGroup,
-                         ::testing::Values(kControlGroup,
-                                           kDefaultGroup,
-                                           kNoGroup));
-
-TEST_P(VariationsSeedStoreTestControlAndDefaultGroup,
+TEST_P(VariationsSeedStoreTestAllGroups,
        GetLatestSerialNumber_ClearsPrefsOnFailure) {
   // Store corrupted seed data to test that prefs are cleared when loading
   // fails.
