@@ -20,8 +20,6 @@ class URLDeduplicationHelper;
 
 namespace visited_url_ranking {
 
-// TODO(crbug.com/330580421): Remove/replace the category blocklist array
-// specified in `modules_util.h` with the one below.
 inline constexpr auto kBlocklistedCategories =
     base::MakeFixedFlatSet<std::string_view>(
         {"/g/11b76fyj2r", "/m/09lkz", "/m/012mj", "/m/01rbb", "/m/02px0wr",
