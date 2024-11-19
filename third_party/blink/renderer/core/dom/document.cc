@@ -5771,7 +5771,11 @@ void Document::NodeWillBeRemoved(Node& n) {
   for (NodeIterator* ni : node_iterators_)
     ni->NodeWillBeRemoved(n);
 
-  if (!StatePreservingAtomicMoveInProgress()) {
+  // We want to run the normal Range reset code when we're not in the middle of
+  // `moveBefore()`, or when we *are* but when range preservation is disabled
+  // (it is by default).
+  if (!StatePreservingAtomicMoveInProgress() ||
+      !RuntimeEnabledFeatures::AtomicMoveRangePreservationEnabled()) {
     for (Range* range : ranges_) {
       range->NodeWillBeRemoved(n);
       if (range == sequential_focus_navigation_starting_point_) {

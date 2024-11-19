@@ -4042,5 +4042,14 @@
     "args": ["--enable-features=SelectAudioOutput"],
     "owners": ["agpalak@chromium.org", "guidou@chromium.org"],
     "expires": "Nov 11, 2025"
+  },
+  {
+    "prefix": "atomic-move-range-preservation",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/dom/nodes/moveBefore/tentative/selection-preserve.html"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=AtomicMoveRangePreservation"],
+    "owners": ["dom@chromium.org", "nrosenthal@chromium.org"],
+    "expires": "May 1, 2025"
   }
 ]
