@@ -129,7 +129,6 @@ a {
 
 :host([in-side-panel_]) #title {
   font-size: .75rem; /* 12px */
-  line-height: calc(20/13);  /* 20px */
   font-weight: 500;
 }
 
@@ -141,7 +140,6 @@ a {
 
 :host([in-side-panel_]) #url {
   color: var(--color-history-clusters-side-panel-card-secondary-foreground);
-  line-height: calc(5/3);  /* 20px */
 }
 
 #debug-info {
