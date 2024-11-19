@@ -1013,4 +1013,31 @@ TEST(VideoFrame, AccessPlaneDataSpans) {
   }
 }
 
+TEST(VideoFrame, WrappedPlaneDataAccess) {
+  VideoPixelFormat format = PIXEL_FORMAT_I420;
+  gfx::Size coded_size(100, 100);
+  gfx::Rect visible_rect(10, 10, 60, 20);
+  const size_t data_size = coded_size.GetArea();
+  std::vector<uint8_t> y_pixels(data_size);
+  std::vector<uint8_t> u_pixels(data_size);
+  std::vector<uint8_t> v_pixels;
+
+  auto timestamp = base::Milliseconds(0);
+  auto frame = VideoFrame::WrapExternalYuvData(
+      format, coded_size, visible_rect, visible_rect.size(),
+      /* stride Y */ 100,
+      /* stride U */ 100,
+      /* stride V */ 100,
+      /* Y plane */ y_pixels,
+      /* U plane */ base::span(u_pixels.data(), 0u),
+      /* V plane */ v_pixels, timestamp);
+
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kY), y_pixels.data());
+  EXPECT_EQ(frame->data_span(VideoFrame::Plane::kY).data(), y_pixels.data());
+  EXPECT_EQ(frame->data_span(VideoFrame::Plane::kY).size(), y_pixels.size());
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kU), nullptr);
+  EXPECT_TRUE(frame->data_span(VideoFrame::Plane::kU).empty());
+  EXPECT_EQ(frame->data(VideoFrame::Plane::kV), nullptr);
+  EXPECT_TRUE(frame->data_span(VideoFrame::Plane::kV).empty());
+}
 }  // namespace media

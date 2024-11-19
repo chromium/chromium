@@ -676,7 +676,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns pointer to the buffer for a given plane, if this is an
   // IsMappable() frame type. The memory is owned by VideoFrame object and must
   // not be freed by the caller.
-  const uint8_t* data(size_t plane) const { return data_span(plane).data(); }
+  const uint8_t* data(size_t plane) const {
+    auto span = data_span(plane);
+    if (span.empty()) [[unlikely]] {
+      return nullptr;
+    }
+    return span.data();
+  }
 
   base::span<const uint8_t> data_span(size_t plane) const {
     CHECK(IsValidPlane(format(), plane));
@@ -688,9 +694,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
     // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
     CHECK_NE(storage_type_, STORAGE_SHMEM);
-    CHECK(IsValidPlane(format(), plane));
-    CHECK(IsMappable());
-    return const_cast<uint8_t*>(data_[plane].data());
+    return const_cast<uint8_t*>(data(plane));
   }
 
   const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
