@@ -150,7 +150,7 @@ class FeaturePromoQueueSetTest : public testing::Test {
     time_provider_.set_clock_for_testing(task_environment_.GetMockClock());
     for (int i = 0; i < 6; ++i) {
       const auto& info = preconditions_[i];
-      list_providers_[i].Add(info.id, info.failure, info.name, true);
+      list_providers_[i].Add(info.id, info.name, FeaturePromoResult::Success());
     }
   }
   ~FeaturePromoQueueSetTest() override = default;
@@ -177,7 +177,9 @@ class FeaturePromoQueueSetTest : public testing::Test {
   // Set a particular precondition to `allow` - mapping from `which` to the
   // specific list for the specific queue is given above.
   void SetPrecondition(int which, bool allow) {
-    list_providers_[which].SetDefault(preconditions_[which].id, allow);
+    list_providers_[which].SetDefault(
+        preconditions_[which].id,
+        allow ? FeaturePromoResult::Success() : preconditions_[which].failure);
   }
 
   // Set a particular precondition to `allow` - mapping from `which` to the
@@ -185,8 +187,9 @@ class FeaturePromoQueueSetTest : public testing::Test {
   void SetPreconditionFor(const base::Feature& iph_feature,
                           int which,
                           bool allow) {
-    list_providers_[which].SetForFeature(iph_feature, preconditions_[which].id,
-                                         allow);
+    list_providers_[which].SetForFeature(
+        iph_feature, preconditions_[which].id,
+        allow ? FeaturePromoResult::Success() : preconditions_[which].failure);
   }
 
   // Tries to queue a promo.
@@ -663,7 +666,7 @@ class FeaturePromoQueueSetCachedDataTest : public FeaturePromoQueueSetTest {
       ui::TypedIdentifier<T> key,
       U data) {
     auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
-        kPrecond1, kFailure1, kPrecond1Name, true);
+        kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
     precond->InitCache(key);
     precond->GetCachedData(key) = std::forward<U>(data);
     return precond;

@@ -20,6 +20,7 @@ DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kMeetsFeatureEngagementCriteriaPrecondition);
 DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kAnchorElementPrecondition);
+DECLARE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kLifecyclePrecondition);
 
 // Represents a precondition requiring the Feature Engagement Tracker to be
 // initialized.
@@ -52,7 +53,7 @@ class MeetsFeatureEngagementCriteriaPrecondition
   ~MeetsFeatureEngagementCriteriaPrecondition() override;
 
   // FeaturePromoPrecondition:
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
  private:
   const raw_ref<const base::Feature> feature_;
@@ -65,19 +66,17 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
   DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(ui::SafeElementReference,
                                        kAnchorElement);
 
-  explicit AnchorElementPrecondition(const AnchorElementProvider& provider,
-                                     ui::ElementContext default_context);
+  AnchorElementPrecondition(const AnchorElementProvider& provider,
+                            ui::ElementContext default_context);
   ~AnchorElementPrecondition() override;
 
   // FeaturePromoPrecondition:
-  bool IsAllowed() const override;
+  FeaturePromoResult CheckPrecondition() const override;
 
  private:
   const raw_ref<const AnchorElementProvider> provider_;
   const ui::ElementContext default_context_;
 };
-
-// Represents a precondition requiring an element to be present.
 
 }  // namespace user_education
 

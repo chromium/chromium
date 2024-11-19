@@ -70,10 +70,14 @@ class FeaturePromoQueueTest : public testing::Test {
                                                         IDS_OK),
         }) {
     time_provider_.set_clock_for_testing(task_environment_.GetMockClock());
-    required_provider_.Add(kPrecond1, kFailure1, kPrecond1Name, true);
-    required_provider_.Add(kPrecond2, kFailure2, kPrecond2Name, true);
-    wait_for_provider_.Add(kPrecond3, kFailure3, kPrecond3Name, true);
-    wait_for_provider_.Add(kPrecond4, kFailure4, kPrecond4Name, true);
+    required_provider_.Add(kPrecond1, kPrecond1Name,
+                           FeaturePromoResult::Success());
+    required_provider_.Add(kPrecond2, kPrecond2Name,
+                           FeaturePromoResult::Success());
+    wait_for_provider_.Add(kPrecond3, kPrecond3Name,
+                           FeaturePromoResult::Success());
+    wait_for_provider_.Add(kPrecond4, kPrecond4Name,
+                           FeaturePromoResult::Success());
   }
   ~FeaturePromoQueueTest() override = default;
 
@@ -181,7 +185,7 @@ TEST_F(FeaturePromoQueueTest, TryToQueueSucceeds) {
 TEST_F(FeaturePromoQueueTest, TryToQueueFails) {
   UNCALLED_MOCK_CALLBACK(ResultCallback, result);
   auto queue = CreateDefaultQueue();
-  required().SetDefault(kPrecond1, false);
+  required().SetDefault(kPrecond1, kFailure1);
   EXPECT_ASYNC_CALL_IN_SCOPE(result, Run(FeaturePromoResult(kFailure1)),
                              TryToQueue(queue, 0, result.Get()));
   EXPECT_EQ(0U, queue.queued_count());
@@ -197,15 +201,15 @@ TEST_F(FeaturePromoQueueTest, CanQueue) {
   // Verify that required conditions affect CanQueue().
   EXPECT_EQ(FeaturePromoResult::Success(),
             queue.CanQueue(promo_spec(0), kTestFeature1));
-  required().SetDefault(kPrecond1, false);
+  required().SetDefault(kPrecond1, kFailure1);
   EXPECT_EQ(FeaturePromoResult(kFailure1),
             queue.CanQueue(promo_spec(0), kTestFeature1));
 
   // Verify that wait-for conditions do not affect CanQueue().
-  wait_for().SetDefault(kPrecond3, false);
+  wait_for().SetDefault(kPrecond3, kFailure3);
   EXPECT_EQ(FeaturePromoResult(kFailure1),
             queue.CanShow(promo_spec(0), kTestFeature1));
-  required().SetDefault(kPrecond1, true);
+  required().SetDefault(kPrecond1, FeaturePromoResult::Success());
   EXPECT_EQ(FeaturePromoResult::Success(),
             queue.CanQueue(promo_spec(0), kTestFeature1));
 }
@@ -217,17 +221,17 @@ TEST_F(FeaturePromoQueueTest, CanShow) {
   // Verify that required conditions affect CanShow().
   EXPECT_EQ(FeaturePromoResult::Success(),
             queue.CanShow(promo_spec(0), kTestFeature1));
-  required().SetDefault(kPrecond1, false);
+  required().SetDefault(kPrecond1, kFailure1);
   EXPECT_EQ(FeaturePromoResult(kFailure1),
             queue.CanShow(promo_spec(0), kTestFeature1));
 
   // Verify that required takes precedence over wait-for conditions.
-  wait_for().SetDefault(kPrecond3, false);
+  wait_for().SetDefault(kPrecond3, kFailure3);
   EXPECT_EQ(FeaturePromoResult(kFailure1),
             queue.CanShow(promo_spec(0), kTestFeature1));
 
   // Verify that wait-for conditions can still affect CanShow().
-  required().SetDefault(kPrecond1, true);
+  required().SetDefault(kPrecond1, FeaturePromoResult::Success());
   EXPECT_EQ(FeaturePromoResult(kFailure3),
             queue.CanShow(promo_spec(0), kTestFeature1));
 }
@@ -278,7 +282,7 @@ TEST_F(FeaturePromoQueueTest, FailedRequirements) {
   auto queue = CreateDefaultQueue();
   TryToQueue(queue, 0, result1.Get());
   TryToQueue(queue, 1, result2.Get());
-  required().SetDefault(kPrecond2, false);
+  required().SetDefault(kPrecond2, kFailure2);
   EXPECT_ASYNC_CALLS_IN_SCOPE_2(result1, Run(FeaturePromoResult(kFailure2)),
                                 result2, Run(FeaturePromoResult(kFailure2)),
                                 RemovePromosWithFailedPreconditions(queue));
@@ -293,7 +297,7 @@ TEST_F(FeaturePromoQueueTest, FailedRequirementOnePromo) {
   TryToQueue(queue, 0, result1.Get());
   TryToQueue(queue, 1, result2.Get());
   TryToQueue(queue, 2, result3.Get());
-  required().SetForFeature(kTestFeature2, kPrecond2, false);
+  required().SetForFeature(kTestFeature2, kPrecond2, kFailure2);
   EXPECT_ASYNC_CALL_IN_SCOPE(result2, Run(FeaturePromoResult(kFailure2)),
                              RemovePromosWithFailedPreconditions(queue));
   EXPECT_EQ(2U, queue.queued_count());
@@ -307,8 +311,8 @@ TEST_F(FeaturePromoQueueTest, FailedDifferentRequirementsDifferentPromos) {
   TryToQueue(queue, 0, result1.Get());
   TryToQueue(queue, 1, result2.Get());
   TryToQueue(queue, 2, result3.Get());
-  required().SetForFeature(kTestFeature2, kPrecond2, false);
-  required().SetForFeature(kTestFeature3, kPrecond1, false);
+  required().SetForFeature(kTestFeature2, kPrecond2, kFailure2);
+  required().SetForFeature(kTestFeature3, kPrecond1, kFailure1);
   EXPECT_ASYNC_CALLS_IN_SCOPE_2(result2, Run(FeaturePromoResult(kFailure2)),
                                 result3, Run(FeaturePromoResult(kFailure1)),
                                 RemovePromosWithFailedPreconditions(queue));
@@ -355,7 +359,7 @@ TEST_F(FeaturePromoQueueTest, GetNextEligiblePromoSkipsWaitFor) {
   TryToQueue(queue, 2, result3.Get());
 
   // This will block the first feature.
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, kFailure3);
 
   EXPECT_EQ(&kTestFeature2, IdentifyNextEligiblePromo(queue));
   const auto promo2 = GetNextEligiblePromo(queue);
@@ -400,7 +404,7 @@ TEST_F(FeaturePromoQueueTest, RemoveIneligiblePromos) {
   TryToQueue(queue, 2, result3.Get());
   FastForward(base::Seconds(10));
   // Now at t=20. Also, the third promo fails preconditions.
-  required().SetForFeature(kTestFeature3, kPrecond1, false);
+  required().SetForFeature(kTestFeature3, kPrecond1, kFailure1);
   EXPECT_ASYNC_CALLS_IN_SCOPE_2(
       result1, Run(FeaturePromoResult(FeaturePromoResult::kTimedOut)), result3,
       Run(FeaturePromoResult(kFailure1)), queue.RemoveIneligiblePromos());
@@ -411,10 +415,11 @@ TEST_F(FeaturePromoQueueTest, UpdateAndGetNextEligiblePromo_OnePromo) {
   UNCALLED_MOCK_CALLBACK(ResultCallback, result1);
   auto queue = CreateDefaultQueue();
   TryToQueue(queue, 0, result1.Get());
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, kFailure3);
   GetAndCheckNextPromo(queue, std::nullopt);
   EXPECT_EQ(1U, queue.queued_count());
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, true);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3,
+                           FeaturePromoResult::Success());
   GetAndCheckNextPromo(queue, 0);
   EXPECT_EQ(0U, queue.queued_count());
 }
@@ -426,11 +431,12 @@ TEST_F(FeaturePromoQueueTest,
   TryToQueue(queue, 1);
   TryToQueue(queue, 2);
   // Block the second feature; the first and third should be ready to go.
-  wait_for().SetForFeature(kTestFeature2, kPrecond3, false);
+  wait_for().SetForFeature(kTestFeature2, kPrecond3, kFailure3);
   GetAndCheckNextPromo(queue, 0);
   GetAndCheckNextPromo(queue, 2);
   // Once the second is unblocked, it should also be able to go.
-  wait_for().SetForFeature(kTestFeature2, kPrecond3, true);
+  wait_for().SetForFeature(kTestFeature2, kPrecond3,
+                           FeaturePromoResult::Success());
   GetAndCheckNextPromo(queue, 1);
 }
 
@@ -441,10 +447,11 @@ TEST_F(FeaturePromoQueueTest,
   TryToQueue(queue, 1);
   TryToQueue(queue, 2);
   // Block the second feature; the first should be ready to go.
-  wait_for().SetForFeature(kTestFeature2, kPrecond3, false);
+  wait_for().SetForFeature(kTestFeature2, kPrecond3, kFailure3);
   GetAndCheckNextPromo(queue, 0);
   // Once the second is unblocked, it should also be able to go.
-  wait_for().SetForFeature(kTestFeature2, kPrecond3, true);
+  wait_for().SetForFeature(kTestFeature2, kPrecond3,
+                           FeaturePromoResult::Success());
   GetAndCheckNextPromo(queue, 1);
   GetAndCheckNextPromo(queue, 2);
 }
@@ -460,7 +467,7 @@ TEST_F(FeaturePromoQueueTest, UpdateAndGetNextEligiblePromo_SomePromosFail) {
 
   FastForward(base::Seconds(10));
   // Now at t=20, then fail the second feature.
-  required().SetForFeature(kTestFeature2, kPrecond1, false);
+  required().SetForFeature(kTestFeature2, kPrecond1, kFailure1);
   GetAndCheckNextPromo(queue, 2);
   EXPECT_TRUE(queue.is_empty());
 }
@@ -496,10 +503,11 @@ TEST_F(FeaturePromoQueueTest, UpdateAndIdentifyNextEligiblePromo_OnePromo) {
   UNCALLED_MOCK_CALLBACK(ResultCallback, result1);
   auto queue = CreateDefaultQueue();
   TryToQueue(queue, 0, result1.Get());
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, kFailure3);
   IdentifyAndCheckNextPromo(queue, std::nullopt);
   EXPECT_EQ(1U, queue.queued_count());
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, true);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3,
+                           FeaturePromoResult::Success());
   IdentifyAndCheckNextPromo(queue, 0);
   EXPECT_EQ(1U, queue.queued_count());
   queue.FailAll(FeaturePromoResult::kCanceled);
@@ -512,10 +520,11 @@ TEST_F(FeaturePromoQueueTest,
   TryToQueue(queue, 0);
   TryToQueue(queue, 1);
   // Block the first feature; the second should be ready to go.
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, kFailure3);
   IdentifyAndCheckNextPromo(queue, 1);
   // Once the second is unblocked, it should also be able to go.
-  wait_for().SetForFeature(kTestFeature1, kPrecond3, true);
+  wait_for().SetForFeature(kTestFeature1, kPrecond3,
+                           FeaturePromoResult::Success());
   IdentifyAndCheckNextPromo(queue, 0);
 }
 
@@ -531,7 +540,7 @@ TEST_F(FeaturePromoQueueTest,
 
   FastForward(base::Seconds(10));
   // Now at t=20, then fail the second feature.
-  required().SetForFeature(kTestFeature2, kPrecond1, false);
+  required().SetForFeature(kTestFeature2, kPrecond1, kFailure1);
   IdentifyAndCheckNextPromo(queue, 2);
   EXPECT_FALSE(queue.is_empty());
 }
@@ -552,7 +561,7 @@ class FeaturePromoQueueCachedDataTest : public FeaturePromoQueueTest {
       ui::TypedIdentifier<T> key,
       U data) {
     auto precond = std::make_unique<CachingFeaturePromoPrecondition>(
-        kPrecond1, kFailure1, kPrecond1Name, true);
+        kPrecond1, kPrecond1Name, FeaturePromoResult::Success());
     precond->InitCache(key);
     precond->GetCachedData(key) = std::forward<U>(data);
     return precond;

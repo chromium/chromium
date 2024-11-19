@@ -21,8 +21,7 @@ namespace user_education {
 TEST(CommonPreconditionsTest,
      FeatureEngagementTrackerInitializedPreconditionFailsNoTracker) {
   FeatureEngagementTrackerInitializedPrecondition precond(nullptr);
-  EXPECT_FALSE(precond.IsAllowed());
-  EXPECT_EQ(FeaturePromoResult::kError, precond.GetFailure());
+  EXPECT_EQ(FeaturePromoResult::kError, precond.CheckPrecondition());
 }
 
 TEST(CommonPreconditionsTest,
@@ -30,8 +29,8 @@ TEST(CommonPreconditionsTest,
   feature_engagement::test::MockTracker tracker;
   EXPECT_CALL(tracker, AddOnInitializedCallback);
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  EXPECT_FALSE(precond.IsAllowed());
-  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig, precond.GetFailure());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig,
+            FeaturePromoResult::kBlockedByConfig);
 }
 
 TEST(CommonPreconditionsTest,
@@ -42,8 +41,7 @@ TEST(CommonPreconditionsTest,
         std::move(callback).Run(false);
       });
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  EXPECT_FALSE(precond.IsAllowed());
-  EXPECT_EQ(FeaturePromoResult::kError, precond.GetFailure());
+  EXPECT_EQ(FeaturePromoResult::kError, FeaturePromoResult::kError);
 }
 
 TEST(
@@ -55,7 +53,7 @@ TEST(
         std::move(callback).Run(true);
       });
   FeatureEngagementTrackerInitializedPrecondition precond(&tracker);
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -79,7 +77,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
       .WillOnce(testing::Return(kPassingEventList));
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   const EventList kFailingEventList1{
       {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 1},
@@ -88,7 +86,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
       .WillOnce(testing::Return(kFailingEventList1));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig, precond.CheckPrecondition());
 
   const EventList kFailingEventList2{
       {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 0},
@@ -97,7 +95,7 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
       .WillOnce(testing::Return(kFailingEventList2));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByConfig, precond.CheckPrecondition());
 }
 #endif
 
@@ -112,15 +110,15 @@ TEST(CommonPreconditionsTest, AnchorElementPrecondition) {
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition());
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(&el));
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition());
 }
 
 TEST(CommonPreconditionsTest,
@@ -135,7 +133,7 @@ TEST(CommonPreconditionsTest,
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(&el));
-  EXPECT_TRUE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition());
 
   internal::PreconditionData::Collection coll;
   precond.ExtractCachedData(coll);
@@ -154,7 +152,7 @@ TEST(CommonPreconditionsTest,
 
   EXPECT_CALL(provider, GetAnchorElement(kTestContext))
       .WillOnce(testing::Return(nullptr));
-  EXPECT_FALSE(precond.IsAllowed());
+  EXPECT_EQ(FeaturePromoResult::kBlockedByUi, precond.CheckPrecondition());
 
   internal::PreconditionData::Collection coll;
   precond.ExtractCachedData(coll);
