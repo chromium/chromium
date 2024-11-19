@@ -41,7 +41,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -179,7 +178,6 @@ public class PaintPreviewPlayerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/376266736")
     public void multiFrameDisplayTest_Wide() throws Exception {
         makeLayoutWide();
         displayTest(true);
