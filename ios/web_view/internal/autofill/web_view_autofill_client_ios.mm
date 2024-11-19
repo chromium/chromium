@@ -221,14 +221,6 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
                             callback:std::move(callback)];
 }
 
-void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  // Please note: This method is only implemented on desktop and is therefore
-  // unreachable here.
-  NOTREACHED();
-}
-
 AutofillClient::SuggestionUiSessionId
 WebViewAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,

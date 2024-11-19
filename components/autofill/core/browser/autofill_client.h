@@ -376,13 +376,6 @@ class AutofillClient {
   // Causes the Autofill settings UI to be shown.
   virtual void ShowAutofillSettings(SuggestionType suggestion_type) = 0;
 
-  // Show an edit address profile dialog, giving the user an option to alter
-  // autofill profile data. `on_user_decision_callback` is used to react to the
-  // user decision of either saving changes or not.
-  virtual void ShowEditAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileSavePromptCallback on_user_decision_callback) = 0;
-
   // Shows the offer-to-save (or update) address profile bubble. If
   // `original_profile` is nullptr, this renders a save prompt. Otherwise, it
   // renders an update prompt where `original_profile` is the address profile

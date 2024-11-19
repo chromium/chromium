@@ -104,9 +104,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       const autofill::AutofillProfile* original_profile,
       bool is_migration_to_account,
       AddressProfileSavePromptCallback callback) override;
-  void ShowEditAddressProfileDialog(
-      const autofill::AutofillProfile& profile,
-      AddressProfileSavePromptCallback on_user_decision_callback) override;
   SuggestionUiSessionId ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) override;

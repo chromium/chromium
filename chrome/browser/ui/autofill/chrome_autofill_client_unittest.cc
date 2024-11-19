@@ -467,32 +467,6 @@ TEST_F(ChromeAutofillClientTest,
       /*on_confirmation_closed_callback=*/std::nullopt);
 }
 
-TEST_F(ChromeAutofillClientTest, EditAddressDialogFooter) {
-  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
-  auto* controller =
-      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  controller->SetViewFactoryForTest(base::BindRepeating(
-      [](content::WebContents*, EditAddressProfileDialogController*) {
-        return static_cast<AutofillBubbleBase*>(nullptr);
-      }));
-
-  // Non-account profile
-  client()->ShowEditAddressProfileDialog(test::GetFullProfile(),
-                                         base::DoNothing());
-  EXPECT_EQ(controller->GetFooterMessage(), u"");
-
-  // Account profile
-  AutofillProfile profile2 = test::GetFullProfile();
-  test_api(profile2).set_record_type(AutofillProfile::RecordType::kAccount);
-  client()->ShowEditAddressProfileDialog(profile2, base::DoNothing());
-  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
-      web_contents()->GetBrowserContext());
-  EXPECT_EQ(controller->GetFooterMessage(),
-            l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-                base::ASCIIToUTF16(account->email)));
-}
-
 TEST_F(ChromeAutofillClientTest,
        AutofillManualFallbackIPH_NotShownByPromoController) {
   SetUpIphForTesting(feature_engagement::kIPHAutofillManualFallbackFeature);

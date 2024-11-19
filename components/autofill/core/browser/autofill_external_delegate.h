@@ -202,14 +202,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   void DidAcceptCreateNewPlusAddressInlineSuggestion(
       const Suggestion& suggestion);
 
-  // Shows the address editor to the user. The Autofill profile to edit is
-  // determined by passed `guid`.
-  void ShowEditAddressProfileDialog(const std::string& guid);
-
-  // Triggered when the user closes the address editor dialog.
-  void OnAddressEditorClosed(AutofillClient::AddressPromptUserDecision decision,
-                             base::optional_ref<const AutofillProfile> profile);
-
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const AutofillTriggerSource trigger_source,
                            const CreditCard& card);

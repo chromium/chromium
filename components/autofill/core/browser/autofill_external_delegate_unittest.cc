@@ -276,10 +276,6 @@ class MockAutofillClient : public TestAutofillClient {
               (AutofillClient::PlusAddressErrorDialogType, base::OnceClosure),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
-  MOCK_METHOD(void,
-              ShowEditAddressProfileDialog,
-              (const AutofillProfile&, AddressProfileSavePromptCallback),
-              (override));
 
 #if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.
@@ -647,86 +643,6 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
       {test::CreateAutofillSuggestion(SuggestionType::kMixedFormMessage,
                                       u"no autofill available")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
-}
-
-// Test that the address editor is not shown if there's no Autofill profile with
-// the provided GUID.
-TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForNonexistingProfile) {
-  IssueOnQuery();
-
-  const std::string guid = base::Uuid().AsLowercaseString();
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog).Times(0);
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(guid);
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-// Test that the address editor is shown for the GUID identifying existing
-// Autofill profile.
-TEST_F(AutofillExternalDelegateUnitTest, ShowEditorForExistingProfile) {
-  IssueOnQuery();
-
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _));
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-// Test the situation when database changes take long enough for the user to
-// open the address editor for the second time.
-TEST_F(AutofillExternalDelegateUnitTest,
-       UserOpensEditorTwiceBeforeProfileIsPersisted) {
-  IssueOnQuery();
-
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
-      .Times(2)
-      .WillRepeatedly([](auto profile, auto save_prompt_callback) {
-        std::move(save_prompt_callback)
-            .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
-                 profile);
-      });
-  // Changes to the Autofill profile must be persisted both times.
-  EXPECT_CALL(address_data_manager(), UpdateProfile(profile)).Times(2);
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-// Test the situation when AutofillExternalDelegate is destroyed before the
-// AddressDataManager observer is notified that all tasks have been processed.
-TEST_F(AutofillExternalDelegateUnitTest,
-       DelegateIsDestroyedBeforeUpdateIsFinished) {
-  IssueOnQuery();
-
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  EXPECT_CALL(client(), ShowEditAddressProfileDialog(profile, _))
-      .WillOnce([](auto profile, auto save_prompt_callback) {
-        std::move(save_prompt_callback)
-            .Run(AutofillClient::AddressPromptUserDecision::kEditAccepted,
-                 profile);
-      });
-
-  EXPECT_CALL(address_data_manager(), UpdateProfile(profile));
-
-  auto suggestion = Suggestion(SuggestionType::kEditAddressProfile);
-  suggestion.payload = Suggestion::Guid(profile.guid());
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-  DestroyAutofillDriver();
 }
 
 // Test that our external delegate called the virtual methods at the right time.

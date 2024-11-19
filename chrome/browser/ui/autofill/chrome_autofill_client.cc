@@ -548,36 +548,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromeAutofillClient::ShowEditAddressProfileDialog(
-    const AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-#if !BUILDFLAG(IS_ANDROID)
-  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
-  EditAddressProfileDialogControllerImpl* controller =
-      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
-  CHECK(controller);
-
-  std::optional<AccountInfo> account = GetPrimaryAccountInfoFromBrowserContext(
-      web_contents()->GetBrowserContext());
-  CHECK(account);
-  std::u16string footer_message =
-      profile.IsAccountProfile()
-          ? l10n_util::GetStringFUTF16(
-                IDS_AUTOFILL_UPDATE_PROMPT_ACCOUNT_ADDRESS_SOURCE_NOTICE,
-                base::ASCIIToUTF16(account->email))
-          : u"";
-  controller->OfferEdit(
-      /*profile=*/profile,
-      /*title_override=*/u"", footer_message,
-      /*is_editing_existing_address=*/false,
-      /*is_migration_to_account=*/false,
-      /*on_user_decision_callback=*/std::move(on_user_decision_callback));
-#else
-  // Edit address profile dialog is only available is desktop.
-  NOTREACHED();
-#endif
-}
-
 void ChromeAutofillClient::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,

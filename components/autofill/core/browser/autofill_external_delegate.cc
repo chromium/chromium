@@ -750,7 +750,6 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kDatalistEntry:
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kDevtoolsTestAddresses:
-    case SuggestionType::kEditAddressProfile:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
@@ -784,6 +783,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kPredictionImprovementsFeedback:
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kEditAddressProfile:
       NOTREACHED();  // Should be handled elsewhere.
   }
 }
@@ -803,7 +803,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillFullEmail:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kEditAddressProfile:
     case SuggestionType::kDevtoolsTestAddressEntry:
       DidAcceptAddressSuggestion(suggestion, metadata);
       break;
@@ -971,6 +970,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kDeleteAddressProfile:
+    case SuggestionType::kEditAddressProfile:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -1134,37 +1134,6 @@ FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-void AutofillExternalDelegate::ShowEditAddressProfileDialog(
-    const std::string& guid) {
-  const AutofillProfile* profile = manager_->client()
-                                       .GetPersonalDataManager()
-                                       .address_data_manager()
-                                       .GetProfileByGUID(guid);
-  if (profile) {
-    manager_->client().ShowEditAddressProfileDialog(
-        *profile,
-        base::BindOnce(&AutofillExternalDelegate::OnAddressEditorClosed,
-                       GetWeakPtr()));
-  }
-}
-
-void AutofillExternalDelegate::OnAddressEditorClosed(
-    AutofillClient::AddressPromptUserDecision decision,
-    base::optional_ref<const AutofillProfile> edited_profile) {
-  if (decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
-    AddressDataManager& adm =
-        manager_->client().GetPersonalDataManager().address_data_manager();
-    if (!adm_observation_.IsObserving()) {
-      adm_observation_.Observe(&adm);
-    }
-    CHECK(edited_profile.has_value());
-    adm.UpdateProfile(edited_profile.value());
-    return;
-  }
-  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
-                                                      GetReopenTriggerSource());
 }
 
 void AutofillExternalDelegate::OnAddressDataChanged() {
@@ -1537,10 +1506,6 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       break;
     case SuggestionType::kAddressFieldByFieldFilling:
       FillFieldByFieldFillingSuggestion(suggestion, metadata);
-      break;
-    case SuggestionType::kEditAddressProfile:
-      ShowEditAddressProfileDialog(
-          suggestion.GetPayload<Suggestion::Guid>().value());
       break;
     case SuggestionType::kDevtoolsTestAddressEntry: {
       const std::optional<AutofillProfile> profile = GetTestAddressByGUID(

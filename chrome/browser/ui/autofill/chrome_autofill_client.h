@@ -137,9 +137,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   profile_metrics::BrowserProfileType GetProfileType() const override;
   FastCheckoutClient* GetFastCheckoutClient() override;
   void ShowAutofillSettings(SuggestionType suggestion_type) override;
-  void ShowEditAddressProfileDialog(
-      const AutofillProfile& profile,
-      AddressProfileSavePromptCallback on_user_decision_callback) override;
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,

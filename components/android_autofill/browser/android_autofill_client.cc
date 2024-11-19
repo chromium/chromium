@@ -181,12 +181,6 @@ void AndroidAutofillClient::ShowAutofillSettings(
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED();
-}
-
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
