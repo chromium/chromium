@@ -60,22 +60,20 @@ class WaitUntilObserver::ThenFulfilled final
 };
 
 class WaitUntilObserver::ThenRejected final
-    : public ThenCallable<IDLAny, ThenRejected, IDLAny> {
+    : public ThenCallable<IDLAny, ThenRejected, IDLPromise<IDLAny>> {
  public:
   explicit ThenRejected(WaitUntilObserver* observer) : observer_(observer) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(observer_);
-    ThenCallable<IDLAny, ThenRejected, IDLAny>::Trace(visitor);
+    ThenCallable<IDLAny, ThenRejected, IDLPromise<IDLAny>>::Trace(visitor);
   }
 
-  ScriptValue React(ScriptState* script_state, ScriptValue value) {
+  ScriptPromise<IDLAny> React(ScriptState* script_state, ScriptValue value) {
     DCHECK(observer_);
     observer_->OnPromiseRejected();
     observer_ = nullptr;
-    return ScriptValue(
-        script_state->GetIsolate(),
-        ScriptPromise<IDLUndefined>::Reject(script_state, value).V8Promise());
+    return ScriptPromise<IDLAny>::Reject(script_state, value);
   }
 
  private:
