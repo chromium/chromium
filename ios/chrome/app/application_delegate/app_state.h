@@ -17,9 +17,6 @@
 
 @class CommandDispatcher;
 @class SceneState;
-@class MemoryWarningHelper;
-@class MetricsMediator;
-@class ProfileState;
 @class DeferredInitializationRunner;
 @protocol StartupInformation;
 
