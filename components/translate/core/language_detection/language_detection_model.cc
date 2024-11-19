@@ -22,7 +22,7 @@ namespace translate {
 // page is truncated to `kTextSampleLength`
 BASE_FEATURE(kTruncateLanguageDetectionSample,
              "TruncateLanguageDetectionSample",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 LanguageDetectionModel::LanguageDetectionModel(
     language_detection::LanguageDetectionModel& shared_tflite_model)
