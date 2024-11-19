@@ -24,10 +24,41 @@
 
 namespace autofill {
 
+// TODO(crbug.com/374086145): Move to a separate file.
+class TestVotesUploader : public VotesUploader {
+ public:
+  using VotesUploader::VotesUploader;
+
+  bool MaybeStartVoteUploadProcess(
+      std::unique_ptr<FormStructure> form_structure,
+      bool observed_submission,
+      LanguageCode current_page_language,
+      base::TimeTicks initial_interaction_timestamp) override;
+
+  void StoreUploadVotesAndLogQualityCallback(
+      FormSignature form_signature,
+      base::OnceClosure callback) override;
+
+  void UploadVotesAndLogQuality(std::unique_ptr<FormStructure> submitted_form,
+                                base::TimeTicks interaction_time,
+                                base::TimeTicks submission_time,
+                                bool observed_submission,
+                                const ukm::SourceId source_id) override;
+
+ private:
+  friend class TestBrowserAutofillManager;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  std::string submitted_form_signature_;
+  std::optional<bool> expected_observed_submission_;
+  std::vector<FieldTypeSet> expected_submitted_field_types_;
+};
+
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : BrowserAutofillManager(driver) {
   test_api(*this).set_form_filler(
       std::make_unique<TestFormFiller>(*this, log_manager()));
+  test_api(*this).set_votes_uploader(std::make_unique<TestVotesUploader>(this));
 }
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
@@ -116,7 +147,7 @@ void TestBrowserAutofillManager::OnFormSubmitted(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::UploadVotesAndLogQuality(
+void TestVotesUploader::UploadVotesAndLogQuality(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
@@ -155,16 +186,16 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
     }
   }
 
-  BrowserAutofillManager::UploadVotesAndLogQuality(
-      std::move(submitted_form), interaction_time, submission_time,
-      observed_submission, source_id);
+  VotesUploader::UploadVotesAndLogQuality(std::move(submitted_form),
+                                          interaction_time, submission_time,
+                                          observed_submission, source_id);
 }
 
-void TestBrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
+void TestVotesUploader::StoreUploadVotesAndLogQualityCallback(
     FormSignature form_signature,
     base::OnceClosure callback) {
-  BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
-      form_signature, std::move(callback));
+  VotesUploader::StoreUploadVotesAndLogQualityCallback(form_signature,
+                                                       std::move(callback));
   run_loop_->Quit();
 }
 
@@ -173,16 +204,19 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
   return card_image_;
 }
 
-bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(
+bool TestVotesUploader::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
-    bool observed_submission) {
+    bool observed_submission,
+    LanguageCode current_page_language,
+    base::TimeTicks initial_interaction_timestamp) {
   // The purpose of this runloop is to ensure that the field type determination
   // finishes. If `observed_submission` is true, it's terminated in
   // LogQualityAndUploadVotes. Otherwise, it is already terminated in
   // StoreUploadVotesAndLogQualityCallback.
   run_loop_ = std::make_unique<base::RunLoop>();
-  if (BrowserAutofillManager::MaybeStartVoteUploadProcess(
-          std::move(form_structure), observed_submission)) {
+  if (VotesUploader::MaybeStartVoteUploadProcess(
+          std::move(form_structure), observed_submission, current_page_language,
+          initial_interaction_timestamp)) {
     run_loop_->Run();
     return true;
   }
@@ -227,8 +261,8 @@ void TestBrowserAutofillManager::ClearFormStructures() {
   mutable_form_structures()->clear();
 }
 
-const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
-  return submitted_form_signature_;
+const std::string& TestBrowserAutofillManager::GetSubmittedFormSignature() {
+  return votes_uploader().submitted_form_signature_;
 }
 
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(
@@ -245,11 +279,15 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
 
 void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(
     const std::vector<FieldTypeSet>& expected_types) {
-  expected_submitted_field_types_ = expected_types;
+  votes_uploader().expected_submitted_field_types_ = expected_types;
 }
 
 void TestBrowserAutofillManager::SetExpectedObservedSubmission(bool expected) {
-  expected_observed_submission_ = expected;
+  votes_uploader().expected_observed_submission_ = expected;
+}
+
+TestVotesUploader& TestBrowserAutofillManager::votes_uploader() {
+  return static_cast<TestVotesUploader&>(test_api(*this).votes_uploader());
 }
 
 }  // namespace autofill

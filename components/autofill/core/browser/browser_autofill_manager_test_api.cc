@@ -9,16 +9,16 @@
 
 namespace autofill {
 
-testing::AssertionResult BrowserAutofillManagerTestApi::FlushPendingVotes(
+testing::AssertionResult VotesUploaderTestApi::FlushPendingVotes(
     base::TimeDelta timeout) {
-  if (!manager_->vote_upload_task_runner_) {
+  if (!votes_uploader_->vote_upload_task_runner_) {
     return testing::AssertionFailure()
            << "The BrowserAutofillManager::vote_upload_task_runner_ is not "
               "initialized yet. Maybe you need to wait for a submission?";
   }
   base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE, timeout);
   base::RunLoop run_loop;
-  manager_->vote_upload_task_runner_->PostTaskAndReply(
+  votes_uploader_->vote_upload_task_runner_->PostTaskAndReply(
       FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
   run_loop.Run();
   return run_loop.AnyQuitCalled()

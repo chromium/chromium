@@ -91,6 +91,102 @@ enum class ValuePatternsMetric {
   kMaxValue = kIban,
 };
 
+class BrowserAutofillManager;
+
+// TODO(crbug.com/374086145): Move ownership to AutofillClient.
+class VotesUploader {
+ public:
+  explicit VotesUploader(BrowserAutofillManager* owner);
+  VotesUploader(const VotesUploader&) = delete;
+  VotesUploader& operator=(const VotesUploader&) = delete;
+  VotesUploader(VotesUploader&&);
+  VotesUploader& operator=(VotesUploader&&);
+  virtual ~VotesUploader();
+
+  // Will send an upload based on the |form_structure| data and the local
+  // Autofill profile data. |observed_submission| is specified if the upload
+  // follows an observed submission event. Returns false if the upload couldn't
+  // start.
+  virtual bool MaybeStartVoteUploadProcess(
+      std::unique_ptr<FormStructure> form_structure,
+      bool observed_submission,
+      LanguageCode current_page_language,
+      base::TimeTicks initial_interaction_timestamp);
+
+  // Triggers and wipes all pending QualityAndVotesUploadCallbacks.
+  void FlushPendingLogQualityAndVotesUploadCallbacks();
+
+  // TODO(crbug.com/374086145): Remove public member.
+  std::u16string last_unlocked_credit_card_cvc_;
+
+ protected:
+  // Stores a `callback` for `form_signature`, possibly overriding an older
+  // callback for `form_signature` or triggering a pending callback in case too
+  // many callbacks are stored to create space.
+  // Virtual and protected for testing.
+  virtual void StoreUploadVotesAndLogQualityCallback(
+      FormSignature form_signature,
+      base::OnceClosure callback);
+
+  // Logs quality metrics for the |submitted_form| and uploads votes for the
+  // field types to the crowdsourcing server, if appropriate.
+  // |observed_submission| indicates whether the upload is a result of an
+  // observed submission event.
+  // Virtual and protected for testing.
+  virtual void UploadVotesAndLogQuality(
+      std::unique_ptr<FormStructure> submitted_form,
+      base::TimeTicks interaction_time,
+      base::TimeTicks submission_time,
+      bool observed_submission,
+      ukm::SourceId source_id);
+
+ private:
+  friend class VotesUploaderTestApi;
+
+  // Method called after the values present on submitted fields were associated
+  // with Autofill field types. It is used to route calls to
+  // `UploadVotesAndLogQuality()` and
+  // `AutofillClient::TriggerUserPerceptionOfAutofillSurvey()`, since both
+  // depend on the field types being determined.
+  void OnSubmissionFieldTypesDetermined(
+      std::unique_ptr<FormStructure> submitted_form,
+      base::TimeTicks interaction_time,
+      base::TimeTicks submission_time,
+      bool observed_submission,
+      ukm::SourceId source_id);
+
+  // Removes a callback for the given `form_signature` without calling it.
+  void WipeLogQualityAndVotesUploadCallback(FormSignature form_signature);
+
+  AutofillClient& client();
+
+  // List of callbacks to be called for sending blur votes. Only one callback is
+  // stored per FormSignature. We rely on FormSignatures rather than
+  // FormGlobalId to send votes for the various signatures of a form while it
+  // evolves (when fields are added or removed). The list of callbacks is
+  // ordered by time of creation: newest elements first. If the list becomes too
+  // long, the oldest pending callbacks are just called and popped removed the
+  // list.
+  //
+  // Callbacks are triggered in the following situations:
+  // - We observe a form submission.
+  // - The list becomes to large.
+
+  // Callbacks are wiped in the following situations:
+  // - A form is submitted.
+  // - A callback is overridden by a more recent version.
+  std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads_;
+
+  // This task runner sequentializes calls to
+  // DeterminePossibleFieldTypesForUpload to ensure that blur votes are
+  // processed before form submission votes. This is important so that a
+  // submission can trigger the upload of blur votes.
+  scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
+
+  // TODO(crbug.com/374086145): Remove or change to AutofillClient.
+  raw_ref<BrowserAutofillManager> owner_;
+};
+
 // Manages saving and restoring the user's personal information entered into web
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager : public AutofillManager {
@@ -215,14 +311,6 @@ class BrowserAutofillManager : public AutofillManager {
                                        const FormData& form,
                                        const FormFieldData& field);
 
-  // Will send an upload based on the |form_structure| data and the local
-  // Autofill profile data. |observed_submission| is specified if the upload
-  // follows an observed submission event. Returns false if the upload couldn't
-  // start.
-  virtual bool MaybeStartVoteUploadProcess(
-      std::unique_ptr<FormStructure> form_structure,
-      bool observed_submission);
-
   // Update the pending form with |form|, possibly processing the current
   // pending form for upload.
   void UpdatePendingForm(const FormData& form);
@@ -337,30 +425,6 @@ class BrowserAutofillManager : public AutofillManager {
   }
 
  protected:
-  // Stores a `callback` for `form_signature`, possibly overriding an older
-  // callback for `form_signature` or triggering a pending callback in case too
-  // many callbacks are stored to create space.
-  virtual void StoreUploadVotesAndLogQualityCallback(
-      FormSignature form_signature,
-      base::OnceClosure callback);
-
-  // Triggers and wipes all pending QualityAndVotesUploadCallbacks.
-  void FlushPendingLogQualityAndVotesUploadCallbacks();
-
-  // Removes a callback for the given `form_signature` without calling it.
-  void WipeLogQualityAndVotesUploadCallback(FormSignature form_signature);
-
-  // Logs quality metrics for the |submitted_form| and uploads votes for the
-  // field types to the crowdsourcing server, if appropriate.
-  // |observed_submission| indicates whether the upload is a result of an
-  // observed submission event.
-  virtual void UploadVotesAndLogQuality(
-      std::unique_ptr<FormStructure> submitted_form,
-      base::TimeTicks interaction_time,
-      base::TimeTicks submission_time,
-      bool observed_submission,
-      ukm::SourceId source_id);
-
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.
   virtual const gfx::Image& GetCardImage(const CreditCard& credit_card);
@@ -481,18 +545,6 @@ class BrowserAutofillManager : public AutofillManager {
   // - Collect any key metrics
   // - Collect profile token quality observations
   std::unique_ptr<FormStructure> ValidateSubmittedForm(const FormData& form);
-
-  // Method called after the values present on submitted fields were associated
-  // with Autofill field types. It is used to route calls to
-  // `UploadVotesAndLogQuality()` and
-  // `AutofillClient::TriggerUserPerceptionOfAutofillSurvey()`, since both
-  // depend on the field types being determined.
-  void OnSubmissionFieldTypesDetermined(
-      std::unique_ptr<FormStructure> submitted_form,
-      base::TimeTicks interaction_time,
-      base::TimeTicks submission_time,
-      bool observed_submission,
-      ukm::SourceId source_id);
 
   // Returns suggestions for the `form`, if suggestions were triggered using
   // the `trigger_source` on the `field`. The field's type is `field_type`.
@@ -679,13 +731,6 @@ class BrowserAutofillManager : public AutofillManager {
   // destruction time (whatever comes first).
   void LogEventCountsUMAMetric(const FormStructure& form_structure);
 
-  // Returns whether the form is considered parseable and meets a couple of
-  // other requirements which makes uploading UKM data worthwhile. E.g. the
-  // form should not be a search form, the forms should have at least one
-  // focusable input field with a type from heuristics or the server.
-  bool ShouldUploadUkm(const FormStructure& form_structure,
-                       bool require_classified_field);
-
   // Returns a compose suggestion if the compose service is available for
   // `field` and `trigger_source`.
   std::optional<Suggestion> MaybeGetComposeSuggestion(
@@ -765,30 +810,9 @@ class BrowserAutofillManager : public AutofillManager {
   std::unique_ptr<FormFiller> form_filler_ =
       std::make_unique<FormFiller>(*this, log_manager());
 
-  std::u16string last_unlocked_credit_card_cvc_;
-
-  // List of callbacks to be called for sending blur votes. Only one callback is
-  // stored per FormSignature. We rely on FormSignatures rather than
-  // FormGlobalId to send votes for the various signatures of a form while it
-  // evolves (when fields are added or removed). The list of callbacks is
-  // ordered by time of creation: newest elements first. If the list becomes too
-  // long, the oldest pending callbacks are just called and popped removed the
-  // list.
-  //
-  // Callbacks are triggered in the following situations:
-  // - We observe a form submission.
-  // - The list becomes to large.
-
-  // Callbacks are wiped in the following situations:
-  // - A form is submitted.
-  // - A callback is overridden by a more recent version.
-  std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads_;
-
-  // This task runner sequentializes calls to
-  // DeterminePossibleFieldTypesForUpload to ensure that blur votes are
-  // processed before form submission votes. This is important so that a
-  // submission can trigger the upload of blur votes.
-  scoped_refptr<base::SequencedTaskRunner> vote_upload_task_runner_;
+  // TODO(crbug.com/374086145): Move ownership to AutofillClient.
+  std::unique_ptr<VotesUploader> votes_uploader_ =
+      std::make_unique<VotesUploader>(this);
 
   // Contains a list of four digit combinations that were found in the webpage
   // DOM. Populated after a standalone cvc field is processed on a form. Used to

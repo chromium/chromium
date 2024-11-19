@@ -21,17 +21,26 @@
 
 namespace autofill {
 
-// Exposes some testing operations for BrowserAutofillManager.
-class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
+class VotesUploaderTestApi {
  public:
-  explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
-      : AutofillManagerTestApi(manager), manager_(*manager) {}
+  explicit VotesUploaderTestApi(VotesUploader* votes_uploader)
+      : votes_uploader_(*votes_uploader) {}
 
   // Blocks until all pending votes have been emitted. This fails if either a
   // timeout is hit or if the BrowserAutofillManager::vote_upload_task_runner_
   // has not been initialized yet.
   [[nodiscard]] testing::AssertionResult FlushPendingVotes(
       base::TimeDelta timeout = base::Seconds(10));
+
+ private:
+  raw_ref<VotesUploader> votes_uploader_;
+};
+
+// Exposes some testing operations for BrowserAutofillManager.
+class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
+ public:
+  explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
+      : AutofillManagerTestApi(manager), manager_(*manager) {}
 
   void SetExternalDelegate(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
@@ -102,9 +111,19 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
                                            std::move(plus_address_override));
   }
 
+  void set_votes_uploader(std::unique_ptr<VotesUploader> votes_uploader) {
+    manager_->votes_uploader_ = std::move(votes_uploader);
+  }
+
+  VotesUploader& votes_uploader() { return *manager_->votes_uploader_; }
+
  private:
   raw_ref<BrowserAutofillManager> manager_;
 };
+
+inline VotesUploaderTestApi test_api(VotesUploader& votes_uploader) {
+  return VotesUploaderTestApi(&votes_uploader);
+}
 
 inline BrowserAutofillManagerTestApi test_api(BrowserAutofillManager& manager) {
   return BrowserAutofillManagerTestApi(&manager);

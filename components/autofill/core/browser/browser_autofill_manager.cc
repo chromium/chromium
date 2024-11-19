@@ -765,6 +765,15 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
 
 }  // namespace
 
+VotesUploader::VotesUploader(BrowserAutofillManager* owner) : owner_(*owner) {}
+VotesUploader::VotesUploader(VotesUploader&&) = default;
+VotesUploader& VotesUploader::operator=(VotesUploader&&) = default;
+VotesUploader::~VotesUploader() = default;
+
+AutofillClient& VotesUploader::client() {
+  return owner_->client();
+}
+
 BrowserAutofillManager::MetricsState::MetricsState(
     BrowserAutofillManager* owner)
     : address_form_event_logger(owner->form_interactions_ukm_logger(),
@@ -794,7 +803,7 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   for (const auto& [form_id, form_structure] : form_structures()) {
     ProcessFieldLogEventsInForm(*form_structure);
   }
-  FlushPendingLogQualityAndVotesUploadCallbacks();
+  votes_uploader_->FlushPendingLogQualityAndVotesUploadCallbacks();
 
   client().GetSingleFieldFillRouter().CancelPendingQueries();
 }
@@ -1013,8 +1022,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     DeterminePossibleFieldTypesForUpload(
         std::move(copied_profiles), std::move(copied_credit_cards),
-        last_unlocked_credit_card_cvc_, client().GetAppLocale(),
-        submitted_form.get());
+        votes_uploader_->last_unlocked_credit_card_cvc_,
+        client().GetAppLocale(), submitted_form.get());
 
     delegate->MaybeImportForm(
         std::move(submitted_form),
@@ -1077,13 +1086,17 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
       *submitted_form, form, client().GetPersonalDataManager());
 
   MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
-  MaybeStartVoteUploadProcess(std::move(submitted_form),
-                              /*observed_submission=*/true);
+  votes_uploader_->MaybeStartVoteUploadProcess(
+      std::move(submitted_form),
+      /*observed_submission=*/true, GetCurrentPageLanguage(),
+      metrics_->initial_interaction_timestamp);
 }
 
-bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
+bool VotesUploader::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
-    bool observed_submission) {
+    bool observed_submission,
+    LanguageCode current_page_language,
+    base::TimeTicks initial_interaction_timestamp) {
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
@@ -1115,7 +1128,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
       credit_cards, [](const CreditCard* card) { return *card; });
 
   // Annotate the form with the source language of the page.
-  form_structure->set_current_page_language(GetCurrentPageLanguage());
+  form_structure->set_current_page_language(current_page_language);
 
   // Attach the Randomized Encoder.
   form_structure->set_randomized_encoder(
@@ -1131,9 +1144,19 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   FormStructure* raw_form = form_structure.get();
 
   base::OnceClosure call_after_determine_field_types = base::BindOnce(
-      &BrowserAutofillManager::OnSubmissionFieldTypesDetermined,
-      weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-      metrics_->initial_interaction_timestamp, base::TimeTicks::Now(),
+      [](base::WeakPtr<AutofillManager> owner, VotesUploader& self,
+         std::unique_ptr<FormStructure> submitted_form,
+         base::TimeTicks interaction_time, base::TimeTicks submission_time,
+         bool observed_submission, ukm::SourceId source_id) {
+        if (!owner) {
+          return;
+        }
+        self.OnSubmissionFieldTypesDetermined(std::move(submitted_form),
+                                              interaction_time, submission_time,
+                                              observed_submission, source_id);
+      },
+      owner_->GetWeakPtr(), std::ref(*this), std::move(form_structure),
+      initial_interaction_timestamp, base::TimeTicks::Now(),
       observed_submission, client().GetUkmSourceId());
 
   // If the form was not submitted (e.g. the user just removed the focus from
@@ -1142,8 +1165,15 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // override it with better data.
   if (!observed_submission) {
     call_after_determine_field_types = base::BindOnce(
-        &BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback,
-        weak_ptr_factory_.GetWeakPtr(), raw_form->form_signature(),
+        [](base::WeakPtr<AutofillManager> owner, VotesUploader& self,
+           FormSignature form_signature, base::OnceClosure callback) {
+          if (!owner) {
+            return;
+          }
+          self.StoreUploadVotesAndLogQualityCallback(form_signature,
+                                                     std::move(callback));
+        },
+        owner_->GetWeakPtr(), std::ref(*this), raw_form->form_signature(),
         std::move(call_after_determine_field_types));
   }
 
@@ -1193,8 +1223,10 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
     return;
   }
 
-  MaybeStartVoteUploadProcess(std::move(upload_form),
-                              /*observed_submission=*/false);
+  votes_uploader_->MaybeStartVoteUploadProcess(
+      std::move(upload_form),
+      /*observed_submission=*/false, GetCurrentPageLanguage(),
+      metrics_->initial_interaction_timestamp);
 }
 
 void BrowserAutofillManager::LogSubmissionMetrics(
@@ -2481,7 +2513,7 @@ void BrowserAutofillManager::
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
+void VotesUploader::StoreUploadVotesAndLogQualityCallback(
     FormSignature form_signature,
     base::OnceClosure callback) {
   // Remove entries with the same FormSignature to replace them.
@@ -2502,14 +2534,14 @@ void BrowserAutofillManager::StoreUploadVotesAndLogQualityCallback(
   queued_vote_uploads_.emplace_front(form_signature, std::move(callback));
 }
 
-void BrowserAutofillManager::WipeLogQualityAndVotesUploadCallback(
+void VotesUploader::WipeLogQualityAndVotesUploadCallback(
     FormSignature form_signature) {
   std::erase_if(queued_vote_uploads_, [form_signature](const auto& entry) {
     return entry.first == form_signature;
   });
 }
 
-void BrowserAutofillManager::FlushPendingLogQualityAndVotesUploadCallbacks() {
+void VotesUploader::FlushPendingLogQualityAndVotesUploadCallbacks() {
   std::list<std::pair<FormSignature, base::OnceClosure>> queued_vote_uploads =
       std::exchange(queued_vote_uploads_, {});
   for (auto& i : queued_vote_uploads) {
@@ -2519,7 +2551,7 @@ void BrowserAutofillManager::FlushPendingLogQualityAndVotesUploadCallbacks() {
 
 // We explicitly pass in all the time stamps of interest, as the cached ones
 // might get reset before this method executes.
-void BrowserAutofillManager::UploadVotesAndLogQuality(
+void VotesUploader::UploadVotesAndLogQuality(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
@@ -2533,10 +2565,11 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   if (submitted_form->ShouldRunHeuristics() ||
       submitted_form->ShouldRunHeuristicsForSingleFields() ||
       submitted_form->ShouldBeQueried()) {
+    // TODO(crbug.com/374086145): Eliminate reference to `owner_`.
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
-        interaction_time, submission_time, form_interactions_ukm_logger(),
-        observed_submission);
+        interaction_time, submission_time,
+        owner_->form_interactions_ukm_logger(), observed_submission);
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
       // we are not sure whether a full navigation with a Reset() call follows.
@@ -2546,8 +2579,8 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   if (!submitted_form->ShouldBeUploaded()) {
     return;
   }
-  if (ShouldRecordUkm() && ShouldUploadUkm(*submitted_form,
-                                           /*require_classified_field=*/true)) {
+  if (ShouldRecordUkm() && submitted_form->ShouldUploadUkm(
+                               /*require_classified_field=*/true)) {
     AutofillMetrics::LogAutofillFieldInfoAfterSubmission(
         client().GetUkmRecorder(), source_id, *submitted_form, submission_time);
   }
@@ -2589,7 +2622,7 @@ const gfx::Image& BrowserAutofillManager::GetCardImage(
                    CreditCard::IconResourceId(credit_card.network()));
 }
 
-void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
+void VotesUploader::OnSubmissionFieldTypesDetermined(
     std::unique_ptr<FormStructure> submitted_form,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
@@ -2651,11 +2684,11 @@ void BrowserAutofillManager::Reset() {
     ProcessFieldLogEventsInForm(*form_structure);
   }
   ProcessPendingFormForUpload();
-  FlushPendingLogQualityAndVotesUploadCallbacks();
+  votes_uploader_->FlushPendingLogQualityAndVotesUploadCallbacks();
   DCHECK(!pending_form_data_);
 
   four_digit_combinations_in_dom_.clear();
-  last_unlocked_credit_card_cvc_.clear();
+  votes_uploader_->last_unlocked_credit_card_cvc_.clear();
   if (touch_to_fill_delegate_) {
     touch_to_fill_delegate_->Reset();
   }
@@ -2995,7 +3028,7 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
 
 void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     const CreditCard& credit_card) {
-  last_unlocked_credit_card_cvc_ = credit_card.cvc();
+  votes_uploader_->last_unlocked_credit_card_cvc_ = credit_card.cvc();
   // If the synced down card is a virtual card, let the client know so that it
   // can show the UI to help user to manually fill the form, if needed.
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
@@ -3541,7 +3574,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   // effort.
   bool should_upload_ukm =
       ShouldRecordUkm() &&
-      ShouldUploadUkm(form_structure, /*require_classified_field=*/true);
+      form_structure.ShouldUploadUkm(/*require_classified_field=*/true);
 
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
@@ -3569,8 +3602,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   if (base::FeatureList::IsEnabled(features::kAutofillUKMExperimentalFields) &&
       !metrics_->form_submitted_timestamp.is_null() &&
-      ShouldUploadUkm(form_structure,
-                      /*require_classified_field=*/false)) {
+      form_structure.ShouldUploadUkm(
+          /*require_classified_field=*/false)) {
     form_interactions_ukm_logger()
         ->LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
             form_structure);
@@ -3582,60 +3615,6 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     // there may be other reasons to log events.
     autofill_field->ClearLogEvents();
   }
-}
-
-bool BrowserAutofillManager::ShouldUploadUkm(
-    const FormStructure& form_structure,
-    bool require_classified_field) {
-  if (!form_structure.ShouldBeParsed()) {
-    return false;
-  }
-
-  auto is_focusable_text_field =
-      [](const std::unique_ptr<AutofillField>& field) {
-        return field->IsTextInputElement() && field->IsFocusable();
-      };
-
-  // Return true if the field is a visible text input field which has predicted
-  // types from heuristics or the server.
-  auto is_focusable_predicted_text_field =
-      [](const std::unique_ptr<AutofillField>& field) {
-        return field->IsTextInputElement() && field->IsFocusable() &&
-               ((field->server_type() != NO_SERVER_DATA &&
-                 field->server_type() != UNKNOWN_TYPE) ||
-                field->heuristic_type() != UNKNOWN_TYPE ||
-                field->html_type() != HtmlFieldType::kUnspecified);
-      };
-
-  size_t num_text_fields = base::ranges::count_if(
-      form_structure.fields(), require_classified_field
-                                   ? is_focusable_predicted_text_field
-                                   : is_focusable_text_field);
-  if (num_text_fields == 0) {
-    return false;
-  }
-
-  // If the form contains a single text field and this contains the string
-  // "search" in its name/id/placeholder, the function return false and the form
-  // is not recorded into UKM. The form is considered a search box.
-  if (num_text_fields == 1) {
-    auto it = base::ranges::find_if(form_structure.fields(),
-                                    require_classified_field
-                                        ? is_focusable_predicted_text_field
-                                        : is_focusable_text_field);
-    if (base::ToLowerASCII((*it)->placeholder()).find(u"search") !=
-            std::string::npos ||
-        base::ToLowerASCII((*it)->name()).find(u"search") !=
-            std::string::npos ||
-        base::ToLowerASCII((*it)->label()).find(u"search") !=
-            std::string::npos ||
-        base::ToLowerASCII((*it)->aria_label()).find(u"search") !=
-            std::string::npos) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(
