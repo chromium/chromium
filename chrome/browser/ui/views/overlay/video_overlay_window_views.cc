@@ -963,7 +963,7 @@ void VideoOverlayWindowViews::SetUpViews() {
                   }
                 },
                 base::Unretained(this)),
-            vector_icons::kMediaPreviousTrackIcon,
+            vector_icons::kSkipPreviousIcon,
             l10n_util::GetStringUTF16(
                 IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
     previous_track_controls_view->SetSize(kActionButtonSize);
@@ -977,7 +977,7 @@ void VideoOverlayWindowViews::SetUpViews() {
               }
             },
             base::Unretained(this)),
-        vector_icons::kMediaNextTrackIcon,
+        vector_icons::kSkipNextIcon,
         l10n_util::GetStringUTF16(
             IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
     next_track_controls_view->SetSize(kActionButtonSize);
