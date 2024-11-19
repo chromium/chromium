@@ -217,6 +217,11 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/android_arm64_dbg_recipe/targets"
     }
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
   "$build/siso": {
     "configs": [
       "builder",
