@@ -134,7 +134,6 @@ class AutocompleteActionPredictorTest : public testing::Test {
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
             chrome_preloading_predictor::kOmniboxDirectURLInput);
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
 
     predictor_ = std::make_unique<AutocompleteActionPredictor>(profile_.get());
     profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -335,7 +334,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
   std::unique_ptr<WebContents> web_contents_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+  base::ScopedMockElapsedTimersForTest test_timer_;
 };
 
 
