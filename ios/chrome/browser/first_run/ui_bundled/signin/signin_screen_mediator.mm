@@ -4,15 +4,21 @@
 
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_mediator.h"
 
+#import "base/containers/contains.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
+#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -20,21 +26,18 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/user_signin_logger.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
-#import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 
-@interface SigninScreenMediator () <ChromeAccountManagerServiceObserver> {
+@interface SigninScreenMediator () <ChromeAccountManagerServiceObserver,
+                                    IdentityManagerObserverBridgeDelegate> {
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
   // YES if this is part of a first run signin.
   BOOL _firstRun;
 }
 
-// Account manager service to retrieve Chrome identities.
-@property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
-// Authentication service for sign in.
-@property(nonatomic, assign) AuthenticationService* authenticationService;
-@property(nonatomic, assign) signin::IdentityManager* identityManager;
 // Application local pref.
 @property(nonatomic, assign) PrefService* localPrefService;
 // User pref.
@@ -52,7 +55,14 @@
 
 @end
 
-@implementation SigninScreenMediator
+@implementation SigninScreenMediator {
+  // Account manager service to retrieve Chrome identities.
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  // Authentication service for sign in.
+  raw_ptr<AuthenticationService> _authenticationService;
+  // Identity manager to retrieve Chrome identities.
+  raw_ptr<signin::IdentityManager> _identityManager;
+}
 
 - (instancetype)
     initWithAccountManagerService:
@@ -66,11 +76,12 @@
                       promoAction:(signin_metrics::PromoAction)promoAction {
   self = [super init];
   if (self) {
-    DCHECK(accountManagerService);
-    DCHECK(authenticationService);
-    DCHECK(localPrefService);
-    DCHECK(prefService);
-    DCHECK(syncService);
+    CHECK(accountManagerService);
+    CHECK(authenticationService);
+    CHECK(identityManager);
+    CHECK(localPrefService);
+    CHECK(prefService);
+    CHECK(syncService);
 
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
     _accountManagerService = accountManagerService;
@@ -79,10 +90,19 @@
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
     _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
     _localPrefService = localPrefService;
     _prefService = prefService;
     _syncService = syncService;
-    _hadIdentitiesAtStartup = self.accountManagerService->HasIdentities();
+
+    if (AreSeparateProfilesForManagedAccountsEnabled()) {
+      _hadIdentitiesAtStartup =
+          !_identityManager->GetAccountsOnDevice().empty();
+    } else {
+      _hadIdentitiesAtStartup = _accountManagerService->HasIdentities();
+    }
     _firstRun =
         accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
     if (_firstRun) {
@@ -108,8 +128,9 @@
 }
 
 - (void)dealloc {
-  DCHECK(!self.accountManagerService);
-  DCHECK(!self.authenticationService);
+  DCHECK(!_accountManagerService);
+  DCHECK(!_authenticationService);
+  DCHECK(!_identityManager);
   DCHECK(!self.localPrefService);
   DCHECK(!self.prefService);
   DCHECK(!self.syncService);
@@ -117,13 +138,14 @@
 
 - (void)disconnect {
   [self.logger disconnect];
-  self.accountManagerService = nullptr;
-  self.authenticationService = nullptr;
-  self.identityManager = nullptr;
+  _accountManagerService = nullptr;
+  _authenticationService = nullptr;
+  _identityManager = nullptr;
   self.localPrefService = nullptr;
   self.prefService = nullptr;
   self.syncService = nullptr;
   _accountManagerServiceObserver.reset();
+  _identityManagerObserver.reset();
 }
 
 - (void)startSignInWithAuthenticationFlow:
@@ -148,14 +170,13 @@
     }];
   };
   id<SystemIdentity> primaryIdentity =
-      self.authenticationService->GetPrimaryIdentity(
-          signin::ConsentLevel::kSignin);
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (primaryIdentity && ![primaryIdentity isEqual:self.selectedIdentity]) {
     // This case is possible if the user signs in with the FRE, and quits Chrome
     // without completed the FRE. And the user starts Chrome again.
     // See crbug.com/1312449.
     // TODO(crbug.com/40832610): Need test for this case.
-    self.authenticationService->SignOut(
+    _authenticationService->SignOut(
         signin_metrics::ProfileSignout::kAbortSignin,
         /*force_clear_browsing_data=*/false, startSignInCompletion);
     return;
@@ -164,7 +185,7 @@
 }
 
 - (void)cancelSignInScreenWithCompletion:(ProceduralBlock)completion {
-  if (!self.authenticationService->HasPrimaryIdentity(
+  if (!_authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     if (completion) {
       completion();
@@ -183,9 +204,9 @@
       completion();
     }
   };
-  self.authenticationService->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
-      /*force_clear_browsing_data=*/false, signOutCompletion);
+  _authenticationService->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
+                                  /*force_clear_browsing_data=*/false,
+                                  signOutCompletion);
 }
 
 - (void)userAttemptedToSignin {
@@ -212,7 +233,7 @@
     self.localPrefService->CommitPendingWrite();
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   firstRunStage);
-    RecordFirstRunSignInMetrics(self.identityManager, self.attemptStatus,
+    RecordFirstRunSignInMetrics(_identityManager, self.attemptStatus,
                                 self.hadIdentitiesAtStartup);
   }
 }
@@ -224,7 +245,7 @@
   DCHECK(!_consumer);
   _consumer = consumer;
   BOOL signinForcedOrAvailable = NO;
-  switch (self.authenticationService->GetServiceStatus()) {
+  switch (_authenticationService->GetServiceStatus()) {
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
       self.attemptStatus = first_run::SignInAttemptStatus::NOT_ATTEMPTED;
       signinForcedOrAvailable = YES;
@@ -269,7 +290,8 @@
             : SigninScreenConsumerScreenIntentWelcomeAndSignin;
   }
   if (signinForcedOrAvailable) {
-    self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
+    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+        _identityManager, _accountManagerService);
   }
 }
 
@@ -278,7 +300,11 @@
     return;
   }
   // nil is allowed only if there is no other identity.
-  DCHECK(selectedIdentity || !self.accountManagerService->HasIdentities());
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    DCHECK(selectedIdentity || _identityManager->GetAccountsOnDevice().empty());
+  } else {
+    DCHECK(selectedIdentity || !_accountManagerService->HasIdentities());
+  }
   _selectedIdentity = selectedIdentity;
 
   [self updateConsumerIdentity];
@@ -286,8 +312,21 @@
 
 #pragma mark - Private
 
+- (bool)selectedIdentityIsValid {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (self.selectedIdentity) {
+      std::string gaia = base::SysNSStringToUTF8(self.selectedIdentity.gaiaID);
+      return base::Contains(_identityManager->GetAccountsOnDevice(), gaia,
+                            [](const AccountInfo& info) { return info.gaia; });
+    }
+    return false;
+  } else {
+    return _accountManagerService->IsValidIdentity(self.selectedIdentity);
+  }
+}
+
 - (void)updateConsumerIdentity {
-  switch (self.authenticationService->GetServiceStatus()) {
+  switch (_authenticationService->GetServiceStatus()) {
     case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
     case AuthenticationService::ServiceStatus::SigninAllowed:
       break;
@@ -300,7 +339,7 @@
   if (!selectedIdentity) {
     [self.consumer noIdentityAvailable];
   } else {
-    UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
+    UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
         selectedIdentity, IdentityAvatarSize::Regular);
     [self.consumer setSelectedIdentityUserName:selectedIdentity.userFullName
                                          email:selectedIdentity.userEmail
@@ -309,24 +348,61 @@
   }
 }
 
-#pragma mark - ChromeAccountManagerServiceObserver
-
-- (void)identityListChanged {
-  if (!self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
-    self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
+- (void)handleIdentityListChanged {
+  if (![self selectedIdentityIsValid]) {
+    self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+        _identityManager, _accountManagerService);
   }
 }
 
-- (void)identityUpdated:(id<SystemIdentity>)identity {
+- (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
   if ([self.selectedIdentity isEqual:identity]) {
     [self updateConsumerIdentity];
   }
+}
+
+#pragma mark - ChromeAccountManagerServiceObserver
+
+- (void)identityListChanged {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)identityUpdated:(id<SystemIdentity>)identity {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated:identity];
 }
 
 - (void)onChromeAccountManagerServiceShutdown:
     (ChromeAccountManagerService*)accountManagerService {
   // TODO(crbug.com/40284086): Remove `[self disconnect]`.
   [self disconnect];
+}
+
+#pragma mark -  IdentityManagerObserver
+
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  id<SystemIdentity> identity =
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  [self handleIdentityUpdated:identity];
 }
 
 @end
