@@ -314,7 +314,9 @@ class IdentityManager : public KeyedService,
   DeviceAccountsSynchronizer* GetDeviceAccountsSynchronizer();
 
 #if BUILDFLAG(IS_IOS)
-  // Gets all accounts on the device, including the ones from other profiles.
+  // Gets all accounts on the device, including the ones from other profiles, in
+  // the order provided by the system (usually the order in which the accounts
+  // were added).
   [[nodiscard]] std::vector<AccountInfo> GetAccountsOnDevice();
 #endif
 

@@ -62,7 +62,8 @@ class DeviceAccountsProvider {
   virtual std::vector<AccountInfo> GetAccountsForProfile() const;
 
   // Returns the IDs of all accounts that exist on the device, including the
-  // ones that are assigned to different profiles.
+  // ones that are assigned to different profiles, in the order in which they're
+  // provided by the SystemIdentityManager.
   virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
 
   // Starts fetching an access token for the account with id |gaia_id| with
