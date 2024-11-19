@@ -45,6 +45,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterProvider.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupSyncIdUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupTitleUtils.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelActionListener.java",
@@ -112,6 +113,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilterImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupSyncIdUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupTitleUtilsUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtilsUnitTest.java",
@@ -121,6 +123,7 @@ robolectric_library("junit") {
   deps = [
     ":factory_java",
     ":java",
+    ":test_support_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
@@ -147,6 +150,19 @@ robolectric_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
+  ]
+}
+
+robolectric_library("test_support_java") {
+  testonly = true
+  sources = [ "android/java/src/org/chromium/chrome/browser/tabmodel/TabUiUnitTestUtils.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//chrome/browser/tab:java",
+    "//content/public/android:content_full_java",
+    "//third_party/mockito:mockito_java",
     "//url:url_java",
   ]
 }

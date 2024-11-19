@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_groups;
+package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
 
@@ -25,8 +23,9 @@ public class TabGroupUtils {
 
     /**
      * This method gets the index in TabModel of the first tab in {@code tabs}.
-     * @param tabModel   The tabModel that owns the {@code tab}.
-     * @param tabs       The list of tabs among which we need to find the first tab index.
+     *
+     * @param tabModel The tabModel that owns the {@code tab}.
+     * @param tabs The list of tabs among which we need to find the first tab index.
      * @return The index in TabModel of the first tab in {@code tabs}
      */
     public static int getFirstTabModelIndexForList(TabModel tabModel, List<Tab> tabs) {
@@ -37,8 +36,9 @@ public class TabGroupUtils {
 
     /**
      * This method gets the index in TabModel of the last tab in {@code tabs}.
-     * @param tabModel   The tabModel that owns the {@code tab}.
-     * @param tabs       The list of tabs among which we need to find the last tab index.
+     *
+     * @param tabModel The tabModel that owns the {@code tab}.
+     * @param tabs The list of tabs among which we need to find the last tab index.
      * @return The index in TabModel of the last tab in {@code tabs}
      */
     public static int getLastTabModelIndexForList(TabModel tabModel, List<Tab> tabs) {

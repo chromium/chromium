@@ -1151,6 +1151,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tabmodel:factory_java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabmodel:junit",
+      "//chrome/browser/tabmodel:test_support_java",
+      "//chrome/browser/tabmodel:test_support_java",
       "//chrome/browser/tabmodel/internal:java",
       "//chrome/browser/tabpersistence:junit",
       "//chrome/browser/thumbnail:java",
