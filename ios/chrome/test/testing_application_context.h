@@ -39,8 +39,16 @@ class TestingApplicationContext : public ApplicationContext {
   // Sets the last shutdown "clean" state.
   void SetLastShutdownClean(bool clean);
 
-  // Sets the ProfileManager.
-  void SetProfileManager(ProfileManagerIOS* manager);
+  // Sets the ProfileManager and the AccountProfileMapper. If this isn't called,
+  // GetProfileManager() will return null, and GetAccountProfileMapper() will
+  // return a default instance.
+  // Since the real AccountProfileMapper depends on the ProfileManagerIOS, a
+  // ProfileManagerIOS should always be set together with a corresponding
+  // AccountProfileMapper.
+  // This must be called before GetAccountProfileMapper(), i.e. before creating
+  // a TestProfileIOS.
+  void SetProfileManagerAndAccountProfileMapper(ProfileManagerIOS* manager,
+                                                AccountProfileMapper* mapper);
 
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);
@@ -115,6 +123,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<MockPromosManager> promos_manager_;
 
   raw_ptr<ProfileManagerIOS> profile_manager_;
+  raw_ptr<AccountProfileMapper> custom_account_profile_mapper_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   bool was_last_shutdown_clean_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
@@ -123,7 +132,7 @@ class TestingApplicationContext : public ApplicationContext {
       test_network_connection_tracker_;
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
-  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
+  std::unique_ptr<AccountProfileMapper> default_account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;

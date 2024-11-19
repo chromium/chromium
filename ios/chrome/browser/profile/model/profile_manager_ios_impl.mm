@@ -335,6 +335,10 @@ ProfileIOS* ProfileManagerIOSImpl::CreateProfile(std::string_view name) {
   return iter->second.profile();
 }
 
+void ProfileManagerIOSImpl::DestroyAllProfiles() {
+  profiles_map_.clear();
+}
+
 ProfileAttributesStorageIOS*
 ProfileManagerIOSImpl::GetProfileAttributesStorage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

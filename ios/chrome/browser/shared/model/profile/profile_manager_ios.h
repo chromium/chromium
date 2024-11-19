@@ -83,6 +83,10 @@ class ProfileManagerIOS {
   // null if loading or creating the Profile failed.
   virtual ProfileIOS* CreateProfile(std::string_view name) = 0;
 
+  // Destroys all loaded Profile objects. Meant to be called right before the
+  // ProfileManagerIOS itself is destroyed.
+  virtual void DestroyAllProfiles() = 0;
+
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;
 

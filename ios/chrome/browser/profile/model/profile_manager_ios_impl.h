@@ -58,6 +58,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
                           ProfileLoadedCallback created_callback) override;
   ProfileIOS* LoadProfile(std::string_view name) override;
   ProfileIOS* CreateProfile(std::string_view name) override;
+  void DestroyAllProfiles() override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // ProfileIOS::Delegate:
