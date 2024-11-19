@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_controller_client.h"
 #include "chrome/browser/enterprise/signin/interstitials/managed_profile_required_page.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -23,19 +25,48 @@ namespace {
 
 class BlockingInfo : public base::SupportsUserData::Data {
  public:
-  explicit BlockingInfo(content::WebContents* allowed_web_contents)
-      : allowed_web_contents_(allowed_web_contents) {}
+  explicit BlockingInfo(content::WebContents* enterprise_action_web_contents,
+                        content::WebContents* allowed_web_contents)
+      : enterprise_action_web_contents_(
+            enterprise_action_web_contents->GetWeakPtr()),
+        allowed_web_contents_(allowed_web_contents) {}
 
   BlockingInfo(const BlockingInfo&) = delete;
   BlockingInfo& operator=(const BlockingInfo&) = delete;
-  ~BlockingInfo() override = default;
+  ~BlockingInfo() override {
+    if (reload_required_ && !enterprise_action_web_contents_.WasInvalidated()) {
+      enterprise_action_web_contents_->OpenURL(
+          content::OpenURLParams(
+              enterprise_action_web_contents_->GetVisibleURL(),
+              content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+              ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false),
+          /*navigation_handle_callback=*/std::move(on_reload_triggered_));
+    }
+  }
+
+  void set_reload_required(bool reload_required,
+                           base::OnceCallback<void(content::NavigationHandle&)>
+                               on_reload_triggered) {
+    reload_required_ = reload_required;
+    if (on_reload_triggered) {
+      on_reload_triggered_ = std::move(on_reload_triggered);
+    }
+  }
+
+  content::WebContents* enterprise_action_web_contents() const {
+    return enterprise_action_web_contents_.get();
+  }
 
   const content::WebContents* allowed_web_contents() const {
     return allowed_web_contents_.get();
   }
 
  private:
+  const base::WeakPtr<content::WebContents> enterprise_action_web_contents_;
   const raw_ptr<content::WebContents> allowed_web_contents_;
+  bool reload_required_ = false;
+  base::OnceCallback<void(content::NavigationHandle&)> on_reload_triggered_ =
+      base::DoNothing();
 };
 
 // BrowserContexts that are marked with this UserData key should have all
@@ -116,6 +147,11 @@ ManagedProfileRequiredNavigationThrottle::ProcessThrottleEvent() {
   if (!navigation_blocked_for_managed_profile_creation_info) {
     return PROCEED;
   }
+
+  BlockingInfo* blocking_info = static_cast<BlockingInfo*>(
+      navigation_blocked_for_managed_profile_creation_info);
+  CHECK(blocking_info);
+
   auto managed_profile_required = std::make_unique<ManagedProfileRequiredPage>(
       navigation_handle()->GetWebContents(), navigation_handle()->GetURL(),
       std::make_unique<ManagedProfileRequiredControllerClient>(
@@ -137,13 +173,49 @@ const char* ManagedProfileRequiredNavigationThrottle::GetNameForLogging() {
 base::ScopedClosureRunner ManagedProfileRequiredNavigationThrottle::
     BlockNavigationUntilEnterpriseActionTaken(
         content::BrowserContext* browser_context,
+        content::WebContents* enterprise_action_web_contents,
         content::WebContents* allowed_web_contents) {
   browser_context->SetUserData(
       kNavigationBlockedForManagedProfileCreationInfo,
-      std::make_unique<BlockingInfo>(allowed_web_contents));
+      std::make_unique<BlockingInfo>(enterprise_action_web_contents,
+                                     allowed_web_contents));
   return base::ScopedClosureRunner(base::BindOnce(
       &content::BrowserContext::RemoveUserData, browser_context->GetWeakPtr(),
       kNavigationBlockedForManagedProfileCreationInfo));
+}
+
+//  static
+void ManagedProfileRequiredNavigationThrottle::ShowBlockedWindow(
+    content::BrowserContext* browser_context) {
+  if (!IsBlockingNavigations(browser_context)) {
+    return;
+  }
+  auto* enterprise_action_web_contents =
+      static_cast<BlockingInfo*>(
+          browser_context->GetUserData(
+              kNavigationBlockedForManagedProfileCreationInfo))
+          ->enterprise_action_web_contents();
+
+  if (!enterprise_action_web_contents) {
+    return;
+  }
+  auto* browser_window = BrowserWindow::FindBrowserWindowWithWebContents(
+      enterprise_action_web_contents);
+  browser_window->Show();
+}
+
+// static
+void ManagedProfileRequiredNavigationThrottle::SetReloadRequired(
+    content::BrowserContext* browser_context,
+    bool reload_required,
+    base::OnceCallback<void(content::NavigationHandle&)> on_reload_triggered) {
+  if (!IsBlockingNavigations(browser_context)) {
+    return;
+  }
+  static_cast<BlockingInfo*>(
+      browser_context->GetUserData(
+          kNavigationBlockedForManagedProfileCreationInfo))
+      ->set_reload_required(reload_required, std::move(on_reload_triggered));
 }
 
 //  static

@@ -90,8 +90,11 @@ void ManagedProfileRequiredPage::CommandReceived(const std::string& command) {
   switch (cmd) {
     case security_interstitials::CMD_DONT_PROCEED:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      if (!ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
+      if (ManagedProfileRequiredNavigationThrottle::IsBlockingNavigations(
               web_contents()->GetBrowserContext())) {
+        ManagedProfileRequiredNavigationThrottle::ShowBlockedWindow(
+            web_contents()->GetBrowserContext());
+      } else {
         controller()->metrics_helper()->RecordUserDecision(
             MetricsHelper::DONT_PROCEED);
         controller()->Reload();
