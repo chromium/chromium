@@ -38,6 +38,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchGroupProto.AuxiliarySearchEntry;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.ArrayList;
@@ -84,7 +86,7 @@ public class AuxiliarySearchDonor {
         }
 
         mAppSearchSession = createAppSearchSession();
-        setSchema();
+        maySetSchema();
     }
 
     /** Creates a session asynchronously. */
@@ -95,9 +97,19 @@ public class AuxiliarySearchDonor {
                         .build());
     }
 
-    /** Sets the document schema for the current session. */
+    /**
+     * Sets the document schema for the current session.
+     *
+     * @return false if the schema has been set before.
+     */
     @SuppressLint({"CheckResult", "NewApi"})
-    private void setSchema() {
+    @VisibleForTesting
+    boolean maySetSchema() {
+        mIsSchemaSet =
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
+        if (mIsSchemaSet) return false;
+
         Futures.transformAsync(
                 mAppSearchSession,
                 session -> {
@@ -116,6 +128,7 @@ public class AuxiliarySearchDonor {
                     return responseFutureCallback;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
+        return true;
     }
 
     @NonNull
@@ -153,6 +166,8 @@ public class AuxiliarySearchDonor {
         if (response == null || !response.getMigrationFailures().isEmpty()) return;
 
         mIsSchemaSet = true;
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, true);
 
         // If there is any pending donation, donates the documents now.
         if (mPendingDocuments != null) {

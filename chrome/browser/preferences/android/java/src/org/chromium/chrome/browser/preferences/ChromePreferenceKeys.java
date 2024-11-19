@@ -95,6 +95,9 @@ public final class ChromePreferenceKeys {
     public static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED =
             "Chrome.AutofillAssistant.ProactiveHelp";
 
+    public static final String AUXILIARY_SEARCH_IS_SCHEMA_SET =
+            "Chrome.AuxiliarySearch.IsSchemaSet";
+
     public static final String BACKUP_FIRST_BACKUP_DONE = "first_backup_done";
 
     public static final String BOOKMARKS_LAST_MODIFIED_FOLDER_ID = "last_bookmark_folder_id";
@@ -917,6 +920,7 @@ public final class ChromePreferenceKeys {
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP_ENABLED,
+                AUXILIARY_SEARCH_IS_SCHEMA_SET,
                 APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE,
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,
