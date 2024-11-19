@@ -2078,7 +2078,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
   assertFalse(this.mockAccessibilityPrivate.getFaceGazeBubbleIsWarning());
 
   // Make bubble controller think that Dictation is active.
-  this.getFaceGaze().bubbleController_.getStateGesture_ = () => {
+  this.getFaceGaze().bubbleController_.getState_ = () => {
     return {dictation: FacialGesture.JAW_OPEN};
   };
 
@@ -2092,7 +2092,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextDictationStateMessage', async function() {
 
   // Toggle dictation off.
   this.processFaceLandmarkerResult(result);
-  this.getFaceGaze().bubbleController_.getStateGesture_ = () => {
+  this.getFaceGaze().bubbleController_.getState_ = () => {
     return {};
   };
 

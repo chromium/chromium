@@ -9,14 +9,22 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {FacialGesture} from './facial_gestures.js';
 
+interface State {
+  paused: FacialGesture|undefined;
+  scrollMode: FacialGesture|undefined;
+  longClick: FacialGesture|undefined;
+  dictation: FacialGesture|undefined;
+  heldMacros: string[];
+}
+
 /** Handles setting the text content of the FaceGaze bubble UI. */
 export class BubbleController {
   private resetBubbleTimeoutId_: number|undefined;
   private baseText_: string[] = [];
-  private getStateGesture_: () => BubbleController.GetStateGestureResult;
+  private getState_: () => State;
 
-  constructor(getStateGesture: () => BubbleController.GetStateGestureResult) {
-    this.getStateGesture_ = getStateGesture;
+  constructor(getState: () => State) {
+    this.getState_ = getState;
   }
 
   updateBubble(text: string): void {
@@ -45,11 +53,11 @@ export class BubbleController {
       scrollMode,
       longClick,
       dictation,
-      heldActions,
-    } = this.getStateGesture_();
+      heldMacros,
+    } = this.getState_();
 
-    if (heldActions) {
-      heldActions.forEach((displayText) => {this.baseText_.push(displayText)});
+    if (heldMacros) {
+      heldMacros.forEach((displayText) => {this.baseText_.push(displayText)});
     }
 
     if (paused) {
@@ -243,14 +251,6 @@ export class BubbleController {
 
 export namespace BubbleController {
   export const RESET_BUBBLE_TIMEOUT_MS = 2500;
-
-  export interface GetStateGestureResult {
-    paused: FacialGesture|undefined;
-    scrollMode: FacialGesture|undefined;
-    longClick: FacialGesture|undefined;
-    dictation: FacialGesture|undefined;
-    heldActions: string[];
-  }
 }
 
 TestImportManager.exportForTesting(BubbleController);

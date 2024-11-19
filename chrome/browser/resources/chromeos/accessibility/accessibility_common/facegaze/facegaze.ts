@@ -47,7 +47,7 @@ export class FaceGaze {
         dictation: isDictationActive() ?
             this.gestureHandler_.getGestureForDictation() :
             undefined,
-        heldActions: this.gestureHandler_.getHeldMacroDisplayStrings(),
+        heldMacros: this.gestureHandler_.getHeldMacroDisplayStrings(),
       };
     });
 
