@@ -165,44 +165,16 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
     return;
   }
 
-  ui::ImageModel icon;
-  std::u16string tooltip, title, label = std::u16string();
-
-  // Check if 3PCD blocking status is initialized.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtection3pcdUx) &&
-      cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
-    icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
-    title = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME);
-    tooltip = l10n_util::GetStringUTF16(
-        IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_TOOLTIP);
-
-    if (!cookie_info.protections_on) {
-      label = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_ALLOWED);
-    } else if (cookie_info.blocking_status == CookieBlocking3pcdStatus::kAll) {
-      label = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_BLOCKED);
-    } else if (cookie_info.blocking_status ==
-               CookieBlocking3pcdStatus::kLimited) {
-      label = l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_LABEL_LIMITED);
-    }
-  } else {
-    icon = PageInfoViewFactory::GetCookiesAndSiteDataIcon();
-    title = l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER);
-    tooltip = l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
-  }
-
-  // Create a cookie button that opens a cookies subpage (or Tracking Protection
-  // subpage in the case of 3PCD).
+  // Create a cookie button that opens a cookies subpage.
   cookie_button_ =
       site_settings_view_->AddChildView(std::make_unique<RichHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
                               base::Unretained(navigation_handler_)),
-          icon, title,
-          /*secondary_text=*/std::u16string(), tooltip, label,
+          PageInfoViewFactory::GetCookiesAndSiteDataIcon(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER),
+          /*secondary_text=*/std::u16string(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP),
+          /*subtitle_text=*/std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
   cookie_button_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIES_SUBPAGE);
