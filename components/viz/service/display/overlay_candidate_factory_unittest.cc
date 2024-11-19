@@ -343,7 +343,8 @@ class OverlayCandidateFactoryArbitraryTransformTest
   TextureDrawQuad CreateUnclippedDrawQuad(
       AggregatedRenderPass& render_pass,
       const gfx::Rect& quad_rect,
-      const gfx::Transform& quad_to_target_transform) {
+      const gfx::Transform& quad_to_target_transform,
+      GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin) {
     SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
     sqs->quad_to_target_transform = quad_to_target_transform;
     TextureDrawQuad quad;
@@ -352,6 +353,7 @@ class OverlayCandidateFactoryArbitraryTransformTest
                 gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
                 false, gfx::ProtectedVideoType::kClear);
 
+    quad.y_flipped = origin == kBottomLeft_GrSurfaceOrigin;
     return quad;
   }
 };
@@ -424,8 +426,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   // Use a non-axis aligned transform so it can't be converted to an
   // OverlayTransform.
   transform.SkewX(45.0);
-  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
-  quad.y_flipped = true;
+  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform,
+                                      /*origin=*/kBottomLeft_GrSurfaceOrigin);
 
   OverlayCandidate candidate;
   OverlayCandidate::CandidateStatus result =
