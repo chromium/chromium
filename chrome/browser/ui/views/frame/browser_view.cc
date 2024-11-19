@@ -1068,6 +1068,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                           base::Unretained(this), CanFullscreen()));
   UpdateFullscreenAllowedFromPolicy(CanFullscreen());
 
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kCompactMode)) {
     registrar_.Init(browser_->profile()->GetPrefs());
     registrar_.Add(prefs::kCompactModeEnabled,
@@ -1075,6 +1076,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
                                        base::Unretained(this)));
     ToggleCompactModeUI();
   }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
