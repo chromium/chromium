@@ -11327,6 +11327,7 @@
                         "period-ms": "500"
                     },
                     "enable_features": [
+                        "AutofillThrottleDocumentFormScanForceFirstScanIos",
                         "AutofillThrottleDocumentFormScanIos"
                     ]
                 }
