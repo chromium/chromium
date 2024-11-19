@@ -41,6 +41,10 @@ class OpenXrLightEstimatorAndroidFactory
   std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
       const OpenXrExtensionEnumeration* extension_enum) const override;
 
+  void ProcessSystemProperties(const OpenXrExtensionEnumeration* extension_enum,
+                               XrInstance instance,
+                               XrSystemId system) override;
+
   std::unique_ptr<OpenXrLightEstimator> CreateLightEstimator(
       const OpenXrExtensionHelper& extension_helper,
       XrSession session,
