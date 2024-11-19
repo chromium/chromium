@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 import java.lang.ref.WeakReference;
+import java.util.Optional;
 
 /**
  * Java counterpart of the `AndroidSensitiveContentClient`. Used to retrieve the container view and
@@ -65,6 +66,12 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     private final ContentSensitivitySetter mContentSensitivitySetter;
 
     private final ObserverList<Observer> mObservers;
+
+    /**
+     * Has value if the content sensitivity was restored from tab state. The value is true if the
+     * content is sensitive, and false otherwise.
+     */
+    private Optional<Boolean> mContentRestoredFromTabStateIsSensitive = Optional.empty();
 
     /**
      * Retrieves the client from {@link WebContents}, by calling the native client. The native
@@ -113,6 +120,26 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
     }
 
     /**
+     * Updates the content sensitivity of the container view. Called by {@link TabImpl} when the tab
+     * gets initialized, in case the {@link WebContents} of the tab were deleted (for example,
+     * because of browser restart).
+     *
+     * @param contentIsSensitive Content sensitivity.
+     */
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void restoreContentSensitivityFromTabState(boolean contentIsSensitive) {
+        // It is important to update {@code mContentIsSensitive} now, in case the container view is
+        // currently null. Thus, the sensitivity will be set later, when the container view can be
+        // accessed. The observers will not be notified about the content sensitivity change,
+        // because {@code mContentIsSensitive} and {@code contentIsSensitive} have the same value.
+        // This is ok, because {@link TabImpl} is both the observer and the one that calls this
+        // method, so it is aware of the content sensitivity.
+        mContentIsSensitive = contentIsSensitive;
+        mContentRestoredFromTabStateIsSensitive = Optional.of(contentIsSensitive);
+        setContentSensitivity(contentIsSensitive);
+    }
+
+    /**
      * The container view of the {@link WebContents} can be swapped. This method sets the current
      * content sensitivity on the new container view.
      *
@@ -157,6 +184,11 @@ public class SensitiveContentClient implements ViewAndroidDelegate.ContainerView
             mContentIsSensitive = contentIsSensitive;
             notifyObserversAboutSensitivityChange(contentIsSensitive);
         }
+    }
+
+    @VisibleForTesting
+    public Optional<Boolean> getContentRestoredFromTabStateIsSensitive() {
+        return mContentRestoredFromTabStateIsSensitive;
     }
 
     /** Observes changes made by the {@link SensitiveContentClient}. */

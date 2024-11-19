@@ -1895,7 +1895,11 @@ class TabImpl implements Tab, SensitiveContentClient.Observer {
                             SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
                 // Adding the observation has to happen after the native `initWebContents`, so that
                 // the {@link SensitiveContentClient} is properly initialized.
-                SensitiveContentClient.fromWebContents(webContents).addObserver(this);
+                SensitiveContentClient sensitiveContentClient =
+                        SensitiveContentClient.fromWebContents(webContents);
+                sensitiveContentClient.addObserver(this);
+                sensitiveContentClient.restoreContentSensitivityFromTabState(
+                        getTabHasSensitiveContent());
             }
         } finally {
             TraceEvent.end("ChromeTab.initWebContents");
