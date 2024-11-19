@@ -1425,13 +1425,6 @@ void WebGLRenderingContextBase::InitializeNewContext() {
       WTF::BindRepeating(&WebGLRenderingContextBase::OnErrorMessage,
                          WrapWeakPersistent(this)));
 
-  // If the context has the flip_y extension, it will behave as having the
-  // origin of coordinates on the top left.
-  is_origin_top_left_ = GetDrawingBuffer()
-                            ->ContextProvider()
-                            ->GetCapabilities()
-                            .mesa_framebuffer_flip_y;
-
   // If WebGL 2, the PRIMITIVE_RESTART_FIXED_INDEX should be always enabled.
   // See the section <Primitive Restart is Always Enabled> in WebGL 2 spec:
   // https://www.khronos.org/registry/webgl/specs/latest/2.0/#4.1.4
@@ -1807,7 +1800,7 @@ bool WebGLRenderingContextBase::UsingSwapChain() const {
 bool WebGLRenderingContextBase::IsOriginTopLeft() const {
   if (isContextLost())
     return false;
-  return is_origin_top_left_;
+  return GetDrawingBuffer()->IsOriginTopLeft();
 }
 
 void WebGLRenderingContextBase::PageVisibilityChanged() {
@@ -1923,7 +1916,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
   // As the resource provider is not accelerated, we don't need an accelerated
   // image.
-  const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
+  const bool flip_y = GetDrawingBuffer()->IsOriginTopLeft() !=
+                      resource_provider->IsOriginTopLeft();
   scoped_refptr<StaticBitmapImage> image =
       GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(flip_y);
 
@@ -6075,7 +6069,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
       DynamicTo<StaticBitmapImage>(image.get());
   DCHECK(static_bitmap_image);
 
-  const bool source_has_flip_y = is_origin_top_left_ && context_host->IsWebGL();
+  const bool source_has_flip_y =
+      GetDrawingBuffer()->IsOriginTopLeft() && context_host->IsWebGL();
   const bool allow_copy_via_gpu = true;
   TexImageStaticBitmapImage(params, static_bitmap_image, source_has_flip_y,
                             allow_copy_via_gpu);
