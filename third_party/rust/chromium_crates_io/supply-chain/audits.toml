@@ -596,6 +596,11 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "4.5.18 -> 4.5.20"
 notes = "Trivial changes"
 
+[[audits.clap]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.20 -> 4.5.21"
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -673,6 +678,11 @@ who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
 delta = "4.5.18 -> 4.5.20"
 notes = "No new unsafe"
+
+[[audits.clap_builder]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.20 -> 4.5.21"
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
