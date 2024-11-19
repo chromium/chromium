@@ -7,7 +7,7 @@
 #include <dlfcn.h>
 
 #include "sandbox/policy/linux/sandbox_linux.h"
-#include "services/on_device_model/ml/chrome_ml.h"
+#include "services/on_device_model/ml/chrome_ml_holder.h"
 
 namespace video_effects {
 

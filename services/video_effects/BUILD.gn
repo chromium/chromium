@@ -53,7 +53,7 @@ if (is_linux) {
     deps = [
       "//sandbox/linux:sandbox",
       "//sandbox/policy",
-      "//services/on_device_model/ml:ml_no_internal",
+      "//services/on_device_model/ml:ml_holder_no_internal",
     ]
   }
 }

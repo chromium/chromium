@@ -9,7 +9,7 @@ include_rules = [
   "+gpu/webgpu",
   "+media/base",
   "+media/capture/mojom",
-  "+services/on_device_model/ml/chrome_ml.h",
+  "+services/on_device_model/ml/chrome_ml_holder.h",
   "+services/viz/public/cpp/gpu",
   "+services/viz/public/mojom",
   "+services/video_effects/public/mojom",
