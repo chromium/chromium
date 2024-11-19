@@ -18,9 +18,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
@@ -122,9 +121,7 @@
 
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these are
   // loaded in iSL.
-  RunSystemCapabilitiesPrefetch(
-      ChromeAccountManagerServiceFactory::GetForProfile(profile)
-          ->GetAllIdentities());
+  RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   FirstRunScreenProvider* provider =
       [[FirstRunScreenProvider alloc] initForProfile:profile];

@@ -198,6 +198,7 @@ source_set("first_run_profile_agent") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
   ]
 }
@@ -251,6 +252,7 @@ source_set("identity_confirmation_app_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]

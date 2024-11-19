@@ -36,6 +36,8 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -127,18 +129,17 @@ enum class IdentityConfirmationSnackbarDecision {
 
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
+  ProfileIOS* profile = browser->GetProfile();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+      AuthenticationServiceFactory::GetForProfile(profile);
   if (!authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile());
-  NSArray<id<SystemIdentity>>* allIdentities =
-      accountManagerService->GetAllIdentities();
-  if ([allIdentities count] <= 1) {
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(profile);
+  if ([identitiesOnDevice count] <= 1) {
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 

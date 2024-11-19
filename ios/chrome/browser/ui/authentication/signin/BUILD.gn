@@ -26,6 +26,7 @@ source_set("signin_headers") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:system_identity",
   ]
 }
 
