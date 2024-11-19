@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_hats_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,7 +66,8 @@ TEST_F(SafetyHubHatsServiceTest, SafetyHubInteractionState) {
                    .find("User interacted with Safety Hub")
                    ->second);
 
-  service()->SafetyHubNotificationClicked();
+  service()->SafetyHubNotificationClicked(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(service()
                   ->GetSafetyHubProductSpecificData()
                   .find("User visited Safety Hub page")
@@ -73,6 +75,10 @@ TEST_F(SafetyHubHatsServiceTest, SafetyHubInteractionState) {
   EXPECT_TRUE(service()
                   ->GetSafetyHubProductSpecificData()
                   .find("User clicked Safety Hub notification")
+                  ->second);
+  EXPECT_TRUE(service()
+                  ->GetSafetyHubProductSpecificData()
+                  .find("Is notification module revoked permissions")
                   ->second);
   EXPECT_FALSE(service()
                    ->GetSafetyHubProductSpecificData()

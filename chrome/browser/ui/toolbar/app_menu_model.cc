@@ -1061,9 +1061,10 @@ void AppMenuModel::LogSafetyHubInteractionMetrics(
       safety_hub::SafetyHubEntryPoint::kMenuNotifications);
   base::UmaHistogramEnumeration("Settings.SafetyHub.MenuNotificationClicked",
                                 sh_module);
+
   if (SafetyHubHatsService* hats_service =
           SafetyHubHatsServiceFactory::GetForProfile(browser_->profile())) {
-    hats_service->SafetyHubNotificationClicked();
+    hats_service->SafetyHubNotificationClicked(sh_module);
   }
 }
 
@@ -2055,6 +2056,8 @@ bool AppMenuModel::AddSafetyHubMenuItem() {
   if (!safety_hub_menu_notification_service) {
     return false;
   }
+  safety_hub_menu_notification_service->MaybeTriggerControlSurvey();
+
   std::optional<MenuNotificationEntry> notification =
       safety_hub_menu_notification_service->GetNotificationToShow();
   if (!notification.has_value()) {
