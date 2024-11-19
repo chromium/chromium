@@ -472,11 +472,12 @@ class BookmarkModel : public BookmarkUndoProvider,
   void AddNodeToIndicesRecursive(const BookmarkNode* node,
                                  NodeTypeForUuidLookup type_for_uuid_lookup);
 
-  // Removes `node` and notifies its observers, returning and transferring
-  // ownership of the node removed. The caller is responsible for allowing undo,
-  // if applicable.
-  std::unique_ptr<BookmarkNode> RemoveNode(const BookmarkNode* node,
-                                           const base::Location& location);
+  // Removes a child under `parent` at position `index` and notifies its
+  // observers. Returns ownership of the node removed. The caller is responsible
+  // for allowing undo, if applicable.
+  std::unique_ptr<BookmarkNode> RemoveChildAt(const BookmarkNode* parent,
+                                              size_t index,
+                                              const base::Location& location);
 
   // Removes the node from internal maps and recurses through all children. If
   // the node is a url, its url is added to removed_urls.

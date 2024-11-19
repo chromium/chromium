@@ -49,11 +49,13 @@ class UrlIndex : public HistoryBookmarkModel {
            size_t index,
            std::unique_ptr<BookmarkNode> node);
 
-  // Removes `node` and all its descendants from the map, adds urls that are no
-  // longer contained in the index to the `removed_urls` set if provided
-  // (doesn't clean up existing items in the set).
-  std::unique_ptr<BookmarkNode> Remove(BookmarkNode* node,
-                                       std::set<GURL>* removed_urls);
+  // Removes a child under `parent` at position `index` and all its descendants
+  // from the map. Adds urls that are no longer contained in the index to the
+  // `removed_urls` set if provided (doesn't clean up existing items in the
+  // set).
+  std::unique_ptr<BookmarkNode> RemoveChildAt(BookmarkNode* parent,
+                                              size_t index,
+                                              std::set<GURL>* removed_urls);
 
   // Mutation of bookmark node fields that are exposed to HistoryBookmarkModel,
   // which means must acquire a lock. Must be called from the UI thread.
