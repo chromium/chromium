@@ -3459,10 +3459,8 @@ TEST_F(AuctionWorkletManagerKVv2Test, SellerWorkletWithoutCoordinator) {
 }
 
 // Test that when both kFledgeTrustedSignalsKVv2Support and
-// kFledgeUseKVv2SignalsCache are enabled, bidder worklets don't get
-// TrustedSignalsPublicKey, but seller worklets do. This is because the cache
-// currently only supports bidder worklets, and manages the keys itself, while
-// seller worklet KVv2 requests still must be managed by the worklet process.
+// kFledgeUseKVv2SignalsCache are enabled, worklets don't get
+// TrustedSignalsPublicKeys.
 TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kFledgeUseKVv2SignalsCache);
@@ -3499,7 +3497,7 @@ TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
       auction_process_manager_.WaitForSellerWorklet();
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
-  EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet->public_key(), key_));
+  EXPECT_FALSE(seller_worklet->public_key());
 }
 
 TEST_F(AuctionWorkletManagerKVv2Test,

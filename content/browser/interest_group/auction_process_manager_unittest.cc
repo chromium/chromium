@@ -528,18 +528,10 @@ class AuctionProcessManagerTest
     }
   }
 
-  // For bidder worklets, validates `handle` has received a cache remote that
-  // works for the provided origin. For seller worklets, validates that no cache
-  // remote is received, as the cache does not yet support seller signals.
+  // Validates `handle` has received a cache remote that works for the provided
+  // origin.
   void ValidateCacheRemote(const AuctionProcessManager::ProcessHandle& handle,
                            const url::Origin& origin) {
-    // In the seller case, which is not yet supported by the caching logic,
-    // expect no cache remote to be received.
-    if (GetWorkletType() == AuctionProcessManager::WorkletType::kSeller) {
-      ExpectNoCacheRemote(handle);
-      return;
-    }
-
     auto* cache_remote = WaitForCacheRemote(handle);
     ASSERT_TRUE(cache_remote);
 
