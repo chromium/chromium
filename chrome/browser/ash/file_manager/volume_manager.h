@@ -405,10 +405,8 @@ class VolumeManager
       documents_provider_root_manager_;
   io_task::IOTaskController io_task_controller_;
   std::unique_ptr<trash::TrashAutoCleanup> trash_auto_cleanup_;
-  // TODO(b/328006921): Replace with a check if the volumes are mounted.
   bool arc_volumes_mounted_ = false;
   bool ignore_clipboard_changed_ = false;
-  // TODO(b/328006921): Replace with a check if the volumes are mounted.
   bool local_user_files_allowed_ = true;
   // Whether a read only version of local folders (My Files) is needed.
   bool read_only_local_folders_ = true;
