@@ -14,6 +14,7 @@
 #include "ui/events/event.h"
 
 class Browser;
+class ToolbarButton;
 
 namespace media_router {
 
@@ -55,8 +56,7 @@ class CastBrowserController :
  private:
   CastToolbarButtonController* GetActionController() const;
 
-  // Updates insets per touch ui mode.
-  void UpdateLayoutInsetDelta();
+  ToolbarButton* GetToolbarButton() const;
 
   void LogIconChange(const gfx::VectorIcon* icon);
 
