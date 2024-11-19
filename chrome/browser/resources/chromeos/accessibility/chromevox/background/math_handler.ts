@@ -12,31 +12,37 @@ import {Msgs} from '../common/msgs.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
+import {InternalKeyEvent} from './input/background_keyboard_handler.js';
+
+import AutomationNode = chrome.automation.AutomationNode;
+
+// Speech Rule Engine is included as a global variable in background.html.
+declare var SRE: any;
 
 /**
  * Handles specialized code to navigate, announce, and interact with math
  * content (encoded in MathML).
  */
 export class MathHandler {
-  /**
-   * @param {!chrome.automation.AutomationNode} node
-   */
-  constructor(node) {
-    /** @private {!chrome.automation.AutomationNode} */
+  private node_: AutomationNode;
+
+  static instance: MathHandler|undefined = undefined;
+
+  private constructor(node: AutomationNode) {
     this.node_ = node;
   }
 
   /**
    * Speaks the current node.
-   * @return {boolean} Whether any math was spoken.
+   * @return Boolean indicating whether any math was spoken.
    */
-  speak() {
+  speak(): boolean {
     const mathml = this.node_.mathContent;
     if (!mathml) {
       return false;
     }
 
-    let text;
+    let text: string|null = null;
 
     try {
       text = SRE.walk(mathml);
@@ -55,10 +61,9 @@ export class MathHandler {
 
   /**
    * Initializes the global instance.
-   * @param {CursorRange} range
-   * @return {boolean} True if an instance was created.
+   * @return Boolean indicating whether an instance was created.
    */
-  static init(range) {
+  static init(range: CursorRange): boolean {
     const node = range.start.node;
     if (node && AutomationPredicate.math(node)) {
       MathHandler.instance = new MathHandler(node);
@@ -70,9 +75,9 @@ export class MathHandler {
 
   /**
    * Handles key events.
-   * @return {boolean} False to prevent further event propagation.
+   * @return Boolean indicating whether an event should propagate.
    */
-  static onKeyDown(evt) {
+  static onKeyDown(evt: InternalKeyEvent): boolean {
     if (!MathHandler.instance) {
       return true;
     }
@@ -82,18 +87,10 @@ export class MathHandler {
       return true;
     }
 
-    const instance = MathHandler.instance;
-    const output = SRE.move(evt.keyCode);
+    const output: string = SRE.move(evt.keyCode);
     if (output) {
       ChromeVox.tts.speak(output, QueueMode.FLUSH);
     }
     return false;
   }
 }
-
-
-/**
- * The global instance.
- * @type {MathHandler|undefined}
- */
-MathHandler.instance;
