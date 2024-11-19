@@ -5,8 +5,11 @@
 #ifndef UI_ACCESSIBILITY_AX_LOCATION_AND_SCROLL_UPDATES_H_
 #define UI_ACCESSIBILITY_AX_LOCATION_AND_SCROLL_UPDATES_H_
 
+#include <vector>
+
 #include "ui/accessibility/ax_base_export.h"
 #include "ui/accessibility/ax_relative_bounds.h"
+
 namespace ui {
 struct AX_BASE_EXPORT AXLocationChange {
  public:
