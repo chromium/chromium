@@ -3338,6 +3338,20 @@ message RegisterBrowserRequest {
   optional string brand_name = 6;
 }
 
+// Registration payload to enroll a Chrome Profile. Currently only used by
+// OIDC profile registration.
+message ProfileRegistrationPayload {
+  // Passing encrypted user information from IdP to DMServer, Chrome itself
+  // does not decrypt or access the information directly.
+  // Format of the un-encrypted data has the format of `ProfileRegistrationData`
+  // proto on DMServer.
+  optional bytes encrypted_user_information = 1;
+  // Chrome requires the subject and issuer to check whether a profile exists
+  // for this user already.
+  optional string subject = 2;
+  optional string issuer = 3;
+}
+
 // Gets an enrollment token to a managed Google Play account for using it with
 // Active Directory. Sent when a new user logs in with Active Directory and
 // opens Play Store for the first time.
