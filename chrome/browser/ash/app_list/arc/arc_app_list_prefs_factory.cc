@@ -40,7 +40,7 @@ bool ArcAppListPrefsFactory::IsFactorySetForSyncTest() {
 void ArcAppListPrefsFactory::RecreateServiceInstanceForTesting(
     content::BrowserContext* context) {
   Disassociate(context);
-  BuildServiceInstanceFor(context);
+  BuildServiceInstanceForBrowserContext(context);
 }
 
 ArcAppListPrefsFactory::ArcAppListPrefsFactory()
@@ -62,7 +62,8 @@ ArcAppListPrefsFactory::ArcAppListPrefsFactory()
 
 ArcAppListPrefsFactory::~ArcAppListPrefsFactory() = default;
 
-KeyedService* ArcAppListPrefsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ArcAppListPrefsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 

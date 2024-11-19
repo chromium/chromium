@@ -484,17 +484,18 @@ void RecordAppCategoryDataSizeUma(const std::string& category,
 }  // namespace
 
 // static
-ArcAppListPrefs* ArcAppListPrefs::Create(Profile* profile) {
-  return new ArcAppListPrefs(profile, nullptr);
+std::unique_ptr<ArcAppListPrefs> ArcAppListPrefs::Create(Profile* profile) {
+  return std::make_unique<ArcAppListPrefs>(profile, nullptr);
 }
 
 // static
-ArcAppListPrefs* ArcAppListPrefs::Create(
+std::unique_ptr<ArcAppListPrefs> ArcAppListPrefs::Create(
     Profile* profile,
     arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>*
         app_connection_holder_for_testing) {
   DCHECK(app_connection_holder_for_testing);
-  return new ArcAppListPrefs(profile, app_connection_holder_for_testing);
+  return std::make_unique<ArcAppListPrefs>(profile,
+                                           app_connection_holder_for_testing);
 }
 
 // static
