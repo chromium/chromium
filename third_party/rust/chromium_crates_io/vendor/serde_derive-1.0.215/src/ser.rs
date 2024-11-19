@@ -1,5 +1,6 @@
 use crate::fragment::{Fragment, Match, Stmts};
 use crate::internals::ast::{Container, Data, Field, Style, Variant};
+use crate::internals::name::Name;
 use crate::internals::{attr, replace_receiver, Ctxt, Derive};
 use crate::{bound, dummy, pretend, this};
 use proc_macro2::{Span, TokenStream};
@@ -798,9 +799,9 @@ fn serialize_untagged_variant(
 
 enum TupleVariant<'a> {
     ExternallyTagged {
-        type_name: &'a str,
+        type_name: &'a Name,
         variant_index: u32,
-        variant_name: &'a str,
+        variant_name: &'a Name,
     },
     Untagged,
 }
@@ -867,11 +868,11 @@ fn serialize_tuple_variant(
 enum StructVariant<'a> {
     ExternallyTagged {
         variant_index: u32,
-        variant_name: &'a str,
+        variant_name: &'a Name,
     },
     InternallyTagged {
         tag: &'a str,
-        variant_name: &'a str,
+        variant_name: &'a Name,
     },
     Untagged,
 }
@@ -880,7 +881,7 @@ fn serialize_struct_variant(
     context: StructVariant,
     params: &Parameters,
     fields: &[Field],
-    name: &str,
+    name: &Name,
 ) -> Fragment {
     if fields.iter().any(|field| field.attrs.flatten()) {
         return serialize_struct_variant_with_flatten(context, params, fields, name);
@@ -964,7 +965,7 @@ fn serialize_struct_variant_with_flatten(
     context: StructVariant,
     params: &Parameters,
     fields: &[Field],
-    name: &str,
+    name: &Name,
 ) -> Fragment {
     let struct_trait = StructTrait::SerializeMap;
     let serialize_fields = serialize_struct_visitor(fields, params, true, &struct_trait);

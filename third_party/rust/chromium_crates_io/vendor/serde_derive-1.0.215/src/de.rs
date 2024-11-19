@@ -1,5 +1,6 @@
 use crate::fragment::{Expr, Fragment, Match, Stmts};
 use crate::internals::ast::{Container, Data, Field, Style, Variant};
+use crate::internals::name::Name;
 use crate::internals::{attr, replace_receiver, ungroup, Ctxt, Derive};
 use crate::{bound, dummy, pretend, this};
 use proc_macro2::{Literal, Span, TokenStream};
@@ -2002,7 +2003,7 @@ fn deserialize_untagged_newtype_variant(
 
 struct FieldWithAliases<'a> {
     ident: Ident,
-    aliases: &'a BTreeSet<String>,
+    aliases: &'a BTreeSet<Name>,
 }
 
 fn deserialize_generated_identifier(
@@ -2216,7 +2217,11 @@ fn deserialize_identifier(
         let ident = &field.ident;
         let aliases = field.aliases;
         // `aliases` also contains a main name
-        quote!(#(#aliases)|* => _serde::__private::Ok(#this_value::#ident))
+        quote! {
+            #(
+                #aliases => _serde::__private::Ok(#this_value::#ident),
+            )*
+        }
     });
     let bytes_mapping = deserialized_fields.iter().map(|field| {
         let ident = &field.ident;
@@ -2224,8 +2229,12 @@ fn deserialize_identifier(
         let aliases = field
             .aliases
             .iter()
-            .map(|alias| Literal::byte_string(alias.as_bytes()));
-        quote!(#(#aliases)|* => _serde::__private::Ok(#this_value::#ident))
+            .map(|alias| Literal::byte_string(alias.value.as_bytes()));
+        quote! {
+            #(
+                #aliases => _serde::__private::Ok(#this_value::#ident),
+            )*
+        }
     });
 
     let expecting = expecting.unwrap_or(if is_variant {
@@ -2423,7 +2432,7 @@ fn deserialize_identifier(
                 __E: _serde::de::Error,
             {
                 match __value {
-                    #(#str_mapping,)*
+                    #(#str_mapping)*
                     _ => {
                         #value_as_borrowed_str_content
                         #fallthrough_borrowed_arm
@@ -2436,7 +2445,7 @@ fn deserialize_identifier(
                 __E: _serde::de::Error,
             {
                 match __value {
-                    #(#bytes_mapping,)*
+                    #(#bytes_mapping)*
                     _ => {
                         #bytes_to_str
                         #value_as_borrowed_bytes_content
@@ -2461,7 +2470,7 @@ fn deserialize_identifier(
             __E: _serde::de::Error,
         {
             match __value {
-                #(#str_mapping,)*
+                #(#str_mapping)*
                 _ => {
                     #value_as_str_content
                     #fallthrough_arm
@@ -2474,7 +2483,7 @@ fn deserialize_identifier(
             __E: _serde::de::Error,
         {
             match __value {
-                #(#bytes_mapping,)*
+                #(#bytes_mapping)*
                 _ => {
                     #bytes_to_str
                     #value_as_bytes_content
