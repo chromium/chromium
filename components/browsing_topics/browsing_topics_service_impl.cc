@@ -700,13 +700,10 @@ const BrowsingTopicsState& BrowsingTopicsServiceImpl::browsing_topics_state() {
 void BrowsingTopicsServiceImpl::ScheduleBrowsingTopicsCalculation(
     bool is_manually_triggered,
     int previous_timeout_count,
-    base::TimeDelta delay,
-    bool persist_calculation_time) {
+    base::TimeDelta delay) {
   DCHECK(browsing_topics_state_loaded_);
 
-  if (persist_calculation_time) {
-    browsing_topics_state_.UpdateNextScheduledCalculationTime(delay);
-  }
+  browsing_topics_state_.UpdateNextScheduledCalculationTime(delay);
 
   // `this` owns the timer, which is automatically cancelled on destruction, so
   // base::Unretained(this) is safe.
@@ -775,8 +772,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
     }
 
     ScheduleBrowsingTopicsCalculation(is_manually_triggered,
-                                      previous_timeout_count + 1, delay,
-                                      /*persist_calculation_time=*/true);
+                                      previous_timeout_count + 1, delay);
     return;
   }
 
@@ -806,8 +802,7 @@ void BrowsingTopicsServiceImpl::OnCalculateBrowsingTopicsCompleted(
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
       /*previous_timeout_count=*/0,
-      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get(),
-      /*persist_calculation_time=*/true);
+      blink::features::kBrowsingTopicsTimePeriodPerEpoch.Get());
 
   for (auto& callback : get_state_for_webui_callbacks_) {
     site_data_manager_->GetContextDomainsFromHashedContextDomains(
@@ -850,8 +845,7 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
 
   ScheduleBrowsingTopicsCalculation(
       /*is_manually_triggered=*/false,
-      /*previous_timeout_count=*/0, decision.next_calculation_delay,
-      /*persist_calculation_time=*/false);
+      /*previous_timeout_count=*/0, decision.next_calculation_delay);
 }
 
 void BrowsingTopicsServiceImpl::Shutdown() {
