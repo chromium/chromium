@@ -1488,3 +1488,5 @@ crbug.com/374045525 [ Debug Mac14 ] webaudio/AudioParam/audioparam-rate-change-3
 
 # Gardener 2024-10-24
 crbug.com/375337253 external/wpt/shadow-dom/reference-target/tentative/property-reflection.html [ Slow ]
+
+crbug.com/378325771 [ Mac ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Slow ]
