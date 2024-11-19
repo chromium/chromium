@@ -95,6 +95,9 @@ class RemoteRouterLink : public RouterLink {
   // and this must be a central link.
   void SetLinkState(FragmentRef<RouterLinkState> state);
 
+  // Flushes the link's local router.
+  void FlushRouter();
+
   const Ref<NodeLink> node_link_;
   const SublinkId sublink_;
   const LinkType type_;

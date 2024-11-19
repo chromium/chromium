@@ -822,6 +822,7 @@ void Router::SerializeNewRouter(NodeLink& to_node_link,
 
   if (local_peer && initiate_proxy_bypass &&
       SerializeNewRouterWithLocalPeer(to_node_link, descriptor, local_peer)) {
+    local_peer->Flush(kForceProxyBypassAttempt);
     return;
   }
 
