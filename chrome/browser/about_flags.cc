@@ -871,9 +871,17 @@ const FeatureEntry::FeatureParam kCctSignInPromptAlways[] = {
     {"user_act_count", "10000"},
     {"if_allowed_by_embedder", "true"},
     {"if_enabled_by_embedder", "true"}};
+const FeatureEntry::FeatureParam kCctSignInTestOnly[] = {
+    {"cadence_day", "0"},
+    {"show_limit", "4"},
+    {"user_act_count", "2"},
+    {"if_allowed_by_embedder", "true"},
+    {"if_enabled_by_embedder", "true"}};
 
 const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
     {"always show", kCctSignInPromptAlways, std::size(kCctSignInPromptAlways),
+     nullptr},
+    {"for test", kCctSignInTestOnly, std::size(kCctSignInTestOnly),
      nullptr}};
 #endif
 
