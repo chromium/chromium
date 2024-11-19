@@ -2647,8 +2647,8 @@ crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-di
 
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
-crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
-crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.html [ Crash ]
+crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash Failure ]
+crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.html [ Crash Failure Timeout ]
 
 # This test is flaky on Linux only
@@ -2682,18 +2682,18 @@ crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attribut
 # https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1942084/overview
 crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-duration-computed.html [ Crash Failure Pass Timeout ]
 crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-iteration-count-computed.html [ Crash Failure Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-function.html [ Crash Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Crash Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Crash Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hwb.html [ Crash Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-lab.html [ Crash Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-rgb.html [ Crash Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-color-function.html [ Crash Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hsl.html [ Crash Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hwb.html [ Crash Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-lab.html [ Crash Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Crash Pass Timeout ]
-crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-function.html [ Crash Failure Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Crash Failure Pass Timeout ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Crash Failure Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hwb.html [ Crash Failure Pass Timeout ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-lab.html [ Crash Failure Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-rgb.html [ Crash Failure Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-color-function.html [ Crash Failure Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hsl.html [ Crash Failure Pass Timeout ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hwb.html [ Crash Failure Pass Timeout ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-lab.html [ Crash Failure Pass ]
+crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Crash Failure Pass Timeout ]
+crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/379779778 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/plugins-and-mimetypes.html [ Crash Timeout ]
@@ -7997,8 +7997,8 @@ crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-047.h
 crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-049.html [ Failure ]
 crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-054.html [ Failure ]
 
-crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Timeout ]
-crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Timeout ]
+crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Failure Timeout ]
+crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Failure Timeout ]
 
 # disable-css-line-clamp
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Failure ]
