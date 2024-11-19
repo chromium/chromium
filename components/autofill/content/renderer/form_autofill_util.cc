@@ -1983,7 +1983,9 @@ void WebFormControlElementToFormField(
   if (auto input_element = element.DynamicTo<WebInputElement>()) {
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
-    if (extract_options.contains(ExtractOption::kDatalist)) {
+    if (extract_options.contains(ExtractOption::kDatalist) ||
+        base::FeatureList::IsEnabled(
+            features::kAutofillOptimizeFormExtraction)) {
       field->set_datalist_options(GetDataListOptions(input_element));
     }
   } else if (IsTextAreaElement(element)) {
@@ -1993,7 +1995,8 @@ void WebFormControlElementToFormField(
     DCHECK(IsSelectElement(element));
     field->set_options(GetSelectOptions(element.To<WebSelectElement>()));
   }
-  if (extract_options.contains(ExtractOption::kBounds)) {
+  if (extract_options.contains(ExtractOption::kBounds) ||
+      base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
       if (auto* render_frame =
               content::RenderFrame::FromWebFrame(local_frame)) {
