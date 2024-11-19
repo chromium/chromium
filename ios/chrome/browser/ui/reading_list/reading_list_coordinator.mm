@@ -195,19 +195,21 @@
       feature_engagement::events::kViewedReadingList);
 
   // Create the sign-in promo view mediator.
-  _identityManagerObserverBridge.reset(
-      new signin::IdentityManagerObserverBridge(_identityManager, self));
+  _identityManagerObserverBridge =
+      std::make_unique<signin::IdentityManagerObserverBridge>(_identityManager,
+                                                              self);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-      initWithAccountManagerService:accountManagerService
-                        authService:_authService
-                        prefService:_prefService
-                        syncService:_syncService
-                        accessPoint:signin_metrics::AccessPoint::
-                                        ACCESS_POINT_READING_LIST
-                    signinPresenter:self
-           accountSettingsPresenter:self];
+       initWithIdentityManager:_identityManager
+         accountManagerService:accountManagerService
+                   authService:_authService
+                   prefService:_prefService
+                   syncService:_syncService
+                   accessPoint:signin_metrics::AccessPoint::
+                                   ACCESS_POINT_READING_LIST
+               signinPresenter:self
+      accountSettingsPresenter:self];
   _signinPromoViewMediator.signinPromoAction =
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;

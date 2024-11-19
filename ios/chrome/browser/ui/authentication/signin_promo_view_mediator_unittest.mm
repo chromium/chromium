@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/account_settings_presenter.h"
@@ -100,14 +101,16 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     account_settings_presenter_ =
         OCMStrictProtocolMock(@protocol(AccountSettingsPresenter));
     mediator_ = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForProfile(profile_.get())
-                          authService:GetAuthenticationService()
-                          prefService:profile_.get()->GetPrefs()
-                          syncService:GetSyncService()
-                          accessPoint:access_point
-                      signinPresenter:signin_presenter_
-             accountSettingsPresenter:account_settings_presenter_];
+         initWithIdentityManager:IdentityManagerFactory::GetForProfile(
+                                     profile_.get())
+           accountManagerService:ChromeAccountManagerServiceFactory::
+                                     GetForProfile(profile_.get())
+                     authService:GetAuthenticationService()
+                     prefService:profile_.get()->GetPrefs()
+                     syncService:GetSyncService()
+                     accessPoint:access_point
+                 signinPresenter:signin_presenter_
+        accountSettingsPresenter:account_settings_presenter_];
     mediator_.consumer = consumer_;
 
     signin_promo_view_ = OCMStrictClassMock([SigninPromoView class]);

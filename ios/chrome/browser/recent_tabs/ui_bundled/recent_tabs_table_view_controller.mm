@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -724,18 +725,20 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 - (void)addSigninPromoViewItem {
   // Init `_signinPromoViewMediator` if nil.
-  if (!self.signinPromoViewMediator && self.profile) {
+  ProfileIOS* profile = self.profile;
+  if (!self.signinPromoViewMediator && profile) {
     self.signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForProfile(self.profile)
-                          authService:AuthenticationServiceFactory::
-                                          GetForProfile(self.profile)
-                          prefService:self.profile->GetPrefs()
-                          syncService:self.syncService
-                          accessPoint:signin_metrics::AccessPoint::
-                                          ACCESS_POINT_RECENT_TABS
-                      signinPresenter:self
-             accountSettingsPresenter:nil];
+         initWithIdentityManager:IdentityManagerFactory::GetForProfile(profile)
+           accountManagerService:ChromeAccountManagerServiceFactory::
+                                     GetForProfile(profile)
+                     authService:AuthenticationServiceFactory::GetForProfile(
+                                     profile)
+                     prefService:profile->GetPrefs()
+                     syncService:self.syncService
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_RECENT_TABS
+                 signinPresenter:self
+        accountSettingsPresenter:nil];
     self.signinPromoViewMediator.signinPromoAction =
         SigninPromoAction::kSigninWithNoDefaultIdentity;
     self.signinPromoViewMediator.consumer = self;

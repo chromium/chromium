@@ -101,15 +101,16 @@ using base::UserMetricsAction;
     ChromeAccountManagerService* accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:accountManagerService
-                          authService:AuthenticationServiceFactory::
-                                          GetForProfile(profile)
-                          prefService:profile->GetPrefs()
-                          syncService:syncService
-                          accessPoint:signin_metrics::AccessPoint::
-                                          ACCESS_POINT_NTP_FEED_TOP_PROMO
-                      signinPresenter:self
-             accountSettingsPresenter:nil];
+         initWithIdentityManager:identityManager
+           accountManagerService:accountManagerService
+                     authService:AuthenticationServiceFactory::GetForProfile(
+                                     profile)
+                     prefService:profile->GetPrefs()
+                     syncService:syncService
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_NTP_FEED_TOP_PROMO
+                 signinPresenter:self
+        accountSettingsPresenter:nil];
 
     self.signinPromoMediator.signinPromoAction =
         SigninPromoAction::kSigninWithNoDefaultIdentity;

@@ -51,20 +51,23 @@
     _delegate = delegate;
     ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
     _browser = browser->AsWeakPtr();
-    _identityManagerObserverBridge.reset(
-        new signin::IdentityManagerObserverBridge(
-            IdentityManagerFactory::GetForProfile(profile), self));
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(profile);
+    _identityManagerObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                                self);
     _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-        initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                          GetForProfile(profile)
-                          authService:AuthenticationServiceFactory::
-                                          GetForProfile(profile)
-                          prefService:profile->GetPrefs()
-                          syncService:syncService
-                          accessPoint:signin_metrics::AccessPoint::
-                                          ACCESS_POINT_BOOKMARK_MANAGER
-                      signinPresenter:signinPresenter
-             accountSettingsPresenter:accountSettingsPresenter];
+         initWithIdentityManager:identityManager
+           accountManagerService:ChromeAccountManagerServiceFactory::
+                                     GetForProfile(profile)
+                     authService:AuthenticationServiceFactory::GetForProfile(
+                                     profile)
+                     prefService:profile->GetPrefs()
+                     syncService:syncService
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_BOOKMARK_MANAGER
+                 signinPresenter:signinPresenter
+        accountSettingsPresenter:accountSettingsPresenter];
     _signinPromoViewMediator.consumer = self;
     _signinPromoViewMediator.dataTypeToWaitForInitialSync =
         syncer::DataType::BOOKMARKS;
