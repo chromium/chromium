@@ -83,8 +83,15 @@ void AttachGaiaIdToProfile(
     ProfileAttributesStorageIOS* profile_attributes_storage,
     std::string_view profile_name,
     std::string_view gaia_id) {
-  if (!profile_attributes_storage ||
-      !profile_attributes_storage->HasProfileWithName(profile_name)) {
+  if (!profile_attributes_storage) {
+    CHECK_IS_TEST();
+    return;
+  }
+  if (profile_name.empty()) {
+    CHECK_IS_TEST();
+    return;
+  }
+  if (!profile_attributes_storage->HasProfileWithName(profile_name)) {
     CHECK_IS_TEST();
     return;
   }
