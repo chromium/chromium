@@ -1045,6 +1045,8 @@ ci.builder(
         ],
     ),
     builderless = False,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows",
@@ -1232,6 +1234,8 @@ ci.builder(
         ],
     ),
     builderless = False,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "ToT Windows|Asan",
