@@ -128,6 +128,7 @@ source_set("ip_protection_core_impl_mojo") {
     ":ip_protection_proxy_config_manager_impl",
     ":ip_protection_proxy_config_mojo_fetcher",
     ":ip_protection_token_manager_impl",
+    ":ip_protection_token_mojo_fetcher",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
   ]
@@ -229,6 +230,42 @@ source_set("ip_protection_proxy_config_mojo_fetcher_unittest") {
     ":ip_protection_proxy_config_mojo_fetcher",
     "//base",
     "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("ip_protection_token_mojo_fetcher") {
+  sources = [
+    "ip_protection_token_mojo_fetcher.cc",
+    "ip_protection_token_mojo_fetcher.h",
+  ]
+  public_deps = [
+    ":ip_protection_config_getter",
+    ":ip_protection_data_types",
+    ":ip_protection_token_fetcher",
+    "//base",
+    "//components/ip_protection/mojom",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("ip_protection_token_mojo_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_token_mojo_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_data_types",
+    ":ip_protection_token_mojo_fetcher",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -424,9 +461,9 @@ source_set("ip_protection_token_manager_impl") {
     "ip_protection_token_manager_impl.h",
   ]
   public_deps = [
-    ":ip_protection_config_getter",
     ":ip_protection_core",
     ":ip_protection_data_types",
+    ":ip_protection_token_fetcher",
     ":ip_protection_token_manager",
     "//base",
   ]
@@ -440,6 +477,7 @@ source_set("ip_protection_token_manager_impl_unittest") {
     ":ip_protection_core",
     ":ip_protection_data_types",
     ":ip_protection_telemetry",
+    ":ip_protection_token_fetcher",
     ":ip_protection_token_manager",
     ":ip_protection_token_manager_impl",
     "//base",

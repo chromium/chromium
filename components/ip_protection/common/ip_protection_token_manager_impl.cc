@@ -42,7 +42,7 @@ constexpr char kDefaultGeo[] = "EARTH";
 
 IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
     IpProtectionCore* core,
-    scoped_refptr<IpProtectionConfigGetter> config_getter,
+    std::unique_ptr<IpProtectionTokenFetcher> fetcher,
     ProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
@@ -50,7 +50,7 @@ IpProtectionTokenManagerImpl::IpProtectionTokenManagerImpl(
           net::features::kIpPrivacyAuthTokenCacheLowWaterMark.Get()),
       enable_token_caching_by_geo_(
           net::features::kIpPrivacyCacheTokensByGeo.Get()),
-      config_getter_(config_getter),
+      fetcher_(std::move(fetcher)),
       proxy_layer_(proxy_layer),
       ip_protection_core_(core),
       disable_cache_management_for_testing_(
@@ -103,7 +103,7 @@ bool IpProtectionTokenManagerImpl::WasTokenCacheEverFilled() {
 // method is idempotent, and can be called at any time.
 void IpProtectionTokenManagerImpl::MaybeRefillCache() {
   RemoveExpiredTokens();
-  if (fetching_auth_tokens_ || !config_getter_ || !ip_protection_core_ ||
+  if (fetching_auth_tokens_ || !fetcher_ || !ip_protection_core_ ||
       disable_cache_management_for_testing_) {
     return;
   }
@@ -121,7 +121,7 @@ void IpProtectionTokenManagerImpl::MaybeRefillCache() {
   if (NeedsRefill(current_geo_id_)) {
     fetching_auth_tokens_ = true;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
-    config_getter_->TryGetAuthTokens(
+    fetcher_->TryGetAuthTokens(
         batch_size_, proxy_layer_,
         base::BindOnce(
             &IpProtectionTokenManagerImpl::OnGotAuthTokens,
@@ -172,7 +172,7 @@ void IpProtectionTokenManagerImpl::ScheduleMaybeRefillCache() {
   //    completes, so there is no need to call a refill here.
   // 2. If there is no config getter or config cache, there is nothing to do.
   // 3. If testing requires disabling the cache management.
-  if (fetching_auth_tokens_ || !config_getter_ || !ip_protection_core_ ||
+  if (fetching_auth_tokens_ || !fetcher_ || !ip_protection_core_ ||
       disable_cache_management_for_testing_) {
     next_maybe_refill_cache_.Stop();
     return;
@@ -469,9 +469,9 @@ void IpProtectionTokenManagerImpl::EnableTokenExpirationFuzzingForTesting(
 // `on_try_get_auth_tokens_completed_for_testing_` when complete.
 void IpProtectionTokenManagerImpl::CallTryGetAuthTokensForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(config_getter_);
+  CHECK(fetcher_);
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
-  config_getter_->TryGetAuthTokens(
+  fetcher_->TryGetAuthTokens(
       batch_size_, proxy_layer_,
       base::BindOnce(
           &IpProtectionTokenManagerImpl::OnGotAuthTokens,

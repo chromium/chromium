@@ -18,6 +18,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_mojo_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager_impl.h"
+#include "components/ip_protection/common/ip_protection_token_mojo_fetcher.h"
 #include "net/base/features.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -34,10 +35,12 @@ MakeTokenManagerMap(
     scoped_refptr<IpProtectionConfigGetter> ip_protection_config_getter) {
   std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
   for (ProxyLayer proxy_layer : {ProxyLayer::kProxyA, ProxyLayer::kProxyB}) {
-    managers.insert({proxy_layer,
-                     std::make_unique<IpProtectionTokenManagerImpl>(
-                         ip_protection_core,
-                         std::move(ip_protection_config_getter), proxy_layer)});
+    managers.insert(
+        {proxy_layer, std::make_unique<IpProtectionTokenManagerImpl>(
+                          ip_protection_core,
+                          std::make_unique<IpProtectionTokenMojoFetcher>(
+                              ip_protection_config_getter),
+                          proxy_layer)});
   }
   return managers;
 }
