@@ -157,10 +157,7 @@ export class TextLayerElement extends PolymerElement {
         type: Boolean,
         reflectToAttribute: true,
       },
-      highlightedLines: {
-        type: Array,
-        computed: 'getHighlightedLines(selectionStartIndex, selectionEndIndex)',
-      },
+      highlightedLines: Array,
       selectionStartIndex: {
         type: Number,
         value: -1,
@@ -181,7 +178,7 @@ export class TextLayerElement extends PolymerElement {
       },
       selectionOverlayRect: {
         type: Object,
-        observer: 'computeTranslatedWordBoundingBoxes',
+        observer: 'handleSelectionOverlayRectResize',
       },
     };
   }
@@ -406,8 +403,7 @@ export class TextLayerElement extends PolymerElement {
       return false;
     }
 
-    this.selectionStartIndex = wordIndex;
-    this.selectionEndIndex = wordIndex;
+    this.selectWords(wordIndex, wordIndex);
     this.isSelectingText = true;
     return true;
   }
@@ -446,14 +442,32 @@ export class TextLayerElement extends PolymerElement {
       return;
     }
 
-    if (this.selectionStartIndex === undefined) {
-      this.selectionStartIndex = words.indexOf(hit);
+    let startIndex = this.selectionStartIndex;
+    if (startIndex === undefined) {
+      startIndex = words.indexOf(hit);
     }
-    this.selectionEndIndex = words.indexOf(hit);
+    this.selectWords(startIndex, words.indexOf(hit));
   }
 
   handleGestureEnd() {
     this.sendSelectedText();
+  }
+
+  // When the selection overlay rect resizes, we need to make sure our
+  // re-rendering happens in a specific order to prevent conflicts (e.g. compute
+  // bounding boxes before rendering highlighted lines).
+  private handleSelectionOverlayRectResize() {
+    // We do not need to do anything if we are not in translate mode.
+    if (!this.shouldRenderTranslateWords) {
+      return;
+    }
+
+    this.computeTranslatedWordBoundingBoxes();
+    // We need to re-select the text so that the highlighted lines are
+    // recomputed before being re-rendered. This is needed because when the
+    // selection overlay rect changes, the font size of the translated lines
+    // could also have changed.
+    this.selectWords(this.selectionStartIndex, this.selectionEndIndex);
   }
 
   private computeTranslatedWordBoundingBoxes() {
@@ -587,8 +601,7 @@ export class TextLayerElement extends PolymerElement {
   }
 
   private unselectWords() {
-    this.selectionStartIndex = -1;
-    this.selectionEndIndex = -1;
+    this.selectWords(-1, -1);
     this.dispatchEvent(new CustomEvent(
         'hide-selected-text-context-menu', {bubbles: true, composed: true}));
     this.dispatchEvent(new CustomEvent(
@@ -598,6 +611,7 @@ export class TextLayerElement extends PolymerElement {
   private selectWords(selectionStartIndex: number, selectionEndIndex: number) {
     this.selectionStartIndex = selectionStartIndex;
     this.selectionEndIndex = selectionEndIndex;
+    this.highlightedLines = this.getHighlightedLines();
   }
 
   private onTextReceived(text: Text) {
