@@ -128,6 +128,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StringCharset',
     # Nice to have.
     'StringCaseLocaleUsage',
+    # Low priority.
+    'RedundantControlFlow',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
@@ -767,6 +769,7 @@ def main(argv):
 
     javac_args += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
 
+    javac_args += ['-XDshould-stop.ifError=FLOW']
     # This flag quits errorprone after checks and before code generation, since
     # we do not need errorprone outputs, this speeds up errorprone by 4 seconds
     # for chrome_java.
