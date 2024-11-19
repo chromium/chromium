@@ -43,7 +43,7 @@ const net::BackoffEntry::Policy kBackOffPolicy = {
     0,
 
     // Initial delay for exponential back-off in ms.
-    static_cast<int>(base::Minutes(5).InMilliseconds()),
+    base::Minutes(5).InMilliseconds(),
 
     // Factor by which the waiting time will be multiplied.
     2,
@@ -52,7 +52,7 @@ const net::BackoffEntry::Policy kBackOffPolicy = {
     // between 90%-100% of the calculated time.
     0.5,
     // Maximum amount of time we are willing to delay our request in ms.
-    static_cast<int>(base::Hours(6).InMilliseconds()),
+    base::Hours(6).InMilliseconds(),
 
     // Time to keep an entry from being discarded even when it
     // has no significant state, -1 to never discard.
