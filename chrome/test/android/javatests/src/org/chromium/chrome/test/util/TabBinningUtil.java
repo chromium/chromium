@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import org.junit.Assert;
+
 import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -84,5 +86,41 @@ public class TabBinningUtil {
             binIndex++;
         }
         return map;
+    }
+
+    /** Asserts the |tabModel| gets binned into the |expectedBins|. */
+    public static void assertBinsEqual(TabModel tabModel, Object... expectedBins) {
+        String binSeparator = "";
+        StringBuilder sb = new StringBuilder("{");
+        for (Object expectedBin : expectedBins) {
+            sb.append(binSeparator);
+            binSeparator = ", ";
+            if (expectedBin instanceof Integer tabId) {
+                sb.append(tabId);
+            } else if (expectedBin instanceof List<?> list) {
+                List<Integer> tabIdsInGroup = (List<Integer>) list;
+                sb.append("[");
+                String separator = "";
+                for (Integer tabId : tabIdsInGroup) {
+                    sb.append(separator);
+                    separator = ", ";
+                    sb.append(tabId);
+                }
+                sb.append("]");
+            } else {
+                sb.append("-");
+            }
+        }
+        sb.append("}");
+        String expectedString = sb.toString();
+
+        TabBinList actual = TabBinningUtil.binTabsByCard(tabModel);
+
+        Assert.assertEquals(expectedString, actual.getTabIdsAsString());
+    }
+
+    /** Create a group for |assertBinsEqual|. */
+    public static List<Integer> group(Integer... tabIds) {
+        return List.of(tabIds);
     }
 }

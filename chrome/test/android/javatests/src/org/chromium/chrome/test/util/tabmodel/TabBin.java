@@ -27,4 +27,18 @@ public class TabBin {
         this.groupId = groupId;
         this.rootId = rootId;
     }
+
+    /** Returns a representation of the bin like "[11, 12]". */
+    public String getTabIdsAsString() {
+        if (groupId == null) {
+            assert tabs.size() == 1;
+            return String.valueOf(tabs.get(0).getId());
+        }
+
+        List<String> tabIdStrings = new ArrayList<>();
+        for (Tab tab : tabs) {
+            tabIdStrings.add(String.valueOf(tab.getId()));
+        }
+        return "[" + String.join(", ", tabIdStrings) + "]";
+    }
 }

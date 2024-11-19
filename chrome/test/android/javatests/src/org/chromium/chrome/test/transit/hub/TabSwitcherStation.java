@@ -34,6 +34,8 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 
+import java.util.List;
+
 /** The base station for Hub tab switcher stations. */
 public abstract class TabSwitcherStation extends HubBaseStation {
     public static final ViewSpec TAB_LIST_RECYCLER_VIEW =
@@ -200,5 +202,16 @@ public abstract class TabSwitcherStation extends HubBaseStation {
                         .withIncognito(mIsIncognito)
                         .build();
         return leaveHubToPreviousTabViaBack(destination);
+    }
+
+    /** Expect a tab group card to exist. */
+    public TabSwitcherGroupCardFacility expectGroupCard(List<Integer> tabIdsInGroup, String title) {
+        return enterFacilitySync(
+                new TabSwitcherGroupCardFacility(tabIdsInGroup, title), /* trigger= */ null);
+    }
+
+    /** Expect a tab card to exist. */
+    public TabSwitcherTabCardFacility expectTabCard(int tabId, String title) {
+        return enterFacilitySync(new TabSwitcherTabCardFacility(tabId, title), /* trigger= */ null);
     }
 }
