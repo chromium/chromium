@@ -410,11 +410,6 @@ class WebAppRegistrar {
   // `FindBestAppWithUrlInScope`.
   std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
-  // Returns true if there exists at least one app installed under |scope|.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `DoesScopeContainAnyApp` with install states.
-  bool DoesScopeContainAnyApp(const GURL& scope) const;
-
   // Finds all apps that are installed under `outer_scope`.
   // TODO(crbug.com/340952100): Remove & replace callers with
   // `FindAllAppsNestedInUrl`.

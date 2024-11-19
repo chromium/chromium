@@ -546,8 +546,14 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
   std::vector<webapps::AppId> in_scope =
       registrar().FindAppsInScope(origin_scope);
   EXPECT_EQ(0u, in_scope.size());
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(origin_scope));
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(app3_scope));
+  // TODO(crbug.com/340952100): Evaluate call sites of DoesScopeContainAnyApp
+  // for correctness (note: multiple instances within this function).
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app1 = test::CreateWebApp(app1_scope);
   app1->SetScope(app1_scope);
@@ -555,12 +561,18 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
 
   in_scope = registrar().FindAppsInScope(origin_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(origin_scope));
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(app3_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   in_scope = registrar().FindAppsInScope(app1_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app1_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app1_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app2 = test::CreateWebApp(app2_scope);
   app2->SetScope(app2_scope);
@@ -568,16 +580,24 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
 
   in_scope = registrar().FindAppsInScope(origin_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(origin_scope));
-  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(app3_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+  EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   in_scope = registrar().FindAppsInScope(app1_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app1_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app1_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   in_scope = registrar().FindAppsInScope(app2_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app2_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app2_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   auto app3 = test::CreateWebApp(app3_scope);
   app3->SetScope(app3_scope);
@@ -585,11 +605,15 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
 
   in_scope = registrar().FindAppsInScope(origin_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(origin_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 
   in_scope = registrar().FindAppsInScope(app3_scope);
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app3_id));
-  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(app3_scope));
+  EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
+      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
 }
 
 TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {

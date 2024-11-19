@@ -484,12 +484,6 @@ std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
            });
 }
 
-bool WebAppRegistrar::DoesScopeContainAnyApp(const GURL& scope) const {
-  return DoesScopeContainAnyApp(
-      scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-              proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
-}
-
 std::vector<webapps::AppId> WebAppRegistrar::FindAppsInScope(
     const GURL& scope) const {
   return FindAllAppsNestedInUrl(
