@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -231,6 +232,10 @@
     // backgrounded to avoid freezes.
     [self closeMediaPresentations];
   }
+
+  if (IsIOSSoftLockEnabled()) {
+    [self recordIncognitoLockImpressionForSceneState:sceneState];
+  }
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
@@ -250,6 +255,13 @@
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   [self notifyObservers];
+}
+
+- (void)sceneState:(SceneState*)sceneState
+    isDisplayingIncognitoContent:(BOOL)level {
+  if (IsIOSSoftLockEnabled()) {
+    [self recordIncognitoLockImpressionForSceneState:sceneState];
+  }
 }
 
 #pragma mark - private
@@ -448,6 +460,32 @@
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
     _prefObserverBridge.reset();
+  }
+}
+
+// Records impressions of the Incognito lock for reauth and soft lock states.
+- (void)recordIncognitoLockImpressionForSceneState:(SceneState*)sceneState {
+  if (sceneState.incognitoContentVisible &&
+      sceneState.activationLevel == SceneActivationLevelForegroundActive) {
+    switch ([self incognitoLockState]) {
+      case IncognitoLockState::kNone:
+        // No impression metrics to be recorded when the lock is disabled.
+        break;
+      case IncognitoLockState::kReauth:
+        base::UmaHistogramEnumeration(
+            kIncognitoLockImpressionHistogram,
+            sceneState.controller.isTabGridVisible
+                ? IncognitoLockImpression::kReauthLockTabGrid
+                : IncognitoLockImpression::kReauthLockSingleTab);
+        break;
+      case IncognitoLockState::kSoftLock:
+        base::UmaHistogramEnumeration(
+            kIncognitoLockImpressionHistogram,
+            sceneState.controller.isTabGridVisible
+                ? IncognitoLockImpression::kSoftLockTabGrid
+                : IncognitoLockImpression::kSoftLockSingleTab);
+        break;
+    }
   }
 }
 

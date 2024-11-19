@@ -125,6 +125,17 @@ the generic promo launch. -->
   <int value="2" label="Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IncognitoLockImpressionType) -->
+
+<enum name="IncognitoLockImpressionType">
+  <int value="0" label="Soft lock on a single tab"/>
+  <int value="1" label="Soft lock on the tab grid"/>
+  <int value="2" label="Reauth lock on a single tab"/>
+  <int value="3" label="Reauth lock on tab grid"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockImpression) -->
+
 <!-- LINT.IfChange(IncognitoLockOverlayInteractionType) -->
 
 <enum name="IncognitoLockOverlayInteractionType">

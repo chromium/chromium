@@ -56,4 +56,22 @@ enum class IncognitoLockOverlayInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockOverlayInteractionType)
 
+// Histogram name for Incognito lock overlay interactions.
+const char kIncognitoLockImpressionHistogram[] = "IOS.IncognitoLockImpression";
+
+// Enum for the IOS.IncognitoLockImpression histogram.
+// LINT.IfChange(IncognitoLockImpression)
+enum class IncognitoLockImpression {
+  // User saw Incognito soft lock on a single tab.
+  kSoftLockSingleTab = 0,
+  // User saw Incognito soft lock on the tab grid.
+  kSoftLockTabGrid,
+  // User saw Incognito reauth lock on a single tab.
+  kReauthLockSingleTab,
+  // User saw Incognito reauth lock on tab grid.
+  kReauthLockTabGrid,
+  kMaxValue = kReauthLockTabGrid,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockImpressionType)
+
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_CONSTANTS_H_
