@@ -322,10 +322,10 @@ ASH_EXPORT void ToggleCapsLock();
 // Toggles the clipboard history.
 ASH_EXPORT void ToggleClipboardHistory(bool is_plain_text_paste);
 
-// Toggles Picker.
+// Toggles Quick Insert.
 // `accelerator_timestamp` is the timestamp associated with the accelerator that
-// triggered Picker.
-ASH_EXPORT void TogglePicker(base::TimeTicks accelerator_timestamp);
+// triggered Quick Insert.
+ASH_EXPORT void ToggleQuickInsert(base::TimeTicks accelerator_timestamp);
 
 // Enables Select to Speak if the feature is currently disabled. Does nothing if
 // the feature is currently enabled.

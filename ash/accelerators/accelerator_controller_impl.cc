@@ -1456,7 +1456,7 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ToggleImeMenuBubble();
       break;
     case AcceleratorAction::kTogglePicker:
-      accelerators::TogglePicker(accelerator.time_stamp());
+      accelerators::ToggleQuickInsert(accelerator.time_stamp());
       break;
     case AcceleratorAction::kToggleProjectorMarker:
       accelerators::ToggleProjectorMarker();
