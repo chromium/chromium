@@ -19,6 +19,7 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
 #include "content/public/browser/browser_thread.h"
+#include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
@@ -160,8 +161,7 @@ std::optional<base::TimeDelta> IpProtectionTokenIpcFetcher::CalculateBackoff(
       break;
     case TryGetAuthTokensAndroidResult::kFailedBSATransient:
     case TryGetAuthTokensAndroidResult::kFailedBSAOther:
-      backoff =
-          ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff;
+      backoff = net::features::kIpPrivacyTryGetAuthTokensTransientBackoff.Get();
       // Note that we calculate the backoff assuming that we've waited for
       // `last_try_get_auth_tokens_backoff_` time already, but this may not be
       // the case when:

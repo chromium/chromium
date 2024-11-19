@@ -32,6 +32,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -111,6 +112,13 @@ class IpProtectionCoreHostTest : public testing::Test {
         {net::features::kIpPrivacyTokenServer.Get(),
          net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()}));
     ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
+
+    default_not_eligible_backoff_ =
+        net::features::kIpPrivacyTryGetAuthTokensNotEligibleBackoff.Get();
+    default_transient_backoff_ =
+        net::features::kIpPrivacyTryGetAuthTokensTransientBackoff.Get();
+    default_bug_backoff_ =
+        net::features::kIpPrivacyTryGetAuthTokensBugBackoff.Get();
   }
 
   void TearDown() override {
@@ -258,6 +266,11 @@ class IpProtectionCoreHostTest : public testing::Test {
   // quiche::BlindSignAuthInterface owned and used by the sequence bound
   // ip_protection_token_fetcher_ in core_host_.
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
+
+  // Default backoff times applied for calculating `try_again_after`.
+  base::TimeDelta default_not_eligible_backoff_;
+  base::TimeDelta default_transient_backoff_;
+  base::TimeDelta default_bug_backoff_;
 };
 
 // NOTE: Many of these tests are similar those for
@@ -309,8 +322,7 @@ TEST_F(IpProtectionCoreHostTest, NoTokens) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -336,8 +348,7 @@ TEST_F(IpProtectionCoreHostTest, MalformedTokens) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -393,8 +404,7 @@ TEST_F(IpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -413,8 +423,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError400) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kBugBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_bug_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA400, 1);
@@ -437,8 +446,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError401) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kBugBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_bug_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA401, 1);
@@ -461,8 +469,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError403) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kNotEligibleBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_not_eligible_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA403, 1);
@@ -486,8 +493,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -539,8 +545,7 @@ TEST_F(IpProtectionCoreHostTest, AuthTokenTransientError) {
   TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedOAuthTokenTransient, 1);

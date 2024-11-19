@@ -22,6 +22,7 @@
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -62,6 +63,9 @@ class AwIpProtectionCoreHostTest : public testing::Test {
         {net::features::kIpPrivacyTokenServer.Get(),
          net::features::kIpPrivacyTokenServerGetProxyConfigPath.Get()}));
     ASSERT_TRUE(token_server_get_proxy_config_url_.is_valid());
+
+    default_transient_backoff_ =
+        net::features::kIpPrivacyTryGetAuthTokensTransientBackoff.Get();
   }
 
   void TearDown() override { core_host_->Shutdown(); }
@@ -125,6 +129,9 @@ class AwIpProtectionCoreHostTest : public testing::Test {
   // ip_protection_token_batch_ipc_fetcher_ in core_host_.
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
 
+  // Default backoff time applied for calculating `try_again_after`.
+  base::TimeDelta default_transient_backoff_;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -175,8 +182,7 @@ TEST_F(AwIpProtectionCoreHostTest, NoTokens) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
@@ -204,8 +210,7 @@ TEST_F(AwIpProtectionCoreHostTest, MalformedTokens) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
@@ -265,8 +270,7 @@ TEST_F(AwIpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
@@ -286,8 +290,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedAuthTransientError) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSATransient, 1);
@@ -327,8 +330,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
-  ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
+  ExpectTryGetAuthTokensResultFailed(default_transient_backoff_);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);

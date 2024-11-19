@@ -76,11 +76,6 @@ class IpProtectionTokenFetcherHelper {
   static constexpr char kChromeIpBlinding[] = "chromeipblinding";
   static constexpr char kWebViewIpBlinding[] = "webviewipblinding";
 
-  // Base time deltas for calculating `try_again_after`.
-  static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
-  static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
-  static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
-
  protected:
   SEQUENCE_CHECKER(sequence_checker_);
 };

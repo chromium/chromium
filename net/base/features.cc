@@ -407,6 +407,22 @@ const base::FeatureParam<base::TimeDelta> kIpPrivacyExpirationFuzz{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyExpirationFuzz",
     /*default_value=*/base::Minutes(15)};
 
+const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensNotEligibleBackoff{
+        &kEnableIpProtectionProxy,
+        /*name=*/"IpPrivacyTryGetAuthTokensNotEligibleBackoff",
+        /*default_value=*/base::Days(1)};
+
+const base::FeatureParam<base::TimeDelta>
+    kIpPrivacyTryGetAuthTokensTransientBackoff{
+        &kEnableIpProtectionProxy,
+        /*name=*/"IpPrivacyTryGetAuthTokensTransientBackoff",
+        /*default_value=*/base::Seconds(5)};
+
+const base::FeatureParam<base::TimeDelta> kIpPrivacyTryGetAuthTokensBugBackoff{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTryGetAuthTokensBugBackoff",
+    /*default_value=*/base::Minutes(10)};
+
 const base::FeatureParam<bool> kIpPrivacyRestrictTopLevelSiteSchemes{
     &kEnableIpProtectionProxy,
     /*name=*/"IpPrivacyRestrictTopLevelSiteSchemes",

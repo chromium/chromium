@@ -21,6 +21,7 @@
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
+#include "net/base/features.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -256,19 +257,20 @@ std::optional<base::TimeDelta> IpProtectionTokenDirectFetcher::CalculateBackoff(
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff = IpProtectionTokenFetcherHelper::kNotEligibleBackoff;
+      backoff =
+          net::features::kIpPrivacyTryGetAuthTokensNotEligibleBackoff.Get();
       break;
     case kFailedOAuthTokenTransient:
     case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff = IpProtectionTokenFetcherHelper::kTransientBackoff;
+      backoff = net::features::kIpPrivacyTryGetAuthTokensTransientBackoff.Get();
       exponential = true;
       break;
     case kFailedBSA400:
     case kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = IpProtectionTokenFetcherHelper::kBugBackoff;
+      backoff = net::features::kIpPrivacyTryGetAuthTokensBugBackoff.Get();
       exponential = true;
       break;
     case kFailedOAuthTokenDeprecated:
