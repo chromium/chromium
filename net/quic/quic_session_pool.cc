@@ -555,7 +555,11 @@ QuicSessionPool::~QuicSessionPool() {
                             all_sessions_.size());
   CloseAllSessions(ERR_ABORTED, quic::QUIC_CONNECTION_CANCELLED);
   all_sessions_.clear();
-  active_jobs_.clear();
+
+  // Clear the active jobs, first moving out of the instance variable so that
+  // calls to CancelRequest for any pending requests do not cause recursion.
+  JobMap active_jobs = std::move(active_jobs_);
+  active_jobs.clear();
 
   DCHECK(dns_aliases_by_session_key_.empty());
 
