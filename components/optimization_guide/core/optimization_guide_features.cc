@@ -193,6 +193,10 @@ const base::FeatureParam<std::string> kPerformanceClassListForOnDeviceModel{
     &kOptimizationGuideOnDeviceModel,
     "compatible_on_device_performance_classes", "5,6"};
 
+BASE_FEATURE(kOptimizationGuideIconView,
+             "OptimizationGuideIconView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The default value here is a bit of a guess.
 // TODO(crbug.com/40163041): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
@@ -899,6 +903,10 @@ int GetOnDeviceModelValidationAttemptCount() {
   static const base::FeatureParam<int> kParam{
       &kOnDeviceModelValidation, "on_device_model_validation_attempt_count", 3};
   return kParam.Get();
+}
+
+bool ShouldEnableOptimizationGuideIconView() {
+  return base::FeatureList::IsEnabled(kOptimizationGuideIconView);
 }
 
 }  // namespace features

@@ -89,6 +89,7 @@
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
@@ -355,6 +356,9 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kPriceInsights);
     params.types_enabled.push_back(PageActionIconType::kPriceTracking);
 
+    if (optimization_guide::features::ShouldEnableOptimizationGuideIconView()) {
+      params.types_enabled.push_back(PageActionIconType::kOptimizationGuide);
+    }
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);

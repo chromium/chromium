@@ -366,6 +366,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ManagePasswords"/>
     <variant name="MandatoryReauth"/>
     <variant name="MemorySaver"/>
+    <variant name="OptimizationGuide"/>
     <variant name="PaymentsOfferNotification"/>
     <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>

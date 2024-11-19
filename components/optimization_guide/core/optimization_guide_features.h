@@ -96,6 +96,9 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FeatureParam<std::string>
     kPerformanceClassListForOnDeviceModel;
 
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
+
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
                       proto::RequestContext_MAX>
@@ -543,6 +546,10 @@ base::TimeDelta GetOnDeviceModelValidationDelay();
 // The maximum number of attempts model validation will be retried.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 int GetOnDeviceModelValidationAttemptCount();
+
+// Returns whether the icon view should be enabled.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldEnableOptimizationGuideIconView();
 
 }  // namespace features
 }  // namespace optimization_guide
