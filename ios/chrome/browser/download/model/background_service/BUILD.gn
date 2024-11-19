@@ -14,11 +14,11 @@ source_set("background_service") {
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/proto",
     "//components/download/public/background_service:public",
-    "//components/keyed_service/ios",
     "//components/leveldb_proto",
     "//components/optimization_guide/core",
     "//ios/chrome/browser/optimization_guide/model:download_client_header",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
