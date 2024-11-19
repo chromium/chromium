@@ -776,8 +776,9 @@ void VideoResourceUpdater::AppendQuad(
       texture_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
                            needs_blending, frame_resource_id_,
                            premultiplied_alpha, uv_top_left, uv_bottom_right,
-                           SkColors::kTransparent, flipped, nearest_neighbor,
-                           false, protected_video_type);
+                           SkColors::kTransparent, nearest_neighbor, false,
+                           protected_video_type);
+      texture_quad->y_flipped = flipped;
       texture_quad->set_resource_size_in_pixels(coded_size);
       // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
       // (e.g. *_layer_overlay.cc).

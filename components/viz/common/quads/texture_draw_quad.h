@@ -45,7 +45,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
               SkColor4f background,
-              bool flipped,
               bool nearest,
               bool secure_output,
               gfx::ProtectedVideoType video_type);
@@ -60,7 +59,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
               const gfx::PointF& top_left,
               const gfx::PointF& bottom_right,
               SkColor4f background,
-              bool flipped,
               bool nearest,
               bool secure_output,
               gfx::ProtectedVideoType video_type);
@@ -68,7 +66,7 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   gfx::PointF uv_top_left;
   gfx::PointF uv_bottom_right;
   SkColor4f background_color = SkColors::kTransparent;
-  bool y_flipped : 1;
+  bool y_flipped : 1 = false;
   bool nearest_neighbor : 1;
   bool premultiplied_alpha : 1;
 

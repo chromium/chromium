@@ -176,7 +176,6 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
                /*top_left=*/gfx::PointF(0.f, 0.f),
                /*bottom_right=*/gfx::PointF(1.f, 1.f),
                /*background=*/SkColors::kTransparent,
-               /*flipped=*/false,
                /*nearest=*/false, /*secure_output=*/false,
                /*video_type=*/gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
@@ -241,7 +240,6 @@ void PaintedScrollbarLayerImpl::AppendTrackAndButtonsQuads(
                /*top_left=*/gfx::PointF(0.f, 0.f),
                /*bottom_right=*/gfx::PointF(1.f, 1.f),
                /*background=*/SkColors::kTransparent,
-               /*flipped=*/false,
                /*nearest=*/false, /*secure_output=*/false,
                /*video_type=*/gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);

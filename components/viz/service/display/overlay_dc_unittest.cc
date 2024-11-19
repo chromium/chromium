@@ -149,7 +149,7 @@ TextureDrawQuad* CreateTextureQuadAt(
                /*needs_blending=*/false, resource_id, /*premultiplied=*/true,
                /*top_left=*/gfx::PointF(0, 0),
                /*bottom_right=*/gfx::PointF(1, 1),
-               /*background=*/SkColors::kBlack, /*flipped=*/false,
+               /*background=*/SkColors::kBlack,
                /*nearest=*/false, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   return quad;
@@ -188,7 +188,7 @@ TextureDrawQuad* CreateFullscreenCandidateYUVTextureQuad(
                        /*premultiplied=*/true,
                        /*top_left=*/gfx::PointF(0, 0),
                        /*bottom_right=*/gfx::PointF(1, 1),
-                       /*background=*/SkColors::kBlack, /*flipped=*/false,
+                       /*background=*/SkColors::kBlack,
                        /*nearest=*/false, /*secure_output=*/false,
                        gfx::ProtectedVideoType::kClear);
   // Content is video frame type.

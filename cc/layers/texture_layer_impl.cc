@@ -173,8 +173,9 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color, flipped_, nearest_neighbor_,
+               uv_bottom_right_, bg_color, nearest_neighbor_,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  quad->y_flipped = flipped_;
   quad->set_resource_size_in_pixels(transferable_resource_.size);
   ValidateQuadResources(quad);
 }

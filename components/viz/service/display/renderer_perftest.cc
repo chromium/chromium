@@ -199,13 +199,12 @@ void CreateTestTextureDrawQuad(ResourceId resource_id,
   const bool needs_blending = true;
   const gfx::PointF uv_top_left(0.0f, 0.0f);
   const gfx::PointF uv_bottom_right(1.0f, 1.0f);
-  const bool flipped = false;
   const bool nearest_neighbor = false;
   auto* quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
 
   quad->SetNew(shared_state, rect, rect, needs_blending, resource_id,
                premultiplied_alpha, uv_top_left, uv_bottom_right,
-               background_color, flipped, nearest_neighbor,
+               background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 

@@ -427,7 +427,6 @@ void NinePatchGenerator::AppendQuads(
   client_resource_provider->ValidateResource(resource);
 #endif
 
-  constexpr bool flipped = false;
   constexpr bool premultiplied_alpha = true;
 
   for (const auto& patch : patches) {
@@ -439,7 +438,7 @@ void NinePatchGenerator::AppendQuads(
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       quad->SetNew(shared_quad_state, output_rect, visible_rect, needs_blending,
                    resource, premultiplied_alpha, image_rect.origin(),
-                   image_rect.bottom_right(), SkColors::kTransparent, flipped,
+                   image_rect.bottom_right(), SkColors::kTransparent,
                    nearest_neighbor_,
                    /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
     }

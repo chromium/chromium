@@ -350,7 +350,7 @@ class OverlayCandidateFactoryArbitraryTransformTest
     quad.SetNew(sqs, quad_rect, quad_rect, false,
                 CreateResource(/*is_overlay_candidate=*/true), false,
                 gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
-                false, false, gfx::ProtectedVideoType::kClear);
+                false, gfx::ProtectedVideoType::kClear);
 
     return quad;
   }
@@ -761,7 +761,7 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     quad.SetNew(sqs, quad_rect, quad_rect, false,
                 CreateResource(/*is_overlay_candidate=*/true), false,
                 quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
-                SkColors::kTransparent, false, false, false,
+                SkColors::kTransparent, false, false,
                 gfx::ProtectedVideoType::kClear);
 
     return quad;

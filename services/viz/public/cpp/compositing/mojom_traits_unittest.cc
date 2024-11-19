@@ -1089,7 +1089,8 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   texture_draw_quad->SetAll(
       sqs, rect5, rect5, needs_blending, resource_id5, resource_size_in_pixels5,
       premultiplied_alpha, uv_top_left, uv_bottom_right, background_color,
-      y_flipped, nearest_neighbor, secure_output_only, protected_video_type);
+      nearest_neighbor, secure_output_only, protected_video_type);
+  texture_draw_quad->y_flipped = y_flipped;
   // Create a stream video TextureDrawQuad.
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
@@ -1100,7 +1101,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   stream_video_draw_quad->SetAll(
       sqs, rect6, rect6, needs_blending6, resource_id6,
       resource_size_in_pixels6, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, false, false, false, protected_video_type);
+      SkColors::kTransparent, false, false, protected_video_type);
   stream_video_draw_quad->is_stream_video = true;
 
   // Create a TextureDrawQuad with rounded-display masks.
@@ -1117,7 +1118,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   rounded_display_mask_quad->SetAll(
       sqs, rect7, rect7, needs_blending7, resource_id7,
       resource_size_in_pixels7, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, false, false, false, protected_video_type);
+      SkColors::kTransparent, false, false, protected_video_type);
   rounded_display_mask_quad->rounded_display_masks_info =
       TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
           origin_rounded_display_mask_radius, other_rounded_display_mask_radius,

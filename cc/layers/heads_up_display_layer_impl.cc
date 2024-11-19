@@ -506,7 +506,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                    /*uv_top_left=*/gfx::PointF(),
                    /*uv_bottom_right=*/uv_bottom_right,
                    /*background_color=*/SkColors::kTransparent,
-                   /*flipped=*/false,
                    /*nearest_neighbor=*/false, /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);
       ValidateQuadResources(quad);

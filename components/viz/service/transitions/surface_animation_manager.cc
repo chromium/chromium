@@ -121,7 +121,6 @@ void ReplaceSharedElementWithTexture(
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SkColors::kTransparent,
-      /*y_flipped=*/false,
       /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);

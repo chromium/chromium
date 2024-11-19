@@ -251,7 +251,6 @@ void EvictionHandler::SubmitPlaceholderContentForEviction(
         /*premultiplied=*/false, /*top_left=*/gfx::PointF(0.0, 0.0),
         /*bottom_right=*/gfx::PointF(1.0, 1.0),
         /*background=*/SkColors::kBlack,
-        /*flipped=*/false,
         /*nearest=*/false,
         /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 

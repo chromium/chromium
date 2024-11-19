@@ -128,12 +128,11 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const gfx::PointF uv_top_left;
         const gfx::PointF uv_bottom_right;
         SkColor4f background_color = SkColors::kGreen;
-        bool flipped = false;
         bool nearest_neighbor = false;
         quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
                      gfx::Size(), premultiplied_alpha, uv_top_left,
-                     uv_bottom_right, background_color, flipped,
-                     nearest_neighbor, /*secure_output_only=*/false,
+                     uv_bottom_right, background_color, nearest_neighbor,
+                     /*secure_output_only=*/false,
                      gfx::ProtectedVideoType::kClear);
       }
       sqs = pass->CreateAndAppendSharedQuadState();

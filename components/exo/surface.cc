@@ -1866,7 +1866,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                              current_resource_.id,
                              /* premultiplied*/ true, uv_crop.origin(),
                              uv_crop.bottom_right(), background_color,
-                             /* flipped=*/false, /* nearest*/ false,
+                             /* nearest*/ false,
                              state_.basic_state.only_visible_on_secure_output,
                              gfx::ProtectedVideoType::kClear);
         if (current_resource_.is_overlay_candidate)

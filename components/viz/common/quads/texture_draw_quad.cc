@@ -22,8 +22,7 @@
 namespace viz {
 
 TextureDrawQuad::TextureDrawQuad()
-    : y_flipped(false),
-      nearest_neighbor(false),
+    : nearest_neighbor(false),
       premultiplied_alpha(false),
       secure_output_only(false),
       is_video_frame(false),
@@ -47,7 +46,6 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
                              SkColor4f background,
-                             bool flipped,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
@@ -61,7 +59,6 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
   background_color = background;
-  y_flipped = flipped;
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
   protected_video_type = video_type;
@@ -77,7 +74,6 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
                              SkColor4f background,
-                             bool flipped,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
@@ -91,7 +87,6 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
   background_color = background;
-  y_flipped = flipped;
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
   protected_video_type = video_type;

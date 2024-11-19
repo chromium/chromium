@@ -304,9 +304,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
   constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
-               uv_bottom_right, SkColors::kTransparent, yflipped,
-               nearest_neighbor, /*secure_output=*/false,
-               gfx::ProtectedVideoType::kClear);
+               uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
+               /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+  quad->y_flipped = yflipped;
   frame->render_pass_list.push_back(std::move(pass));
 
   if (change_size_for_next_commit_ ||
