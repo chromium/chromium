@@ -30,6 +30,10 @@ main {
   text-align: center;
 }
 
+.title:focus {
+  outline: none;
+}
+
 .subtitle {
   margin: 0 0 12px 0;
   text-align: center;

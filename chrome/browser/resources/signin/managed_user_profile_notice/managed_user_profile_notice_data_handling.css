@@ -29,6 +29,10 @@ main {
   margin: 0;
 }
 
+.title:focus {
+  outline: none;
+}
+
 cr-radio-group {
   background-color: var(--md-background-color);
   border-radius: 24px;

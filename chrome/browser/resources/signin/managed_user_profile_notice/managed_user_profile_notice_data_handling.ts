@@ -36,6 +36,14 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
   override title: string = '';
   selectedDataHandling: BrowsingDataHandling|null = null;
 
+  get titleElement(): HTMLElement|undefined {
+    return this.shadowRoot?.querySelector('.title') || undefined;
+  }
+
+  override firstUpdated() {
+    this.titleElement?.focus();
+  }
+
   protected onSelectedRadioOptionChanged_(
       e: CustomEvent<{value: BrowsingDataHandling}>) {
     this.selectedDataHandling = e.detail.value;

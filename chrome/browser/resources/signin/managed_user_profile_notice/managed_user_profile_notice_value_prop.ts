@@ -20,6 +20,14 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
     return getCss();
   }
 
+  get titleElement(): HTMLElement|undefined {
+    return this.shadowRoot?.querySelector('.title') || undefined;
+  }
+
+  override firstUpdated() {
+    this.titleElement?.focus();
+  }
+
   override render() {
     return getHtml.bind(this)();
   }
