@@ -23,6 +23,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -64,6 +65,8 @@ import javax.inject.Inject;
 @ActivityScope
 public class CustomTabActivityNavigationController
         implements StartStopWithNativeObserver, BackPressHandler {
+    private static final String TAG = "CTANavigationCtrl";
+
     @IntDef({
         FinishReason.USER_NAVIGATION,
         FinishReason.REPARENTING,
@@ -299,6 +302,9 @@ public class CustomTabActivityNavigationController
         }
         String url = gurl.getSpec();
         if (TextUtils.isEmpty(url)) url = mIntentDataProvider.getUrlToLoad();
+
+        assertUrlNotNullForOpenInBrowser(url, tab);
+
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, true);
@@ -414,5 +420,30 @@ public class CustomTabActivityNavigationController
         } else {
             mTabController.saveState();
         }
+    }
+
+    // Debug log dump for https://crbug.com/374871254.
+    private void assertUrlNotNullForOpenInBrowser(String url, @NonNull Tab tab) {
+        if (url != null) return;
+
+        String tabInfo =
+                "Tab: isInitialized "
+                        + tab.isInitialized()
+                        + " getWebContents() == null "
+                        + (tab.getWebContents() == null);
+
+        String intentDataProviderInfo =
+                " IntentDataProvider: activityType "
+                        + mIntentDataProvider.getActivityType()
+                        + " getCustomTabMode "
+                        + mIntentDataProvider.getCustomTabMode()
+                        // #getUrlToLoad "must be called only after native has
+                        // loaded".
+                        + " isFullBrowserInitialized "
+                        + ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
+
+        String assertMsg = "URL used to open browser is null. " + tabInfo + intentDataProviderInfo;
+        Log.e(TAG, assertMsg);
+        assert false : assertMsg;
     }
 }
