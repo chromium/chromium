@@ -137,10 +137,7 @@ class InterestGroupAuctionReporterTest
         winning_bid_info_(GetWinningBidInfo()) {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
-                               {{"fledge_extensions_enabled", "true"}}},
-                              {blink::features::
-                                   kPrivateAggregationApiFilteringIds,
-                               {}}},
+                               {{"fledge_extensions_enabled", "true"}}}},
         /*disabled_features=*/{});
 
     mojo::SetDefaultProcessErrorHandler(

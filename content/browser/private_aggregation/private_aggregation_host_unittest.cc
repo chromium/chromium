@@ -604,12 +604,6 @@ TEST_F(PrivateAggregationHostTest, TimeoutSetWithContextId_Succeeds) {
 
 TEST_F(PrivateAggregationHostTest,
        TimeoutSetWithNonDefaultFilteringIdMaxBytes_Succeeds) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -850,8 +844,7 @@ TEST_F(PrivateAggregationHostTest,
        ContributionsMergedIffSameBucketAndFilteringId) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivateAggregationApiContributionMerging},
+      /*enabled_features=*/{kPrivateAggregationApiContributionMerging},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -922,10 +915,8 @@ TEST_F(PrivateAggregationHostTest,
 
 TEST_F(PrivateAggregationHostTest, ContributionsNotMergedIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{kPrivateAggregationApiContributionMerging});
+  scoped_feature_list.InitAndDisableFeature(
+      kPrivateAggregationApiContributionMerging);
 
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
@@ -1160,8 +1151,7 @@ TEST_F(PrivateAggregationHostTest,
        NumberOfContributionMergeKeysHistograms_RecordsCorrectSubMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivateAggregationApiContributionMerging},
+      /*enabled_features=*/{kPrivateAggregationApiContributionMerging},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -1638,12 +1628,6 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
 }
 
 TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -1693,12 +1677,6 @@ TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
 }
 
 TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kPrivateAggregationApiFilteringIds},
-      /*disabled_features=*/{});
-
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin kMainFrameOrigin =
@@ -1824,160 +1802,6 @@ TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
     EXPECT_EQ(
         validated_request->payload_contents().contributions[0].filtering_id,
         test_case.filtering_id);
-  }
-}
-
-TEST_F(PrivateAggregationHostTest,
-       FilteringIdMaxBytesNotValidatedIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
-
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  const struct {
-    const char* description;
-    const size_t filtering_id_max_bytes;
-  } kTestCases[] = {
-      {
-          "filtering_id_max_bytes zero",
-          0,
-      },
-      {
-          "filtering_id_max_bytes minimum valid value",
-          1,
-      },
-      {
-          "filtering_id_max_bytes maximum valid value",
-          AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes,
-      },
-      {
-          "filtering_id_max_bytes too large",
-          AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes + 1,
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-
-    mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-    bool bind_result = host_->BindNewReceiver(
-        kExampleOrigin, kMainFrameOrigin,
-        PrivateAggregationCallerApi::kProtectedAudience,
-        /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-        /*aggregation_coordinator_origin=*/std::nullopt,
-        /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
-        remote.BindNewPipeAndPassReceiver());
-
-    EXPECT_TRUE(bind_result);
-  }
-}
-
-TEST_F(PrivateAggregationHostTest,
-       FilteringIdNotValidatedToFitInMaxBytesIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kPrivateAggregationApiFilteringIds);
-
-  const url::Origin kExampleOrigin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin kMainFrameOrigin =
-      url::Origin::Create(GURL("https://main_frame.com"));
-
-  const struct {
-    const char* description;
-    const size_t filtering_id_max_bytes;
-    const std::optional<uint64_t> filtering_id;
-  } kTestCases[] = {
-      {
-          "filtering_id null with default max bytes",
-          1,
-          std::nullopt,
-      },
-      {
-          "filtering_id 0",
-          1,
-          0,
-      },
-      {
-          "filtering_id max for one byte",
-          1,
-          255,
-      },
-      {
-          "filtering_id too big",
-          1,
-          256,
-      },
-      {
-          "filtering_id null with custom maxBytes",
-          3,
-          std::nullopt,
-      },
-      {
-          "filtering_id max value for max maxBytes",
-          8,
-          std::numeric_limits<uint64_t>::max(),
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-    for (bool should_enable_debug_mode : {false, true}) {
-      base::HistogramTester histogram;
-
-      mojo::Remote<blink::mojom::PrivateAggregationHost> remote;
-      bool bind_result = host_->BindNewReceiver(
-          kExampleOrigin, kMainFrameOrigin,
-          PrivateAggregationCallerApi::kProtectedAudience,
-          /*context_id=*/std::nullopt, /*timeout=*/std::nullopt,
-          /*aggregation_coordinator_origin=*/std::nullopt,
-          /*filtering_id_max_bytes=*/test_case.filtering_id_max_bytes,
-          remote.BindNewPipeAndPassReceiver());
-
-      ASSERT_TRUE(bind_result);
-
-      // We shouldn't have any validation errors if the feature is disabled.
-      std::optional<AggregatableReportRequest> validated_request;
-      EXPECT_CALL(mock_callback_, Run)
-          .WillOnce(GenerateAndSaveReportRequest(&validated_request));
-      if (should_enable_debug_mode) {
-        remote->EnableDebugMode(/*debug_key=*/nullptr);
-      }
-
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
-          contributions;
-      contributions.push_back(
-          blink::mojom::AggregatableReportHistogramContribution::New(
-              /*bucket=*/123, /*value=*/456, test_case.filtering_id));
-      remote->ContributeToHistogram(std::move(contributions));
-
-      // The pipe should've been closed in case of a validation error.
-      remote.FlushForTesting();
-      EXPECT_TRUE(remote.is_connected());
-
-      remote.reset();
-      host_->FlushReceiverSetForTesting();
-
-      histogram.ExpectUniqueSample(
-          kPipeResultHistogram,
-          PrivateAggregationHost::PipeResult::kReportSuccess, 1);
-
-      histogram.ExpectTotalCount(kFilteringIdStatusHistogram, 0);
-
-      ASSERT_TRUE(validated_request.has_value());
-      ASSERT_EQ(validated_request->payload_contents().contributions.size(), 1u);
-
-      // The filtering IDs should always be default if the feature is disabled.
-      EXPECT_FALSE(validated_request->payload_contents()
-                       .filtering_id_max_bytes.has_value());
-      EXPECT_FALSE(validated_request->payload_contents()
-                       .contributions[0]
-                       .filtering_id.has_value());
-    }
   }
 }
 

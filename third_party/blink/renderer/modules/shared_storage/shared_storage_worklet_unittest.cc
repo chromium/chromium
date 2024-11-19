@@ -4224,21 +4224,7 @@ TEST_F(SharedStoragePrivateAggregationTest,
   run_loop.Run();
 }
 
-class SharedStoragePrivateAggregationFilteringIdTest
-    : public SharedStoragePrivateAggregationTest {
- public:
-  SharedStoragePrivateAggregationFilteringIdTest() = default;
-
- private:
-  // The features are not necessarily synchronized in the unit test, so we
-  // enable both.
-  base::test::ScopedFeatureList scoped_base_feature_{
-      features::kPrivateAggregationApiFilteringIds};
-  ScopedPrivateAggregationApiFilteringIdsForTest scoped_rte_feature{
-      /*enabled=*/true};
-};
-
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest, BasicFilteringId) {
+TEST_F(SharedStoragePrivateAggregationTest, BasicFilteringId) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: 3n});",
@@ -4247,8 +4233,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest, BasicFilteringId) {
       /*filtering_id=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       FilteringIdWithDebugMode) {
+TEST_F(SharedStoragePrivateAggregationTest, FilteringIdWithDebugMode) {
   ExecuteScriptAndValidateContribution(
       R"(privateAggregation.enableDebugMode();
          privateAggregation.contributeToHistogram(
@@ -4260,7 +4245,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        NoFilteringIdSpecified_FilteringIdNull) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
@@ -4269,7 +4254,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/std::nullopt);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        ExplicitDefaultFilteringId_FilteringIdNotNull) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
@@ -4279,8 +4264,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/0);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       MaxFilteringIdForByteSize_Success) {
+TEST_F(SharedStoragePrivateAggregationTest, MaxFilteringIdForByteSize_Success) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: 255n});",
@@ -4289,7 +4273,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/255);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        FilteringIdTooBigForByteSize_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
@@ -4304,8 +4288,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
                                  "does not fit in byte size"));
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       FilteringIdNegative_Error) {
+TEST_F(SharedStoragePrivateAggregationTest, FilteringIdNegative_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: -1n});",
@@ -4319,8 +4302,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
                                  "does not fit in byte size"));
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
-       NoFilteringIdWithCustomByteSize) {
+TEST_F(SharedStoragePrivateAggregationTest, NoFilteringIdWithCustomByteSize) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
       /*expected_bucket=*/1, /*expected_value=*/2,
@@ -4328,7 +4310,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/std::nullopt, /*filtering_id_max_bytes=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        FilteringIdWithCustomByteSize_Success) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
@@ -4338,7 +4320,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/3, /*filtering_id_max_bytes=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        MaxFilteringIdWithCustomByteSize_Success) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
@@ -4348,7 +4330,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
       /*filtering_id=*/16777215, /*filtering_id_max_bytes=*/3);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        TooBigFilteringIdWithCustomByteSize_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
@@ -4364,7 +4346,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
                                  "does not fit in byte size"));
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest, MaxPossibleFilteringId) {
+TEST_F(SharedStoragePrivateAggregationTest, MaxPossibleFilteringId) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.contributeToHistogram("
       "{bucket: 1n, value: 2, filteringId: (1n << 64n) - 1n});",
@@ -4374,7 +4356,7 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest, MaxPossibleFilteringId) {
       /*filtering_id_max_bytes=*/8);
 }
 
-TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
+TEST_F(SharedStoragePrivateAggregationTest,
        TooBigFilteringIdWithMaxByteSize_Error) {
   std::string error_str = ExecuteScriptReturningError(
       "privateAggregation.contributeToHistogram("
@@ -4388,49 +4370,6 @@ TEST_F(SharedStoragePrivateAggregationFilteringIdTest,
   EXPECT_THAT(error_str,
               testing::HasSubstr("contribution['filteringId'] is negative or "
                                  "does not fit in byte size"));
-}
-
-class SharedStoragePrivateAggregationFilteringIdDisabledTest
-    : public SharedStoragePrivateAggregationTest {
- public:
-  SharedStoragePrivateAggregationFilteringIdDisabledTest() {
-    scoped_base_feature_.InitAndDisableFeature(
-        features::kPrivateAggregationApiFilteringIds);
-  }
-
- private:
-  // The features are not necessarily synchronized in the unit test, so we
-  // disable both.
-  base::test::ScopedFeatureList scoped_base_feature_;
-  ScopedPrivateAggregationApiFilteringIdsForTest scoped_rte_feature{
-      /*enabled=*/false};
-};
-
-TEST_F(SharedStoragePrivateAggregationFilteringIdDisabledTest,
-       ValidFilteringId_Ignored) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.contributeToHistogram("
-      "{bucket: 1n, value: 2, filteringId: 3n});",
-      /*expected_bucket=*/1, /*expected_value=*/2,
-      /*expected_debug_mode_details=*/mojom::blink::DebugModeDetails::New(),
-      /*filtering_id=*/std::nullopt);
-}
-TEST_F(SharedStoragePrivateAggregationFilteringIdDisabledTest,
-       InvalidFilteringId_Ignored) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.contributeToHistogram("
-      "{bucket: 1n, value: 2, filteringId: -1});",
-      /*expected_bucket=*/1, /*expected_value=*/2,
-      /*expected_debug_mode_details=*/mojom::blink::DebugModeDetails::New(),
-      /*filtering_id=*/std::nullopt);
-}
-TEST_F(SharedStoragePrivateAggregationFilteringIdDisabledTest,
-       CustomFilteringIdMaxBytes_Ignored) {
-  ExecuteScriptAndValidateContribution(
-      "privateAggregation.contributeToHistogram({bucket: 1n, value: 2});",
-      /*expected_bucket=*/1, /*expected_value=*/2,
-      /*expected_debug_mode_details=*/mojom::blink::DebugModeDetails::New(),
-      /*filtering_id=*/std::nullopt, /*filtering_id_max_bytes=*/3);
 }
 
 class SharedStorageWorkletThreadTest : public testing::Test {};

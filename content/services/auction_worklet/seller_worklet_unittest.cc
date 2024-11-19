@@ -7600,9 +7600,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
 
   // Filtering IDs are specified
   {
-    base::test::ScopedFeatureList scoped_feature_list{
-        blink::features::kPrivateAggregationApiFilteringIds};
-
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         mojom::AggregatableReportContribution::NewHistogramContribution(
@@ -7884,9 +7881,6 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
 
   // Filtering IDs are specified
   {
-    base::test::ScopedFeatureList scoped_feature_list{
-        blink::features::kPrivateAggregationApiFilteringIds};
-
     PrivateAggregationRequests expected_pa_requests;
     expected_pa_requests.push_back(mojom::PrivateAggregationRequest::New(
         mojom::AggregatableReportContribution::NewHistogramContribution(

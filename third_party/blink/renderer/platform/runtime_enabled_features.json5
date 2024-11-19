@@ -3393,12 +3393,6 @@
       status: "stable"
     },
     {
-      // Controls whether filtering IDs can be specified for Private Aggregation
-      // contributions. If disabled, any IDs will be ignored.
-      name: "PrivateAggregationApiFilteringIds",
-      status: "stable",
-    },
-    {
       name: "PrivateAggregationAuctionReportBuyerDebugModeConfig",
       status: "stable",
     },

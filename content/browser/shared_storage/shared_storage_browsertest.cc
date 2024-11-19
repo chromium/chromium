@@ -8026,19 +8026,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   EXPECT_TRUE(console_observer.messages().empty());
 }
 
-class SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest
-    : public SharedStoragePrivateAggregationEnabledBrowserTest {
- public:
-  SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kPrivateAggregationApiFilteringIds};
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    BasicFilteringId_Success) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       BasicFilteringId_Success) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8094,9 +8083,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdWithDebugMode_Success) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdWithDebugMode_Success) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8161,9 +8149,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    NoFilteringIdSpecified_FilteringIdNull) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       NoFilteringIdSpecified_FilteringIdNull) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8236,9 +8223,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    ExplicitDefaultFilteringId_FilteringIdNotNull) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       ExplicitDefaultFilteringId_FilteringIdNotNull) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8303,9 +8289,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    MaxFilteringIdForByteSize_Success) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       MaxFilteringIdForByteSize_Success) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8370,9 +8355,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdTooBigForByteSize_Error) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdTooBigForByteSize_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8423,9 +8407,8 @@ IN_PROC_BROWSER_TEST_F(
             console_observer.messages()[0].log_level);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdNegative_Error) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdNegative_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8476,9 +8459,8 @@ IN_PROC_BROWSER_TEST_F(
             console_observer.messages()[0].log_level);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    NoFilteringIdWithCustomByteSize_Success) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       NoFilteringIdWithCustomByteSize_Success) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8552,9 +8534,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdWithCustomByteSize_Success) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdWithCustomByteSize_Success) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8628,9 +8609,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    MaxFilteringIdWithCustomByteSize_Success) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       MaxFilteringIdWithCustomByteSize_Success) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8695,9 +8675,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    TooBigFilteringIdWithCustomByteSize_Error) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       TooBigFilteringIdWithCustomByteSize_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   base::RunLoop run_loop;
@@ -8769,9 +8748,8 @@ IN_PROC_BROWSER_TEST_F(
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdMaxBytesTooBig_Error) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdMaxBytesTooBig_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   EXPECT_CALL(mock_callback(), Run).Times(0);
@@ -8818,9 +8796,8 @@ IN_PROC_BROWSER_TEST_F(
               testing::HasSubstr("Error: filteringIdMaxBytes is too big"));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdMaxBytesZero_Error) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdMaxBytesZero_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   EXPECT_CALL(mock_callback(), Run).Times(0);
@@ -8866,9 +8843,8 @@ IN_PROC_BROWSER_TEST_F(
                              "Error: filteringIdMaxBytes must be positive"));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdEnabledBrowserTest,
-    FilteringIdMaxBytesNegative_Error) {
+IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+                       FilteringIdMaxBytesNegative_Error) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   EXPECT_CALL(mock_callback(), Run).Times(0);
@@ -8914,289 +8890,6 @@ IN_PROC_BROWSER_TEST_F(
               testing::HasSubstr("Value is outside the 'unsigned long"
                                  " long' value range."));
 }
-
-class SharedStoragePrivateAggregationFilteringIdDisabledBrowserTest
-    : public SharedStoragePrivateAggregationEnabledBrowserTest {
- public:
-  SharedStoragePrivateAggregationFilteringIdDisabledBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kPrivateAggregationApiFilteringIds);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdDisabledBrowserTest,
-    ValidFilteringId_Ignored) {
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  base::RunLoop run_loop;
-
-  EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
-          [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
-              PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
-                      std::nullopt);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes,
-                      std::nullopt);
-            EXPECT_EQ(request.shared_info().debug_mode,
-                      AggregatableReportSharedInfo::DebugMode::kEnabled);
-            run_loop.Quit();
-          }));
-
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
-      .Times(0);
-  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsPrivateAggregationDebugModeAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsSharedStorageAllowed)
-      .WillByDefault(testing::Return(true));
-
-  GURL out_script_url;
-  ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.enableDebugMode();
-      privateAggregation.contributeToHistogram(
-          {bucket: 1n, value: 2, filteringId: 3n});
-    )",
-                         &out_script_url, /*expected_total_host_count=*/1u,
-                         /*keep_alive_after_operation=*/true,
-                         /*context_id=*/std::nullopt);
-
-  EXPECT_TRUE(console_observer.messages().empty());
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdDisabledBrowserTest,
-    InvalidFilteringId_Ignored) {
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  base::RunLoop run_loop;
-
-  EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
-          [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
-              PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
-                      std::nullopt);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes,
-                      std::nullopt);
-            EXPECT_EQ(request.shared_info().debug_mode,
-                      AggregatableReportSharedInfo::DebugMode::kEnabled);
-            run_loop.Quit();
-          }));
-
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
-      .Times(0);
-  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsPrivateAggregationDebugModeAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsSharedStorageAllowed)
-      .WillByDefault(testing::Return(true));
-
-  GURL out_script_url;
-  ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.enableDebugMode();
-      privateAggregation.contributeToHistogram(
-          {bucket: 1n, value: 2, filteringId: -1});
-    )",
-                         &out_script_url, /*expected_total_host_count=*/1u,
-                         /*keep_alive_after_operation=*/true,
-                         /*context_id=*/std::nullopt);
-
-  EXPECT_TRUE(console_observer.messages().empty());
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdDisabledBrowserTest,
-    CustomFilteringIdMaxBytes_Ignored) {
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  base::RunLoop run_loop;
-
-  EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
-          [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
-              PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
-                      std::nullopt);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes,
-                      std::nullopt);
-            EXPECT_EQ(request.shared_info().debug_mode,
-                      AggregatableReportSharedInfo::DebugMode::kEnabled);
-            run_loop.Quit();
-          }));
-
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
-      .Times(0);
-  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsPrivateAggregationDebugModeAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsSharedStorageAllowed)
-      .WillByDefault(testing::Return(true));
-
-  GURL out_script_url;
-  ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.enableDebugMode();
-      privateAggregation.contributeToHistogram(
-          {bucket: 1n, value: 2, filteringId: 100000n});
-    )",
-                         &out_script_url, /*expected_total_host_count=*/1u,
-                         /*keep_alive_after_operation=*/true,
-                         /*context_id=*/std::nullopt,
-                         /*filtering_id_max_bytes=*/"2");
-
-  EXPECT_TRUE(console_observer.messages().empty());
-
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SharedStoragePrivateAggregationFilteringIdDisabledBrowserTest,
-    InvalidFilteringIdMaxBytes_Ignored) {
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-
-  base::RunLoop run_loop;
-
-  EXPECT_CALL(mock_callback(), Run)
-      .WillOnce(testing::Invoke(
-          [&](PrivateAggregationHost::ReportRequestGenerator generator,
-              std::vector<blink::mojom::AggregatableReportHistogramContribution>
-                  contributions,
-              PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
-            AggregatableReportRequest request =
-                std::move(generator).Run(contributions);
-            ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
-            EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
-                      std::nullopt);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes,
-                      std::nullopt);
-            EXPECT_EQ(request.shared_info().debug_mode,
-                      AggregatableReportSharedInfo::DebugMode::kEnabled);
-            run_loop.Quit();
-          }));
-
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiAll));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
-  EXPECT_CALL(
-      browser_client(),
-      LogWebFeatureForCurrentPage(
-          shell()->web_contents()->GetPrimaryMainFrame(),
-          blink::mojom::WebFeature::kPrivateAggregationApiSharedStorage));
-  EXPECT_CALL(browser_client(),
-              LogWebFeatureForCurrentPage(
-                  shell()->web_contents()->GetPrimaryMainFrame(),
-                  blink::mojom::WebFeature::kPrivateAggregationApiFilteringIds))
-      .Times(0);
-  ON_CALL(browser_client(), IsPrivateAggregationAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsPrivateAggregationDebugModeAllowed)
-      .WillByDefault(testing::Return(true));
-  ON_CALL(browser_client(), IsSharedStorageAllowed)
-      .WillByDefault(testing::Return(true));
-
-  GURL out_script_url;
-  ExecuteScriptInWorklet(shell(), R"(
-      privateAggregation.enableDebugMode();
-      privateAggregation.contributeToHistogram(
-          {bucket: 1n, value: 2});
-    )",
-                         &out_script_url, /*expected_total_host_count=*/1u,
-                         /*keep_alive_after_operation=*/true,
-                         /*context_id=*/std::nullopt,
-                         /*filtering_id_max_bytes=*/"-1n");
-
-  EXPECT_TRUE(console_observer.messages().empty());
-
-  run_loop.Run();
-}
-
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                        PrivateAggregationPermissionsPolicyNone) {
   GURL url = https_server()->GetURL(

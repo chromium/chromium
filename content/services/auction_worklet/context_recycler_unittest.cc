@@ -2932,10 +2932,7 @@ class ContextRecyclerPrivateAggregationEnabledTest
  public:
   ContextRecyclerPrivateAggregationEnabledTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kPrivateAggregationApi, {}},
-                              {blink::features::
-                                   kPrivateAggregationApiFilteringIds,
-                               {}}},
+        /*enabled_features=*/{{blink::features::kPrivateAggregationApi, {}}},
         /*disabled_features=*/{});
   }
 
@@ -3728,7 +3725,6 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
         /*enabled_features=*/
         {{blink::features::kPrivateAggregationApi,
           {{"fledge_extensions_enabled", "true"}}},
-         {blink::features::kPrivateAggregationApiFilteringIds, {}},
          {blink::features::
               kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
           {}}},
@@ -5234,146 +5230,6 @@ TEST_F(ContextRecyclerPrivateAggregationOnlyFledgeExtensionsDisabledTest,
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests.size(), 1u);
-  }
-}
-
-class ContextRecyclerPrivateAggregationOnlyFilteringIdsDisabledTest
-    : public ContextRecyclerTest {
- public:
-  ContextRecyclerPrivateAggregationOnlyFilteringIdsDisabledTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{blink::features::kPrivateAggregationApi,
-                               {{"fledge_extensions_enabled", "true"}}}},
-        /*disabled_features=*/{
-            blink::features::kPrivateAggregationApiFilteringIds});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ContextRecyclerPrivateAggregationOnlyFilteringIdsDisabledTest,
-       PrivateAggregationForEventBindings) {
-  const char kScript[] = R"(
-    function test(args) {
-      // Passing BigInts in directly is complicated so we construct them from
-      // strings.
-      if (typeof args.bucket === "string") {
-        args.bucket = BigInt(args.bucket);
-      }
-      if (args.filteringId && typeof args.filteringId === 'string') {
-        args.filteringId = BigInt(args.filteringId);
-      }
-      privateAggregation.contributeToHistogram(args);
-      privateAggregation.contributeToHistogramOnEvent("reserved.win", args);
-    }
-  )";
-
-  v8::Local<v8::UnboundScript> script = Compile(kScript);
-  ASSERT_FALSE(script.IsEmpty());
-
-  ContextRecycler context_recycler(helper_.get());
-  {
-    ContextRecyclerScope scope(context_recycler);  // Initialize context
-    context_recycler.AddPrivateAggregationBindings(
-        /*private_aggregation_permissions_policy_allowed=*/true,
-        /*reserved_once_allowed=*/true);
-  }
-
-  const auction_worklet::mojom::PrivateAggregationRequestPtr kExpectedRequest =
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(
-                  blink::mojom::AggregatableReportHistogramContribution::New(
-                      /*bucket=*/123, /*value=*/45,
-                      /*filtering_id=*/std::nullopt)),
-          blink::mojom::AggregationServiceMode::kDefault,
-          blink::mojom::DebugModeDetails::New());
-
-  const auction_worklet::mojom::PrivateAggregationRequestPtr
-      kExpectedForEventRequest =
-          auction_worklet::mojom::PrivateAggregationRequest::New(
-              auction_worklet::mojom::AggregatableReportContribution::
-                  NewForEventContribution(
-                      auction_worklet::mojom::
-                          AggregatableReportForEventContribution::New(
-                              auction_worklet::mojom::ForEventSignalBucket::
-                                  NewIdBucket(123),
-                              auction_worklet::mojom::ForEventSignalValue::
-                                  NewIntValue(45),
-                              /*filtering_id=*/std::nullopt,
-                              Reserved(auction_worklet::mojom::
-                                           ReservedEventType::kReservedWin))),
-              blink::mojom::AggregationServiceMode::kDefault,
-              blink::mojom::DebugModeDetails::New());
-
-  // Valid filtering ID ignored
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", std::string("123"));
-    dict.Set("value", 45);
-    dict.Set("filteringId", std::string("1"));
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs, ElementsAre());
-
-    EXPECT_THAT(
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
-        ElementsAreRequests(kExpectedRequest, kExpectedForEventRequest));
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
-                    .empty());
-  }
-
-  // Too large filtering ID ignored
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", std::string("123"));
-    dict.Set("value", 45);
-    dict.Set("filteringId", std::string("256"));
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs, ElementsAre());
-
-    EXPECT_THAT(
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
-        ElementsAreRequests(kExpectedRequest, kExpectedForEventRequest));
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
-                    .empty());
-  }
-
-  // Invalid filtering ID type ignored
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", std::string("123"));
-    dict.Set("value", 45);
-    dict.Set("filteringId", 1);
-
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs, ElementsAre());
-
-    EXPECT_THAT(
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests(),
-        ElementsAreRequests(kExpectedRequest, kExpectedForEventRequest));
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationRequests()
-                    .empty());
   }
 }
 
