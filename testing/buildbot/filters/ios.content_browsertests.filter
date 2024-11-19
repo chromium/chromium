@@ -132,12 +132,20 @@
 # TODO(crbug.com/40276545): hitting unexpected driver errors.
 -ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/2
+-ProprietaryCodec/WebRtcMediaRecorderTest.RecordWithTransparency/3
 -ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/2
+-ProprietaryCodec/WebRtcMediaRecorderTest.ResumeAndDataAvailable/3
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/3
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/2
+-ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/3
 
 # TODO(crbug.com/40276556): unexpected `fallback_after_restore` ID.
 # Resize-while-hidden should give the `DelegatedFrameHost` a new primary ID
