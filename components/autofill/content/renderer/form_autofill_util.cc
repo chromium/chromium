@@ -1323,7 +1323,7 @@ void FillFormField(const FormFieldData::FillData& data,
   if (IsTextInput(field)) {
     field_data_manager.UpdateFieldDataMap(
         GetFieldRendererId(field), data.value.substr(0, field.MaxLength()),
-        FieldPropertiesFlags::kAutofilled);
+        FieldPropertiesFlags::kAutofilledOnUserTrigger);
   }
 
   field.SetAutofillValue(WebString::FromUTF16(data.value), new_autofill_state);
