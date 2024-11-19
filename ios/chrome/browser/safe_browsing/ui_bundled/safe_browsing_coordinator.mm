@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
+#import "ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h"
 
 #import "base/feature_list.h"
 #import "components/safe_browsing/core/common/features.h"
