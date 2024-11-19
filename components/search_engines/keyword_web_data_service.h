@@ -29,9 +29,6 @@ struct WDKeywordsResult {
   ~WDKeywordsResult();
 
   KeywordTable::Keywords keywords;
-  // Identifies the ID of the TemplateURL that is the default search. A value of
-  // 0 indicates there is no default search provider.
-  int64_t default_search_provider_id = 0;
 
   // Context qualifying the built-in keywords and starter pack engines data.
   struct Metadata {
@@ -106,9 +103,6 @@ class KeywordWebDataService : public WebDataServiceBase {
   // Fetches the keywords.
   // On success, consumer is notified with WDResult<KeywordTable::Keywords>.
   Handle GetKeywords(WebDataServiceConsumer* consumer);
-
-  // Sets the ID of the default search provider.
-  void SetDefaultSearchProviderID(TemplateURLID id);
 
   // Sets the version of the builtin keyword data.
   void SetBuiltinKeywordDataVersion(int version);

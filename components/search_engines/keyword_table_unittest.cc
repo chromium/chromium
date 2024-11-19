@@ -92,20 +92,6 @@ class KeywordTableTest : public testing::Test {
     return keywords;
   }
 
-  void KeywordMiscTest() const {
-    EXPECT_EQ(kInvalidTemplateURLID, table_->GetDefaultSearchProviderID());
-    EXPECT_EQ(0, table_->GetBuiltinKeywordDataVersion());
-    EXPECT_EQ(0, table_->GetBuiltinKeywordCountry());
-
-    EXPECT_TRUE(table_->SetDefaultSearchProviderID(10));
-    EXPECT_TRUE(table_->SetBuiltinKeywordDataVersion(11));
-    EXPECT_TRUE(table_->SetBuiltinKeywordCountry(12));
-
-    EXPECT_EQ(10, table_->GetDefaultSearchProviderID());
-    EXPECT_EQ(11, table_->GetBuiltinKeywordDataVersion());
-    EXPECT_EQ(12, table_->GetBuiltinKeywordCountry());
-  }
-
   void GetStatement(const base::cstring_view sql,
                     sql::Statement* statement) const {
     statement->Assign(table_->db()->GetUniqueStatement(sql));
@@ -156,10 +142,6 @@ TEST_F(KeywordTableTest, Keywords) {
   RemoveKeyword(restored_keyword.id);
 
   EXPECT_EQ(0U, GetKeywords().size());
-}
-
-TEST_F(KeywordTableTest, KeywordMisc) {
-  KeywordMiscTest();
 }
 
 TEST_F(KeywordTableTest, UpdateKeyword) {
