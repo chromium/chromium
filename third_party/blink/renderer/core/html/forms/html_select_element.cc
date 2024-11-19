@@ -1087,9 +1087,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
 
   select_type_->DidSelectOption(element, flags, should_update_popup);
   NotifyFormStateChanged();
-
-  if (LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()) &&
-      GetDocument().IsActive()) {
+  if (GetDocument().IsActive()) {
     GetDocument()
         .GetPage()
         ->GetChromeClient()
