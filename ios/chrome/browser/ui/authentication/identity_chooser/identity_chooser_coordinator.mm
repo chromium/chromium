@@ -78,9 +78,12 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       self.transitionController;
 
   // Creates the mediator.
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (profile->IsOffTheRecord()) {
+    profile = profile->GetOriginalProfile();
+  };
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(
-          self.browser->GetProfile()->GetOriginalProfile());
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
       initWithAccountManagerService:accountManagerService];
 
