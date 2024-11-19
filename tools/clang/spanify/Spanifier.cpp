@@ -166,12 +166,10 @@ class OutputHelper {
   std::set<std::string> node_pairs_;
 };
 
-static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
+static std::string GetReplacementDirective(
     const clang::SourceRange replacement_range,
     std::string replacement_text,
-    const clang::SourceManager& source_manager,
-    const char* include_path = nullptr,
-    bool is_system_include_path = false) {
+    const clang::SourceManager& source_manager) {
   clang::tooling::Replacement replacement(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
@@ -182,9 +180,23 @@ static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
   // If `replacement_text` is a special keyword, e.g. "<empty>", should not
   // escape `replacement_text`.
   replacement_text = EscapeReplacementText(replacement_text);
-  std::string replacement_directive = llvm::formatv(
-      "r:::{0}:::{1}:::{2}:::{3}", file_path, replacement.getOffset(),
-      replacement.getLength(), replacement_text);
+  return llvm::formatv("r:::{0}:::{1}:::{2}:::{3}", file_path,
+                       replacement.getOffset(), replacement.getLength(),
+                       replacement_text);
+}
+
+static std::pair<std::string, std::string> GetReplacementAndIncludeDirectives(
+    const clang::SourceRange replacement_range,
+    std::string replacement_text,
+    const clang::SourceManager& source_manager,
+    const char* include_path = nullptr,
+    bool is_system_include_path = false) {
+  std::string replacement_directive = GetReplacementDirective(
+      replacement_range, replacement_text, source_manager);
+
+  std::string file_path =
+      GetFilename(source_manager, replacement_range.getBegin(),
+                  raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
   if (!include_path) {
     include_path = kBaseSpanIncludePath;
@@ -369,6 +381,20 @@ static Node getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
   Node n;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
+  return n;
+}
+
+// Creates a node as a placeholder for dependent edits that depend on the array
+// variable rewrite.
+static Node getProxyVarNodeFromArrayVariable(
+    const clang::VarDecl* var_decl,
+    const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  auto replacement_range =
+      clang::SourceRange(var_decl->getBeginLoc(), var_decl->getBeginLoc());
+  Node n;
+  n.replacement =
+      GetReplacementDirective(replacement_range, "", source_manager);
   return n;
 }
 
@@ -896,6 +922,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       source_manager, include_path,
       /* is_system_include_header =*/true);
   Node n;
+  n.is_buffer = true;
   n.replacement = replacement_and_include_pair.first;
   n.include_directive = replacement_and_include_pair.second;
   n.size_info_available = true;
@@ -963,6 +990,16 @@ class PotentialNodes : public MatchFinder::MatchCallback {
     if (auto* type_loc =
             result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
       return getNodeFromPointerTypeLoc(type_loc, result);
+    }
+
+    if (auto* rhs_array_var =
+            result.Nodes.getNodeAs<clang::VarDecl>("array_variable")) {
+      return getProxyVarNodeFromArrayVariable(rhs_array_var, result);
+    }
+
+    if (auto* rhs_array_var =
+            result.Nodes.getNodeAs<clang::VarDecl>("array_variable_rhs")) {
+      return getProxyVarNodeFromArrayVariable(rhs_array_var, result);
     }
 
     if (auto* raw_ptr_type_loc =
@@ -1355,13 +1392,12 @@ class Spanifier {
 
     auto buffer_expr2 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
-        expr(ignoringParenCasts(arraySubscriptExpr(hasLHS(declRefExpr(to(
-                 varDecl(hasType(arrayType().bind("array_type")),
-                         hasTypeLoc(
-                             loc(qualType(anything())).bind("array_type_loc")),
-                         unless(exclusions), unless(hasExternalFormalLinkage()))
-                     .bind("array_variable")))))))
-            .bind("buffer_expr"));
+        expr(ignoringParenCasts(arraySubscriptExpr(hasLHS(declRefExpr(
+            to(varDecl(
+                   hasType(arrayType().bind("array_type")),
+                   hasTypeLoc(loc(qualType(anything())).bind("array_type_loc")),
+                   unless(exclusions), unless(hasExternalFormalLinkage()))
+                   .bind("array_variable"))))))));
     match_finder_.addMatcher(buffer_expr2, &potential_nodes_);
 
     auto deref_expression = traverse(
@@ -1403,6 +1439,29 @@ class Spanifier {
                          .bind("passing_a_buffer_to_third_party_function"),
                      parmVarDecl())));
     match_finder_.addMatcher(passing_a_buffer_to_external_functions,
+                             &potential_nodes_);
+
+    // When passing c-style arrays to third_party functions as parameters, we
+    // need to add `.data()` to extract the pointer and keep things compiling.
+    auto c_style_array_var = varDecl(hasType(arrayType()), unless(exclusions),
+                                     unless(hasExternalFormalLinkage()));
+    // Functions that are annotated with UNSAFE_BUFFER_USAGE also get this
+    // treatment because the annotation means it was left there intentionally.
+    // And since they emit warnings we can easily find and spanify them later.
+    auto passing_a_c_array_to_external_functions_etc = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        callExpr(callee(functionDecl(
+                     anyOf(isExpansionInSystemHeader(),
+                           raw_ptr_plugin::isInExternCContext(),
+                           raw_ptr_plugin::isInThirdPartyLocation(),
+                           hasAttr(clang::attr::UnsafeBufferUsage)))),
+                 forEachArgumentWithParam(
+                     expr(declRefExpr(
+                              to(c_style_array_var.bind("array_variable_rhs")))
+                              .bind("rhs_expr"))
+                         .bind("passing_a_buffer_to_third_party_function"),
+                     parmVarDecl())));
+    match_finder_.addMatcher(passing_a_c_array_to_external_functions_etc,
                              &potential_nodes_);
 
     // Handles assignment:
