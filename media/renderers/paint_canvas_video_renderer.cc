@@ -1520,7 +1520,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   }
 
   if (!internals::IsPixelFormatSupportedForYuvSharedImageConversion(
-          *video_frame)) {
+          video_frame->format())) {
     return false;
   }
   // Could handle NV12 here as well. See NewSkImageFromVideoFrameYUV.
@@ -1836,7 +1836,7 @@ bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
     const VideoFrame& video_frame) {
   return video_frame.HasSharedImage() ||
          internals::IsPixelFormatSupportedForYuvSharedImageConversion(
-             video_frame);
+             video_frame.format());
 }
 
 gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(

@@ -7,6 +7,7 @@
 
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/media_export.h"
+#include "media/base/video_types.h"
 
 namespace viz {
 class RasterContextProvider;
@@ -21,7 +22,7 @@ class VideoFrameSharedImageCache;
 namespace internals {
 
 MEDIA_EXPORT bool IsPixelFormatSupportedForYuvSharedImageConversion(
-    const VideoFrame& video_frame);
+    VideoPixelFormat video_format);
 
 // Converts YUV video frames to RGB format and stores the results in the
 // provided destination shared image. The caller of this function maintains

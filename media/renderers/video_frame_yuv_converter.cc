@@ -24,9 +24,53 @@
 namespace media::internals {
 
 bool IsPixelFormatSupportedForYuvSharedImageConversion(
-    const VideoFrame& video_frame) {
-  return std::get<0>(VideoPixelFormatToSkiaValues(video_frame.format())) !=
-         SkYUVAInfo::PlaneConfig::kUnknown;
+    VideoPixelFormat video_format) {
+  // To expand support for additional VideoFormats expand this switch.
+  switch (video_format) {
+    case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_NV16:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_NV24:
+    case PIXEL_FORMAT_P410LE:
+    case PIXEL_FORMAT_NV12A:
+    case PIXEL_FORMAT_I420:
+    case PIXEL_FORMAT_I420A:
+      return true;
+    case PIXEL_FORMAT_YV12:
+    case PIXEL_FORMAT_I422:
+    case PIXEL_FORMAT_I444:
+    case PIXEL_FORMAT_YUV420P9:
+    case PIXEL_FORMAT_YUV420P10:
+    case PIXEL_FORMAT_YUV422P9:
+    case PIXEL_FORMAT_YUV422P10:
+    case PIXEL_FORMAT_YUV444P9:
+    case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV420P12:
+    case PIXEL_FORMAT_YUV422P12:
+    case PIXEL_FORMAT_YUV444P12:
+    case PIXEL_FORMAT_ARGB:
+    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
+    case PIXEL_FORMAT_NV21:
+    case PIXEL_FORMAT_UYVY:
+    case PIXEL_FORMAT_YUY2:
+    case PIXEL_FORMAT_RGB24:
+    case PIXEL_FORMAT_MJPEG:
+    case PIXEL_FORMAT_Y16:
+    case PIXEL_FORMAT_XR30:
+    case PIXEL_FORMAT_XB30:
+    case PIXEL_FORMAT_BGRA:
+    case PIXEL_FORMAT_RGBAF16:
+    case PIXEL_FORMAT_I422A:
+    case PIXEL_FORMAT_I444A:
+    case PIXEL_FORMAT_YUV420AP10:
+    case PIXEL_FORMAT_YUV422AP10:
+    case PIXEL_FORMAT_YUV444AP10:
+    case PIXEL_FORMAT_UNKNOWN:
+      return false;
+  }
 }
 
 void ConvertYuvVideoFrameToRgbSharedImage(
@@ -37,7 +81,8 @@ void ConvertYuvVideoFrameToRgbSharedImage(
     VideoFrameSharedImageCache* shared_image_cache) {
   CHECK(video_frame);
   CHECK(!video_frame->HasSharedImage());
-  DCHECK(IsPixelFormatSupportedForYuvSharedImageConversion(*video_frame))
+  DCHECK(
+      IsPixelFormatSupportedForYuvSharedImageConversion(video_frame->format()))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
   DCHECK(!video_frame->coded_size().IsEmpty())
       << "|video_frame| must have an area > 0";
@@ -80,10 +125,8 @@ void ConvertYuvVideoFrameToRgbSharedImage(
 
   // Prepare the SkYUVAInfo
   SkISize video_size = gfx::SizeToSkISize(video_frame->coded_size());
-  auto plane_config = SkYUVAInfo::PlaneConfig::kUnknown;
-  auto subsampling = SkYUVAInfo::Subsampling::kUnknown;
-  std::tie(plane_config, subsampling) =
-      VideoPixelFormatToSkiaValues(video_frame->format());
+  SkYUVAInfo::PlaneConfig plane_config = ToSkYUVAPlaneConfig(si_format);
+  SkYUVAInfo::Subsampling subsampling = ToSkYUVASubsampling(si_format);
 
   // TODO(crbug.com/41380578): This should really default to rec709.
   SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;

@@ -51,6 +51,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/renderers/resource_sync_token_client.h"
@@ -173,34 +174,6 @@ gfx::Size SoftwareFirstPlaneDimension(VideoFrame* input_frame,
   int plane_width = input_frame->columns(/*plane=*/0);
   int plane_height = input_frame->rows(/*plane=*/0);
   return gfx::Size(plane_width, plane_height);
-}
-
-SkYUVAInfo::PlaneConfig ToSkYUVAPlaneConfig(viz::SharedImageFormat format) {
-  using PlaneConfig = viz::SharedImageFormat::PlaneConfig;
-  switch (format.plane_config()) {
-    case PlaneConfig::kY_U_V:
-      return SkYUVAInfo::PlaneConfig::kY_U_V;
-    case PlaneConfig::kY_V_U:
-      return SkYUVAInfo::PlaneConfig::kY_V_U;
-    case PlaneConfig::kY_UV:
-      return SkYUVAInfo::PlaneConfig::kY_UV;
-    case PlaneConfig::kY_UV_A:
-      return SkYUVAInfo::PlaneConfig::kY_UV_A;
-    case PlaneConfig::kY_U_V_A:
-      return SkYUVAInfo::PlaneConfig::kY_U_V_A;
-  }
-}
-
-SkYUVAInfo::Subsampling ToSkYUVASubsampling(viz::SharedImageFormat format) {
-  using Subsampling = viz::SharedImageFormat::Subsampling;
-  switch (format.subsampling()) {
-    case Subsampling::k420:
-      return SkYUVAInfo::Subsampling::k420;
-    case Subsampling::k422:
-      return SkYUVAInfo::Subsampling::k422;
-    case Subsampling::k444:
-      return SkYUVAInfo::Subsampling::k444;
-  }
 }
 
 viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
