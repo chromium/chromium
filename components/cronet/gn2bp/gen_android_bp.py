@@ -2906,7 +2906,28 @@ def main():
   parser.add_argument(
       'targets',
       nargs=argparse.REMAINDER,
-      help='Targets to include in the blueprint (e.g., "//:perfetto_tests")')
+      help='Targets to include in the blueprint (e.g., "//:perfetto_tests")'
+  )
+  parser.add_argument(
+      '--suffix',
+      help='The suffix to the Android.bp filename. Pass "" if no suffix.',
+      default='.gn2bp'
+  )
+  # TODO(crbug.com/378706121): Remove once license generation is fixed.
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--license',
+      help='Generate license.',
+      dest='license',
+      action='store_true',
+  )
+  group.add_argument(
+      '--no-license',
+      help='Do not generate license.',
+      dest='license',
+      action='store_false',
+  )
+  parser.set_defaults(license=True)
   args = parser.parse_args()
 
   if args.verbose:
@@ -2930,9 +2951,11 @@ def main():
   tool_name = os.path.relpath(os.path.abspath(__file__), project_root)
 
   final_blueprints = _break_down_blueprint(top_level_blueprint)
-  license_modules = create_license_modules(final_blueprints)
-  for (path, module) in license_modules.items():
-    final_blueprints[path].set_license_module(module)
+  # TODO(crbug.com/378706121): Remove once license generation is fixed.
+  if args.license:
+    license_modules = create_license_modules(final_blueprints)
+    for (path, module) in license_modules.items():
+      final_blueprints[path].set_license_module(module)
 
   finalize_package_modules(final_blueprints)
 
@@ -2954,7 +2977,9 @@ def main():
 """ % (Path(__file__).name)
 
   for (path, blueprint) in final_blueprints.items():
-    android_bp_file = Path(os.path.join(args.repo_root, path, "Android.bp"))
+    # Copybara only includes the Android.bp files generated with .gn2bp suffix
+    filename = "Android.bp" + args.suffix
+    android_bp_file = Path(os.path.join(args.repo_root, path, filename))
     android_bp_file.write_text(
         "\n".join([header] + BLUEPRINTS_EXTRAS.get(path, []) +
                   blueprint.to_string()))
