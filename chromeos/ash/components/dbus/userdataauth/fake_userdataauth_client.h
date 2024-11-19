@@ -90,6 +90,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       FakeUserDataAuthClient::Get()->enable_auth_check_ = enable_auth_check;
     }
 
+    void SetPinType(const cryptohome::AccountIdentifier& account_id,
+                    const std::string& label,
+                    bool legacy_pin);
+
     // Sets whether ARC disk quota is supported or not.
     void set_arc_quota_supported(bool supported) {
       FakeUserDataAuthClient::Get()->arc_quota_supported_ = supported;

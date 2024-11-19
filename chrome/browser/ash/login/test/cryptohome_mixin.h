@@ -48,6 +48,7 @@ class CryptohomeMixin : public InProcessBrowserTestMixin,
                         const std::string& pin,
                         const std::string& pin_salt);
   void SetPinLocked(const AccountId& user, bool locked);
+  void SetPinType(const AccountId& user, bool legacy);
   bool HasPinFactor(const AccountId& user);
   void AddRecoveryFactor(const AccountId& user);
   bool HasRecoveryFactor(const AccountId& user);

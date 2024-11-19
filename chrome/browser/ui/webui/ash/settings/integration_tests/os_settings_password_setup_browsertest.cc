@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "content/public/test/browser_test.h"
 
@@ -115,6 +116,51 @@ IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithPinOnly, Shown) {
   password_settings.AssertCanOpenLocalPasswordDialog();
   password_settings.AssertSubmitButtonDisabledForInvalidPasswordInput();
   password_settings.AssertSubmitButtonEnabledForValidPasswordInput();
+}
+
+// Tests that setting a password works.
+IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithPinOnly, SetPassword) {
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.AssertPasswordControlVisibility(true);
+  mojom::PasswordSettingsApiAsyncWaiter password_settings =
+      GoToPasswordSettings(lock_screen_settings);
+  password_settings.AssertCanOpenLocalPasswordDialog();
+  password_settings.SetPassword();
+  password_settings.AssertHasPassword(true);
+}
+
+// Tests that removing a password works.
+IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithPinOnly,
+                       RemovePassword) {
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.AssertPasswordControlVisibility(true);
+  mojom::PasswordSettingsApiAsyncWaiter password_settings =
+      GoToPasswordSettings(lock_screen_settings);
+  password_settings.SetPassword();
+
+  password_settings.AssertHasPassword(true);
+
+  password_settings.RemovePassword();
+  password_settings.AssertHasPassword(false);
+}
+
+// Tests that removing a password does not work when the pin is legacy pin.
+IN_PROC_BROWSER_TEST_F(OSSettingsAuthFactorSetupTestWithPinOnly,
+                       RemovePasswordWithLegacyPin) {
+  cryptohome_->SetPinType(GetAccountId(), true);
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.AssertPasswordControlVisibility(true);
+  mojom::PasswordSettingsApiAsyncWaiter password_settings =
+      GoToPasswordSettings(lock_screen_settings);
+  password_settings.SetPassword();
+  password_settings.AssertHasPassword(true);
+
+  password_settings.RemovePassword();
+  // Password would not be removed.
+  password_settings.AssertHasPassword(true);
 }
 
 }  // namespace ash::settings
