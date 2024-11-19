@@ -332,6 +332,23 @@ bool IsGlicEnabled() {
          base::FeatureList::IsEnabled(features::kGlic);
 }
 
+BASE_FEATURE(kGlicURLConfig,
+             "GlicURLConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kGlicGuestURL{&kGlicURLConfig,
+                                                    "glic-guest-url", ""};
+
+BASE_FEATURE(kGlicCSPConfig,
+             "GlicCSPConfig",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TODO(crbug.com/378951332): Configure an approved CSP.
+const base::FeatureParam<std::string> kGlicWebUICSPOverride{
+    &kGlicCSPConfig, "glic-webui-csp-override",
+    "child-src 'self'"
+    " https://*.google.com/"
+    " https://*.googleplex.com/;"};
+
 BASE_FEATURE(kTabstripComboButton,
              "TabstripComboButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
