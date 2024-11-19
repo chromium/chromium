@@ -183,7 +183,10 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        if (mRpMode == RpMode.PASSIVE) return HeightMode.WRAP_CONTENT;
+        if (mRpMode == RpMode.PASSIVE) {
+            computeAndUpdateAccountListHeight();
+            return HeightMode.WRAP_CONTENT;
+        }
         // WRAP_CONTENT would be the right fit but this disables the HALF state.
         return Math.min(
                         getMaximumActiveModeSheetHeightPx(),
