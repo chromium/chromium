@@ -199,12 +199,6 @@ class WebAppRegistrar {
   // have completed. It will return false after uninstallation has completed.
   bool IsUninstalling(const webapps::AppId& app_id) const;
 
-  // Returns true if the app was actively installed, meaning the app has
-  // involved some form of user or administrator action to either install it or
-  // configure it to behave like an app.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsActivelyInstalled(const webapps::AppId& app_id) const;
-
   // Returns the permissions policy declared as declared in the manifest for
   // the app with |app_id|. This permissions policy is not yet parsed by the
   // PermissionsPolicyParser, and thus may contain invalid permissions and/or

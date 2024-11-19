@@ -971,11 +971,6 @@ bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
   return web_app && web_app->is_uninstalling();
 }
 
-bool WebAppRegistrar::IsActivelyInstalled(const webapps::AppId& app_id) const {
-  return IsInstallState(app_id,
-                        {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
-}
-
 bool WebAppRegistrar::IsIsolated(const webapps::AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app && web_app->isolation_data().has_value();

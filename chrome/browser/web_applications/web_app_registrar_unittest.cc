@@ -483,10 +483,11 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
 
   {
     EXPECT_FALSE(registrar().IsNotInRegistrar(app_id));
+    // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+    // correctness.
     EXPECT_FALSE(registrar().IsInstallState(
         app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                  proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-    EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 
     EXPECT_TRUE(registrar().IsNotInRegistrar("unknown"));
     EXPECT_FALSE(registrar().IsInstallState(
@@ -495,10 +496,11 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
     base::test::TestFuture<void> future;
     fake_provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
     ASSERT_TRUE(future.Wait());
+    // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+    // correctness.
     EXPECT_TRUE(registrar().IsInstallState(
         app_id, {proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
                  proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
-    EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
   }
 
   {
@@ -1242,7 +1244,7 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
 }
 
-TEST_F(WebAppRegistrarTest, DefaultNotActivelyInstalled) {
+TEST_F(WebAppRegistrarTest, DefaultNotInstalledWithOsIntegration) {
   std::unique_ptr<WebApp> default_app = test::CreateWebApp(
       GURL("https://example.com/path"), WebAppManagement::kDefault);
   default_app->SetDisplayMode(DisplayMode::kStandalone);
@@ -1256,7 +1258,10 @@ TEST_F(WebAppRegistrarTest, DefaultNotActivelyInstalled) {
   PopulateRegistry(registry);
   StartWebAppProvider();
 
-  EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
+  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+  // correctness.
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 // Link capturing preferences & overlapping scopes have custom behavior on CrOS.

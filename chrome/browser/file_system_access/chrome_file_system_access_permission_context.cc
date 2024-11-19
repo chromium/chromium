@@ -82,6 +82,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -2401,7 +2402,11 @@ void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   const auto& registrar = provider->registrar_unsafe();
-  if (!registrar.IsActivelyInstalled(app_id)) {
+  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+  // correctness.
+  if (!registrar.IsInstallState(
+          app_id,
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return;
   }
 
@@ -2981,9 +2986,13 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
   }
   auto app_id = web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
       origin.GetURL());
+  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+  // correctness.
   auto has_actively_installed_app =
       app_id.has_value() &&
-      web_app_provider->registrar_unsafe().IsActivelyInstalled(app_id.value());
+      web_app_provider->registrar_unsafe().IsInstallState(
+          app_id.value(),
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
   // Update the cached value.
   origin_state.web_app_install_status = has_actively_installed_app
                                             ? WebAppInstallStatus::kInstalled

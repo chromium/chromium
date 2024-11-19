@@ -449,7 +449,10 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
                   .registrar_unsafe()
                   .GetAppCurrentOsIntegrationState(app_id)
                   ->has_shortcut());
-  EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(app_id));
+  // TODO(crbug.com/340952100): Evaluate call sites of IsInstallState for
+  // correctness.
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 }  // namespace
