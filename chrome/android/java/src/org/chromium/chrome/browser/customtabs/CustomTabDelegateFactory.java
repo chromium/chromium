@@ -70,8 +70,6 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 /**
  * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned by a {@link
  * CustomTabActivity}.
@@ -341,14 +339,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
      * @param contextMenuEnabled Whether the context menu will be enabled.
      * @param browserControlsManager Manages the browser controls.
      */
-    private CustomTabDelegateFactory(
+    public CustomTabDelegateFactory(
             Activity activity,
-            boolean shouldHideBrowserControls,
-            boolean isOpenedByChrome,
-            @Nullable String webApkScopeUrl,
             @Nullable BrowserServicesIntentDataProvider intentDataProvider,
-            @DisplayMode.EnumType int displayMode,
-            boolean shouldEnableEmbeddedMediaExperience,
             BrowserControlsVisibilityDelegate visibilityDelegate,
             Verifier verifier,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
@@ -363,15 +356,26 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             @ActivityType int activityType,
             Supplier<BottomSheetController> bottomSheetController,
             AuthTabVerifier authTabVerifier,
-            boolean contextMenuEnabled,
             BrowserControlsManager browserControlsManager) {
-        mActivity = activity;
-        mShouldHideBrowserControls = shouldHideBrowserControls;
-        mIsOpenedByChrome = isOpenedByChrome;
-        mWebApkScopeUrl = webApkScopeUrl;
         mIntentDataProvider = intentDataProvider;
-        mDisplayMode = displayMode;
-        mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
+        if (mIntentDataProvider != null) {
+            mShouldHideBrowserControls = mIntentDataProvider.shouldEnableUrlBarHiding();
+            mIsOpenedByChrome = mIntentDataProvider.isOpenedByChrome();
+            mWebApkScopeUrl = getWebApkScopeUrl(mIntentDataProvider);
+            mDisplayMode = getDisplayMode(mIntentDataProvider);
+            mShouldEnableEmbeddedMediaExperience =
+                    mIntentDataProvider.shouldEnableEmbeddedMediaExperience();
+            mContextMenuEnabled = !mIntentDataProvider.isAuthTab();
+        } else {
+            // Default values for empty CustomTabDelegateFactory that won't be used.
+            mShouldHideBrowserControls = false;
+            mIsOpenedByChrome = false;
+            mWebApkScopeUrl = null;
+            mDisplayMode = DisplayMode.BROWSER;
+            mShouldEnableEmbeddedMediaExperience = false;
+            mContextMenuEnabled = false;
+        }
+        mActivity = activity;
         mBrowserStateVisibilityDelegate = visibilityDelegate;
         mVerifier = verifier;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
@@ -387,35 +391,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mBottomSheetController = bottomSheetController;
         mAuthTabVerifier = authTabVerifier;
         mBrowserControlsManager = browserControlsManager;
-        mContextMenuEnabled = contextMenuEnabled;
-    }
-
-    @Inject
-    public CustomTabDelegateFactory(BaseCustomTabActivity activity) {
-        this(
-                activity,
-                activity.getIntentDataProvider().shouldEnableUrlBarHiding(),
-                activity.getIntentDataProvider().isOpenedByChrome(),
-                getWebApkScopeUrl(activity.getIntentDataProvider()),
-                activity.getIntentDataProvider(),
-                getDisplayMode(activity.getIntentDataProvider()),
-                activity.getIntentDataProvider().shouldEnableEmbeddedMediaExperience(),
-                activity.getCustomTabBrowserControlsVisibilityDelegate(),
-                activity.getVerifier(),
-                activity,
-                activity.getBrowserControlsManager(),
-                activity.getFullscreenManager(),
-                activity,
-                activity.getTabModelSelectorSupplier(),
-                activity.getCompositorViewHolderSupplier(),
-                activity.getModalDialogManagerSupplier(),
-                activity::getSnackbarManager,
-                activity.getShareDelegateSupplier(),
-                activity.getActivityType(),
-                activity.getBottomSheetController(),
-                activity.getAuthTabVerifier(),
-                !activity.getIntentDataProvider().isAuthTab(),
-                activity.getBrowserControlsManager());
     }
 
     /**
@@ -425,12 +400,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     public static CustomTabDelegateFactory createEmpty() {
         return new CustomTabDelegateFactory(
                 null,
-                false,
-                false,
                 null,
-                null,
-                DisplayMode.BROWSER,
-                false,
                 null,
                 null,
                 null,
@@ -445,7 +415,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 ActivityType.CUSTOM_TAB,
                 null,
                 null,
-                false,
                 null);
     }
 

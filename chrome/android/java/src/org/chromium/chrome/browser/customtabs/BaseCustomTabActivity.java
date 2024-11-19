@@ -115,7 +115,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     protected BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
-    protected CustomTabDelegateFactory mDelegateFactory;
+    private CustomTabDelegateFactory mDelegateFactory;
     protected CustomTabToolbarCoordinator mToolbarCoordinator;
     protected CustomTabActivityNavigationController mNavigationController;
     protected CustomTabActivityTabController mTabController;
@@ -145,6 +145,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private ImmersiveModeController mImmersiveModeController;
     private CustomTabToolbarColorController mCustomTabToolbarColorController;
     private SplashController mSplashController;
+    private CustomTabCompositorContentInitializer mCustomTabCompositorContentInitializer;
+    private CustomTabBottomBarDelegate mCustomTabBottomBarDelegate;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -346,15 +348,50 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getTabObserverRegistrar(),
                         getTopUiThemeColorProvider());
 
-        mDelegateFactory = component.resolveTabDelegateFactory();
+        mCustomTabCompositorContentInitializer =
+                new CustomTabCompositorContentInitializer(
+                        this,
+                        getCompositorViewHolderSupplier(),
+                        getTabContentManagerSupplier(),
+                        /* compositorViewHolderInitializer= */ this,
+                        getTopUiThemeColorProvider(),
+                        getLifecycleDispatcher());
+
+        mCustomTabBottomBarDelegate =
+                new CustomTabBottomBarDelegate(
+                        this,
+                        getWindowAndroid(),
+                        getIntentDataProvider(),
+                        getBrowserControlsManager(),
+                        getCustomTabNightModeStateController(),
+                        getCustomTabActivityTabProvider(),
+                        getCustomTabCompositorContentInitializer());
+
+        mDelegateFactory =
+                new CustomTabDelegateFactory(
+                        this,
+                        getIntentDataProvider(),
+                        getCustomTabBrowserControlsVisibilityDelegate(),
+                        getVerifier(),
+                        this,
+                        getBrowserControlsManager(),
+                        getFullscreenManager(),
+                        this,
+                        getTabModelSelectorSupplier(),
+                        getCompositorViewHolderSupplier(),
+                        getModalDialogManagerSupplier(),
+                        this::getSnackbarManager,
+                        getShareDelegateSupplier(),
+                        getActivityType(),
+                        getBottomSheetController(),
+                        getAuthTabVerifier(),
+                        getBrowserControlsManager());
         mToolbarCoordinator = component.resolveToolbarCoordinator();
         mNavigationController = component.resolveNavigationController();
         mTabController = component.resolveTabController();
         mTabFactory = component.resolveTabFactory();
         mCustomTabIntentHandler = component.resolveIntentHandler();
 
-        component.resolveCompositorContentInitializer();
-        component.resolveUmaTracker();
         mNavigationController.setFinishHandler(
                 (reason, warmupOnFinish) -> {
                     if (reason == USER_NAVIGATION) {
@@ -397,8 +434,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
         mTabFactory.setActivityType(getActivityType());
-        mDelegateFactory.setEphemeralTabCoordinatorSupplier(
-                mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
+        getCustomTabDelegateFactory()
+                .setEphemeralTabCoordinatorSupplier(
+                        mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
         return component;
     }
 
@@ -483,6 +521,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getIntentDataProvider(),
                         getCustomTabActivityTabProvider(),
                         getLifecycleDispatcher());
+
+        new CustomTabActivityLifecycleUmaTracker(
+                this,
+                getIntentDataProvider(),
+                this::getSavedInstanceState,
+                getLifecycleDispatcher());
 
         super.performPreInflationStartup();
 
@@ -869,13 +913,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     public WebContentsDelegateAndroid getWebContentsDelegate() {
-        assert mDelegateFactory != null;
-        return mDelegateFactory.getWebContentsDelegate();
+        assert getCustomTabDelegateFactory() != null;
+        return getCustomTabDelegateFactory().getWebContentsDelegate();
     }
 
     /**
      * @return Whether the app is running in the "Trusted Web Activity" mode, where the TWA-specific
-     *         UI is shown.
+     *     UI is shown.
      */
     public boolean isInTwaMode() {
         return mTwaCoordinator == null ? false : mTwaCoordinator.shouldUseAppModeUi();
@@ -1078,5 +1122,17 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public Supplier<SplashController> getSplashControllerSupplier() {
         return this::getSplashController;
+    }
+
+    public CustomTabCompositorContentInitializer getCustomTabCompositorContentInitializer() {
+        return mCustomTabCompositorContentInitializer;
+    }
+
+    public CustomTabBottomBarDelegate getCustomTabBottomBarDelegate() {
+        return mCustomTabBottomBarDelegate;
+    }
+
+    public CustomTabDelegateFactory getCustomTabDelegateFactory() {
+        return mDelegateFactory;
     }
 }

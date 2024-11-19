@@ -87,12 +87,12 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(mActivity.getIntentDataProvider()).thenReturn(env.intentDataProvider);
         when(mActivity.getWindowAndroid()).thenReturn(mActivityWindowAndroid);
         when(mActivity.getCustomTabToolbarColorController()).thenReturn(mToolbarColorController);
+        when(mActivity.getCustomTabCompositorContentInitializer())
+                .thenReturn(mCompositorContentInitializer);
 
         mCoordinator =
                 new CustomTabToolbarCoordinator(
-                        mActivity,
-                        env.createNavigationController(mTabController),
-                        mCompositorContentInitializer);
+                        mActivity, env.createNavigationController(mTabController));
 
         ShareDelegateSupplier.setInstanceForTesting(mShareDelegateSupplier);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);

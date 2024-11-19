@@ -7,10 +7,6 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 import dagger.Subcomponent;
 
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
-import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTracker;
-import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
-import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
-import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
@@ -34,19 +30,11 @@ import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 @Subcomponent(modules = {ChromeActivityCommonsModule.class, BaseCustomTabActivityModule.class})
 @ActivityScope
 public interface BaseCustomTabActivityComponent extends ChromeActivityComponent {
-    CustomTabActivityLifecycleUmaTracker resolveUmaTracker();
-
     CustomTabActivityNavigationController resolveNavigationController();
 
     CustomTabActivityTabController resolveTabController();
 
     CustomTabActivityTabFactory resolveTabFactory();
-
-    CustomTabBottomBarDelegate resolveBottomBarDelegate();
-
-    CustomTabCompositorContentInitializer resolveCompositorContentInitializer();
-
-    CustomTabDelegateFactory resolveTabDelegateFactory();
 
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
 

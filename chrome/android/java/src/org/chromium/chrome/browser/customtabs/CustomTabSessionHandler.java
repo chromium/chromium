@@ -20,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import dagger.Lazy;
 
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -48,20 +49,19 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
     private final Lazy<CustomTabToolbarCoordinator> mToolbarCoordinator;
-    private final Lazy<CustomTabBottomBarDelegate> mBottomBarDelegate;
+    private final Supplier<CustomTabBottomBarDelegate> mBottomBarDelegate;
     private final CustomTabIntentHandler mIntentHandler;
     private final Activity mActivity;
 
     @Inject
     public CustomTabSessionHandler(
             Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
-            Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
             CustomTabIntentHandler intentHandler,
             BaseCustomTabActivity activity) {
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
-        mBottomBarDelegate = bottomBarDelegate;
+        mBottomBarDelegate = activity::getCustomTabBottomBarDelegate;
         mIntentHandler = intentHandler;
         mActivity = activity;
         activity.getLifecycleDispatcher().register(this);

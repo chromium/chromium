@@ -10,8 +10,6 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -52,7 +50,7 @@ public class CustomTabActivityTabFactory {
     private final CustomTabTabPersistencePolicy mPersistencePolicy;
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
+    private final Supplier<CustomTabDelegateFactory> mCustomTabDelegateFactory;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -64,14 +62,12 @@ public class CustomTabActivityTabFactory {
 
     @Inject
     public CustomTabActivityTabFactory(
-            BaseCustomTabActivity activity,
-            CustomTabTabPersistencePolicy persistencePolicy,
-            Lazy<CustomTabDelegateFactory> customTabDelegateFactory) {
+            BaseCustomTabActivity activity, CustomTabTabPersistencePolicy persistencePolicy) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
         mActivityWindowAndroid = activity.getWindowAndroid();
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
-        mCustomTabDelegateFactory = customTabDelegateFactory;
+        mCustomTabDelegateFactory = activity::getCustomTabDelegateFactory;
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabCreatorManager = activity;
         mTabModelSelectorSupplier = activity.getTabModelSelectorSupplier();

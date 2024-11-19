@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
-import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -84,8 +83,7 @@ public class CustomTabToolbarCoordinator {
     @Inject
     public CustomTabToolbarCoordinator(
             BaseCustomTabActivity activity,
-            CustomTabActivityNavigationController navigationController,
-            CustomTabCompositorContentInitializer compositorContentInitializer) {
+            CustomTabActivityNavigationController navigationController) {
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mActivity = activity;
@@ -96,7 +94,8 @@ public class CustomTabToolbarCoordinator {
         mVisibilityDelegate = activity.getCustomTabBrowserControlsVisibilityDelegate();
         mToolbarColorController = activity.getCustomTabToolbarColorController();
 
-        compositorContentInitializer.addCallback(this::onCompositorContentInitialized);
+        activity.getCustomTabCompositorContentInitializer()
+                .addCallback(this::onCompositorContentInitialized);
     }
 
     /**

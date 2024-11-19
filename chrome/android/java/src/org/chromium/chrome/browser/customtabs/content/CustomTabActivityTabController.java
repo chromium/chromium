@@ -14,8 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
-import dagger.Lazy;
-
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
@@ -96,7 +94,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
+    private final Supplier<CustomTabDelegateFactory> mCustomTabDelegateFactory;
     private final AppCompatActivity mActivity;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
@@ -119,11 +117,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     @Inject
     public CustomTabActivityTabController(
             BaseCustomTabActivity activity,
-            Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
             CustomTabTabPersistencePolicy persistencePolicy,
             CustomTabActivityTabFactory tabFactory) {
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
-        mCustomTabDelegateFactory = customTabDelegateFactory;
+        mCustomTabDelegateFactory = activity::getCustomTabDelegateFactory;
         mActivity = activity;
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();

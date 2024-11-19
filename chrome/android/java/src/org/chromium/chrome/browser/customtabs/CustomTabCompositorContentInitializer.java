@@ -12,7 +12,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -21,12 +20,9 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 /**
  * Initializes the compositor content (calls {@link ChromeActivity#initializeCompositorContent}).
  */
-@ActivityScope
 public class CustomTabCompositorContentInitializer implements NativeInitObserver {
     private final List<Callback<LayoutManagerImpl>> mListeners = new ArrayList<>();
 
@@ -39,14 +35,19 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
 
     private boolean mInitialized;
 
-    @Inject
-    public CustomTabCompositorContentInitializer(BaseCustomTabActivity activity) {
-        mLifecycleDispatcher = activity.getLifecycleDispatcher();
+    public CustomTabCompositorContentInitializer(
+            Activity activity,
+            Supplier<CompositorViewHolder> compositorViewHolder,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            CompositorViewHolder.Initializer compositorViewHolderInitializer,
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        mCompositorViewHolder = activity.getCompositorViewHolderSupplier();
-        mTabContentManagerSupplier = activity.getTabContentManagerSupplier();
-        mCompositorViewHolderInitializer = activity;
-        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
+        mCompositorViewHolder = compositorViewHolder;
+        mTabContentManagerSupplier = tabContentManagerSupplier;
+        mCompositorViewHolderInitializer = compositorViewHolderInitializer;
+        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mLifecycleDispatcher = lifecycleDispatcher;
 
         mLifecycleDispatcher.register(this);
     }
