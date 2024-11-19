@@ -49,7 +49,7 @@ bool IsPriceInsightsEnabled(ProfileIOS* profile) {
 std::string GetLowPriceParamValue() {
   std::string low_price_value = base::GetFieldTrialParamValueByFeature(
       commerce::kPriceInsightsIos, kLowPriceParam);
-  return low_price_value.empty() ? std::string(kLowPriceParamPriceIsLow)
+  return low_price_value.empty() ? std::string(kLowPriceParamGoodDealNow)
                                  : low_price_value;
 }
 

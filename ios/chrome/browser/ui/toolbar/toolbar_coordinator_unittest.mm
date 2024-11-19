@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -90,6 +92,19 @@ class ToolbarCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mockActivityServiceHandler
                      forProtocol:@protocol(ActivityServiceCommands)];
+
+    id mockContextualSheetHandler =
+        OCMProtocolMock(@protocol(ContextualSheetCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mockContextualSheetHandler
+                     forProtocol:@protocol(ContextualSheetCommands)];
+
+    id mockContextualPanelEntrypointIPHHandler =
+        OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mockContextualPanelEntrypointIPHHandler
+                     forProtocol:@protocol(
+                                     ContextualPanelEntrypointIPHCommands)];
 
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
   }

@@ -11888,30 +11888,6 @@
             ]
         }
     ],
-    "IOSPriceInsightsContextualPanel": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "BigBubbleBlueEntrypointHighPrice_CanaryDev",
-                    "params": {
-                        "LowPriceStringParam": "GoodDealNow",
-                        "entrypoint-highlight-iph": "true",
-                        "entrypoint-rich-iph": "true"
-                    },
-                    "enable_features": [
-                        "ContextualPanel",
-                        "PriceInsights",
-                        "PriceInsightsHighPrice",
-                        "PriceInsightsIos",
-                        "RichBubbleWithoutImage"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSProactivePasswordGenerationBottomSheet": [
         {
             "platforms": [

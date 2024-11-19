@@ -332,7 +332,7 @@ bool IsContextualPanelForceShowEntrypointEnabled() {
 
 BASE_FEATURE(kContextualPanel,
              "ContextualPanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsContextualPanelEnabled() {
   return base::FeatureList::IsEnabled(kContextualPanel);
@@ -1092,7 +1092,7 @@ bool IsHomeMemoryImprovementsEnabled() {
 
 BASE_FEATURE(kRichBubbleWithoutImage,
              "RichBubbleWithoutImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsRichBubbleWithoutImageEnabled() {
   return base::FeatureList::IsEnabled(kRichBubbleWithoutImage);

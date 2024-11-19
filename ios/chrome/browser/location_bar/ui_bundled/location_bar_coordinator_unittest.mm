@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
@@ -121,6 +123,16 @@ class LocationBarCoordinatorTest : public PlatformTest {
     id mock_toolbar_handler = OCMProtocolMock(@protocol(ToolbarCommands));
     [dispatcher startDispatchingToTarget:mock_toolbar_handler
                              forProtocol:@protocol(ToolbarCommands)];
+    id mock_contextual_sheet_handler =
+        OCMProtocolMock(@protocol(ContextualSheetCommands));
+    [dispatcher startDispatchingToTarget:mock_contextual_sheet_handler
+                             forProtocol:@protocol(ContextualSheetCommands)];
+    id mock_contextual_panel_entrypoint_iph_handler =
+        OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+    [dispatcher
+        startDispatchingToTarget:mock_contextual_panel_entrypoint_iph_handler
+                     forProtocol:@protocol(
+                                     ContextualPanelEntrypointIPHCommands)];
 
     // Set up application and settings handler mocks.
     id mock_application_handler =

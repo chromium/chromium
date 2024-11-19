@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -181,6 +183,16 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [dispatcher
         startDispatchingToTarget:mockParcelTrackingCommandHandler
                      forProtocol:@protocol(ParcelTrackingOptInCommands)];
+    id mockContextualSheetCommandHandler =
+        OCMProtocolMock(@protocol(ContextualSheetCommands));
+    [dispatcher startDispatchingToTarget:mockContextualSheetCommandHandler
+                             forProtocol:@protocol(ContextualSheetCommands)];
+    id mockContextualPanelEntrypointIPHCommandHandler =
+        OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
+    [dispatcher
+        startDispatchingToTarget:mockContextualPanelEntrypointIPHCommandHandler
+                     forProtocol:@protocol(
+                                     ContextualPanelEntrypointIPHCommands)];
 
     id mockHelpHandler = OCMProtocolMock(@protocol(HelpCommands));
     [dispatcher startDispatchingToTarget:mockHelpHandler

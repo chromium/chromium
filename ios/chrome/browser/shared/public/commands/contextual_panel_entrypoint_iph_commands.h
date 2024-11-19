@@ -6,6 +6,9 @@
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_CONTEXTUAL_PANEL_ENTRYPOINT_IPH_COMMANDS_H_
 
 #import "base/feature_list.h"
+#import "base/memory/weak_ptr.h"
+
+struct ContextualPanelItemConfiguration;
 
 // Commands for the Contextual Panel Entrypoint's IPH.
 @protocol ContextualPanelEntrypointIPHCommands

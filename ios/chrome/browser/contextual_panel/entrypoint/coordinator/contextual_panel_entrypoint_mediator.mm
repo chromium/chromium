@@ -235,6 +235,13 @@
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
+  // In some cases (e.g. tests), an OTR web state (without a
+  // ContextualPanelTabHelper) can be added to the web state list being
+  // observed, even though this mediator is only created for non-OTR browsers.
+  // Just in case, make sure there actually is a ContextualPanelTabHelper.
+  if (!contextualPanelTabHelper) {
+    return;
+  }
   [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()];
 }
 

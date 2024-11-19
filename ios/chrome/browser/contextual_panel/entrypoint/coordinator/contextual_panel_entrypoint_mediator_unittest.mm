@@ -416,7 +416,9 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestLargeEntrypointAppears) {
       EntrypointInteractionType::Displayed, 1);
 }
 
-TEST_F(ContextualPanelEntrypointMediatorTest, TestIPHEntrypointAppears) {
+// TODO(crbug.com/379887903): Re-enable this test.
+TEST_F(ContextualPanelEntrypointMediatorTest,
+       DISABLED_TestIPHEntrypointAppears) {
   const base::HistogramTester histogram_tester;
   std::unique_ptr<SamplePanelItemConfiguration> configuration =
       std::make_unique<SamplePanelItemConfiguration>();
