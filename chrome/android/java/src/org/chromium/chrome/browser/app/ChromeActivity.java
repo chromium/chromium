@@ -569,10 +569,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         ChromeActivityCommonsModule commonsModule =
                 new ChromeActivityCommonsModule(
                         this,
-                        mCompositorViewHolderSupplier,
-                        /* tabCreatorManager= */ this,
-                        this::getCurrentTabCreator,
-                        mRootUiCoordinator.getStatusBarColorController(),
                         ScreenOrientationProvider.getInstance(),
                         this::getLegacyTabStartupMetricsTracker,
                         this::getStartupMetricsTracker,

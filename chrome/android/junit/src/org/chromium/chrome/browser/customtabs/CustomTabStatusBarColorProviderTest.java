@@ -44,10 +44,10 @@ public class CustomTabStatusBarColorProviderTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        when(mActivity.getIntentDataProvider()).thenReturn(mIntentDataProvider);
         mStatusBarColorProvider =
                 Mockito.spy(
-                        new CustomTabStatusBarColorProvider(mActivity, mStatusBarColorController));
+                        new CustomTabStatusBarColorProvider(
+                                mIntentDataProvider, mStatusBarColorController));
 
         when(mIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
 

@@ -14,10 +14,9 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -71,7 +70,7 @@ public class SplashController extends CustomTabTabObserver
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final TwaFinishHandler mFinishHandler;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
 
     private SplashDelegate mDelegate;
 
@@ -102,15 +101,14 @@ public class SplashController extends CustomTabTabObserver
     private ObserverList<SplashscreenObserver> mObservers;
 
     @Inject
-    public SplashController(
-            BaseCustomTabActivity activity, Lazy<CompositorViewHolder> compositorViewHolder) {
+    public SplashController(BaseCustomTabActivity activity) {
         mActivity = activity;
         mLifecycleDispatcher = activity.getLifecycleDispatcher();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mObservers = new ObserverList<>();
         mFinishHandler = activity.getTwaFinishHandler();
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mCompositorViewHolder = compositorViewHolder;
+        mCompositorViewHolder = activity.getCompositorViewHolderSupplier();
 
         mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);

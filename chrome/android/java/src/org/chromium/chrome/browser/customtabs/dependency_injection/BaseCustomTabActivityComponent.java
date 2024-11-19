@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitiali
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
-import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
@@ -55,8 +54,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabIntentHandler resolveIntentHandler();
 
     CustomTabSessionHandler resolveSessionHandler();
-
-    CustomTabStatusBarColorProvider resolveCustomTabStatusBarColorProvider();
 
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
 

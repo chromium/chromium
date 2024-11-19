@@ -41,13 +41,12 @@ public class SharedActivityCoordinator implements InflationObserver {
     @Inject
     public SharedActivityCoordinator(
             CustomTabActivityNavigationController navigationController,
-            CustomTabStatusBarColorProvider statusBarColorProvider,
             TrustedWebActivityBrowserControlsVisibilityManager browserControlsVisibilityManager,
             BaseCustomTabActivity activity) {
         mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mToolbarColorController = activity.getCustomTabToolbarColorController();
-        mStatusBarColorProvider = statusBarColorProvider;
+        mStatusBarColorProvider = activity.getCustomTabStatusBarColorProvider();
         mImmersiveModeController = activity::getImmersiveModeController;
         mImmersiveDisplayMode = computeImmersiveMode(activity.getIntentDataProvider());
         mCustomTabOrientationController = activity.getCustomTabOrientationController();

@@ -7,10 +7,9 @@ package org.chromium.chrome.browser.customtabs;
 import android.app.Activity;
 import android.view.ViewGroup;
 
-import dagger.Lazy;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -33,7 +32,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
-    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
@@ -43,11 +42,10 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     @Inject
     public CustomTabCompositorContentInitializer(
             BaseCustomTabActivity activity,
-            Lazy<CompositorViewHolder> compositorViewHolder,
             CompositorViewHolder.Initializer compositorViewHolderInitializer) {
         mLifecycleDispatcher = activity.getLifecycleDispatcher();
         mActivity = activity;
-        mCompositorViewHolder = compositorViewHolder;
+        mCompositorViewHolder = activity.getCompositorViewHolderSupplier();
         mTabContentManagerSupplier = activity.getTabContentManagerSupplier();
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
         mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();

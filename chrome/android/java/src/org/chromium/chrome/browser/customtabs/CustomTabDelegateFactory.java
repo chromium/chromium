@@ -396,8 +396,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     @Inject
     public CustomTabDelegateFactory(
             BaseCustomTabActivity activity,
-            TabCreatorManager tabCreatorManager,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType) {
@@ -414,9 +412,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 activity,
                 activity.getBrowserControlsManager(),
                 activity.getFullscreenManager(),
-                tabCreatorManager,
+                activity,
                 activity.getTabModelSelectorSupplier(),
-                compositorViewHolderSupplier,
+                activity.getCompositorViewHolderSupplier(),
                 modalDialogManagerSupplier,
                 activity::getSnackbarManager,
                 shareDelegateSupplier,

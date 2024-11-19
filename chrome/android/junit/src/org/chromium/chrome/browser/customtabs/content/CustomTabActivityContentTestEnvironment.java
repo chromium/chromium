@@ -27,6 +27,8 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.UserDataHost;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -154,6 +156,9 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
         profileProviderSupplier.set(profileProvider);
         when(activity.getProfileProviderSupplier()).thenReturn(profileProviderSupplier);
+        ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier =
+                new ObservableSupplierImpl(compositorViewHolder);
+        when(activity.getCompositorViewHolderSupplier()).thenReturn(compositorViewHolderSupplier);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -167,7 +172,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return new CustomTabActivityTabController(
                 activity,
                 () -> customTabDelegateFactory,
-                () -> compositorViewHolder,
                 tabPersistencePolicy,
                 tabFactory,
                 () -> activity.getSavedInstanceState(),

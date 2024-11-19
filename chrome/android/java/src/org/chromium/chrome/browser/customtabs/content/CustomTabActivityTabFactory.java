@@ -66,18 +66,16 @@ public class CustomTabActivityTabFactory {
     public CustomTabActivityTabFactory(
             BaseCustomTabActivity activity,
             CustomTabTabPersistencePolicy persistencePolicy,
-            Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
-            TabCreatorManager tabCreatorManager,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            Lazy<CustomTabDelegateFactory> customTabDelegateFactory) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
         mActivityWindowAndroid = activity.getWindowAndroid();
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mIntentDataProvider = activity.getIntentDataProvider();
-        mTabCreatorManager = tabCreatorManager;
+        mTabCreatorManager = activity;
         mTabModelSelectorSupplier = activity.getTabModelSelectorSupplier();
-        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mCompositorViewHolderSupplier = activity.getCompositorViewHolderSupplier();
         mCipherFactory = activity.getCipherFactory();
     }
 

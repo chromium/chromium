@@ -118,7 +118,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabActivityNavigationController mNavigationController;
     protected CustomTabActivityTabController mTabController;
     protected CustomTabActivityTabProvider mTabProvider;
-    protected CustomTabStatusBarColorProvider mStatusBarColorProvider;
+    private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     protected CustomTabActivityTabFactory mTabFactory;
     protected CustomTabIntentHandler mCustomTabIntentHandler;
     protected CustomTabNightModeStateController mNightModeStateController;
@@ -347,7 +347,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         mToolbarCoordinator = component.resolveToolbarCoordinator();
         mNavigationController = component.resolveNavigationController();
         mTabController = component.resolveTabController();
-        mStatusBarColorProvider = component.resolveCustomTabStatusBarColorProvider();
         mTabFactory = component.resolveTabFactory();
         mCustomTabIntentHandler = component.resolveIntentHandler();
 
@@ -782,7 +781,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         .shouldEnableGoogleBottomBarForIntent(mIntentDataProvider)) {
             return getWindow().getContext().getColor(R.color.google_bottom_bar_background_color);
         }
-        return mStatusBarColorProvider.getBaseStatusBarColor(tab);
+        return getCustomTabStatusBarColorProvider().getBaseStatusBarColor(tab);
     }
 
     @Override
@@ -1042,5 +1041,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabToolbarColorController getCustomTabToolbarColorController() {
         return mCustomTabToolbarColorController;
+    }
+
+    public CustomTabStatusBarColorProvider getCustomTabStatusBarColorProvider() {
+        if (mStatusBarColorProvider == null) {
+            mStatusBarColorProvider =
+                    new CustomTabStatusBarColorProvider(
+                            getIntentDataProvider(),
+                            mRootUiCoordinator.getStatusBarColorController());
+        }
+        return mStatusBarColorProvider;
     }
 }

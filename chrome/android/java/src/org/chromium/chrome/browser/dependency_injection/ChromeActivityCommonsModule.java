@@ -26,10 +26,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
-import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -39,10 +36,6 @@ import javax.inject.Named;
 @Module
 public class ChromeActivityCommonsModule {
     private final ChromeActivity mActivity;
-    private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final TabCreatorManager mTabCreatorManager;
-    private final Supplier<TabCreator> mTabCreatorSupplier;
-    private final StatusBarColorController mStatusBarColorController;
     private final ScreenOrientationProvider mScreenOrientationProvider;
     private final Supplier<LegacyTabStartupMetricsTracker> mLegacyTabStartupMetricsTrackerSupplier;
     private final Supplier<StartupMetricsTracker> mStartupMetricsTrackerSupplier;
@@ -56,10 +49,6 @@ public class ChromeActivityCommonsModule {
 
     public ChromeActivityCommonsModule(
             ChromeActivity activity,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            TabCreatorManager tabCreatorManager,
-            Supplier<TabCreator> tabCreatorSupplier,
-            StatusBarColorController statusBarColorController,
             ScreenOrientationProvider screenOrientationProvider,
             Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
             Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
@@ -71,10 +60,6 @@ public class ChromeActivityCommonsModule {
             TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
-        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
-        mTabCreatorManager = tabCreatorManager;
-        mTabCreatorSupplier = tabCreatorSupplier;
-        mStatusBarColorController = statusBarColorController;
         mScreenOrientationProvider = screenOrientationProvider;
         mLegacyTabStartupMetricsTrackerSupplier = legacyTabStartupMetricsTrackerSupplier;
         mStartupMetricsTrackerSupplier = startupMetricsTrackerSupplier;
@@ -111,31 +96,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public Resources provideResources() {
         return mActivity.getResources();
-    }
-
-    @Provides
-    public CompositorViewHolder provideCompositorViewHolder() {
-        return mCompositorViewHolderSupplier.get();
-    }
-
-    @Provides
-    public Supplier<CompositorViewHolder> provideCompositorViewHolderSupplier() {
-        return mCompositorViewHolderSupplier;
-    }
-
-    @Provides
-    public TabCreatorManager provideTabCreatorManager() {
-        return mTabCreatorManager;
-    }
-
-    @Provides
-    public Supplier<TabCreator> provideTabCreatorSupplier() {
-        return mTabCreatorSupplier;
-    }
-
-    @Provides
-    public StatusBarColorController provideStatusBarColorController() {
-        return mStatusBarColorController;
     }
 
     @Provides
