@@ -27,7 +27,9 @@
 #include "chrome/test/chromedriver/logging.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/session.h"
+#include "chrome/test/chromedriver/test/command_injecting_socket.h"
 #include "chrome/test/chromedriver/test/integration_test.h"
+#include "chrome/test/chromedriver/test/sync_websocket_wrapper.h"
 #include "chrome/test/chromedriver/window_commands.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,42 +47,6 @@ testing::AssertionResult StatusCodeIs(const Status& status) {
     return testing::AssertionFailure() << status.message();
   }
 }
-
-class SyncWebSocketWrapper : public SyncWebSocket {
- public:
-  explicit SyncWebSocketWrapper(std::unique_ptr<SyncWebSocket> wrapped_socket)
-      : wrapped_socket_(std::move(wrapped_socket)) {}
-
-  ~SyncWebSocketWrapper() override = default;
-
-  void SetId(const std::string& socket_id) override {
-    wrapped_socket_->SetId(socket_id);
-  }
-
-  bool IsConnected() override { return wrapped_socket_->IsConnected(); }
-
-  bool Connect(const GURL& url) override {
-    return wrapped_socket_->Connect(url);
-  }
-
-  bool Send(const std::string& message) override {
-    return wrapped_socket_->Send(message);
-  }
-
-  StatusCode ReceiveNextMessage(std::string* message,
-                                const Timeout& timeout) override {
-    return wrapped_socket_->ReceiveNextMessage(message, timeout);
-  }
-
-  bool HasNextMessage() override { return wrapped_socket_->HasNextMessage(); }
-
-  void SetNotificationCallback(base::RepeatingClosure callback) override {
-    wrapped_socket_->SetNotificationCallback(std::move(callback));
-  }
-
- protected:
-  std::unique_ptr<SyncWebSocket> wrapped_socket_;
-};
 
 class SocketDecoratorTest : public IntegrationTest {
  protected:
@@ -435,87 +401,21 @@ INSTANTIATE_TEST_SUITE_P(
 
 namespace {
 
-class NavigationCausingSocket : public SyncWebSocketWrapper {
+class NavigationCausingSocket : public CommandInjectingSocket {
  public:
   explicit NavigationCausingSocket(
       std::unique_ptr<SyncWebSocket> wrapped_socket)
-      : SyncWebSocketWrapper(std::move(wrapped_socket)) {}
-
-  void SetSkipCount(int count) { skip_count_ = count; }
+      : CommandInjectingSocket(std::move(wrapped_socket)) {}
 
   void SetFrameId(const std::string& frame_id) {
-    frame_for_navigation_ = frame_id;
-  }
-
-  void SetSessionId(const std::string& session_id) {
-    session_for_navigation_ = session_id;
-  }
-
-  void SetUrl(const GURL& url) { url_for_navigation_ = url; }
-
-  bool IsSaturated() const { return skip_count_ < 0; }
-
-  bool Send(const std::string& message) override {
-    if (skip_count_ == 0) {
-      base::Value::Dict params;
-      EXPECT_TRUE(!url_for_navigation_.is_empty());
-      params.Set("url", url_for_navigation_.spec());
-      if (!frame_for_navigation_.empty()) {
-        params.Set("frameId", frame_for_navigation_);
-      }
-      base::Value::Dict command;
-      command.Set("id", next_cmd_id++);
-      command.Set("method", "Page.navigate");
-      command.Set("params", std::move(params));
-      if (!session_for_navigation_.empty()) {
-        command.Set("sessionId", session_for_navigation_);
-      }
-      std::string json;
-      if (!base::JSONWriter::Write(command, &json)) {
-        return false;
-      }
-      if (!wrapped_socket_->Send(json)) {
-        return false;
-      }
+    if (frame_id.empty()) {
+      params_.Remove("frameId");
+    } else {
+      params_.Set("frameId", frame_id);
     }
-    --skip_count_;
-    return wrapped_socket_->Send(message);
   }
 
-  bool InterceptResponse(const std::string& message) {
-    std::optional<base::Value> maybe_response = base::JSONReader::Read(message);
-    if (!maybe_response.has_value() || !maybe_response->is_dict()) {
-      return false;
-    }
-    std::optional<int> maybe_id = maybe_response->GetDict().FindInt("id");
-    return maybe_id.value_or(0) >= 1000'000'000;
-  }
-
-  StatusCode ReceiveNextMessage(std::string* message,
-                                const Timeout& timeout) override {
-    StatusCode code = StatusCode::kOk;
-    std::string received_message;
-    // This loop tries to remove the response to the injected command. Otherwise
-    // DevToolsClientImpl gets confused.
-    do {
-      received_message.clear();
-      code = wrapped_socket_->ReceiveNextMessage(&received_message, timeout);
-    } while (code == StatusCode::kOk && InterceptResponse(received_message));
-
-    if (code == StatusCode::kOk) {
-      *message = std::move(received_message);
-    }
-    return code;
-  }
-
-  bool HasNextMessage() override { return wrapped_socket_->HasNextMessage(); }
-
- private:
-  int skip_count_ = 1000'000'000;
-  int next_cmd_id = 1000'000'000;
-  std::string frame_for_navigation_;
-  std::string session_for_navigation_;
-  GURL url_for_navigation_;
+  void SetUrl(const GURL& url) { params_.Set("url", url.spec()); }
 };
 
 class MouseClickNavigationInjectionTest

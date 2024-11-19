@@ -624,11 +624,16 @@ if (is_win || is_posix) {
     sources = [
       "net/test_http_server.cc",
       "net/test_http_server.h",
+      "test/command_injecting_socket.cc",
+      "test/command_injecting_socket.h",
       "test/commands_integrationtest.cc",
       "test/devtools_client_impl_integrationtest.cc",
       "test/integration_test.cc",
       "test/integration_test.h",
       "test/navigation_tracker_integrationtest.cc",
+      "test/sync_websocket_wrapper.cc",
+      "test/sync_websocket_wrapper.h",
+      "test/web_view_impl_integrationtest.cc",
     ]
 
     data_deps = [ "//chrome:chrome" ]

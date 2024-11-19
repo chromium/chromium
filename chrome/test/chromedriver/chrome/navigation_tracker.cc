@@ -25,7 +25,9 @@ Status MakeNavigationCheckFailedStatus(Status command_status) {
   if (command_status.code() == kUnexpectedAlertOpen ||
       command_status.code() == kTimeout ||
       command_status.code() == kAbortedByNavigation ||
-      command_status.code() == kNoSuchExecutionContext) {
+      command_status.code() == kNoSuchExecutionContext ||
+      command_status.code() == kDisconnected ||
+      command_status.code() == kTabCrashed) {
     return command_status;
   }
 
@@ -146,7 +148,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     // wait for pending navigations to complete, since we won't see any more
     // events from it until we reconnect.
     *is_pending = false;
-    return Status(kOk);
+    return status;
   }
   if (status.code() == kTargetDetached) {
     // If we receive a kTargetDetached status code from Runtime.evaluate, don't
@@ -223,10 +225,12 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     }
 
     status = UpdateCurrentLoadingState();
-    if (status.code() == kNoSuchExecutionContext)
+    if (status.code() == kNoSuchExecutionContext ||
+        status.code() == kAbortedByNavigation) {
       *loading_state_ = kLoading;
-    else if (status.IsError())
+    } else if (status.IsError()) {
       return MakeNavigationCheckFailedStatus(status);
+    }
   }
   *is_pending = GetLoadingState() == kLoading;
   return Status(kOk);
