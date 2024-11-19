@@ -153,7 +153,7 @@ fn decode_sentence(bs: &[u8]) -> (&str, usize) {
         let sentence = unsafe { bs[..hm.offset()].to_str_unchecked() };
         (sentence, sentence.len())
     } else {
-        const INVALID: &'static str = "\u{FFFD}";
+        const INVALID: &str = "\u{FFFD}";
         // No match on non-empty bytes implies we found invalid UTF-8.
         let (_, size) = utf8::decode_lossy(bs);
         (INVALID, size)
@@ -214,8 +214,7 @@ mod tests {
     /// Return all of the UCD for sentence breaks.
     #[cfg(not(miri))]
     fn ucdtests() -> Vec<SentenceBreakTest> {
-        const TESTDATA: &'static str =
-            include_str!("data/SentenceBreakTest.txt");
+        const TESTDATA: &str = include_str!("data/SentenceBreakTest.txt");
 
         let mut tests = vec![];
         for mut line in TESTDATA.lines() {

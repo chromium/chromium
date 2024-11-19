@@ -533,7 +533,6 @@ third_party/google-java-format 2 1
 third_party/google-java-format/local_modifications/java/com/google/googlejavaformat/java 1 1
 third_party/google-java-format/originals/java/com/google/googlejavaformat/java 1 1
 third_party/googletest 10 2
-third_party/google_trust_services 1 1
 third_party/grpc 2 1
 third_party/hunspell/fuzz/bdict_corpus 2 2
 third_party/hyphenation-patterns 1 1

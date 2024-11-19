@@ -302,6 +302,12 @@ track partial audits is tracked in
 https://github.com/mozilla/cargo-vet/issues/380.
 """
 
+[[audits.bstr]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.10.0 -> 1.11.0"
+notes = "Changes two unsafe blocks to use core::mem::align_of<usize> instead of core::mem::size_of<usize> which shouldn't differ on mainstream platforms."
+
 [[audits.bytemuck]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "safe-to-deploy"

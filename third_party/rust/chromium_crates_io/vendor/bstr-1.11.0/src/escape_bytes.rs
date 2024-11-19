@@ -12,7 +12,7 @@ pub struct EscapeBytes<'a> {
 }
 
 impl<'a> EscapeBytes<'a> {
-    pub(crate) fn new(bytes: &'a [u8]) -> EscapeBytes {
+    pub(crate) fn new(bytes: &'a [u8]) -> EscapeBytes<'a> {
         EscapeBytes { remaining: bytes, state: EscapeState::Start }
     }
 }

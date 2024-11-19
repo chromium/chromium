@@ -11,15 +11,16 @@
 
 [package]
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.73"
 name = "bstr"
-version = "1.10.0"
+version = "1.11.0"
 authors = ["Andrew Gallant <jamslam@gmail.com>"]
 build = false
 exclude = [
     "/.github",
     "/scripts",
 ]
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false

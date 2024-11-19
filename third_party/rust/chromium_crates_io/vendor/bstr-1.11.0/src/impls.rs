@@ -18,6 +18,26 @@ macro_rules! impl_partial_eq {
     };
 }
 
+macro_rules! impl_partial_eq_n {
+    ($lhs:ty, $rhs:ty) => {
+        impl<'a, 'b, const N: usize> PartialEq<$rhs> for $lhs {
+            #[inline]
+            fn eq(&self, other: &$rhs) -> bool {
+                let other: &[u8] = other.as_ref();
+                PartialEq::eq(self.as_bytes(), other)
+            }
+        }
+
+        impl<'a, 'b, const N: usize> PartialEq<$lhs> for $rhs {
+            #[inline]
+            fn eq(&self, other: &$lhs) -> bool {
+                let this: &[u8] = self.as_ref();
+                PartialEq::eq(this, other.as_bytes())
+            }
+        }
+    };
+}
+
 #[cfg(feature = "alloc")]
 macro_rules! impl_partial_eq_cow {
     ($lhs:ty, $rhs:ty) => {
@@ -59,9 +79,29 @@ macro_rules! impl_partial_ord {
     };
 }
 
+macro_rules! impl_partial_ord_n {
+    ($lhs:ty, $rhs:ty) => {
+        impl<'a, 'b, const N: usize> PartialOrd<$rhs> for $lhs {
+            #[inline]
+            fn partial_cmp(&self, other: &$rhs) -> Option<Ordering> {
+                let other: &[u8] = other.as_ref();
+                PartialOrd::partial_cmp(self.as_bytes(), other)
+            }
+        }
+
+        impl<'a, 'b, const N: usize> PartialOrd<$lhs> for $rhs {
+            #[inline]
+            fn partial_cmp(&self, other: &$lhs) -> Option<Ordering> {
+                let this: &[u8] = self.as_ref();
+                PartialOrd::partial_cmp(this, other.as_bytes())
+            }
+        }
+    };
+}
+
 #[cfg(feature = "alloc")]
 mod bstring {
-    use core::{cmp::Ordering, fmt, ops, str::FromStr};
+    use core::{cmp::Ordering, fmt, hash, ops, str::FromStr};
 
     use alloc::{
         borrow::{Borrow, BorrowMut, Cow, ToOwned},
@@ -356,7 +396,7 @@ mod bstring {
     impl PartialEq for BString {
         #[inline]
         fn eq(&self, other: &BString) -> bool {
-            &self[..] == &other[..]
+            self[..] == other[..]
         }
     }
 
@@ -368,6 +408,15 @@ mod bstring {
     impl_partial_eq!(BString, &'a str);
     impl_partial_eq!(BString, BStr);
     impl_partial_eq!(BString, &'a BStr);
+    impl_partial_eq_n!(BString, [u8; N]);
+    impl_partial_eq_n!(BString, &'a [u8; N]);
+
+    impl hash::Hash for BString {
+        #[inline]
+        fn hash<H: hash::Hasher>(&self, state: &mut H) {
+            self.as_bytes().hash(state);
+        }
+    }
 
     impl PartialOrd for BString {
         #[inline]
@@ -391,13 +440,15 @@ mod bstring {
     impl_partial_ord!(BString, &'a str);
     impl_partial_ord!(BString, BStr);
     impl_partial_ord!(BString, &'a BStr);
+    impl_partial_ord_n!(BString, [u8; N]);
+    impl_partial_ord_n!(BString, &'a [u8; N]);
 }
 
 mod bstr {
     use core::{
         borrow::{Borrow, BorrowMut},
         cmp::Ordering,
-        fmt, ops,
+        fmt, hash, ops,
     };
 
     #[cfg(feature = "alloc")]
@@ -480,7 +531,7 @@ mod bstr {
                             write!(f, "{}", ch.escape_debug())?;
                         } else {
                             for &b in self[s..e].as_bytes() {
-                                write!(f, r"\x{:02X}", b)?;
+                                write!(f, "\\x{:02x}", b)?;
                             }
                         }
                     }
@@ -492,7 +543,10 @@ mod bstr {
                     | '\x7f' => {
                         write!(f, "\\x{:02x}", ch as u32)?;
                     }
-                    '\n' | '\r' | '\t' | _ => {
+                    '\n' | '\r' | '\t' => {
+                        write!(f, "{}", ch.escape_debug())?;
+                    }
+                    _ => {
                         write!(f, "{}", ch.escape_debug())?;
                     }
                 }
@@ -811,6 +865,8 @@ mod bstr {
     impl_partial_eq!(BStr, &'a [u8]);
     impl_partial_eq!(BStr, str);
     impl_partial_eq!(BStr, &'a str);
+    impl_partial_eq_n!(BStr, [u8; N]);
+    impl_partial_eq_n!(BStr, &'a [u8; N]);
 
     #[cfg(feature = "alloc")]
     impl_partial_eq!(BStr, Vec<u8>);
@@ -826,6 +882,13 @@ mod bstr {
     impl_partial_eq_cow!(&'a BStr, Cow<'a, str>);
     #[cfg(feature = "alloc")]
     impl_partial_eq_cow!(&'a BStr, Cow<'a, [u8]>);
+
+    impl hash::Hash for BStr {
+        #[inline]
+        fn hash<H: hash::Hasher>(&self, state: &mut H) {
+            self.as_bytes().hash(state);
+        }
+    }
 
     impl PartialOrd for BStr {
         #[inline]
@@ -845,6 +908,8 @@ mod bstr {
     impl_partial_ord!(BStr, &'a [u8]);
     impl_partial_ord!(BStr, str);
     impl_partial_ord!(BStr, &'a str);
+    impl_partial_ord_n!(BStr, [u8; N]);
+    impl_partial_ord_n!(BStr, &'a [u8; N]);
 
     #[cfg(feature = "alloc")]
     impl_partial_ord!(BStr, Vec<u8>);
@@ -1228,11 +1293,19 @@ fn test_debug() {
     // replacement codepoint, then we emit the codepoint just like other
     // non-printable Unicode characters.
     assert_eq!(
-        b"\"\\xFF\xEF\xBF\xBD\\xFF\"".as_bstr(),
+        b"\"\\xff\xef\xbf\xbd\\xff\"".as_bstr(),
         // Before fixing #72, the output here would be:
         //   \\xFF\\xEF\\xBF\\xBD\\xFF
-        B(&format!("{:?}", b"\xFF\xEF\xBF\xBD\xFF".as_bstr())).as_bstr(),
+        B(&format!("{:?}", b"\xff\xef\xbf\xbd\xff".as_bstr())).as_bstr(),
     );
+
+    // Tests that all ASCII control characters are in lower case.
+    assert_eq!(
+        b"\"\\xed\\xa0\\x80Aa\\x7f\\x0b\"".as_bstr(),
+        // Before fixing #188, the output here would be:
+        //   \\xED\\xA0\\x80Aa\\x7f\\x0b
+        B(&format!("{:?}", b"\xed\xa0\x80Aa\x7f\x0b".as_bstr())).as_bstr(),
+    )
 }
 
 // See: https://github.com/BurntSushi/bstr/issues/82
@@ -1250,4 +1323,24 @@ fn test_cows_regression() {
     let c3 = Cow::from("hello str");
     let c4 = "goodbye str";
     assert_ne!(c3, c4);
+}
+
+#[test]
+#[cfg(feature = "alloc")]
+fn test_eq_ord() {
+    use core::cmp::Ordering;
+
+    use crate::{BStr, BString};
+
+    let b = BStr::new("hello");
+    assert_eq!(b, b"hello");
+    assert_ne!(b, b"world");
+    assert_eq!(b.partial_cmp(b"hello"), Some(Ordering::Equal));
+    assert_eq!(b.partial_cmp(b"world"), Some(Ordering::Less));
+
+    let b = BString::from("hello");
+    assert_eq!(b, b"hello");
+    assert_ne!(b, b"world");
+    assert_eq!(b.partial_cmp(b"hello"), Some(Ordering::Equal));
+    assert_eq!(b.partial_cmp(b"world"), Some(Ordering::Less));
 }

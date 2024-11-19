@@ -38,7 +38,7 @@ use crate::bstr::BStr;
 /// A `BString` has the same representation as a `Vec<u8>` and a `String`.
 /// That is, it is made up of three word sized components: a pointer to a
 /// region of memory containing the bytes, a length and a capacity.
-#[derive(Clone, Hash)]
+#[derive(Clone)]
 pub struct BString {
     bytes: Vec<u8>,
 }

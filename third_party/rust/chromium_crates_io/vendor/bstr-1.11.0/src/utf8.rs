@@ -37,7 +37,7 @@ const REJECT: usize = 0;
 
 /// SAFETY: The decode below function relies on the correctness of these
 /// equivalence classes.
-#[cfg_attr(rustfmt, rustfmt::skip)]
+#[rustfmt::skip]
 const CLASSES: [u8; 256] = [
    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -51,8 +51,8 @@ const CLASSES: [u8; 256] = [
 
 /// SAFETY: The decode below function relies on the correctness of this state
 /// machine.
-#[cfg_attr(rustfmt, rustfmt::skip)]
-const STATES_FORWARD: &'static [u8] = &[
+#[rustfmt::skip]
+const STATES_FORWARD: &[u8] = &[
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   12, 0, 24, 36, 60, 96, 84, 0, 0, 0, 48, 72,
   0, 12, 0, 0, 0, 0, 0, 12, 0, 12, 0, 0,
@@ -605,7 +605,7 @@ pub fn validate(slice: &[u8]) -> Result<(), Utf8Error> {
 #[inline]
 pub fn decode<B: AsRef<[u8]>>(slice: B) -> (Option<char>, usize) {
     let slice = slice.as_ref();
-    match slice.get(0) {
+    match slice.first() {
         None => return (None, 0),
         Some(&b) if b <= 0x7F => return (Some(b as char), 1),
         _ => {}
@@ -813,10 +813,11 @@ pub fn decode_last_lossy<B: AsRef<[u8]>>(slice: B) -> (char, usize) {
 #[inline]
 pub fn decode_step(state: &mut usize, cp: &mut u32, b: u8) {
     let class = CLASSES[b as usize];
+    let b = u32::from(b);
     if *state == ACCEPT {
-        *cp = (0xFF >> class) & (b as u32);
+        *cp = (0xFF >> class) & b;
     } else {
-        *cp = (b as u32 & 0b111111) | (*cp << 6);
+        *cp = (b & 0b0011_1111) | (*cp << 6);
     }
     *state = STATES_FORWARD[*state + class as usize] as usize;
 }

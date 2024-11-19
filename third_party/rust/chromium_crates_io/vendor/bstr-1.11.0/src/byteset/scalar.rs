@@ -5,6 +5,7 @@
 use core::{cmp, usize};
 
 const USIZE_BYTES: usize = core::mem::size_of::<usize>();
+const ALIGN_MASK: usize = core::mem::align_of::<usize>() - 1;
 
 // The number of bytes to loop at in one iteration of memchr/memrchr.
 const LOOP_SIZE: usize = 2 * USIZE_BYTES;
@@ -22,7 +23,6 @@ pub fn inv_memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
     let vn1 = repeat_byte(n1);
     let confirm = |byte| byte != n1;
     let loop_size = cmp::min(LOOP_SIZE, haystack.len());
-    let align = USIZE_BYTES - 1;
     let start_ptr = haystack.as_ptr();
 
     unsafe {
@@ -38,7 +38,7 @@ pub fn inv_memchr(n1: u8, haystack: &[u8]) -> Option<usize> {
             return forward_search(start_ptr, end_ptr, ptr, confirm);
         }
 
-        ptr = ptr.add(USIZE_BYTES - (start_ptr as usize & align));
+        ptr = ptr.add(USIZE_BYTES - (start_ptr as usize & ALIGN_MASK));
         debug_assert!(ptr > start_ptr);
         debug_assert!(end_ptr.sub(USIZE_BYTES) >= start_ptr);
         while loop_size == LOOP_SIZE && ptr <= end_ptr.sub(loop_size) {
@@ -62,7 +62,6 @@ pub fn inv_memrchr(n1: u8, haystack: &[u8]) -> Option<usize> {
     let vn1 = repeat_byte(n1);
     let confirm = |byte| byte != n1;
     let loop_size = cmp::min(LOOP_SIZE, haystack.len());
-    let align = USIZE_BYTES - 1;
     let start_ptr = haystack.as_ptr();
 
     unsafe {
@@ -78,7 +77,7 @@ pub fn inv_memrchr(n1: u8, haystack: &[u8]) -> Option<usize> {
             return reverse_search(start_ptr, end_ptr, ptr, confirm);
         }
 
-        ptr = ptr.sub(end_ptr as usize & align);
+        ptr = ptr.sub(end_ptr as usize & ALIGN_MASK);
         debug_assert!(start_ptr <= ptr && ptr <= end_ptr);
         while loop_size == LOOP_SIZE && ptr >= start_ptr.add(loop_size) {
             debug_assert_eq!(0, (ptr as usize) % USIZE_BYTES);

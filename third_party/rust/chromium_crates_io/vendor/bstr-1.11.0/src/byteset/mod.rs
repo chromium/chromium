@@ -14,7 +14,7 @@ fn build_table(byteset: &[u8]) -> [u8; 256] {
 #[inline]
 pub(crate) fn find(haystack: &[u8], byteset: &[u8]) -> Option<usize> {
     match byteset.len() {
-        0 => return None,
+        0 => None,
         1 => memchr(byteset[0], haystack),
         2 => memchr2(byteset[0], byteset[1], haystack),
         3 => memchr3(byteset[0], byteset[1], byteset[2], haystack),
@@ -28,7 +28,7 @@ pub(crate) fn find(haystack: &[u8], byteset: &[u8]) -> Option<usize> {
 #[inline]
 pub(crate) fn rfind(haystack: &[u8], byteset: &[u8]) -> Option<usize> {
     match byteset.len() {
-        0 => return None,
+        0 => None,
         1 => memrchr(byteset[0], haystack),
         2 => memrchr2(byteset[0], byteset[1], haystack),
         3 => memrchr3(byteset[0], byteset[1], byteset[2], haystack),
@@ -45,7 +45,7 @@ pub(crate) fn find_not(haystack: &[u8], byteset: &[u8]) -> Option<usize> {
         return None;
     }
     match byteset.len() {
-        0 => return Some(0),
+        0 => Some(0),
         1 => scalar::inv_memchr(byteset[0], haystack),
         2 => scalar::forward_search_bytes(haystack, |b| {
             b != byteset[0] && b != byteset[1]
@@ -65,7 +65,7 @@ pub(crate) fn rfind_not(haystack: &[u8], byteset: &[u8]) -> Option<usize> {
         return None;
     }
     match byteset.len() {
-        0 => return Some(haystack.len() - 1),
+        0 => Some(haystack.len() - 1),
         1 => scalar::inv_memrchr(byteset[0], haystack),
         2 => scalar::reverse_search_bytes(haystack, |b| {
             b != byteset[0] && b != byteset[1]
