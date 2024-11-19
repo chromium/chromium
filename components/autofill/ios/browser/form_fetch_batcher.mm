@@ -63,7 +63,8 @@ void FormFetchBatcher::PushRequestAndRun(
 void FormFetchBatcher::PushRequest(
     FormFetchCompletion&& completion,
     std::optional<std::u16string> form_name_filter) {
-  if (fetch_requests_.empty()) {
+  if (!batch_scheduled_) {
+    batch_scheduled_ = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&FormFetchBatcher::Run, weak_factory_.GetWeakPtr()),
@@ -101,14 +102,27 @@ void FormFetchBatcher::Complete(
   // Complete() should only be done when there are queued requests.
   CHECK_GT(fetch_requests_.size(), 0u, base::NotFatalUntil::M133);
 
-  for (auto& completion : fetch_requests_) {
-    std::move(completion).Run(forms);
+  // The batch is being completed so a new batch can be scheduled starting from
+  // now which includes new requests pushed by the completion blocks that are
+  // about to be completed here.
+  batch_scheduled_ = false;
+
+  // Make a local copy of the queue of completion blocks so the vector cannot
+  // be resized if one of the callback pushes a new request in the
+  // `fetch_requests_` queue. Resizing the vector will invalidate the iteration
+  // loop. Any new requests that were pushed when emptying the loop will be
+  // pushed to the next scheduled batch. A new batch will be scheduled if
+  // needed.
+  std::vector<FormFetchCompletion> fetch_requests_copy =
+      std::move(fetch_requests_);
+  fetch_requests_ = std::vector<FormFetchCompletion>();
+
+  // Complete the original requests. New requests may be pushed to
+  // fetch_requests_ when completing the blocks here but this won't affect this
+  // loop.
+  for (auto& fetch_request : fetch_requests_copy) {
+    std::move(fetch_request).Run(forms);
   }
-  // Complete the current batch. The batch is completed after form extraction
-  // which should be reliable considering that there are mechanisms in place
-  // to complete the pending fetch requests if the targeted frame becomes
-  // unavailable.
-  fetch_requests_.clear();
 }
 
 }  // namespace autofill
