@@ -76,7 +76,7 @@ std::unique_ptr<PublicKey> P256PublicKey::ExtractFromU2fRegistrationResponse(
     return nullptr;
   }
   return ParseX962Uncompressed(algorithm,
-                               u2f_data.subspan(1, kUncompressedPointLength));
+                               u2f_data.subspan<1, kUncompressedPointLength>());
 }
 
 // static
@@ -159,10 +159,8 @@ std::unique_ptr<PublicKey> P256PublicKey::ParseX962Uncompressed(
     return nullptr;
   }
 
-  base::span<const uint8_t, kFieldElementLength> x(&x962[1],
-                                                   kFieldElementLength);
-  base::span<const uint8_t, kFieldElementLength> y(
-      &x962[1 + kFieldElementLength], kFieldElementLength);
+  auto [x, remainder] = x962.subspan<1>().split_at<kFieldElementLength>();
+  auto y = remainder.first<kFieldElementLength>();
 
   cbor::Value::MapValue map;
   map.emplace(static_cast<int>(CoseKeyKey::kKty),

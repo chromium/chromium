@@ -350,7 +350,7 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
 
   cbor::Reader::DecoderError error;
   std::optional<CBOR> decoded_response =
-      cbor::Reader::Read(buffer.subspan(1), &error);
+      cbor::Reader::Read(buffer.subspan<1>(), &error);
 
   if (!decoded_response) {
     FIDO_LOG(ERROR) << "-> (CBOR parse error from GetInfo response '"
@@ -820,7 +820,7 @@ static std::optional<std::string> FixInvalidUTF8String(
   size_t longest_valid_prefix_len = 0;
 
   for (size_t i = 0; i < utf8_bytes.size(); i++) {
-    state = validator.AddBytes(utf8_bytes.subspan(i, 1));
+    state = validator.AddBytes(utf8_bytes.subspan(i, 1u));
     switch (state) {
       case base::StreamingUtf8Validator::VALID_ENDPOINT:
         longest_valid_prefix_len = i + 1;

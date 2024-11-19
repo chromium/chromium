@@ -376,25 +376,18 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
   }
 
   void CheckMetaButtonState(bool is_pressed,
-                            base::span<GamepadButton const> output_buttons) {
-    if (is_pressed) {
-      EXPECT_TRUE(output_buttons[BUTTON_INDEX_META].pressed);
-      EXPECT_NEAR(output_buttons[BUTTON_INDEX_META].value, 1.0f,
-                  kErrorTolerance);
-      return;
-    }
-    EXPECT_FALSE(output_buttons[BUTTON_INDEX_META].pressed);
-    EXPECT_NEAR(output_buttons[BUTTON_INDEX_META].value, 0.0f, kErrorTolerance);
+                            base::span<const GamepadButton> output_buttons) {
+    const GamepadButton& button = output_buttons[BUTTON_INDEX_META];
+    EXPECT_EQ(button.pressed, is_pressed);
+    EXPECT_NEAR(button.value, is_pressed ? 1.0f : 0.0f, kErrorTolerance);
   }
 
   void CheckGamepadInputResult(const GamepadReading& input,
                                const Gamepad& output,
                                bool has_paddles) {
-    if (has_paddles) {
-      EXPECT_EQ(output.buttons_length, kGamepadWithPaddlesButtonsLength);
-    } else {
-      EXPECT_EQ(output.buttons_length, kGamepadButtonsLength);
-    }
+    EXPECT_EQ(output.buttons_length, has_paddles
+                                         ? kGamepadWithPaddlesButtonsLength
+                                         : kGamepadButtonsLength);
 
     CheckButtonState(BUTTON_INDEX_PRIMARY, input.Buttons, output.buttons);
     CheckButtonState(BUTTON_INDEX_SECONDARY, input.Buttons, output.buttons);

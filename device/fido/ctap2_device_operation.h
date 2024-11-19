@@ -144,7 +144,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     std::optional<cbor::Value> cbor;
     std::optional<Response> response;
     base::span<const uint8_t> cbor_bytes(*device_response);
-    cbor_bytes = cbor_bytes.subspan(1);
+    cbor_bytes = cbor_bytes.subspan<1>();
 
     if (!cbor_bytes.empty()) {
       cbor::Reader::DecoderError error;

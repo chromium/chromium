@@ -79,7 +79,7 @@ void MockFidoHidConnection::ExpectWriteHidInit(
             ASSERT_EQ(64u, buffer.size());
             // First 7 bytes are 4 bytes of channel id, one byte representing
             // HID command, 2 bytes for payload length.
-            SetNonce(base::make_span(buffer).subspan(7, 8));
+            SetNonce(base::span(buffer).subspan<7, 8>());
             std::move(*cb).Run(true);
           }));
 }

@@ -529,7 +529,7 @@ class TestPlatform : public authenticator::Platform {
       return;
     }
 
-    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
+    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan<1>());
     const cbor::Value::MapValue& in_map = v->GetMap();
 
     cbor::Value::MapValue out_map;
@@ -582,7 +582,7 @@ class TestPlatform : public authenticator::Platform {
     response->extensions =
         blink::mojom::AuthenticationExtensionsClientOutputs::New();
 
-    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan(1));
+    std::optional<cbor::Value> v = cbor::Reader::Read(payload.subspan<1>());
     const cbor::Value::MapValue& in_map = v->GetMap();
 
     auto cred_id_it = in_map.find(cbor::Value(1));

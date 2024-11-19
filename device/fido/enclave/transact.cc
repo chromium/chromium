@@ -193,7 +193,7 @@ struct Transaction : base::RefCounted<Transaction> {
 
     // `response` may contain arbitrary extra data, which is ignored. In
     // the future this will contain attestation information.
-    response = response.subspan(0, cablev2::HandshakeInitiator::kResponseSize);
+    response = response.first<cablev2::HandshakeInitiator::kResponseSize>();
 
     cablev2::HandshakeResult result = handshake_.ProcessResponse(response);
     if (!result) {
