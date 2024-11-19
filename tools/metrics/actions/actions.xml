@@ -42356,6 +42356,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.CloseTab.Abort">
+  <obsolete>Merged with CloseTabFullGroup.Abort.</obsolete>
   <owner>zheliooo@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42365,6 +42366,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.CloseTab.Proceed">
+  <obsolete>Merged with CloseTabFullGroup.Proceed.</obsolete>
   <owner>zheliooo@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42374,6 +42376,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.CloseTab.StopShowing">
+  <obsolete>Merged with CloseTabFullGroup.StopShowing.</obsolete>
   <owner>zheliooo@google.com</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42528,6 +42531,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.RemoveTab.Abort">
+  <obsolete>Merged with RemoveTabFullGroup.Abort.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42536,6 +42540,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.RemoveTab.Proceed">
+  <obsolete>Merged with RemoveTabFullGroup.Proceed.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>
@@ -42544,6 +42549,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TabGroupConfirmation.RemoveTab.StopShowing">
+  <obsolete>Merged with RemoveTabFullGroup.StopShowing.</obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
   <description>

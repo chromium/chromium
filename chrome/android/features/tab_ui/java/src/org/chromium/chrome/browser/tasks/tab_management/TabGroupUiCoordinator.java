@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -137,10 +136,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
 
     private ActionConfirmationManager createActionConfirmationManager() {
         Profile profile = mTabModelSelector.getModel(false).getProfile();
-        TabGroupModelFilter regularFilter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
-        return new ActionConfirmationManager(
-                profile, mActivity, regularFilter, mModalDialogManager);
+        return new ActionConfirmationManager(profile, mActivity, mModalDialogManager);
     }
 
     private TabGridDialogMediator.DialogController initTabGridDialogCoordinator() {

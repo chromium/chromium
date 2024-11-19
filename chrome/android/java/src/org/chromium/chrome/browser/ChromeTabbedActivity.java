@@ -838,7 +838,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     new ActionConfirmationManager(
                             mTabModelProfileSupplier.get(),
                             this,
-                            /* regularTabGroupModelFilter= */ null,
                             getModalDialogManagerSupplier().get());
 
             mLayoutManager =

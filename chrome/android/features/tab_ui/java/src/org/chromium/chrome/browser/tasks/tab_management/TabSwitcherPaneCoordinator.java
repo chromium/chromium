@@ -242,7 +242,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                     filter.isIncognitoBranded()
                             ? null
                             : new ActionConfirmationManager(
-                                    profile, mActivity, filter, mModalDialogManager);
+                                    profile, mActivity, mModalDialogManager);
 
             mDialogControllerSupplier =
                     LazyOneshotSupplier.fromSupplier(

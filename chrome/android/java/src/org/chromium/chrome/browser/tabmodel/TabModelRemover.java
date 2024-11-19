@@ -119,10 +119,7 @@ class TabModelRemover {
             TabGroupModelFilter filter = getTabGroupModelFilter();
             mActionConfirmationManager =
                     new ActionConfirmationManager(
-                            filter.getTabModel().getProfile(),
-                            mContext,
-                            filter,
-                            mModalDialogManager);
+                            filter.getTabModel().getProfile(), mContext, mModalDialogManager);
         }
         return mActionConfirmationManager;
     }
