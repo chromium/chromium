@@ -12,12 +12,10 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityLifecycleUmaTrack
 import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
-import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
-import org.chromium.chrome.browser.customtabs.CustomTabTaskDescriptionHelper;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
@@ -60,13 +58,9 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     CustomTabStatusBarColorProvider resolveCustomTabStatusBarColorProvider();
 
-    CustomTabTaskDescriptionHelper resolveTaskDescriptionHelper();
-
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
 
     CustomTabMinimizationManagerHolder resolveCustomTabMinimizationManagerHolder();
-
-    CustomTabFeatureOverridesManager resolveCustomTabFeatureOverridesManager();
 
     // Webapp & WebAPK only
     WebappActivityCoordinator resolveWebappActivityCoordinator();

@@ -22,7 +22,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -104,9 +103,7 @@ public class SplashController extends CustomTabTabObserver
 
     @Inject
     public SplashController(
-            BaseCustomTabActivity activity,
-            CustomTabOrientationController orientationController,
-            Lazy<CompositorViewHolder> compositorViewHolder) {
+            BaseCustomTabActivity activity, Lazy<CompositorViewHolder> compositorViewHolder) {
         mActivity = activity;
         mLifecycleDispatcher = activity.getLifecycleDispatcher();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
@@ -118,7 +115,8 @@ public class SplashController extends CustomTabTabObserver
         mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
 
-        orientationController.delayOrientationRequestsIfNeeded(this, mIsWindowInitiallyTranslucent);
+        activity.getCustomTabOrientationController()
+                .delayOrientationRequestsIfNeeded(this, mIsWindowInitiallyTranslucent);
 
         mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerActivityTabObserver(this);

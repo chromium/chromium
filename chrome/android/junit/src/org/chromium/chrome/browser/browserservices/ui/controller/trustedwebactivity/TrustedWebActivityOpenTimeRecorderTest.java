@@ -60,10 +60,9 @@ public class TrustedWebActivityOpenTimeRecorderTest {
         doNothing()
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
-        when(mActivity.getActivityTabProvider()).thenReturn(mTabProvider);
-        when(mActivity.getCurrentPageVerifier()).thenReturn(mCurrentPageVerifier);
-        mRecorder = new TrustedWebActivityOpenTimeRecorder(mActivity);
+        mRecorder =
+                new TrustedWebActivityOpenTimeRecorder(
+                        mCurrentPageVerifier, mTabProvider, mLifecycleDispatcher);
 
         when(mTabProvider.get()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);

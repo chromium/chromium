@@ -78,9 +78,7 @@ public class ImmersiveModeControllerTest {
                 .setSystemUiVisibility(anyInt());
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
-        when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
-        when(mActivity.getWindowAndroid()).thenReturn(mWindowAndroid);
-        mController = new ImmersiveModeController(mActivity);
+        mController = new ImmersiveModeController(mActivity, mWindowAndroid, mLifecycleDispatcher);
     }
 
     @Test

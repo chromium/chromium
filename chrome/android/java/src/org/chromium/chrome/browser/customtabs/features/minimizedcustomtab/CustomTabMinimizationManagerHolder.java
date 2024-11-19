@@ -49,15 +49,14 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     public CustomTabMinimizationManagerHolder(
             BaseCustomTabActivity activity,
             Provider<CustomTabActivityNavigationController> navigationController,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
-            CustomTabFeatureOverridesManager featureOverridesManager) {
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mActivity = activity;
         mNavigationController = navigationController;
         mActivityTabProvider = activity.getActivityTabProvider();
         mIntentDataProvider = activity.getIntentDataProvider();
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mLifecycleDispatcher = activity.getLifecycleDispatcher();
-        mFeatureOverridesManager = featureOverridesManager;
+        mFeatureOverridesManager = activity.getCustomTabFeatureOverridesManager();
 
         mLifecycleDispatcher.register(this);
     }

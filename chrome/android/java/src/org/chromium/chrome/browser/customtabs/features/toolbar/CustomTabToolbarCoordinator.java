@@ -85,8 +85,7 @@ public class CustomTabToolbarCoordinator {
     public CustomTabToolbarCoordinator(
             BaseCustomTabActivity activity,
             CustomTabActivityNavigationController navigationController,
-            CustomTabCompositorContentInitializer compositorContentInitializer,
-            CustomTabToolbarColorController toolbarColorController) {
+            CustomTabCompositorContentInitializer compositorContentInitializer) {
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mActivity = activity;
@@ -95,7 +94,7 @@ public class CustomTabToolbarCoordinator {
         mNavigationController = navigationController;
         mCloseButtonVisibilityManager = activity.getCloseButtonVisibilityManager();
         mVisibilityDelegate = activity.getCustomTabBrowserControlsVisibilityDelegate();
-        mToolbarColorController = toolbarColorController;
+        mToolbarColorController = activity.getCustomTabToolbarColorController();
 
         compositorContentInitializer.addCallback(this::onCompositorContentInitialized);
     }

@@ -8,8 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
-import dagger.Lazy;
-
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityBrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -32,7 +31,7 @@ public class SharedActivityCoordinator implements InflationObserver {
     private TrustedWebActivityBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final CustomTabToolbarColorController mToolbarColorController;
     private final CustomTabStatusBarColorProvider mStatusBarColorProvider;
-    private final Lazy<ImmersiveModeController> mImmersiveModeController;
+    private final Supplier<ImmersiveModeController> mImmersiveModeController;
     private final CustomTabOrientationController mCustomTabOrientationController;
 
     @Nullable private final ImmersiveMode mImmersiveDisplayMode;
@@ -42,19 +41,16 @@ public class SharedActivityCoordinator implements InflationObserver {
     @Inject
     public SharedActivityCoordinator(
             CustomTabActivityNavigationController navigationController,
-            CustomTabToolbarColorController toolbarColorController,
             CustomTabStatusBarColorProvider statusBarColorProvider,
             TrustedWebActivityBrowserControlsVisibilityManager browserControlsVisibilityManager,
-            Lazy<ImmersiveModeController> immersiveModeController,
-            CustomTabOrientationController customTabOrientationController,
             BaseCustomTabActivity activity) {
         mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
-        mToolbarColorController = toolbarColorController;
+        mToolbarColorController = activity.getCustomTabToolbarColorController();
         mStatusBarColorProvider = statusBarColorProvider;
-        mImmersiveModeController = immersiveModeController;
+        mImmersiveModeController = activity::getImmersiveModeController;
         mImmersiveDisplayMode = computeImmersiveMode(activity.getIntentDataProvider());
-        mCustomTabOrientationController = customTabOrientationController;
+        mCustomTabOrientationController = activity.getCustomTabOrientationController();
 
         navigationController.setLandingPageOnCloseCriterion(
                 activity.getVerifier()::wasPreviouslyVerified);

@@ -11,15 +11,11 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 
-import javax.inject.Inject;
-
 /** Records how long Trusted Web Activities are used for. */
-@ActivityScope
 public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNativeObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final ActivityTabProvider mTabProvider;
@@ -30,11 +26,13 @@ public class TrustedWebActivityOpenTimeRecorder implements PauseResumeWithNative
     private boolean mInVerifiedOrigin;
     private boolean mTwaOpenedRecorded;
 
-    @Inject
-    TrustedWebActivityOpenTimeRecorder(BaseCustomTabActivity activity) {
-        mCurrentPageVerifier = activity.getCurrentPageVerifier();
-        mTabProvider = activity.getActivityTabProvider();
-        activity.getLifecycleDispatcher().register(this);
+    public TrustedWebActivityOpenTimeRecorder(
+            CurrentPageVerifier currentPageVerifier,
+            ActivityTabProvider tabProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mCurrentPageVerifier = currentPageVerifier;
+        mTabProvider = tabProvider;
+        lifecycleDispatcher.register(this);
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationStateChanged);
     }
 

@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityOpenTimeRecorder;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHomescreenVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
@@ -62,11 +63,13 @@ import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -125,7 +128,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private Verifier mVerifier;
     protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
-    protected CustomTabFeatureOverridesManager mFeatureOverridesManager;
+    private CustomTabFeatureOverridesManager mCustomTabFeatureOverridesManager;
     private boolean mWarmupOnDestroy;
     private TabObserverRegistrar mTabObserverRegistrar;
     private CustomTabObserver mCustomTabObserver;
@@ -136,6 +139,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabBrowserControlsVisibilityDelegate mCustomTabBrowserControlsVisibilityDelegate;
     private CurrentPageVerifier mCurrentPageVerifier;
     private CustomTabActivityClientConnectionKeeper mCustomTabActivityClientConnectionKeeper;
+    private CustomTabOrientationController mCustomTabOrientationController;
+    private ImmersiveModeController mImmersiveModeController;
+    private CustomTabToolbarColorController mCustomTabToolbarColorController;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -284,7 +290,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         mBackPressManager,
                         () -> mTabController,
                         () -> mMinimizationManagerHolder.getMinimizationManager(),
-                        () -> mFeatureOverridesManager,
+                        () -> getCustomTabFeatureOverridesManager(),
                         getBaseChromeLayout(),
                         getEdgeToEdgeStateProvider());
         return mBaseCustomTabRootUiCoordinator;
@@ -329,6 +335,14 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 ChromeApplicationImpl.getComponent()
                         .createBaseCustomTabActivityComponent(commonsModule, baseCustomTabsModule);
 
+        mCustomTabToolbarColorController =
+                new CustomTabToolbarColorController(
+                        this,
+                        getIntentDataProvider(),
+                        getCustomTabActivityTabProvider(),
+                        getTabObserverRegistrar(),
+                        getTopUiThemeColorProvider());
+
         mDelegateFactory = component.resolveTabDelegateFactory();
         mToolbarCoordinator = component.resolveToolbarCoordinator();
         mNavigationController = component.resolveNavigationController();
@@ -338,7 +352,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         mCustomTabIntentHandler = component.resolveIntentHandler();
 
         component.resolveCompositorContentInitializer();
-        component.resolveTaskDescriptionHelper();
         component.resolveUmaTracker();
         mNavigationController.setFinishHandler(
                 (reason, warmupOnFinish) -> {
@@ -376,7 +389,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         }
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
-        mFeatureOverridesManager = component.resolveCustomTabFeatureOverridesManager();
         mTabFactory.setActivityType(getActivityType());
         mDelegateFactory.setEphemeralTabCoordinatorSupplier(
                 mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
@@ -465,9 +477,22 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getCustomTabActivityTabProvider(),
                         getLifecycleDispatcher());
 
+        super.performPreInflationStartup();
+
         new CustomTabDownloadObserver(this, getTabObserverRegistrar());
 
-        super.performPreInflationStartup();
+        if (mIntentDataProvider.isTrustedWebActivity()) {
+            new TrustedWebActivityOpenTimeRecorder(
+                    getCurrentPageVerifier(), getActivityTabProvider(), getLifecycleDispatcher());
+        }
+
+        new CustomTabTaskDescriptionHelper(
+                this,
+                getCustomTabActivityTabProvider(),
+                getTabObserverRegistrar(),
+                getIntentDataProvider(),
+                getTopUiThemeColorProvider(),
+                getLifecycleDispatcher());
 
         mTabController.setUpInitialTab(hiddenTab != null ? hiddenTab.tab : null);
 
@@ -886,7 +911,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected boolean wasInPictureInPictureForMinimizedCustomTabs() {
-        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(this, mFeatureOverridesManager)) {
+        if (!MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
+                this, getCustomTabFeatureOverridesManager())) {
             return false;
         }
         return mLastPipMode == PictureInPictureMode.MINIMIZED_CUSTOM_TAB;
@@ -941,8 +967,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     public TwaFinishHandler getTwaFinishHandler() {
-        if (mTwaFinishHandler == null)
+        if (mTwaFinishHandler == null) {
             mTwaFinishHandler = new TwaFinishHandler(this, mIntentDataProvider);
+        }
         return mTwaFinishHandler;
     }
 
@@ -987,5 +1014,33 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabActivityClientConnectionKeeper getCustomTabActivityClientConnectionKeeper() {
         return mCustomTabActivityClientConnectionKeeper;
+    }
+
+    public CustomTabFeatureOverridesManager getCustomTabFeatureOverridesManager() {
+        if (mCustomTabFeatureOverridesManager == null) {
+            mCustomTabFeatureOverridesManager =
+                    new CustomTabFeatureOverridesManager(getIntentDataProvider());
+        }
+        return mCustomTabFeatureOverridesManager;
+    }
+
+    public CustomTabOrientationController getCustomTabOrientationController() {
+        if (mCustomTabOrientationController == null) {
+            mCustomTabOrientationController =
+                    new CustomTabOrientationController(getWindowAndroid(), getIntentDataProvider());
+        }
+        return mCustomTabOrientationController;
+    }
+
+    public ImmersiveModeController getImmersiveModeController() {
+        if (mImmersiveModeController == null) {
+            mImmersiveModeController =
+                    new ImmersiveModeController(this, getWindowAndroid(), getLifecycleDispatcher());
+        }
+        return mImmersiveModeController;
+    }
+
+    public CustomTabToolbarColorController getCustomTabToolbarColorController() {
+        return mCustomTabToolbarColorController;
     }
 }

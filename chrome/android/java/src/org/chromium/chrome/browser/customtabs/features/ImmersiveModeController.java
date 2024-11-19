@@ -19,16 +19,13 @@ import android.view.Window;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
-
-import javax.inject.Inject;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Allows to enter and exit immersive mode in TWAs and WebAPKs. */
-@ActivityScope
 public class ImmersiveModeController implements WindowFocusChangedObserver, DestroyObserver {
     private static final int ENTER_IMMERSIVE_MODE_ON_WINDOW_FOCUS_DELAY_MILLIS = 300;
     private static final int RESTORE_IMMERSIVE_MODE_DELAY_MILLIS = 3000;
@@ -55,12 +52,14 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
             (IMMERSIVE_MODE_UI_FLAGS & ~View.SYSTEM_UI_FLAG_IMMERSIVE)
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-    @Inject
-    public ImmersiveModeController(BaseCustomTabActivity activity) {
+    public ImmersiveModeController(
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
 
-        mCutoutSupplier.attach(activity.getWindowAndroid().getUnownedUserDataHost());
+        mCutoutSupplier.attach(windowAndroid.getUnownedUserDataHost());
     }
 
     /**
