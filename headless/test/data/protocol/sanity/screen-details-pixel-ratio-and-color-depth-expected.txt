@@ -1,0 +1,2 @@
+Tests screen details pixel ratio and color depth.
+Screen: colorDepth=32 devicePixelRatio=3

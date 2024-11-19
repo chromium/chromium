@@ -605,4 +605,14 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/screen-orientation-lock-natural-portrait.js",
     "--screen-info={600x800}")
 
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenDetailsMultipleScreens,
+    "sanity/screen-details-multiple-screens.js",
+    "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    ScreenDetailsPixelRatioAndColorDepth,
+    "sanity/screen-details-pixel-ratio-and-color-depth.js",
+    "--screen-info={ label='Screen' devicePixelRatio=3.0 colorDepth=32 }")
+
 }  // namespace headless
