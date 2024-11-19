@@ -35,6 +35,8 @@ class ArcKeyMintBridge : public KeyedService,
   // browser |context| is not allowed to use ARC.
   static ArcKeyMintBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcKeyMintBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcKeyMintBridge(content::BrowserContext* context,
                    ArcBridgeService* bridge_service);

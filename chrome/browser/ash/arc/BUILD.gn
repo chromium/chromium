@@ -186,6 +186,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/input_overlay:unit_tests",
     "//chrome/browser/ash/arc/instance_throttle:unit_tests",
     "//chrome/browser/ash/arc/intent_helper:unit_tests",
+    "//chrome/browser/ash/arc/keymint:unit_tests",
     "//chrome/browser/ash/arc/memory_pressure:unit_tests",
     "//chrome/browser/ash/arc/nearby_share:unit_tests",
     "//chrome/browser/ash/arc/net:unit_tests",

@@ -48,6 +48,12 @@ ArcKeyMintBridge* ArcKeyMintBridge::GetForBrowserContext(
   return ArcKeyMintBridgeFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcKeyMintBridge* ArcKeyMintBridge::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcKeyMintBridgeFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcKeyMintBridge::ArcKeyMintBridge(content::BrowserContext* context,
                                    ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
