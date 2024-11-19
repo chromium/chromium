@@ -184,10 +184,15 @@ class Preconnector {
   HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
 
   int Preconnect(HttpStreamPool& pool) {
+    const HttpStreamKey stream_key = GetStreamKey();
     int rv = pool.Preconnect(
-        HttpStreamPoolSwitchingInfo(GetStreamKey(), alternative_service_info_,
-                                    is_http1_allowed_, load_flags_,
-                                    proxy_info_),
+        HttpStreamPoolRequestInfo(
+            stream_key.destination(), stream_key.privacy_mode(),
+            stream_key.socket_tag(), stream_key.network_anonymization_key(),
+            stream_key.secure_dns_policy(),
+            stream_key.disable_cert_network_fetches(),
+            alternative_service_info_, is_http1_allowed_, load_flags_,
+            proxy_info_),
         num_streams_,
         base::BindOnce(&Preconnector::OnComplete, base::Unretained(this)));
     if (rv != ERR_IO_PENDING) {
@@ -309,12 +314,16 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   HttpStreamKey GetStreamKey() const { return key_builder_.Build(); }
 
   HttpStreamRequest* RequestStream(HttpStreamPool& pool) {
-    HttpStreamKey stream_key = GetStreamKey();
+    const HttpStreamKey stream_key = GetStreamKey();
     request_ = pool.RequestStream(
         this,
-        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
-                                    is_http1_allowed_, load_flags_,
-                                    proxy_info_),
+        HttpStreamPoolRequestInfo(
+            stream_key.destination(), stream_key.privacy_mode(),
+            stream_key.socket_tag(), stream_key.network_anonymization_key(),
+            stream_key.secure_dns_policy(),
+            stream_key.disable_cert_network_fetches(),
+            alternative_service_info_, is_http1_allowed_, load_flags_,
+            proxy_info_),
         priority_, allowed_bad_certs_, enable_ip_based_pooling_,
         enable_alternative_services_, NetLogWithSource());
     return request_.get();
@@ -383,7 +392,7 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo request_info) override {}
+      HttpStreamPoolRequestInfo request_info) override {}
 
   std::unique_ptr<HttpStream> ReleaseStream() { return std::move(stream_); }
 

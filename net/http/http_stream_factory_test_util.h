@@ -93,11 +93,11 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
 
   // `switching_info` is not copyable and therefore cannot be mocked.
   MOCK_METHOD1(OnSwitchesToHttpStreamPoolImpl,
-               void(HttpStreamPoolSwitchingInfo& switching_info));
+               void(HttpStreamPoolRequestInfo& request_info));
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo switching_info) override {
-    OnSwitchesToHttpStreamPoolImpl(switching_info);
+      HttpStreamPoolRequestInfo request_info) override {
+    OnSwitchesToHttpStreamPoolImpl(request_info);
   }
 };
 

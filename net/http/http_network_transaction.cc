@@ -774,13 +774,13 @@ void HttpNetworkTransaction::OnQuicBroken() {
 }
 
 void HttpNetworkTransaction::OnSwitchesToHttpStreamPool(
-    HttpStreamPoolSwitchingInfo switching_info) {
+    HttpStreamPoolRequestInfo request_info) {
   CHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   CHECK(stream_request_);
   stream_request_.reset();
 
   stream_request_ = session_->http_stream_pool()->RequestStream(
-      this, std::move(switching_info), priority_,
+      this, std::move(request_info), priority_,
       /*allowed_bad_certs=*/observed_bad_certs_, enable_ip_based_pooling_,
       enable_alternative_services_, net_log_);
   CHECK(!stream_request_->completed());

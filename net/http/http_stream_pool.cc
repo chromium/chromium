@@ -124,36 +124,38 @@ void HttpStreamPool::OnShuttingDown() {
 
 std::unique_ptr<HttpStreamRequest> HttpStreamPool::RequestStream(
     HttpStreamRequest::Delegate* delegate,
-    HttpStreamPoolSwitchingInfo switching_info,
+    HttpStreamPoolRequestInfo request_info,
     RequestPriority priority,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     bool enable_ip_based_pooling,
     bool enable_alternative_services,
     const NetLogWithSource& net_log) {
-  auto controller = std::make_unique<JobController>(this);
+  auto controller = std::make_unique<JobController>(
+      this, std::move(request_info), enable_ip_based_pooling,
+      enable_alternative_services);
   JobController* controller_raw_ptr = controller.get();
   // Put `controller` into `job_controllers_` before calling RequestStream() to
   // make sure `job_controllers_` always contains `controller` when
   // OnJobControllerComplete() is called.
   job_controllers_.emplace(std::move(controller));
 
-  return controller_raw_ptr->RequestStream(
-      delegate, std::move(switching_info), priority, allowed_bad_certs,
-      enable_ip_based_pooling, enable_alternative_services, net_log);
+  return controller_raw_ptr->RequestStream(delegate, priority,
+                                           allowed_bad_certs, net_log);
 }
 
-int HttpStreamPool::Preconnect(HttpStreamPoolSwitchingInfo switching_info,
+int HttpStreamPool::Preconnect(HttpStreamPoolRequestInfo request_info,
                                size_t num_streams,
                                CompletionOnceCallback callback) {
-  auto controller = std::make_unique<JobController>(this);
+  auto controller = std::make_unique<JobController>(
+      this, std::move(request_info), /*enable_ip_based_pooling=*/true,
+      /*enable_alternative_services=*/true);
   JobController* controller_raw_ptr = controller.get();
   // SAFETY: Using base::Unretained() is safe because `this` will own
   // `controller` when Preconnect() return ERR_IO_PENDING.
   int rv = controller_raw_ptr->Preconnect(
-      std::move(switching_info), num_streams,
-      base::BindOnce(&HttpStreamPool::OnPreconnectComplete,
-                     base::Unretained(this), controller_raw_ptr,
-                     std::move(callback)));
+      num_streams, base::BindOnce(&HttpStreamPool::OnPreconnectComplete,
+                                  base::Unretained(this), controller_raw_ptr,
+                                  std::move(callback)));
   if (rv == ERR_IO_PENDING) {
     job_controllers_.emplace(std::move(controller));
   }

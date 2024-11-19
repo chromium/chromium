@@ -21,7 +21,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/http/alternative_service.h"
-#include "net/http/http_stream_pool_switching_info.h"
+#include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_client_socket.h"
@@ -125,7 +125,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Requests an HttpStream.
   std::unique_ptr<HttpStreamRequest> RequestStream(
       HttpStreamRequest::Delegate* delegate,
-      HttpStreamPoolSwitchingInfo switching_info,
+      HttpStreamPoolRequestInfo request_info,
       RequestPriority priority,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       bool enable_ip_based_pooling,
@@ -134,7 +134,7 @@ class NET_EXPORT_PRIVATE HttpStreamPool
 
   // Requests that enough connections/sessions for `num_streams` be opened.
   // `callback` is only invoked when the return value is `ERR_IO_PENDING`.
-  int Preconnect(HttpStreamPoolSwitchingInfo switching_info,
+  int Preconnect(HttpStreamPoolRequestInfo request_info,
                  size_t num_streams,
                  CompletionOnceCallback callback);
 

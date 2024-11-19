@@ -359,12 +359,12 @@ class StreamRequester : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo switching_info) override {
+      HttpStreamPoolRequestInfo request_info) override {
     CHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV3));
     CHECK(request_);
 
     request_ = session_->http_stream_pool()->RequestStream(
-        this, std::move(switching_info), priority_, allowed_bad_certs_,
+        this, std::move(request_info), priority_, allowed_bad_certs_,
         enable_ip_based_pooling_, enable_alternative_services_,
         NetLogWithSource());
 

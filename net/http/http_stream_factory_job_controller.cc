@@ -28,7 +28,7 @@
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
-#include "net/http/http_stream_pool_switching_info.h"
+#include "net/http/http_stream_pool_request_info.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -1495,17 +1495,15 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
 
   bool disable_cert_network_fetches =
       !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-  HttpStreamKey stream_key(
+  HttpStreamPoolRequestInfo pool_request_info(
       url::SchemeHostPort(origin_url_), request_info_.privacy_mode,
       request_info_.socket_tag, request_info_.network_anonymization_key,
-      request_info_.secure_dns_policy, disable_cert_network_fetches);
-
+      request_info_.secure_dns_policy, disable_cert_network_fetches,
+      alternative_service_info_, request_info_.is_http1_allowed,
+      request_info_.load_flags, proxy_info_);
   if (is_preconnect_) {
     int rv = session_->http_stream_pool()->Preconnect(
-        HttpStreamPoolSwitchingInfo(stream_key, alternative_service_info_,
-                                    request_info_.is_http1_allowed,
-                                    request_info_.load_flags, proxy_info_),
-        num_streams_,
+        std::move(pool_request_info), num_streams_,
         base::BindOnce(&JobController::OnPoolPreconnectsComplete,
                        ptr_factory_.GetWeakPtr()));
     if (rv != ERR_IO_PENDING) {
@@ -1519,8 +1517,7 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&JobController::CallOnSwitchesToHttpStreamPool,
-                     ptr_factory_.GetWeakPtr(), std::move(stream_key),
-                     alternative_service_info_));
+                     ptr_factory_.GetWeakPtr(), std::move(pool_request_info)));
 }
 
 void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
@@ -1530,16 +1527,13 @@ void HttpStreamFactory::JobController::OnPoolPreconnectsComplete(int rv) {
 }
 
 void HttpStreamFactory::JobController::CallOnSwitchesToHttpStreamPool(
-    HttpStreamKey stream_key,
-    AlternativeServiceInfo alternative_service_info) {
+    HttpStreamPoolRequestInfo request_info) {
   CHECK(request_);
   CHECK(delegate_);
 
   // `request_` and `delegate_` will be reset later.
 
-  delegate_->OnSwitchesToHttpStreamPool(HttpStreamPoolSwitchingInfo(
-      std::move(stream_key), std::move(alternative_service_info),
-      request_info_.is_http1_allowed, request_info_.load_flags, proxy_info_));
+  delegate_->OnSwitchesToHttpStreamPool(std::move(request_info));
 }
 
 }  // namespace net
