@@ -70,13 +70,13 @@ namespace web_request = api::web_request;
 // request.
 // These values are written to logs.  New enum values can be added, but existing
 // enum values must never be renumbered or deleted and reused.
-enum RequestAction {
-  CANCEL = 0,
-  REDIRECT = 1,
-  MODIFY_REQUEST_HEADERS = 2,
-  MODIFY_RESPONSE_HEADERS = 3,
-  SET_AUTH_CREDENTIALS = 4,
-  MAX
+enum class RequestAction {
+  kCancel = 0,
+  kRedirect = 1,
+  kModifyRequestHeaders = 2,
+  kModifyResponseHeaders = 3,
+  kSetAuthCredentials = 4,
+  kMaxValue = kSetAuthCredentials,
 };
 
 constexpr char kEventMessage[] = "webViewInternal.onMessage";
@@ -173,9 +173,7 @@ const char* GetRequestStageAsString(WebRequestEventRouter::EventTypes type) {
 }
 
 void LogRequestAction(RequestAction action) {
-  DCHECK_NE(RequestAction::MAX, action);
-  UMA_HISTOGRAM_ENUMERATION("Extensions.WebRequestAction", action,
-                            RequestAction::MAX);
+  UMA_HISTOGRAM_ENUMERATION("Extensions.WebRequestAction", action);
   TRACE_EVENT1("extensions", "WebRequestAction", "action", action);
 }
 
@@ -2475,19 +2473,19 @@ int WebRequestEventRouter::ExecuteDeltas(
   // actions are used by extensions. Hence multiple actions may be logged for a
   // single delta execution.
   if (canceled_by_extension) {
-    LogRequestAction(RequestAction::CANCEL);
+    LogRequestAction(RequestAction::kCancel);
   }
   if (redirected) {
-    LogRequestAction(RequestAction::REDIRECT);
+    LogRequestAction(RequestAction::kRedirect);
   }
   if (request_headers_modified) {
-    LogRequestAction(RequestAction::MODIFY_REQUEST_HEADERS);
+    LogRequestAction(RequestAction::kModifyRequestHeaders);
   }
   if (response_headers_modified) {
-    LogRequestAction(RequestAction::MODIFY_RESPONSE_HEADERS);
+    LogRequestAction(RequestAction::kModifyResponseHeaders);
   }
   if (credentials_set) {
-    LogRequestAction(RequestAction::SET_AUTH_CREDENTIALS);
+    LogRequestAction(RequestAction::kSetAuthCredentials);
   }
 
   // This triggers onErrorOccurred if canceled is true.
