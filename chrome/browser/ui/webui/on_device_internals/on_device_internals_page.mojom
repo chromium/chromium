@@ -8,6 +8,11 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
+// Struct containing data to be displayed on on-device-internals page.
+struct OnDeviceInternalsData {
+  // Whether the base model is downloaded and ready.
+  bool base_model_ready;
+};
 
 // Lives in the browser process. A renderer uses this to link itself with
 // a page handler.
@@ -30,6 +35,9 @@ interface OnDeviceInternalsPageHandler {
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() =>
       (on_device_model.mojom.PerformanceClass performance_class);
+
+  // Returns the status of various on-device models.
+  GetOnDeviceInternalsData() => (OnDeviceInternalsData page_data);
 };
 
 

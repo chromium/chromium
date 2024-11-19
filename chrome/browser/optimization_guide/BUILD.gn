@@ -23,6 +23,7 @@ source_set("optimization_guide") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/on_device_internals:mojom",
     "//components/keyed_service/core",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/core:prediction",

@@ -13,6 +13,8 @@
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
+class OptimizationGuideKeyedService;
+
 // Handler for the internals page to receive and forward the log messages.
 class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
                                      public OptimizationGuideLogger::Observer {
@@ -20,7 +22,7 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
   OnDeviceInternalsPageHandler(
       mojo::PendingReceiver<mojom::OnDeviceInternalsPageHandler> receiver,
       mojo::PendingRemote<mojom::OnDeviceInternalsPage> page,
-      OptimizationGuideLogger* optimization_guide_logger);
+      OptimizationGuideKeyedService* optimization_guide_keyed_service);
   ~OnDeviceInternalsPageHandler() override;
 
   OnDeviceInternalsPageHandler(const OnDeviceInternalsPageHandler&) = delete;
@@ -50,6 +52,8 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
       LoadModelCallback callback) override;
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
+  void GetOnDeviceInternalsData(
+      GetOnDeviceInternalsDataCallback callback) override;
 
   // optimization_guide::OptimizationGuideLogger::Observer:
   void OnLogMessageAdded(base::Time event_time,
@@ -68,6 +72,7 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
   // optimization guide keyed service, while |this| is part of
   // RenderFrameHostImpl::WebUIImpl.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
   base::WeakPtrFactory<OnDeviceInternalsPageHandler> weak_ptr_factory_{this};
 };

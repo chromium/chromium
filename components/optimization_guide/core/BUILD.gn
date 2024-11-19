@@ -327,6 +327,7 @@ static_library("core") {
   deps = [
     ":bloomfilter",
     "//base",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/prefs",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/unified_consent",
