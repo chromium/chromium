@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/data_host.mojom.h"
@@ -133,16 +134,60 @@ AttributionInputEvent AttributionHost::GetMostRecentNavigationInputEvent()
 }
 
 void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
+  // Impression navigations need to navigate the primary main frame to be valid.
+  // Impressions should never be attached to same-document navigations but can
+  // be the result of a bad renderer.
+
+  // A navigation is considered client bounce if it navigates the current page
+  // away within a short period of time without any user interaction with the
+  // page, and the navigation is not user initiated. Client bounce detection
+  // only cares about primary main frame and non-same-document navigations.
+
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (primary_main_frame_data_.has_value()) {
+    // Note that `NavigationHandle::HasUserGesture()` does not capture
+    // browser-initiated navigations. The negation of
+    // `NavigationHandle::IsRendererInitiated()` tells us whether the navigation
+    // is browser-initiated.
+    bool has_user_gesture = navigation_handle->HasUserGesture() ||
+                            !navigation_handle->IsRendererInitiated();
+
+    // A user gesture indicates no client-redirect. And, we don't consider a
+    // client-redirect to be a bounce if there was user interaction on the page
+    // or if we timed out on the client bounce detection timers.
+    if (!has_user_gesture && !primary_main_frame_data_->has_user_interaction &&
+        primary_main_frame_data_->num_data_hosts_registered > 0) {
+      CHECK(last_navigation_time_.has_value());
+      base::TimeDelta time_since_last_navigation =
+          base::Time::Now() - *last_navigation_time_;
+
+      if (time_since_last_navigation < base::Seconds(1)) {
+        base::UmaHistogramCounts100(
+            "Conversions.NumDataHostsRegisteredOnClientBounce.1s",
+            primary_main_frame_data_->num_data_hosts_registered);
+      }
+      if (time_since_last_navigation < base::Seconds(5)) {
+        base::UmaHistogramCounts100(
+            "Conversions.NumDataHostsRegisteredOnClientBounce.5s",
+            primary_main_frame_data_->num_data_hosts_registered);
+      }
+      if (time_since_last_navigation < base::Seconds(10)) {
+        base::UmaHistogramCounts100(
+            "Conversions.NumDataHostsRegisteredOnClientBounce.10s",
+            primary_main_frame_data_->num_data_hosts_registered);
+      }
+    }
+  }
+
   const auto& impression = navigation_handle->GetImpression();
 
   // TODO(crbug.com/40262156): Consider checking for navigations taking place in
   // a prerendered main frame.
-
-  // Impression navigations need to navigate the primary main frame to be valid.
-  // Impressions should never be attached to same-document navigations but can
-  // be the result of a bad renderer.
-  if (!impression || !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+  if (!impression) {
     return;
   }
   RenderFrameHostImpl* initiator_frame_host =
@@ -193,6 +238,21 @@ void AttributionHost::DidRedirectNavigation(
 }
 
 void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsSameDocument()) {
+    if (primary_main_frame_data_.has_value()) {
+      // Resets for further client redirects.
+      primary_main_frame_data_->num_data_hosts_registered = 0;
+    }
+
+    // Sets current time to detect further client redirects.
+    last_navigation_time_ = base::Time::Now();
+
+    if (navigation_handle->HasCommitted()) {
+      primary_main_frame_data_ = PrimaryMainFrameData();
+    }
+  }
+
   const auto& impression = navigation_handle->GetImpression();
   if (!impression.has_value()) {
     return;
@@ -209,6 +269,14 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   ongoing_registration_eligible_navigations_.erase(
       navigation_handle->GetNavigationId());
+}
+
+void AttributionHost::FrameReceivedUserActivation(
+    RenderFrameHost* render_frame_host) {
+  // We consider user activation from all frames in the page.
+  if (primary_main_frame_data_.has_value()) {
+    primary_main_frame_data_->has_user_interaction = true;
+  }
 }
 
 void AttributionHost::NotifyNavigationRegistrationData(
@@ -280,6 +348,10 @@ void AttributionHost::RegisterDataHost(
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame()));
   if (!suitable_context.has_value()) {
     return;
+  }
+
+  if (primary_main_frame_data_.has_value()) {
+    primary_main_frame_data_->num_data_hosts_registered++;
   }
 
   AttributionDataHostManager* manager = suitable_context->data_host_manager();

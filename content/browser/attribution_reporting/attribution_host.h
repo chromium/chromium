@@ -8,9 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/data_host.mojom-forward.h"
@@ -63,6 +65,11 @@ class CONTENT_EXPORT AttributionHost
   friend class AttributionHostTestPeer;
   friend class WebContentsUserData<AttributionHost>;
 
+  struct PrimaryMainFrameData {
+    int num_data_hosts_registered = 0;
+    bool has_user_interaction = false;
+  };
+
   // blink::mojom::AttributionHost:
   void NotifyNavigationWithBackgroundRegistrationsWillStart(
       const blink::AttributionSrcToken& attribution_src_token,
@@ -79,6 +86,7 @@ class CONTENT_EXPORT AttributionHost
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void FrameReceivedUserActivation(RenderFrameHost* render_frame_host) override;
 
   void NotifyNavigationRegistrationData(NavigationHandle* navigation_handle);
 
@@ -96,6 +104,9 @@ class CONTENT_EXPORT AttributionHost
   std::unique_ptr<AttributionInputEventTrackerAndroid>
       input_event_tracker_android_;
 #endif
+
+  std::optional<base::Time> last_navigation_time_;
+  std::optional<PrimaryMainFrameData> primary_main_frame_data_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
