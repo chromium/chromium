@@ -62,6 +62,14 @@ NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(
 // Convenience version that grabs the required services from the `profile`.
 NSArray<id<SystemIdentity>>* GetIdentitiesOnDevice(ProfileIOS* profile);
 
+// Returns the default identity on the device, i.e. the first one returned by
+// GetIdentitiesOnDevice(), or nil if there are none.
+id<SystemIdentity> GetDefaultIdentityOnDevice(
+    signin::IdentityManager* identityManager,
+    ChromeAccountManagerService* accountManagerService);
+// Convenience version that grabs the required services from the `profile`.
+id<SystemIdentity> GetDefaultIdentityOnDevice(ProfileIOS* profile);
+
 }  // namespace signin
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_UTILS_H_
