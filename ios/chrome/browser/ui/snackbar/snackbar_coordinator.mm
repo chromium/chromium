@@ -21,12 +21,6 @@ namespace {
 const double kRetainA11yFocusSeconds = 0.75;
 }  // namespace
 
-// Allow access to `usesLegacyDismissalBehavior` since the autoroller to update
-// the header is broken.
-@interface MDCSnackbarMessage (UsesLegacyDismissalBehavior)
-@property(nonatomic) BOOL usesLegacyDismissalBehavior;
-@end
-
 @interface SnackbarCoordinator () <MDCSnackbarManagerDelegate>
 
 @property(nonatomic, weak) id<SnackbarCoordinatorDelegate> delegate;
@@ -91,10 +85,7 @@ const double kRetainA11yFocusSeconds = 0.75;
 
 - (void)showSnackbarMessage:(MDCSnackbarMessage*)message
                bottomOffset:(CGFloat)offset {
-  if ([message respondsToSelector:@selector(setUsesLegacyDismissalBehavior:)]) {
-    message.usesLegacyDismissalBehavior = YES;
-  }
-
+  message.usesLegacyDismissalBehavior = YES;
   [[MDCSnackbarManager defaultManager]
       setPresentationHostView:self.baseViewController.view.window];
   [[MDCSnackbarManager defaultManager] setBottomOffset:offset];
