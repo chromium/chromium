@@ -1100,14 +1100,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
     ApplyScrollStart();
   }
 
-  ScrollOffset offset_for_scroll_marker_update = GetScrollOffset();
-  if (GetScrollAnimator().HasRunningAnimation()) {
-    offset_for_scroll_marker_update = GetScrollAnimator().DesiredTargetOffset();
-  } else if (GetProgrammaticScrollAnimator().HasRunningAnimation()) {
-    offset_for_scroll_marker_update =
-        GetProgrammaticScrollAnimator().TargetOffset();
-  }
-  UpdateScrollMarkers(offset_for_scroll_marker_update);
+  UpdateScrollMarkers();
 }
 
 Element* PaintLayerScrollableArea::GetElementForScrollStart() const {
@@ -3404,16 +3397,28 @@ void PaintLayerScrollableArea::SetSnappedQueryTargetIds(
   EnsureRareData().snapped_query_target_ids_ = ids;
 }
 
-void PaintLayerScrollableArea::UpdateScrollMarkers(const ScrollOffset& offset) {
+ScrollOffset PaintLayerScrollableArea::GetScrollOffsetForScrollMarkerUpdate() {
+  ScrollOffset offset_for_scroll_marker_update = GetScrollOffset();
+  if (GetScrollAnimator().HasRunningAnimation()) {
+    offset_for_scroll_marker_update = GetScrollAnimator().DesiredTargetOffset();
+  } else if (GetProgrammaticScrollAnimator().HasRunningAnimation()) {
+    offset_for_scroll_marker_update =
+        GetProgrammaticScrollAnimator().TargetOffset();
+  }
+  return offset_for_scroll_marker_update;
+}
+
+void PaintLayerScrollableArea::UpdateScrollMarkers() {
   if (Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
+    ScrollOffset scroll_offset = GetScrollOffsetForScrollMarkerUpdate();
     if (PseudoElement* before =
             element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
       auto* group_before = DynamicTo<ScrollMarkerGroupPseudoElement>(before);
-      group_before->UpdateSelectedScrollMarker(offset);
+      group_before->UpdateSelectedScrollMarker(scroll_offset);
     } else if (PseudoElement* after =
                    element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
       auto* group_after = DynamicTo<ScrollMarkerGroupPseudoElement>(after);
-      group_after->UpdateSelectedScrollMarker(offset);
+      group_after->UpdateSelectedScrollMarker(scroll_offset);
     }
   }
 }

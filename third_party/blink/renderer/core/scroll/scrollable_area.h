@@ -611,9 +611,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void SetSnappedQueryTargetIds(
       std::optional<cc::TargetSnapAreaElementIds>) {}
 
-  virtual void UpdateScrollMarkers(const ScrollOffset& offset) {}
-
  protected:
+  virtual void UpdateScrollMarkers() {}
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
   // instant or smooth scroll.

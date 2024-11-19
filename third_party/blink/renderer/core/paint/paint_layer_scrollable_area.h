@@ -655,8 +655,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // @container (snapped:...) query for the given axis.
   Element* GetSnappedQueryTargetAlongAxis(cc::SnapAxis) const;
 
-  void UpdateScrollMarkers(const ScrollOffset& offset) override;
-
  private:
   bool NeedsHypotheticalScrollbarThickness(ScrollbarOrientation) const;
   int ComputeHypotheticalScrollbarThickness(
@@ -760,6 +758,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // snapped target elements depend on snapped container queries.
   void CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
       cc::TargetSnapAreaElementIds);
+
+  ScrollOffset GetScrollOffsetForScrollMarkerUpdate();
+  void UpdateScrollMarkers() override;
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will
