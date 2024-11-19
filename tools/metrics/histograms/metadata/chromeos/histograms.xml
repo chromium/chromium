@@ -1374,7 +1374,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
-    expires_after="2025-02-23">
+    expires_after="2025-05-18">
   <owner>byronlee@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
@@ -1441,7 +1441,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Display.Startup.AmbientLightSensorEnabled"
-    enum="BooleanEnabled" expires_after="2025-03-01">
+    enum="BooleanEnabled" expires_after="2025-05-18">
   <owner>longbowei@google.com</owner>
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>

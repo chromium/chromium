@@ -443,7 +443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
-    expires_after="2025-03-01">
+    expires_after="2025-05-18">
   <owner>alexrudenko@chromium.org</owner>
   <owner>mathias@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>

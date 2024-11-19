@@ -617,7 +617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeActiveForSyncToSigninMigration{SyncDataType}"
-    enum="BooleanActive" expires_after="2025-03-09">
+    enum="BooleanActive" expires_after="2025-05-18">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1055,7 +1055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.History.DatabaseError" enum="SyncHistoryDatabaseError"
-    expires_after="2025-03-17">
+    expires_after="2025-05-18">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.TrustedVaultDownloadKeysStatus"
-    enum="TrustedVaultDownloadKeysStatus" expires_after="2025-05-11">
+    enum="TrustedVaultDownloadKeysStatus" expires_after="2025-05-18">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>

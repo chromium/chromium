@@ -1964,7 +1964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.ApRoVerificationTime" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-18">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -2081,7 +2081,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.FilesystemInitTime" units="ms"
-    expires_after="2025-01-05">
+    expires_after="2025-05-18">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -2091,7 +2091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.FilesystemUtilization" units="bytes"
-    expires_after="2025-01-05">
+    expires_after="2025-05-18">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>

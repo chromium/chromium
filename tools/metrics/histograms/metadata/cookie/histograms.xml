@@ -584,7 +584,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.HasNonASCII.{CookieField}" enum="Boolean"
-    expires_after="2025-02-04">
+    expires_after="2025-05-18">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>

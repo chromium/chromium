@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.FencedFrameBeaconReportingCountCrossOrigin"
-    units="beacons" expires_after="2025-03-13">
+    units="beacons" expires_after="2025-05-18">
   <owner>lbrady@google.com</owner>
   <owner>shivanisha@chromium.org</owner>
   <owner>chrome-fenced-frames-core@google.com</owner>
@@ -1195,7 +1195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.IsDuplicate" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-05-18">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
   <summary>
@@ -1926,7 +1926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.RendererInitiated.IsDuplicate" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-05-18">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
   <summary>

@@ -962,7 +962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.Auction.NumBidsGeneratedAtOnce" units="bids"
-    expires_after="2025-03-15">
+    expires_after="2025-05-18">
   <owner>morlovich@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -1148,7 +1148,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.PostSignalsReceivedResumeGenerateBidTime"
-    units="ms" expires_after="2025-03-02">
+    units="ms" expires_after="2025-05-18">
   <owner>abigailkatcoff@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
@@ -7884,7 +7884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.AcceptLanguageNegotiationRestart"
-    enum="AcceptLanguageNegotiationRestart" expires_after="M135">
+    enum="AcceptLanguageNegotiationRestart" expires_after="2025-05-18">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
@@ -7895,7 +7895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReduceAcceptLanguage.AcceptLanguagePrefValueIsEmpty"
-    enum="BooleanAvailable" expires_after="M135">
+    enum="BooleanAvailable" expires_after="2025-05-18">
   <owner>victortan@chromium.org</owner>
   <owner>awillia@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>

@@ -5116,7 +5116,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SessionCreate.GoogleSearch.Preconnect.Quic.CompletionResult"
-    enum="NetErrorCodes" expires_after="2025-03-02">
+    enum="NetErrorCodes" expires_after="2025-05-18">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

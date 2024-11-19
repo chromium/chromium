@@ -1096,7 +1096,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.{PromoAction}.{PromoStat}"
-    units="count" expires_after="2025-02-05">
+    units="count" expires_after="2025-05-18">
   <owner>gayane@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -1678,7 +1678,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Fullscreen.State" enum="CrFullscreenState"
-    expires_after="2025-03-09">
+    expires_after="2025-05-18">
   <owner>joemerramos@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

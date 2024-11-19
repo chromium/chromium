@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.UnknownPpdColorModel" enum="Boolean"
-    expires_after="2025-03-14">
+    expires_after="2025-05-18">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -547,7 +547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.EnumeratePrintersTime" units="ms"
-    expires_after="2025-03-14">
+    expires_after="2025-05-18">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -557,7 +557,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.FetchCapabilitiesTime" units="ms"
-    expires_after="2025-03-14">
+    expires_after="2025-05-18">
   <owner>awscreen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

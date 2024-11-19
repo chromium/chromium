@@ -2390,7 +2390,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.CdmStorageDatabase.IncompatibleDatabaseDetected"
-    enum="Boolean" expires_after="2025-02-27">
+    enum="Boolean" expires_after="2025-05-18">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4168,7 +4168,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.MediaFoundation.MediaEngineError.{MF_MEDIA_ENGINE_ERR}.Hresult"
-    enum="Hresult" expires_after="2025-02-27">
+    enum="Hresult" expires_after="2025-05-18">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -4254,7 +4254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.PlaybackError" enum="Hresult"
-    expires_after="2025-02-27">
+    expires_after="2025-05-18">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5889,7 +5889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Capture.Mac.ScreenCaptureSystemPermission"
-    enum="BooleanAllowed" expires_after="2025-03-16">
+    enum="BooleanAllowed" expires_after="2025-05-18">
   <owner>bur@chromium.org</owner>
   <owner>mark@chromium.org</owner>
   <summary>
@@ -6340,7 +6340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Win.Device.RequestedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2025-03-19">
+    enum="VideoPixelFormatUnion" expires_after="2025-05-18">
   <owner>ilnik@google.com</owner>
   <owner>video-cmi-mpp@google.com</owner>
   <summary>

@@ -724,7 +724,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.AddedNewAddress"
-    enum="AutofillManuallyAddedAddressSurface" expires_after="2025-03-19">
+    enum="AutofillManuallyAddedAddressSurface" expires_after="2025-05-18">
   <owner>brunobraga@google.com</owner>
   <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -860,7 +860,7 @@ AutofillSaveCreditCardPromptDestination.
 </histogram>
 
 <histogram name="Autofill.AndroidAutofillAvailabilityStatus"
-    enum="AndroidAutofillAvailabilityStatus" expires_after="2025-02-14">
+    enum="AndroidAutofillAvailabilityStatus" expires_after="2025-05-18">
   <owner>friedrichh@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3664,7 +3664,7 @@ TODO(crbug.com/378835293): Remove metric.
 -->
 
 <histogram name="Autofill.ManualFallback.AddNewAddressPromptShown"
-    enum="AutofillAddNewAddressPromptOutcome" expires_after="2025-03-18">
+    enum="AutofillAddNewAddressPromptOutcome" expires_after="2025-05-18">
   <owner>brunobraga@google.com</owner>
   <owner>vykochko@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

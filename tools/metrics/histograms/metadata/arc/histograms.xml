@@ -1389,7 +1389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.KeyMint.KeyMintError" enum="ArcKeyMintError"
-    expires_after="2025-02-02">
+    expires_after="2025-05-18">
   <owner>yaohuali@google.com</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
@@ -2304,7 +2304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Supervision.Transition.Screen.Successful"
-    enum="BooleanSuccess" expires_after="2025-02-23">
+    enum="BooleanSuccess" expires_after="2025-05-18">
   <owner>mhasank@chromium.org</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
