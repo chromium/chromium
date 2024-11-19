@@ -21,7 +21,6 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
-#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
@@ -136,11 +135,6 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 // way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
-
-// The name of a boolean pref that records whether the sunfish consent
-// disclaimer has been accepted.
-constexpr char kSunfishConsentDisclaimerAccepted[] =
-    "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
 // The ID for the toast shown when text is copied to clipboard.
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
@@ -667,7 +661,7 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kSunfishEnabled,
                                 /*default_value=*/true);
-  registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
+  registry->RegisterBooleanPref(capture_mode::kSunfishConsentDisclaimerAccepted,
                                 /*default_value=*/false);
 }
 
@@ -684,25 +678,6 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
              ? views::AsViewClass<SearchResultsPanel>(
                    search_results_panel_widget_->GetContentsView())
              : nullptr;
-}
-
-void CaptureModeController::MaybeShowDisclaimer(
-    base::RepeatingClosure accept_callback) {
-  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          kSunfishConsentDisclaimerAccepted)) {
-    if (accept_callback) {
-      std::move(accept_callback).Run();
-    }
-    return;
-  }
-  disclaimer_ = DisclaimerView::CreateWidget(
-      capture_mode_util::GetPreferredRootWindow(),
-      base::BindRepeating(&CaptureModeController::OnDisclaimerAccepted,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          std::move(accept_callback)),
-      base::BindRepeating(&CaptureModeController::OnDisclaimerDeclined,
-                          weak_ptr_factory_.GetWeakPtr()));
-  disclaimer_->Show();
 }
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
@@ -1975,28 +1950,6 @@ void CaptureModeController::OnCopyTextButtonClicked(
   CopyTextToClipboard(text);
   ShowTextCopiedToast();
   Stop();
-}
-
-void CaptureModeController::OnDisclaimerDeclined() {
-  RecordScannerFeatureUserState(
-      ScannerFeatureUserState::kConsentDisclaimerRejected);
-
-  if (disclaimer_.get() != nullptr) {
-    disclaimer_.reset();
-  }
-}
-
-void CaptureModeController::OnDisclaimerAccepted(
-    base::RepeatingClosure callback) {
-  RecordScannerFeatureUserState(
-      ScannerFeatureUserState::kConsentDisclaimerAccepted);
-  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
-      kSunfishConsentDisclaimerAccepted, true);
-
-  disclaimer_.reset();
-  if (callback) {
-    std::move(callback).Run();
-  }
 }
 
 void CaptureModeController::OnScannerActionsFetched(

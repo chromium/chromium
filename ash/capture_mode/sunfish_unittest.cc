@@ -1518,6 +1518,46 @@ class ScannerTest : public AshTestBase {
   ScannerTest& operator=(const ScannerTest&) = delete;
   ~ScannerTest() override = default;
 
+  // Starts a default capture session, and mocks selecting a user region with
+  // text to show the "Smart Actions" button.
+  ActionButtonView* GetSmartActionsButton() {
+    auto* controller = CaptureModeController::Get();
+    StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+    base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+    EXPECT_CALL(*test_delegate, DetectTextInImage)
+        .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+    // Reset the user-selected region to ensure the region passed to
+    // `SelectCaptureModeRegion()` is verified without interference from any
+    // previously selected region. This guarantees consistent and predictable
+    // behavior during tests.
+    CaptureModeTestApi test_api;
+    test_api.SetUserSelectedRegion(gfx::Rect());
+
+    // Select a region to trigger text detection. The capture label should be
+    // hidden so that it does not interfere with text detection.
+    SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                            /*release_mouse=*/true, /*verify_region=*/true);
+    CaptureModeSessionTestApi session_test_api(
+        controller->capture_mode_session());
+    EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+    // The capture label should be reshown once capture completes.
+    WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
+    EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+    detect_text_future.Take().Run("detected text");
+
+    std::vector<ActionButtonView*> action_buttons =
+        session_test_api.GetActionButtons();
+    EXPECT_THAT(action_buttons,
+                ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+    return session_test_api.GetButtonWithViewID(
+        ActionButtonViewID::kSmartActionsButton);
+  }
+
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -2407,7 +2447,7 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
 
   // Click the smart actions button.
   LeftClickOn(action_buttons[0]);
-  views::Widget* disclaimer = controller->disclaimer_widget();
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
   ASSERT_TRUE(disclaimer);
 
   views::View* accept_button =
@@ -2417,7 +2457,7 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kConsentDisclaimerAccepted, 1);
-  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
+  EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
   EXPECT_TRUE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           kSunfishConsentDisclaimerAccepted));
@@ -2449,36 +2489,15 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       kSunfishConsentDisclaimerAccepted, false);
 
-  auto* controller = CaptureModeController::Get();
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
-  auto* test_delegate =
-      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  EXPECT_CALL(*test_delegate, DetectTextInImage)
-      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
-
-  // Select a region to trigger text detection. The capture label should be
-  // hidden so that it does not interfere with text detection.
-  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
-                          /*release_mouse=*/true, /*verify_region=*/true);
-  CaptureModeSessionTestApi session_test_api(
-      controller->capture_mode_session());
-  EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
-
-  // The capture label should be reshown once capture completes.
-  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
-  EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
-
-  detect_text_future.Take().Run("detected text");
-  // Smart actions button should have been created.
-  std::vector<ActionButtonView*> action_buttons =
-      session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+  auto* smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
 
   // Click the smart actions button.
-  LeftClickOn(action_buttons[0]);
-  views::Widget* disclaimer = controller->disclaimer_widget();
+  LeftClickOn(smart_actions_button);
+  auto* controller = CaptureModeController::Get();
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
   ASSERT_TRUE(disclaimer);
 
   views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
@@ -2488,7 +2507,7 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kConsentDisclaimerRejected, 1);
-  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
+  EXPECT_EQ(session_test_api.GetDisclaimerWidget(), nullptr);
   EXPECT_FALSE(
       Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
           kSunfishConsentDisclaimerAccepted));
@@ -2498,8 +2517,19 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
               ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
 
   // Click the smart actions button again, should show the disclaimer again.
-  LeftClickOn(action_buttons[0]);
-  EXPECT_TRUE(controller->disclaimer_widget());
+  LeftClickOn(smart_actions_button);
+  EXPECT_TRUE(session_test_api.GetDisclaimerWidget());
+
+  // Exit the session. The disclaimer will be dismissed.
+  controller->Stop();
+  ASSERT_FALSE(controller->IsActive());
+
+  // Re-enter the session. The disclaimer will be re-shown.
+  smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
+  LeftClickOn(smart_actions_button);
+  EXPECT_TRUE(CaptureModeSessionTestApi(controller->capture_mode_session())
+                  .GetDisclaimerWidget());
 }
 
 }  // namespace ash

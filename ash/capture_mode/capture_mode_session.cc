@@ -26,6 +26,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/capture_region_overlay_controller.h"
 #include "ash/capture_mode/capture_window_observer.h"
+#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/folder_selection_dialog_controller.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/capture_mode/recording_type_menu_view.h"
@@ -61,6 +62,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
@@ -1431,7 +1433,7 @@ void CaptureModeSession::OnTextDetected() {
                 weak_ptr_factory_.GetWeakPtr()),
             u"Smart actions", &kCaptureModeSmartActionsIcon,
             ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0},
-            ActionButtonViewID::kCopyTextButton)) {
+            ActionButtonViewID::kSmartActionsButton)) {
       action_button->CollapseToIconButton();
     }
   }
@@ -1478,8 +1480,46 @@ void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
   // is no need to call either method here.
 }
 
+void CaptureModeSession::MaybeShowDisclaimer(
+    base::RepeatingClosure accept_callback) {
+  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+          capture_mode::kSunfishConsentDisclaimerAccepted)) {
+    if (accept_callback) {
+      std::move(accept_callback).Run();
+    }
+    return;
+  }
+  disclaimer_ = DisclaimerView::CreateWidget(
+      capture_mode_util::GetPreferredRootWindow(),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(accept_callback)),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
+                          weak_ptr_factory_.GetWeakPtr()));
+  disclaimer_->Show();
+}
+
+void CaptureModeSession::OnDisclaimerDeclined() {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerRejected);
+
+  disclaimer_.reset();
+}
+
+void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerAccepted);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      capture_mode::kSunfishConsentDisclaimerAccepted, true);
+
+  disclaimer_.reset();
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
 void CaptureModeSession::OnSmartActionsButtonPressed() {
-  controller_->MaybeShowDisclaimer(base::BindRepeating(
+  MaybeShowDisclaimer(base::BindRepeating(
       &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
       weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1877,6 +1917,10 @@ std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   if (feedback_button_widget_) {
     result.push_back(feedback_button_widget_.get());
   }
+  if (disclaimer_) {
+    result.push_back(disclaimer_.get());
+  }
+
   return result;
 }
 
@@ -2161,7 +2205,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   // If disclaimer dialog is visible, block all actions.
-  if (controller_->disclaimer_widget()) {
+  if (disclaimer_) {
     // TODO(b/367882127): See if we can never create a cursor_setter_ instead of
     // having to reset it.
     if (cursor_setter_) {

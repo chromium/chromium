@@ -51,6 +51,8 @@ class CaptureModeSessionTestApi {
 
   views::Widget* GetActionContainerWidget();
 
+  views::Widget* GetDisclaimerWidget();
+
   views::Widget* GetRecordingTypeMenuWidget();
 
   views::Widget* GetDimensionsLabelWidget();

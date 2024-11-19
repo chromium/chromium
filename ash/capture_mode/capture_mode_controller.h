@@ -138,17 +138,9 @@ class ASH_EXPORT CaptureModeController
   views::Widget* search_results_panel_widget() {
     return search_results_panel_widget_.get();
   }
-  views::Widget* disclaimer_widget() { return disclaimer_.get(); }
 
   // Returns the search results panel, or nullptr if none exists.
   SearchResultsPanel* GetSearchResultsPanel() const;
-
-  // Checks if the controller needs to show the disclaimer and shows if
-  // necessary. Call back is run if disclaimer is accepted.
-  // Takes a repeating closure because the button that triggers this (Smart
-  // actions button) will continue to appear after the disclaimer is dismissed,
-  // allowing the user to click on it again and trigger the callback again.
-  void MaybeShowDisclaimer(base::RepeatingClosure accept_callback);
 
   // Shows the results panel with the captured region as `image` and the search
   // results `url`.
@@ -552,12 +544,6 @@ class ASH_EXPORT CaptureModeController
   // clipboard, show a notification, and close the capture session.
   void OnCopyTextButtonClicked(const std::u16string& text);
 
-  // Called by the consent disclaimer on accept.
-  void OnDisclaimerAccepted(base::RepeatingClosure callback);
-
-  // Called by the consent disclaimer on decline.
-  void OnDisclaimerDeclined();
-
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
   void OnScannerActionsFetched(
@@ -875,8 +861,6 @@ class ASH_EXPORT CaptureModeController
   base::ObserverList<CaptureModeObserver> observers_;
 
   std::unique_ptr<CaptureModeEducationController> education_controller_;
-
-  views::UniqueWidgetPtr disclaimer_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

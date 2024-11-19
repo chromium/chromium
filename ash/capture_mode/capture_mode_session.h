@@ -99,6 +99,7 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
+  views::Widget* disclaimer_widget() { return disclaimer_.get(); }
   bool is_selecting_region() const { return is_selecting_region_; }
   CaptureModeToastController* capture_toast_controller() {
     return &capture_toast_controller_;
@@ -451,6 +452,20 @@ class ASH_EXPORT CaptureModeSession
   // are added after this is called will still be enabled by default.
   void SetActionButtonsEnabled(bool enabled);
 
+  // Checks if the controller needs to show the disclaimer and shows if
+  // necessary. `accept_callback` is run if disclaimer is accepted.
+  // Takes a repeating closure because the button that triggers this (Smart
+  // actions button) will continue to appear after the disclaimer is dismissed,
+  // allowing the user to click on it again and trigger the callback again.
+  void MaybeShowDisclaimer(base::RepeatingClosure accept_callback);
+
+  // Called by the consent disclaimer on accept, which will run the `callback`
+  // to `OnSmartActionsButtonDisclaimerCheckSuccess()`.
+  void OnDisclaimerAccepted(base::RepeatingClosure callback);
+
+  // Called by the consent disclaimer on decline.
+  void OnDisclaimerDeclined();
+
   // Called back when the smart actions button is pressed.
   void OnSmartActionsButtonPressed();
 
@@ -525,6 +540,8 @@ class ASH_EXPORT CaptureModeSession
   // Widget that shows a feedback button for Sunfish.
   views::UniqueWidgetPtr feedback_button_widget_;
   raw_ptr<PillButton> feedback_button_;
+
+  views::UniqueWidgetPtr disclaimer_;
 
   // Magnifier glass used during a region capture session.
   MagnifierGlass magnifier_glass_;

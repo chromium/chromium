@@ -68,6 +68,10 @@ views::Widget* CaptureModeSessionTestApi::GetActionContainerWidget() {
   return session_->action_container_widget_.get();
 }
 
+views::Widget* CaptureModeSessionTestApi::GetDisclaimerWidget() {
+  return session_->disclaimer_.get();
+}
+
 views::Widget* CaptureModeSessionTestApi::GetRecordingTypeMenuWidget() {
   return session_->recording_type_menu_widget_.get();
 }
