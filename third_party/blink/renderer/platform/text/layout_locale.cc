@@ -362,14 +362,14 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
         : length_(base::saturated_cast<wtf_size_t>(utf8_locale.length())),
           buffer_(length_ + kMaxKeywordsLen + 1, 0) {
       // The `buffer_` is initialized to 0 above.
-      memcpy(buffer_.data(), utf8_locale.c_str(), length_);
+      base::span(buffer_).copy_prefix_from(
+          base::span(utf8_locale).first(length_));
     }
     explicit ULocaleKeywordBuilder(const String& locale)
         : ULocaleKeywordBuilder(locale.Utf8()) {}
 
     AtomicString ToAtomicString() const {
-      auto utf8_bytes = base::as_byte_span(buffer_).first(length_);
-      return AtomicString::FromUTF8(utf8_bytes.data(), utf8_bytes.size());
+      return AtomicString::FromUTF8(base::as_byte_span(buffer_).first(length_));
     }
 
     bool SetStrictness(LineBreakStrictness strictness) {
