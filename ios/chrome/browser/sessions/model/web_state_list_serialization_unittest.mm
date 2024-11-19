@@ -713,15 +713,17 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_NTPCleanup) {
   FakeWebStateListDelegate delegate;
   WebStateList web_state_list(&delegate);
   web_state_list.InsertWebState(
-      CreateWebStateWithNavigations(0, GURL(kChromeUINewTabURL),
+      CreateWebStateWithNavigations(1, GURL(kChromeUINewTabURL),
                                     web::WebStateID::NewUnique()),
       WebStateList::InsertionParams::AtIndex(0));
+  web_state_list.CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  EXPECT_FALSE(web_state_list.GetGroups().empty());
   web_state_list.InsertWebState(
       CreateWebStateWithNavigations(2, GURL(kChromeUINewTabURL),
                                     web::WebStateID::NewUnique()),
       WebStateList::InsertionParams::AtIndex(1).Pinned());
   web_state_list.InsertWebState(
-      CreateWebStateWithNavigations(0, GURL(kChromeUINewTabURL),
+      CreateWebStateWithNavigations(1, GURL(kChromeUINewTabURL),
                                     web::WebStateID::NewUnique()),
       WebStateList::InsertionParams::AtIndex(2));
 
@@ -729,9 +731,11 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_NTPCleanup) {
   ios::proto::WebStateListStorage storage;
   SerializeWebStateList(web_state_list, storage);
 
-  // Check that there is only one tab left and it is an NTP with navigation.
-  EXPECT_EQ(storage.items_size(), 1);
+  // Check that there are only two tab left and they are the NTP with navigation
+  // and the NTP in the tab group.
+  EXPECT_EQ(storage.items_size(), 2);
   EXPECT_EQ(storage.pinned_item_count(), 1);
+  EXPECT_EQ(storage.groups_size(), 1);
 }
 
 // Tests deserializing works when support for pinned tabs is enabled.
