@@ -19,6 +19,7 @@
 <translation id="146407871188825689">默认在 iPad 上使用 Chromium</translation>
 <translation id="1471084500615228555">删除 Chromium 中的浏览数据</translation>
 <translation id="1472013873724362412">无法在 Chromium 上登录您的账号。请与您的网域管理员联系，或使用普通的 Google 账号登录。</translation>
+<translation id="148576268809812097">在 Chromium 中保存密码</translation>
 <translation id="1501302548410882220">随时随地使用 Chromium</translation>
 <translation id="1503199973012840174">您的 Chromium 版本过旧。请更新以确保安全。</translation>
 <translation id="1515748263297244785">默认使用 iPad 版 Chromium</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">您的密码将会保存到您的账号 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1811860791247653035">若要获得个性化体验和其他功能，请在 <ph name="FEATURE_NAME_1" /> 和 <ph name="FEATURE_NAME_2" /> 中包含 Chromium</translation>
 <translation id="1838412507805038478">Chromium 已证实：此网站的证书是由 <ph name="ISSUER" /> 签发的。</translation>
+<translation id="1839447949248872139">默认在 Chromium 中打开链接</translation>
 <translation id="1843424232666537147">Chromium 的某些功能可帮助您管理互联网数据和网页加载速度。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium 中的地图</translation>

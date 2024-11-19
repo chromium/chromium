@@ -471,27 +471,6 @@
 <translation id="1348603614848418219">ปิดใช้การย้ายข้อมูลของอุปกรณ์ที่มีการจัดการของ <ph name="MS_AD_NAME" /> ไปยังการจัดการระบบคลาวด์</translation>
 <translation id="1352799151662469739">ระยะเวลาเป็นมิลลิวินาทีก่อนล็อกหน้าจอหลังจากไม่มีการป้อนข้อมูลจากผู้ใช้ ขณะที่เครื่องทำงานโดยเสียบปลั๊ก</translation>
 <translation id="1353416417709895349">ปิดใช้การตรวจสอบการสกัดกั้น DNS และแถบข้อมูล "หรือคุณหมายถึง http://intranetsite/"</translation>
-<translation id="1353910503649343481">การตั้งค่านโยบายนี้จะกำหนดค่าพร็อกซีสำหรับ Chrome และแอป ARC โดยไม่พิจารณาตัวเลือกเกี่ยวกับพร็อกซีทั้งหมดที่ระบุจากบรรทัดคำสั่ง
-
-       การไม่ตั้งค่านโยบายนี้จะทำให้ผู้ใช้เลือกการตั้งค่าพร็อกซีได้
-
-       การตั้งค่านโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> จะยอมรับช่องต่อไปนี้
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> ซึ่งช่วยให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> URL ไปยังไฟล์ .pac ของพร็อกซี หรือสคริปต์ PAC ที่เข้ารหัสเป็น URL ข้อมูลที่มีประเภท MIME application/x-ns-proxy-autoconfig
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> สำหรับป้องกันไม่ให้สแต็กเครือข่ายเปลี่ยนไปใช้วิธีสำรอง นั่นคือการเชื่อมต่อโดยตรงกับสคริปต์ PAC ที่ไม่ถูกต้องหรือไม่พร้อมใช้งาน
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> คือ URL ของพร็อกซีเซิร์ฟเวอร์
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> คือรายการโฮสต์ที่จะข้ามพร็อกซี
-
-      ช่อง <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> เลิกใช้งานแล้วเพื่อใช้ช่อง <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />
-
-        สำหรับ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> หากคุณเลือกค่าต่อไปนี้
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> ระบบจะไม่ใช้พร็อกซีและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> ระบบจะใช้พร็อกซีของระบบและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> ระบบจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ระบบจะใช้ช่อง <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
-          * ระบบจะใช้ช่อง<ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
-
-      หมายเหตุ: ดูตัวอย่างโดยละเอียดเพิ่มเติมได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett )</translation>
 <translation id="1354280967938151061">ปิดใช้ ARC</translation>
 <translation id="1354349503792572661">บังคับให้ Native Client (NaCl) ได้รับอนุญาตให้ทำงานบน <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1354424209129232709">สูงสุด:</translation>
@@ -2742,6 +2721,10 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
           หากตั้งค่านโยบายนี้ ผู้ใช้จะเปลี่ยนหรือลบล้างไม่ได้
 
           หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะปิดใช้เคอร์เซอร์ขนาดใหญ่ในหน้าจอการเข้าสู่ระบบในขั้นต้นแต่ผู้ใช้เปิดใช้ได้ทุกเมื่อ</translation>
+<translation id="3028201032688933333">นโยบายนี้ควบคุมว่าผู้ใช้จะได้รับอนุญาตให้เลือกไฟล์จาก <ph name="GOOGLE_DRIVE_NAME" />โดยตรงหรือไม่ เมื่อเว็บไซต์มีแบบฟอร์มที่ส่งไฟล์ได้
+การตั้งค่านโยบายเป็น "แสดงตัวเลือกสำหรับ <ph name="GOOGLE_DRIVE_NAME" />" (0) หรือไม่ตั้งค่านโยบายจะอนุญาตให้ผู้ใช้เลือกไฟล์จาก <ph name="GOOGLE_DRIVE_NAME" />ในเมนูการเลือกไฟล์
+การตั้งค่านโยบายเป็น "ซ่อนตัวเลือกสำหรับ <ph name="GOOGLE_DRIVE_NAME" />" (1) ซ่อนตัวเลือกสำหรับ <ph name="GOOGLE_DRIVE_NAME" />ในเมนูการเลือกไฟล์
+นโยบายนี้ยังคงอนุญาตให้ผู้ใช้เลือกไฟล์จาก <ph name="GOOGLE_DRIVE_NAME" />ด้วยวิธีอื่นๆ นอกเหนือจากการดำเนินการสำหรับ "Google ไดรฟ์" ในเมนูการเลือกไฟล์</translation>
 <translation id="3030000825273123558">เปิดใช้งานการรายงานเมตริก</translation>
 <translation id="30300807616984726">รายงานข้อมูลพื้นที่โฆษณาในแอปสำหรับผู้ใช้ที่เชื่อมโยง
 
@@ -3216,6 +3199,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="3387999258705169775">ลักษณะการทํางานเริ่มต้นของการบีบที่ซ้อนอยู่ของฟังก์ชัน setTimeout()</translation>
 <translation id="3388628790024977864">ไม่อนุญาตการทำงานของ <ph name="CLOUD_UPLOAD_NAME" /> สําหรับ <ph name="GOOGLE_DRIVE_NAME" /> และ <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">เปิดใช้การตรวจสอบสิทธิ์ gnubby สำหรับโฮสต์การเข้าถึงระยะไกล</translation>
+<translation id="3395744872155955051">อนุญาตให้เลือกไฟล์จาก <ph name="GOOGLE_DRIVE_NAME" />โดยตรง</translation>
 <translation id="3397883909301547525">ไม่ต้องแสดงการแนะนำแอปใน Launcher ของ "<ph name="PRODUCT_OS_NAME" />"</translation>
 <translation id="3398051852031115795">การทำงานของระบบตามค่าเริ่มต้น (ขึ้นอยู่กับขนาดของหน้าจอ)</translation>
 <translation id="33993310248354034">อนุญาตให้ตรวจหาเอนทิตีข้อความธรรมดาในหน้าเว็บ</translation>
@@ -5733,6 +5717,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 การกำหนดรายการ URL ในนโยบายนี้มีผลเหมือนกับการตั้งค่า Flag บรรทัดคำสั่ง --unsafely-treat-insecure-origin-as-secure เป็นรายการ URL เดียวกันที่คั่นด้วยคอมมา นโยบายจะลบล้าง Flag บรรทัดคำสั่งและ UnsafelyTreatInsecureOriginAsSecure (หากมี)
 
 ดูข้อมูลเพิ่มเติมเกี่ยวกับบริบทที่ปลอดภัยได้ที่ Secure Contexts (https://www.w3.org/TR/secure-contexts)</translation>
+<translation id="530111809849214840">ซ่อนตัวเลือกสำหรับ <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="530134925949808452">เวลาของวันตามเวลาท้องถิ่นที่จะให้ต่ออายุโควต้าการใช้งาน</translation>
 <translation id="5303080953475303561">การตั้งค่านโยบายจะควบคุมความถี่ที่หน้าจอล็อกขอรหัสผ่านสำหรับการปลดล็อกด่วน แต่ละครั้งที่หน้าจอล็อกปรากฏขึ้นมา หากการป้อนรหัสผ่านครั้งล่าสุดเกิดขึ้นก่อนกรอบเวลาที่ระบุโดยค่าที่เลือกไว้ การปลดล็อกด่วนจะไม่พร้อมใช้งาน หากผู้ใช้อยู่ในหน้าจอล็อกเกินระยะเวลานี้ หน้าจอล็อกจะขอรหัสผ่านในครั้งถัดไปที่ผู้ใช้ป้อนรหัสไม่ถูกต้องหรือเข้าสู่หน้าจอล็อกอีกครั้ง ขึ้นอยู่กับว่าเหตุการณ์ใดเกิดก่อน
 
@@ -6077,6 +6062,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
       โดยการตั้งค่านโยบายนี้เลิกใช้งานแล้ว โปรดใช้ <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> แทน</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">แสดงตัวเลือกสำหรับ <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="5558394213067608844">เปิดใช้ตัวควบคุมการวินิจฉัยพร้อมทั้งการวัดและส่งข้อมูลทางไกลของ Wilco</translation>
 <translation id="5559079916187891399">นโยบายนี้ไม่มีผลต่อแอป Android</translation>
 <translation id="5560039246134246593">เพิ่มพารามิเตอร์ไปยังการเรียกเมล็ดรูปแบบใน <ph name="PRODUCT_NAME" />

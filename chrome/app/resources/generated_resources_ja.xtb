@@ -2901,7 +2901,6 @@
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="3007771295016901659">タブを複製</translation>
 <translation id="3008142279736625920">チーズケーキ</translation>
-<translation id="3008232374986381779"><ph name="DEVICE_TYPE" /> で Linux のツール、エディタ、IDE を実行します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">権限をリセット</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、Wi-Fi に接続して、今日中にアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}other{<ph name="MANAGER" /> が、Wi-Fi に接続して、期限までにアップデートをダウンロードするよう求めています。Wi-Fi に接続しない場合、従量制接続でダウンロードします（通信料が発生することがあります）。}}</translation>
 <translation id="3009178788565917040">出力</translation>
@@ -3395,7 +3394,6 @@
 <translation id="338583716107319301">セパレータ</translation>
 <translation id="3385916046075724800">タブグループが自動的に保存されるようになりました。</translation>
 <translation id="3387023983419383865">、</translation>
-<translation id="3387261909427947069">お支払い方法</translation>
 <translation id="3387588771342841525">オンにすると、パスワードは <ph name="EMAIL" /> に保存されます。オフにすると、パスワードはこのデバイスのみに保存されます。</translation>
 <translation id="3387614642886316601">拡張スペルチェックを使用する</translation>
 <translation id="3387829698079331264">このデバイスのアクティブ状態の検出を許可しない</translation>
@@ -6345,7 +6343,6 @@
 <translation id="5488093641312826914">「<ph name="COPIED_ITEM_NAME" />」がコピーされました</translation>
 <translation id="5488508217173274228">同期データの暗号化オプション</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> からの通知を許可しないが後で確認する</translation>
-<translation id="5490432419156082418">住所やその他の情報</translation>
 <translation id="5490721031479690399">Bluetooth デバイスの接続の解除</translation>
 <translation id="5490798133083738649">Linux にマイクへのアクセスを許可する</translation>
 <translation id="549211519852037402">ベージュと白</translation>

@@ -474,27 +474,6 @@ dall'upgrade ad HTTPS da parte di questa funzionalità.</translation>
 <translation id="1348603614848418219">Disattiva la migrazione dei dispositivi gestiti da <ph name="MS_AD_NAME" /> nella gestione del cloud.</translation>
 <translation id="1352799151662469739">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene bloccato quando viene usata l'alimentazione CA.</translation>
 <translation id="1353416417709895349">Disattiva controlli dell'intercettazione DNS e barre di informazioni "http://intranetsite/" alternative</translation>
-<translation id="1353910503649343481">L'impostazione del criterio consente di configurare le impostazioni del proxy per Chrome e le app ARC, ignorando tutte le opzioni relative al proxy specificate dalla riga di comando.
-
-       Se il criterio non viene configurato, gli utenti possono scegliere le impostazioni del proxy.
-
-       L'impostazione del criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> consente di accettare i seguenti campi:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, che consente di specificare il server proxy utilizzato da Chrome e impedisce agli utenti di modificare le impostazioni del proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, un URL a un file proxy .pac o uno script PAC codificato come URL di dati con tipo MIME application/x-ns-proxy-autoconfig
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, che impedisce allo stack di rete di eseguire il fallback alle connessioni dirette con script PAC non valido o non disponibile
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, un URL del server proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, un elenco di host per i quali il proxy verrà bypassato
-
-       Il campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> è deprecato a favore del campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Per il campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, se scegli il valore:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, non viene mai utilizzato un proxy e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, viene utilizzato il proxy del sistema e tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tutti gli altri campi vengono ignorati.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, vengono utilizzati i campi <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, vengono utilizzati i campi <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> e <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">Disattiva ARC</translation>
 <translation id="1354349503792572661">Forza la possibilità di eseguire Native Client (NaCl) su <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1354424209129232709">Massimo:</translation>
@@ -1196,6 +1175,7 @@ Se questo criterio viene applicato, dopo l'accesso a un account gestito l'utente
 Se questo criterio viene impostato su Disabled o se non viene impostato, dopo l'accesso a un account gestito l'utente potrebbe visualizzare un fumetto in cui gli viene chiesto di creare un nuovo profilo. Il fumetto può essere ignorato e l'utente può continuare la navigazione in un ambiente non gestito. Il fumetto è controllato dal criterio <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Questo criterio non ha effetto se viene impostato a livello di macchina.</translation>
+<translation id="1834796168555733063">Disattiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
 <translation id="1836380138559328229">Salva le credenziali Wi-Fi attive a livello di dispositivo</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
 <translation id="1838910874018595451">Configurazione precompilata per i ticket Kerberos</translation>
@@ -2799,6 +2779,10 @@ Se il valore è impostato su <ph name="LONGPRESSONLY_ENUM_VALUE" />, le entità 
           Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 
           Se questo criterio non viene impostato, inizialmente il puntatore grande è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
+<translation id="3028201032688933333">Questa policy consente di stabilire se all'utente è consentito scegliere file direttamente da <ph name="GOOGLE_DRIVE_NAME" /> quando un sito web contiene un modulo in cui è possibile inviare file.
+Se la policy viene impostata su "Mostra l'opzione <ph name="GOOGLE_DRIVE_NAME" />" (0) o se non viene configurata, l'utente può scegliere i file da <ph name="GOOGLE_DRIVE_NAME" /> nel menu di selezione dei file.
+Se la policy viene impostata su "Nascondi l'opzione <ph name="GOOGLE_DRIVE_NAME" />" (1), l'opzione <ph name="GOOGLE_DRIVE_NAME" /> viene nascosta nel menu di selezione dei file.
+Questa policy non impedisce agli utenti di scegliere file da <ph name="GOOGLE_DRIVE_NAME" /> utilizzando altri metodi diversi dall'azione "Google Drive" nel menu di selezione dei file.</translation>
 <translation id="3030000825273123558">Attiva rapporti sulle metriche</translation>
 <translation id="30300807616984726">Consente di generare report sui dati dell'inventario per app per gli utenti affiliati.
 
@@ -3278,6 +3262,7 @@ Se viene disattivato, la funzionalità di scrittura predittiva sulla tastiera fi
 <translation id="3387999258705169775">Comportamento predefinito per il blocco nidificato della funzione setTimeout().</translation>
 <translation id="3388628790024977864">Non consentire il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Attiva l'autenticazione Gnubby per l'host di accesso remoto</translation>
+<translation id="3395744872155955051">Consenti di scegliere i file direttamente da <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Non mostrare consigli delle app in Avvio app di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamento predefinito del sistema (dipende dalle dimensioni dello schermo)</translation>
 <translation id="33993310248354034">Consente di rilevare entità di testo normale nelle pagine web.</translation>
@@ -3957,6 +3942,7 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
 
  Se il criterio non viene configurato oppure se viene impostato un valore vuoto o non valido, non verrà aggiunto un ulteriore valore <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> alle richieste di processi di stampa.
 </translation>
+<translation id="3896591584655529057">Attiva il salvataggio delle passkey utilizzando Gestore delle password</translation>
 <translation id="3897218615484393758">Limita il tempo per cui un utente autenticato tramite SAML può accedere offline nella schermata di blocco</translation>
 <translation id="3897860452756794695">Verrà utilizzato il nuovo comportamento offsetParent.</translation>
 <translation id="3898345958122666461">Disattiva NTLMv2</translation>
@@ -5827,6 +5813,7 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 La configurazione di un elenco di URL in questo criterio equivale a impostare il flag della riga di comando unsafely-treat-insecure-origin-as-secure su un elenco separato da virgole degli stessi URL. Il criterio sovrascrive il flag della riga di comando e UnsafelyTreatInsecureOriginAsSecure, se presenti.
 
 Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="530111809849214840">Nascondi l'opzione <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">L'ora del giorno, in ora locale, in cui viene rinnovata la quota di utilizzo.</translation>
 <translation id="5303080953475303561">La configurazione del criterio consente di stabilire la frequenza della richiesta della password nella schermata di blocco per lo sblocco rapido. Ogni volta che viene visualizzata la schermata di blocco, se l'ultimo inserimento della password si è verificato prima del periodo di tempo specificato dal valore scelto, lo sblocco rapido non sarà disponibile. Se l'utente rimane nella schermata di blocco per un tempo superiore a quello specificato in questo criterio, viene richiesta la password la volta successiva che inserisce il codice sbagliato o accede di nuovo alla schermata di blocco, a seconda dell'evento che si verifica per primo.
 
@@ -6177,6 +6164,7 @@ Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed
 
       Questo criterio è deprecato. Utilizza <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">Mostra l'opzione <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Attiva il controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
 <translation id="5559079916187891399">Questa norma non influisce sulle app Android.</translation>
 <translation id="5560039246134246593">Aggiungi un parametro al recupero del numero di inizializzazione delle varianti in <ph name="PRODUCT_NAME" />.
@@ -8552,6 +8540,11 @@ Nota: se utilizzi questo criterio per risolvere automaticamente il fuso orario, 
       Se un'estensione non è presente nell'elenco o se l'elenco non viene configurato, la chiamata all'API non va a buon fine e viene generato un codice di errore.</translation>
 <translation id="718956142899066210">Tipi di connessioni consentiti per gli aggiornamenti</translation>
 <translation id="7190286937411178540">Attiva la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera</translation>
+<translation id="7190595750461561896">Questa policy consente di stabilire se il browser può o meno salvare le passkey nel Gestore delle password integrato. Non consente di limitare l'accesso alle passkey già salvate nel Gestore delle password né di modificarne i contenuti. Se la policy <ph name="POLICY_NAME" /> viene impostata su Disattivata, il salvataggio nel Gestore delle password integrato viene disattivato in generale, incluse le passkey e le password, e quindi questa policy non è applicabile.
+
+Se la policy viene impostata su Attivata o se non viene impostata, gli utenti possono salvare le passkey nel Gestore delle password integrato se hanno eseguito l'accesso a <ph name="PRODUCT_NAME" />.
+
+Se la policy viene impostata su Disattivata, gli utenti non possono salvare le passkey nel Gestore delle password integrato, ma quelle salvate in precedenza restano attive.</translation>
 <translation id="719398790886719721">Disattiva l'accesso root alle macchine virtuali Linux</translation>
 <translation id="7194407337890404814">Nome del provider di ricerca predefinito</translation>
 <translation id="7196336906814426783">Questo criterio stabilisce una serie di intervalli settimanali per la pianificazione della sospensione automatica. Quando inizia un intervallo, il dispositivo <ph name="PRODUCT_OS_NAME" /> entra in modalità di sospensione e si riattiva al termine dell'intervallo.
@@ -11102,6 +11095,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 
       Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />. Dopo la rimozione del criterio, <ph name="PRODUCT_NAME" /> potrà sempre eseguire query su tipi DNS aggiuntivi.</translation>
 <translation id="9167719789236691545">Disattiva Drive nell'app File di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9171359005568194889">Attiva il salvataggio delle passkey in Gestore delle password</translation>
 <translation id="9172648973829444124">Forza l'attivazione della Modalità solo HTTPS in Modalità bilanciata</translation>
 <translation id="9172911925443428317">Non consentire la visualizzazione della promozione di valutazione dell'App Store</translation>
 <translation id="9173133289347070466">Sondaggi di <ph name="PRODUCT_NAME" /> all'interno del prodotto raccolgono il feedback degli utenti per il browser. Le risposte al sondaggio non sono associate agli account utente.

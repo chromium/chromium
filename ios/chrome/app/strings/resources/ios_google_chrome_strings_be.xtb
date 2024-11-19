@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Адкрывае наладу Chrome, якая дазваляе зрабіць Chrome стандартным браўзерам.</translation>
 <translation id="1670609221633730681">Парада Chrome: выберыце пазіцыю адраснага радка</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Захоўвайце паролі ў Chrome</translation>
 <translation id="1790080846677398234">Дадае ўведзеныя URL-адрасы ў закладкі ў Chrome.</translation>
 <translation id="1799920918471566157">Парады адносна Chrome</translation>
 <translation id="1830634592642484976">Гэты адрас зараз захаваны ў Chrome. Каб выкарыстоўваць яго ў іншых прадуктах Google, захавайце гэты адрас у сваім Уліковым запісе Google (<ph name="USER_EMAIL" />).</translation>
@@ -219,6 +220,7 @@
 
 Каб паглядзець дадатковыя налады, якія выкарыстоўваюць даныя для паляпшэння работы Chrome, перайдзіце на старонку з <ph name="BEGIN_LINK" />параметрамі сэрвісаў Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Выдаліць даныя пра работу ў браўзеры Chrome.</translation>
+<translation id="6924922227983877439">Адкрывайце спасылкі стандартна ў Chrome</translation>
 <translation id="6975725306479268850">Для параметра AutoFill ("Аўтазапаўненне") выберыце Chrome</translation>
 <translation id="7056826488869329999">Запускае праверку бяспекі ў Chrome.</translation>
 <translation id="7061455974939528301">Націсніце і ўтрымлівайце значок Chrome, а потым выберыце пункт "Змяніць галоўны экран"</translation>

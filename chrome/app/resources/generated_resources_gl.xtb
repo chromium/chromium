@@ -800,6 +800,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1556127816860282890">É posible que se limiten a actividade en segundo plano e algúns efectos visuais (como o desprazamento suave)</translation>
 <translation id="1556537182262721003">Non se puido mover o directorio de extensións ao perfil.</translation>
 <translation id="1557939148300698553">Crear perfil</translation>
+<translation id="155803912725350982">Teclas lentas</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1558671750917454373">Retomar a emisión no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Desta forma, as aplicacións, os sitios web co permiso correspondente e os servizos do sistema poderán acceder á localización</translation>
@@ -2905,7 +2906,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3006881078666935414">Non hai datos de uso</translation>
 <translation id="3007771295016901659">Duplicar pestana</translation>
 <translation id="3008142279736625920">Torta de queixo</translation>
-<translation id="3008232374986381779">Executa IDE, editores e ferramentas de Linux no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Restablecer permisos</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
 <translation id="3009178788565917040">Saída</translation>
@@ -3401,7 +3401,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="338583716107319301">Separador</translation>
 <translation id="3385916046075724800">Agora os teus grupos de pestanas gárdanse automaticamente.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Métodos de pago</translation>
 <translation id="3387588771342841525">Cando a opción estea activada, os contrasinais gardaranse en <ph name="EMAIL" />. Se está desactivada, gardaranse só neste dispositivo.</translation>
 <translation id="3387614642886316601">Utilizar corrector ortográfico mellorado</translation>
 <translation id="3387829698079331264">Permiso denegado para saber cando estás utilizando o dispositivo de maneira activa</translation>
@@ -3550,6 +3549,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3488199663160411179">nome</translation>
 <translation id="3490695139702884919">Descargando… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Os datos locais poderán restaurarse se esqueces o contrasinal ou o PIN</translation>
+<translation id="3491616972057195633">Teclas de rebote</translation>
 <translation id="3491669675709357988">A conta do teu fillo ou filla non está configurada para os controis parentais de Family Link. Podes engadilos unha vez rematada a configuración. Atoparás información ao respecto na aplicación Explorar.</translation>
 <translation id="3491678231052507920">Os sitios adoitan usar os datos e dispositivos de realidade virtual para permitirche acceder a sesións de RV</translation>
 <translation id="3493043608231401654">Quitar <ph name="TAB_TITLE" /> do grupo de pestanas</translation>
@@ -3636,6 +3636,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3551320343578183772">Pechar pestana</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" />: <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cookie borrada ao saír</translation>
+<translation id="3553442438687311630">Autenticación de Microsoft</translation>
 <translation id="3554493885489666172">O teu dispositivo está xestionado por <ph name="PROFILE_NAME" />. Os administradores poden acceder aos datos de calquera perfil deste dispositivo.</translation>
 <translation id="3555812735919707620">Eliminar extensión</translation>
 <translation id="3557101512409028104">Define as restricións de sitios web e o tempo diante da pantalla con Family Link</translation>
@@ -3790,6 +3791,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3654045516529121250">Ler a configuración de accesibilidade</translation>
 <translation id="3654682977761834281">Datos de sitios inseridos</translation>
 <translation id="3656328935986149999">Velocidade do cursor</translation>
+<translation id="3656701180077048004">Engade un atraso entre o momento no que premes unha tecla e o momento no que se activa</translation>
 <translation id="3658871634334445293">Aceleración de TrackPoint</translation>
 <translation id="3659929705630080526">Metiches un código de acceso incorrecto demasiadas veces. Téntao de novo máis tarde</translation>
 <translation id="3660234220361471169">Non fiables</translation>
@@ -6358,7 +6360,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5488093641312826914">Copiouse <ph name="COPIED_ITEM_NAME" /></translation>
 <translation id="5488508217173274228">Opcións de encriptación da sincronización</translation>
 <translation id="5489077378642700219">Non permitir notificacións de <ph name="WEBSITE" />, pero preguntar máis tarde</translation>
-<translation id="5490432419156082418">Enderezos e moito máis</translation>
 <translation id="5490721031479690399">Desconectar dispositivo Bluetooth</translation>
 <translation id="5490798133083738649">Permitir que Linux acceda ao micrófono</translation>
 <translation id="549211519852037402">Beixe e branco</translation>
@@ -6676,6 +6677,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5731247495086897348">Pe&amp;gar e acceder</translation>
 <translation id="5733109311583381874">Engade as túas propias palabras aos dicionarios de usuario para personalizar as suxestións de conversión.</translation>
 <translation id="5733669387494115331">Configuración dos servizos de Google</translation>
+<translation id="5733913382424854675">Pestanas de grupo con IA</translation>
 <translation id="5734362860645681824">Comunicacións</translation>
 <translation id="5734697361979786483">Engadir un sistema de ficheiros compartido</translation>
 <translation id="5735513236153491131">Mellorar agora</translation>
@@ -7963,6 +7965,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6677527809400770913">Xesto <ph name="GESTURE" /> asignado a <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Ondas grandes salpicando no mar, con terra firme ao lonxe. Ceo escuro e tenebroso, con pequenos toques de luz laranxa máis alá do horizonte.</translation>
 <translation id="6678717876183468697">URL da consulta</translation>
+<translation id="6679947539429331601">Ocultar durante 12 horas</translation>
 <translation id="6680442031740878064">Espazo dispoñible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
 <translation id="6683022854667115063">Auriculares</translation>
@@ -8600,6 +8603,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7127980134843952133">Historial de descargas</translation>
 <translation id="7128151990937044829">Mostrar un indicador na barra de enderezos cando se bloqueen notificacións</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
+<translation id="7130680050151101667">Non mostrar esta tarxeta</translation>
 <translation id="7131040479572660648">Lectura dos teus datos de <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Engadir pá&amp;xina...</translation>
 <translation id="7131431455372521159">Desconectáronse todos os TrackPoints</translation>
@@ -10104,6 +10108,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8194788147118885421">Revisar as pestanas inactivas</translation>
 <translation id="8195265224453131880">Intensidade</translation>
 <translation id="8195854162863398249">Inhabilitar <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Atraso antes de activar a mesma tecla de novo</translation>
 <translation id="8197673340773315084">Engade un nome ou etiqueta, como "Traballo" ou "Persoal"</translation>
 <translation id="8198456017687137612">Recibindo emisión de pestana</translation>
 <translation id="8198457270656084773">Buscas a páxina cos rexistros do dispositivo no sistema? Visita <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10519,6 +10524,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8486666913807228950">Razón: atopouse a regra invertida <ph name="REVERT_RULE" /> na lista "Forzar a apertura en".</translation>
 <translation id="8487678622945914333">Achegar o zoom</translation>
 <translation id="8487699605742506766">Zona wifi</translation>
+<translation id="8488735603679729015">Atraso antes de activar a tecla</translation>
 <translation id="8489156414266187072">As suxestións persoais só se mostran na túa conta</translation>
 <translation id="8490896350101740396">Actualizáronse as seguintes aplicacións de quiosco: "<ph name="UPDATED_APPS" />". Reinicia o dispositivo para completar o proceso de actualización.</translation>
 <translation id="8492822722330266509">Os sitios poden mostrar ventás emerxentes e usar redireccións</translation>
@@ -10906,6 +10912,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8755376271068075440">&amp;Máis grande</translation>
 <translation id="8755584192133371929">Selecciona unha pestana para compartir</translation>
 <translation id="875604634276263540">O URL da imaxe non é valido</translation>
+<translation id="8756262226135340085">Ignora as pulsacións repetidas rapidamente da mesma tecla</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8757368836647541092">Quitouse a <ph name="USER_NAME_OR_EMAIL" /></translation>
 <translation id="8759753423332885148">Máis información</translation>

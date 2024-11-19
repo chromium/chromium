@@ -467,27 +467,6 @@
 <translation id="1348603614848418219"><ph name="MS_AD_NAME" /> 管理対象デバイスのクラウド管理への移行を無効にする。</translation>
 <translation id="1352799151662469739">AC 電源での使用中、ユーザー入力が行われなくなってから画面をロックするまでの時間（ミリ秒）</translation>
 <translation id="1353416417709895349">DNS 傍受チェックと「もしかして: "http://intranetsite/"」情報バーを無効にする。</translation>
-<translation id="1353910503649343481">このポリシーでは、Chrome と ARC アプリのプロキシ設定を行います。いずれもコマンドラインで指定されたプロキシ関連の設定はすべて無視されます。
-
-       このポリシーを未設定のままにした場合、ユーザーはプロキシ設定を選択できます。
-
-       <ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを設定すると、次のフィールドを受け取れるようになります。
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにします
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: プロキシ .pac ファイルへの URL、または MIME タイプ application/x-ns-proxy-autoconfig のデータ URL としてエンコードされた PAC スクリプト
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: PAC スクリプトが無効または使用できないためにネットワーク スタックが直接接続にフォールバックすることを防ぎます
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: プロキシが回避されるホストのリスト
-
-      <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドは非推奨となったため、代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。
-
-        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: システムのプロキシを使用して、他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: 他のフィールドをすべて無視します。
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />、<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />、<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
-
-      注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett）をご覧ください。</translation>
 <translation id="1354280967938151061">ARC を無効にする</translation>
 <translation id="1354349503792572661"><ph name="PRODUCT_OS_NAME" /> でのネイティブ クライアント（NaCl）の実行を強制的に許可する。</translation>
 <translation id="1354424209129232709">最大:</translation>

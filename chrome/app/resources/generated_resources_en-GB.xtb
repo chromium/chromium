@@ -802,6 +802,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1556127816860282890">Background activity and some visual effects, like smooth scrolling, may be limited</translation>
 <translation id="1556537182262721003">Could not move extension directory into profile.</translation>
 <translation id="1557939148300698553">Create profile</translation>
+<translation id="155803912725350982">Slow keys</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Resume casting to <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">This allows location access for apps, websites with the location permission and system services</translation>
@@ -2919,7 +2920,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
-<translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset permissions</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -3415,7 +3415,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Your tab groups now automatically save.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Payment methods</translation>
 <translation id="3387588771342841525">When on, passwords are saved in <ph name="EMAIL" />. When off, passwords are saved only to this device.</translation>
 <translation id="3387614642886316601">Use enhanced spell check</translation>
 <translation id="3387829698079331264">Not allowed to know when you're actively using your device</translation>
@@ -3564,6 +3563,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3488199663160411179">name</translation>
 <translation id="3490695139702884919">Downloading… <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">Local data can be restored if you forget your PIN or password</translation>
+<translation id="3491616972057195633">Bounce keys</translation>
 <translation id="3491669675709357988">You child's account isn't set up for Family Link parental controls. You can add parental controls once you finish setup. You'll find information on parental controls in the Explore app.</translation>
 <translation id="3491678231052507920">Sites usually use your virtual reality devices and data to let you enter VR sessions</translation>
 <translation id="3493043608231401654">Remove <ph name="TAB_TITLE" /> from tab group</translation>
@@ -3650,6 +3650,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Cleared on exit</translation>
+<translation id="3553442438687311630">Microsoft Authentication</translation>
 <translation id="3554493885489666172">Your device is managed by <ph name="PROFILE_NAME" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="3555812735919707620">Remove extension</translation>
 <translation id="3557101512409028104">Set website restrictions and screen time limits with Family Link</translation>
@@ -3801,6 +3802,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3654045516529121250">Read your accessibility settings</translation>
 <translation id="3654682977761834281">Data from embedded sites</translation>
 <translation id="3656328935986149999">Cursor speed</translation>
+<translation id="3656701180077048004">Adds a delay between when you press a key and when it activates</translation>
 <translation id="3658871634334445293">TrackPoint acceleration</translation>
 <translation id="3659929705630080526">You have entered an incorrect access code too many times. Try again later</translation>
 <translation id="3660234220361471169">Untrusted</translation>
@@ -6369,7 +6371,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' copied</translation>
 <translation id="5488508217173274228">Sync encryption options</translation>
 <translation id="5489077378642700219">Don’t allow notifications from <ph name="WEBSITE" /> but ask later</translation>
-<translation id="5490432419156082418">Addresses and more</translation>
 <translation id="5490721031479690399">Disconnect Bluetooth device</translation>
 <translation id="5490798133083738649">Allow Linux to access your microphone</translation>
 <translation id="549211519852037402">Beige and white</translation>
@@ -6689,6 +6690,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5731247495086897348">Pa&amp;ste and Go</translation>
 <translation id="5733109311583381874">Add your own words to the user dictionaries in order to customise the conversion candidates.</translation>
 <translation id="5733669387494115331">Google services settings</translation>
+<translation id="5733913382424854675">Group tabs with AI</translation>
 <translation id="5734362860645681824">Communications</translation>
 <translation id="5734697361979786483">Add file share</translation>
 <translation id="5735513236153491131">Boost now</translation>
@@ -7977,6 +7979,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6677527809400770913">Assigned gesture <ph name="GESTURE" /> to <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Large waves splashing in the sea, with land in the distant background. Hints of orange light are just beyond the horizon, in an otherwise dark moody sky.</translation>
 <translation id="6678717876183468697">Query URL</translation>
+<translation id="6679947539429331601">Hide for 12 hours</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Rate</translation>
 <translation id="6683022854667115063">Headphones</translation>
@@ -8615,6 +8618,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7127980134843952133">Download history</translation>
 <translation id="7128151990937044829">Show an indicator in the address bar when notifications are blocked</translation>
 <translation id="7130438335435247835">Access Point Name (APN)</translation>
+<translation id="7130680050151101667">Don't show this card</translation>
 <translation id="7131040479572660648">Read your data on <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> and <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Add pa&amp;ge...</translation>
 <translation id="7131431455372521159">All TrackPoints have been disconnected</translation>
@@ -10120,6 +10124,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8194788147118885421">Review inactive tabs</translation>
 <translation id="8195265224453131880">Intensity</translation>
 <translation id="8195854162863398249">Disable <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Delay before activating the same key again</translation>
 <translation id="8197673340773315084">Add a name or label, like Work or Personal</translation>
 <translation id="8198456017687137612">Casting tab</translation>
 <translation id="8198457270656084773">Looking for the system device-log page? Visit<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10535,6 +10540,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8486666913807228950">Reason: The inverted rule <ph name="REVERT_RULE" /> was found in the 'Force open in' list.</translation>
 <translation id="8487678622945914333">Zoom In</translation>
 <translation id="8487699605742506766">Hotspot</translation>
+<translation id="8488735603679729015">Delay before activating key</translation>
 <translation id="8489156414266187072">Personal suggestions are only shown on your account</translation>
 <translation id="8490896350101740396">The following kiosk apps "<ph name="UPDATED_APPS" />" have been updated. Please reboot the device to complete the update process.</translation>
 <translation id="8492822722330266509">Sites can send pop-ups and use redirects</translation>
@@ -10922,6 +10928,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8755376271068075440">&amp;Larger</translation>
 <translation id="8755584192133371929">Select a tab to share</translation>
 <translation id="875604634276263540">Image URL is invalid</translation>
+<translation id="8756262226135340085">Ignores quickly repeated presses of the same keyboard key</translation>
 <translation id="8756969031206844760">Update password?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> removed</translation>
 <translation id="8759753423332885148">Learn more.</translation>

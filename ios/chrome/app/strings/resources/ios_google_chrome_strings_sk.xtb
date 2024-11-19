@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Otvorí nastavenia Chromu, aby bolo možné Chrome nakonfigurovať ako predvolený prehliadač.</translation>
 <translation id="1670609221633730681">Tip pre Chrome: vyberte umiestnenie panela s adresou</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Ukladajte si heslá v Chrome</translation>
 <translation id="1790080846677398234">Pridá vložené webové adresy do záložiek v Chrome.</translation>
 <translation id="1799920918471566157">Tipy pre Chrome</translation>
 <translation id="1830634592642484976">Táto adresa je momentálne uložená v Chrome. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
@@ -219,6 +220,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 
 Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Odstránenie dát prehliadania v Chrome.</translation>
+<translation id="6924922227983877439">Otvárajte odkazy predvolene v Chrome</translation>
 <translation id="6975725306479268850">Ak chcete využívať automatické dopĺňanie, vyberte si Chrome</translation>
 <translation id="7056826488869329999">Otvorí a spustí kontrolu bezpečnosti v Chrome.</translation>
 <translation id="7061455974939528301">Pridržte ikonu Chromu a kliknite na Úprava plochy</translation>

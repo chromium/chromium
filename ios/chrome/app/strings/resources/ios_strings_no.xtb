@@ -527,7 +527,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3443810440409579745">Fane er mottatt.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Finn ut mer om Google Lens</translation>
-<translation id="3447332786336558089">Når du logger av, lukkes fanene, og kontodata som ikke er lagret, slettes fra denne enheten. Dette kan inkludere blant annet passord og logg.</translation>
+<translation id="3447332786336558089">Når du logger av, lukkes fanene, og kontodata som ikke er lagret, slettes fra denne enheten. Dette kan blant annet inkludere passord og logg.</translation>
 <translation id="3449016921756175697">Nyttige forslag som gjør det enklere å surfe.</translation>
 <translation id="345348365500626747">Fant adressen</translation>
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
@@ -1594,7 +1594,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8219424187226230983">Se versjonen uten nett på en ny fane</translation>
 <translation id="8230355548492839438">Finn forrige</translation>
 <translation id="8232956427053453090">Behold dataene</translation>
-<translation id="8242644458318193141">For å ivareta organisasjonens sikkerhet blir faner lukket, og kontodata som ikke er lagret, blir slettet fra denne enheten. Dette kan inkludere blant annet passord og logg.</translation>
+<translation id="8242644458318193141">For å ivareta organisasjonens sikkerhet blir faner lukket, og kontodata som ikke er lagret, blir slettet fra denne enheten. Dette kan blant annet inkludere passord og logg.</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="82619448491672958">Se andre faner</translation>
 <translation id="8263228331881858381">Passnøkkelen er lagret</translation>

@@ -2921,7 +2921,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3006881078666935414">Walang data ng paggamit</translation>
 <translation id="3007771295016901659">I-duplicate ang Tab</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
-<translation id="3008232374986381779">Paganahin sa iyong <ph name="DEVICE_TYPE" /> ang mga tool, editor, at IDE ng Linux. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">I-reset ang mga pahintulot</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi ngayong araw para mag-download ng update. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}}</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -3417,7 +3416,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Awtomatiko na ngayong nase-save ang iyong mga grupo ng tab.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Mga Paraan ng Pagbabayad</translation>
 <translation id="3387588771342841525">Kapag naka-on, mase-save ang mga password sa <ph name="EMAIL" />. Kapag naka-off, mase-save lang ang mga password sa device na ito.</translation>
 <translation id="3387614642886316601">Gumamit ng pinahusay na pang-check ng pagbabaybay</translation>
 <translation id="3387829698079331264">Hindi pinapayagang makaalam kung aktibo mong ginagamit ang iyong device</translation>
@@ -6374,7 +6372,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5488093641312826914">Nakopya ang '<ph name="COPIED_ITEM_NAME" />'</translation>
 <translation id="5488508217173274228">I-sync ang mga opsyon sa pag-encrypt</translation>
 <translation id="5489077378642700219">Huwag payagan ang mga notification mula sa <ph name="WEBSITE" /> pero magtanong sa ibang pagkakataon</translation>
-<translation id="5490432419156082418">Mga Address at Higit Pa</translation>
 <translation id="5490721031479690399">Idiskonekta ang Bluetooth device</translation>
 <translation id="5490798133083738649">Payagan ang Linux na ma-access ang iyong mikropono</translation>
 <translation id="549211519852037402">Beige at puti</translation>

@@ -2301,6 +2301,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2575407791320728464">Ongeldige URL. Check of de notatie klopt.</translation>
 <translation id="2575441894380764255">Geen toestemming om opdringerige of misleidende advertenties te bekijken</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Dit apparaat wordt 1 jaar bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}other{Dit apparaat wordt {YEARS} jaar bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}}</translation>
+<translation id="2577127557293415225">Beide ogen kort sluiten</translation>
 <translation id="257779572837908839">Instellen als Chromebox for meetings</translation>
 <translation id="2580889980133367162"><ph name="HOST" /> altijd toestaan meerdere bestanden te downloaden</translation>
 <translation id="258095186877893873">Lang</translation>
@@ -2771,6 +2772,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2904210161403910217">Je wachtwoord is gewijzigd sinds de laatste keer dat je hebt ingelogd</translation>
 <translation id="2904506722835398619">Inloggen en synchronisatie vereist</translation>
 <translation id="2904845070985032877">Animaties pauzeren</translation>
+<translation id="2905556994482999199">Gebruik hoofdbewegingen en gezichtsuitdrukkingen om je Chromebook te bedienen</translation>
 <translation id="2907619724991574506">Start-URL's</translation>
 <translation id="2907798539022650680">Kan geen verbinding maken met '<ph name="NAME" />': <ph name="DETAILS" />
     Melding van de server: <ph name="SERVER_MSG" /></translation>
@@ -2907,7 +2909,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3006881078666935414">Geen gebruiksgegevens</translation>
 <translation id="3007771295016901659">Tabblad dupliceren</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
-<translation id="3008232374986381779">Voer Linux-tools, -editors en -IDE's op je <ph name="DEVICE_TYPE" /> uit. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Rechten resetten</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag verbinding maakt met wifi om een update te downloaden. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}other{<ph name="MANAGER" /> vereist dat je vóór de deadline verbinding maakt met wifi en een update downloadt. Je kunt de update ook downloaden via een verbinding met datalimiet (er kunnen kosten van toepassing zijn).}}</translation>
 <translation id="3009178788565917040">Uitgang</translation>
@@ -3401,7 +3402,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Je tabbladgroepen worden nu automatisch opgeslagen.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Betaalmethoden</translation>
 <translation id="3387588771342841525">Als dit aanstaat, worden wachtwoorden opgeslagen in <ph name="EMAIL" />. Als dit uitstaat, worden wachtwoorden alleen opgeslagen op dit apparaat.</translation>
 <translation id="3387614642886316601">Verbeterde spellingcontrole gebruiken</translation>
 <translation id="3387829698079331264">Mogen niet weten wanneer je je apparaat actief gebruikt</translation>
@@ -6355,7 +6355,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' gekopieerd</translation>
 <translation id="5488508217173274228">Opties voor versleuteling synchroniseren</translation>
 <translation id="5489077378642700219">Meldingen van <ph name="WEBSITE" /> niet toestaan, maar later vragen</translation>
-<translation id="5490432419156082418">Adressen en meer</translation>
 <translation id="5490721031479690399">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="5490798133083738649">Linux toegang geven tot je microfoon</translation>
 <translation id="549211519852037402">Beige/wit</translation>
@@ -7234,6 +7233,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6143186082490678276">Hulp nodig?</translation>
 <translation id="6143366292569327983">Kies de paginataal die je wilt vertalen</translation>
 <translation id="6144938890088808325">Help ons Chromebooks te verbeteren</translation>
+<translation id="6145363037359279595">Welkom, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">Synchronisatie werkt niet. Probeer opnieuw in te loggen.</translation>
 <translation id="6147020289383635445">Kan afdrukvoorbeeld niet bekijken.</translation>
 <translation id="6147253937684562370">Als je het profiel wilt ontgrendelen, log je in met het e-mailadres van je primaire account: <ph name="EMAIL" /></translation>

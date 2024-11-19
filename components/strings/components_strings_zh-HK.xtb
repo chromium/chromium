@@ -314,6 +314,7 @@
 <translation id="1549470594296187301">必須啟用 JavaScript 才能使用此功能。</translation>
 <translation id="1553152622374372421">冬季運動</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
+<translation id="1554485704925237240">控制名為 <ph name="READERNAME" /> 的讀卡器和配合使用的智能卡</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="1555191101192706055">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。</translation>
 <translation id="1559231233244409191">紙板 (三層瓦楞紙)</translation>
@@ -907,6 +908,7 @@
 <translation id="2595719060046994702">此裝置和帳戶未受任何公司或其他機構管理。</translation>
 <translation id="2596415276201385844">如要建立安全連線，您時鐘的設定必須正確無誤；因為網站用於自我識別的憑證僅在特定時間內有效。由於您裝置的時鐘設定有誤，Chrome 無法驗證這些憑證。</translation>
 <translation id="2597378329261239068">此文件受到密碼保護，請輸入密碼。</translation>
+<translation id="2605979593348332811">姓名拼音</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2608019759319359258">已封鎖的主題不會用於個人化廣告</translation>
 <translation id="2610561535971892504">點擊複製</translation>
@@ -918,6 +920,7 @@
 <translation id="2622754869869445457">最近使用的分頁</translation>
 <translation id="2625385379895617796">您時鐘的時間過快</translation>
 <translation id="262745152991669301">可要求連接 USB 裝置</translation>
+<translation id="2627847595568876492">正在從 PDF 擷取文字…</translation>
 <translation id="2628224721443278970">登入 Microsoft OneDrive</translation>
 <translation id="2634124572758952069">找不到 <ph name="HOST_NAME" /> 的伺服器 IP 位址。</translation>
 <translation id="2639739919103226564">狀態：</translation>
@@ -1521,6 +1524,7 @@
 <translation id="3711430313228789376">Chrome 瀏覽器正在嘗試顯示密碼</translation>
 <translation id="3711861349027352138">電腦和電玩遊戲</translation>
 <translation id="3711895659073496551">暫停</translation>
+<translation id="3712004750972384495">正在儲存螢幕錄影畫面</translation>
 <translation id="3712006010833051684">10 信封</translation>
 <translation id="3712624925041724820">授權已用盡</translation>
 <translation id="3713277100229669269">宜家你可以喺俾錢之前睇到信用卡優惠</translation>
@@ -1549,6 +1553,7 @@
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
 <translation id="3745599309295009257">你在頁面上的文字和該頁內容與網址都會傳送給 Google、由真人審核，並用來改善此功能。因此，請勿輸入醫療或財務資料等個人資料，亦不要在含有私人或敏感資料的網站上使用此工具。</translation>
 <translation id="3748009735914587286">金屬 (高光面)</translation>
+<translation id="3752181611900535304">要將地址儲存至帳戶嗎？</translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
 <translation id="3754210790023674521">退出畫中畫</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機報告功能停用時發生的當機不會在這裡顯示。</translation>
@@ -1659,6 +1664,7 @@
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
+<translation id="3965672182149944205">要儲存地址嗎？</translation>
 <translation id="3966044442021752214">產品安全</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> 已遭封鎖</translation>
@@ -2327,6 +2333,7 @@
 <translation id="5191315092027169558">您的個人檔案由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下載多個檔案</translation>
 <translation id="519422657042045905">無法使用註解模式</translation>
+<translation id="5200063972779787617">將地址儲存至帳戶</translation>
 <translation id="5201306358585911203">此網頁上的嵌入式頁面顯示</translation>
 <translation id="5205222826937269299">需要提供名稱</translation>
 <translation id="5206392433295093945">睡房</translation>
@@ -2349,6 +2356,7 @@
 <translation id="5239623327352565343">批准存取位置資料</translation>
 <translation id="5241048084654737238">確認儲存唔到信用卡資料</translation>
 <translation id="5242610955375133957">乾膜</translation>
+<translation id="5243004157379865295">更新地址</translation>
 <translation id="5244521145258281926">管理 Google 帳戶按鈕，啟動之後就可以管理 Google 帳戶嘅資料、私隱權同安全性</translation>
 <translation id="5244732203286792411">正在載入…
     可能需時一分鐘。</translation>
@@ -2846,6 +2854,7 @@
 <translation id="6159554577634054750">蟲害控制</translation>
 <translation id="6159908896951210943">正式</translation>
 <translation id="6160391204859821737">開啟廣告私隱功能</translation>
+<translation id="6162403104168428984">要更新地址嗎？</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6167577165590485365">上次嘗試擷取時間：</translation>
 <translation id="617256461084925519">Google Chrome 正嘗試驗證您的身份，以便為您填入付款資料。</translation>
@@ -3080,6 +3089,7 @@
 <translation id="6569060085658103619">您正在查看擴充程式頁面</translation>
 <translation id="6573200754375280815">雙孔 (右側)</translation>
 <translation id="6574762126505704998">填滿</translation>
+<translation id="6575408526598156416">儲存在帳戶中</translation>
 <translation id="6577792494180292262">創業資金</translation>
 <translation id="6578434528542148658">無效的擴充程式 ID。</translation>
 <translation id="6579858392010591435">假日和節日活動</translation>
@@ -3392,6 +3402,7 @@
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
+<translation id="7152230779180489711">上次瀏覽時間</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 和另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 種付款方法}}</translation>
 <translation id="7153618581592392745">淡紫色</translation>
 <translation id="7156870133441232244">伺服器應升級至 TLS 1.2 或以上版本。</translation>
@@ -4471,6 +4482,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以恢復瀏覽過程，同埋睇到 Chrome 記錄入面嘅相關活動</translation>
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> 想驗證你的身分</translation>
+<translation id="9120593907434185157">儲存地址</translation>
 <translation id="912327514020027767">短裙</translation>
 <translation id="9128870381267983090">連接網絡</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>

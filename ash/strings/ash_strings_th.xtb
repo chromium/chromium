@@ -2119,6 +2119,7 @@
 <translation id="8142699993796781067">เครือข่ายส่วนบุคคล</translation>
 <translation id="8144760705599030999">บันทึก <ph name="NAME" /> ลงใน <ph name="EMAIL" /> เพื่อให้จับคู่กับอุปกรณ์อื่นๆ ของคุณได้รวดเร็วยิ่งขึ้น</translation>
 <translation id="8144914663975476336">เลือกรูปแบบการบันทึก</translation>
+<translation id="8145272500474066209">Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="8149413265954228307">แสดงการตั้งค่าบลูทูธ <ph name="STATE_TEXT" /></translation>
 <translation id="8152092012181020186">กด Ctrl + W เพื่อปิด</translation>
 <translation id="8152264887680882389"><ph name="TEXT" /> เติมข้อความอัตโนมัติ</translation>

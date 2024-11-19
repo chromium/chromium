@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Zezwól witrynie na zapisywanie danych na Twoim urządzeniu</translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
+<translation id="1396327438254055134">Zezwalaj witrynie na korzystanie z optymalizatora V8.</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Dekoder obrazów</translation>
 <translation id="1785415724048343560">Polecane dla wygody przeglądania</translation>
 <translation id="1799920918471566157">Chrome – wskazówki</translation>
+<translation id="1816835383954230954">Gdy ta opcja jest włączona, Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami. Po jej wyłączeniu wydajność spada, ale mechanizm V8 jest bardziej odporny na ataki.</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do kamery. Gdy jest wyłączona, strony nie mogą używać kamery.</translation>
 <translation id="3521663503435878242">Witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Nie zezwalaj witrynom na śledzenie rąk</translation>
+<translation id="3532312529397438268">Witryny nie mogą używać optymalizatora V8</translation>
 <translation id="3536227077203206203">Przyznano jednorazowo</translation>
 <translation id="3538390592868664640">Nie zezwalaj stronom na tworzenie mapy 3D Twojego otoczenia ani na śledzenie pozycji kamery</translation>
 <translation id="3544058026430919413">Firma może zdefiniować grupę witryn, które mogą używać plików cookie, aby udostępniać dane o Twojej aktywności w tej grupie. Ta funkcja jest wyłączona w trybie incognito.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4807122856660838973">Włącz Bezpieczne przeglądanie</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
+<translation id="481168145262973879">Witryny mogą używać optymalizatora V8</translation>
 <translation id="4816495437032298535">Zapisane powiększenie witryn</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="483914009762354899">Uwzględnij wszystkie witryny w tej domenie</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Usunąć dane witryny? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
+<translation id="6999131147875565462">Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami</translation>
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
 <translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="959682366969460160">Większy porządek</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
+<translation id="969975166333045662">Nie zezwalaj witrynie na korzystanie z optymalizatora V8.</translation>
 </translationbundle>

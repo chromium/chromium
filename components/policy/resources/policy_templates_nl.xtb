@@ -471,27 +471,6 @@ Het afzonderlijke beleid <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> kan worden geb
 <translation id="1348603614848418219">De migratie van door <ph name="MS_AD_NAME" /> beheerde apparaten naar cloudbeheer uitzetten.</translation>
 <translation id="1352799151662469739">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op netvoeding wordt gewerkt (in milliseconden)</translation>
 <translation id="1353416417709895349">Controles voor DNS-onderschepping en infobalken voor 'bedoelde je http://intranetsite/' uitzetten.</translation>
-<translation id="1353910503649343481">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden ingevoerd.
-
-       Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
-
-       Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
-* <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee verstrek je de proxyserver die Chrome gebruikt en voorkom je dat gebruikers de proxy-instellingen kunnen wijzigen.
-* <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een proxy-pac-bestand of een PAC-script dat is gecodeerd als een gegevens-URL met het MIME-type application/x-ns-proxy-autoconfig.
-* <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: Hiermee wordt voorkomen dat de netwerkstack terugvalt op directe verbindingen met een ongeldig of niet-beschikbaar PAC-script.
-* <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver.
-* <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met proxyhosts die de proxy omzeilen.
-
-Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd en vervangen door het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
-* <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
-
-      Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">ARC uitzetten</translation>
 <translation id="1354349503792572661">Dwingt af dat Native Client (NaCl) mag worden uitgevoerd op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1354424209129232709">Maximum:</translation>
@@ -1147,6 +1126,7 @@ Als je dit beleid instelt op Afdwingen, moet de gebruiker nadat die is ingelogd 
 Als je dit beleid niet toepast of niet instelt, kan de gebruiker na het inloggen op een beheerd account een ballon te zien krijgen met de vraag om een nieuw profiel te maken. De ballon kan worden gesloten en de gebruiker kan verder browsen in een onbeheerde omgeving. De ballon wordt beheerd door het beleid <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Dit beleid heeft geen effect als het is ingesteld op apparaatniveau.</translation>
+<translation id="1834796168555733063">Opslag van toegangssleutels met de wachtwoordmanager uitzetten</translation>
 <translation id="1836380138559328229">Actieve wifi-inloggegevens opslaan op apparaatniveau</translation>
 <translation id="1837165432382702436">Hoogte van de pagina in micrometers</translation>
 <translation id="1838910874018595451">Vooraf ingestelde configuratie voor Kerberos-tickets</translation>
@@ -2737,6 +2717,10 @@ Als je de waarde instelt op <ph name="LONGPRESSONLY_ENUM_VALUE" />, worden entit
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de grote cursor in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
+<translation id="3028201032688933333">Met dit beleid bepaal je of de gebruiker rechtstreeks bestanden mag kiezen uit <ph name="GOOGLE_DRIVE_NAME" /> als een website een formulier bevat waarin bestanden kunnen worden ingediend.
+Als je het beleid instelt op 'De optie <ph name="GOOGLE_DRIVE_NAME" /> weergeven.' (0) of als je het beleid niet instelt, kan de gebruiker bestanden kiezen uit <ph name="GOOGLE_DRIVE_NAME" /> in het menu voor bestandsselectie.
+Als je het beleid instelt op 'De optie <ph name="GOOGLE_DRIVE_NAME" /> verbergen.' (1) wordt de optie <ph name="GOOGLE_DRIVE_NAME" /> verborgen in het menu voor bestandsselectie.
+Dit beleid voorkomt niet dat gebruikers bestanden uit <ph name="GOOGLE_DRIVE_NAME" /> kiezen op andere manieren dan via de actie Google Drive in het menu voor bestandsselectie.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
 <translation id="30300807616984726">Rapporteert app-voorraadgegevens voor aangesloten gebruikers.
 
@@ -3212,6 +3196,7 @@ Als je dit beleid niet toepast, is de functie voor voorspellend schrijven op het
 <translation id="3387999258705169775">Standaardgedrag voor genest vastzetten voor de functie setTimeout().</translation>
 <translation id="3388628790024977864">Het <ph name="CLOUD_UPLOAD_NAME" />-proces niet toestaan voor <ph name="GOOGLE_DRIVE_NAME" /> en <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Gnubby-verificatie aanzetten voor de host voor externe toegang</translation>
+<translation id="3395744872155955051">Toestaan dat bestanden rechtstreeks worden gekozen uit <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Geen app-aanbevelingen laten zien in de <ph name="PRODUCT_OS_NAME" />-launcher</translation>
 <translation id="3398051852031115795">Standaard systeemgedrag (afhankelijk van schermgrootte)</translation>
 <translation id="33993310248354034">Detectie van entiteiten in platte tekst op webpagina's toestaan.</translation>
@@ -3889,6 +3874,7 @@ Dit beleid heeft geen effect als het beleid <ph name="ENTERPRISE_PROFILE_BADGE_T
 
  Als je het beleid niet instelt of dit instelt op een lege of ongeldige waarde, wordt er geen extra <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />-waarde toegevoegd aan verzoeken voor afdruktaken.
 </translation>
+<translation id="3896591584655529057">Opslag van toegangssleutels met de wachtwoordmanager aanzetten</translation>
 <translation id="3897218615484393758">Beperken hoelang een gebruiker die via SAML is geverifieerd offline kan inloggen op het vergrendelscherm</translation>
 <translation id="3897860452756794695">Het nieuwe offsetParent-gedrag wordt gebruikt.</translation>
 <translation id="3898345958122666461">NTLMv2 uitzetten</translation>
@@ -5720,6 +5706,7 @@ Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 Als je een lijst met URL's instelt in dit beleid, heeft dit hetzelfde effect als wanneer de opdrachtregelmarkering --unsafely-treat-insecure-origin-as-secure wordt ingesteld voor een door komma's gescheiden lijst met dezelfde URL's. Het beleid overschrijft de opdrachtregelmarkering en UnsafelyTreatInsecureOriginAsSecure, indien aanwezig.
 
 Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="530111809849214840">De optie <ph name="GOOGLE_DRIVE_NAME" /> verbergen.</translation>
 <translation id="530134925949808452">De tijd van de dag in lokale tijd wanneer het gebruiksquotum wordt vernieuwd.</translation>
 <translation id="5303080953475303561">Met dit beleid stel je in hoe vaak het vergrendelscherm om het wachtwoord voor snel ontgrendelen vraagt. Elke keer dat het vergrendelscherm wordt getoond en de laatste wachtwoordinvoer plaatsvond vóór de periode die is gespecificeerd door de gekozen waarde, is snel ontgrendelen niet beschikbaar. Als gebruikers na deze periode op het vergrendelscherm blijven, worden ze de volgende keer dat ze een verkeerde code opgeven of het vergrendelscherm opnieuw openen (afhankelijk van wat als eerste gebeurt) om het wachtwoord gevraagd.
 
@@ -6067,6 +6054,7 @@ Bekijk voor meer informatie het volgende artikel: https://wiki.samba.org/index.p
 
       Dit beleid is beëindigd. Gebruik in plaats daarvan <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">De optie <ph name="GOOGLE_DRIVE_NAME" /> weergeven.</translation>
 <translation id="5558394213067608844">De wilco-controller voor diagnostische gegevens en telemetrie aanzetten</translation>
 <translation id="5559079916187891399">Dit beleid is niet van invloed op Android-apps.</translation>
 <translation id="5560039246134246593">Een parameter toevoegen aan het ophalen van de seed voor varianten in <ph name="PRODUCT_NAME" />.
@@ -8377,6 +8365,11 @@ Opmerking: Als je dit beleid gebruikt om de tijdzone automatisch te wijzigen, mo
       Als een extensie niet in de lijst voorkomt of als de lijst niet is ingesteld, mislukt de API-aanroep en wordt er een foutcode getoond.</translation>
 <translation id="718956142899066210">Verbindingstypen die zijn toegestaan voor updates</translation>
 <translation id="7190286937411178540">Toegankelijkheidsfunctie voor markeren via toetsenbordfocus aanzetten</translation>
+<translation id="7190595750461561896">Dit beleid bepaalt of de browser toegangssleutels kan opslaan in de ingebouwde wachtwoordmanager. Het beleid beperkt de toegang niet en wijzigt de inhoud niet van toegangssleutels die al zijn opgeslagen in de wachtwoordmanager. Als het beleid <ph name="POLICY_NAME" /> niet wordt toegepast, is opslaan in de ingebouwde wachtwoordmanager in het algemeen uitgezet, waaronder toegangssleutels en wachtwoorden. Dit beleid is dan niet van toepassing.
+
+Als je het beleid toepast of niet instelt, kunnen gebruikers toegangssleutels opslaan in de ingebouwde wachtwoordmanager als ze zijn ingelogd bij <ph name="PRODUCT_NAME" />.
+
+Als je het beleid niet toepast, kunnen gebruikers geen toegangssleutels opslaan in de ingebouwde wachtwoordmanager, maar kunnen ze nog wel gebruikmaken van eerder opgeslagen toegangssleutels.</translation>
 <translation id="719398790886719721">Roottoegang tot virtuele Linux-machines uitzetten</translation>
 <translation id="7194407337890404814">Naam van standaardzoekprovider</translation>
 <translation id="7196336906814426783">Met dit beleid stel je een reeks wekelijkse intervallen vast om automatische opschorting te plannen. Als een interval begint, wordt de opschortingsstand van het <ph name="PRODUCT_OS_NAME" />-apparaat geactiveerd. Het apparaat wordt weer geactiveerd als het interval voorbij is.
@@ -10912,6 +10905,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 
       Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />. Na verwijdering van het beleid kan <ph name="PRODUCT_NAME" /> altijd zoekopdrachten voor aanvullende DNS-typen uitvoeren.</translation>
 <translation id="9167719789236691545">Drive in de app Bestanden van <ph name="PRODUCT_OS_NAME" /> uitzetten</translation>
+<translation id="9171359005568194889">Opslaan van toegangssleutels in wachtwoordmanager aanzetten</translation>
 <translation id="9172648973829444124">De modus Alleen HTTPS geforceerd aanzetten in de gebalanceerde modus</translation>
 <translation id="9172911925443428317">Niet toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
 <translation id="9173133289347070466"><ph name="PRODUCT_NAME" />-enquêtes in het product verzamelen gebruikersfeedback voor de browser. De enquête-antwoorden worden niet gekoppeld aan gebruikersaccounts.

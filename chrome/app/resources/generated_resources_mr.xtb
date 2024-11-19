@@ -802,6 +802,7 @@
 <translation id="1556127816860282890">बॅकग्राउंड अ‍ॅक्टिव्हिटी आणि सहजपणे स्क्रोल करणे यांसारखे काही व्हिज्युअल इफेक्ट मर्यादित असू शकतात</translation>
 <translation id="1556537182262721003">प्रोफाइलमध्ये एक्स्टेंशन डिरेक्टरी हलविणे शक्य नाही.</translation>
 <translation id="1557939148300698553">प्रोफाइल तयार करा</translation>
+<translation id="155803912725350982">स्लो की</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> वर कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="1561331397460162942">हे स्थानाची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी स्थान ॲक्सेसची अनुमती देते</translation>
@@ -2312,6 +2313,7 @@
 <translation id="2575407791320728464">चुकीची URL. ती योग्य प्रकारे फॉरमॅट केली गेली आहे याची खात्री करा.</translation>
 <translation id="2575441894380764255">अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवण्याची अनुमती नाही</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{हे डिव्हाइस एका वर्षासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {YEARS} वर्षांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
+<translation id="2577127557293415225">थोड्या वेळासाठी दोन्ही डोळे बंद करा</translation>
 <translation id="257779572837908839">मीटिंगसाठी Chromebox म्हणून सेट अप करा</translation>
 <translation id="2580889980133367162">एकापेक्षा जास्त फाइल डाउनलोड करण्यास <ph name="HOST" /> ला नेहमी अनुमती द्या</translation>
 <translation id="258095186877893873">दीर्घ</translation>
@@ -2782,6 +2784,7 @@
 <translation id="2904210161403910217">तुम्ही मागील वेळी साइन इन केल्यापासून तुमचा पासवर्ड बदलला आहे</translation>
 <translation id="2904506722835398619">साइन इन आणि सिंक करणे आवश्यक आहे</translation>
 <translation id="2904845070985032877">अ‍ॅनिमेशन थांबवा</translation>
+<translation id="2905556994482999199">तुमचे Chromebook नियंत्रित करण्यासाठी डोक्याच्या हालचाली किंवा चेहर्‍यावरील हावभाव वापरा</translation>
 <translation id="2907619724991574506">सुरू URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' शी कनेक्ट करण्यात अयशस्वी: <ph name="DETAILS" />
     सर्व्हर संदेश: <ph name="SERVER_MSG" /></translation>
@@ -2918,7 +2921,6 @@
 <translation id="3006881078666935414">वापराचा कोणताही डेटा नाही</translation>
 <translation id="3007771295016901659">डुप्लिकेट टॅब</translation>
 <translation id="3008142279736625920">चीझकेक</translation>
-<translation id="3008232374986381779">तुमच्या <ph name="DEVICE_TYPE" /> वर Linux टूल, संपादक, आणि IDE रन करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">परवानग्या रीसेट करा</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> नुसार, तुम्ही अपडेट डाउनलोड करण्यासाठी आजच वाय-फायशी कनेक्ट करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}other{<ph name="MANAGER" /> नुसार, तुम्ही डेडलाइनपूर्वी वाय-फाय शी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे. किंवा मर्यादित कनेक्शनमधून डाउनलोड करा (शुल्के लागू होऊ शकतात).}}</translation>
 <translation id="3009178788565917040">आउटपुट</translation>
@@ -3414,7 +3416,6 @@
 <translation id="338583716107319301">विभाजक</translation>
 <translation id="3385916046075724800">तुमचे टॅब गट आता आपोआप सेव्ह होतात.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">पेमेंट पद्धती</translation>
 <translation id="3387588771342841525">सुरू असल्यास, पासवर्ड <ph name="EMAIL" /> मध्ये सेव्ह केले जातात. बंद असल्यास, पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले जातात.</translation>
 <translation id="3387614642886316601">वर्धित केलेले स्पेल चेक वापरा</translation>
 <translation id="3387829698079331264">तुम्ही तुमचे डिव्हाइस सक्रियपणे केव्हा वापरता हे जाणून घेण्याची अनुमती नाही</translation>
@@ -3563,6 +3564,7 @@
 <translation id="3488199663160411179">नाव</translation>
 <translation id="3490695139702884919">डाउनलोड करत आहे... <ph name="PERCENT" />%</translation>
 <translation id="3491171603443463516">तुम्ही तुमचा पिन किंवा पासवर्ड विसरल्यास, स्थानिक डेटा रिस्टोअर केला जाऊ शकतो</translation>
+<translation id="3491616972057195633">बाउन्स की</translation>
 <translation id="3491669675709357988">तुमच्‍या लहान मुलाचे खाते Family Link पालक नियंत्रणांसाठी सेट केलेले नाही. सेटअप पूर्ण केल्‍यानंतर तुम्‍ही पालक नियंत्रणे जोडू शकता. तुम्‍हाला Explore ॲपमध्ये पालक नियंत्रणांविषयी माहिती मिळेल.</translation>
 <translation id="3491678231052507920">तुम्हाला VR सेशन एंटर करू देण्यासाठी साइट सामान्यपणे तुमची आभासी वास्तविकता डिव्हाइस आणि डेटा वापरतात</translation>
 <translation id="3493043608231401654">टॅब गटामधून <ph name="TAB_TITLE" /> काढून टाका</translation>
@@ -3649,6 +3651,7 @@
 <translation id="3551320343578183772">टॅब बंद करा</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">बाहेर पडताना साफ केले</translation>
+<translation id="3553442438687311630">Microsoft ऑथेंटिकेशन</translation>
 <translation id="3554493885489666172">तुमचे डिव्हाइस <ph name="PROFILE_NAME" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर या डिव्हाइसवरील कोणत्याही प्रोफाइलचा डेटा ॲक्सेस करू शकतो.</translation>
 <translation id="3555812735919707620">एक्स्टेंशन काढून टाका</translation>
 <translation id="3557101512409028104">Family Link सह वेबसाइटवरील बंधने आणि स्क्रीन वेळ मर्यादा सेट करा</translation>
@@ -3800,6 +3803,7 @@
 <translation id="3654045516529121250">तुमच्या ॲक्सेस योग्यता सेटिंग्ज वाचा</translation>
 <translation id="3654682977761834281">एंबेड केलेल्या साइटवरील डेटा</translation>
 <translation id="3656328935986149999">कर्सरचा वेग</translation>
+<translation id="3656701180077048004">तुम्ही की प्रेस करता आणि अ‍ॅक्टिव्हेट होते यांदरम्यान विलंब जोडते</translation>
 <translation id="3658871634334445293">TrackPoint अ‍ॅक्सिलरेशन</translation>
 <translation id="3659929705630080526">तुम्ही खूप वेळा चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3660234220361471169">अविश्‍वासू</translation>
@@ -6366,7 +6370,6 @@
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' कॉपी केला</translation>
 <translation id="5488508217173274228">सिंक एंक्रिप्शन पर्याय</translation>
 <translation id="5489077378642700219"><ph name="WEBSITE" /> वरील सूचनांना अनुमती देऊ नका, पण नंतर विचारा</translation>
-<translation id="5490432419156082418">पत्ते आणि बरेच काही</translation>
 <translation id="5490721031479690399">ब्लूटूथ डिव्हाइस डिस्‍कनेक्‍ट करा</translation>
 <translation id="5490798133083738649">Linux ला तुमचा मायक्रोफोन अ‍ॅक्सेस करण्याची परवानगी द्या</translation>
 <translation id="549211519852037402">फिकट तपकिरी आणि पांढरा</translation>
@@ -6686,6 +6689,7 @@
 <translation id="5731247495086897348">पे&amp;स्ट करा आणि जा</translation>
 <translation id="5733109311583381874">रूपांतरण उमेदवार कस्टमाइझ करण्यासाठी तुमच्या वापरकर्ता शब्दकोशात तुमचे स्वत:चे शब्द जोडा.</translation>
 <translation id="5733669387494115331">Google सेवा सेटिंग्ज</translation>
+<translation id="5733913382424854675">AI वापरून टॅब गटबद्ध करा</translation>
 <translation id="5734362860645681824">संप्रेषणे</translation>
 <translation id="5734697361979786483">फाइल शेअर जोडा</translation>
 <translation id="5735513236153491131">आता बूस्ट करा</translation>
@@ -7250,6 +7254,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6143186082490678276">मदत मिळवा</translation>
 <translation id="6143366292569327983">ज्यातून भाषांतर करायचे आहे ती पेज भाषा निवडा</translation>
 <translation id="6144938890088808325">Chromebooks सुधारण्यात आम्हाला मदत करा</translation>
+<translation id="6145363037359279595">स्वागत आहे, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">सिंक काम करत नाही. पुन्हा साइन इन करून पहा.</translation>
 <translation id="6147020289383635445">प्रिंट पूर्वावलोकन अयशस्वी.</translation>
 <translation id="6147253937684562370">प्रोफाइल अनलॉक करण्यासाठी तुमच्या मुख्य खात्याचा ईमेल वापरून साइन इन करा: <ph name="EMAIL" /></translation>
@@ -7977,6 +7982,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6677527809400770913"><ph name="ACTION" /> साठी <ph name="GESTURE" /> हे जेश्चर असाइन केले आहे</translation>
 <translation id="6678604587151240716">बॅकग्राउंडमध्ये काही अंतरावर जमीन असलेल्या समुद्राध्ये उसळलेल्या मोठ्या लाटा. अन्यथा गडद मूडी आकाशामध्ये क्षितिजाच्या पलीकडे नारिंगी रंगाच्या छटा.</translation>
 <translation id="6678717876183468697">क्वेरी URL</translation>
+<translation id="6679947539429331601">१२ तासांसाठी लपवा</translation>
 <translation id="6680442031740878064">उपलब्ध: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">रेट करा</translation>
 <translation id="6683022854667115063">हेडफोन</translation>
@@ -8615,6 +8621,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7127980134843952133">इतिहास डाउनलोड करा</translation>
 <translation id="7128151990937044829">सूचना ब्लॉक केल्यावर अ‍ॅड्रेस बारमध्ये इंडिकेटर दाखवा</translation>
 <translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
+<translation id="7130680050151101667">हे कार्ड दाखवू नका</translation>
 <translation id="7131040479572660648"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, आणि <ph name="WEBSITE_3" /> वर तुमचा डेटा वाचा</translation>
 <translation id="713122686776214250">पृ&amp;ष्ठ जोडा...</translation>
 <translation id="7131431455372521159">सर्व TrackPoints डिस्कनेक्ट केले गेले आहेत</translation>
@@ -10118,6 +10125,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8194788147118885421">इनॅक्टिव्ह टॅबचे पुनरावलोकन करा</translation>
 <translation id="8195265224453131880">तीव्रता</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> बंद करा</translation>
+<translation id="8195920051450756553">तीच की पुन्हा अ‍ॅक्टिव्हेट करण्यापूर्वीचा विलंब</translation>
 <translation id="8197673340773315084">कार्य किंवा वैयक्तिक सारखे नाव किंवा लेबल जोडा</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
 <translation id="8198457270656084773">सिस्टीमच्या डिव्हाइस लॉग पेजविषयी माहिती शोधत आहात का? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ला भेट द्या.</translation>
@@ -10533,6 +10541,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8486666913807228950">कारण: "फोर्स ओपन इन" सूचीमध्ये इन्व्हर्टेड रुल<ph name="REVERT_RULE" /> आढळला होता.</translation>
 <translation id="8487678622945914333">झूम इन करा</translation>
 <translation id="8487699605742506766">हॉटस्पॉट</translation>
+<translation id="8488735603679729015">की अ‍ॅक्टिव्हेट करण्यापूर्वीचा विलंब</translation>
 <translation id="8489156414266187072">वैयक्तिक सूचना फक्त तुमच्या खात्यावर दाखवल्या जातात</translation>
 <translation id="8490896350101740396">खालील कियोस्क अ‍ॅप्स "<ph name="UPDATED_APPS" />" अपडेट करण्यात आले आहेत. कृपया अपडेट प्रक्रिया पूर्ण करण्यासाठी डिव्हाइस रीबूट करा.</translation>
 <translation id="8492822722330266509">साइट पॉप-अप पाठवू शकतात आणि रीडिरेक्ट वापरू शकतात</translation>
@@ -10920,6 +10929,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8755376271068075440">&amp;विशाल</translation>
 <translation id="8755584192133371929">शेअर करण्यासाठी टॅब निवडा</translation>
 <translation id="875604634276263540">इमेजची URL चुकीची आहे</translation>
+<translation id="8756262226135340085">कीबोर्डवरील तीच की झटपट वारंवार प्रेस करण्याकडे दुर्लक्ष करते</translation>
 <translation id="8756969031206844760">पासवर्ड अपडेट करायचा आहे का?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> ला काढून टाकले</translation>
 <translation id="8759753423332885148">अधिक जाणून घ्या.</translation>

@@ -469,28 +469,6 @@
 <translation id="1348603614848418219">Запретить переход устройств, контролируемых <ph name="MS_AD_NAME" />, под облачное управление</translation>
 <translation id="1352799151662469739">Время бездействия при работе от сети, после которого блокируется экран (в миллисекундах).</translation>
 <translation id="1353416417709895349">Отключить проверки на перехват DNS и запретить показ информационных панелей с вопросом о том, не хотел ли пользователь ввести адрес сайта в интранете</translation>
-<translation id="1353910503649343481">Правило позволяет задать настройки прокси-сервера для Chrome и ARC-приложений. Настройки прокси, указанные через командную строку, учитываться не будут.
-
-       Если правило не задано, пользователи могут самостоятельно настраивать прокси-сервер.
-
-       Для <ph name="PROXY_SETTINGS_POLICY_NAME" /> можно указать значения следующих полей:
-         – <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />. Позволяет задать прокси-сервер для Chrome и запретить пользователям изменять эти настройки.
-         – <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />. В этом поле можно указать URL PAC-файла прокси-сервера или PAC-скрипт, закодированный как URL-адрес данных с MIME-типом application/x-ns-proxy-autoconfig.
-         – <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />. Не дает сетевому стеку выполнять прямое подключение, когда PAC-скрипт недоступен или недействителен.
-         – <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />. Здесь можно указать URL прокси-сервера.
-         – <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />. Позволяет задать список хостов, подключение к которым будет выполняться в обход прокси-сервера.
-
-
-       Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> заменено полем <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Выбор значения для <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />:
-          – <ph name="PROXY_MODE_ENUM_DIRECT" />. Прокси-сервер не используется никогда, а значения остальных полей игнорируются.
-          – <ph name="PROXY_MODE_ENUM_SYSTEM" />. Действуют системные настройки прокси-сервера. Значения остальных полей не учитываются.
-          – <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />. Значения остальных полей игнорируются.
-          – <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />. Используются поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-          – <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />. Используются поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> и <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
-
-      Примечание. Подробные примеры использования можно найти на странице https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1354280967938151061">Отключить ARC</translation>
 <translation id="1354349503792572661">Принудительно разрешить запуск Native Client (NaCl) в <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1354424209129232709">Максимальное значение:</translation>

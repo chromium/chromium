@@ -803,6 +803,7 @@
 <translation id="1556127816860282890">Активноста во заднина и некои визуелни ефекти, како што е непреченото лизгање, може да се ограничени</translation>
 <translation id="1556537182262721003">Не може да го премести директориумот за наставки во профилот.</translation>
 <translation id="1557939148300698553">Создајте профил</translation>
+<translation id="155803912725350982">Забави ги копчињата</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
 <translation id="1558671750917454373">Продолжи со емитување на <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Ова овозможува пристап до локацијата за апликациите, веб-сајтовите со дозволата за локација и системските услуги</translation>
@@ -2920,7 +2921,6 @@
 <translation id="3006881078666935414">Нема податоци за користење</translation>
 <translation id="3007771295016901659">Направи дупликат од картичката</translation>
 <translation id="3008142279736625920">Торта со сирење</translation>
-<translation id="3008232374986381779">Извршувајте ги алатките на Linux, уредувачите и интегрираните средини за програмери на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Ресетирај ги дозволите</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да се поврзете на Wi-Fi денес и да преземете ажурирање. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).}one{<ph name="MANAGER" /> бара да се поврзете на Wi-Fi и да преземете ажурирање пред крајниот рок. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).}other{<ph name="MANAGER" /> бара да се поврзете на Wi-Fi и да преземете ажурирање пред крајниот рок. Може да го преземете и преку врска со ограничен интернет (може да ви се наплати).}}</translation>
 <translation id="3009178788565917040">Излез</translation>
@@ -2962,7 +2962,7 @@
 <translation id="3029466929721441205">Прикажи ја алатката пенкало на полицата</translation>
 <translation id="3029808567601324798">Време до заклучување</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да преземете ажурирање денес. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}one{<ph name="MANAGER" /> бара да преземете ажурирање пред крајниот рок. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}other{<ph name="MANAGER" /> бара да преземете ажурирање пред крајниот рок. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}}</translation>
-<translation id="3030772324014024606">Изменете</translation>
+<translation id="3030772324014024606">Измени</translation>
 <translation id="3030967311408872958">Од зајдисонце до изгрејсонце</translation>
 <translation id="3031417829280473749">Агентката X</translation>
 <translation id="3031532026314193077">Користи допирна подлога и тастатура за кликнување со десно копче</translation>
@@ -3416,7 +3416,6 @@
 <translation id="338583716107319301">Разделник</translation>
 <translation id="3385916046075724800">Отсега вашите групи картички се зачувуваат автоматски.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Начини на плаќање</translation>
 <translation id="3387588771342841525">Кога е вклучено, лозинките за зачувуваат во <ph name="EMAIL" />. Кога е исклучено, лозинките се зачувуваат само на овој уред.</translation>
 <translation id="3387614642886316601">Користи подобрена проверка на правопис</translation>
 <translation id="3387829698079331264">Не им е дозволено да знаат кога активно го користите уредот</translation>
@@ -3565,6 +3564,7 @@
 <translation id="3488199663160411179">име</translation>
 <translation id="3490695139702884919">Се презема… <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Локалните податоци може да се вратат ако го заборавите PIN-кодот или лозинката</translation>
+<translation id="3491616972057195633">Игнорирај повторени притискања</translation>
 <translation id="3491669675709357988">Не се поставени родителски контроли за сметката на вашето дете во Family Link. Може да додадете родителски контроли откако ќе завршите со поставувањето. Информации за родителските контроли ќе најдете во апликацијата Explore.</translation>
 <translation id="3491678231052507920">Сајтовите обично ги користат вашите податоци и уреди со виртуелна реалност за да ви овозможат да влезете во VR-сесиите</translation>
 <translation id="3493043608231401654">Отстранување на <ph name="TAB_TITLE" /> од групата картички</translation>
@@ -3651,6 +3651,7 @@
 <translation id="3551320343578183772">Затвори ја картичката</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> - <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Ќе се брише на излегување</translation>
+<translation id="3553442438687311630">Автентикација на Microsoft</translation>
 <translation id="3554493885489666172">Со уредот управува <ph name="PROFILE_NAME" />. Администраторите може да пристапуваат до податоците на секој профил на уредов.</translation>
 <translation id="3555812735919707620">Отстрани наставка</translation>
 <translation id="3557101512409028104">Поставете ограничувања за веб-сајтови и за време поминато на уредот со Family Link</translation>
@@ -3802,6 +3803,7 @@
 <translation id="3654045516529121250">Прочитајте ги поставките за пристапност</translation>
 <translation id="3654682977761834281">Податоци од вметнати сајтови</translation>
 <translation id="3656328935986149999">Брзина на курсорот</translation>
+<translation id="3656701180077048004">Додава одложување меѓу моментот на притискање некое копче и моментот на активирање на копчето</translation>
 <translation id="3658871634334445293">Забрзување на TrackPoint</translation>
 <translation id="3659929705630080526">Внесовте премногу неточни кодови за пристап. Обидете се повторно подоцна</translation>
 <translation id="3660234220361471169">Недоверливи</translation>
@@ -5986,7 +5988,7 @@
 <translation id="5208988882104884956">Полуширина</translation>
 <translation id="5209320130288484488">Не се пронајдени уреди</translation>
 <translation id="5209513429611499188">HID-уреди со искористеност од страницата за користење <ph name="USAGE_PAGE" /></translation>
-<translation id="5210365745912300556">Затвори ја картичката</translation>
+<translation id="5210365745912300556">Затвори картичка</translation>
 <translation id="5213114823401215820">Повторно отвори ја затворената група</translation>
 <translation id="5213481667492808996">Услугата за мобилен интернет од <ph name="NAME" /> е спремна за употреба</translation>
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>
@@ -6370,7 +6372,6 @@
 <translation id="5488093641312826914">Ставката „<ph name="COPIED_ITEM_NAME" />“ е копирана</translation>
 <translation id="5488508217173274228">Опции за шифрирање на синхронизираните податоци</translation>
 <translation id="5489077378642700219">Не дозволувај известувања од <ph name="WEBSITE" />, но прашај подоцна</translation>
-<translation id="5490432419156082418">Адреси и друго</translation>
 <translation id="5490721031479690399">Прекинете ја врската на уредот со Bluetooth</translation>
 <translation id="5490798133083738649">Дозволете Linux да пристапува до микрофонот</translation>
 <translation id="549211519852037402">Беж и бела</translation>
@@ -6690,6 +6691,7 @@
 <translation id="5731247495086897348">За&amp;лепи и оди</translation>
 <translation id="5733109311583381874">Додајте свои зборови во речниците на корисникот за да ги приспособите кандидатите за конверзија.</translation>
 <translation id="5733669387494115331">Поставки за „Услуги на Google“</translation>
+<translation id="5733913382424854675">Групирајте картички со AI</translation>
 <translation id="5734362860645681824">Комуникации</translation>
 <translation id="5734697361979786483">Додајте споделување датотеки</translation>
 <translation id="5735513236153491131">Засили сега</translation>
@@ -7980,6 +7982,7 @@
 <translation id="6677527809400770913">Дејството <ph name="GESTURE" /> е доделено на <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Големи бранови се распрскуваат во морето, со копно далеку во заднината. Зраци портокаловата светлина се наѕираат зад хоризонтот, на инаку темното смрачено небо.</translation>
 <translation id="6678717876183468697">Барај URL</translation>
+<translation id="6679947539429331601">Криј 12 часа</translation>
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Брзина</translation>
 <translation id="6683022854667115063">Слушалки</translation>
@@ -8617,6 +8620,7 @@
 <translation id="7127980134843952133">Историја на преземања</translation>
 <translation id="7128151990937044829">Прикажувај индикатор во лентата за адреси кога известувањата се блокирани</translation>
 <translation id="7130438335435247835">Име на пристапна точка (APN)</translation>
+<translation id="7130680050151101667">Не прикажувај ја картичкава</translation>
 <translation id="7131040479572660648">Читајте ги вашите податоци на <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> и <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Додај стра&amp;ница...</translation>
 <translation id="7131431455372521159">Врската со сите TrackPoint е прекината</translation>
@@ -10121,6 +10125,7 @@
 <translation id="8194788147118885421">Прегледајте ги неактивните картички</translation>
 <translation id="8195265224453131880">Интензитет</translation>
 <translation id="8195854162863398249">Оневозможете <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Одложи пред да го активираш истото копче повторно</translation>
 <translation id="8197673340773315084">Додајте име или етикета, на пр., „Работен“ или „Личен“</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
 <translation id="8198457270656084773">Дали ја барате страницата за евиденција на уреди на системот? Одете на <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10539,6 +10544,7 @@
 <translation id="8486666913807228950">Причина: обратното правило <ph name="REVERT_RULE" /> беше најдено во списокот „Отвори присилно во“.</translation>
 <translation id="8487678622945914333">Зумирај</translation>
 <translation id="8487699605742506766">Точка на пристап</translation>
+<translation id="8488735603679729015">Одложи пред да активираш копче</translation>
 <translation id="8489156414266187072">Личните предлози се прикажуваат само на вашата сметка</translation>
 <translation id="8490896350101740396">Следниве апликации на Киоск „<ph name="UPDATED_APPS" />“ се ажурирани. Рестартирајте го уредот за да го завршите процесот на ажурирање.</translation>
 <translation id="8492822722330266509">Сајтовите може да испраќаат скокачки прозорци и да користат пренасочувања</translation>
@@ -10926,6 +10932,7 @@
 <translation id="8755376271068075440">&amp;Поголем</translation>
 <translation id="8755584192133371929">Изберете картичка за споделување</translation>
 <translation id="875604634276263540">URL-адресата на сликата е неважечка</translation>
+<translation id="8756262226135340085">Игнорира брзи повторливи притискања на истото копче на тастатурата</translation>
 <translation id="8756969031206844760">Дали да се ажурира лозинката?</translation>
 <translation id="8757368836647541092">Контактот <ph name="USER_NAME_OR_EMAIL" /> е отстранет</translation>
 <translation id="8759753423332885148">Дознајте повеќе.</translation>

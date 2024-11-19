@@ -473,27 +473,6 @@ Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik 
 <translation id="1348603614848418219"><ph name="MS_AD_NAME" /> tarafından yönetilen cihazların bulut yönetimine taşınmasını devre dışı bırak.</translation>
 <translation id="1352799151662469739">AC gücüyle çalışırken, ekran kilitlenmeden önce kullanıcı girişi olmadan geçecek süre (milisaniye olarak)</translation>
 <translation id="1353416417709895349">DNS müdahale kontrollerini ve bunu mu demek istediniz "http://intranetsite/" bilgi çubuklarını devre dışı bırak.</translation>
-<translation id="1353910503649343481">Politikanın ayarlanması, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yok sayan Chrome ve ARC-uygulamaları için proxy ayarlarını yapılandırır.
-
-       Politika ayarlanmazsa kullanıcılar kendi proxy ayarlarını seçebilir.
-
-       <ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasının ayarlanması, aşağıdaki alanları kabul eder:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlar ve kullanıcıların proxy ayarlarını değiştirmesini önler
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, proxy .pac dosyası için URL veya application/x-ns-proxy-autoconfig MIME türü ile veri URL'si olarak kodlanmış bir PAC komut dosyası
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, ağ yığınının geçersiz veya kullanılamayan PAC komut dosyasıyla doğrudan bağlantılara geri dönmesini önler
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, proxy sunucu URL'si
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, proxy'nin atlanacağı ana makinelerin listesi
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> alanının desteği sonlandırılmış, yerine <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> alanı getirilmiştir.
-
-        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> için aşağıdaki değerleri seçerseniz:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy hiçbir zaman kullanılmaz ve diğer tüm alanlar yok sayılır.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, sisteme ait proxy kullanılır ve diğer tüm alanlar yok sayılır.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, diğer tüm alanlar yok sayılır.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
-
-      Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">ARC'yi devre dışı bırak</translation>
 <translation id="1354349503792572661">Native Client'ın (NaCl) <ph name="PRODUCT_OS_NAME" /> üzerinde çalışmasına izin vermeye zorlar</translation>
 <translation id="1354424209129232709">Maksimum:</translation>
@@ -1172,6 +1151,7 @@ Bu politika Zorunlu Kılındı değerine ayarlanırsa yönetilen bir hesap oturu
 Bu politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yönetilen bir hesap oturum açtıktan sonra kullanıcı, kendisinden yeni profil oluşturmasını isteyen bir balon görebilir. Kullanıcı bu balonu kapatabilir ve yönetilmeyen bir ortamda göz atmaya devam edebilir. Bu balon, <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" /> politikası ile kontrol edilir.
 
 Makine düzeyinde ayarlanmışsa bu politikanın etkisi olmaz.</translation>
+<translation id="1834796168555733063">Şifre yöneticisini kullanarak geçiş anahtarı kaydetmeyi devre dışı bırak</translation>
 <translation id="1836380138559328229">Etkin kablosuz ağ kimlik bilgilerini cihaz düzeyinde kaydet</translation>
 <translation id="1837165432382702436">Mikrometre cinsinden sayfanın yüksekliği</translation>
 <translation id="1838910874018595451">Kerberos kayıtları için önceden doldurulmuş yapılandırma</translation>
@@ -3971,6 +3951,7 @@ Bu politika yalnızca kullanıcı politikası olarak ayarlanabilir.
 
  Politika ayarlanmazsa ya da boş veya geçersiz bir değere ayarlanırsa yazdırma işi isteklerine ilave bir <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> değeri eklenmez.
 </translation>
+<translation id="3896591584655529057">Geçiş anahtarlarının, şifre yöneticisi kullanılarak kaydedilmesini etkinleştir</translation>
 <translation id="3897218615484393758">SAML kullanarak kimlik doğrulaması yapmış kullanıcının, kilit ekranında çevrimdışı olarak giriş yapabileceği süreyi sınırla</translation>
 <translation id="3897860452756794695">Yeni offsetParent davranışı kullanılacak.</translation>
 <translation id="3898345958122666461">NTLMv2'yi kapat</translation>
@@ -8583,6 +8564,11 @@ Not: Bu politikayı, saat dilimini otomatik olarak çözümlemek için kullanıy
       Bir uzantı listede yoksa veya liste ayarlanmamışsa API'ye yapılan çağrılar başarısız olur ve hata kodu görüntülenir.</translation>
 <translation id="718956142899066210">Güncellemeler için izin verilen bağlantı türleri</translation>
 <translation id="7190286937411178540">Klavye odağını vurgulama erişilebilirlik özelliğini etkinleştir</translation>
+<translation id="7190595750461561896">Bu politika, tarayıcının geçiş anahtarlarını yerleşik şifre yöneticisine kaydetme özelliğini kontrol eder. Şifre yöneticisine kaydedilmiş olan geçiş anahtarlarına erişimi kısıtlamaz veya bunların içeriğini değiştirmez. <ph name="POLICY_NAME" /> politikası Devre Dışı seçeneğine ayarlanırsa yerleşik şifre yöneticisine kaydetme özelliği (geçiş anahtarları ve şifreler dahil) genel olarak devre dışı bırakılır ve bu nedenle bu politika uygulanamaz.
+
+Politika, Etkin seçeneğine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar <ph name="PRODUCT_NAME" /> uygulamasında oturum açarak geçiş anahtarlarını yerleşik şifre yöneticisine kaydedebilir.
+
+Politika, Devre Dışı seçeneğine ayarlanırsa kullanıcılar geçiş anahtarlarını yerleşik şifre yöneticisine kaydedemez ancak önceden kaydedilmiş olan geçiş anahtarları çalışmaya devam eder.</translation>
 <translation id="719398790886719721">Linux sanal makinelerine kök erişimi devre dışı bırak</translation>
 <translation id="7194407337890404814">Varsayılan arama sağlayıcının adı</translation>
 <translation id="7196336906814426783">Bu politika, otomatik askıya alma işleminin programlanması için bir dizi haftalık aralık oluşturur. <ph name="PRODUCT_OS_NAME" /> cihaz, bir aralık başladığında askıya alma moduna girer ve aralık sona erdiğinde uyanır.
@@ -11162,6 +11148,7 @@ Bu politika yalnızca <ph name="FULL_RESTORE_ENABLED_NAME" /> politikası doğru
 
       Bu politika geçici bir çözüm olup gelecekteki <ph name="PRODUCT_NAME" /> sürümlerinden kaldırılacaktır. Politikanın kaldırılmasından sonra <ph name="PRODUCT_NAME" />, her zaman ilave DNS türlerini sorgulayabilecektir.</translation>
 <translation id="9167719789236691545"><ph name="PRODUCT_OS_NAME" />, Dosyalar uygulamasında Drive'ı devre dışı bırak</translation>
+<translation id="9171359005568194889">Geçiş anahtarlarının, şifre yöneticisine kaydedilmesini etkinleştir</translation>
 <translation id="9172648973829444124">Dengeli Mod'da Yalnızca HTTPS Modu'nu zorla etkinleştir</translation>
 <translation id="9172911925443428317">App Store puan promosyonunun gösterilmesine izin verme</translation>
 <translation id="9173133289347070466"><ph name="PRODUCT_NAME" /> ürün içi anketleri, tarayıcı ile ilgili kullanıcı geri bildirimleri toplar. Anket yanıtları, kullanıcı hesaplarıyla ilişkilendirilmez.

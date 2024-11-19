@@ -483,27 +483,6 @@ cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.</translation>
 <translation id="1348603614848418219">Không cho phép di chuyển các thiết bị được <ph name="MS_AD_NAME" /> quản lý sang chế độ quản lý qua đám mây.</translation>
 <translation id="1352799151662469739">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm màn hình bị khóa khi chạy bằng nguồn điện AC</translation>
 <translation id="1353416417709895349">Tắt các tùy chọn kiểm tra chặn hệ thống tên miền (DNS) và thanh thông tin "Ý của bạn là http://intranetsite/".</translation>
-<translation id="1353910503649343481">Nếu bạn đặt chính sách này, các chế độ cài đặt proxy cho Chrome và các ứng dụng dùng App Runtime for Chrome (ARC) sẽ được định cấu hình. Chrome và các ứng dụng này sẽ bỏ qua mọi lựa chọn liên quan đến proxy được chỉ định thông qua dòng lệnh.
-
-       Nếu bạn không đặt chính sách này, người dùng có thể tự chọn các chế độ cài đặt proxy.
-
-       Khi bạn đặt chính sách <ph name="PROXY_SETTINGS_POLICY_NAME" />, các trường sau sẽ được chấp nhận:
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Cho phép bạn chỉ định máy chủ proxy mà Chrome sử dụng và không cho phép người dùng thay đổi các chế độ cài đặt proxy
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: URL đến một tệp .pac proxy hoặc tập lệnh PAC được mã hoá dưới dạng URL của dữ liệu có loại MIME là application/x-ns-proxy-autoconfig
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: Ngăn bộ phần cứng và phần mềm mạng chuyển về các kết nối trực tiếp có tập lệnh PAC không hợp lệ hoặc dùng được
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: URL của máy chủ proxy
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Danh sách máy chủ lưu trữ mà hệ thống sẽ bỏ qua proxy
-
-       Trường <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> không được dùng nữa mà thay bằng trường <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />.
-
-        Đối với <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, nếu bạn chọn giá trị:
-          * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy sẽ không bao giờ được dùng và tất cả trường khác sẽ bị bỏ qua.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" />, proxy của các hệ thống sẽ được dùng và tất cả trường khác sẽ bị bỏ qua.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, tất cả trường khác sẽ bị bỏ qua.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, các trường <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> và <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sẽ được dùng.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, các trường <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> và <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> sẽ được dùng.
-
-      Lưu ý: Để xem thêm ví dụ cụ thể, hãy truy cập vào trang The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">Tắt ARC</translation>
 <translation id="1354349503792572661">Buộc Native Client (NaCl) được phép chạy trên <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1354424209129232709">Tối đa:</translation>
@@ -1179,6 +1158,7 @@ Nếu bạn đặt chính sách này thành Bắt buộc, thì sau khi đăng nh
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, thì sau khi đăng nhập vào tài khoản được quản lý, người dùng có thể thấy một bong bóng yêu cầu họ tạo hồ sơ mới. Họ có thể đóng bong bóng này và tiếp tục duyệt web trong môi trường không được quản lý. Bong bóng này được kiểm soát theo chính sách <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Chính sách này không có hiệu lực khi đặt ở cấp độ thiết bị.</translation>
+<translation id="1834796168555733063">Tắt tính năng lưu khoá truy cập bằng trình quản lý mật khẩu</translation>
 <translation id="1836380138559328229">Lưu thông tin đăng nhập Wi-Fi đang hoạt động ở cấp thiết bị</translation>
 <translation id="1837165432382702436">Chiều cao của trang (tính bằng micromet)</translation>
 <translation id="1838910874018595451">Cấu hình điền sẵn cho phiếu yêu cầu hỗ trợ Kerberos</translation>
@@ -3951,6 +3931,7 @@ Xin lưu ý rằng chính sách này sẽ không có hiệu lực nếu bạn đ
 
  Nếu bạn không đặt chính sách này hay đặt thành một giá trị trống hoặc không hợp lệ, giá trị <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> bổ sung sẽ không được thêm vào yêu cầu lệnh in.
 </translation>
+<translation id="3896591584655529057">Bật tính năng lưu khoá truy cập bằng trình quản lý mật khẩu</translation>
 <translation id="3897218615484393758">Giới hạn thời gian mà người dùng đã xác thực qua SAML có thể đăng nhập ở chế độ ngoại tuyến trên màn hình khóa</translation>
 <translation id="3897860452756794695">Thao tác offsetParent mới sẽ được sử dụng.</translation>
 <translation id="3898345958122666461">Tắt NTLMv2</translation>
@@ -8606,6 +8587,11 @@ Lưu ý: Nếu bạn đang dùng chính sách này để hệ thống tự độ
       Nếu một tiện ích không có trong danh sách hoặc nếu bạn không đặt danh sách này, thì lệnh gọi đến API sẽ không thực hiện được kèm theo mã lỗi.</translation>
 <translation id="718956142899066210">Các loại kết nối được cho phép để cập nhật</translation>
 <translation id="7190286937411178540">Bật tính năng hỗ trợ tiếp cận về làm nổi bật tiêu điểm bằng bàn phím</translation>
+<translation id="7190595750461561896">Chính sách này kiểm soát khả năng trình duyệt lưu khoá truy cập trong trình quản lý mật khẩu tích hợp sẵn. Chính sách này không giới hạn quyền truy cập hoặc thay đổi nội dung của khoá truy cập đã lưu trong trình quản lý mật khẩu. Nếu bạn đặt chính sách <ph name="POLICY_NAME" /> thành Tắt, thì nhìn chung, tính năng lưu vào trình quản lý mật khẩu tích hợp sẵn sẽ bị tắt (trong đó có cả khoá truy cập và mật khẩu). Do đó, chính sách này không áp dụng được.
+
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt, thì người dùng có thể lưu khoá truy cập vào trình quản lý mật khẩu tích hợp sẵn nếu đã đăng nhập vào <ph name="PRODUCT_NAME" />.
+
+Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thể lưu khoá truy cập vào trình quản lý mật khẩu tích hợp sẵn. Tuy nhiên, những khoá truy cập đã lưu trước đó sẽ vẫn hoạt động.</translation>
 <translation id="719398790886719721">Tắt quyền truy cập gốc vào các máy ảo Linux</translation>
 <translation id="7194407337890404814">Tên nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="7196336906814426783">Chính sách này thiết lập một loạt các khoảng thời gian hằng tuần để lên lịch tạm ngưng tự động. Khi một khoảng thời gian bắt đầu, thiết bị <ph name="PRODUCT_OS_NAME" /> sẽ chuyển sang chế độ tạm ngưng và hoạt động lại khi khoảng thời gian này kết thúc.
@@ -11174,6 +11160,7 @@ Chính sách này không còn được dùng trong M69 và đã bị thay bằng
 
       Chính sách này chỉ là biện pháp tạm thời và sẽ bị xóa trong các phiên bản <ph name="PRODUCT_NAME" /> sau này. Sau khi chính sách này bị xóa, <ph name="PRODUCT_NAME" /> luôn có thể truy vấn các loại DNS khác.</translation>
 <translation id="9167719789236691545">Tắt Drive trong ứng dụng Tệp dành cho <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9171359005568194889">Bật lưu khoá truy cập cho trình quản lý mật khẩu</translation>
 <translation id="9172648973829444124">Buộc bật chế độ Chỉ giao thức HTTPS ở chế độ Cân bằng</translation>
 <translation id="9172911925443428317">Không cho phép hiển thị quảng cáo Xếp hạng trong App Store</translation>
 <translation id="9173133289347070466">Khảo sát trong sản phẩm <ph name="PRODUCT_NAME" /> thu thập phản hồi của người dùng đối với trình duyệt. Các câu trả lời khảo sát không được liên kết với tài khoản người dùng.

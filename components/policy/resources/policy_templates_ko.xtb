@@ -471,27 +471,6 @@
 <translation id="1348603614848418219"><ph name="MS_AD_NAME" /> 관리 기기를 클라우드 관리로 이전하지 못하게 합니다.</translation>
 <translation id="1352799151662469739">AC 전원으로 구동될 때 사용자 입력이 없어서 화면이 잠기기까지 걸리는 시간(밀리초)입니다.</translation>
 <translation id="1353416417709895349">DNS 가로채기 검사 및 'http://intranetsite/'를 찾으셨나요? 정보 표시줄을 사용 중지합니다.</translation>
-<translation id="1353910503649343481">정책을 설정하면 Chrome 및 ARC 앱에 프록시 설정이 구성되어 명령줄로 지정된 모든 프록시 관련 옵션이 무시됩니다.
-
-       설정하지 않으면 사용자가 프록시 설정을 선택할 수 있습니다.
-
-       <ph name="PROXY_SETTINGS_POLICY_NAME" /> 정책 설정 시 다음 필드가 허용됩니다.
-         * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome에서 사용하는 프록시 서버를 지정하고 사용자가 프록시 설정을 변경하지 못하도록 합니다.
-         * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: 프록시 .pac 파일의 URL 또는 MIME 유형 application/x-ns-proxy-autoconfig로 데이터 URL로 인코딩된 PAC 스크립트입니다.
-         * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: 네트워크 스택이 잘못되었거나 사용할 수 없는 PAC 스크립트를 통해 직접 연결로 대체되지 않도록 합니다.
-         * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: 프록시 서버의 URL입니다.
-         * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: 프록시를 우회할 호스트 목록입니다.
-
-       <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 필드는 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 필드로 대체되어 더 이상 사용되지 않습니다.
-
-        <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />에 선택하는 값에 따른 결과는 다음과 같습니다.
-          * <ph name="PROXY_MODE_ENUM_DIRECT" /> 값을 선택하면 프록시가 사용되지 않고 다른 모든 필드가 무시됩니다.
-          * <ph name="PROXY_MODE_ENUM_SYSTEM" /> 값을 선택하면 시스템 프록시가 사용되고 다른 모든 필드가 무시됩니다.
-          * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> 값을 선택하면 다른 모든 필드가 무시됩니다.
-          * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> 값을 선택하면 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 및 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 필드가 사용됩니다.
-          * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> 및 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 필드가 사용됩니다.
-
-      참고: 자세한 예시를 보려면 Chromium 프로젝트(https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett)를 참고하세요.</translation>
 <translation id="1354280967938151061">ARC 사용 안함</translation>
 <translation id="1354349503792572661"><ph name="PRODUCT_OS_NAME" />에서 Native Client(NaCl)를 실행할 수 있도록 강제 적용합니다.</translation>
 <translation id="1354424209129232709">최대:</translation>

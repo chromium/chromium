@@ -2921,7 +2921,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3006881078666935414">Ingen brugsdata</translation>
 <translation id="3007771295016901659">Dupliker fane</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
-<translation id="3008232374986381779">Kør Linux-værktøjer, -redigeringsværktøjer og -IDE'er på din <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Nulstil tilladelser</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi i dag for at downloade en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}one{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}other{<ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi og downloader en opdatering, før fristen udløber. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).}}</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -3417,7 +3416,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Dine fanegrupper gemmes nu automatisk.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Betalingsmetoder</translation>
 <translation id="3387588771342841525">Når denne indstilling er aktiveret, gemmes adgangskoder på <ph name="EMAIL" />. Når indstillingen er deaktiveret, gemmes adgangskoder kun på denne enhed.</translation>
 <translation id="3387614642886316601">Brug forbedret stavekontrol</translation>
 <translation id="3387829698079331264">Har ikke tilladelse til at vide, hvornår du aktivt bruger din enhed</translation>
@@ -4087,7 +4085,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3824621460022590830">Tokenet for tilmelding af enhed er ugyldigt. Kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log ind for at se faner fra andre enheder</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Husk mit valg for denne filtype: <ph name="FILE_TYPES" />}one{Husk mit valg for denne filtype: <ph name="FILE_TYPES" />}other{Husk mit valg for disse filtyper: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Vis</translation>
+<translation id="3825512074963838982">Oversigt</translation>
 <translation id="3825635794653163640">Vis prik på appikon ved appunderretninger</translation>
 <translation id="3826071569074535339">Har tilladelse til at bruge bevægelsessensorer</translation>
 <translation id="3826086052025847742">ChromeOS Flex-logs</translation>
@@ -5641,7 +5639,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Gem aldrig adgangskoder til dette website</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
-<translation id="4954652437333037880">Fil</translation>
+<translation id="4954652437333037880">Arkiv</translation>
 <translation id="4955707703665801001">Synlighed for <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Vælg din pinkode</translation>
 <translation id="4956593309300508411">Vil du stoppe delingen?</translation>
@@ -6374,7 +6372,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5488093641312826914">"<ph name="COPIED_ITEM_NAME" />" er kopieret</translation>
 <translation id="5488508217173274228">Indstillinger for synkronisering af kryptering</translation>
 <translation id="5489077378642700219">Tillad ikke notifikationer fra <ph name="WEBSITE" />, men spørg senere</translation>
-<translation id="5490432419156082418">Adresser m.m.</translation>
 <translation id="5490721031479690399">Afbryd forbindelsen til Bluetooth-enhed</translation>
 <translation id="5490798133083738649">Tillad, at Linux får adgang til din mikrofon</translation>
 <translation id="549211519852037402">Beige og hvid</translation>

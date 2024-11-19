@@ -792,7 +792,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="238459632961158867">Webhely</translation>
 <translation id="2385809941344967209">A Chrome-ot a Chrome-beállítások között frissítheti</translation>
 <translation id="2386255080630008482">A szerver tanúsítványát visszavonták.</translation>
-<translation id="2386410849674401722">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy tetszik Önnek az automatikus kitöltés AI-val</translation>
+<translation id="2386410849674401722">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy tetszik Önnek az automatikus kitöltés AI-jal</translation>
 <translation id="2388828676877700238">Adóelőkészítés és -tervezés</translation>
 <translation id="239203817277685015">Részletesebb</translation>
 <translation id="239293030466334554">Nyitott és nyitható tetejű járművek</translation>
@@ -1408,7 +1408,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3543935938072367282">Fizessen gyorsabban az automatikus kitöltéssel</translation>
 <translation id="3547442767634383572">A munkaprofil áttekintése</translation>
 <translation id="3547746132308051926">20 × 24 hüvelyk</translation>
-<translation id="3550325450190222557">Visszajelzés küldése az Automatikus kitöltés AI-val funkcióval kapcsolatban.</translation>
+<translation id="3550325450190222557">Visszajelzés küldése az Automatikus kitöltés AI-jal funkcióval kapcsolatban.</translation>
 <translation id="3552155506104542239">Figyelmeztetés: Ez a házirend ütközik a(z) <ph name="POLICY_NAME" /> házirenddel, ezért nem lesz hatással az Android-alkalmazásokra. Minden más esetben a kívánt módon működik.</translation>
 <translation id="3552297013052089404">Sans-serif betűtípus</translation>
 <translation id="3558573058928565255">Nappal</translation>
@@ -1503,7 +1503,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3681007416295224113">Tanúsítvány adatai</translation>
 <translation id="3681421644246505351">A Chrome feljegyzi az Önt érdeklő témákat a legutóbbi böngészési előzményei alapján.</translation>
 <translation id="3682094733650754138">A „Cím kitöltése” lehetőség volt kiválasztva</translation>
-<translation id="3687493962714153124">Az Automatikus kitöltés AI-val funkció kezelése</translation>
+<translation id="3687493962714153124">Az Automatikus kitöltés AI-jal funkció kezelése</translation>
 <translation id="3687920599421452763">Mikrobuszok és kisbuszok</translation>
 <translation id="3693327506115126094">Válassza ki, hogyan szeretné igazolni személyazonosságát</translation>
 <translation id="3698353241727597930">A rendszergazda úgy konfigurálta a <ph name="FILES" /> mentését, hogy a vállalati kezelésű <ph name="CLOUD_STORAGE" />-tárhelyre kerüljenek. Ezek a fájlok figyelhetők, auditálhatók és megőrizhetők, amikor törli őket.</translation>
@@ -2627,7 +2627,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5745733273847572235">Engedélyt kérhet a helyadataihoz való hozzáférésre</translation>
 <translation id="5750869797196646528">Kézmozgás követése</translation>
 <translation id="5752327398324808817">Írjon be egy-két szót</translation>
-<translation id="5752519522101347518">Banki igazolás webhelyének betöltése…</translation>
+<translation id="5752519522101347518">Bank hitelesítő webhelyének betöltése…</translation>
 <translation id="5759751709240058861">A kamera használata és mozgatása</translation>
 <translation id="5763042198335101085">Érvényes e-mail-címet adjon meg</translation>
 <translation id="5764725887548570807">Érvénytelen eredetformátum.</translation>
@@ -2825,7 +2825,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6124432979022149706">Chrome Enterprise csatlakozási szoftverek</translation>
 <translation id="6126565365696310362">2. kínai boríték</translation>
 <translation id="6127379762771434464">Elem eltávolítva</translation>
-<translation id="6128214169525122635">A „Nem tetszik” értékeléssel azt a visszajelzést küldi, hogy nem tetszik Önnek az automatikus kitöltés AI-val</translation>
+<translation id="6128214169525122635">A „Nem tetszik” értékeléssel azt a visszajelzést küldi, hogy nem tetszik Önnek az automatikus kitöltés AI-jal</translation>
 <translation id="6131824478727057281">helyszín</translation>
 <translation id="6133320744616005677">Engedélyezés folytatása</translation>
 <translation id="6133984428121856852">A fájlkiterjesztés üres vagy hibás formátumú.</translation>
@@ -3882,7 +3882,7 @@ További részletek:
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter billentyűt, a Chrome-ot szeretné beállítani a rendszer alapértelmezett böngészőjeként.</translation>
 <translation id="8027077570865220386">15. tálca</translation>
 <translation id="8027585818882015174">A Chrome biztonsági ellenőrzését futtató gomb. A gombot megnyomva biztonsági ellenőrzést futtathat a Chrome beállításai között.</translation>
-<translation id="8028138772801251745">Automatikus kitöltés AI-val</translation>
+<translation id="8028138772801251745">Automatikus kitöltés AI-jal</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új űrlap gyors létrehozásához a Google Űrlapok szolgáltatással</translation>
 <translation id="8028892419725165118">Egyszerű játékok</translation>
 <translation id="8028960012888758725">Vágás a munka végén</translation>
@@ -4490,7 +4490,7 @@ További részletek:
 <translation id="9150025764986957246">Például a következőket adhatja meg:</translation>
 <translation id="9154194610265714752">Frissítve</translation>
 <translation id="9155211586651734179">Csatlakoztatott hangperifériák</translation>
-<translation id="9155453166708525139">Az automatikus kitöltés AI-val egy kísérleti funkció, amely nem mindig működik megfelelően. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
+<translation id="9155453166708525139">Az automatikus kitöltés AI-jal egy kísérleti funkció, amely nem mindig működik megfelelően. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS" />.</translation>
 <translation id="9155646082713385498">Magazinok</translation>
 <translation id="9157595877708044936">Előkészítés...</translation>
 <translation id="9161794544616754735">{0,plural, =1{A(z) <ph name="FILE_NAME" /> bizalmas adatokat tartalmazhat}other{<ph name="FILE_COUNT" /> fájl bizalmas adatokat tartalmazhat}}</translation>

@@ -802,6 +802,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1556127816860282890">Bakgrundsaktivitet och vissa visuella effekter, till exempel jämn scrollning, kan begränsas</translation>
 <translation id="1556537182262721003">Det gick inte att flytta tilläggskatalogen till profilen.</translation>
 <translation id="1557939148300698553">Skapa profil</translation>
+<translation id="155803912725350982">Långsamma tangenter</translation>
 <translation id="155865706765934889">Styrplatta</translation>
 <translation id="1558671750917454373">Återuppta castingen till <ph name="DEVICE_NAME" /></translation>
 <translation id="1561331397460162942">Detta tillåter platsåtkomst för appar, webbplatser med platsbehörighet och systemtjänster</translation>
@@ -2919,7 +2920,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3006881078666935414">Ingen användningsdata tillgänglig</translation>
 <translation id="3007771295016901659">Duplicera flik</translation>
 <translation id="3008142279736625920">Cheesecake</translation>
-<translation id="3008232374986381779">Kör verktyg, redigerare och IDE:er för Linux på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Återställ behörigheter</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du ansluter till wifi och laddar ned en uppdatering i dag. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}other{<ph name="MANAGER" /> kräver att du ansluter till wifi laddar ned en uppdatering före deadline. Du kan även ladda ned via en anslutning med datapriser (avgifter kan tillkomma).}}</translation>
 <translation id="3009178788565917040">Utgång</translation>
@@ -3415,7 +3415,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="338583716107319301">Avgränsare</translation>
 <translation id="3385916046075724800">Dina flikgrupper sparas nu automatiskt.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Betalningsmetoder</translation>
 <translation id="3387588771342841525">När funktionen är aktiverad sparas lösenord i <ph name="EMAIL" />. När funktionen är inaktiverad sparas lösenorden endast på den här enheten.</translation>
 <translation id="3387614642886316601">Använd förbättrad stavningskontroll</translation>
 <translation id="3387829698079331264">Har inte tillåtelse att veta om du använder enheten aktivt</translation>
@@ -3564,6 +3563,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3488199663160411179">ditt namn</translation>
 <translation id="3490695139702884919">Laddas ned … <ph name="PERCENT" /> %</translation>
 <translation id="3491171603443463516">Lokal data kan återställas om du glömmer pinkoden eller lösenordet</translation>
+<translation id="3491616972057195633">Studsande tangenter</translation>
 <translation id="3491669675709357988">Ditt barns konto har inte konfigurerats för föräldrakontroller i Family Link. Du kan lägga till föräldrakontroller när du har slutfört konfigureringen. Information om föräldrakontroller finns i Utforska-appen.</translation>
 <translation id="3491678231052507920">Åtkomst till VR-enheter och VR-data brukar kunna behövas för VR-sessioner på webbplatsen</translation>
 <translation id="3493043608231401654">Ta bort <ph name="TAB_TITLE" /> från flikgruppen</translation>
@@ -3650,6 +3650,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3551320343578183772">Stäng flik</translation>
 <translation id="3552097563855472344"><ph name="NETWORK_NAME" /> – <ph name="SPAN_START" /><ph name="CARRIER_NAME" /><ph name="SPAN_END" /></translation>
 <translation id="3552780134252864554">Rensas vis avslutning</translation>
+<translation id="3553442438687311630">Microsoft Authentication</translation>
 <translation id="3554493885489666172">Enheten hanteras av <ph name="PROFILE_NAME" />. Administratörer kan få åtkomst till data i alla profiler på enheten.</translation>
 <translation id="3555812735919707620">Ta bort tillägg</translation>
 <translation id="3557101512409028104">Begränsa vilka webbplatser som är tillgängliga och ange skärmtid med Family Link</translation>
@@ -3801,6 +3802,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3654045516529121250">Läsa tillgänglighetsinställningarna</translation>
 <translation id="3654682977761834281">Data från inbäddade webbplatser</translation>
 <translation id="3656328935986149999">Markörhastighet</translation>
+<translation id="3656701180077048004">Lägger till en fördröjning mellan när du trycker på en tangent och när den aktiveras</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
 <translation id="3659929705630080526">Du har angett fel åtkomstkod för många gånger. Försök igen senare</translation>
 <translation id="3660234220361471169">Opålitliga</translation>
@@ -6369,7 +6371,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5488093641312826914"><ph name="COPIED_ITEM_NAME" /> har kopierats</translation>
 <translation id="5488508217173274228">Alternativ för synkroniseringskryptering</translation>
 <translation id="5489077378642700219">Tillåt inte aviseringar från <ph name="WEBSITE" /> men fråga senare</translation>
-<translation id="5490432419156082418">Adresser och annat</translation>
 <translation id="5490721031479690399">Koppla från Bluetooth-enhet</translation>
 <translation id="5490798133083738649">Ge Linux åtkomst till mikrofonen</translation>
 <translation id="549211519852037402">Beige och vit</translation>
@@ -6689,6 +6690,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5731247495086897348">Kl&amp;istra in och öppna</translation>
 <translation id="5733109311583381874">Anpassa vilka kandidater som visas för teckenkonvertering genom att lägga till ord i de egna ordlistorna.</translation>
 <translation id="5733669387494115331">Inställningar för Googles tjänster</translation>
+<translation id="5733913382424854675">Gruppera flikar med AI</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Lägg till filresurs</translation>
 <translation id="5735513236153491131">Förbättra nu</translation>
@@ -7977,6 +7979,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6677527809400770913">Tilldelade rörelsen <ph name="GESTURE" /> till <ph name="ACTION" /></translation>
 <translation id="6678604587151240716">Stora stänkande vågor på havet med land långt borta i bakgrunden. Det finns strimmor av orange ljus bortom horisonten på en annars mörk, dyster himmel.</translation>
 <translation id="6678717876183468697">Frågewebbadress</translation>
+<translation id="6679947539429331601">Dölj i 12 timmar</translation>
 <translation id="6680442031740878064">Tillgängligt: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
 <translation id="6683022854667115063">Hörlurar</translation>
@@ -8615,6 +8618,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7127980134843952133">Nedladdningshistorik</translation>
 <translation id="7128151990937044829">Visa en indikator i adressfältet när en avisering blockeras</translation>
 <translation id="7130438335435247835">Åtkomstpunktens namn (APN)</translation>
+<translation id="7130680050151101667">Visa inte det här kortet</translation>
 <translation id="7131040479572660648">Läsa din data på <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> och <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">Lägg till si&amp;da ...</translation>
 <translation id="7131431455372521159">Alla TrackPoints har kopplats bort</translation>
@@ -10120,6 +10124,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8194788147118885421">Granska inaktiva flikar</translation>
 <translation id="8195265224453131880">Intensitet</translation>
 <translation id="8195854162863398249">Inaktivera <ph name="FEATURE_NAME" /></translation>
+<translation id="8195920051450756553">Fördröjning innan samma tangent aktiveras igen</translation>
 <translation id="8197673340773315084">Lägg till ett namn eller en etikett, till exempel Jobb eller Privat</translation>
 <translation id="8198456017687137612">Castar flik</translation>
 <translation id="8198457270656084773">Letar du systemets enhetslogg? Besök<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -10535,6 +10540,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8486666913807228950">Orsak: Den inverterade regeln <ph name="REVERT_RULE" /> hittades i listan Tvinga att öppna i.</translation>
 <translation id="8487678622945914333">Zooma in</translation>
 <translation id="8487699605742506766">Surfzon</translation>
+<translation id="8488735603679729015">Fördröjning innan aktivering av tangent</translation>
 <translation id="8489156414266187072">Personliga förslag visas bara i ditt konto</translation>
 <translation id="8490896350101740396">Följande kioskappar <ph name="UPDATED_APPS" /> har uppdaterats. Starta om enheten för att slutföra uppdateringen.</translation>
 <translation id="8492822722330266509">Webbplatser får öppna popup-fönster och använda omdirigering</translation>
@@ -10922,6 +10928,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8755376271068075440">&amp;Större</translation>
 <translation id="8755584192133371929">Välj en flik att dela</translation>
 <translation id="875604634276263540">Avbildningens webbadress är ogiltig</translation>
+<translation id="8756262226135340085">Ignorerar snabbt upprepade tryck på samma tangent på tangentbordet</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
 <translation id="8757368836647541092"><ph name="USER_NAME_OR_EMAIL" /> har tagits bort</translation>
 <translation id="8759753423332885148">Läs mer.</translation>

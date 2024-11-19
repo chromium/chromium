@@ -2911,7 +2911,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3006881078666935414">Kasutusandmed puuduvad</translation>
 <translation id="3007771295016901659">Topeltvaheleht</translation>
 <translation id="3008142279736625920">Juustukook</translation>
-<translation id="3008232374986381779">Linuxi tööriistade, redaktorite ja IDE-de käitamine teie seadmes <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Lähtesta load</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> nõuab, et looksite täna WiFi-ühenduse, et värskendus alla laadida. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).}other{<ph name="MANAGER" /> nõuab, et looksite ühenduse WiFi-võrguga ja laadiksite enne tähtaega alla värskenduse. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).}}</translation>
 <translation id="3009178788565917040">Väljund</translation>
@@ -3407,7 +3406,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="338583716107319301">Eraldaja</translation>
 <translation id="3385916046075724800">Teie vahelehegrupid salvestuvad nüüd automaatselt.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Makseviisid</translation>
 <translation id="3387588771342841525">Pärast sisselülitamist salvestatakse paroolid kontole <ph name="EMAIL" />. Kui see on välja lülitatud, salvestatakse paroolid ainult sellesse seadmesse.</translation>
 <translation id="3387614642886316601">Kasuta täiustatud õigekirjakontrolli</translation>
 <translation id="3387829698079331264">Ei ole lubatud teada, millal oma seadet aktiivselt kasutate</translation>
@@ -5519,7 +5517,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4872192066608821120">Paroolide importimiseks valige CSV-fail</translation>
 <translation id="4872212987539553601">Seadistage seadmes krüpteerimine</translation>
 <translation id="4873312501243535625">Meediafaili kontrollija</translation>
-<translation id="4875690134140862902">Tabulaator</translation>
+<translation id="4875690134140862902">Vaheleht</translation>
 <translation id="4876273079589074638">Aidake meie inseneridel seda kokkujooksmist uurida ja see parandada. Võimaluse korral loetlege täpselt tehtud toimingud. Ükski pisiasi pole liiga väike!</translation>
 <translation id="4876305945144899064">Kasutajanimi puudub</translation>
 <translation id="4876327226315760474">See tähendab, et saidi funktsioonid peaksid ootuspäraselt töötama, kuid teil võib olla väiksem sirvimiskaitse.</translation>
@@ -6364,7 +6362,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5488093641312826914">„<ph name="COPIED_ITEM_NAME" />” on kopeeritud</translation>
 <translation id="5488508217173274228">Sünkroonitavate andmete krüpteerimise valikud</translation>
 <translation id="5489077378642700219">Ära luba märguandeid veebisaidilt <ph name="WEBSITE" />, kuid küsi hiljem</translation>
-<translation id="5490432419156082418">Aadressid ja muu</translation>
 <translation id="5490721031479690399">Bluetooth-seadmete eemaldamine</translation>
 <translation id="5490798133083738649">Andke Linuxile luba teie mikrofonile juurde pääseda</translation>
 <translation id="549211519852037402">Beež ja valge</translation>

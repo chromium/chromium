@@ -38,6 +38,7 @@ Considerações:
 <translation id="1646463005043273333">Abre as configurações para definir o Chrome como navegador padrão.</translation>
 <translation id="1670609221633730681">Dica do Chrome: escolha a posição da barra de endereço</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Salvar suas senhas no Chrome</translation>
 <translation id="1790080846677398234">Adiciona os URLs inseridos aos seus favoritos no Chrome.</translation>
 <translation id="1799920918471566157">Dicas do Chrome</translation>
 <translation id="1830634592642484976">Este endereço está salvo no Chrome. Para usá-lo nos produtos do Google, salve-o na sua conta, <ph name="USER_EMAIL" />.</translation>
@@ -219,6 +220,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 
 Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Exclui dados de navegação no Chrome.</translation>
+<translation id="6924922227983877439">Abrir links no Chrome por padrão</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
 <translation id="7056826488869329999">Abre e realiza a Confirmação de segurança no Chrome.</translation>
 <translation id="7061455974939528301">Toque no ícone do Chrome, pressione e clique em "Editar tela inicial"</translation>

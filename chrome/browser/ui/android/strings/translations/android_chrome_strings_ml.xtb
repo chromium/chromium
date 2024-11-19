@@ -342,6 +342,7 @@
 <translation id="2571711316400087311">മറ്റ് ഭാഷകളിലുള്ള പേജുകൾ Google Translate-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="2571834852878229351">നിങ്ങളുടേതായ പാസ്‌വേഡ് സൃഷ്ടിക്കൂ</translation>
 <translation id="2574249610672786438">Chrome ഉപയോഗിക്കുന്നിടത്തെല്ലാം നിങ്ങളുടെ ടാബുകൾ കാണാൻ, നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും സൈൻ ഇൻ ചെയ്യുക</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) എന്നയാൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, Google സേവനങ്ങളിലുടനീളം ഇനി നിങ്ങളുമായി ഇടപഴകാനാകില്ല.</translation>
 <translation id="2578337197553672982">പ്രായപൂർത്തിയാകാത്തവർക്കുള്ള Google ഉള്ളടക്കം</translation>
 <translation id="2579297619530305344">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലെയും പാസ്‌വേഡുകൾ സംബന്ധിച്ച ഷീറ്റ് പൂർണ്ണ വലുപ്പത്തിൽ തുറന്നു</translation>
 <translation id="2581165646603367611">ഇത്, Chrome പ്രധാനമായി കണക്കാക്കാത്ത സൈറ്റുകളുടെ കുക്കികളും കാഷെയും മറ്റ് വിവരങ്ങളും മായ്‌ക്കും.</translation>
@@ -566,6 +567,7 @@
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3614126103057878858">നിരക്ക് ഉൾക്കാഴ്‌ചകൾ</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
+<translation id="3619255692378312441">ആക്‌സസ് മാനേജ് ചെയ്യുക</translation>
 <translation id="3622349720008044802">വിൻഡോകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 സൈറ്റ്}other{+ # സൈറ്റുകൾ}}</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> എന്നതിലേക്ക് പങ്കിടുന്നു</translation>
@@ -585,6 +587,7 @@
 <translation id="3701515417135397388">ഡാറ്റാ ലംഘനത്തിൽ പാസ്‌വേഡ് അപഹരിക്കപ്പെട്ടാൽ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുക</translation>
 <translation id="3703166520839776970">ഈ പ്രശ്‌നം നിലനിൽക്കുകയാണെങ്കിൽ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്നതിൽ നിന്ന് കൂടുതൽ വിവരങ്ങൾ നേടാൻ ചുവടെയുള്ള "കൂടുതൽ വിശദാംശങ്ങൾ" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="3710501561113687889">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ <ph name="FIELDS_STRING" /> ഈ സൈറ്റുമായി പങ്കിടും.</translation>
+<translation id="3710560693796335511">കൊളാബറേഷൻ</translation>
 <translation id="3714981814255182093">കണ്ടെത്തൽ ബാർ തുറക്കുക</translation>
 <translation id="3716182511346448902">ഈ പേജ് ഒരുപാട് മെമ്മറി ഉപയോഗിക്കുന്നു, അതിനാൽ Chrome ഇത് താൽക്കാലികമായി അവസാനിപ്പിച്ചു.</translation>
 <translation id="3718765429352682176">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം.</translation>
@@ -956,6 +959,7 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) എന്നയാൾക്ക് “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് ഉടൻ നഷ്ടപ്പെടും</translation>
 <translation id="5423934151118863508">നിങ്ങളുടെ ഏറ്റവുമധികം സന്ദർശിച്ച പേജുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ലഭ്യമാണ്</translation>
+<translation id="543121643585717256">ലിങ്കുള്ള ആർക്ക് വേണമെങ്കിലും എല്ലാ ടാബുകളും എഡിറ്റ് ചെയ്യാം. പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളെ കുറിച്ച് അറിയുക</translation>
 <translation id="543338862236136125">പാസ്‌വേഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5433691172869980887">ഉപയോക്തൃനാമം പകർത്തി</translation>
 <translation id="5438292632479953702">വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -970,6 +974,7 @@
 <translation id="5468068603361015296">നിങ്ങൾക്ക് എന്തായാലും <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="548278423535722844">മാപ്‌സ് ആപ്പിൽ തുറക്കുക</translation>
 <translation id="5492637351392383067">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
+<translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> എന്നയാളായി ചേരുക</translation>
 <translation id="5503125329065007089">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലെയും പാസ്‌വേഡുകൾ സംബന്ധിച്ച ഷീറ്റ് പകുതി വലുപ്പത്തിൽ തുറന്നു</translation>
 <translation id="5514904542973294328">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5515439363601853141">നിങ്ങളുടെ പാസ്‍വേഡ് കാണാൻ അൺലോക്ക് ചെയ്യുക</translation>
@@ -1372,6 +1377,7 @@
 <translation id="7182051712900867547">മറ്റൊരു അക്കൗണ്ട് ഉപയോഗിക്കുക</translation>
 <translation id="7183517696921903380">ആപ്പ് ഫിൽട്ടർ ഷീറ്റ് തുറന്നു.</translation>
 <translation id="7186568385131859684">Google സേവനങ്ങളിലുടനീളം നിങ്ങളുടെ മറ്റ് ഡാറ്റയ്‌ക്കൊപ്പം ബ്രൗസിംഗ് ചരിത്രം ഉപയോഗിക്കുന്നത് എങ്ങനെയെന്നത് നിയന്ത്രിക്കുക</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> ബ്ലോക്ക് ചെയ്യണോ?</translation>
 <translation id="7191430249889272776">ടാബ് പശ്ചാത്തലത്തിൽ തുറന്നു.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{നിങ്ങൾ ഇത് ഇപ്പോൾ മാറ്റണം}other{നിങ്ങൾ ഇവ ഇപ്പോൾ മാറ്റണം}}</translation>
 <translation id="7196215469483532480">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
@@ -1570,6 +1576,7 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ്}other{<ph name="TAB_COUNT_NORMAL" /> അദൃശ്യ ടാബുകൾ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ലഭ്യമാണ്</translation>
 <translation id="8058746566562539958">പുതിയ Chrome ടാബിൽ തുറക്കുക</translation>
+<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}=1{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് # ആൾക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}other{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് # പേർക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}}</translation>
 <translation id="8062594758852531064">വിപുലീകരിച്ച മുൻകൂട്ടി ലോഡ് ചെയ്യൽ:</translation>
 <translation id="8063895661287329888">ബുക്ക്‌മാർക്ക് ചേർക്കാനായില്ല.</translation>
 <translation id="8066816452984416180">ഈ പേജ് വേഗത്തിൽ ബുക്ക്‌മാർക്ക് ചെയ്യുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>

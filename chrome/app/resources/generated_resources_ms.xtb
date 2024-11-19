@@ -2927,7 +2927,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3006881078666935414">Tiada data penggunaan</translation>
 <translation id="3007771295016901659">Tab Pendua</translation>
 <translation id="3008142279736625920">Kek keju</translation>
-<translation id="3008232374986381779">Jalankan alatan, editor dan IDE Linux pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi hari ini untuk memuat turun kemaskinian. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).}other{<ph name="MANAGER" /> menghendaki anda menyambung kepada Wi-Fi dan memuat turun kemaskinian sebelum tarikh akhir. Atau, muat turun daripada sambungan bermeter (caj mungkin dikenakan).}}</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -3424,7 +3423,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="338583716107319301">Pemisah</translation>
 <translation id="3385916046075724800">Kini kumpulan tab anda disimpan secara automatik.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387261909427947069">Kaedah Pembayaran</translation>
 <translation id="3387588771342841525">Apabila dihidupkan, kata laluan disimpan dalam <ph name="EMAIL" />. Apabila dimatikan, kata laluan disimpan pada peranti ini sahaja.</translation>
 <translation id="3387614642886316601">Gunakan semak ejaan yang dipertingkatkan</translation>
 <translation id="3387829698079331264">Tidak dibenarkan mengetahui waktunya anda aktif menggunakan peranti</translation>
@@ -6385,7 +6383,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' disalin</translation>
 <translation id="5488508217173274228">Pilihan penyulitan penyegerakan</translation>
 <translation id="5489077378642700219">Jangan benarkan pemberitahuan daripada <ph name="WEBSITE" /> tetapi tanya kemudian</translation>
-<translation id="5490432419156082418">Alamat dan Pelbagai Lagi</translation>
 <translation id="5490721031479690399">Putuskan sambungan peranti Bluetooth</translation>
 <translation id="5490798133083738649">Benarkan Linux mengakses mikrofon anda</translation>
 <translation id="549211519852037402">Kuning air dan putih</translation>
