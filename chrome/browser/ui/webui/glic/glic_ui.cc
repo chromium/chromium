@@ -49,12 +49,13 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
                                         ? command_line->GetSwitchValueASCII(
                                               ::switches::kGlicGuestURL)
                                         : features::kGlicGuestURL.Get());
+
+  // Set up guest api source.
   source->AddString(
       "glicGuestAPISource",
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_GENERATED_GLIC_API_IMPL_ROLLUP_JS));
-  source->AddString("glicGuestURL", command_line->GetSwitchValueASCII(
-                                        ::switches::kGlicGuestURL));
+
   // TODO(crbug.com/378951332): Configure an approved CSP.
   // Set up csp override by cli flag or default to finch param value. This will
   // be removed when we go to canary since it will no longer be needed once
