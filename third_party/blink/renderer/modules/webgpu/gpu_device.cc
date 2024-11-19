@@ -179,9 +179,7 @@ void GPUDevice::Initialize(wgpu::Device handle,
   wgpu::SupportedLimits limits = {};
   // Chain to get subgroup limits, if device has subgroups feature.
   wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups) ||
-      features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
+  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     limits.nextInChain = &subgroupLimits;
   }
 
@@ -641,16 +639,6 @@ ScriptPromise<GPUComputePipeline> GPUDevice::createComputePipelineAsync(
   OwnedProgrammableStage computeStage;
   wgpu::ComputePipelineDescriptor dawn_desc =
       AsDawnType(this, descriptor, &desc_label, &computeStage);
-
-  // If ChromiumExperimentalSubgroups feature is enabled, chain the full
-  // subgroups options after compute pipeline descriptor.
-  wgpu::DawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
-  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
-    fullSubgroupsOptions.requiresFullSubgroups =
-        descriptor->getRequiresFullSubgroupsOr(false);
-    dawn_desc.nextInChain = &fullSubgroupsOptions;
-  }
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPUDevice::OnCreateComputePipelineAsyncCallback,

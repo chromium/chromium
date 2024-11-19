@@ -1282,8 +1282,6 @@ ContextResult WebGPUDecoderImpl::Initialize(
 bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
-    case wgpu::FeatureName::ChromiumExperimentalSubgroups:
-    case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
     case wgpu::FeatureName::MultiDrawIndirect:
     case wgpu::FeatureName::Unorm16TextureFormats:
     case wgpu::FeatureName::Snorm16TextureFormats:

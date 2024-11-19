@@ -50,11 +50,6 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
       return V8GPUFeatureName::Enum::kRg11B10UfloatRenderable;
     case wgpu::FeatureName::BGRA8UnormStorage:
       return V8GPUFeatureName::Enum::kBgra8UnormStorage;
-    case wgpu::FeatureName::ChromiumExperimentalSubgroups:
-      return V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups;
-    case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
-      return V8GPUFeatureName::Enum::
-          kChromiumExperimentalSubgroupUniformControlFlow;
     case wgpu::FeatureName::ShaderF16:
       return V8GPUFeatureName::Enum::kShaderF16;
     case wgpu::FeatureName::Float32Filterable:
@@ -179,11 +174,9 @@ GPUAdapter::GPUAdapter(
   features_ = MakeFeatureNameSet(GetHandle(), gpu_->GetExecutionContext());
 
   wgpu::SupportedLimits limits = {};
-  // Chain to get experimental subgroup limits, if support subgroups feature.
+  // Chain to get subgroup limits, if support subgroups feature.
   wgpu::DawnExperimentalSubgroupLimits subgroupLimits = {};
-  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
-  if (features_->has(V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups) ||
-      features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
+  if (features_->has(V8GPUFeatureName::Enum::kSubgroups)) {
     limits.nextInChain = &subgroupLimits;
   }
 

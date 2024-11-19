@@ -704,11 +704,6 @@ wgpu::FeatureName AsDawnEnum(const V8GPUFeatureName& webgpu_enum) {
       return wgpu::FeatureName::Depth32FloatStencil8;
     case V8GPUFeatureName::Enum::kIndirectFirstInstance:
       return wgpu::FeatureName::IndirectFirstInstance;
-    case V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups:
-      return wgpu::FeatureName::ChromiumExperimentalSubgroups;
-    case V8GPUFeatureName::Enum::
-        kChromiumExperimentalSubgroupUniformControlFlow:
-      return wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow;
     case V8GPUFeatureName::Enum::kRg11B10UfloatRenderable:
       return wgpu::FeatureName::RG11B10UfloatRenderable;
     case V8GPUFeatureName::Enum::kBgra8UnormStorage:
