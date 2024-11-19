@@ -1714,6 +1714,7 @@ static_library("browser") {
   # "browser_public_dependencies".
   allow_circular_includes_from = [
     "//chrome/browser/ui/autofill:impl",
+    "//chrome/browser/task_manager:impl",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
     "//chrome/browser/ui/bluetooth:impl",
@@ -1940,6 +1941,8 @@ static_library("browser") {
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync:utils",
+    "//chrome/browser/task_manager",
+    "//chrome/browser/task_manager:impl",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/task_manager/common:impl",
     "//chrome/browser/thumbnail",
@@ -4200,8 +4203,6 @@ static_library("browser") {
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/search/background",
       "//chrome/browser/smart_card",
-      "//chrome/browser/task_manager",
-      "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_list_impl",
@@ -4392,7 +4393,6 @@ static_library("browser") {
       "//chrome/browser/ui/toolbar/cast:impl",
 
       "//chrome/browser/ui/browser_window:impl",
-      "//chrome/browser/task_manager:impl",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/searchbox",
