@@ -99,6 +99,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/policy/model:eg2_tests",
     "//ios/chrome/browser/policy_url_blocking/model:eg2_tests",
     "//ios/chrome/browser/prerender/model:eg2_tests",
+    "//ios/chrome/browser/push_notification/ui_bundled:eg2_tests",
     "//ios/chrome/browser/safe_browsing/model:eg2_tests",
     "//ios/chrome/browser/snapshots/model:eg2_tests",
     "//ios/chrome/browser/ssl/model:eg2_tests",
@@ -108,7 +109,6 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/ui/content_suggestions:eg2_tests",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption:eg2_tests",
     "//ios/chrome/browser/ui/integration_tests:eg2_tests",
-    "//ios/chrome/browser/ui/push_notification:eg2_tests",
     "//ios/chrome/browser/variations/model:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]

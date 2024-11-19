@@ -104,10 +104,10 @@ source_set("prominence_notification_setting_alert") {
     "//components/prefs",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/alert_view/ui_bundled",
+    "//ios/chrome/browser/push_notification/ui_bundled/resources",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/ui/push_notification/resources",
     "//ui/base",
   ]
 }

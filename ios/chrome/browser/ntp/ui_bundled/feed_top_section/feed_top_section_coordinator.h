@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
 
 @protocol NewTabPageDelegate;
 

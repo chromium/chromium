@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_CONTENT_NOTIFICATIONS_CONTENT_NOTIFICATIONS_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_NOTIFICATIONS_CONTENT_NOTIFICATIONS_CONTENT_NOTIFICATIONS_COORDINATOR_H_
 
+#import "ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
 
 @class ContentNotificationsCoordinator;
 
