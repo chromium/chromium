@@ -2272,6 +2272,21 @@ export class AppElement extends AppElementBase {
         browserOrPageBaseLang, storedLanguagesPref, this.availableLangs_,
         this.defaultVoice()?.lang);
 
+    storedLanguagesPref.forEach(storedLanguage => {
+      if (!this.enabledLangs.find(language => language === storedLanguage)) {
+        // If a stored language doesn't have a match in the enabled languages
+        // list, disable the original preference. This can guard against issues
+        // with preferences after bugs are fixed.
+        // e.g. if "de-DE" is accidentally stored as a language, the preference
+        // will always be converted to "de-de" in
+        // #createInitialListOfEnabledLanguages, and if we disable the
+        // preference, "de-de" will be disabled, meaning the original
+        // pref will never be deleted and it will be impossible to disable
+        // the preference.
+        chrome.readingMode.onLanguagePrefChange(storedLanguage, false);
+      }
+    });
+
     for (const lang of this.enabledLangs) {
       this.installVoicePackIfPossible(
           lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
