@@ -70,7 +70,8 @@ SmartLockServiceFactory::SmartLockServiceFactory()
 
 SmartLockServiceFactory::~SmartLockServiceFactory() = default;
 
-KeyedService* SmartLockServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SmartLockServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!context) {
     return nullptr;
@@ -91,7 +92,7 @@ KeyedService* SmartLockServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  SmartLockService* service = new SmartLockService(
+  auto service = std::make_unique<SmartLockService>(
       Profile::FromBrowserContext(context),
       secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
       device_sync::DeviceSyncClientFactory::GetForProfile(profile),
