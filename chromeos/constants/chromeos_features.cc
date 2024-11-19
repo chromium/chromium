@@ -198,7 +198,7 @@ BASE_FEATURE(kNewGuestProfile,
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease,
              "NotificationWidthIncrease",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the Navigation Capturing Reimpl for the Office
 // PWA.
