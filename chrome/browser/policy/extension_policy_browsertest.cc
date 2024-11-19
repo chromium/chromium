@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -2297,8 +2298,14 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyTest, StartUpInstallation) {
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  std::optional<webapps::AppId> app_id =
-      registrar.FindAppWithUrlInScope(policy_app_url_);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      policy_app_url_,
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2330,8 +2337,14 @@ IN_PROC_BROWSER_TEST_F(
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  std::optional<webapps::AppId> app_id =
-      registrar.FindAppWithUrlInScope(policy_app_url_);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      policy_app_url_,
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2363,8 +2376,14 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicySAATest,
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  std::optional<webapps::AppId> app_id =
-      registrar.FindAppWithUrlInScope(policy_app_url_);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      policy_app_url_,
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2393,8 +2412,14 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallForceListPolicyWithAppFallbackNameSAATest,
       web_app::WebAppProvider::GetForTest(browser()->profile())
           ->registrar_unsafe();
   web_app::WebAppTestInstallObserver install_observer(browser()->profile());
-  std::optional<webapps::AppId> app_id =
-      registrar.FindAppWithUrlInScope(policy_app_url_);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      policy_app_url_,
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
@@ -2428,8 +2453,14 @@ IN_PROC_BROWSER_TEST_F(
           ->registrar_unsafe();
   web_app::WebAppTestInstallWithOsHooksObserver install_observer(
       browser()->profile());
-  std::optional<webapps::AppId> app_id =
-      registrar.FindAppWithUrlInScope(policy_app_url_);
+  // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
+      policy_app_url_,
+      {
+          web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+          web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+      });
   if (!app_id) {
     app_id = install_observer.BeginListeningAndWait();
   }
