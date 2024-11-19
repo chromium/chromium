@@ -78,17 +78,6 @@ void LensOverlayNavigationManager::LensOverlayDidGenerateResult(
   }
 }
 
-void LensOverlayNavigationManager::LoadUnimodalOmniboxNavigation(
-    const GURL& destination_url,
-    const std::u16string& omnibox_text) {
-  /// SRP loaded in the lens overlay require this parameter.
-  GURL url =
-      net::AppendOrReplaceQueryParameter(destination_url, "lns_surface", "4");
-
-  RegisterSubNavigation(url, omnibox_text);
-  [mutator_ loadURL:url omniboxText:base::SysUTF16ToNSString(omnibox_text)];
-}
-
 bool LensOverlayNavigationManager::CanGoBack() const {
   // Sub navigation back.
   if (!lens_navigation_items_.empty() &&
@@ -119,7 +108,7 @@ void LensOverlayNavigationManager::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   if (navigation_context && !navigation_context->IsSameDocument()) {
-    RegisterSubNavigation(navigation_context->GetUrl(), PreviousOmniboxText());
+    RegisterSubNavigation(navigation_context->GetUrl());
   }
 }
 
@@ -129,9 +118,7 @@ void LensOverlayNavigationManager::WebStateDestroyed(web::WebState* web_state) {
 
 #pragma mark - Private
 
-void LensOverlayNavigationManager::RegisterSubNavigation(
-    GURL url,
-    const std::u16string& omnibox_text) {
+void LensOverlayNavigationManager::RegisterSubNavigation(GURL url) {
   if (lens_navigation_items_.empty()) {
     NOTREACHED(kLensOverlayNotFatalUntil)
         << "Web navigation without lens result is not supported.";
@@ -146,11 +133,10 @@ void LensOverlayNavigationManager::RegisterSubNavigation(
   }
 
   // Add sub navigation if it's not a reload.
-  std::vector<LensSubNavigationItem>& sub_navigations =
+  std::vector<GURL>& sub_navigations =
       lens_navigation_items_.back()->sub_navigations();
-  if (sub_navigations.empty() ||
-      url != sub_navigations.back().destination_url) {
-    sub_navigations.emplace_back(url, omnibox_text);
+  if (sub_navigations.empty() || url != sub_navigations.back()) {
+    sub_navigations.push_back(url);
     OnNavigationListUpdate();
   }
 }
@@ -160,14 +146,12 @@ void LensOverlayNavigationManager::OnNavigationListUpdate() const {
 }
 
 void LensOverlayNavigationManager::GoToPreviousSubNavigation() {
-  std::vector<LensSubNavigationItem>& sub_navigation =
+  std::vector<GURL>& sub_navigation =
       lens_navigation_items_.back()->sub_navigations();
   // Removes current sub navigation.
   sub_navigation.pop_back();
   // Reloads previous sub navigation.
-  const LensSubNavigationItem& previous_navigation = sub_navigation.back();
-  [mutator_ loadURL:previous_navigation.destination_url
-        omniboxText:base::SysUTF16ToNSString(previous_navigation.omnibox_text)];
+  [mutator_ reloadURL:sub_navigation.back()];
   OnNavigationListUpdate();
 }
 
@@ -176,8 +160,7 @@ void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
   lens_navigation_items_.pop_back();
   LensResultItem& previous_item = *lens_navigation_items_.back();
   // Clear previous sub navigations as they become invalid after reload.
-  std::vector<LensSubNavigationItem>& previous_sub_navigation =
-      previous_item.sub_navigations();
+  std::vector<GURL>& previous_sub_navigation = previous_item.sub_navigations();
   previous_sub_navigation.erase(previous_sub_navigation.begin() + 1,
                                 previous_sub_navigation.end());
   // Load the previous lens navigation.
@@ -185,20 +168,4 @@ void LensOverlayNavigationManager::GoToPreviousLensNavigation() {
       lens_navigation_items_.size() - 1;
   [mutator_ reloadLensResult:previous_item.lens_result()];
   OnNavigationListUpdate();
-}
-
-std::u16string LensOverlayNavigationManager::PreviousOmniboxText() const {
-  if (lens_navigation_items_.empty()) {
-    NOTREACHED(kLensOverlayNotFatalUntil)
-        << "Should only be called with an existing LensResultItem.";
-  }
-  const LensResultItem& current_lens_result = *lens_navigation_items_.back();
-  // If there is no previous sub navigation return the omnibox text from the
-  // lens result.
-  if (current_lens_result.sub_navigations().empty()) {
-    return base::SysNSStringToUTF16(
-        current_lens_result.lens_result().queryText);
-  } else {
-    return current_lens_result.sub_navigations().back().omnibox_text;
-  }
 }
