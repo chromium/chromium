@@ -51,7 +51,7 @@ const char kFlagsKey[] = "Flags";
 const char kVersionKey[] = "Version";
 const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
-const char kUriKey[] = "Uri";
+const char kLocationsKey[] = "Locations";
 const char kChecksumKey[] = "Checksum";
 const char kTrustFlagsKey[] = "TrustFlags";
 const char kFakeRemoteIdForTesting[] = "test-remote";
@@ -91,7 +91,7 @@ struct RequestUpdatesResponse {
   std::optional<std::string> description = kFakeUpdateDescriptionForTesting;
   std::optional<uint32_t> priority = kFakeUpdatePriorityForTesting;
   bool trusted = true;
-  std::string uri = kFakeUpdateUriForTesting;
+  std::vector<std::string> locations = {kFakeUpdateUriForTesting};
   std::string version = kFakeUpdateVersionForTesting;
 
   std::unique_ptr<dbus::Response> Create() {
@@ -101,6 +101,7 @@ struct RequestUpdatesResponse {
     dbus::MessageWriter response_array_writer(nullptr);
     dbus::MessageWriter update_array_writer(nullptr);
     dbus::MessageWriter dict_writer(nullptr);
+    dbus::MessageWriter variant_writer(nullptr);
 
     // The response is an array of arrays of dictionaries. Each dictionary is
     // one update description.
@@ -134,8 +135,10 @@ struct RequestUpdatesResponse {
     }
 
     update_array_writer.OpenDictEntry(&dict_writer);
-    dict_writer.AppendString(kUriKey);
-    dict_writer.AppendVariantOfString(uri);
+    dict_writer.AppendString(kLocationsKey);
+    dict_writer.OpenVariant("as", &variant_writer);
+    variant_writer.AppendArrayOfStrings(locations);
+    dict_writer.CloseContainer(&variant_writer);
     update_array_writer.CloseContainer(&dict_writer);
 
     update_array_writer.OpenDictEntry(&dict_writer);
@@ -982,5 +985,60 @@ TEST_F(FwupdClientTest, UpdateMetadata) {
       }));
   run_loop_.Run();
 }
+
+TEST(FwupdClientUpdatePath, MissingLocations) {
+  base::Value::Dict dict;
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, EmptyLocations) {
+  base::Value::Dict dict;
+  dict.Set(kLocationsKey, base::Value::List());
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, WrongType) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append(123);
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, InvalidUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, InvalidScheme) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("invalid:///usr/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_TRUE(GetUpdatePathFromDict(dict).empty());
+}
+
+TEST(FwupdClientUpdatePath, FileUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("file:///usr/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_EQ(GetUpdatePathFromDict(dict).value(), "file:///usr/test.cab");
+}
+
+TEST(FwupdClientUpdatePath, HttpsUrl) {
+  base::Value::Dict dict;
+  base::Value::List list;
+  list.Append("https://fwupd.org/downloads/test.cab");
+  dict.Set(kLocationsKey, std::move(list));
+  EXPECT_EQ(
+      GetUpdatePathFromDict(dict).value(),
+      "https://storage.googleapis.com/chromeos-localmirror/lvfs/test.cab");
+}
+
+// TODO: valid mirror test
 
 }  // namespace ash
