@@ -100,10 +100,11 @@ StandaloneBrowserExtensionAppsFactoryForExtension::
   DependsOn(AppServiceProxyFactory::GetInstance());
 }
 
-KeyedService*
-StandaloneBrowserExtensionAppsFactoryForExtension::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new StandaloneBrowserExtensionApps(
+std::unique_ptr<KeyedService>
+StandaloneBrowserExtensionAppsFactoryForExtension::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<StandaloneBrowserExtensionApps>(
       AppServiceProxyFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
       AppType::kStandaloneBrowserExtension);

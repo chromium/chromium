@@ -106,9 +106,11 @@ AppServiceProxyFactory::AppServiceProxyFactory()
 
 AppServiceProxyFactory::~AppServiceProxyFactory() = default;
 
-KeyedService* AppServiceProxyFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppServiceProxyFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto* proxy = new AppServiceProxy(Profile::FromBrowserContext(context));
+  auto proxy =
+      std::make_unique<AppServiceProxy>(Profile::FromBrowserContext(context));
   proxy->Initialize();
   return proxy;
 }

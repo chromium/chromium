@@ -62,7 +62,7 @@ class StandaloneBrowserExtensionAppsFactoryForExtension
   ~StandaloneBrowserExtensionAppsFactoryForExtension() override = default;
 
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
