@@ -455,18 +455,6 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
 
-  void LoadComponentWithDeviceTargetings(const std::string& countries) {
-    std::string feature_aware_targeting = "";
-    auto device_targeting = base::StringPrintf(R"(
-            "device": {
-              %s
-            }
-          )",
-                                               countries.c_str());
-    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
-        kValidCampaignsFileTemplate, device_targeting.c_str()));
-  }
-
   void LoadComponentWithRegisteredTimeTargeting(
       const std::string& registerd_time_targeting) {
     auto device_targeting =
@@ -1209,7 +1197,7 @@ TEST_F(CampaignsManagerTest, GetCampaignUserLocaleTargetingMismatch) {
 TEST_F(CampaignsManagerTest, GetCampaignWithIncludedCountryTargeting) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithDeviceTargetings(R"("includedCountries": ["us", "in"])");
+  LoadComponentWithDeviceTargeting(R"({"includedCountries": ["us", "in"]})");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1218,7 +1206,7 @@ TEST_F(CampaignsManagerTest, GetCampaignWithIncludedCountryTargeting) {
 TEST_F(CampaignsManagerTest, GetCampaignIncludedCountryTargetingMismatch) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithDeviceTargetings(R"("includedCountries": ["us", "ca"])");
+  LoadComponentWithDeviceTargeting(R"({"includedCountries": ["us", "ca"]})");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1226,7 +1214,7 @@ TEST_F(CampaignsManagerTest, GetCampaignIncludedCountryTargetingMismatch) {
 TEST_F(CampaignsManagerTest, CampaignWithExcludedCountryTargeting) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithDeviceTargetings(R"("excludedCountries": ["us", "ca"])");
+  LoadComponentWithDeviceTargeting(R"({"excludedCountries": ["us", "ca"]})");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1235,7 +1223,7 @@ TEST_F(CampaignsManagerTest, CampaignWithExcludedCountryTargeting) {
 TEST_F(CampaignsManagerTest, GetCampaignExcludedCountryTargetingMismatch) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithDeviceTargetings(R"("excludedCountries": ["us", "in"])");
+  LoadComponentWithDeviceTargeting(R"({"excludedCountries": ["us", "in"]})");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -2864,8 +2852,8 @@ TEST_F(CampaignsManagerTest, RecordEventWithQueuedEventWithoutFeatureEnabled) {
 
 TEST_F(CampaignsManagerTest, GetCampaignWithIncludedBoardsTargeting) {
   campaigns_manager_->SetBoardForTesting("brya");
-  LoadComponentWithDeviceTargetings(
-      R"("boards": {"includes": ["brya"], "excludes": ["zork"]})");
+  LoadComponentWithDeviceTargeting(
+      R"({"boards": {"includes": ["brya"], "excludes": ["zork"]}})");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -2874,23 +2862,23 @@ TEST_F(CampaignsManagerTest, GetCampaignWithIncludedBoardsTargeting) {
 
 TEST_F(CampaignsManagerTest, GetCampaignIncludedBoardsTargetingEmptyMismatch) {
   campaigns_manager_->SetBoardForTesting("betty");
-  LoadComponentWithDeviceTargetings(
-      R"("boards": {"includes": [], "excludes": ["zork"]})");
+  LoadComponentWithDeviceTargeting(
+      R"({"boards": {"includes": [], "excludes": ["zork"]}})");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignIncludedBoardsTargetingMismatch) {
   campaigns_manager_->SetBoardForTesting("betty");
-  LoadComponentWithDeviceTargetings(
-      R"("boards": {"includes": ["brya"], "excludes": ["zork"]})");
+  LoadComponentWithDeviceTargeting(
+      R"({"boards": {"includes": ["brya"], "excludes": ["zork"]}})");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, CampaignWithExcludedBoardTargetingMismatch) {
   campaigns_manager_->SetBoardForTesting("brya");
-  LoadComponentWithDeviceTargetings(R"("boards": {"excludes": ["flex"]})");
+  LoadComponentWithDeviceTargeting(R"({"boards": {"excludes": ["flex"]}})");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -2898,7 +2886,7 @@ TEST_F(CampaignsManagerTest, CampaignWithExcludedBoardTargetingMismatch) {
 
 TEST_F(CampaignsManagerTest, GetCampaignExcludedBoardsTargeting) {
   campaigns_manager_->SetBoardForTesting("flex");
-  LoadComponentWithDeviceTargetings(R"("boards": {"excludes": ["flex"]})");
+  LoadComponentWithDeviceTargeting(R"({"boards": {"excludes": ["flex"]}})");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
