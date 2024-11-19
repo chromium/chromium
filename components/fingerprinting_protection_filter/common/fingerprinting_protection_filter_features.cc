@@ -27,24 +27,12 @@ bool IsFingerprintingProtectionFeatureEnabled() {
              kEnableFingerprintingProtectionFilterInIncognito);
 }
 
-bool IsFingerprintingProtectionEnabledInIncognito(bool is_incognito) {
-  if (!is_incognito) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(
-      kEnableFingerprintingProtectionFilterInIncognito);
-}
-
-bool IsFingerprintingProtectionEnabledInNonIncognito(bool is_incognito) {
+bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito) {
   if (is_incognito) {
-    return false;
+    return base::FeatureList::IsEnabled(
+        kEnableFingerprintingProtectionFilterInIncognito);
   }
   return base::FeatureList::IsEnabled(kEnableFingerprintingProtectionFilter);
-}
-
-bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito) {
-  return IsFingerprintingProtectionEnabledInIncognito(is_incognito) ||
-         IsFingerprintingProtectionEnabledInNonIncognito(is_incognito);
 }
 
 bool IsFingerprintingProtectionConsoleLoggingEnabled() {
