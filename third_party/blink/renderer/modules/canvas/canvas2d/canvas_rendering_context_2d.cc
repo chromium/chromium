@@ -855,7 +855,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
 
   if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&
       element->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
-    bridge->InitiateHibernationIfNecessary();
+    bridge->GetHibernationHandler().InitiateHibernationIfNecessary();
   }
 
   // The impl tree may have dropped the transferable resource for this canvas

@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -42,8 +41,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   virtual ~Canvas2DLayerBridge();
 
-  void InitiateHibernationIfNecessary();
-
   // Allow access to the hibernation handler while Canvas2DLayerBridge is being
   // incrementally folded into CanvasRenderingContext2D.
   // TODO(crbug.com/40280152): Eliminate Canvas2DLayerBridge entirely.
@@ -52,15 +49,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   }
 
  private:
-  static void HibernateOrLogFailure(base::WeakPtr<Canvas2DLayerBridge> bridge,
-                                    base::TimeTicks /*idleDeadline*/);
-  void Hibernate();
-
   CanvasHibernationHandler hibernation_handler_;
-
-  bool hibernation_scheduled_ = false;
-
-  const base::raw_ref<CanvasResourceHost> resource_host_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };
