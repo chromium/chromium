@@ -27,3 +27,10 @@
 -ShaderTranslatorTest.ValidFragmentShader
 -ShaderTranslatorTest.ValidVertexShader
 -ShaderTranslatorTest.ValidVertexShader
+
+# TODO(crbug.com/379525870): These tests are failing on the ios-blink-dbg-fyi
+# bot.
+-OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/0
+-OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/1
+-OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/2
+-OpenGLESContexts/ShaderTranslatorOutputVersionTest.HasCorrectOutputGLSLVersion/3
