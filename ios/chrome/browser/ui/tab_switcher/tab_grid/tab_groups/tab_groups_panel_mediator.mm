@@ -292,6 +292,13 @@ NSString* CreationText(base::Time creation_date) {
   [self populateItemsFromService];
 }
 
+- (void)tabGroupSyncServiceTabGroupMigrated:
+            (const tab_groups::SavedTabGroup&)newGroup
+                                  oldSyncID:(const base::Uuid&)oldSync
+                                 fromSource:(tab_groups::TriggerSource)source {
+  [self populateItemsFromService];
+}
+
 - (void)tabGroupSyncServiceSavedTabGroupLocalIdChanged:(const base::Uuid&)syncID
                                                localID:
                                                    (const std::optional<

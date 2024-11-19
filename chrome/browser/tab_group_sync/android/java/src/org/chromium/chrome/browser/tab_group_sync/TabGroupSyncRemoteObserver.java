@@ -77,17 +77,6 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
         if (source != TriggerSource.REMOTE) return;
         if (!mIsActiveWindowSupplier.get()) return;
 
-        if (tabGroup.collaborationId != null && tabGroup.localId != null) {
-            // This is a shared group which has replaced previously existing saved
-            // tab group after transitioning to shared. This is similar to update
-            // event. If the group is not open yet, then the originating saved tab
-            // group was not open (or may be missing), and hence just open the new
-            // shared tab group.
-            // TODO(crbug.com/370745855): introduce a new observer method.
-            onTabGroupUpdated(tabGroup, source);
-            return;
-        }
-
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;
         boolean isAutoOpenEnabled =

@@ -867,8 +867,20 @@ void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
 
   // Saved tab group should be transitions to shared before notifying observers
   // because the new group may be opened automatically on some platforms.
-  TransitionSavedToSharedTabGroupIfNeeded(*saved_tab_group);
+  bool group_migrated =
+      TransitionSavedToSharedTabGroupIfNeeded(*saved_tab_group);
+  if (group_migrated) {
+    NotifyTabGroupMigrated(saved_tab_group->saved_guid(), source);
 
+    // Simulate tab group update after the transition to notify observers which
+    // don't handle the migration case (e.g. because they don't store their
+    // GUIDs).
+    NotifyTabGroupUpdated(saved_tab_group->saved_guid(), source);
+    return;
+  }
+
+  // The group wasn't transition from any pre-existing SavedTabGroup, so it's
+  // just a normal new group.
   for (TabGroupSyncService::Observer& observer : observers_) {
     observer.OnTabGroupAdded(*saved_tab_group, source);
   }
@@ -883,6 +895,20 @@ void TabGroupSyncServiceImpl::NotifyTabGroupUpdated(const base::Uuid& guid,
 
   for (auto& observer : observers_) {
     observer.OnTabGroupUpdated(*saved_tab_group, source);
+  }
+}
+
+void TabGroupSyncServiceImpl::NotifyTabGroupMigrated(
+    const base::Uuid& new_group_guid,
+    TriggerSource source) {
+  const SavedTabGroup* new_group = model_->Get(new_group_guid);
+  CHECK(new_group);
+  // Originating saved tab group must exist if it was transitioned.
+  CHECK(new_group->originating_saved_tab_group_guid().has_value());
+  for (TabGroupSyncService::Observer& observer : observers_) {
+    observer.OnTabGroupMigrated(
+        *new_group, new_group->originating_saved_tab_group_guid().value(),
+        source);
   }
 }
 
@@ -1159,30 +1185,34 @@ bool TabGroupSyncServiceImpl::TransitionSavedToSharedTabGroupIfNeeded(
 
   const SavedTabGroup* originating_saved_group =
       model_->Get(shared_group.originating_saved_tab_group_guid().value());
-  if (!originating_saved_group ||
-      !originating_saved_group->local_group_id().has_value()) {
-    // Originating group doesn't exist in the model or it's not open in the tab
-    // strip model. The group may not exist if it was deleted from the current
+  if (!originating_saved_group) {
+    // Originating group doesn't exist in the model and hence it wasn't
+    // transitioned. The group may not exist if it was deleted from the current
     // device before the remote shared tab group was downloaded.
     return false;
   }
 
-  // Make a copy because both groups will be updated.
-  LocalTabGroupID local_group_id =
-      originating_saved_group->local_group_id().value();
+  if (originating_saved_group->local_group_id().has_value()) {
+    // The group is open in the tab strip and needs to be transitioned with all
+    // local IDs.
 
-  // First, remove the local tab group mapping and then disconnect the local tab
-  // group. Note that on some platforms the coordinator may call
-  // RemoveLocalTabGroupMapping() but it should be a no-op.
-  RemoveLocalTabGroupMapping(local_group_id,
-                             ClosingSource::kDisconnectOnGroupShared);
-  coordinator_->DisconnectLocalTabGroup(local_group_id);
+    // Make a copy because both groups will be updated.
+    const LocalTabGroupID local_group_id =
+        originating_saved_group->local_group_id().value();
 
-  // Connect the shared tab group to the local group: update the local tab
-  // group mapping on all platforms, and update the mapping for session
-  // restore.
-  ConnectLocalTabGroup(shared_group.saved_guid(), local_group_id,
-                       OpeningSource::kConnectOnGroupShare);
+    // First, remove the local tab group mapping and then disconnect the local
+    // tab group. Note that on some platforms the coordinator may call
+    // RemoveLocalTabGroupMapping() but it should be a no-op.
+    RemoveLocalTabGroupMapping(local_group_id,
+                               ClosingSource::kDisconnectOnGroupShared);
+    coordinator_->DisconnectLocalTabGroup(local_group_id);
+
+    // Connect the shared tab group to the local group: update the local tab
+    // group mapping on all platforms, and update the mapping for session
+    // restore.
+    ConnectLocalTabGroup(shared_group.saved_guid(), local_group_id,
+                         OpeningSource::kConnectOnGroupShare);
+  }
 
   return true;
 }

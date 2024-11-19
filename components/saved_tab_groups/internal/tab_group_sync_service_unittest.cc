@@ -86,6 +86,9 @@ class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
   MOCK_METHOD(void,
+              OnTabGroupMigrated,
+              (const SavedTabGroup&, const base::Uuid&, TriggerSource));
+  MOCK_METHOD(void,
               OnTabGroupLocalIdChanged,
               (const base::Uuid&, const std::optional<LocalTabGroupID>&));
   MOCK_METHOD(void, OnTabGroupsReordered, (TriggerSource));
@@ -111,6 +114,9 @@ class MockTabGroupSyncCoordinator : public TabGroupSyncCoordinator {
   MOCK_METHOD(void, OnTabGroupUpdated, (const SavedTabGroup&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const LocalTabGroupID&, TriggerSource));
   MOCK_METHOD(void, OnTabGroupRemoved, (const base::Uuid&, TriggerSource));
+  MOCK_METHOD(void,
+              OnTabGroupMigrated,
+              (const SavedTabGroup&, const base::Uuid&, TriggerSource));
 };
 
 class MockCollaborationFinder : public CollaborationFinder {
@@ -1349,6 +1355,9 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
       .InSequence(s);
   EXPECT_CALL(*coordinator_, ConnectLocalTabGroup(_, local_group_id_1_))
       .InSequence(s);
+
+  EXPECT_CALL(*observer_, OnTabGroupMigrated(_, group_1_.saved_guid(),
+                                             TriggerSource::LOCAL));
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
                                               "collaboration");
   // The new group replaces the originating one asynchronously.

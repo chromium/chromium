@@ -193,6 +193,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                              TriggerSource source);
   void NotifyTabGroupAdded(const base::Uuid& guid, TriggerSource source);
   void NotifyTabGroupUpdated(const base::Uuid& guid, TriggerSource source);
+  void NotifyTabGroupMigrated(const base::Uuid& new_group_guid,
+                              TriggerSource source);
 
   void HandleTabGroupRemoved(
       std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,

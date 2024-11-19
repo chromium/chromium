@@ -28,6 +28,10 @@ class TabGroupSyncService;
 - (void)tabGroupSyncServiceSavedTabGroupRemoved:(const base::Uuid&)syncID
                                      fromSource:
                                          (tab_groups::TriggerSource)source;
+- (void)tabGroupSyncServiceTabGroupMigrated:
+            (const tab_groups::SavedTabGroup&)newGroup
+                                  oldSyncID:(const base::Uuid&)oldSyncId
+                                 fromSource:(tab_groups::TriggerSource)source;
 - (void)tabGroupSyncServiceSavedTabGroupLocalIdChanged:(const base::Uuid&)syncID
                                                localID:
                                                    (const std::optional<
@@ -61,6 +65,9 @@ class TabGroupSyncServiceObserverBridge final
                          tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
+  void OnTabGroupMigrated(const tab_groups::SavedTabGroup& new_group,
+                          const base::Uuid& old_sync_id,
+                          tab_groups::TriggerSource source) override;
   void OnTabGroupLocalIdChanged(
       const base::Uuid& sync_id,
       const std::optional<tab_groups::LocalTabGroupID>& local_id) override;

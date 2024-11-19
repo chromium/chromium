@@ -165,4 +165,11 @@ void SharedTabGroupsMatchChecker::OnTabGroupRemoved(const base::Uuid& sync_id,
   CheckExitCondition();
 }
 
+void SharedTabGroupsMatchChecker::OnTabGroupMigrated(
+    const SavedTabGroup& shared_group,
+    const base::Uuid& old_sync_id,
+    TriggerSource source) {
+  CheckExitCondition();
+}
+
 }  // namespace tab_groups

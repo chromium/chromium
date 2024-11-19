@@ -44,6 +44,9 @@ class SessionServiceTabGroupSyncObserver
                        tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const tab_groups::LocalTabGroupID& local_id,
                          tab_groups::TriggerSource source) override;
+  void OnTabGroupMigrated(const SavedTabGroup& new_group,
+                          const base::Uuid& old_sync_id,
+                          TriggerSource source) override;
   void OnTabGroupLocalIdChanged(
       const base::Uuid& sync_id,
       const std::optional<LocalTabGroupID>& local_id) override;

@@ -39,6 +39,15 @@ void TabGroupSyncServiceObserverBridge::OnTabGroupRemoved(
   [delegate_ tabGroupSyncServiceSavedTabGroupRemoved:sync_id fromSource:source];
 }
 
+void TabGroupSyncServiceObserverBridge::OnTabGroupMigrated(
+    const tab_groups::SavedTabGroup& new_group,
+    const base::Uuid& old_sync_id,
+    tab_groups::TriggerSource source) {
+  [delegate_ tabGroupSyncServiceTabGroupMigrated:new_group
+                                       oldSyncID:old_sync_id
+                                      fromSource:source];
+}
+
 void TabGroupSyncServiceObserverBridge::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<tab_groups::LocalTabGroupID>& local_id) {

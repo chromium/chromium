@@ -87,6 +87,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
       const std::optional<LocalTabGroupID>& local_id) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override;
+  void OnTabGroupMigrated(const SavedTabGroup& new_group,
+                          const base::Uuid& old_sync_id,
+                          TriggerSource source) override;
   void OnTabGroupsReordered(TriggerSource source) override;
 
   // WidgetObserver

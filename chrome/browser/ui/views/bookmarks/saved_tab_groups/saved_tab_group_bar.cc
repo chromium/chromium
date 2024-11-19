@@ -478,6 +478,13 @@ void SavedTabGroupBar::OnTabGroupRemoved(const base::Uuid& sync_id,
   SavedTabGroupRemoved(sync_id);
 }
 
+void SavedTabGroupBar::OnTabGroupMigrated(const SavedTabGroup& new_group,
+                                          const base::Uuid& old_sync_id,
+                                          TriggerSource source) {
+  SavedTabGroupRemoved(old_sync_id);
+  UpsertSavedTabGroupButton(new_group.saved_guid());
+}
+
 void SavedTabGroupBar::OnTabGroupsReordered(TriggerSource source) {
   SavedTabGroupReordered();
 }

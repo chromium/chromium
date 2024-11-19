@@ -45,6 +45,8 @@ class TabGroupSyncCoordinator : public TabGroupSyncService::Observer {
                          TriggerSource source) override = 0;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          TriggerSource source) override = 0;
+  // Do not handle OnTabGroupMigrated() because the transition is handled by
+  // TabGroupSyncService.
 };
 
 }  // namespace tab_groups
