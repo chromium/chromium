@@ -12,12 +12,13 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -47,6 +49,8 @@ public class TabGroupCreationDialogManagerUnitTest {
     private static final String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE =
             FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tracker mTracker;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Profile mProfile;
@@ -61,7 +65,6 @@ public class TabGroupCreationDialogManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         TrackerFactory.setTrackerForTests(mTracker);
 
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);

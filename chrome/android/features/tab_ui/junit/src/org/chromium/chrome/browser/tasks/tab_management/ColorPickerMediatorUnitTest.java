@@ -12,12 +12,14 @@ import android.app.Activity;
 import android.widget.FrameLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -31,6 +33,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ColorPickerMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private ColorPickerContainer mContainerView;
 
     private Activity mActivity;
@@ -42,7 +46,6 @@ public class ColorPickerMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mColorIds = ColorPickerUtils.getTabGroupColorIdList();
 

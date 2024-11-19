@@ -52,11 +52,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
@@ -161,6 +163,8 @@ public class TabListViewHolderTest {
 
     private static Activity sActivity;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
     private PropertyModelChangeProcessor mGridMcp;
@@ -253,7 +257,6 @@ public class TabListViewHolderTest {
         sActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         // Note: MockitoRule does not work here due to timing issues with
         // BlankUiTestActivityTestCase.
-        MockitoAnnotations.initMocks(this);
 
         ViewGroup view = new LinearLayout(sActivity);
         FrameLayout.LayoutParams params =

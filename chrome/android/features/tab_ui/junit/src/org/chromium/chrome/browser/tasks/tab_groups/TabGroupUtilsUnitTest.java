@@ -11,10 +11,12 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -46,6 +48,8 @@ public class TabGroupUtilsUnitTest {
     private static final int POSITION2 = 1;
     private static final int POSITION3 = 2;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock TabModel mTabModel;
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
@@ -57,7 +61,6 @@ public class TabGroupUtilsUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE, GURL.emptyGURL());
         mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, TAB2_TITLE, GURL.emptyGURL());
