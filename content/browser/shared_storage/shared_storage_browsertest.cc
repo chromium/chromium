@@ -8055,7 +8055,7 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
             EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
                       3);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 1);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 1u);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kDisabled);
             run_loop.Quit();
@@ -8189,7 +8189,7 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
             EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
                       std::nullopt);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 1);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 1u);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
@@ -8504,7 +8504,7 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
             EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
                       std::nullopt);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
@@ -8580,7 +8580,7 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
             EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
                       1000);
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
@@ -8647,7 +8647,7 @@ IN_PROC_BROWSER_TEST_F(
             ASSERT_EQ(request.payload_contents().contributions.size(), 1u);
             EXPECT_EQ(request.payload_contents().contributions[0].filtering_id,
                       std::numeric_limits<uint64_t>::max());
-            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8);
+            EXPECT_EQ(request.payload_contents().filtering_id_max_bytes, 8u);
             EXPECT_EQ(request.shared_info().debug_mode,
                       AggregatableReportSharedInfo::DebugMode::kEnabled);
             run_loop.Quit();
