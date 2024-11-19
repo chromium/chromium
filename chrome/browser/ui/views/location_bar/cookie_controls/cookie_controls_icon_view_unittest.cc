@@ -72,10 +72,7 @@ class CookieControlsIconViewUnitTest
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {
  protected:
   CookieControlsIconViewUnitTest()
-      : a11y_counter_(views::AXEventManager::Get()) {
-    feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kTrackingProtection3pcdUx);
-  }
+      : a11y_counter_(views::AXEventManager::Get()) {}
 
   void SetUp() override {
     TestWithBrowserView::SetUp();

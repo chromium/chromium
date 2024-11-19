@@ -259,16 +259,7 @@ TEST_F(CookieControlsBubbleViewControllerTest, WidgetClosesOnTpcdEnforcement) {
   OnStatusChanged();
 }
 
-class CookieControlsBubbleViewController3pcdBubbleTitleTest
-    : public CookieControlsBubbleViewControllerTest {
- public:
-  CookieControlsBubbleViewController3pcdBubbleTitleTest() {
-    feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kTrackingProtection3pcdUx);
-  }
-};
-
-TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+TEST_F(CookieControlsBubbleViewControllerTest,
        DisplaysThirdPartyCookiesBlockedTitle) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
@@ -277,7 +268,7 @@ TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
   OnStatusChanged();
 }
 
-TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+TEST_F(CookieControlsBubbleViewControllerTest,
        DisplaysThirdPartyCookiesLimitedTitle) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(
@@ -286,7 +277,7 @@ TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
   OnStatusChanged();
 }
 
-TEST_F(CookieControlsBubbleViewController3pcdBubbleTitleTest,
+TEST_F(CookieControlsBubbleViewControllerTest,
        DisplaysThirdPartyCookiesAllowedTitle) {
   EXPECT_CALL(*mock_bubble_view(),
               UpdateTitle(l10n_util::GetStringUTF16(

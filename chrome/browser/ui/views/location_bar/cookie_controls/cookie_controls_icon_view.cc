@@ -155,18 +155,8 @@ bool CookieControlsIconView::IsManagedIPHActive() const {
 }
 
 void CookieControlsIconView::SetLabelForStatus() {
-  int icon_label = GetLabelForStatus();
-  // Only use "Tracking Protection" and verbose accessibility description if the
-  // label is hidden.
-  if (ShouldShowTrackingProtectionText()) {
-    // Set the accessible description to whatever the 3PC blocking state is.
-    GetViewAccessibility().SetDescription(
-        l10n_util::GetStringUTF16(icon_label));
-    icon_label = IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL;
-  } else {
-    GetViewAccessibility().SetDescription(u"");
-  }
-  SetLabel(l10n_util::GetStringUTF16(icon_label));
+  GetViewAccessibility().SetDescription(u"");
+  SetLabel(l10n_util::GetStringUTF16(GetLabelForStatus()));
 }
 
 int CookieControlsIconView::GetLabelForStatus() const {
@@ -230,10 +220,7 @@ void CookieControlsIconView::UpdateIcon() {
   if (protections_changed_ || label()->GetText().empty()) {
     SetLabelForStatus();
   }
-  SetTooltipText(
-      l10n_util::GetStringUTF16(ShouldShowTrackingProtectionText()
-                                    ? IDS_TRACKING_PROTECTION_PAGE_ACTION_LABEL
-                                    : GetLabelForStatus()));
+  SetTooltipText(l10n_util::GetStringUTF16(GetLabelForStatus()));
   if (protections_on_ && should_highlight_) {
     if (blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
       MaybeShowIPH();
@@ -314,13 +301,6 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   return protections_on_ ? views::kEyeCrossedRefreshIcon
                          : views::kEyeRefreshIcon;
-}
-
-bool CookieControlsIconView::ShouldShowTrackingProtectionText() {
-  return base::FeatureList::IsEnabled(
-             privacy_sandbox::kTrackingProtection3pcdUx) &&
-         blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd &&
-         !label()->GetVisible();
 }
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}
