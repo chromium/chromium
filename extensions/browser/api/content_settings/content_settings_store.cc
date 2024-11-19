@@ -147,15 +147,14 @@ void ContentSettingsStore::SetExtensionContentSetting(
     ContentSettingsType type,
     ContentSetting setting,
     ChromeSettingScope scope) {
-  if (primary_pattern.GetScheme() ==
-      ContentSettingsPattern::SCHEME_CHROMEEXTENSION) {
+  if (primary_pattern.Matches(GURL("chrome-extension://" + ext_id))) {
     content_settings_uma_util::RecordContentSettingsHistogram(
-        "Extensions.ContentSettings.PrimaryPatternChromeExtensionScheme", type);
+        "Extensions.ContentSettings.PrimaryPatternMatchesExtensionOrigin",
+        type);
   }
-  if (secondary_pattern.GetScheme() ==
-      ContentSettingsPattern::SCHEME_CHROMEEXTENSION) {
+  if (secondary_pattern.Matches(GURL("chrome-extension://" + ext_id))) {
     content_settings_uma_util::RecordContentSettingsHistogram(
-        "Extensions.ContentSettings.SecondaryPatternChromeExtensionScheme",
+        "Extensions.ContentSettings.SecondaryPatternMatchesExtensionOrigin",
         type);
   }
 

@@ -433,13 +433,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ContentSettings.PrimaryPatternChromeExtensionScheme"
+    name="Extensions.ContentSettings.PrimaryPatternMatchesExtensionOrigin"
     enum="ContentType" expires_after="2025-02-28">
   <owner>estark@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     An entry is emitted each time an extension sets a content setting whose
-    primary pattern has a Chrome extension scheme. This will be used to
+    primary pattern matches the Chrome extension origin. This will be used to
     determine if the ability to set content settings for Chrome extension
     origins can be deprecated.
 
@@ -520,13 +520,13 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ContentSettings.SecondaryPatternChromeExtensionScheme"
+    name="Extensions.ContentSettings.SecondaryPatternMatchesExtensionOrigin"
     enum="ContentType" expires_after="2025-02-28">
   <owner>estark@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     An entry is emitted each time an extension sets a content setting whose
-    secondary pattern has a Chrome extension scheme. This will be used to
+    secondary pattern matches the Chrome extension origin. This will be used to
     determine if the ability to set content settings for Chrome extension
     origins can be deprecated.
 
