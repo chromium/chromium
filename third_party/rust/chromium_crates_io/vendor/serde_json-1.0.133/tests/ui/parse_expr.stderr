@@ -1,4 +1,4 @@
-error: no rules expected the token `~`
+error: no rules expected `~`
  --> tests/ui/parse_expr.rs:4:19
   |
 4 |     json!({ "a" : ~ });

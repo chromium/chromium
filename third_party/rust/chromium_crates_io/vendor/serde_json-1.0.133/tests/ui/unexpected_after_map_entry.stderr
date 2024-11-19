@@ -1,4 +1,4 @@
-error: no rules expected the token `=>`
+error: no rules expected `=>`
  --> tests/ui/unexpected_after_map_entry.rs:4:23
   |
 4 |     json!({ "k": true => });

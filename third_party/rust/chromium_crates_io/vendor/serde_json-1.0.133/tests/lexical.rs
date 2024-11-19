@@ -12,6 +12,7 @@
     clippy::let_underscore_untyped,
     clippy::module_name_repetitions,
     clippy::needless_late_init,
+    clippy::question_mark,
     clippy::shadow_unrelated,
     clippy::similar_names,
     clippy::single_match_else,

@@ -36,6 +36,7 @@ jobs:
         with:
           name: Cargo.lock
           path: Cargo.lock
+        continue-on-error: true
 
   build:
     name: Rust ${{matrix.rust}} ${{matrix.os == 'windows' && '(windows)' || ''}}
@@ -43,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [beta, 1.64.0, 1.56.1]
+        rust: [beta, 1.65.0, 1.56.1]
         os: [ubuntu]
         include:
           - rust: stable
