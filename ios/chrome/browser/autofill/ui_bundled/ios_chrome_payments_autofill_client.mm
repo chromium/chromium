@@ -71,7 +71,7 @@ IOSChromePaymentsAutofillClient::IOSChromePaymentsAutofillClient(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                   web_state->GetBrowserState()->GetURLLoaderFactory()),
               client->GetIdentityManager(),
-              &client->GetPersonalDataManager()->payments_data_manager(),
+              &client->GetPersonalDataManager().payments_data_manager(),
               web_state->GetBrowserState()->IsOffTheRecord())),
       pref_service_(pref_service),
       web_state_(web_state) {}
@@ -342,7 +342,7 @@ IOSChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   if (!virtual_card_enrollment_manager_) {
     virtual_card_enrollment_manager_ =
         std::make_unique<VirtualCardEnrollmentManager>(
-            client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
+            &client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
             &client_.get());
   }
 

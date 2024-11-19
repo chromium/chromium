@@ -117,8 +117,8 @@ WebViewAutofillClientIOS::GetCrowdsourcingManager() {
   return crowdsourcing_manager_.get();
 }
 
-PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
-  return personal_data_manager_;
+PersonalDataManager& WebViewAutofillClientIOS::GetPersonalDataManager() {
+  return CHECK_DEREF(personal_data_manager_);
 }
 
 SingleFieldFillRouter& WebViewAutofillClientIOS::GetSingleFieldFillRouter() {

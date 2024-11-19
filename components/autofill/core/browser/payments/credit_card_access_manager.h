@@ -188,7 +188,7 @@ class CreditCardAccessManager
   }
 
   PersonalDataManager& personal_data_manager() {
-    return *autofill_client().GetPersonalDataManager();
+    return autofill_client().GetPersonalDataManager();
   }
 
   PaymentsDataManager& payments_data_manager() {

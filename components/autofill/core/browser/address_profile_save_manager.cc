@@ -201,7 +201,7 @@ void AddressProfileSaveManager::ClearPendingImport(
     std::unique_ptr<ProfileImportProcess> import_process) {}
 
 AddressDataManager& AddressProfileSaveManager::address_data_manager() {
-  return client_->GetPersonalDataManager()->address_data_manager();
+  return client_->GetPersonalDataManager().address_data_manager();
 }
 
 }  // namespace autofill

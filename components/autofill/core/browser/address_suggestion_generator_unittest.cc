@@ -111,7 +111,7 @@ class AddressSuggestionGeneratorTest : public testing::Test {
 
   TestAddressDataManager& address_data() {
     return autofill_client_.GetPersonalDataManager()
-        ->test_address_data_manager();
+        .test_address_data_manager();
   }
 
   const std::string& app_locale() { return address_data().app_locale(); }

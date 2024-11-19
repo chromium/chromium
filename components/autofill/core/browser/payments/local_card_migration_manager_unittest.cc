@@ -323,7 +323,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
  protected:
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_.GetPersonalDataManager();
+    return autofill_client_.GetPersonalDataManager();
   }
 
   payments::TestPaymentsAutofillClient& payments_autofill_client() {

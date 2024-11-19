@@ -147,7 +147,7 @@ class FormFillerTest : public testing::Test {
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(),
-                autofill_client_.GetPersonalDataManager()));
+                &autofill_client_.GetPersonalDataManager()));
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(&autofill_driver_);
 

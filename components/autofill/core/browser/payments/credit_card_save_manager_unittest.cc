@@ -239,8 +239,8 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
     set_personal_data_manager(std::make_unique<TestPersonalDataManager>());
-    TestPersonalDataManager* pdm = GetPersonalDataManager();
-    pdm->set_payments_data_manager(std::make_unique<MockPaymentsDataManager>());
+    TestPersonalDataManager& pdm = GetPersonalDataManager();
+    pdm.set_payments_data_manager(std::make_unique<MockPaymentsDataManager>());
     set_payments_autofill_client(
         std::make_unique<MockPaymentsAutofillClient>(this));
   }
@@ -291,7 +291,7 @@ class CreditCardSaveManagerTest : public testing::Test {
                 autofill_client_.GetIdentityManager(), &personal_data()));
     payments_client().set_virtual_card_enrollment_manager(
         std::make_unique<MockVirtualCardEnrollmentManager>(
-            autofill_client_.GetPersonalDataManager(),
+            &autofill_client_.GetPersonalDataManager(),
             &payments_network_interface(), &autofill_client_));
     payments_client().SetLocalSaveCallbackOfferDecision(
         SaveCardOfferUserDecision::kAccepted);
@@ -495,7 +495,7 @@ class CreditCardSaveManagerTest : public testing::Test {
 
  protected:
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_.GetPersonalDataManager();
+    return autofill_client_.GetPersonalDataManager();
   }
   MockPaymentsDataManager& payments_data_manager() {
     return static_cast<MockPaymentsDataManager&>(

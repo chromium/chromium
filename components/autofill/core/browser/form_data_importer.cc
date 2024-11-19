@@ -1109,11 +1109,11 @@ void FormDataImporter::
 }
 
 AddressDataManager& FormDataImporter::address_data_manager() {
-  return client_->GetPersonalDataManager()->address_data_manager();
+  return client_->GetPersonalDataManager().address_data_manager();
 }
 
 PaymentsDataManager& FormDataImporter::payments_data_manager() {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill

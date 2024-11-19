@@ -121,11 +121,11 @@ class TestAutofillClientTemplate : public T {
     return test_shared_loader_factory_;
   }
 
-  TestPersonalDataManager* GetPersonalDataManager() override {
+  TestPersonalDataManager& GetPersonalDataManager() override {
     if (!test_personal_data_manager_) {
       test_personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
     }
-    return test_personal_data_manager_.get();
+    return *test_personal_data_manager_.get();
   }
 
   MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
@@ -426,7 +426,7 @@ class TestAutofillClientTemplate : public T {
     }
     if (!autofill_profile_enabled_) {
       // Profile data is refreshed when this pref is changed.
-      GetPersonalDataManager()->test_address_data_manager().ClearProfiles();
+      GetPersonalDataManager().test_address_data_manager().ClearProfiles();
     }
   }
 
@@ -438,7 +438,7 @@ class TestAutofillClientTemplate : public T {
     }
     if (!autofill_payment_methods_enabled) {
       // Credit card data is refreshed when this pref is changed.
-      GetPersonalDataManager()->test_payments_data_manager().ClearCreditCards();
+      GetPersonalDataManager().test_payments_data_manager().ClearCreditCards();
     }
   }
 
@@ -492,7 +492,7 @@ class TestAutofillClientTemplate : public T {
       const GeoIpCountryCode& variation_config_country_code) {
     variation_config_country_code_ = variation_config_country_code;
     GetPersonalDataManager()
-        ->test_address_data_manager()
+        .test_address_data_manager()
         .SetVariationCountryCode(variation_config_country_code);
   }
 

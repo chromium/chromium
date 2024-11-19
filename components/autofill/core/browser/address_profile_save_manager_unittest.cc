@@ -219,7 +219,7 @@ class AddressProfileSaveManagerTest
 
   TestAddressDataManager& address_data_manager() {
     return autofill_client_.GetPersonalDataManager()
-        ->test_address_data_manager();
+        .test_address_data_manager();
   }
 
   base::test::TaskEnvironment task_environment_;

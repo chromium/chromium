@@ -212,8 +212,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
     return *fido_authenticator_;
   }
   TestPersonalDataManager& personal_data_manager() {
-    return static_cast<TestPersonalDataManager&>(
-        *autofill_client_.GetPersonalDataManager());
+    return autofill_client_.GetPersonalDataManager();
   }
   TestAuthenticationRequester& requester() { return requester_; }
 

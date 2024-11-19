@@ -129,10 +129,9 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
 
 TouchToFillDelegateAndroidImpl::DryRunResult
 TouchToFillDelegateAndroidImpl::DryRunForIban() {
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  CHECK(pdm);
+  PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   std::vector<Iban> ibans_to_suggest =
-      pdm->payments_data_manager().GetOrderedIbansToSuggest();
+      pdm.payments_data_manager().GetOrderedIbansToSuggest();
   return ibans_to_suggest.empty() || !base::FeatureList::IsEnabled(
                                          features::kAutofillEnableLocalIban)
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
@@ -305,10 +304,9 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
     bool is_virtual) {
   HideTouchToFill();
 
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
-  CHECK(pdm);
+  PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   const CreditCard* card =
-      pdm->payments_data_manager().GetCreditCardByGUID(unique_id);
+      pdm.payments_data_manager().GetCreditCardByGUID(unique_id);
   // TODO(crbug.com/40071928): Figure out why `card` is sometimes nullptr.
   if (!card) {
     return;

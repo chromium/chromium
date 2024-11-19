@@ -159,7 +159,7 @@ class AutofillMergeTest : public testing::DataDrivenTest,
 
   TestAddressDataManager& test_address_data_manager() {
     return autofill_client_.GetPersonalDataManager()
-        ->test_address_data_manager();
+        .test_address_data_manager();
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -207,11 +207,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return ContentAutofillDriver::GetForRenderFrameHost(rfh);
   }
 
-  TestPersonalDataManager* personal_data_manager() {
-    return static_cast<TestPersonalDataManager*>(
-        client()->GetPersonalDataManager());
-  }
-
   MockAutofillFieldPromoController* autofill_field_promo_controller() {
     return autofill_field_promo_controller_;
   }

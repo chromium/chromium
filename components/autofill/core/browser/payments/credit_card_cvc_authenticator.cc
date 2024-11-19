@@ -165,7 +165,7 @@ payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
     full_card_request_ = std::make_unique<payments::FullCardRequest>(
         client_,
         client_->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface(),
-        client_->GetPersonalDataManager());
+        &client_->GetPersonalDataManager());
   }
   return full_card_request_.get();
 }

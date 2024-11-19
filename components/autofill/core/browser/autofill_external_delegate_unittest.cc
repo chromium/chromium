@@ -476,7 +476,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
         driver().GetAutofillManager());
   }
   MockPersonalDataManager& pdm() {
-    return *static_cast<MockPersonalDataManager*>(
+    return static_cast<MockPersonalDataManager&>(
         client().GetPersonalDataManager());
   }
   MockAddressDataManager& address_data_manager() {

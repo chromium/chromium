@@ -62,7 +62,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
-  PersonalDataManager* GetPersonalDataManager() override;
+  PersonalDataManager& GetPersonalDataManager() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;

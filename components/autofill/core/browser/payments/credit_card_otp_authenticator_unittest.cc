@@ -137,7 +137,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
  protected:
   TestPersonalDataManager& personal_data() {
-    return *autofill_client()->GetPersonalDataManager();
+    return autofill_client()->GetPersonalDataManager();
   }
 
   TestAutofillClient* autofill_client() { return &autofill_client_; }

@@ -154,7 +154,7 @@ TestPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
   if (!virtual_card_enrollment_manager_) {
     virtual_card_enrollment_manager_ =
         std::make_unique<VirtualCardEnrollmentManager>(
-            client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
+            &client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
             &*client_);
   }
 
@@ -196,7 +196,7 @@ void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
   if (!mock_iban_manager_) {
     mock_iban_manager_ = std::make_unique<testing::NiceMock<MockIbanManager>>(
-        client_->GetPersonalDataManager());
+        &client_->GetPersonalDataManager());
   }
   return mock_iban_manager_.get();
 }

@@ -62,7 +62,7 @@ UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
   UnmaskRequestDetails request_details;
   request_details.card = context.card;
   request_details.billing_customer_number = GetBillingCustomerId(
-      &client.GetPersonalDataManager()->payments_data_manager());
+      &client.GetPersonalDataManager().payments_data_manager());
   request_details.risk_data = context.risk_data;
   request_details.context_token = context.context_token;
 

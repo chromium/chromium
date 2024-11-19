@@ -156,7 +156,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
                 ->GetPaymentsNetworkInterface();
   }
   TestPersonalDataManager& personal_data_manager() {
-    return *autofill_client_->GetPersonalDataManager();
+    return autofill_client_->GetPersonalDataManager();
   }
   PrefService* user_prefs() { return autofill_client_->GetPrefs(); }
 

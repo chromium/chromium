@@ -546,7 +546,7 @@ class FormDataImporterTest : public testing::Test {
     autofill_client_->set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
 
-    personal_data_manager_ = autofill_client_->GetPersonalDataManager();
+    personal_data_manager_ = &autofill_client_->GetPersonalDataManager();
     test_api(personal_data_manager_->address_data_manager())
         .set_auto_accept_address_imports(true);
     personal_data_manager_->SetPrefService(prefs_.get());

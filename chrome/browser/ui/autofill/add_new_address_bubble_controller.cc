@@ -19,23 +19,23 @@ namespace {
 
 AddressCountryCode GetCountryCodeForNewAddress(
     content::WebContents* web_contents) {
-  PersonalDataManager* pdm =
+  PersonalDataManager& pdm =
       ContentAutofillClient::FromWebContents(web_contents)
           ->GetPersonalDataManager();
-  return pdm->address_data_manager().GetDefaultCountryCodeForNewAddress();
+  return pdm.address_data_manager().GetDefaultCountryCodeForNewAddress();
 }
 
 bool IsEligibleForAccountStorage(content::WebContents* web_contents,
                                  const std::string& country_code) {
-  PersonalDataManager* pdm =
+  PersonalDataManager& pdm =
       ContentAutofillClient::FromWebContents(web_contents)
           ->GetPersonalDataManager();
 
   // Note: addresses from unsupported countries can't be saved in account.
   // TODO(crbug.com/40263955): remove temporary unsupported countries
   // filtering.
-  return pdm->address_data_manager().IsEligibleForAddressAccountStorage() &&
-         pdm->address_data_manager().IsCountryEligibleForAccountStorage(
+  return pdm.address_data_manager().IsEligibleForAddressAccountStorage() &&
+         pdm.address_data_manager().IsCountryEligibleForAccountStorage(
              country_code);
 }
 

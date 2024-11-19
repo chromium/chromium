@@ -88,8 +88,8 @@ AndroidAutofillClient::GetCrowdsourcingManager() {
   return crowdsourcing_manager_.get();
 }
 
-autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
-  return nullptr;
+autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
+  NOTREACHED();
 }
 
 autofill::SingleFieldFillRouter&

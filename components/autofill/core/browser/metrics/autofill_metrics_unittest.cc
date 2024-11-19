@@ -5238,7 +5238,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                         /*masked_card_is_enrolled_for_virtual_card=*/false);
 
     credit_card_ = *autofill_client_->GetPersonalDataManager()
-                        ->payments_data_manager()
+                        .payments_data_manager()
                         .GetCreditCardsToSuggest()
                         .front();
     credit_card_.set_cvc(u"123");

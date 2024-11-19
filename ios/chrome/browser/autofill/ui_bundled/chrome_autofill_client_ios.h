@@ -73,7 +73,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
-  PersonalDataManager* GetPersonalDataManager() override;
+  PersonalDataManager& GetPersonalDataManager() override;
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;

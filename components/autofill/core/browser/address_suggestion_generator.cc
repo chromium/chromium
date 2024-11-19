@@ -617,7 +617,7 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override) {
   std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
-      client.GetPersonalDataManager()->address_data_manager(),
+      client.GetPersonalDataManager().address_data_manager(),
       trigger_field_type, trigger_field.value(), trigger_field.is_autofilled(),
       field_types,
       GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
@@ -631,14 +631,14 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
       std::move(profiles_to_suggest), gaia_email, field_types, suggestion_type,
       trigger_field_type, trigger_field.max_length(),
       std::move(plus_address_email_override), client.IsOffTheRecord(),
-      client.GetPersonalDataManager()->address_data_manager().app_locale());
+      client.GetPersonalDataManager().address_data_manager().app_locale());
 
   // Add devtools test addresses suggestion if it exists. A suggestion will
   // exist if devtools is open and therefore test addresses were set.
   if (std::optional<Suggestion> test_addresses_suggestion =
           GetSuggestionForTestAddresses(client.GetTestAddresses(),
                                         client.GetPersonalDataManager()
-                                            ->address_data_manager()
+                                            .address_data_manager()
                                             .app_locale())) {
     suggestions.push_back(std::move(*test_addresses_suggestion));
   }

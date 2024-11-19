@@ -508,7 +508,7 @@ CreditCardAccessManagerTestBase::payments_network_interface() {
 }
 
 TestPersonalDataManager& CreditCardAccessManagerTestBase::personal_data() {
-  return *autofill_client_.GetPersonalDataManager();
+  return autofill_client_.GetPersonalDataManager();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)

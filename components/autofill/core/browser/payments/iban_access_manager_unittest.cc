@@ -77,8 +77,7 @@ class IbanAccessManagerTest : public testing::Test {
 
  protected:
   TestPersonalDataManager& personal_data() {
-    return static_cast<TestPersonalDataManager&>(
-        *autofill_client_.GetPersonalDataManager());
+    return autofill_client_.GetPersonalDataManager();
   }
 
   MockTestPaymentsNetworkInterface* payments_network_interface() {

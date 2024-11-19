@@ -206,7 +206,7 @@ void LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
 
 void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
     const std::string& deleted_card_guid) {
-  client_->GetPersonalDataManager()->RemoveByGUID(deleted_card_guid);
+  client_->GetPersonalDataManager().RemoveByGUID(deleted_card_guid);
 }
 
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
@@ -474,7 +474,7 @@ PaymentsDataManager& LocalCardMigrationManager::payments_data_manager() {
 
 const PaymentsDataManager& LocalCardMigrationManager::payments_data_manager()
     const {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill

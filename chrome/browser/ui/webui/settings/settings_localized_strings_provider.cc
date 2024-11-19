@@ -1335,8 +1335,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 #else   // !BUILDFLAG(IS_CHROMEOS_ASH)
   is_guest_mode = profile->IsOffTheRecord();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  autofill::PersonalDataManager* personal_data =
-      autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
+  autofill::PersonalDataManager& personal_data =
+      *autofill::PersonalDataManagerFactory::GetForBrowserContext(profile);
   html_source->AddBoolean(
       "migrationEnabled",
       !is_guest_mode &&
@@ -1348,7 +1348,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showIbansSettings",
                           autofill::ShouldShowIbanOnSettingsPage(
-                              personal_data->payments_data_manager()
+                              personal_data.payments_data_manager()
                                   .GetCountryCodeForExperimentGroup(),
                               profile->GetPrefs()));
 

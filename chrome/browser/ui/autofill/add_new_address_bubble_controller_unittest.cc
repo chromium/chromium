@@ -70,7 +70,7 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
 
     autofill_client()
         ->GetPersonalDataManager()
-        ->test_address_data_manager()
+        .test_address_data_manager()
         .SetAutofillProfileEnabled(true);
   }
 
@@ -100,7 +100,7 @@ class AddNewAddressBubbleControllerTest : public ::testing::Test {
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
   autofill_client()
       ->GetPersonalDataManager()
-      ->test_address_data_manager()
+      .test_address_data_manager()
       .SetIsEligibleForAddressAccountStorage(false);
 
   std::unique_ptr<AddNewAddressBubbleController> controller =
@@ -123,7 +123,7 @@ TEST_F(AddNewAddressBubbleControllerTest, SavingIntoChrome) {
 TEST_F(AddNewAddressBubbleControllerTest, SavingIntoAccount) {
   autofill_client()
       ->GetPersonalDataManager()
-      ->test_address_data_manager()
+      .test_address_data_manager()
       .SetIsEligibleForAddressAccountStorage(true);
 
   std::unique_ptr<AddNewAddressBubbleController> controller =

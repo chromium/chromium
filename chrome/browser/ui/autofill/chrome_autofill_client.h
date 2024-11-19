@@ -103,7 +103,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       override;
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
-  PersonalDataManager* GetPersonalDataManager() override;
+  PersonalDataManager& GetPersonalDataManager() override;
   SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;

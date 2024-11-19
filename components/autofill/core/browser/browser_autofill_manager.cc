@@ -675,7 +675,7 @@ void MaybeAddAddressSuggestionStrikes(AutofillClient& client,
       // will lead to automatic address suggestions to be suppressed.
       // Currently, this is only done for autocomplete=off fields.
       client.GetPersonalDataManager()
-          ->address_data_manager()
+          .address_data_manager()
           .AddStrikeToBlockAddressSuggestions(form.form_signature(),
                                               field->GetFieldSignature(),
                                               form.source_url());
@@ -770,7 +770,7 @@ BrowserAutofillManager::MetricsState::MetricsState(
     : address_form_event_logger(owner->form_interactions_ukm_logger(),
                                 &owner->client()),
       credit_card_form_event_logger(owner->form_interactions_ukm_logger(),
-                                    owner->client().GetPersonalDataManager(),
+                                    &owner->client().GetPersonalDataManager(),
                                     &owner->client()) {}
 
 BrowserAutofillManager::MetricsState::~MetricsState() {
@@ -876,14 +876,14 @@ bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
 
   return client()
       .GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .ShouldShowCardsFromAccountOption();
 }
 
 void BrowserAutofillManager::OnUserAcceptedCardsFromAccountOption() {
   client()
       .GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .OnUserAcceptedCardsFromAccountOption();
 }
 
@@ -915,13 +915,10 @@ bool BrowserAutofillManager::ShouldParseForms() {
   // need to parse the forms and query the server as the password manager
   // depends on server classifications.
   bool password_manager_enabled = client().IsPasswordManagerEnabled();
-  metrics_->signin_state_for_metrics =
-      client().GetPersonalDataManager()
-          ? client()
-                .GetPersonalDataManager()
-                ->payments_data_manager()
-                .GetPaymentsSigninStateForMetrics()
-          : AutofillMetrics::PaymentsSigninState::kUnknown;
+  metrics_->signin_state_for_metrics = client()
+                                           .GetPersonalDataManager()
+                                           .payments_data_manager()
+                                           .GetPaymentsSigninStateForMetrics();
   if (!metrics_->has_logged_autofill_enabled) {
     autofill_metrics::LogIsAutofillEnabledAtPageLoad(
         autofill_enabled, metrics_->signin_state_for_metrics);
@@ -990,11 +987,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // Only upload server statistics and UMA metrics if at least some local data
     // is available to use as a baseline.
     std::vector<const AutofillProfile*> profiles =
-        client().GetPersonalDataManager()->address_data_manager().GetProfiles(
+        client().GetPersonalDataManager().address_data_manager().GetProfiles(
             AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
     std::vector<CreditCard*> credit_cards = client()
                                                 .GetPersonalDataManager()
-                                                ->payments_data_manager()
+                                                .payments_data_manager()
                                                 .GetCreditCards();
     // Shrink the maximum size of the vectors for performance reasons.
     profiles.resize(
@@ -1077,7 +1074,7 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
   LogSubmissionMetrics(submitted_form.get(), form_submitted_timestamp);
 
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
-      *submitted_form, form, *client().GetPersonalDataManager());
+      *submitted_form, form, client().GetPersonalDataManager());
 
   MaybeAddAddressSuggestionStrikes(client(), *submitted_form);
   MaybeStartVoteUploadProcess(std::move(submitted_form),
@@ -1087,28 +1084,18 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
 bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission) {
-  // It is possible for |client().GetPersonalDataManager()| to be null, such as
-  // when used in the Android webview.
-  if (!client().GetPersonalDataManager()) {
-    return false;
-  }
-
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
-      client().GetPersonalDataManager()->address_data_manager().GetProfiles();
+      client().GetPersonalDataManager().address_data_manager().GetProfiles();
   if (observed_submission && form_structure->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
-        client()
-            .GetPersonalDataManager()
-            ->address_data_manager()
-            .GetProfiles()
-            .size());
+        profiles.size());
   }
 
   const std::vector<CreditCard*>& credit_cards = client()
                                                      .GetPersonalDataManager()
-                                                     ->payments_data_manager()
+                                                     .payments_data_manager()
                                                      .GetCreditCards();
 
   if (profiles.empty() && credit_cards.empty()) {
@@ -1834,7 +1821,7 @@ void BrowserAutofillManager::MaybeShowIphForManualFallback(
   }
   if (std::ranges::none_of(client()
                                .GetPersonalDataManager()
-                               ->address_data_manager()
+                               .address_data_manager()
                                .GetProfiles(),
                            [type = autofill_field->Type().GetStorableType()](
                                const AutofillProfile* profile) {
@@ -2272,21 +2259,20 @@ bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
       absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)
           ? absl::get<Suggestion::AutofillProfilePayload>(payload).guid.value()
           : absl::get<Suggestion::Guid>(payload).value();
-  PersonalDataManager* pdm = client().GetPersonalDataManager();
-
+  PersonalDataManager& pdm = client().GetPersonalDataManager();
   if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(guid)) {
+          pdm.payments_data_manager().GetCreditCardByGUID(guid)) {
     // Server cards cannot be deleted from within Chrome.
     bool allowed_to_delete = CreditCard::IsLocalCard(credit_card);
     if (allowed_to_delete) {
-      pdm->payments_data_manager().DeleteLocalCreditCards({*credit_card});
+      pdm.payments_data_manager().DeleteLocalCreditCards({*credit_card});
     }
     return allowed_to_delete;
   }
 
   if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(guid)) {
-    pdm->RemoveByGUID(profile->guid());
+          pdm.address_data_manager().GetProfileByGUID(guid)) {
+    pdm.RemoveByGUID(profile->guid());
     return true;
   }
 
@@ -2568,13 +2554,13 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   if (!client().GetCrowdsourcingManager()) {
     return;
   }
-  const PersonalDataManager* pdm = client().GetPersonalDataManager();
+  const PersonalDataManager& pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
   for (const AutofillProfile* profile :
-       pdm->address_data_manager().GetProfiles()) {
+       pdm.address_data_manager().GetProfiles()) {
     profile->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
   }
-  for (const CreditCard* card : pdm->payments_data_manager().GetCreditCards()) {
+  for (const CreditCard* card : pdm.payments_data_manager().GetCreditCards()) {
     card->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
   }
   // As CVC is not stored, treat it separately.
@@ -2595,7 +2581,7 @@ const gfx::Image& BrowserAutofillManager::GetCardImage(
   gfx::Image* card_art_image =
       client()
           .GetPersonalDataManager()
-          ->payments_data_manager()
+          .payments_data_manager()
           .GetCreditCardArtImageForUrl(credit_card.card_art_url());
   return card_art_image
              ? *card_art_image
@@ -2691,7 +2677,7 @@ void BrowserAutofillManager::UpdateLoggersReadinessData() {
   }
   GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();
   metrics_->address_form_event_logger.UpdateProfileAvailabilityForReadiness(
-      client().GetPersonalDataManager()->address_data_manager().GetProfiles());
+      client().GetPersonalDataManager().address_data_manager().GetProfiles());
 }
 
 void BrowserAutofillManager::OnDidFillOrPreviewForm(
@@ -2842,7 +2828,7 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
         filled_field_ids, safe_field_ids, metrics_->signin_state_for_metrics,
         trigger_details.trigger_source);
 
-    client().GetPersonalDataManager()->payments_data_manager().RecordUseOfCard(
+    client().GetPersonalDataManager().payments_data_manager().RecordUseOfCard(
         card);
   }
 }
@@ -2868,7 +2854,7 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
         .OnDidFillFormFillingSuggestion();
   }
   if (!is_refill) {
-    client().GetPersonalDataManager()->address_data_manager().RecordUseOf(
+    client().GetPersonalDataManager().address_data_manager().RecordUseOf(
         *filled_profile);
   }
 }
@@ -2879,10 +2865,8 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
     const AutofillProfile* filled_profile,
     const FormStructure& form_structure) {
   const AutofillProfile* original_profile =
-      client()
-          .GetPersonalDataManager()
-          ->address_data_manager()
-          .GetProfileByGUID(filled_profile->guid());
+      client().GetPersonalDataManager().address_data_manager().GetProfileByGUID(
+          filled_profile->guid());
 
   if (!original_profile) {
     return;
@@ -2995,10 +2979,6 @@ std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
 AutofillField* BrowserAutofillManager::GetAutofillField(
     const FormData& form,
     const FormFieldData& field) const {
-  if (!client().GetPersonalDataManager()) {
-    return nullptr;
-  }
-
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form.global_id(), field.global_id(),
@@ -3059,7 +3039,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     bool should_suppress =
         client()
             .GetPersonalDataManager()
-            ->address_data_manager()
+            .address_data_manager()
             .AreAddressSuggestionsBlocked(
                 CalculateFormSignature(form),
                 CalculateFieldSignatureForField(trigger_field), form.url());
@@ -3267,7 +3247,7 @@ void BrowserAutofillManager::OnBeforeProcessParsedForms() {
   // Record the current sync state to be used for metrics on this page.
   metrics_->signin_state_for_metrics = client()
                                            .GetPersonalDataManager()
-                                           ->payments_data_manager()
+                                           .payments_data_manager()
                                            .GetPaymentsSigninStateForMetrics();
 
   // Setup the url for metrics that we will collect for this form.

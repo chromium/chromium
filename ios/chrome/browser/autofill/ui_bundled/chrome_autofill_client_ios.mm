@@ -147,8 +147,8 @@ ChromeAutofillClientIOS::GetCrowdsourcingManager() {
   return crowdsourcing_manager_.get();
 }
 
-PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {
-  return personal_data_manager_;
+PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
+  return CHECK_DEREF(personal_data_manager_.get());
 }
 
 FieldClassificationModelHandler*

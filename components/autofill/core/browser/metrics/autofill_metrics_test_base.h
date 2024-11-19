@@ -247,7 +247,7 @@ class AutofillMetricsBaseTest {
   }
 
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_->GetPersonalDataManager();
+    return autofill_client_->GetPersonalDataManager();
   }
 
   ukm::TestUkmRecorder& test_ukm_recorder() {

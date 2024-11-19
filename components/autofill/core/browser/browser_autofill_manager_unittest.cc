@@ -1328,7 +1328,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_.GetPersonalDataManager();
+    return autofill_client_.GetPersonalDataManager();
   }
 
   MockCreditCardAccessManager& cc_access_manager() {

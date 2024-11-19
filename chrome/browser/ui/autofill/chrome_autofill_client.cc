@@ -290,9 +290,9 @@ ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
   return nullptr;
 }
 
-PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {
-  return PersonalDataManagerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
+PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
+  return CHECK_DEREF(PersonalDataManagerFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext()));
 }
 
 SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {

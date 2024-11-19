@@ -137,7 +137,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
   // bubble, return that we should not offer mandatory re-auth opt-in.
   // Pref-related decision logging also occurs within this function call.
   if (!client_->GetPersonalDataManager()
-           ->payments_data_manager()
+           .payments_data_manager()
            .ShouldShowPaymentMethodsMandatoryReauthPromo()) {
     return false;
   }
@@ -255,28 +255,28 @@ void MandatoryReauthManager::OnOptInAuthenticationStepCompleted(bool success) {
                     kFlowFailed);
   if (success) {
     client_->GetPersonalDataManager()
-        ->payments_data_manager()
+        .payments_data_manager()
         .SetPaymentMethodsMandatoryReauthEnabled(
             /*enabled=*/true);
     client_->GetPaymentsAutofillClient()
         ->ShowMandatoryReauthOptInConfirmation();
   } else {
     client_->GetPersonalDataManager()
-        ->payments_data_manager()
+        .payments_data_manager()
         .IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
   }
 }
 
 void MandatoryReauthManager::OnUserCancelledOptInPrompt() {
   client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .SetPaymentMethodsMandatoryReauthEnabled(
           /*enabled=*/false);
 }
 
 void MandatoryReauthManager::OnUserClosedOptInPrompt() {
   client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
 }
 

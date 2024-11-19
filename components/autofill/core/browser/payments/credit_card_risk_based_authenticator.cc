@@ -70,17 +70,16 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
   }
-  if (DidDisplayBenefitForCard(unmask_request_details_->card,
-                               autofill_client_.get(),
-                               autofill_client_->GetPersonalDataManager()
-                                   ->payments_data_manager())) {
+  if (DidDisplayBenefitForCard(
+          unmask_request_details_->card, autofill_client_.get(),
+          autofill_client_->GetPersonalDataManager().payments_data_manager())) {
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardBenefits);
   }
 
   unmask_request_details_->billing_customer_number =
       payments::GetBillingCustomerId(
-          &autofill_client_->GetPersonalDataManager()->payments_data_manager());
+          &autofill_client_->GetPersonalDataManager().payments_data_manager());
 
   autofill_client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()

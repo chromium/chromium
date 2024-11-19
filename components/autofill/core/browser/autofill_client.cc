@@ -55,7 +55,7 @@ AutofillCrowdsourcingManager* AutofillClient::GetCrowdsourcingManager() {
   return nullptr;
 }
 
-const PersonalDataManager* AutofillClient::GetPersonalDataManager() const {
+const PersonalDataManager& AutofillClient::GetPersonalDataManager() const {
   return const_cast<AutofillClient*>(this)->GetPersonalDataManager();
 }
 

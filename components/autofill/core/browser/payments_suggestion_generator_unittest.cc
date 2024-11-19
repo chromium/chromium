@@ -202,7 +202,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     payments_data().SetSyncServiceForTest(&sync_service_);
     autofill_client_.GetPaymentsAutofillClient()->set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
-            autofill_client_.GetPersonalDataManager()));
+            &autofill_client_.GetPersonalDataManager()));
   }
 
   void TearDown() override {
@@ -272,7 +272,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
 
   TestPaymentsDataManager& payments_data() {
     return autofill_client_.GetPersonalDataManager()
-        ->test_payments_data_manager();
+        .test_payments_data_manager();
   }
 
   const std::string& app_locale() { return payments_data().app_locale(); }

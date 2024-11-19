@@ -1140,7 +1140,7 @@ void AutofillExternalDelegate::ShowEditAddressProfileDialog(
     const std::string& guid) {
   const AutofillProfile* profile = manager_->client()
                                        .GetPersonalDataManager()
-                                       ->address_data_manager()
+                                       .address_data_manager()
                                        .GetProfileByGUID(guid);
   if (profile) {
     manager_->client().ShowEditAddressProfileDialog(
@@ -1155,7 +1155,7 @@ void AutofillExternalDelegate::OnAddressEditorClosed(
     base::optional_ref<const AutofillProfile> edited_profile) {
   if (decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) {
     AddressDataManager& adm =
-        manager_->client().GetPersonalDataManager()->address_data_manager();
+        manager_->client().GetPersonalDataManager().address_data_manager();
     if (!adm_observation_.IsObserving()) {
       adm_observation_.Observe(&adm);
     }
@@ -1189,7 +1189,7 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
 
   if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
     if (std::optional<AutofillProfile> profile = GetProfileFromPayload(
-            *manager_->client().GetPersonalDataManager(), suggestion.payload)) {
+            manager_->client().GetPersonalDataManager(), suggestion.payload)) {
       PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
     }
     return;
@@ -1197,7 +1197,7 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
 
   if (manager_->client()
           .GetPersonalDataManager()
-          ->payments_data_manager()
+          .payments_data_manager()
           .GetCreditCardByGUID(
               suggestion.GetPayload<Suggestion::Guid>().value())) {
     PreviewCreditCardFieldByFieldFillingSuggestion(suggestion);
@@ -1213,7 +1213,7 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
 
   if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
     if (std::optional<AutofillProfile> profile = GetProfileFromPayload(
-            *manager_->client().GetPersonalDataManager(), suggestion.payload)) {
+            manager_->client().GetPersonalDataManager(), suggestion.payload)) {
       FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, metadata);
     }
     return;
@@ -1221,7 +1221,7 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
   const auto guid = suggestion.GetPayload<Suggestion::Guid>().value();
   if (const CreditCard* credit_card = manager_->client()
                                           .GetPersonalDataManager()
-                                          ->payments_data_manager()
+                                          .payments_data_manager()
                                           .GetCreditCardByGUID(guid)) {
     FillCreditCardFieldByFieldFillingSuggestion(*credit_card, suggestion);
   }
@@ -1355,14 +1355,14 @@ void AutofillExternalDelegate::FillAutofillFormData(
       is_preview ? mojom::ActionPersistence::kPreview
                  : mojom::ActionPersistence::kFill;
 
-  PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
+  PersonalDataManager& pdm = manager_->client().GetPersonalDataManager();
   if (const Suggestion::AutofillProfilePayload* profile_payload =
           absl::get_if<Suggestion::AutofillProfilePayload>(&payload)) {
     std::optional<AutofillProfile> profile =
         type == SuggestionType::kDevtoolsTestAddressEntry
             ? GetTestAddressByGUID(manager_->client().GetTestAddresses(),
                                    profile_payload->guid.value())
-            : GetProfileFromPayload(*pdm, payload);
+            : GetProfileFromPayload(pdm, payload);
     if (profile) {
       manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                          query_field_.global_id(), *profile,
@@ -1372,7 +1372,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
   }
 
   if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(
+          pdm.payments_data_manager().GetCreditCardByGUID(
               absl::get<Suggestion::Guid>(payload).value())) {
     is_preview ? manager_->FillOrPreviewCreditCardForm(
                      mojom::ActionPersistence::kPreview, query_form_,
@@ -1566,7 +1566,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
   // can be automatically shown again if needed.
   manager_->client()
       .GetPersonalDataManager()
-      ->address_data_manager()
+      .address_data_manager()
       .ClearStrikesToBlockAddressSuggestions(
           CalculateFormSignature(query_form_),
           CalculateFieldSignatureForField(query_field_), query_form_.url());
@@ -1600,7 +1600,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         if (const CreditCard* credit_card =
                 manager_->client()
                     .GetPersonalDataManager()
-                    ->payments_data_manager()
+                    .payments_data_manager()
                     .GetCreditCardByGUID(
                         suggestion.GetPayload<Suggestion::Guid>().value())) {
           CreditCard virtual_card = CreditCard::CreateVirtualCard(*credit_card);

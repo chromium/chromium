@@ -79,11 +79,11 @@ GetCardBenefitsOptimizationTypesForCard(const CreditCard& card) {
 }
 
 void AddCreditCardOptimizationTypes(
-    const PersonalDataManager* personal_data_manager,
+    const PersonalDataManager& personal_data_manager,
     base::flat_set<optimization_guide::proto::OptimizationType>&
         optimization_types) {
   for (const CreditCard* card :
-       personal_data_manager->payments_data_manager().GetServerCreditCards()) {
+       personal_data_manager.payments_data_manager().GetServerCreditCards()) {
     auto vcn_merchant_opt_out_optimization_type =
         GetVcnMerchantOptOutOptimizationTypeForCard(*card);
     if (vcn_merchant_opt_out_optimization_type !=
@@ -162,7 +162,7 @@ AutofillOptimizationGuide::~AutofillOptimizationGuide() = default;
 // check for presence.
 void AutofillOptimizationGuide::OnDidParseForm(
     const FormStructure& form_structure,
-    const PersonalDataManager* personal_data_manager) {
+    const PersonalDataManager& personal_data_manager) {
   // This flat set represents all of the optimization types that we need to
   // register based on `form_structure`.
   base::flat_set<optimization_guide::proto::OptimizationType>
@@ -175,31 +175,29 @@ void AutofillOptimizationGuide::OnDidParseForm(
   if (has_iban_field) {
     optimization_types.insert(optimization_guide::proto::IBAN_AUTOFILL_BLOCKED);
   }
-  if (personal_data_manager) {
-    bool has_credit_card_field =
-        std::ranges::any_of(form_structure, [](const auto& field) {
-          return field->Type().group() == FieldTypeGroup::kCreditCard;
-        });
+  bool has_credit_card_field =
+      std::ranges::any_of(form_structure, [](const auto& field) {
+        return field->Type().group() == FieldTypeGroup::kCreditCard;
+      });
 
-    if (has_credit_card_field) {
-      AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
-    }
+  if (has_credit_card_field) {
+    AddCreditCardOptimizationTypes(personal_data_manager, optimization_types);
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-    if (has_credit_card_field &&
-        !personal_data_manager->payments_data_manager()
-             .GetServerCreditCards()
-             .empty() &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableAmountExtractionDesktop)) {
-      optimization_types.insert(
-          optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
-      optimization_types.insert(
-          optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
-    }
-#endif
+  if (has_credit_card_field &&
+      !personal_data_manager.payments_data_manager()
+           .GetServerCreditCards()
+           .empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableAmountExtractionDesktop)) {
+    optimization_types.insert(
+        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM);
+    optimization_types.insert(
+        optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP);
   }
+#endif
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableAblationStudy)) {
     AddAblationOptimizationTypes(optimization_types);

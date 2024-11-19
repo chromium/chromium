@@ -28,7 +28,7 @@ IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
               base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                   web_state->GetBrowserState()->GetURLLoaderFactory()),
               client->GetIdentityManager(),
-              &client->GetPersonalDataManager()->payments_data_manager(),
+              &client->GetPersonalDataManager().payments_data_manager(),
               web_state->GetBrowserState()->IsOffTheRecord())),
       web_state_(CHECK_DEREF(web_state)) {}
 

@@ -103,7 +103,7 @@ TEST_F(AutofillOptimizationGuideTest, IbanFieldFound_IbanAutofillBlocked) {
                   optimization_guide::proto::IBAN_AUTOFILL_BLOCKED)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the corresponding optimization types are registered in the VCN
@@ -130,7 +130,7 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
                   optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is not registered
@@ -149,7 +149,7 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is not registered
@@ -172,7 +172,7 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the `VCN_MERCHANT_OPT_OUT_VISA` optimization type is not registered
@@ -192,25 +192,7 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
-}
-
-// Test that no optimization type is registered when we have seen a credit card
-// form, and meet all of the pre-requisites for the Visa merchant opt-out
-// use-case, but there is no personal data manager present.
-TEST_F(AutofillOptimizationGuideTest,
-       CreditCardFormFound_VcnMerchantOptOut_NoPersonalDataManager) {
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
-                                         /*log_manager=*/nullptr);
-  personal_data_manager_.reset();
-
-  EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
-
-  autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that if the field type does not correlate to any optimization type we
@@ -226,7 +208,7 @@ TEST_F(AutofillOptimizationGuideTest, OptimizationTypeToRegisterNotFound) {
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that if the form denotes that we need to register multiple optimization
@@ -252,7 +234,7 @@ TEST_F(AutofillOptimizationGuideTest,
                   optimization_guide::proto::VCN_MERCHANT_OPT_OUT_VISA)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that single field suggestions are blocked when we are about to display
@@ -584,7 +566,7 @@ TEST_F(AutofillOptimizationGuideTest,
                       AMERICAN_EXPRESS_CREDIT_CARD_SUBSCRIPTION_BENEFITS)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the Capital One category-benefit optimization types are registered
@@ -618,7 +600,7 @@ TEST_F(AutofillOptimizationGuideTest,
           optimization_guide::proto::VCN_MERCHANT_OPT_OUT_MASTERCARD)));
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the Amex category-benefit optimization types are not registered
@@ -649,7 +631,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that the Capital One category-benefit optimization types are not
@@ -679,7 +661,7 @@ TEST_F(AutofillOptimizationGuideTest,
       .Times(1);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` optimization type is registered
@@ -707,7 +689,7 @@ TEST_F(
       RegisterOptimizationTypes(testing::IsSupersetOf(
           {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM})));
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test the `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization type is registered
@@ -732,7 +714,7 @@ TEST_F(AutofillOptimizationGuideTest,
       RegisterOptimizationTypes(testing::IsSupersetOf(
           {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP})));
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test neither `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` nor
@@ -756,7 +738,7 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test neither `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` nor
@@ -779,29 +761,7 @@ TEST_F(AutofillOptimizationGuideTest,
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
-}
-
-// Test neither `BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM` nor
-// `BUY_NOW_PAY_LATER_ALLOWLIST_ZIP` optimization types are registered when
-// there is no personal data manager present.
-TEST_F(AutofillOptimizationGuideTest,
-       CreditCardFormFound_AmountExtractionAllowed_NoPersonalDataManager) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-  FormStructure form_structure{
-      CreateTestCreditCardFormData(/*is_https=*/true,
-                                   /*use_month_type=*/true)};
-  test_api(form_structure)
-      .SetFieldTypes({CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                      CREDIT_CARD_EXP_MONTH, CREDIT_CARD_VERIFICATION_CODE});
-  personal_data_manager_.reset();
-
-  // RegisterOptimizationTypes shouldn't be called.
-  EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
-
-  autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 }
 
 // Test that we allow BNPL for Affirm on an allowlisted URL.
@@ -930,7 +890,7 @@ TEST_F(AutofillOptimizationGuideTest, AutofillAblation) {
                    optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST5,
                    optimization_guide::proto::AUTOFILL_ABLATION_SITES_LIST6})));
   autofill_optimization_guide_->OnDidParseForm(form_structure,
-                                               personal_data_manager_.get());
+                                               *personal_data_manager_);
 
   // Ensure that `IsEligibleForAblation()` returns the right responses.
   ON_CALL(*decider_,

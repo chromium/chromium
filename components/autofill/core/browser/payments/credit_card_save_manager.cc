@@ -912,9 +912,8 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
 
   // Second, collect all of the already stored addresses used or modified
   // recently.
-  for (const AutofillProfile* profile : client_->GetPersonalDataManager()
-                                            ->address_data_manager()
-                                            .GetProfiles()) {
+  for (const AutofillProfile* profile :
+       client_->GetPersonalDataManager().address_data_manager().GetProfiles()) {
     has_profile = true;
     if ((now - profile->use_date()) < fifteen_minutes ||
         (now - profile->modification_date()) < fifteen_minutes) {
@@ -1474,7 +1473,7 @@ PaymentsDataManager& CreditCardSaveManager::payments_data_manager() {
 
 const PaymentsDataManager& CreditCardSaveManager::payments_data_manager()
     const {
-  return client_->GetPersonalDataManager()->payments_data_manager();
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 }  // namespace autofill
