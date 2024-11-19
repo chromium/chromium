@@ -212,8 +212,8 @@ void PDFDocumentHelper::GetPdfBytes(
     uint32_t size_limit,
     pdf::mojom::PdfListener::GetPdfBytesCallback callback) {
   if (!remote_pdf_client_) {
-    std::move(callback).Run(
-        pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed, {});
+    std::move(callback).Run(pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
+                            /*bytes=*/{}, /*page_count=*/0);
     return;
   }
   remote_pdf_client_->GetPdfBytes(size_limit, std::move(callback));

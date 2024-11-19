@@ -304,4 +304,9 @@ void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
                              document_size_bytes / 1000);
 }
 
+void RecordPdfPageCount(uint32_t page_count) {
+  base::UmaHistogramCounts1000("Lens.Overlay.ByDocumentType.Pdf.PageCount",
+                               page_count);
+}
+
 }  // namespace lens

@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <!-- Represents the MIME types that are retrieved from the page content.
-       Corresponds to the content type set in the request to the server. -->
+         Corresponds to the content type set in the request to the server. -->
 
 <variants name="ContentTypes">
   <variant name="Html"/>
@@ -122,6 +122,16 @@ chromium-metrics-reviews@google.com.
     between the two.
   </summary>
   <token key="ContentType" variants="ContentTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ByDocumentType.Pdf.PageCount" units="Pages"
+    expires_after="2025-05-06">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded whenever a PDF is fetched from the PDF renderer. Records the number
+    of pages in the PDF that was fetched.
+  </summary>
 </histogram>
 
 <histogram name="Lens.Overlay.ByDocumentType.{DocumentType}.Invoked"
