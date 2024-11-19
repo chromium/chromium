@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -37,15 +36,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
@@ -55,14 +50,12 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -70,7 +63,6 @@ const base::Time kLastLaunchTime = base::Time::Now();
 const base::Time kInstallTime = base::Time::Now();
 const char kUrl[] = "https://example.com/";
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 scoped_refptr<extensions::Extension> MakeExtensionApp(
     const std::string& name,
     const std::string& version,
@@ -89,11 +81,8 @@ scoped_refptr<extensions::Extension> MakeExtensionApp(
   EXPECT_EQ(err, "");
   return app;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-
+#if BUILDFLAG(IS_CHROMEOS)
 void AddArcPackage(ArcAppTest& arc_test,
                    const std::vector<arc::mojom::AppInfoPtr>& fake_apps) {
   for (const auto& fake_app : fake_apps) {
@@ -126,9 +115,7 @@ apps::Permissions MakeFakePermissions() {
       /*is_managed*/ false));
   return permissions;
 }
-
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 apps::IntentFilters CreateIntentFilters() {
   const GURL url(kUrl);
@@ -176,7 +163,7 @@ MATCHER_P(ShownInLauncher, shown, "App shown in the launcher") {
   return arg.show_in_launcher.has_value() && arg.show_in_launcher == shown;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 arc::mojom::PrivacyItemPtr CreateArcPrivacyItem(
     arc::mojom::AppPermissionGroup permission,
     const std::string& package_name) {
@@ -186,7 +173,7 @@ arc::mojom::PrivacyItemPtr CreateArcPrivacyItem(
   item->privacy_application->package_name = package_name;
   return item;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // AppRegistryCacheObserver is used to test the OnAppTypeInitialized and
 // OnAppUpdate interfaces for AppRegistryCache::Observer.
@@ -242,19 +229,19 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     InitializeExtensionService(ExtensionServiceInitParams());
     service_->Init();
     ConfigureWebAppProvider();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     browser_manager_ = std::make_unique<crosapi::FakeBrowserManager>();
     ash::LoginState::Initialize();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDown() override {
     extensions::ExtensionServiceTestBase::TearDown();
     profile_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ash::LoginState::Shutdown();
     browser_manager_.reset();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void ConfigureWebAppProvider() {
@@ -285,13 +272,13 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void RemoveArcApp(const std::string& app_id) {
     ArcApps* arc_apps = ArcAppsFactory::GetForProfile(profile());
     ASSERT_TRUE(arc_apps);
     arc_apps->OnAppRemoved(app_id);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void VerifyOptionalBool(std::optional<bool> source,
                           std::optional<bool> target) {
@@ -437,13 +424,13 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
             }));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  private:
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PublisherTest, ArcAppsOnApps) {
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
@@ -633,10 +620,8 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
   }
   VerifyAppTypeIsInitialized(AppType::kBuiltIn);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(PublisherTest, ExtensionAppsOnApps) {
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
@@ -728,7 +713,5 @@ TEST_F(PublisherTest, WebAppsOnApps) {
   VerifyIntentFilters(app_id);
   VerifyAppTypeIsInitialized(AppType::kWeb);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace apps

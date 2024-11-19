@@ -7,29 +7,6 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/app_service_types.mojom";
 import "chromeos/crosapi/mojom/ui_constants.mojom";
 
-// Interacts with the app service. Implemented in ash-chrome.
-// This is a generic app-publisher interface that is used by the implementation
-// for both Web Apps and Chrome Apps in Lacros.
-// Next version: 3
-// Next method id: 3
-[Uuid="238dd8e0-480e-49f4-a3a0-28e610ef7119"]
-interface AppPublisher {
-  // Publish a stream of apps from lacros-chrome.
-  // |deltas| holds a sparse data structure that includes the update App data
-  // from the existing app state in app service.
-  OnApps@0(array<App> deltas);
-
-  // Lacros exposes an AppController interface to Ash. This allows Ash to
-  // launch, or otherwise interact with Apps that run in Lacros.
-  [MinVersion=1]
-  RegisterAppController@1(pending_remote<AppController> controller);
-
-  // Receives a stream of accesses from lacros-chrome, and saves to
-  // AppCapabilityAccess.
-  [MinVersion=2]
-  OnCapabilityAccesses@2(array<CapabilityAccess> deltas);
-};
-
 // Interacts with the app service. Implemented in lacros-chrome and called in
 // ash-chrome.
 // Next version: 22
@@ -247,31 +224,6 @@ interface AppServiceSubscriber {
   // representation of the user's preferred apps.
   [MinVersion=15]
   InitializePreferredApps@2(array<PreferredApp> preferred_apps);
-};
-
-// Interacts with the app service. Implemented in ash-chrome.
-// This is a generic app-shortcut-publisher interface that is used by the
-// implementation for browser shortcuts and other future lacros based shortcut
-// (e.g. shortcut to a web app).
-// Deprecated in M127, reason: moving shortcuts storage from Lacros to Ash.
-[Uuid="f46f05bb-218e-4370-ad07-f2f0dfef0298"]
-interface AppShortcutPublisher {
-  // Publish a stream of app shortcuts from lacros-chrome.
-  // |deltas| holds a sparse data structure that includes the update
-  // AppShortcut data from the existing shortcut state in app service.
-  PublishShortcuts@0(array<AppShortcut> deltas) => ();
-
-  // Lacros exposes an AppShortcutController interface to Ash. This allows
-  // Ash to launch, or otherwise interact with shortcuts that run in Lacros.
-  [MinVersion=1]
-  RegisterAppShortcutController@1(
-    pending_remote<AppShortcutController> controller) =>
-      (ControllerRegistrationResult result);
-
-  // Notify ash-chrome that a shortcut identified by 'shortcut_id' has been
-  // removed.
-  [MinVersion=2]
-  ShortcutRemoved@2(string shortcut_id) => ();
 };
 
 // Interacts with shortcuts that run in Lacros. Implemented in lacros-chrome

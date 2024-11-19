@@ -14,11 +14,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi.h"
-#include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
@@ -390,12 +385,6 @@ void CrosapiAsh::BindBrowserServiceHost(
                                           std::move(receiver));
 }
 
-void CrosapiAsh::BindBrowserShortcutPublisher(
-    mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) {
-  // TODO(b/352513798): Remove after M131.
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void CrosapiAsh::BindCecPrivate(
     mojo::PendingReceiver<mojom::CecPrivate> receiver) {
   cec_private_ash_->BindReceiver(std::move(receiver));
@@ -425,14 +414,6 @@ void CrosapiAsh::BindChapsService(
 void CrosapiAsh::BindChromeAppKioskService(
     mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) {
   chrome_app_kiosk_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindChromeAppPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  apps::StandaloneBrowserExtensionApps* chrome_apps =
-      apps::StandaloneBrowserExtensionAppsFactoryForApp::GetForProfile(profile);
-  chrome_apps->RegisterCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::BindChromeAppWindowTracker(
@@ -557,15 +538,6 @@ void CrosapiAsh::BindExtensionInfoPrivate(
   extension_info_private_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindExtensionPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  apps::StandaloneBrowserExtensionApps* extensions =
-      apps::StandaloneBrowserExtensionAppsFactoryForExtension::GetForProfile(
-          profile);
-  extensions->RegisterCrosapiHost(std::move(receiver));
-}
-
 void CrosapiAsh::BindEyeDropper(
     mojo::PendingReceiver<mojom::EyeDropper> receiver) {
   eye_dropper_ash_->BindReceiver(std::move(receiver));
@@ -669,18 +641,6 @@ void CrosapiAsh::BindKioskSessionService(
 void CrosapiAsh::BindLacrosShelfItemTracker(
     mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) {
   lacros_shelf_item_tracker_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindLacrosAppPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  apps::StandaloneBrowserApps* lacros_apps =
-      app_service_proxy->StandaloneBrowserApps();
-  if (lacros_apps) {
-    lacros_apps->RegisterCrosapiHost(std::move(receiver));
-  }
 }
 
 void CrosapiAsh::BindLocalPrinter(
@@ -1036,14 +996,6 @@ void CrosapiAsh::BindWebKioskService(
 void CrosapiAsh::BindGuestOsSkForwarderFactory(
     mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver) {
   NOTREACHED();
-}
-
-void CrosapiAsh::BindWebAppPublisher(
-    mojo::PendingReceiver<mojom::AppPublisher> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  apps::WebAppsCrosapi* web_apps =
-      apps::WebAppsCrosapiFactory::GetForProfile(profile);
-  web_apps->RegisterWebAppsCrosapiHost(std::move(receiver));
 }
 
 void CrosapiAsh::REMOVED_29(

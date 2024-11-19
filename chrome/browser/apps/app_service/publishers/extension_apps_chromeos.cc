@@ -274,7 +274,7 @@ void ExtensionAppsChromeOs::Initialize() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ExtensionAppsChromeOs::GetCompressedIconData(
     const std::string& app_id,
     int32_t size_in_dip,

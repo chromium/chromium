@@ -172,8 +172,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
-  void BindBrowserShortcutPublisher(
-      mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) override;
   void BindCecPrivate(
       mojo::PendingReceiver<mojom::CecPrivate> receiver) override;
   void BindCertDatabase(
@@ -187,8 +185,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ChapsService> receiver) override;
   void BindChromeAppKioskService(
       mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
-  void BindChromeAppPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindChromeAppWindowTracker(
       mojo::PendingReceiver<mojom::AppWindowTracker> receiver) override;
   void BindClipboardHistory(
@@ -237,8 +233,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::EmojiPicker> receiver) override;
   void BindExtensionInfoPrivate(
       mojo::PendingReceiver<mojom::ExtensionInfoPrivate> receiver) override;
-  void BindExtensionPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindEyeDropper(
       mojo::PendingReceiver<mojom::EyeDropper> receiver) override;
   void BindFieldTrialService(
@@ -280,8 +274,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::KioskSessionService> receiver) override;
   void BindLacrosShelfItemTracker(
       mojo::PendingReceiver<mojom::LacrosShelfItemTracker> receiver) override;
-  void BindLacrosAppPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
@@ -414,8 +406,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::VpnService> receiver) override;
   void BindWallpaper(
       mojo::PendingReceiver<crosapi::mojom::Wallpaper> receiver) override;
-  void BindWebAppPublisher(
-      mojo::PendingReceiver<mojom::AppPublisher> receiver) override;
   void BindWebAppService(
       mojo::PendingReceiver<mojom::WebAppService> receiver) override;
   void BindWebKioskService(

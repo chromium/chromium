@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
-#include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -45,10 +44,6 @@ PublisherHost::PublisherHost(AppServiceProxy* proxy) : proxy_(proxy) {
 PublisherHost::~PublisherHost() = default;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-apps::StandaloneBrowserApps* PublisherHost::StandaloneBrowserApps() {
-  return standalone_browser_apps_ ? standalone_browser_apps_.get() : nullptr;
-}
-
 void PublisherHost::SetArcIsRegistered() {
   chrome_apps_->ObserveArc();
 }
@@ -75,10 +70,6 @@ void PublisherHost::RegisterPublishersForTesting() {
   }
   if (plugin_vm_apps_) {
     proxy_->RegisterPublisher(AppType::kPluginVm, plugin_vm_apps_.get());
-  }
-  if (standalone_browser_apps_) {
-    proxy_->RegisterPublisher(AppType::kStandaloneBrowser,
-                              standalone_browser_apps_.get());
   }
   if (web_apps_) {
     proxy_->RegisterPublisher(AppType::kWeb, web_apps_.get());
@@ -132,16 +123,6 @@ void PublisherHost::Initialize() {
   if (!g_omit_plugin_vm_apps_for_testing_) {
     plugin_vm_apps_ = std::make_unique<PluginVmApps>(proxy_);
     plugin_vm_apps_->Initialize();
-  }
-
-  // Lacros does not support multi-signin, so only create for the primary
-  // profile. This also avoids creating an instance for the lock screen app
-  // profile and ensures there is only one instance of StandaloneBrowserApps.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      ash::ProfileHelper::IsPrimaryProfile(profile)) {
-    standalone_browser_apps_ =
-        std::make_unique<apps::StandaloneBrowserApps>(proxy_);
-    standalone_browser_apps_->Initialize();
   }
 
   // `web_apps_` can be initialized itself.
