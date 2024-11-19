@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -94,8 +93,6 @@ void AudioInputStreamBroker::CreateStream(
                                     device_id_);
   awaiting_created_ = true;
 
-  base::ReadOnlySharedMemoryRegion key_press_count_buffer;
-
   mojo::PendingRemote<media::mojom::AudioInputStreamClient> client;
   pending_client_receiver_ = client.InitWithNewPipeAndPassReceiver();
 
@@ -120,7 +117,7 @@ void AudioInputStreamBroker::CreateStream(
           media::AudioLogFactory::AudioComponent::kAudioInputController,
           log_component_id, render_process_id(), render_frame_id()),
       device_id_, params_, shared_memory_count_, enable_agc_,
-      std::move(key_press_count_buffer), std::move(processing_config_),
+      std::move(processing_config_),
       base::BindOnce(&AudioInputStreamBroker::StreamCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream)));
 }

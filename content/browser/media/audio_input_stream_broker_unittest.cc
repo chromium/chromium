@@ -111,7 +111,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     const media::AudioParameters params;
     uint32_t shared_memory_count;
     bool enable_agc;
-    base::ReadOnlySharedMemoryRegion key_press_count_buffer;
     media::mojom::AudioProcessingConfigPtr processing_config;
     CreateInputStreamCallback created_callback;
   };
@@ -134,7 +133,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc,
-      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
     // No way to cleanly exit the test here in case of failure, so use CHECK.
@@ -148,8 +146,6 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     stream_request_data_->log.Bind(std::move(log));
     stream_request_data_->shared_memory_count = shared_memory_count;
     stream_request_data_->enable_agc = enable_agc;
-    stream_request_data_->key_press_count_buffer =
-        std::move(key_press_count_buffer);
     stream_request_data_->processing_config = std::move(processing_config);
     stream_request_data_->created_callback = std::move(created_callback);
   }
