@@ -1459,12 +1459,15 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
         {bottom_controls_bounds.width() - (2 * kTimestampHorizontalMargin),
          kTimestampHeight});
 
-    // The play/pause button should not be visible while dragging the progress
-    // bar.
-    play_pause_controls_view_->SetVisible(
-        show_play_pause_button_ &&
-        progress_view_drag_state_ !=
-            global_media_controls::DragState::kDragStarted);
+    // The play/pause button and replay/forward 10 seconds buttons should not be
+    // visible while dragging the progress bar.
+    const bool is_dragging_progress_bar =
+        progress_view_drag_state_ ==
+        global_media_controls::DragState::kDragStarted;
+    play_pause_controls_view_->SetVisible(show_play_pause_button_ &&
+                                          !is_dragging_progress_bar);
+    replay_10_seconds_button_->SetVisible(!is_dragging_progress_bar);
+    forward_10_seconds_button_->SetVisible(!is_dragging_progress_bar);
 
     // The previous and next track buttons are always visible, but disabled if
     // there is no action handler for them.
