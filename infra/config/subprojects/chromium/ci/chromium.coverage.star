@@ -26,6 +26,16 @@ luci.gitiles_poller(
     schedule = "0 4 * * *",
 )
 
+# Use a separate poller to trigger the webview coverage builders.
+luci.gitiles_poller(
+    name = "code-coverage-webview-gitiles-trigger",
+    bucket = "ci",
+    repo = "https://chromium.googlesource.com/chromium/src",
+    refs = [settings.ref],
+    # Trigger coverage jobs once a day at 10 am UTC(2 am PST)
+    schedule = "0 10 * * *",
+)
+
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.coverage",
@@ -57,6 +67,18 @@ def coverage_builder(**kwargs):
     return ci.builder(
         schedule = "triggered",
         triggered_by = ["code-coverage-gitiles-trigger"],
+        # This should allow one to be pending should code coverage
+        # builds take longer.
+        triggering_policy = scheduler.greedy_batching(
+            max_concurrent_invocations = 2,
+        ),
+        **kwargs
+    )
+
+def coverage_webview_builder(**kwargs):
+    return ci.builder(
+        schedule = "triggered",
+        triggered_by = ["code-coverage-webview-gitiles-trigger"],
         # This should allow one to be pending should code coverage
         # builds take longer.
         triggering_policy = scheduler.greedy_batching(
@@ -129,12 +151,9 @@ coverage_builder(
     use_java_coverage = True,
 )
 
-ci.builder(
+coverage_webview_builder(
     name = "android-webview-code-coverage",
     description_html = "Builder for WebView java coverage",
-    # Trigger coverage jobs once a day at 10 am UTC(2 am PST)
-    schedule = "0 10 * * *",
-    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -532,12 +551,9 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
-ci.builder(
+coverage_webview_builder(
     name = "android-webview-code-coverage-native",
     description_html = "Builder for WebView clang coverage",
-    # Trigger coverage jobs once a day at 10 am UTC(2 am PST)
-    schedule = "0 10 * * *",
-    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
