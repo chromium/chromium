@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display_embedder/compositor_gpu_thread.h"
 #include "components/viz/service/viz_service_export.h"
@@ -61,11 +60,11 @@
 #include "ui/gl/direct_composition_support.h"
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace arc {
 class ProtectedBufferManager;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace gpu {
 class DawnContextProvider;
@@ -183,7 +182,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void OnDiskCacheHandleDestoyed(
       const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
@@ -206,7 +205,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void CreateJpegEncodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
   void RegisterDCOMPSurfaceHandle(
@@ -498,7 +497,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                         const std::string& header,
                         const std::string& message);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   void CreateArcVideoDecodeAcceleratorOnMainThread(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver);
   void CreateArcVideoDecoderOnMainThread(
@@ -510,7 +509,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
           pba_receiver);
   void CreateArcProtectedBufferManagerOnMainThread(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
@@ -658,9 +657,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // Map of client_id to ClientGmbInterfaceImpl object.
   std::unordered_map<int, std::unique_ptr<ClientGmbInterfaceImpl>> gmb_clients_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   scoped_refptr<arc::ProtectedBufferManager> protected_buffer_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
   VisibilityChangedCallback visibility_changed_callback_;

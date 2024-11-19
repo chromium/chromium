@@ -31,7 +31,6 @@ viz_component("shared_image_format") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/base",
     "//gpu/vulkan:buildflags",
     "//skia",
@@ -285,7 +284,6 @@ viz_component("common") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
 
     # TODO(staraz): cc/base was added because SharedQuadState includes
     # cc::MathUtil. Remove it once cc/base/math_util* are moved to viz.

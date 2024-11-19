@@ -241,7 +241,7 @@ Display::Display(
   DCHECK(output_surface_);
   DCHECK(frame_sink_id_.is_valid());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static bool logged = false;
   // TODO(b/329688656): Remove this after the issue is resolved.
   if (!logged && output_surface_->capabilities().max_texture_size > 0) {

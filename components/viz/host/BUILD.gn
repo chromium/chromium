@@ -39,7 +39,6 @@ viz_component("host") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//gpu/ipc/client",
     "//gpu/ipc/common",
     "//services/viz/privileged/mojom",
@@ -79,7 +78,6 @@ viz_source_set("unit_tests") {
     ":host",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/viz/test:test_support",
     "//gpu",
     "//gpu/ipc/host",

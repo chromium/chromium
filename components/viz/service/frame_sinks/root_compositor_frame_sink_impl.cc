@@ -17,7 +17,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display.h"
@@ -153,7 +152,7 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
 #else
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     hw_support_for_multiple_refresh_rates =
         features::IsCrosContentAdjustedRefreshRateEnabled();
 #endif
@@ -452,16 +451,16 @@ void RootCompositorFrameSinkImpl::SetSwapCompletionCallbackEnabled(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
     const std::vector<float>& supported_refresh_rates) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHECK_NE(use_preferred_interval_,
            features::IsCrosContentAdjustedRefreshRateEnabled());
   if (use_preferred_interval_) {
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   exact_supported_refresh_rates_.clear();
   for (float rate : supported_refresh_rates) {
@@ -472,7 +471,7 @@ void RootCompositorFrameSinkImpl::SetSupportedRefreshRates(
   display_->SetSupportedFrameIntervals(GetSupportedFrameIntervals());
   UpdateFrameIntervalDeciderSettings();
 }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
     mojo::PendingRemote<mojom::VSyncParameterObserver> observer) {
@@ -824,7 +823,7 @@ void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 
 void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     base::TimeDelta interval) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHECK_NE(use_preferred_interval_,
            features::IsCrosContentAdjustedRefreshRateEnabled());
   if (use_preferred_interval_) {
@@ -832,9 +831,9 @@ void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     UpdateVSyncParameters();
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
+#endif  // BUILDFLAG(IS_CHROMEOS))
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   if (display_client_) {
     float refresh_rate;
     if (interval.is_zero()) {
@@ -855,7 +854,7 @@ void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
 #else
   preferred_frame_interval_ = interval;
   UpdateVSyncParameters();
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 }
 
 base::TimeDelta
@@ -889,11 +888,11 @@ void RootCompositorFrameSinkImpl::SetMaxVSyncAndVrr(
             : std::nullopt);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!use_preferred_interval_) {
     interval_decider_use_fixed_intervals_ = !max_vsync_interval.has_value();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   UpdateFrameIntervalDeciderSettings();
 }
 

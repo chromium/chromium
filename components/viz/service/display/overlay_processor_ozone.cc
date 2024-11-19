@@ -20,7 +20,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -161,7 +160,7 @@ uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {
          (mailbox.name[2] << 8) + mailbox.name[3];
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsYUVColorSpace(const gfx::ColorSpace& color_space) {
   SkYUVColorSpace yuv_color_space;
   return color_space.ToSkYUVColorSpace(&yuv_color_space);
@@ -232,7 +231,7 @@ bool AllowColorSpaceCombination(
          source_color_space.GetContentColorUsage() ==
              destination_color_space.GetContentColorUsage();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -336,7 +335,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   primary_plane->mailbox,
                                                   /*is_primary=*/true);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         if (!result) {
           // For ChromeOS HW protected content, there's a race condition that
           // can occur here where the mailbox for the native pixmap isn't
@@ -356,7 +355,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
             }
           }
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         // We cannot validate an overlay configuration without the buffer for
         // primary plane present.
         if (!result) {
@@ -382,7 +381,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
 
       ConvertToOzoneOverlaySurface(*surface_iterator,
                                    &(*ozone_surface_iterator));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // On Chrome OS, skip the candidate if we think a color space combination
       // might cause visible color differences between compositing and overlays.
       // The reason is that on Chrome OS, we don't yet have an API to set up
@@ -401,19 +400,19 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         ozone_surface_iterator->plane_z_order = surface_iterator->plane_z_order;
         continue;
       }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       if (shared_image_interface_) {
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   surface_iterator->mailbox,
                                                   /*is_primary=*/false);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         if (!result && surface_iterator->requires_overlay) {
           // For ChromeOS HW protected content, same condition as above
           // regarding missing pixmaps.
           result = true;
           DLOG(WARNING) << "Allowing required overlay with missing pixmap";
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
         // Skip the candidate if the corresponding NativePixmap is not found.
         if (!result) {
@@ -424,7 +423,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
       }
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Some platforms (e.g. AMD) do not provide a dedicated cursor plane, and
     // the display hardware will need to blit the cursor to the topmost plane.
     // If the topmost plane is scaled/translated, the cursor will then be
@@ -447,7 +446,7 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         }
       }
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   overlay_candidates_->CheckOverlaySupport(&ozone_surface_list);
 

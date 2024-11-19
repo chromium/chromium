@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -33,10 +32,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/overlay_transform.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(b/181974042):  Remove when color space is plumbed.
 #include "ui/gfx/color_space.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace viz {
 
@@ -145,7 +144,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // confirmed in `OverlayProcessorOzone::ReceiveHardwareCapabilities`.
   int max_overlays_considered_ = 1;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  protected:
   // TODO(b/181974042):  Remove when color space is plumbed.
   gfx::ColorSpace primary_plane_color_space_;

@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/startup_metric_utils/gpu/startup_metric_utils.h"
 #include "components/version_info/version_info.h"
 #include "components/viz/common/features.h"
@@ -93,7 +92,7 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/chromeos_camera/gpu_mjpeg_decode_accelerator_factory.h"
 #include "components/chromeos_camera/mojo_jpeg_encode_accelerator_service.h"
 #include "components/chromeos_camera/mojo_mjpeg_decode_accelerator_service.h"
@@ -109,7 +108,7 @@
 #include "ash/components/arc/video_accelerator/protected_buffer_manager_proxy.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
@@ -291,12 +290,12 @@ bool PostInitializeLogHandler(int severity,
 }
 
 bool IsAcceleratedJpegDecodeSupported() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return chromeos_camera::GpuMjpegDecodeAcceleratorFactory::
       IsAcceleratedJpegDecodeSupported();
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool WillGetGmbConfigFromGpu() {
@@ -343,9 +342,9 @@ GpuServiceImpl::GpuServiceImpl(
   DCHECK(!io_runner_->BelongsToCurrentThread());
   DCHECK(exit_callback_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   protected_buffer_manager_ = new arc::ProtectedBufferManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) &&
+#endif  // BUILDFLAG(IS_CHROMEOS) &&
         // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -714,7 +713,7 @@ void GpuServiceImpl::RecordLogMessage(int severity,
   gpu_host_->RecordLogMessage(severity, std::move(header), std::move(message));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 void GpuServiceImpl::CreateArcVideoDecodeAccelerator(
     mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver) {
@@ -837,7 +836,7 @@ void GpuServiceImpl::CreateJpegEncodeAccelerator(
   chromeos_camera::MojoJpegEncodeAcceleratorService::Create(
       std::move(jea_receiver));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 void GpuServiceImpl::RegisterDCOMPSurfaceHandle(

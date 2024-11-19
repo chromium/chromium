@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
@@ -55,7 +54,7 @@
 #include "ui/ozone/public/surface_ozone_canvas.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/viz/service/display_embedder/output_surface_unified.h"
 #endif
 
@@ -96,7 +95,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
     DisplayCompositorMemoryAndTaskController* gpu_dependency,
     const RendererSettings& renderer_settings,
     const DebugRendererSettings* debug_settings) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (surface_handle == gpu::kNullSurfaceHandle)
     return std::make_unique<OutputSurfaceUnified>();
 #endif
@@ -125,7 +124,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
 #endif  // BUILDFLAG(IS_ANDROID)
 
     if (!output_surface) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CASTOS)
       // GPU compositing is expected to always work on Chrome OS and Cast
       // devices, so we should never encounter fatal context error. This could
       // be an unrecoverable hardware error or a bug.
