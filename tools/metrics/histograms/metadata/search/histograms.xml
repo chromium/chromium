@@ -849,6 +849,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.DefaultSearchEngineMirrored" enum="Boolean"
+    expires_after="2025-11-10">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    True if the default search engine pref is the same as the mirrored pref,
+    &quot;default_search_provider_data.mirrored_template_url_data&quot;, false
+    otherwise. If the default search engine pref is changed externally, this
+    would be false.
+
+    Recorded each time a DefaultSearchManager is created, after the default
+    search engine is loaded from prefs.
+  </summary>
+</histogram>
+
 <histogram name="Search.DefaultSearchProviderType2{Population}"
     enum="OmniboxSearchEngineType" expires_after="2025-03-30">
   <owner>mpearson@chromium.org</owner>
