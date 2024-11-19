@@ -32,17 +32,29 @@ class MockCollaborationFinderClient
 
 class CollaborationFinderImplTest : public testing::Test {
  protected:
-  CollaborationFinderImplTest()
-      : collaboration_finder_(&data_sharing_service_) {}
+  CollaborationFinderImplTest() = default;
   ~CollaborationFinderImplTest() override = default;
 
+  void CreateFinder() {
+    collaboration_finder_ =
+        std::make_unique<CollaborationFinderImpl>(&data_sharing_service_);
+  }
+
   data_sharing::MockDataSharingService data_sharing_service_;
-  CollaborationFinderImpl collaboration_finder_;
+  std::unique_ptr<CollaborationFinderImpl> collaboration_finder_;
   MockCollaborationFinderClient client_;
 };
 
+TEST_F(CollaborationFinderImplTest, ObservesDataSharingService) {
+  EXPECT_CALL(data_sharing_service_, AddObserver(_));
+  CreateFinder();
+  EXPECT_CALL(data_sharing_service_, RemoveObserver(_));
+  collaboration_finder_.reset();
+}
+
 TEST_F(CollaborationFinderImplTest, IsCollaborationAvailable) {
-  collaboration_finder_.SetClient(&client_);
+  CreateFinder();
+  collaboration_finder_->SetClient(&client_);
 
   const data_sharing::GroupId group_id("test_group_id");
   data_sharing::GroupData group_data;
@@ -50,22 +62,23 @@ TEST_F(CollaborationFinderImplTest, IsCollaborationAvailable) {
 
   ON_CALL(data_sharing_service_, ReadGroup(group_id))
       .WillByDefault(testing::Return(std::make_optional<>(group_data)));
-  EXPECT_EQ(true, collaboration_finder_.IsCollaborationAvailable(*group_id));
+  EXPECT_EQ(true, collaboration_finder_->IsCollaborationAvailable(*group_id));
 
   ON_CALL(data_sharing_service_, ReadGroup(group_id))
       .WillByDefault(testing::Return(std::nullopt));
-  EXPECT_EQ(false, collaboration_finder_.IsCollaborationAvailable(*group_id));
+  EXPECT_EQ(false, collaboration_finder_->IsCollaborationAvailable(*group_id));
 }
 
 TEST_F(CollaborationFinderImplTest, OnGroupAdded) {
-  collaboration_finder_.SetClient(&client_);
+  CreateFinder();
+  collaboration_finder_->SetClient(&client_);
 
   const data_sharing::GroupId group_id("test_group_id");
   data_sharing::GroupData group_data;
   group_data.group_token.group_id = group_id;
 
   EXPECT_CALL(client_, OnCollaborationAvailable(Eq(*group_id))).Times(1);
-  collaboration_finder_.OnGroupAdded(group_data, base::Time());
+  collaboration_finder_->OnGroupAdded(group_data, base::Time());
 }
 
 }  // namespace
