@@ -21,6 +21,7 @@
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_pool_request_info.h"
 #include "net/http/http_stream_request.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -83,12 +84,13 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
     NextProto protocol = NextProto::kProtoUnknown;
     quic::ParsedQuicVersion quic_version =
         quic::ParsedQuicVersion::Unsupported();
-    // TODO(crbug.com/346835898): Add QuicSessionAliasKey when supporting HTTP/3
-    // alternative services.
+    QuicSessionAliasKey quic_key;
   };
 
   // Calculate an alternative endpoint for the request.
   static std::optional<Alternative> CalculateAlternative(
+      HttpStreamPool* pool,
+      const HttpStreamKey& origin_stream_key,
       const HttpStreamPoolRequestInfo& request_info,
       bool enable_alternative_services);
 
@@ -98,6 +100,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // When there is a QUIC session that can serve an HttpStream for the request,
   // creates an HttpStream and returns it.
   std::unique_ptr<HttpStream> MaybeCreateStreamFromExistingQuicSession();
+  std::unique_ptr<HttpStream> MaybeCreateStreamFromExistingQuicSessionInternal(
+      const QuicSessionAliasKey& key);
 
   // Returns true when a QUIC session can be used for the request.
   bool CanUseExistingQuicSession();
@@ -145,6 +149,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   const HttpStreamKey origin_stream_key_;
   const QuicSessionAliasKey origin_quic_key_;
+  quic::ParsedQuicVersion origin_quic_version_ =
+      quic::ParsedQuicVersion::Unsupported();
 
   const std::optional<Alternative> alternative_;
 

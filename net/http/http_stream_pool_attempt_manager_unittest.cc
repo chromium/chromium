@@ -51,6 +51,7 @@
 #include "net/quic/mock_crypto_client_stream_factory.h"
 #include "net/quic/mock_quic_context.h"
 #include "net/quic/mock_quic_data.h"
+#include "net/quic/quic_context.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_test_util.h"
@@ -4705,6 +4706,168 @@ TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcSetPriority) {
   request->SetPriority(RequestPriority::HIGHEST);
   EXPECT_EQ(origin_manager->GetPriority(), RequestPriority::HIGHEST);
   EXPECT_EQ(alt_manager->GetPriority(), RequestPriority::HIGHEST);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicOk) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          alternative_service, expiration, DefaultSupportedQuicVersions()));
+
+  AddQuicData();
+
+  // For QUIC alt-svc.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For origin. Endpoint resolution never completes.
+  resolver()->AddFakeRequest();
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicFailOriginOk) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          alternative_service, expiration, DefaultSupportedQuicVersions()));
+
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData tcp_data;
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  socket_factory()->AddSSLSocketDataProvider(&ssl);
+
+  // For QUIC alt-svc.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For origin.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_NE(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicFailOriginFail) {
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  StreamRequester requester;
+  requester.set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          alternative_service, expiration, DefaultSupportedQuicVersions()));
+
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(SYNCHRONOUS, ERR_CONNECTION_REFUSED);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData tcp_data;
+  tcp_data.set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_FAILED));
+  socket_factory()->AddSocketDataProvider(&tcp_data);
+
+  // For QUIC alt-svc.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For origin.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.2").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  requester.RequestStream(pool());
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_CONNECTION_FAILED)));
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, AltSvcQuicUseExistingSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  const url::SchemeHostPort kOrigin(url::kHttpsScheme, "origin.example.org",
+                                    443);
+  const HostPortPair kAlternative("alt.example.org", 443);
+
+  const AlternativeService alternative_service(NextProto::kProtoQUIC,
+                                               kAlternative);
+  const base::Time expiration = base::Time::Now() + base::Days(1);
+
+  // The first request creates a QUIC session.
+  auto requester1 = std::make_unique<StreamRequester>();
+  requester1->set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          alternative_service, expiration, DefaultSupportedQuicVersions()));
+
+  AddQuicData();
+
+  // For QUIC alt-svc.
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  // For origin. Endpoint resolution never completes.
+  resolver()->AddFakeRequest();
+
+  requester1->RequestStream(pool());
+  requester1->WaitForResult();
+  EXPECT_THAT(requester1->result(), Optional(IsOk()));
+  EXPECT_EQ(requester1->negotiated_protocol(), NextProto::kProtoQUIC);
+
+  requester1.reset();
+
+  // The second request uses the existing QUIC session.
+  auto requester2 = std::make_unique<StreamRequester>();
+  requester2->set_destination(kOrigin).set_alternative_service_info(
+      AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
+          alternative_service, expiration, DefaultSupportedQuicVersions()));
+
+  requester2->RequestStream(pool());
+  requester2->WaitForResult();
+  EXPECT_THAT(requester2->result(), Optional(IsOk()));
+  EXPECT_EQ(requester2->negotiated_protocol(), NextProto::kProtoQUIC);
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, FlushWithError) {
