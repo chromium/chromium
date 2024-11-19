@@ -97,6 +97,8 @@ _NEGATIVE_FILTER = [
     'BidiTest.testOpenMultipleTabsInJavaScript',
     # Flaky crbug.com/350916212
     'BidiTest.testFocusInFirstTab',
+    # Reliably failing due to crbug.com/379049702
+    'BidiTest.testBrowserCrashWhileWaitingForEvents',
     # crbug.com/372153090. The feature is not yet supported.
     'ChromeDriverTest.testCreateWindowFromScript',
 ]
@@ -8062,6 +8064,22 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertLessEqual(1, len(events2))
     self.assertFalse('channel' in events2[0])
     self.assertEqual('browsingContext.load', events2[0]['method'])
+
+  def testBrowserCrashWhileWaitingForEvents(self):
+    '''Regression test for crbug.com/372153090'''
+    conn = self.createWebSocketConnection()
+    context_id = self.getContextId(conn, 0)
+    self.assertIsNotNone(context_id)
+
+    command = {
+        'method': 'cdp.sendCommand',
+        'params': {
+          'method': 'Browser.crash',
+          'params': {}}}
+    conn.SendCommand(command)
+
+    with self.assertRaises(chromedriver.ChromeDriverException):
+      conn.TakeEvents()
 
   def testElementReference(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/element_ref.html'))
