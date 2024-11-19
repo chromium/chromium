@@ -1183,7 +1183,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect5, out_texture_draw_quad->rect);
   EXPECT_EQ(rect5, out_texture_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_texture_draw_quad->needs_blending);
-  EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id());
+  EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id);
   EXPECT_EQ(resource_size_in_pixels5,
             out_texture_draw_quad->resource_size_in_pixels());
   EXPECT_EQ(premultiplied_alpha, out_texture_draw_quad->premultiplied_alpha);
@@ -1200,7 +1200,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect6, out_stream_video_draw_quad->rect);
   EXPECT_EQ(rect6, out_stream_video_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending6, out_stream_video_draw_quad->needs_blending);
-  EXPECT_EQ(resource_id6, out_stream_video_draw_quad->resource_id());
+  EXPECT_EQ(resource_id6, out_stream_video_draw_quad->resource_id);
   EXPECT_EQ(resource_size_in_pixels6,
             out_stream_video_draw_quad->resource_size_in_pixels());
   EXPECT_EQ(uv_top_left, out_stream_video_draw_quad->uv_top_left);
@@ -1212,7 +1212,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect7, out_rounded_display_mask_quad->rect);
   EXPECT_EQ(rect7, out_rounded_display_mask_quad->visible_rect);
   EXPECT_EQ(needs_blending7, out_rounded_display_mask_quad->needs_blending);
-  EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id());
+  EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id);
   EXPECT_EQ(resource_size_in_pixels7,
             out_rounded_display_mask_quad->resource_size_in_pixels());
   EXPECT_EQ(uv_top_left, out_rounded_display_mask_quad->uv_top_left);

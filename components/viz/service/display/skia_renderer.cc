@@ -2613,11 +2613,9 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   // We need only RGB portion of the color space, YUV conversion handled in
   // skia.
   const gfx::ColorSpace src_color_space =
-      resource_provider()
-          ->GetColorSpace(quad->resource_id())
-          .GetAsFullRangeRGB();
+      resource_provider()->GetColorSpace(quad->resource_id).GetAsFullRangeRGB();
   const gfx::HDRMetadata& src_hdr_metadata =
-      resource_provider()->GetHDRMetadata(quad->resource_id());
+      resource_provider()->GetHDRMetadata(quad->resource_id);
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&
@@ -2644,7 +2642,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 #endif
 
   ScopedSkImageBuilder builder(
-      this, quad->resource_id(), /*maybe_concurrent_reads=*/true,
+      this, quad->resource_id, /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
       override_color_space, false, quad->force_rgbx);
@@ -2758,7 +2756,7 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   bool raw_draw_if_possible =
       is_using_raw_draw_ && !quad->ShouldDrawWithBlending();
   ScopedSkImageBuilder builder(
-      this, quad->resource_id(), /*maybe_concurrent_reads=*/false,
+      this, quad->resource_id, /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
       /*origin=*/kTopLeft_GrSurfaceOrigin,
       /*override_color_space=*/nullptr, raw_draw_if_possible);

@@ -26,8 +26,7 @@ RenderPassDrawQuadInternal::~RenderPassDrawQuadInternal() = default;
 
 void RenderPassDrawQuadInternal::ExtendValue(
     base::trace_event::TracedValue* value) const {
-  value->SetInteger("mask_resource_id",
-                    resources.ids[kMaskResourceIdIndex].GetUnsafeValue());
+  value->SetInteger("mask_resource_id", resource_id.GetUnsafeValue());
   cc::MathUtil::AddToTracedValue("mask_texture_size", mask_texture_size, value);
   cc::MathUtil::AddToTracedValue("mask_uv_rect", mask_uv_rect, value);
   cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect, value);

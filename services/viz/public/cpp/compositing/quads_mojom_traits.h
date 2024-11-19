@@ -391,7 +391,7 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
   static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
-    return quad->resource_id();
+    return quad->resource_id;
   }
 
   static const gfx::Size& resource_size_in_pixels(const viz::DrawQuad& input) {
@@ -516,7 +516,7 @@ struct StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad> {
 
   static viz::ResourceId resource_id(const viz::DrawQuad& input) {
     const viz::TileDrawQuad* quad = viz::TileDrawQuad::MaterialCast(&input);
-    return quad->resource_id();
+    return quad->resource_id;
   }
 
   static bool force_anti_aliasing_off(const viz::DrawQuad& input) {

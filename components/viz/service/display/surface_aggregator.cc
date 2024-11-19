@@ -1521,7 +1521,7 @@ void SurfaceAggregator::CopyQuadsToPass(
         dest_quad = dest_pass->CopyFromAndAppendDrawQuad(quad);
       }
       if (dest_quad) {
-        dest_quad->resources = quad_data.remapped_resources;
+        dest_quad->resource_id = quad_data.remapped_resource_id;
       }
     }
   }

@@ -41,7 +41,7 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& rect,
                              const gfx::Rect& visible_rect,
                              bool needs_blending,
-                             ResourceId resource_id,
+                             ResourceId resource,
                              bool premultiplied,
                              const gfx::PointF& top_left,
                              const gfx::PointF& bottom_right,
@@ -49,12 +49,11 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
-  CHECK_NE(resource_id, kInvalidResourceId);
+  CHECK_NE(resource, kInvalidResourceId);
   this->needs_blending = needs_blending;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
-  resources.ids[kResourceIdIndex] = resource_id;
-  resources.count = 1;
+  resource_id = resource;
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
@@ -68,7 +67,7 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              const gfx::Rect& rect,
                              const gfx::Rect& visible_rect,
                              bool needs_blending,
-                             ResourceId resource_id,
+                             ResourceId resource,
                              gfx::Size resource_size_in_pixels,
                              bool premultiplied,
                              const gfx::PointF& top_left,
@@ -77,12 +76,11 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              bool nearest,
                              bool secure_output,
                              gfx::ProtectedVideoType video_type) {
-  CHECK_NE(resource_id, kInvalidResourceId);
+  CHECK_NE(resource, kInvalidResourceId);
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
-  resources.ids[kResourceIdIndex] = resource_id;
+  resource_id = resource;
   overlay_resources.size_in_pixels = resource_size_in_pixels;
-  resources.count = 1;
   premultiplied_alpha = premultiplied;
   uv_top_left = top_left;
   uv_bottom_right = bottom_right;
@@ -98,8 +96,7 @@ const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
 }
 
 void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
-  value->SetInteger("resource_id",
-                    resources.ids[kResourceIdIndex].GetUnsafeValue());
+  value->SetInteger("resource_id", resource_id.GetUnsafeValue());
   value->SetBoolean("premultiplied_alpha", premultiplied_alpha);
 
   cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);

@@ -148,9 +148,8 @@ DCLayerResult ValidateTextureQuad(
     const DisplayResourceProvider* resource_provider) {
   // Check that resources are overlay compatible first so that subsequent
   // assumptions are valid.
-  for (const auto& resource : quad->resources) {
-    if (!resource_provider->IsOverlayCandidate(resource))
-      return DC_LAYER_FAILED_TEXTURE_NOT_CANDIDATE;
+  if (!resource_provider->IsOverlayCandidate(quad->resource_id)) {
+    return DC_LAYER_FAILED_TEXTURE_NOT_CANDIDATE;
   }
 
   if (quad->shared_quad_state->blend_mode != SkBlendMode::kSrcOver)
@@ -169,11 +168,10 @@ DCLayerResult ValidateTextureQuad(
 
   if (quad->is_video_frame) {
     const auto& color_space =
-        resource_provider->GetColorSpace(quad->resource_id());
+        resource_provider->GetColorSpace(quad->resource_id);
     const auto& hdr_metadata =
-        resource_provider->GetHDRMetadata(quad->resource_id());
-    auto si_format =
-        resource_provider->GetSharedImageFormat(quad->resource_id());
+        resource_provider->GetHDRMetadata(quad->resource_id);
+    auto si_format = resource_provider->GetSharedImageFormat(quad->resource_id);
     auto result = ValidateYUVOverlay(
         quad->protected_video_type, color_space, si_format, hdr_metadata,
         has_overlay_support, has_p010_video_processor_support,
@@ -435,9 +433,9 @@ bool AllowRemoveClearVideoQuadCandidatesWhenMoving(
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent: {
       const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
-      return !(resource_provider->GetColorSpace(texture_quad->resource_id())
-                   .IsHDR() ||
-               force_overlay_for_auto_hdr);
+      return !(
+          resource_provider->GetColorSpace(texture_quad->resource_id).IsHDR() ||
+          force_overlay_for_auto_hdr);
     }
     default:
       NOTREACHED();
@@ -505,7 +503,7 @@ ValidateDrawQuadResult ValidateDrawQuad(
   if (allow_promotion_hinting) {
     // If this quad has marked itself as wanting promotion hints then get
     // the associated mailbox.
-    ResourceId id = quad->resource_id();
+    ResourceId id = quad->resource_id;
     if (resource_provider->DoesResourceWantPromotionHint(id)) {
       result.promotion_hint_mailbox = resource_provider->GetMailbox(id);
     }
@@ -539,14 +537,13 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
           : false;
 
   const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
-  dc_layer.resource_id = quad->resource_id();
+  dc_layer.resource_id = quad->resource_id;
   dc_layer.resource_size_in_pixels =
-      resource_provider->GetResourceBackedSize(quad->resource_id());
+      resource_provider->GetResourceBackedSize(quad->resource_id);
   dc_layer.uv_rect =
       gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
   dc_layer.display_rect = gfx::RectF(quad->rect);
-  dc_layer.format =
-      resource_provider->GetSharedImageFormat(quad->resource_id());
+  dc_layer.format = resource_provider->GetSharedImageFormat(quad->resource_id);
   dc_layer.color = quad->background_color;
 
   // Quad rect is in quad content space so both quad to target, and target to
@@ -572,9 +569,8 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
         quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
   }
 
-  dc_layer.color_space = resource_provider->GetColorSpace(quad->resource_id());
-  dc_layer.hdr_metadata =
-      resource_provider->GetHDRMetadata(quad->resource_id());
+  dc_layer.color_space = resource_provider->GetColorSpace(quad->resource_id);
+  dc_layer.hdr_metadata = resource_provider->GetHDRMetadata(quad->resource_id);
 
   dc_layer.protected_video_type = quad->protected_video_type;
   // Both color space and protected_video_type are hard-coded for stream video.

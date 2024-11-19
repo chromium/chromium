@@ -546,17 +546,14 @@ void PopulateTransferableResources(CompositorFrame& frame) {
   std::set<ResourceId> resources_added;
   for (auto& render_pass : frame.render_pass_list) {
     for (auto* quad : render_pass->quad_list) {
-      for (ResourceId resource_id : quad->resources) {
-        if (resource_id == kInvalidResourceId)
-          continue;
-
+      if (quad->resource_id != kInvalidResourceId) {
         // Adds a TransferableResource the first time seeing a ResourceId.
-        if (resources_added.insert(resource_id).second) {
+        if (resources_added.insert(quad->resource_id).second) {
           frame.resource_list.push_back(
               TransferableResource::MakeSoftwareSharedBitmap(
                   SharedBitmap::GenerateId(), gpu::SyncToken(),
                   quad->rect.size(), SinglePlaneFormat::kRGBA_8888));
-          frame.resource_list.back().id = resource_id;
+          frame.resource_list.back().id = quad->resource_id;
         }
       }
     }

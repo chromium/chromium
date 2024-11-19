@@ -1048,7 +1048,7 @@ TEST_F(FullscreenOverlayTest, SuccessfulOverlay) {
   TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId original_resource_id = original_quad->resource_id();
+  ResourceId original_resource_id = original_quad->resource_id;
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1314,7 +1314,7 @@ TEST_F(SingleOverlayOnTopTest, SuccessfulOverlay) {
   TextureDrawQuad* original_quad = CreateFullscreenCandidateQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId original_resource_id = original_quad->resource_id();
+  ResourceId original_resource_id = original_quad->resource_id;
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1695,7 +1695,7 @@ TEST_F(MultiSingleOnTopOverlayTest,
   EXPECT_EQ(1U, main_pass->quad_list.size());
 
   for (const auto& candidate : candidate_list) {
-    EXPECT_NE(candidate.resource_id, not_promoted_candidate->resource_id());
+    EXPECT_NE(candidate.resource_id, not_promoted_candidate->resource_id);
   }
 }
 
@@ -1717,7 +1717,7 @@ TEST_F(SingleOverlayOnTopTest, PrioritizeBiggerOne) {
       kBigCandidateRect);
   AddExpectedRectToOverlayProcessor(gfx::RectF(kBigCandidateRect));
 
-  ResourceId resource_big = quad_big->resource_id();
+  ResourceId resource_big = quad_big->resource_id;
 
   // Add something behind it.
   CreateFullscreenOpaqueQuad(resource_provider_.get(),
@@ -1761,7 +1761,7 @@ TEST_F(SingleOverlayOnTopTest, CandidateIdCollision) {
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get(),
       kCandidateRect);
   AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRect));
-  ResourceId resource_a = quad_a->resource_id();
+  ResourceId resource_a = quad_a->resource_id;
 
   TextureDrawQuad* quad_b = CreateCandidateQuadAt(
       resource_provider_.get(), child_resource_provider_.get(),

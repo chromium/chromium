@@ -792,10 +792,7 @@ void VideoResourceUpdater::AppendQuad(
       }
 #endif
       texture_quad->is_video_frame = true;
-      for (viz::ResourceId resource_id : texture_quad->resources) {
-        resource_provider_->ValidateResource(resource_id);
-      }
-
+      resource_provider_->ValidateResource(texture_quad->resource_id);
       break;
     }
     case VideoFrameResourceType::NONE:

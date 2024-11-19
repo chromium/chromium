@@ -424,13 +424,13 @@ void SoftwareRenderer::DrawSolidColorQuad(const SolidColorDrawQuad* quad) {
 }
 
 void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
-  if (!IsSoftwareResource(quad->resource_id()) || quad->is_stream_video) {
+  if (!IsSoftwareResource(quad->resource_id) || quad->is_stream_video) {
     DrawUnsupportedQuad(quad);
     return;
   }
 
   DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-      resource_provider(), quad->resource_id(),
+      resource_provider(), quad->resource_id,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
 
   if (!lock.valid())
@@ -476,10 +476,10 @@ void SoftwareRenderer::DrawTileQuad(const TileDrawQuad* quad) {
   // |resource_provider_| can be NULL in resourceless software draws, which
   // should never produce tile quads in the first place.
   DCHECK(resource_provider_);
-  DCHECK(IsSoftwareResource(quad->resource_id()));
+  DCHECK(IsSoftwareResource(quad->resource_id));
 
   DisplayResourceProviderSoftware::ScopedReadLockSkImage lock(
-      resource_provider(), quad->resource_id(),
+      resource_provider(), quad->resource_id,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType);
   if (!lock.valid())
     return;

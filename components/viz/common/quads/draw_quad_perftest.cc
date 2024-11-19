@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/viz/common/quads/draw_quad.h"
+
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -9,8 +11,8 @@
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
-#include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
@@ -102,8 +104,9 @@ class DrawQuadPerfTest : public testing::Test {
     timer_.Reset();
     do {
       for (auto* quad : quads) {
-        for (ResourceId& resource_id : quad->resources)
-          resource_id = NextId(resource_id);
+        if (quad->resource_id != kInvalidResourceId) {
+          quad->resource_id = NextId(quad->resource_id);
+        }
       }
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());

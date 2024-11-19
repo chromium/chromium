@@ -36,6 +36,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/traced_value.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -470,8 +471,9 @@ void LayerImpl::ValidateQuadResourcesInternal(viz::DrawQuad* quad) const {
 #if DCHECK_IS_ON()
   const viz::ClientResourceProvider* resource_provider =
       layer_tree_impl_->resource_provider();
-  for (viz::ResourceId resource_id : quad->resources)
-    resource_provider->ValidateResource(resource_id);
+  if (quad->resource_id != viz::kInvalidResourceId) {
+    resource_provider->ValidateResource(quad->resource_id);
+  }
 #endif
 }
 

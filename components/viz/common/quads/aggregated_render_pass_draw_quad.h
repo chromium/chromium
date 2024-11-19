@@ -27,7 +27,7 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
   AggregatedRenderPassDrawQuad(const AggregatedRenderPassDrawQuad& other);
   ~AggregatedRenderPassDrawQuad() override;
 
-  // No comparison for resources.ids. shared_quad_state is compared
+  // No comparison for `resource_id`. shared_quad_state is compared
   // by calling Equals().
   bool Equals(const AggregatedRenderPassDrawQuad& other) const;
 

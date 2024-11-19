@@ -3072,8 +3072,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   std::vector<viz::ResourceId> resources;
   for (const auto& render_pass : frame->render_passes) {
     for (auto* quad : render_pass->quad_list) {
-      for (viz::ResourceId resource_id : quad->resources)
-        resources.push_back(resource_id);
+      if (quad->resource_id != viz::kInvalidResourceId) {
+        resources.push_back(quad->resource_id);
+      }
     }
   }
 

@@ -621,12 +621,12 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTileQuad(
     return CandidateStatus::kFailNearFilter;
 
   candidate.resource_size_in_pixels =
-      resource_provider_->GetResourceBackedSize(quad->resource_id());
+      resource_provider_->GetResourceBackedSize(quad->resource_id);
   candidate.uv_rect = gfx::ScaleRect(
       quad->tex_coord_rect, 1.f / candidate.resource_size_in_pixels.width(),
       1.f / candidate.resource_size_in_pixels.height());
 
-  auto rtn = FromDrawQuadResource(quad, quad->resource_id(), false, candidate);
+  auto rtn = FromDrawQuadResource(quad, quad->resource_id, false, candidate);
   return rtn;
 }
 
@@ -669,8 +669,8 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
 
   candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 
-  auto rtn = FromDrawQuadResource(quad, quad->resource_id(), quad->y_flipped,
-                                  candidate);
+  auto rtn =
+      FromDrawQuadResource(quad, quad->resource_id, quad->y_flipped, candidate);
   if (rtn == CandidateStatus::kSuccess) {
     // Only handle clip rect for required overlays
     if (!context_.is_delegated_context && candidate.requires_overlay) {
@@ -693,7 +693,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
 #if BUILDFLAG(IS_ANDROID)
     candidate.is_video_in_surface_view =
         quad->is_stream_video &&
-        !resource_provider_->IsBackedBySurfaceTexture(quad->resource_id());
+        !resource_provider_->IsBackedBySurfaceTexture(quad->resource_id);
     if (quad->is_stream_video) {
       // StreamVideoDrawQuad used to set the resource_size_in_pixels directly
       // from the quad rather than from the resource.

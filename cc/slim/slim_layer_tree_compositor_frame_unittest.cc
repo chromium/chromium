@@ -598,18 +598,18 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     const viz::TextureDrawQuad* texture_quad =
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.front());
     EXPECT_TRUE(texture_quad->needs_blending);
-    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
+    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id);
     EXPECT_EQ(gfx::PointF(0.0f, 0.0f), texture_quad->uv_top_left);
     EXPECT_EQ(gfx::PointF(1.0f, 1.0f), texture_quad->uv_bottom_right);
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
-    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
+    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
     EXPECT_EQ(frame.resource_list[0].size, gfx::Size(1, 1));
-    first_resource_id = texture_quad->resource_id();
+    first_resource_id = texture_quad->resource_id;
 
     ASSERT_EQ(frame_sink_->uploaded_resources().size(), 1u);
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,
-              texture_quad->resource_id());
+              texture_quad->resource_id);
   }
 
   ui_resource_layer->SetUV(gfx::PointF(0.25f, 0.25f),
@@ -632,14 +632,14 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     const viz::TextureDrawQuad* texture_quad =
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.front());
     EXPECT_TRUE(texture_quad->needs_blending);
-    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
+    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id);
     EXPECT_EQ(gfx::PointF(0.25f, 0.25f), texture_quad->uv_top_left);
     EXPECT_EQ(gfx::PointF(0.75f, 0.75f), texture_quad->uv_bottom_right);
 
     ASSERT_EQ(frame.resource_list.size(), 1u);
-    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
+    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
     EXPECT_EQ(frame.resource_list[0].size, gfx::Size(2, 2));
-    EXPECT_NE(first_resource_id, texture_quad->resource_id());
+    EXPECT_NE(first_resource_id, texture_quad->resource_id);
   }
 }
 
@@ -767,14 +767,14 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
   for (size_t i = 0; i < std::size(expected_uv_top_left); ++i) {
     const viz::TextureDrawQuad* texture_quad =
         viz::TextureDrawQuad::MaterialCast(pass->quad_list.ElementAt(i));
-    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
+    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id);
     EXPECT_TRUE(texture_quad->nearest_neighbor);
     EXPECT_EQ(expected_uv_top_left[i], texture_quad->uv_top_left);
     EXPECT_EQ(expected_uv_bottom_right[i], texture_quad->uv_bottom_right);
 
-    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
+    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id);
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,
-              texture_quad->resource_id());
+              texture_quad->resource_id);
   }
 }
 

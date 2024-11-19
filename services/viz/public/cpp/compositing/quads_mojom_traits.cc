@@ -97,19 +97,15 @@ bool StructTraits<
     viz::DrawQuad>::Read(viz::mojom::CompositorRenderPassQuadStateDataView data,
                          viz::DrawQuad* out) {
   auto* quad = static_cast<viz::CompositorRenderPassDrawQuad*>(out);
-  viz::ResourceId& mask_resource_id =
-      quad->resources
-          .ids[viz::CompositorRenderPassDrawQuad::kMaskResourceIdIndex];
   if (!data.ReadMaskUvRect(&quad->mask_uv_rect) ||
       !data.ReadMaskTextureSize(&quad->mask_texture_size) ||
       !data.ReadFiltersScale(&quad->filters_scale) ||
       !data.ReadFiltersOrigin(&quad->filters_origin) ||
       !data.ReadTexCoordRect(&quad->tex_coord_rect) ||
       !data.ReadRenderPassId(&quad->render_pass_id) ||
-      !data.ReadMaskResourceId(&mask_resource_id)) {
+      !data.ReadMaskResourceId(&quad->resource_id)) {
     return false;
   }
-  quad->resources.count = mask_resource_id ? 1 : 0;
 
   // CompositorRenderPass ids are never zero.
   if (!quad->render_pass_id) {
@@ -154,13 +150,11 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
     viz::DrawQuad* out) {
   auto* quad = static_cast<viz::TextureDrawQuad*>(out);
 
-  if (!data.ReadResourceId(
-          &quad->resources.ids[viz::TextureDrawQuad::kResourceIdIndex]) ||
+  if (!data.ReadResourceId(&quad->resource_id) ||
       !data.ReadResourceSizeInPixels(&quad->overlay_resources.size_in_pixels)) {
     return false;
   }
 
-  quad->resources.count = 1;
   quad->premultiplied_alpha = data.premultiplied_alpha();
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
@@ -197,15 +191,13 @@ bool StructTraits<viz::mojom::TileQuadStateDataView, viz::DrawQuad>::Read(
   viz::TileDrawQuad* quad = static_cast<viz::TileDrawQuad*>(out);
   if (!data.ReadTexCoordRect(&quad->tex_coord_rect) ||
       !data.ReadTextureSize(&quad->texture_size) ||
-      !data.ReadResourceId(
-          &quad->resources.ids[viz::TileDrawQuad::kResourceIdIndex])) {
+      !data.ReadResourceId(&quad->resource_id)) {
     return false;
   }
 
   quad->is_premultiplied = data.is_premultiplied();
   quad->nearest_neighbor = data.nearest_neighbor();
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
-  quad->resources.count = 1;
   return true;
 }
 

@@ -67,8 +67,7 @@ void CompositorRenderPassDrawQuad::SetAll(
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kCompositorRenderPass,
                    rect, visible_rect, needs_blending);
   render_pass_id = render_pass;
-  resources.ids[kMaskResourceIdIndex] = mask_resource_id;
-  resources.count = mask_resource_id ? 1 : 0;
+  resource_id = mask_resource_id;
   this->mask_uv_rect = mask_uv_rect;
   this->mask_texture_size = mask_texture_size;
   this->filters_scale = filters_scale;

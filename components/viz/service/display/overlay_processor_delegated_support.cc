@@ -38,7 +38,7 @@ TryPromoteDrawQuadForDelegation(
       "delegated.overlay.type",
       gfx::Vector2dF(display_rect.origin().x(), display_rect.origin().y()),
       base::StringPrintf("m=%d rid=%d", static_cast<int>(quad->material),
-                         quad->resources.begin()->value()));
+                         quad->resource_id.value()));
 
   OverlayCandidate candidate;
   OverlayCandidate::CandidateStatus candidate_status =

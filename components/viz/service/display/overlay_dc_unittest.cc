@@ -2878,7 +2878,7 @@ TEST_F(OverlayProcessorWinDelegatedCompositingTest,
   auto* video_quad = CreateFullscreenCandidateYUVTextureQuad(
       resource_provider_.get(), child_resource_provider_.get(),
       child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
-  ResourceId video_resource_id = video_quad->resource_id();
+  ResourceId video_resource_id = video_quad->resource_id;
 
   {
     // A RPDQ with a backdrop filter occluding another quad will cause delegated
@@ -3137,7 +3137,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
         child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
+    child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3183,7 +3183,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
         child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
+    child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3224,7 +3224,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
         child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_video_id = texture_quad->resource_id();
+    child_pass_video_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3241,14 +3241,14 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         other_child_pass->CreateAndAppendSharedQuadState(),
         other_child_pass.get(), gfx::Rect(10, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    other_child_pass_video_id = texture_quad->resource_id();
+    other_child_pass_video_id = texture_quad->resource_id;
     auto* texture_quad_2 = CreateTextureQuadAt(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(),
         other_child_pass->CreateAndAppendSharedQuadState(),
         other_child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    other_child_pass_video_2_id = texture_quad_2->resource_id();
+    other_child_pass_video_2_id = texture_quad_2->resource_id;
     pass_list.push_back(std::move(other_child_pass));
   }
 
@@ -3348,7 +3348,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
         child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
+    child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3396,7 +3396,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         child_provider_.get(), child_pass->CreateAndAppendSharedQuadState(),
         child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
+    child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3449,7 +3449,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), sqs, child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
+    child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3499,7 +3499,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), sqs, child_pass.get(), gfx::Rect(0, 0, 50, 50),
         /*is_overlay_candidate=*/true);
-    child_pass_texture_id = texture_quad->resource_id();
+    child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -3560,7 +3560,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
                                   child_pass->CreateAndAppendSharedQuadState(),
                                   child_pass.get(), texture_quad_rect,
                                   /*is_overlay_candidate=*/false);
-    ResourceId child_pass_texture_id = texture_quad->resource_id();
+    ResourceId child_pass_texture_id = texture_quad->resource_id;
     pass_list.push_back(std::move(child_pass));
 
     auto pass = CreateRenderPass();
@@ -3660,7 +3660,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
                   left_child_pass->CreateAndAppendSharedQuadState(),
                   left_child_pass.get(), left_texture_quad_rect,
                   /*is_overlay_candidate=*/false);
-    ResourceId left_child_pass_texture_id = left_texture_quad->resource_id();
+    ResourceId left_child_pass_texture_id = left_texture_quad->resource_id;
     pass_list.push_back(std::move(left_child_pass));
 
     auto right_child_pass = CreateRenderPass(right_child_pass_id);
@@ -3680,7 +3680,7 @@ TEST_F(OverlayProcessorWinPartiallyDelegatedCompositingTest,
                   right_child_pass->CreateAndAppendSharedQuadState(),
                   right_child_pass.get(), right_texture_quad_rect,
                   /*is_overlay_candidate=*/false);
-    ResourceId right_child_pass_texture_id = right_texture_quad->resource_id();
+    ResourceId right_child_pass_texture_id = right_texture_quad->resource_id;
     pass_list.push_back(std::move(right_child_pass));
 
     CreateRenderPassDrawQuadAt(pass.get(),

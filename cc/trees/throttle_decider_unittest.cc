@@ -97,8 +97,7 @@ TEST_F(ThrottleDeciderTest, BackdropFilter) {
   EXPECT_EQ(GetFrameSinksToThrottle(), expected_frame_sinks);
 
   // Add a mask to the backdrop filter.
-  rpdq->resources.ids[viz::RenderPassDrawQuadInternal::kMaskResourceIdIndex] =
-      viz::ResourceId::FromUnsafeValue(1u);
+  rpdq->resource_id = viz::ResourceId::FromUnsafeValue(1u);
 
   // As the mask would make the backdrop filter to be ignored, the surface
   // should not be throttled.

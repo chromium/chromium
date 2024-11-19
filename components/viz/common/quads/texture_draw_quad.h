@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_TEXTURE_DRAW_QUAD_H_
 
@@ -28,7 +23,6 @@ enum class OverlayPriority { kLow, kRegular, kRequired };
 
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
-  static const size_t kResourceIdIndex = 0;
   static constexpr Material kMaterial = Material::kTextureContent;
 
   TextureDrawQuad();
@@ -143,7 +137,6 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   };
   OverlayResources overlay_resources;
 
-  ResourceId resource_id() const { return resources.ids[kResourceIdIndex]; }
   // TODO(crbug/354862211): Consider removing post LaCros sunset.
   const gfx::Size& resource_size_in_pixels() const {
     return overlay_resources.size_in_pixels;

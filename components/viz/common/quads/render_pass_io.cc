@@ -958,34 +958,31 @@ bool ColorSpaceFromDict(const base::Value::Dict& dict,
   return true;
 }
 
-base::Value::List DrawQuadResourcesToList(
-    const DrawQuad::Resources& resources) {
+base::Value::List DrawQuadResourceToList(ResourceId resource_id) {
   base::Value::List list;
-  DCHECK_LE(resources.count, DrawQuad::Resources::kMaxResourceIdCount);
-  for (ResourceId id : resources)
-    list.Append(static_cast<int>(id.GetUnsafeValue()));
+  if (resource_id != kInvalidResourceId) {
+    list.Append(static_cast<int>(resource_id.GetUnsafeValue()));
+  }
   return list;
 }
 
-bool DrawQuadResourcesFromList(const base::Value::List& list,
-                               DrawQuad::Resources* resources) {
-  DCHECK(resources);
+bool DrawQuadResourceFromList(const base::Value::List& list,
+                              ResourceId& resource_id) {
   size_t size = list.size();
   if (size == 0u) {
-    resources->count = 0u;
     return true;
   }
-  if (size > DrawQuad::Resources::kMaxResourceIdCount)
+  // DrawQuad resources are stored as a list as quads used to have multiple
+  // resources. Now they should all have at most a single resource.
+  if (size > 1) {
     return false;
-  for (size_t ii = 0; ii < size; ++ii) {
-    if (!list[ii].is_int())
-      return false;
+  }
+  if (!list[0].is_int()) {
+    return false;
   }
 
-  resources->count = static_cast<uint32_t>(size);
-  for (size_t ii = 0; ii < size; ++ii) {
-    resources->ids[ii] = ResourceId(list[ii].GetInt());
-  }
+  resource_id = ResourceId(list[0].GetInt());
+
   return true;
 }
 
@@ -1083,7 +1080,7 @@ void DrawQuadCommonToDict(const DrawQuad* draw_quad,
       shared_quad_state_list, draw_quad->shared_quad_state);
   DCHECK_LE(0, shared_quad_state_index);
   dict->Set("shared_quad_state_index", shared_quad_state_index);
-  dict->Set("resources", DrawQuadResourcesToList(draw_quad->resources));
+  dict->Set("resources", DrawQuadResourceToList(draw_quad->resource_id));
 }
 
 void ContentDrawQuadCommonToDict(const ContentDrawQuadBase* draw_quad,
@@ -1104,7 +1101,7 @@ struct DrawQuadCommon {
   bool needs_blending = false;
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
   RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state = nullptr;
-  DrawQuad::Resources resources;
+  ResourceId resource_id;
 };
 
 std::optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
@@ -1134,16 +1131,17 @@ std::optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
       !RectFromDict(*visible_rect, &t_visible_rect)) {
     return std::nullopt;
   }
-  DrawQuad::Resources t_resources;
-  if (!DrawQuadResourcesFromList(*resources, &t_resources))
+  ResourceId t_resource;
+  if (!DrawQuadResourceFromList(*resources, t_resource)) {
     return std::nullopt;
+  }
 
   return DrawQuadCommon{static_cast<DrawQuad::Material>(material_index),
                         t_rect,
                         t_visible_rect,
                         needs_blending.value(),
                         shared_quad_state_list.ElementAt(sqs_index),
-                        t_resources};
+                        t_resource};
 }
 
 struct ContentDrawQuadCommon {
@@ -1195,7 +1193,6 @@ void CompositorRenderPassDrawQuadToDict(
   dict->Set("backdrop_filter_quality", draw_quad->backdrop_filter_quality);
   dict->Set("force_anti_aliasing_off", draw_quad->force_anti_aliasing_off);
   dict->Set("intersects_damage_under", draw_quad->intersects_damage_under);
-  DCHECK_GE(1u, draw_quad->resources.count);
 }
 
 void SolidColorDrawQuadToDict(const SolidColorDrawQuad* draw_quad,
@@ -1260,7 +1257,6 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   dict->Set("secure_output_only", draw_quad->secure_output_only);
   dict->Set("protected_video_type",
             ProtectedVideoTypeToString(draw_quad->protected_video_type));
-  DCHECK_EQ(1u, draw_quad->resources.count);
   dict->Set("resource_size_in_pixels",
             SizeToDict(draw_quad->overlay_resources.size_in_pixels));
   if (draw_quad->damage_rect.has_value()) {
@@ -1279,7 +1275,6 @@ void TileDrawQuadToDict(const TileDrawQuad* draw_quad,
   DCHECK(draw_quad);
   DCHECK(dict);
   ContentDrawQuadCommonToDict(draw_quad, dict);
-  DCHECK_EQ(1u, draw_quad->resources.count);
 }
 
 void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
@@ -1340,8 +1335,6 @@ bool CompositorRenderPassDrawQuadFromDict(
     const DrawQuadCommon& common,
     CompositorRenderPassDrawQuad* draw_quad) {
   DCHECK(draw_quad);
-  if (common.resources.count > 1u)
-    return false;
 
   const std::string* render_pass_id = dict.FindString("render_pass_id");
   const base::Value::Dict* mask_uv_rect = dict.FindDict("mask_uv_rect");
@@ -1377,11 +1370,7 @@ bool CompositorRenderPassDrawQuadFromDict(
   }
   CompositorRenderPassId t_render_pass_id{render_pass_id_as_int};
 
-  ResourceId mask_resource_id = kInvalidResourceId;
-  if (common.resources.count == 1u) {
-    const size_t kIndex = CompositorRenderPassDrawQuad::kMaskResourceIdIndex;
-    mask_resource_id = common.resources.ids[kIndex];
-  }
+  ResourceId mask_resource_id = common.resource_id;
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,
       common.needs_blending, t_render_pass_id, mask_resource_id, t_mask_uv_rect,
@@ -1443,8 +1432,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
                              const DrawQuadCommon& common,
                              TextureDrawQuad* draw_quad) {
   DCHECK(draw_quad);
-  if (common.resources.count != 1u)
-    return false;
 
   std::optional<bool> premultiplied_alpha =
       dict.FindBool("premultiplied_alpha");
@@ -1481,8 +1468,7 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
     return false;
   }
 
-  const size_t kIndex = TextureDrawQuad::kResourceIdIndex;
-  ResourceId resource_id = common.resources.ids[kIndex];
+  ResourceId resource_id = common.resource_id;
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,
       common.needs_blending, resource_id, t_resource_size_in_pixels,
@@ -1504,16 +1490,13 @@ bool TileDrawQuadFromDict(const base::Value::Dict& dict,
                           const DrawQuadCommon& common,
                           TileDrawQuad* draw_quad) {
   DCHECK(draw_quad);
-  if (common.resources.count != 1u)
-    return false;
 
   std::optional<ContentDrawQuadCommon> content_common =
       GetContentDrawQuadCommonFromDict(dict);
   if (!content_common)
     return false;
 
-  const size_t kIndex = TileDrawQuad::kResourceIdIndex;
-  ResourceId resource_id = common.resources.ids[kIndex];
+  ResourceId resource_id = common.resource_id;
 
   draw_quad->SetAll(
       common.shared_quad_state, common.rect, common.visible_rect,

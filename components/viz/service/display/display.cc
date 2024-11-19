@@ -601,18 +601,17 @@ void DebugDrawFrame(
                         display_rect.origin(), display_rect.ToString());
       DBG_DRAW_TEXT_OPT(
           "frame.render_pass.resource_id", DBG_OPT_RED, display_rect.origin(),
-          base::NumberToString(quad->resources.ids[0].GetUnsafeValue()));
+          base::NumberToString(quad->resource_id.GetUnsafeValue()));
 
-      if (quad->resources.ids[0] != kInvalidResourceId) {
+      if (quad->resource_id != kInvalidResourceId) {
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_format", DBG_OPT_BLUE, display_rect.origin(),
-            resource_provider->GetSharedImageFormat(quad->resources.ids[0])
+            resource_provider->GetSharedImageFormat(quad->resource_id)
                 .ToString());
         DBG_DRAW_TEXT_OPT(
             "frame.render_pass.buf_color_space", DBG_OPT_GREEN,
             display_rect.origin(),
-            resource_provider->GetColorSpace(quad->resources.ids[0])
-                .ToString());
+            resource_provider->GetColorSpace(quad->resource_id).ToString());
       }
       DBG_DRAW_RECT("frame.render_pass.quad", display_rect);
     }

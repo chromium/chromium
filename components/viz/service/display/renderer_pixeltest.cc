@@ -436,8 +436,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
   // Get the appended quad and map resource ids for transfer.
   auto* quad = render_pass->quad_list.back();
   EXPECT_EQ(quad->material, TextureDrawQuad::kMaterial);
-  EXPECT_EQ(quad->resources.count, 1u);
-  ResourceId resource_y = quad->resources.ids[0];
+  ResourceId resource_y = quad->resource_id;
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap({resource_y}, resource_provider,
                                              child_resource_provider,
@@ -445,8 +444,7 @@ void CreateTestY16TextureDrawQuad_FromVideoFrame(
 
   // Set correct resource ids and count.
   EXPECT_EQ(resource_map.size(), 1u);
-  quad->resources.ids[0] = resource_map[resource_y];
-  quad->resources.count = resource_map.size();
+  quad->resource_id = resource_map[resource_y];
 }
 
 void CreateTestY16TextureDrawQuad_TwoColor(
@@ -587,20 +585,15 @@ void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
 
   // Get the appended quad and map resource ids for transfer.
   auto* quad = render_pass->quad_list.back();
-  std::vector<ResourceId> resource_ids_to_transfer;
-  for (uint32_t i = 0; i < quad->resources.count; ++i) {
-    resource_ids_to_transfer.push_back(quad->resources.ids[i]);
-  }
 
   std::unordered_map<ResourceId, ResourceId, ResourceIdHasher> resource_map =
       cc::SendResourceAndGetChildToParentMap(
-          resource_ids_to_transfer, resource_provider, child_resource_provider,
+          {quad->resource_id}, resource_provider, child_resource_provider,
           child_context_provider);
+
   // Set correct resource ids and count.
-  for (size_t i = 0; i < resource_map.size(); ++i) {
-    quad->resources.ids[i] = resource_map[resource_ids_to_transfer[i]];
-  }
-  quad->resources.count = resource_map.size();
+  EXPECT_EQ(resource_map.size(), 1u);
+  quad->resource_id = resource_map[quad->resource_id];
 }
 
 void CreateTestMultiplanarVideoDrawQuad_Striped(
