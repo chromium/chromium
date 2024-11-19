@@ -694,7 +694,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.BoundSessionCredentials.CookieRotationOutageDuration"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -710,7 +710,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.BoundSessionCredentials.CookieRotationResult"
     enum="BoundSessionCredentialsCookieRotationResult"
-    expires_after="2024-11-17">
+    expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskDuration{Priority}"
-    units="ms" expires_after="2024-11-17">
+    units="ms" expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.UnexportableKeys.BackgroundTaskRunDuration{TaskType}"
-    units="ms" expires_after="2025-01-26">
+    units="ms" expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
   <owner>kristianm@chromium.org</owner>
   <summary>
