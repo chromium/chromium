@@ -147,8 +147,7 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
 }
 
 // Checks if there is a plus address section when
-// `plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled` is
-// enabled.
+// `plus_addresses::features::kPlusAddressesEnabled` is enabled.
 TEST_F(AutofillProfileTableViewControllerTest, TestPlusAddressSection) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
