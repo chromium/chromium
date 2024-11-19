@@ -9,6 +9,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
+import {PrefNames} from './pref_names.js';
 import {ScrollModeController} from './scroll_mode_controller.js';
 
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
@@ -488,36 +489,36 @@ export class MouseController {
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
-        case MouseController.PREF_SPD_UP:
+        case PrefNames.SPD_UP:
           if (pref.value) {
             this.spdUp_ = pref.value;
             this.calcVelocityThreshold_();
           }
           break;
-        case MouseController.PREF_SPD_DOWN:
+        case PrefNames.SPD_DOWN:
           if (pref.value) {
             this.spdDown_ = pref.value;
             this.calcVelocityThreshold_();
           }
           break;
-        case MouseController.PREF_SPD_LEFT:
+        case PrefNames.SPD_LEFT:
           if (pref.value) {
             this.spdLeft_ = pref.value;
             this.calcVelocityThreshold_();
           }
           break;
-        case MouseController.PREF_SPD_RIGHT:
+        case PrefNames.SPD_RIGHT:
           if (pref.value) {
             this.spdRight_ = pref.value;
             this.calcVelocityThreshold_();
           }
           break;
-        case MouseController.PREF_CURSOR_USE_ACCELERATION:
+        case PrefNames.CURSOR_USE_ACCELERATION:
           if (pref.value !== undefined) {
             this.useMouseAcceleration_ = pref.value;
           }
           break;
-        case MouseController.PREF_VELOCITY_THRESHOLD:
+        case PrefNames.VELOCITY_THRESHOLD:
           if (pref.value !== undefined) {
             // Ensure threshold factor is a decimal value.
             this.velocityThresholdFactor_ =
@@ -614,16 +615,6 @@ export namespace MouseController {
    * before moving the mouse with facegaze.
    */
   export const IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS = 500;
-
-  // Pref names. Should be in sync with with values at ash_pref_names.h.
-  export const PREF_SPD_UP = 'settings.a11y.face_gaze.cursor_speed_up';
-  export const PREF_SPD_DOWN = 'settings.a11y.face_gaze.cursor_speed_down';
-  export const PREF_SPD_LEFT = 'settings.a11y.face_gaze.cursor_speed_left';
-  export const PREF_SPD_RIGHT = 'settings.a11y.face_gaze.cursor_speed_right';
-  export const PREF_CURSOR_USE_ACCELERATION =
-      'settings.a11y.face_gaze.cursor_use_acceleration';
-  export const PREF_VELOCITY_THRESHOLD =
-      'settings.a11y.face_gaze.velocity_threshold';
 
   // Default values. Will be overwritten by prefs.
   export const DEFAULT_MOUSE_SPEED = 10;

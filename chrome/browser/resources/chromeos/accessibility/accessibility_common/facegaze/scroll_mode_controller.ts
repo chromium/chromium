@@ -4,6 +4,8 @@
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {PrefNames} from './pref_names.js';
+
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScrollDirection = chrome.accessibilityPrivate.ScrollDirection;
@@ -43,14 +45,12 @@ export class ScrollModeController {
     this.active_ = true;
     this.scrollLocation_ = mouseLocation;
     this.screenBounds_ = screenBounds;
-    chrome.settingsPrivate.getPref(
-        ScrollModeController.PREF_CURSOR_CONTROL_ENABLED, pref => {
-          // Save the original cursor control setting and ensure cursor control
-          // is enabled.
-          this.originalCursorControlPref_ = pref.value;
-          chrome.settingsPrivate.setPref(
-              ScrollModeController.PREF_CURSOR_CONTROL_ENABLED, true);
-        });
+    chrome.settingsPrivate.getPref(PrefNames.CURSOR_CONTROL_ENABLED, pref => {
+      // Save the original cursor control setting and ensure cursor control
+      // is enabled.
+      this.originalCursorControlPref_ = pref.value;
+      chrome.settingsPrivate.setPref(PrefNames.CURSOR_CONTROL_ENABLED, true);
+    });
   }
 
   private stop_(): void {
@@ -61,7 +61,7 @@ export class ScrollModeController {
 
     // Set cursor control back to its original setting.
     chrome.settingsPrivate.setPref(
-        ScrollModeController.PREF_CURSOR_CONTROL_ENABLED,
+        PrefNames.CURSOR_CONTROL_ENABLED,
         Boolean(this.originalCursorControlPref_));
     this.originalCursorControlPref_ = undefined;
   }
@@ -105,8 +105,6 @@ export class ScrollModeController {
 }
 
 export namespace ScrollModeController {
-  export const PREF_CURSOR_CONTROL_ENABLED =
-      'settings.a11y.face_gaze.cursor_control_enabled';
   // The time in milliseconds that needs to be exceeded before sending another
   // scroll.
   export const RATE_LIMIT = 50;

@@ -231,6 +231,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(MediapipeFacialGesture);
     assertNotNullNorUndefined(MetricsUtils);
     assertNotNullNorUndefined(MouseController);
+    assertNotNullNorUndefined(PrefNames);
     assertNotNullNorUndefined(ScrollModeController);
     assertNotNullNorUndefined(WebCamFaceLandmarker);
     await new Promise(resolve => {
@@ -304,8 +305,7 @@ FaceGazeTestBase = class extends E2ETestBase {
       for (const [gesture, macroName] of config.gestureToMacroName) {
         gestureToMacroName[gesture] = macroName;
       }
-      await this.setPref(
-          GestureHandler.GESTURE_TO_MACRO_PREF, gestureToMacroName);
+      await this.setPref(PrefNames.GESTURE_TO_MACRO, gestureToMacroName);
     }
 
     if (config.gestureToConfidence) {
@@ -313,18 +313,17 @@ FaceGazeTestBase = class extends E2ETestBase {
       for (const [gesture, confidence] of config.gestureToConfidence) {
         gestureToConfidence[gesture] = confidence * 100;
       }
-      await this.setPref(
-          GestureHandler.GESTURE_TO_CONFIDENCE_PREF, gestureToConfidence);
+      await this.setPref(PrefNames.GESTURE_TO_CONFIDENCE, gestureToConfidence);
     }
 
     if (config.bufferSize !== -1) {
       faceGaze.mouseController_.setBufferSizeForTesting(config.bufferSize);
     }
 
-    await this.setPref(MouseController.PREF_SPD_UP, config.speeds.up);
-    await this.setPref(MouseController.PREF_SPD_DOWN, config.speeds.down);
-    await this.setPref(MouseController.PREF_SPD_LEFT, config.speeds.left);
-    await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
+    await this.setPref(PrefNames.SPD_UP, config.speeds.up);
+    await this.setPref(PrefNames.SPD_DOWN, config.speeds.down);
+    await this.setPref(PrefNames.SPD_LEFT, config.speeds.left);
+    await this.setPref(PrefNames.SPD_RIGHT, config.speeds.right);
 
     if (config.repeatDelayMs !== undefined) {
       faceGaze.gestureHandler_.gestureTimer_.repeatDelayMs_ =
@@ -352,17 +351,16 @@ FaceGazeTestBase = class extends E2ETestBase {
         config.useVelocityThreshold);
 
     await this.setPref(
-        MouseController.PREF_CURSOR_USE_ACCELERATION,
-        config.useMouseAcceleration);
+        PrefNames.CURSOR_USE_ACCELERATION, config.useMouseAcceleration);
     assertEquals(
         faceGaze.mouseController_.useMouseAcceleration_,
         config.useMouseAcceleration);
 
     await this.setPref(
-        FaceGaze.PREF_CURSOR_CONTROL_ENABLED, config.cursorControlEnabled);
+        PrefNames.CURSOR_CONTROL_ENABLED, config.cursorControlEnabled);
     assertEquals(faceGaze.cursorControlEnabled_, config.cursorControlEnabled);
 
-    await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, config.actionsEnabled);
+    await this.setPref(PrefNames.ACTIONS_ENABLED, config.actionsEnabled);
     assertEquals(faceGaze.actionsEnabled_, config.actionsEnabled);
 
     if (config.cursorControlEnabled) {

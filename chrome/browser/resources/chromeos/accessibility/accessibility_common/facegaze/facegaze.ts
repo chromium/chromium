@@ -9,9 +9,12 @@ import {BubbleController} from './bubble_controller.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
+import {PrefNames} from './pref_names.js';
 import {FaceLandmarkerResultWithLatency, WebCamFaceLandmarker} from './web_cam_face_landmarker.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
+
+const SETTINGS_PAGE_ROUTE = 'manageAccessibility/faceGaze';
 
 /** Main class for FaceGaze. */
 export class FaceGaze {
@@ -78,7 +81,7 @@ export class FaceGaze {
 
   private maybeShowConfirmationDialog_(): void {
     chrome.settingsPrivate.getPref(
-        FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
+        PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, pref => {
           if (pref.value === undefined || pref.value === null) {
             return;
           }
@@ -106,16 +109,15 @@ export class FaceGaze {
   /** Runs when the confirmation dialog has either been accepted or rejected. */
   private onConfirmationDialog_(accepted: boolean): void {
     chrome.settingsPrivate.setPref(
-        FaceGaze.PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, accepted);
+        PrefNames.ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED, accepted);
     if (!accepted) {
       // If the dialog was rejected, then disable the FaceGaze feature.
-      chrome.settingsPrivate.setPref(FaceGaze.PREF_FACE_GAZE_ENABLED, false);
+      chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
       return;
     }
 
     // If the dialog was accepted, then initialize FaceGaze.
-    chrome.accessibilityPrivate.openSettingsSubpage(
-        FaceGaze.SETTINGS_PAGE_ROUTE);
+    chrome.accessibilityPrivate.openSettingsSubpage(SETTINGS_PAGE_ROUTE);
 
     this.bubbleController_.updateBubble('');
     this.webCamFaceLandmarker_.init();
@@ -124,10 +126,10 @@ export class FaceGaze {
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
-        case FaceGaze.PREF_CURSOR_CONTROL_ENABLED:
+        case PrefNames.CURSOR_CONTROL_ENABLED:
           this.cursorControlEnabledChanged_(pref.value);
           break;
-        case FaceGaze.PREF_ACTIONS_ENABLED:
+        case PrefNames.ACTIONS_ENABLED:
           this.actionsEnabledChanged_(pref.value);
           break;
         default:
@@ -228,18 +230,6 @@ export class FaceGaze {
 
     callback();
   }
-}
-
-export namespace FaceGaze {
-  // Pref names. Should be in sync with with values at ash_pref_names.h.
-  export const PREF_ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED =
-      'settings.a11y.face_gaze.accelerator_dialog_has_been_accepted';
-  export const PREF_FACE_GAZE_ENABLED = 'settings.a11y.face_gaze.enabled';
-  export const PREF_ACTIONS_ENABLED = 'settings.a11y.face_gaze.actions_enabled';
-  export const PREF_CURSOR_CONTROL_ENABLED =
-      'settings.a11y.face_gaze.cursor_control_enabled';
-
-  export const SETTINGS_PAGE_ROUTE = 'manageAccessibility/faceGaze';
 }
 
 TestImportManager.exportForTesting(FaceGaze);

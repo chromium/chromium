@@ -21,6 +21,7 @@ import {MouseLongClickMacro} from './macros/mouse_long_click_macro.js';
 import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
+import {PrefNames} from './pref_names.js';
 
 import RoleType = chrome.automation.RoleType;
 import StateType = chrome.automation.StateType;
@@ -94,7 +95,7 @@ export class GestureHandler {
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
       switch (pref.key) {
-        case GestureHandler.GESTURE_TO_MACRO_PREF:
+        case PrefNames.GESTURE_TO_MACRO:
           if (pref.value) {
             // Update the whole map from this preference.
             this.gestureToMacroName_.clear();
@@ -140,7 +141,7 @@ export class GestureHandler {
             }
           }
           break;
-        case GestureHandler.GESTURE_TO_CONFIDENCE_PREF:
+        case PrefNames.GESTURE_TO_CONFIDENCE:
           if (pref.value) {
             for (const [gesture, confidence] of Object.entries(pref.value)) {
               this.gestureToConfidence_.set(
@@ -148,7 +149,7 @@ export class GestureHandler {
             }
           }
           break;
-        case GestureHandler.GESTURE_TO_KEY_COMBO_PREF:
+        case PrefNames.GESTURE_TO_KEY_COMBO:
           if (pref.value) {
             // Update the whole map from this preference.
             this.gesturesToKeyCombos_.clear();
@@ -432,19 +433,6 @@ export class GestureHandler {
 export namespace GestureHandler {
   /** The default confidence threshold for facial gestures. */
   export const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
-
-  export const GESTURE_TO_KEY_COMBO_PREF =
-      'settings.a11y.face_gaze.gestures_to_key_combos';
-
-  /**
-   * Pref name of preference mapping facegaze gestures to macro action names.
-   */
-  export const GESTURE_TO_MACRO_PREF =
-      'settings.a11y.face_gaze.gestures_to_macros';
-
-  export const GESTURE_TO_CONFIDENCE_PREF =
-      'settings.a11y.face_gaze.gestures_to_confidence';
-
   export const SETTINGS_PATH = 'manageAccessibility/faceGaze';
 }
 

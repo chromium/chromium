@@ -235,7 +235,7 @@ AX_TEST_F(
           null, this.mockAccessibilityPrivate.getLatestCursorPosition());
 
       // Turn on cursor control.
-      await this.setPref(FaceGaze.PREF_CURSOR_CONTROL_ENABLED, true);
+      await this.setPref(PrefNames.CURSOR_CONTROL_ENABLED, true);
 
       // Now head movement should do something.
       // This is the first detected head movement and should end up at the
@@ -254,7 +254,7 @@ AX_TEST_F(
       this.assertLatestCursorPosition({x: 360, y: 560});
 
       // Turn it off again and move the mouse further. Nothing should happen.
-      await this.setPref(FaceGaze.PREF_CURSOR_CONTROL_ENABLED, false);
+      await this.setPref(PrefNames.CURSOR_CONTROL_ENABLED, false);
       result = new MockFaceLandmarkerResult().setNormalizedForeheadLocation(
           0.13, 0.23);
       this.processFaceLandmarkerResult(result);
@@ -789,7 +789,7 @@ AX_TEST_F(
       assertTrue(this.getFaceGaze().mouseController_.isLongClickActive());
 
       // Remove long click action.
-      await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, false);
+      await this.setPref(PrefNames.ACTIONS_ENABLED, false);
 
       // Ensure long click automatically toggled off.
       assertFalse(this.getFaceGaze().mouseController_.isLongClickActive());
@@ -814,7 +814,7 @@ AX_TEST_F(
       assertTrue(this.getFaceGaze().mouseController_.isLongClickActive());
 
       // Remove long click action.
-      await this.setPref(GestureHandler.GESTURE_TO_MACRO_PREF, {});
+      await this.setPref(PrefNames.GESTURE_TO_MACRO, {});
 
       // Ensure long click automatically toggled off.
       assertFalse(this.getFaceGaze().mouseController_.isLongClickActive());
@@ -906,7 +906,7 @@ AX_TEST_F(
       this.assertNumMouseEvents(0);
 
       // Enable actions. Now we we should get actions.
-      await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, true);
+      await this.setPref(PrefNames.ACTIONS_ENABLED, true);
 
       result =
           new MockFaceLandmarkerResult()
@@ -1569,7 +1569,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinations', async function() {
     modifiers: {ctrl: true},
   };
   await this.setPref(
-      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      PrefNames.GESTURE_TO_KEY_COMBO,
       {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
 
   // Verify that the preference propagated to FaceGaze.
@@ -1618,7 +1618,7 @@ AX_TEST_F('FaceGazeTest', 'KeyCombinationsRepeat', async function() {
     modifiers: {ctrl: true},
   };
   await this.setPref(
-      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      PrefNames.GESTURE_TO_KEY_COMBO,
       {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
 
   // Verify that the preference propagated to FaceGaze.
@@ -1773,7 +1773,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextKeyCombination', async function() {
     modifiers: {ctrl: true},
   };
   await this.setPref(
-      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      PrefNames.GESTURE_TO_KEY_COMBO,
       {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
 
   // Verify that the preference propagated to FaceGaze.
@@ -1828,7 +1828,7 @@ AX_TEST_F(
         modifiers: {ctrl: true},
       };
       await this.setPref(
-          GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+          PrefNames.GESTURE_TO_KEY_COMBO,
           {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
 
       // Verify that the preference propagated to FaceGaze.
@@ -1896,7 +1896,7 @@ AX_TEST_F(
         modifiers: {ctrl: true},
       };
       await this.setPref(
-          GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+          PrefNames.GESTURE_TO_KEY_COMBO,
           {[FacialGesture.JAW_OPEN]: JSON.stringify(keyCombination)});
 
       // Verify that the preference propagated to FaceGaze.
@@ -2183,7 +2183,7 @@ AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
       this.getBubbleText());
 
   // Turn off actions via pref.
-  await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, false);
+  await this.setPref(PrefNames.ACTIONS_ENABLED, false);
 
   // Ensure scroll mode automatically toggled off.
   assertFalse(this.getScrollModeController().active());
@@ -2215,7 +2215,7 @@ AX_TEST_F(
           this.getBubbleText());
 
       // Remove scroll mode action.
-      await this.setPref(GestureHandler.GESTURE_TO_MACRO_PREF, {});
+      await this.setPref(PrefNames.GESTURE_TO_MACRO, {});
 
       // Ensure scroll mode automatically toggled off.
       assertFalse(this.getScrollModeController().active());
@@ -2332,7 +2332,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
     modifiers: {ctrl: true},
   };
   await this.setPref(
-      GestureHandler.GESTURE_TO_KEY_COMBO_PREF,
+      PrefNames.GESTURE_TO_KEY_COMBO,
       {[FacialGesture.BROW_INNER_UP]: JSON.stringify(keyCombination)});
 
   const gestureHandler = this.getFaceGaze().gestureHandler_;
