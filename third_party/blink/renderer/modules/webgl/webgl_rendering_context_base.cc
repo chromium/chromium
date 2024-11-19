@@ -3196,15 +3196,15 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveAttrib(
                       "no active attributes exist");
     return nullptr;
   }
-  LChar* name_ptr;
-  scoped_refptr<StringImpl> name_impl =
-      StringImpl::CreateUninitialized(max_name_length, name_ptr);
   GLsizei length = 0;
   GLint size = -1;
   GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
   ContextGL()->GetActiveAttrib(program_id, index, max_name_length, &length,
                                &size, &type,
-                               reinterpret_cast<GLchar*>(name_ptr));
+                               reinterpret_cast<GLchar*>(name_buffer.data()));
   if (size < 0)
     return nullptr;
   return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
@@ -3227,15 +3227,15 @@ WebGLActiveInfo* WebGLRenderingContextBase::getActiveUniform(
                       "no active uniforms exist");
     return nullptr;
   }
-  LChar* name_ptr;
-  scoped_refptr<StringImpl> name_impl =
-      StringImpl::CreateUninitialized(max_name_length, name_ptr);
   GLsizei length = 0;
   GLint size = -1;
   GLenum type = 0;
+  base::span<LChar> name_buffer;
+  scoped_refptr<StringImpl> name_impl =
+      StringImpl::CreateUninitialized(max_name_length, name_buffer);
   ContextGL()->GetActiveUniform(program_id, index, max_name_length, &length,
                                 &size, &type,
-                                reinterpret_cast<GLchar*>(name_ptr));
+                                reinterpret_cast<GLchar*>(name_buffer.data()));
   if (size < 0)
     return nullptr;
   return MakeGarbageCollected<WebGLActiveInfo>(name_impl->Substring(0, length),
@@ -4254,24 +4254,24 @@ ScriptValue WebGLRenderingContextBase::getUniform(
   GLint active_uniforms = 0;
   ContextGL()->GetProgramiv(program_id, GL_ACTIVE_UNIFORMS, &active_uniforms);
   for (GLint i = 0; i < active_uniforms; i++) {
-    LChar* name_ptr;
+    base::span<LChar> name_buffer;
     scoped_refptr<StringImpl> name_impl =
-        StringImpl::CreateUninitialized(max_name_length, name_ptr);
+        StringImpl::CreateUninitialized(max_name_length, name_buffer);
     GLsizei name_length = 0;
     GLint size = -1;
     GLenum type = 0;
-    ContextGL()->GetActiveUniform(program_id, i, max_name_length, &name_length,
-                                  &size, &type,
-                                  reinterpret_cast<GLchar*>(name_ptr));
+    ContextGL()->GetActiveUniform(
+        program_id, i, max_name_length, &name_length, &size, &type,
+        reinterpret_cast<GLchar*>(name_buffer.data()));
     if (size < 0)
       return ScriptValue::CreateNull(script_state->GetIsolate());
     String name(name_impl->Substring(0, name_length));
-    StringBuilder name_builder;
     // Strip "[0]" from the name if it's an array.
     if (size > 1 && name.EndsWith("[0]"))
       name = name.Left(name.length() - 3);
     // If it's an array, we need to iterate through each element, appending
     // "[index]" to the name.
+    StringBuilder name_builder;
     for (GLint index = 0; index < size; ++index) {
       name_builder.Clear();
       name_builder.Append(name);
