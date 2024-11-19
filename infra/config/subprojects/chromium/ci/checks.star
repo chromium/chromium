@@ -47,8 +47,10 @@ ci.builder(
     name = "win-presubmit",
     executable = "recipe:presubmit",
     builderless = True,
-    cores = 32,
+    cores = "16|32",
     os = os.WINDOWS_DEFAULT,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 and add ssd=True after bot migration.
+    ssd = None,
     gardener_rotations = gardener_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
