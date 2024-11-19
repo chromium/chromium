@@ -19,7 +19,6 @@
 #include "base/types/expected.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
@@ -270,10 +269,10 @@ class IpProtectionCoreHostTest : public testing::Test {
 // it.
 TEST_F(IpProtectionCoreHostTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_),
-                    ip_protection::IpProtectionCoreHostHelper::
+                    ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-2", expiration_time_, geo_hint_)});
 
@@ -284,11 +283,11 @@ TEST_F(IpProtectionCoreHostTest, Success) {
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   std::vector<BlindSignedAuthToken> expected;
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_)
                              .value());
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-2", expiration_time_, geo_hint_)
                              .value());
@@ -311,7 +310,7 @@ TEST_F(IpProtectionCoreHostTest, NoTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -338,7 +337,7 @@ TEST_F(IpProtectionCoreHostTest, MalformedTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -351,10 +350,10 @@ TEST_F(IpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
   GeoHint geo_hint_country;
   geo_hint_country.country_code = "US";
   bsa_->set_tokens(
-      {ip_protection::IpProtectionCoreHostHelper::
+      {ip_protection::IpProtectionTokenFetcherHelper::
            CreateBlindSignTokenForTesting("single-use-1", expiration_time_,
                                           geo_hint_country),
-       ip_protection::IpProtectionCoreHostHelper::
+       ip_protection::IpProtectionTokenFetcherHelper::
            CreateBlindSignTokenForTesting("single-use-2", expiration_time_,
                                           geo_hint_country)});
 
@@ -365,11 +364,11 @@ TEST_F(IpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   std::vector<BlindSignedAuthToken> expected;
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_country)
                              .value());
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-2", expiration_time_, geo_hint_country)
                              .value());
@@ -384,7 +383,7 @@ TEST_F(IpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
 TEST_F(IpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   GeoHint geo_hint;
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint)});
 
@@ -395,7 +394,7 @@ TEST_F(IpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -415,7 +414,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError400) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kBugBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA400, 1);
@@ -439,7 +438,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError401) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kBugBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA401, 1);
@@ -463,7 +462,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError403) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kNotEligibleBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSA403, 1);
@@ -488,7 +487,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedBSAOther, 1);
@@ -503,10 +502,10 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
 // The CanUseChromeIpProtection capability is not present (`kUnknown`).
 TEST_F(IpProtectionCoreHostTest, AccountCapabilityUnknown) {
   primary_account_behavior_ = PrimaryAccountBehavior::kUnknownEligibility;
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_),
-                    ip_protection::IpProtectionCoreHostHelper::
+                    ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-2", expiration_time_, geo_hint_)});
 
@@ -517,11 +516,11 @@ TEST_F(IpProtectionCoreHostTest, AccountCapabilityUnknown) {
   EXPECT_EQ(bsa_->num_tokens(), 2);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   std::vector<BlindSignedAuthToken> expected;
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_)
                              .value());
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-2", expiration_time_, geo_hint_)
                              .value());
@@ -541,7 +540,7 @@ TEST_F(IpProtectionCoreHostTest, AuthTokenTransientError) {
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensResult::kFailedOAuthTokenTransient, 1);
@@ -608,7 +607,7 @@ TEST_F(IpProtectionCoreHostTest, AccountLoginTriggersBackoffReset) {
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
 
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_)});
 
@@ -648,7 +647,7 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
 
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_)});
   tokens_future.Clear();
@@ -923,7 +922,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyConfig_IpProtectionDisabled) {
 // Do a basic check of the token formats.
 TEST_F(IpProtectionCoreHostTest, TokenFormat) {
   BlindSignedAuthToken result =
-      ip_protection::IpProtectionCoreHostHelper::
+      ip_protection::IpProtectionTokenFetcherHelper::
           CreateMockBlindSignedAuthTokenForTesting("single-use-1",
                                                    expiration_time_, geo_hint_)
               .value();

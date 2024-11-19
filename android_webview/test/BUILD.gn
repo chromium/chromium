@@ -769,7 +769,6 @@ test("android_webview_unittests") {
     "//components/flags_ui:flags_ui",
     "//components/ip_protection:unit_tests",
     "//components/ip_protection/android:blind_sign_message_android_impl",
-    "//components/ip_protection/common:ip_protection_core_host_helper",
     "//components/ip_protection/common:ip_protection_data_types",
     "//components/ip_protection/common:ip_protection_proxy_config_direct_fetcher",
     "//components/ip_protection/common:mock_blind_sign_auth",

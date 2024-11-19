@@ -66,20 +66,6 @@ source_set("ip_protection_core") {
   ]
 }
 
-source_set("ip_protection_core_host_helper") {
-  sources = [
-    "ip_protection_core_host_helper.cc",
-    "ip_protection_core_host_helper.h",
-  ]
-  public_deps = [
-    ":ip_protection_data_types",
-    "//base",
-    "//components/ip_protection:get_proxy_config_proto",
-    "//net/third_party/quiche:blind_sign_auth",
-    "//services/network/public/mojom",
-  ]
-}
-
 source_set("ip_protection_core_impl") {
   sources = [
     "ip_protection_core_impl.cc",
@@ -187,9 +173,9 @@ source_set("ip_protection_proxy_config_direct_fetcher_unittest") {
   testonly = true
   sources = [ "ip_protection_proxy_config_direct_fetcher_unittest.cc" ]
   deps = [
-    ":ip_protection_core_host_helper",
     ":ip_protection_data_types",
     ":ip_protection_proxy_config_direct_fetcher",
+    ":ip_protection_token_fetcher_helper",
     "//base",
     "//base/test:test_support",
     "//net",
@@ -393,7 +379,6 @@ source_set("ip_protection_token_direct_fetcher") {
     "//services/network/public/cpp",
   ]
   deps = [
-    ":ip_protection_core_host_helper",
     ":ip_protection_data_types",
     ":ip_protection_telemetry",
     ":ip_protection_token_fetcher_helper",
@@ -406,9 +391,9 @@ source_set("ip_protection_token_direct_fetcher_unittest") {
   testonly = true
   sources = [ "ip_protection_token_direct_fetcher_unittest.cc" ]
   deps = [
-    ":ip_protection_core_host_helper",
     ":ip_protection_data_types",
     ":ip_protection_token_direct_fetcher",
+    ":ip_protection_token_fetcher_helper",
     ":mock_blind_sign_auth",
     "//base",
     "//base/test:test_support",
@@ -422,7 +407,6 @@ source_set("ip_protection_token_direct_fetcher_unittest") {
 source_set("ip_protection_token_fetcher") {
   sources = [ "ip_protection_token_fetcher.h" ]
   public_deps = [
-    ":ip_protection_core_host_helper",
     "//base",
     "//third_party/abseil-cpp:absl",
   ]
@@ -439,6 +423,7 @@ source_set("ip_protection_token_fetcher_helper") {
   ]
   public_deps = [
     "//base",
+    "//net",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [

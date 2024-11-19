@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 
 namespace quiche {
@@ -46,6 +47,39 @@ class IpProtectionTokenFetcherHelper {
       uint32_t batch_size,
       quiche::ProxyLayer proxy_layer,
       FetchBlindSignedTokenCallback callback);
+
+  // Converts a batch of `quiche::BlindSignToken` into
+  // `BlindSignedAuthToken`, returning nullopt on failure.
+  static std::optional<std::vector<ip_protection::BlindSignedAuthToken>>
+  QuicheTokensToIpProtectionAuthTokens(std::vector<quiche::BlindSignToken>&);
+
+  // Creates a blind-signed auth token by converting token fetched using the
+  // `quiche::BlindSignAuth` library to a `BlindSignedAuthToken`.
+  static std::optional<BlindSignedAuthToken> CreateBlindSignedAuthToken(
+      const quiche::BlindSignToken& bsa_token);
+
+  // Creates a `quiche::BlindSignToken()` in the format that the BSA library
+  // will return them.
+  static quiche::BlindSignToken CreateBlindSignTokenForTesting(
+      std::string token_value,
+      base::Time expiration,
+      const GeoHint& geo_hint);
+
+  // Converts a mock token value and expiration time into the struct that will
+  // be passed to the network service.
+  static std::optional<BlindSignedAuthToken>
+  CreateMockBlindSignedAuthTokenForTesting(std::string token_value,
+                                           base::Time expiration,
+                                           const GeoHint& geo_hint);
+
+  // Service types used for GetProxyConfigRequest.
+  static constexpr char kChromeIpBlinding[] = "chromeipblinding";
+  static constexpr char kWebViewIpBlinding[] = "webviewipblinding";
+
+  // Base time deltas for calculating `try_again_after`.
+  static constexpr base::TimeDelta kNotEligibleBackoff = base::Days(1);
+  static constexpr base::TimeDelta kTransientBackoff = base::Seconds(5);
+  static constexpr base::TimeDelta kBugBackoff = base::Minutes(10);
 
  protected:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -15,7 +15,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/ip_protection/android/blind_sign_message_android_impl.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
@@ -109,23 +108,18 @@ void IpProtectionTokenIpcFetcher::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<ip_protection::BlindSignedAuthToken> bsa_tokens;
-  for (const quiche::BlindSignToken& token : tokens.value()) {
-    std::optional<ip_protection::BlindSignedAuthToken> converted_token =
-        ip_protection::IpProtectionCoreHostHelper::CreateBlindSignedAuthToken(
-            token);
-    if (!converted_token.has_value() || converted_token->token.empty()) {
-      TryGetAuthTokensComplete(
-          /*bsa_tokens=*/std::nullopt, std::move(callback),
-          TryGetAuthTokensAndroidResult::kFailedBSAOther);
-      return;
-    } else {
-      bsa_tokens.push_back(std::move(converted_token).value());
-    }
+  std::optional<std::vector<ip_protection::BlindSignedAuthToken>> bsa_tokens =
+      IpProtectionTokenFetcherHelper::QuicheTokensToIpProtectionAuthTokens(
+          tokens.value());
+  if (!bsa_tokens) {
+    TryGetAuthTokensComplete(
+        /*bsa_tokens=*/std::nullopt, std::move(callback),
+        TryGetAuthTokensAndroidResult::kFailedBSAOther);
+    return;
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  TryGetAuthTokensComplete(std::move(bsa_tokens), std::move(callback),
+  TryGetAuthTokensComplete(std::move(bsa_tokens.value()), std::move(callback),
                            TryGetAuthTokensAndroidResult::kSuccess,
                            current_time - bsa_get_tokens_start_time);
 }
@@ -166,7 +160,8 @@ std::optional<base::TimeDelta> IpProtectionTokenIpcFetcher::CalculateBackoff(
       break;
     case TryGetAuthTokensAndroidResult::kFailedBSATransient:
     case TryGetAuthTokensAndroidResult::kFailedBSAOther:
-      backoff = ip_protection::IpProtectionCoreHostHelper::kTransientBackoff;
+      backoff =
+          ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff;
       // Note that we calculate the backoff assuming that we've waited for
       // `last_try_get_auth_tokens_backoff_` time already, but this may not be
       // the case when:

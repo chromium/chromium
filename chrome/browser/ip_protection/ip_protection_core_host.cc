@@ -24,7 +24,6 @@
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -86,7 +85,8 @@ void IpProtectionCoreHost::SetUp() {
     ip_protection_proxy_config_fetcher_ =
         std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
             url_loader_factory.get(),
-            ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding, this);
+            ip_protection::IpProtectionTokenFetcherHelper::kChromeIpBlinding,
+            this);
   }
 }
 
@@ -106,7 +106,8 @@ void IpProtectionCoreHost::SetUpForTesting(
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(url_loader_factory),
-          ip_protection::IpProtectionCoreHostHelper::kChromeIpBlinding, this);
+          ip_protection::IpProtectionTokenFetcherHelper::kChromeIpBlinding,
+          this);
 }
 
 IpProtectionCoreHost::~IpProtectionCoreHost() = default;

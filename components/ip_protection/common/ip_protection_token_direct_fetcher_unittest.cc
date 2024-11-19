@@ -15,7 +15,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
 #include "net/base/features.h"
@@ -126,10 +125,11 @@ class IpProtectionTokenDirectFetcherTest : public testing::Test {
 };
 
 TEST_F(IpProtectionTokenDirectFetcherTest, Success) {
-  bsa_->set_tokens({IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
-                        "single-use-1", expiration_time_, geo_hint_),
-                    IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
-                        "single-use-2", expiration_time_, geo_hint_)});
+  bsa_->set_tokens(
+      {IpProtectionTokenFetcherHelper::CreateBlindSignTokenForTesting(
+           "single-use-1", expiration_time_, geo_hint_),
+       IpProtectionTokenFetcherHelper::CreateBlindSignTokenForTesting(
+           "single-use-2", expiration_time_, geo_hint_)});
 
   TryGetAuthTokens(2, ProxyLayer::kProxyB);
 
@@ -139,11 +139,11 @@ TEST_F(IpProtectionTokenDirectFetcherTest, Success) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   std::vector<BlindSignedAuthToken> expected;
   expected.push_back(
-      IpProtectionCoreHostHelper::CreateMockBlindSignedAuthTokenForTesting(
+      IpProtectionTokenFetcherHelper::CreateMockBlindSignedAuthTokenForTesting(
           "single-use-1", expiration_time_, geo_hint_)
           .value());
   expected.push_back(
-      IpProtectionCoreHostHelper::CreateMockBlindSignedAuthTokenForTesting(
+      IpProtectionTokenFetcherHelper::CreateMockBlindSignedAuthTokenForTesting(
           "single-use-2", expiration_time_, geo_hint_)
           .value());
   ExpectTryGetAuthTokensResult(std::move(expected));
@@ -162,7 +162,7 @@ TEST_F(IpProtectionTokenDirectFetcherTest, NoTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionCoreHostHelper::kTransientBackoff);
+      IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSAOther,
                                        1);
@@ -188,7 +188,7 @@ TEST_F(IpProtectionTokenDirectFetcherTest, MalformedTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionCoreHostHelper::kTransientBackoff);
+      IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSAOther,
                                        1);
@@ -199,10 +199,11 @@ TEST_F(IpProtectionTokenDirectFetcherTest, MalformedTokens) {
 TEST_F(IpProtectionTokenDirectFetcherTest, TokenGeoHintContainsOnlyCountry) {
   GeoHint geo_hint_country;
   geo_hint_country.country_code = "US";
-  bsa_->set_tokens({IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
-                        "single-use-1", expiration_time_, geo_hint_country),
-                    IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
-                        "single-use-2", expiration_time_, geo_hint_country)});
+  bsa_->set_tokens(
+      {IpProtectionTokenFetcherHelper::CreateBlindSignTokenForTesting(
+           "single-use-1", expiration_time_, geo_hint_country),
+       IpProtectionTokenFetcherHelper::CreateBlindSignTokenForTesting(
+           "single-use-2", expiration_time_, geo_hint_country)});
 
   TryGetAuthTokens(2, ProxyLayer::kProxyB);
 
@@ -212,11 +213,11 @@ TEST_F(IpProtectionTokenDirectFetcherTest, TokenGeoHintContainsOnlyCountry) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   std::vector<BlindSignedAuthToken> expected;
   expected.push_back(
-      IpProtectionCoreHostHelper::CreateMockBlindSignedAuthTokenForTesting(
+      IpProtectionTokenFetcherHelper::CreateMockBlindSignedAuthTokenForTesting(
           "single-use-1", expiration_time_, geo_hint_country)
           .value());
   expected.push_back(
-      IpProtectionCoreHostHelper::CreateMockBlindSignedAuthTokenForTesting(
+      IpProtectionTokenFetcherHelper::CreateMockBlindSignedAuthTokenForTesting(
           "single-use-2", expiration_time_, geo_hint_country)
           .value());
   ExpectTryGetAuthTokensResult(std::move(expected));
@@ -228,8 +229,9 @@ TEST_F(IpProtectionTokenDirectFetcherTest, TokenGeoHintContainsOnlyCountry) {
 
 TEST_F(IpProtectionTokenDirectFetcherTest, TokenHasMissingGeoHint) {
   GeoHint geo_hint;
-  bsa_->set_tokens({IpProtectionCoreHostHelper::CreateBlindSignTokenForTesting(
-      "single-use-1", expiration_time_, geo_hint)});
+  bsa_->set_tokens(
+      {IpProtectionTokenFetcherHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_, geo_hint)});
 
   TryGetAuthTokens(1, ProxyLayer::kProxyA);
 
@@ -238,7 +240,7 @@ TEST_F(IpProtectionTokenDirectFetcherTest, TokenHasMissingGeoHint) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionCoreHostHelper::kTransientBackoff);
+      IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSAOther,
                                        1);
@@ -256,7 +258,8 @@ TEST_F(IpProtectionTokenDirectFetcherTest, BlindSignedTokenError400) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(IpProtectionCoreHostHelper::kBugBackoff);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionTokenFetcherHelper::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSA400,
                                        1);
@@ -278,7 +281,8 @@ TEST_F(IpProtectionTokenDirectFetcherTest, BlindSignedTokenError401) {
   EXPECT_EQ(bsa_->num_tokens(), 1);
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
-  ExpectTryGetAuthTokensResultFailed(IpProtectionCoreHostHelper::kBugBackoff);
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionTokenFetcherHelper::kBugBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSA401,
                                        1);
@@ -301,7 +305,7 @@ TEST_F(IpProtectionTokenDirectFetcherTest, BlindSignedTokenError403) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionCoreHostHelper::kNotEligibleBackoff);
+      IpProtectionTokenFetcherHelper::kNotEligibleBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSA403,
                                        1);
@@ -325,7 +329,7 @@ TEST_F(IpProtectionTokenDirectFetcherTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionCoreHostHelper::kTransientBackoff);
+      IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(kTryGetAuthTokensResultHistogram,
                                        TryGetAuthTokensResult::kFailedBSAOther,
                                        1);
@@ -346,7 +350,7 @@ TEST_F(IpProtectionTokenDirectFetcherTest, AuthTokenTransientError) {
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(
-      IpProtectionCoreHostHelper::kTransientBackoff);
+      IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       TryGetAuthTokensResult::kFailedOAuthTokenTransient, 1);
@@ -415,21 +419,23 @@ TEST_F(IpProtectionTokenDirectFetcherTest, CalculateBackoff) {
   };
 
   check(kSuccess, std::nullopt, false);
-  check(kFailedNotEligible, IpProtectionCoreHostHelper::kNotEligibleBackoff,
+  check(kFailedNotEligible, IpProtectionTokenFetcherHelper::kNotEligibleBackoff,
         false);
-  check(kFailedBSA400, IpProtectionCoreHostHelper::kBugBackoff, true);
-  check(kFailedBSA401, IpProtectionCoreHostHelper::kBugBackoff, true);
-  check(kFailedBSA403, IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
-  check(kFailedBSAOther, IpProtectionCoreHostHelper::kTransientBackoff, true);
+  check(kFailedBSA400, IpProtectionTokenFetcherHelper::kBugBackoff, true);
+  check(kFailedBSA401, IpProtectionTokenFetcherHelper::kBugBackoff, true);
+  check(kFailedBSA403, IpProtectionTokenFetcherHelper::kNotEligibleBackoff,
+        false);
+  check(kFailedBSAOther, IpProtectionTokenFetcherHelper::kTransientBackoff,
+        true);
   check(kFailedOAuthTokenTransient,
-        IpProtectionCoreHostHelper::kTransientBackoff, true);
+        IpProtectionTokenFetcherHelper::kTransientBackoff, true);
 
   check(kFailedNoAccount, base::TimeDelta::Max(), false);
   // The account-related backoffs should not be changed except by account change
   // events.
   check(kFailedBSA400, base::TimeDelta::Max(), false);
   fetcher_->AccountStatusChanged(true);
-  check(kFailedBSA400, IpProtectionCoreHostHelper::kBugBackoff, true);
+  check(kFailedBSA400, IpProtectionTokenFetcherHelper::kBugBackoff, true);
 }
 
 }  // namespace ip_protection

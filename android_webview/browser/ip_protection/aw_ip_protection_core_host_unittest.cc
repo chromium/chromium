@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/ip_protection/android/blind_sign_message_android_impl.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/mock_blind_sign_auth.h"
@@ -134,10 +133,10 @@ TEST_F(AwIpProtectionCoreHostTest, Success) {
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kEnableIpProtectionProxy);
 
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_),
-                    ip_protection::IpProtectionCoreHostHelper::
+                    ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-2", expiration_time_, geo_hint_)});
 
@@ -149,11 +148,11 @@ TEST_F(AwIpProtectionCoreHostTest, Success) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
 
   std::vector<ip_protection::BlindSignedAuthToken> expected;
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_)
                              .value());
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-2", expiration_time_, geo_hint_)
                              .value());
@@ -177,7 +176,7 @@ TEST_F(AwIpProtectionCoreHostTest, NoTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
@@ -206,7 +205,7 @@ TEST_F(AwIpProtectionCoreHostTest, MalformedTokens) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
@@ -220,10 +219,10 @@ TEST_F(AwIpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
   ip_protection::GeoHint geo_hint_country;
   geo_hint_country.country_code = "US";
   bsa_->set_tokens(
-      {ip_protection::IpProtectionCoreHostHelper::
+      {ip_protection::IpProtectionTokenFetcherHelper::
            CreateBlindSignTokenForTesting("single-use-1", expiration_time_,
                                           geo_hint_country),
-       ip_protection::IpProtectionCoreHostHelper::
+       ip_protection::IpProtectionTokenFetcherHelper::
            CreateBlindSignTokenForTesting("single-use-2", expiration_time_,
                                           geo_hint_country)});
 
@@ -235,11 +234,11 @@ TEST_F(AwIpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
 
   std::vector<ip_protection::BlindSignedAuthToken> expected;
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-1", expiration_time_, geo_hint_country)
                              .value());
-  expected.push_back(ip_protection::IpProtectionCoreHostHelper::
+  expected.push_back(ip_protection::IpProtectionTokenFetcherHelper::
                          CreateMockBlindSignedAuthTokenForTesting(
                              "single-use-2", expiration_time_, geo_hint_country)
                              .value());
@@ -256,7 +255,7 @@ TEST_F(AwIpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kEnableIpProtectionProxy);
   ip_protection::GeoHint geo_hint;
-  bsa_->set_tokens({ip_protection::IpProtectionCoreHostHelper::
+  bsa_->set_tokens({ip_protection::IpProtectionTokenFetcherHelper::
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint)});
 
@@ -267,7 +266,7 @@ TEST_F(AwIpProtectionCoreHostTest, TokenHasMissingGeoHint) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);
@@ -288,7 +287,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedAuthTransientError) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyA);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSATransient, 1);
@@ -329,7 +328,7 @@ TEST_F(AwIpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   EXPECT_EQ(bsa_->proxy_layer(), quiche::ProxyLayer::kProxyB);
   EXPECT_EQ(bsa_->oauth_token(), std::nullopt);
   ExpectTryGetAuthTokensResultFailed(
-      ip_protection::IpProtectionCoreHostHelper::kTransientBackoff);
+      ip_protection::IpProtectionTokenFetcherHelper::kTransientBackoff);
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
       ip_protection::TryGetAuthTokensAndroidResult::kFailedBSAOther, 1);

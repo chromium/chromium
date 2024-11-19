@@ -19,7 +19,6 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"

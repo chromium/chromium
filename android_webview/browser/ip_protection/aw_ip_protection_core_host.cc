@@ -27,7 +27,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "components/ip_protection/android/ip_protection_token_ipc_fetcher.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
@@ -72,7 +71,7 @@ void AwIpProtectionCoreHost::SetUp() {
             aw_browser_context_->GetDefaultStoragePartition()
                 ->GetURLLoaderFactoryForBrowserProcess()
                 .get(),
-            ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding,
+            ip_protection::IpProtectionTokenFetcherHelper::kWebViewIpBlinding,
             this);
   }
 }
@@ -92,7 +91,8 @@ void AwIpProtectionCoreHost::SetUpForTesting(
   ip_protection_proxy_config_fetcher_ =
       std::make_unique<ip_protection::IpProtectionProxyConfigDirectFetcher>(
           std::move(url_loader_factory),
-          ip_protection::IpProtectionCoreHostHelper::kWebViewIpBlinding, this);
+          ip_protection::IpProtectionTokenFetcherHelper::kWebViewIpBlinding,
+          this);
 }
 
 void AwIpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {

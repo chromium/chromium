@@ -18,7 +18,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/ip_protection/common/ip_protection_config_http.h"
-#include "components/ip_protection/common/ip_protection_core_host_helper.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher.h"
 #include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
@@ -187,22 +186,17 @@ void IpProtectionTokenDirectFetcher::OnFetchBlindSignedTokenCompleted(
     return;
   }
 
-  std::vector<BlindSignedAuthToken> bsa_tokens;
-  for (const quiche::BlindSignToken& token : tokens.value()) {
-    std::optional<BlindSignedAuthToken> converted_token =
-        IpProtectionCoreHostHelper::CreateBlindSignedAuthToken(token);
-    if (!converted_token.has_value() || converted_token->token.empty()) {
-      TryGetAuthTokensComplete(std::nullopt, std::move(callback),
-                               kFailedBSAOther);
-      return;
-    } else {
-      bsa_tokens.push_back(std::move(converted_token).value());
-    }
+  std::optional<std::vector<BlindSignedAuthToken>> bsa_tokens =
+      IpProtectionTokenFetcherHelper::QuicheTokensToIpProtectionAuthTokens(
+          tokens.value());
+  if (!bsa_tokens) {
+    TryGetAuthTokensComplete(std::nullopt, std::move(callback),
+                             kFailedBSAOther);
+    return;
   }
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  TryGetAuthTokensComplete(std::make_optional(std::move(bsa_tokens)),
-                           std::move(callback), kSuccess,
+  TryGetAuthTokensComplete(std::move(bsa_tokens), std::move(callback), kSuccess,
                            current_time - bsa_get_tokens_start_time);
 }
 
@@ -262,19 +256,19 @@ std::optional<base::TimeDelta> IpProtectionTokenDirectFetcher::CalculateBackoff(
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff = IpProtectionCoreHostHelper::kNotEligibleBackoff;
+      backoff = IpProtectionTokenFetcherHelper::kNotEligibleBackoff;
       break;
     case kFailedOAuthTokenTransient:
     case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff = IpProtectionCoreHostHelper::kTransientBackoff;
+      backoff = IpProtectionTokenFetcherHelper::kTransientBackoff;
       exponential = true;
       break;
     case kFailedBSA400:
     case kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = IpProtectionCoreHostHelper::kBugBackoff;
+      backoff = IpProtectionTokenFetcherHelper::kBugBackoff;
       exponential = true;
       break;
     case kFailedOAuthTokenDeprecated:

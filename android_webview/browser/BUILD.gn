@@ -285,7 +285,6 @@ source_set("browser") {
     "//components/heap_profiling/multi_process",
     "//components/history/core/browser:browser",
     "//components/ip_protection/android:ip_protection_token_ipc_fetcher",
-    "//components/ip_protection/common:ip_protection_core_host_helper",
     "//components/ip_protection/common:ip_protection_data_types",
     "//components/ip_protection/common:ip_protection_proxy_config_direct_fetcher",
     "//components/ip_protection/common:ip_protection_telemetry",
