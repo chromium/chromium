@@ -20,9 +20,6 @@ const char kSortIsAscendingKey[] = "sort_is_ascending";
 // IDS_TASK_MANAGER_TASK_COLUMN, we use the literal string
 // "IDS_TASK_MANAGER_TASK_COLUMN").
 
-#if defined(COLUMN_CASE)
-#error Surprising name collision ┐(´∇｀)┌
-#endif
 #define COLUMN_CASE(column_id) \
   case column_id:              \
     return #column_id
