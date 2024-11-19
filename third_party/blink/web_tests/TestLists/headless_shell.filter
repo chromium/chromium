@@ -512,6 +512,7 @@ external/wpt/file-system-access/*
 external/wpt/FileAPI/*
 external/wpt/focus/*
 external/wpt/font-access/*
+external/wpt/forced-colors-mode/*
 external/wpt/fullscreen/*
 external/wpt/gamepad/*
 external/wpt/generic-sensor/*
