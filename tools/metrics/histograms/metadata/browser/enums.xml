@@ -325,6 +325,21 @@ chromium-metrics-reviews@google.com.
   <int value="122" label="CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS"/>
 </enum>
 
+<!-- LINT.IfChange(NoSpareRendererReason) -->
+
+<enum name="NoSpareRendererReason">
+  <int value="0" label="kNotYetCreated"/>
+  <int value="1" label="kTakenByPreviousNavigation"/>
+  <int value="2" label="kTimeout"/>
+  <int value="3" label="kNotEnabled"/>
+  <int value="4" label="kProcessLimit"/>
+  <int value="5" label="kMemoryPressure"/>
+  <int value="6" label="kProcessExited"/>
+  <int value="7" label="kProcessHostDestroyed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
+
 <enum name="RendererType">
   <int value="1" label="Normal renderer"/>
   <int value="2" label="Extension renderer"/>

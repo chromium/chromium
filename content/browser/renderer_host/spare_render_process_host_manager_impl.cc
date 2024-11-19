@@ -24,6 +24,26 @@ namespace {
 constexpr char kSpareRendererDispatchResultUmaName[] =
     "BrowserRenderProcessHost.SpareRendererDispatchResult";
 
+content::NoSpareRendererReason MapToNoSpareRendererReason(
+    content::SpareRendererDispatchResult dispatch_result) {
+  switch (dispatch_result) {
+    case content::SpareRendererDispatchResult::kUsed:
+      return content::NoSpareRendererReason::kTakenByPreviousNavigation;
+    case content::SpareRendererDispatchResult::kTimeout:
+      return content::NoSpareRendererReason::kTimeout;
+    case content::SpareRendererDispatchResult::kOverridden:
+      return content::NoSpareRendererReason::kNotYetCreated;
+    case content::SpareRendererDispatchResult::kDestroyedNotEnabled:
+      return content::NoSpareRendererReason::kNotEnabled;
+    case content::SpareRendererDispatchResult::kDestroyedProcessLimit:
+      return content::NoSpareRendererReason::kProcessLimit;
+    case content::SpareRendererDispatchResult::kProcessExited:
+      return content::NoSpareRendererReason::kProcessExited;
+    case content::SpareRendererDispatchResult::kProcessHostDestroyed:
+      return content::NoSpareRendererReason::kProcessHostDestroyed;
+  }
+}
+
 }  // namespace
 
 namespace content {
@@ -155,6 +175,7 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   if (RenderProcessHost::run_renderer_in_process() ||
       RenderProcessHostImpl::GetProcessCountForLimit() >=
           RenderProcessHostImpl::GetMaxRendererProcessCount()) {
+    no_spare_renderer_reason_ = NoSpareRendererReason::kProcessLimit;
     return;
   }
 
@@ -165,6 +186,7 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   if (memory_monitor &&
       memory_monitor->GetCurrentPressureLevel() >=
           base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    no_spare_renderer_reason_ = NoSpareRendererReason::kMemoryPressure;
     return;
   }
 
@@ -315,6 +337,11 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   }
   UMA_HISTOGRAM_ENUMERATION(
       "BrowserRenderProcessHost.SpareProcessMaybeTakeAction", action);
+  if (action == SpareProcessMaybeTakeAction::kNoSparePresent) {
+    base::UmaHistogramEnumeration(
+        "BrowserRenderProcessHost.NoSparePresentReason",
+        no_spare_renderer_reason_);
+  }
 
   // Decide whether to take or drop the spare process.
   RenderProcessHost* returned_process = nullptr;
@@ -408,6 +435,10 @@ void SpareRenderProcessHostManagerImpl::CleanupSpares(
       observer.OnSpareRenderProcessHostRemoved(spare_rph);
     }
   }
+  if (dispatch_result.has_value()) {
+    no_spare_renderer_reason_ =
+        MapToNoSpareRendererReason(dispatch_result.value());
+  }
 }
 
 void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
@@ -427,6 +458,9 @@ void SpareRenderProcessHostManagerImpl::ReleaseSpare(
   host->RemoveObserver(this);
   for (auto& observer : observer_list_) {
     observer.OnSpareRenderProcessHostRemoved(host);
+  }
+  if (spare_rphs_.empty()) {
+    no_spare_renderer_reason_ = MapToNoSpareRendererReason(dispatch_result);
   }
 }
 
