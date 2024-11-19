@@ -21,13 +21,11 @@ import {MouseLongClickMacro} from './macros/mouse_long_click_macro.js';
 import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
-import {PrefNames} from './pref_names.js';
 
 import RoleType = chrome.automation.RoleType;
 import StateType = chrome.automation.StateType;
 
 type AutomationNode = chrome.automation.AutomationNode;
-type PrefObject = chrome.settingsPrivate.PrefObject;
 
 interface DetectMacrosResult {
   macros: Macro[];
@@ -42,7 +40,6 @@ export class GestureHandler {
   private mouseController_: MouseController;
   private bubbleController_: BubbleController;
   private gestureTimer_: GestureTimer;
-  private prefsListener_: (prefs: any) => void;
   private toggleInfoListener_: (enabled: boolean) => void;
   // The most recently detected gestures. We track this to know when a gesture
   // has ended.
@@ -58,7 +55,6 @@ export class GestureHandler {
     this.mouseController_ = mouseController;
     this.bubbleController_ = bubbleController;
     this.isDictationActive_ = isDictationActive;
-    this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.toggleInfoListener_ = enabled =>
         GestureDetector.toggleSendGestureDetectionInfo(enabled);
     this.gestureTimer_ = new GestureTimer();
@@ -66,16 +62,12 @@ export class GestureHandler {
 
   start(): void {
     this.paused_ = false;
-    chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
-    chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
-
     chrome.accessibilityPrivate.onToggleGestureInfoForSettings.addListener(
         this.toggleInfoListener_);
   }
 
   stop(): void {
     this.paused_ = false;
-    chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
     chrome.accessibilityPrivate.onToggleGestureInfoForSettings.removeListener(
         this.toggleInfoListener_);
     this.previousGestures_ = [];
@@ -90,24 +82,6 @@ export class GestureHandler {
 
   isPaused(): boolean {
     return this.paused_;
-  }
-
-  private updateFromPrefs_(prefs: PrefObject[]): void {
-    prefs.forEach(pref => {
-      switch (pref.key) {
-        case PrefNames.GESTURE_TO_MACRO:
-          this.gesturesToMacrosChanged_(pref.value);
-          break;
-        case PrefNames.GESTURE_TO_CONFIDENCE:
-          this.gesturesToConfidencesChanged_(pref.value);
-          break;
-        case PrefNames.GESTURE_TO_KEY_COMBO:
-          this.gesturesToKeyCombosChanged_(pref.value);
-          break;
-        default:
-          return;
-      }
-    });
   }
 
   getHeldMacroDisplayStrings(): string[] {
@@ -371,7 +345,7 @@ export class GestureHandler {
     return true;
   }
 
-  private gesturesToMacrosChanged_(bindings: Object): void {
+  gesturesToMacrosChanged(bindings: Object): void {
     if (!bindings) {
       return;
     }
@@ -418,7 +392,7 @@ export class GestureHandler {
     }
   }
 
-  private gesturesToConfidencesChanged_(confidences: Object) {
+  gesturesToConfidencesChanged(confidences: Object) {
     if (!confidences) {
       return;
     }
@@ -429,7 +403,7 @@ export class GestureHandler {
     }
   }
 
-  private gesturesToKeyCombosChanged_(keyCombos: Object) {
+  gesturesToKeyCombosChanged(keyCombos: Object) {
     if (!keyCombos) {
       return;
     }

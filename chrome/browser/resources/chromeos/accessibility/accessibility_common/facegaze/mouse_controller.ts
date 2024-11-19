@@ -9,14 +9,11 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
-import {PrefNames} from './pref_names.js';
 import {ScrollModeController} from './scroll_mode_controller.js';
 
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
 import SyntheticMouseEventButton = chrome.accessibilityPrivate.SyntheticMouseEventButton;
-
-type PrefObject = chrome.settingsPrivate.PrefObject;
 
 // A ScreenPoint represents an integer screen coordinate, whereas
 // a FloatingPoint2D represents a (x, y) floating point number
@@ -42,8 +39,6 @@ export class MouseController {
   private onMouseMovedHandler_: EventHandler;
   private onMouseDraggedHandler_: EventHandler;
   private screenBounds_: ScreenRect|undefined;
-
-  private prefsListener_: ((prefs: PrefObject[]) => void);
 
   // These values will be updated when prefs are received in init_().
   private targetBufferSize_ = MouseController.DEFAULT_BUFFER_SIZE;
@@ -101,7 +96,6 @@ export class MouseController {
     this.landmarkWeights_.set(LandmarkType.RIGHT_TEMPLE, 0.0336);
     this.landmarkWeights_.set(LandmarkType.ROTATION, 0.3960);
 
-    this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init();
   }
 
@@ -124,8 +118,6 @@ export class MouseController {
 
   async start(): Promise<void> {
     this.paused_ = false;
-    chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
-    chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
 
     // TODO(b/309121742): Handle display bounds changed.
     const screens = await new Promise<ScreenRect[]>((resolve) => {
@@ -345,7 +337,6 @@ export class MouseController {
     this.lastMouseMovedTime_ = 0;
     this.buffer_ = [];
     this.paused_ = false;
-    chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
   }
 
   togglePaused(): void {
@@ -486,45 +477,6 @@ export class MouseController {
     return multiply * sig;
   }
 
-  private updateFromPrefs_(prefs: PrefObject[]): void {
-    prefs.forEach(pref => {
-      switch (pref.key) {
-        case PrefNames.SPD_UP:
-          if (pref.value !== undefined) {
-            this.speedUpChanged_(pref.value);
-          }
-          break;
-        case PrefNames.SPD_DOWN:
-          if (pref.value !== undefined) {
-            this.speedDownChanged_(pref.value);
-          }
-          break;
-        case PrefNames.SPD_LEFT:
-          if (pref.value !== undefined) {
-            this.speedLeftChanged_(pref.value);
-          }
-          break;
-        case PrefNames.SPD_RIGHT:
-          if (pref.value !== undefined) {
-            this.speedRightChanged_(pref.value);
-          }
-          break;
-        case PrefNames.CURSOR_USE_ACCELERATION:
-          if (pref.value !== undefined) {
-            this.useCursorAccelerationChanged_(pref.value);
-          }
-          break;
-        case PrefNames.VELOCITY_THRESHOLD:
-          if (pref.value !== undefined) {
-            this.velocityThresholdChanged_(pref.value);
-          }
-          break;
-        default:
-          return;
-      }
-    });
-  }
-
   private calcVelocityThreshold_(): void {
     // Threshold is a function of speed. Threshold increases as speed increases
     // because it's easier to move the mouse accidentally at high mouse speeds.
@@ -576,31 +528,31 @@ export class MouseController {
     }
   }
 
-  private speedUpChanged_(speed: number): void {
+  speedUpChanged(speed: number): void {
     this.spdUp_ = speed;
     this.calcVelocityThreshold_();
   }
 
-  private speedDownChanged_(speed: number): void {
+  speedDownChanged(speed: number): void {
     this.spdDown_ = speed;
     this.calcVelocityThreshold_();
   }
 
-  private speedLeftChanged_(speed: number): void {
+  speedLeftChanged(speed: number): void {
     this.spdLeft_ = speed;
     this.calcVelocityThreshold_();
   }
 
-  private speedRightChanged_(speed: number): void {
+  speedRightChanged(speed: number): void {
     this.spdRight_ = speed;
     this.calcVelocityThreshold_();
   }
 
-  private useCursorAccelerationChanged_(useAcceleration: boolean): void {
+  useCursorAccelerationChanged(useAcceleration: boolean): void {
     this.useMouseAcceleration_ = useAcceleration;
   }
 
-  private velocityThresholdChanged_(threshold: number): void {
+  velocityThresholdChanged(threshold: number): void {
     // Ensure threshold factor is a decimal value.
     this.velocityThresholdFactor_ =
         threshold / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;

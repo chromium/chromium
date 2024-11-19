@@ -125,12 +125,43 @@ export class FaceGaze {
 
   private updateFromPrefs_(prefs: PrefObject[]): void {
     prefs.forEach(pref => {
+      if (pref.value === undefined || pref.value === null) {
+        return;
+      }
+
       switch (pref.key) {
+        case PrefNames.ACTIONS_ENABLED:
+          this.actionsEnabledChanged_(pref.value);
+          break;
         case PrefNames.CURSOR_CONTROL_ENABLED:
           this.cursorControlEnabledChanged_(pref.value);
           break;
-        case PrefNames.ACTIONS_ENABLED:
-          this.actionsEnabledChanged_(pref.value);
+        case PrefNames.CURSOR_USE_ACCELERATION:
+          this.mouseController_.useCursorAccelerationChanged(pref.value);
+          break;
+        case PrefNames.GESTURE_TO_CONFIDENCE:
+          this.gestureHandler_.gesturesToConfidencesChanged(pref.value);
+          break;
+        case PrefNames.GESTURE_TO_KEY_COMBO:
+          this.gestureHandler_.gesturesToKeyCombosChanged(pref.value);
+          break;
+        case PrefNames.GESTURE_TO_MACRO:
+          this.gestureHandler_.gesturesToMacrosChanged(pref.value);
+          break;
+        case PrefNames.SPD_UP:
+          this.mouseController_.speedUpChanged(pref.value);
+          break;
+        case PrefNames.SPD_DOWN:
+          this.mouseController_.speedDownChanged(pref.value);
+          break;
+        case PrefNames.SPD_LEFT:
+          this.mouseController_.speedLeftChanged(pref.value);
+          break;
+        case PrefNames.SPD_RIGHT:
+          this.mouseController_.speedRightChanged(pref.value);
+          break;
+        case PrefNames.VELOCITY_THRESHOLD:
+          this.mouseController_.velocityThresholdChanged(pref.value);
           break;
         default:
           return;
@@ -219,6 +250,7 @@ export class FaceGaze {
     this.mouseController_.reset();
     this.gestureHandler_.stop();
     this.webCamFaceLandmarker_.stop();
+    chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
   }
 
   /** Allows tests to wait for FaceGaze to be fully initialized. */
