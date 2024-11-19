@@ -58,7 +58,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mModel = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS).build();
-        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ false);
+        mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         when(mLifecycle.canBegin()).thenReturn(true);
         mMediator = new AutofillVcnEnrollBottomSheetMediator(mContent, mLifecycle, mModel);

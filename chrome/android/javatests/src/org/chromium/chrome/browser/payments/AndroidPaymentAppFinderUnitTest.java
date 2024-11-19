@@ -116,7 +116,7 @@ public class AndroidPaymentAppFinderUnitTest {
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(sActivity),
                                     mInsetObserver,
-                                    /* trackOcclusion= */ false);
+                                    /* trackOcclusion= */ true);
                         });
 
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();

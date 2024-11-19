@@ -78,7 +78,7 @@ public class DefaultBrowserPromoUtilsTest {
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
-                        /* trackOcclusion= */ false);
+                        /* trackOcclusion= */ true);
         TrackerFactory.setTrackerForTests(mMockTracker);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMockMessageDispatcher);
         SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
