@@ -708,6 +708,7 @@ public class NavigationTransitionsTest {
     /** Test that it falls back to fallback screenshot when navigating between native pages. */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/379861088")
     public void testNavigateBetweenNativePages() throws TimeoutException {
         if (mTestNavigationMode == NAVIGATION_MODE_GESTURAL
                 && VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE) return;
