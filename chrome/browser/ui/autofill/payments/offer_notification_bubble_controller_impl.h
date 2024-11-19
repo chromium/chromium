@@ -8,17 +8,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/commerce/coupons/coupon_service.h"
-#include "chrome/browser/commerce/coupons/coupon_service_observer.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
 
-class AutofillOfferData;
 struct OfferNotificationOptions;
 
 // Implementation of per-tab class to control the offer notification bubble and
@@ -27,8 +25,7 @@ class OfferNotificationBubbleControllerImpl
     : public AutofillBubbleControllerBase,
       public OfferNotificationBubbleController,
       public content::WebContentsUserData<
-          OfferNotificationBubbleControllerImpl>,
-      public CouponServiceObserver {
+          OfferNotificationBubbleControllerImpl> {
  public:
   // An observer class used by browsertests that gets notified whenever
   // particular actions occur.
@@ -70,10 +67,6 @@ class OfferNotificationBubbleControllerImpl
 
   // Removes any visible bubble and the omnibox icon.
   void DismissNotification();
-
-  // CouponService::CouponServiceObserver:
-  void OnCouponInvalidated(
-      const autofill::AutofillOfferData& offer_data) override;
 
  protected:
   explicit OfferNotificationBubbleControllerImpl(
@@ -123,9 +116,6 @@ class OfferNotificationBubbleControllerImpl
   // Determines the appropriate hover tooltip for the button.
   bool promo_code_button_clicked_ = false;
 
-  // Used to update coupon last display timestamp.
-  raw_ptr<CouponService> coupon_service_;
-
   // Records the current state of the bubble.
   BubbleState bubble_state_ = BubbleState::kHidden;
 
@@ -133,9 +123,6 @@ class OfferNotificationBubbleControllerImpl
 
   // Denotes whether the icon should expand in the omnibox.
   bool icon_should_expand_ = false;
-
-  base::ScopedObservation<CouponService, CouponServiceObserver>
-      coupon_service_observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
