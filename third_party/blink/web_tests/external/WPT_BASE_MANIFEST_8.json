@@ -305468,7 +305468,7 @@
     "shared-storage": {
      "trusted-origins": {
       "default.py": [
-       "4dbd83639715edc8e59f2c6d077291fd7d86a249",
+       "b595f17073f0463dd633469527f255d3c3376d65",
        []
       ]
      }
@@ -365543,7 +365543,7 @@
       []
      ],
      "testharness.md": [
-      "e426e37f22b7afe3fda3a37755f46fb651356b5b",
+      "02864f8853bbb4d7c225327ce0c8ec0461e05ab5",
       []
      ],
      "tools.md": [
@@ -392886,6 +392886,12 @@
        []
       ]
      },
+     "atob": {
+      "base64.any.shadowrealm-expected.txt": [
+       "f1c2a17f287945caa185475f439de706f11d56b7",
+       []
+      ]
+     },
      "dynamic-markup-insertion": {
       "document-write": {
        "005.js": [
@@ -404546,7 +404552,7 @@
      ]
     },
     "idlharness-shadowrealm.js": [
-     "9484ca6f512ad0414d0969b3ec265114c95fd306",
+     "b959ca00e83d3a312edd4fde9c217ca6e9776aed",
      []
     ],
     "idlharness.js": [
@@ -404603,6 +404609,18 @@
     ],
     "testdriver.js.headers": [
      "5e8f640c6659d176eaca4c71cc1798b7285540b7",
+     []
+    ],
+    "testharness-shadowrealm-audioworkletprocessor.js": [
+     "a87d9130908f86dc3ff0428eb57be31ef123bf00",
+     []
+    ],
+    "testharness-shadowrealm-inner.js": [
+     "98df77b0b6cce61533bf629e1dcdb5ebd93c40b5",
+     []
+    ],
+    "testharness-shadowrealm-outer.js": [
+     "9665ff2656fbc5c939a6ea30b54cb3d75f27aac8",
      []
     ],
     "testharness.js": [
@@ -415131,14 +415149,6 @@
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
      []
     ],
-    "video-decoder.https.any-expected.txt": [
-     "3893314ee160f59883efd7f9bc8f9591b5bb64c8",
-     []
-    ],
-    "video-decoder.https.any.worker-expected.txt": [
-     "3893314ee160f59883efd7f9bc8f9591b5bb64c8",
-     []
-    ],
     "video-encoder-h264.https.any.worker_high-6.2-expected.txt": [
      "3c94b3c80671e48cfffa1adf2ec63ff713fdda52",
      []
@@ -416489,8 +416499,24 @@
       []
      ],
      "es-exceptions": {
+      "DOMException-constants.any.shadowrealm-expected.txt": [
+       "c4cf51c6285538952d0a018c839fd75446d67201",
+       []
+      ],
+      "DOMException-constructor-and-prototype.any.shadowrealm-expected.txt": [
+       "c4cf51c6285538952d0a018c839fd75446d67201",
+       []
+      ],
+      "DOMException-constructor-behavior.any.shadowrealm-expected.txt": [
+       "c4cf51c6285538952d0a018c839fd75446d67201",
+       []
+      ],
       "DOMException-custom-bindings.any-expected.txt": [
        "018987dc5956289530510ff5ab899cc2d365f22c",
+       []
+      ],
+      "DOMException-custom-bindings.any.shadowrealm-expected.txt": [
+       "c4cf51c6285538952d0a018c839fd75446d67201",
        []
       ],
       "DOMException-custom-bindings.any.worker-expected.txt": [
@@ -439430,10 +439456,10 @@
        }
       ]
      ],
-     "detector.tentative.window.js": [
+     "detector.https.tentative.window.js": [
       "4f962de8339de0a8eb1b0444dfcf668c05f76b88",
       [
-       "ai/language_detection/detector.tentative.window.html",
+       "ai/language_detection/detector.https.tentative.window.html",
        {
         "script_metadata": [
          [
@@ -450682,11 +450708,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "2fdc807ee07e329fd017db31025b857b957e8040",
+     "ead3dcc837606f0f68933dc61661d4cc8ee16329",
      [
       "compression/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -452185,11 +452215,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "8f68252dcd2b13d25f7e623495987517a3dea411",
+     "fcd3817f2276a50ea6fee7990cd7a4449e4722a6",
      [
       "console/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -486845,6 +486879,13 @@
         {}
        ]
       ],
+      "replaced-element-044.tentative.html": [
+       "58a4b9b76ff32010a82c49d1e5d42090d794a081",
+       [
+        null,
+        {}
+       ]
+      ],
       "sign-function-aspect-ratio.html": [
        "e5ba1a8321a42918cccee4ee164527fa25078e4f",
        [
@@ -507381,11 +507422,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "cb03c07c9be1d8f4eb6d3656a17b1bf3d6625ed3",
+     "d9312080264d47a4558c3093deaf96e841834757",
      [
       "dom/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -516309,11 +516354,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "baf3efcbb027e4f44df8d42a9ab0e6350bad328e",
+     "205b35cf04aeaec3883db40be87aa87749f80836",
      [
       "encoding/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -563191,11 +563240,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "3209db5f41b721a2cb2376e3b79bf21bc0f0da08",
+     "b5b2a2d3efd0148ddd06a62928544e9e09b95449",
      [
       "hr-time/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -599907,11 +599960,15 @@
       ]
      ],
      "idlharness-shadowrealm.window.js": [
-      "ef71b74e50984fbfb9a397296150227cecb7c15a",
+      "e0f2691ce2add8ff0780d3350919a46c25040a62",
       [
        "html/dom/idlharness-shadowrealm.window.html",
        {
         "script_metadata": [
+         [
+          "script",
+          "/resources/testharness-shadowrealm-outer.js"
+         ],
          [
           "script",
           "/resources/idlharness-shadowrealm.js"
@@ -621655,14 +621712,39 @@
      },
      "atob": {
       "base64.any.js": [
-       "7f433f4d8a9ee2e317def3327c5882938cbd6732",
+       "e9bcb67a9d9a278cd8e20005575011bf007b248e",
        [
         "html/webappapis/atob/base64.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "html/webappapis/atob/base64.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ],
        [
         "html/webappapis/atob/base64.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ]
       ]
      },
@@ -638893,7 +638975,7 @@
      ]
     ],
     "nav2-test-document-replaced.html": [
-     "5972f20e9bd7ffdf27d32b5b30b63913ceeeed09",
+     "480e2bef841f7d5e36e872b8ba390ebbd7418ee2",
      [
       null,
       {}
@@ -638997,6 +639079,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "nav2-test-timing-persistent.html": [
+     "c3db5e1dcf0fb151c0bc896b1be7b9fc1acb46cb",
+     [
+      null,
+      {}
      ]
     ],
     "nav2-test-unique-nav-instances.html": [
@@ -641576,11 +641665,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "6caaa3306132bdc930e5bbae24981f01d0022a0a",
+     "671c172d3e6862bdcb1f299985ef8085e7a9f9ec",
      [
       "performance-timeline/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -668949,6 +669042,15 @@
        }
       ]
      ],
+     "click-focus-slot-ancestor.html": [
+      "724b5644dcb5b40cf5d2ff34209e124070117477",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "delegatesFocus-tabindex-change.html": [
       "f159c22164bb62064b62bc089faf5bd05cba555f",
       [
@@ -676162,11 +676264,15 @@
    },
    "streams": {
     "idlharness-shadowrealm.window.js": [
-     "099b2475ca7e8795a685a080d48b0c0b05fd886d",
+     "9ec65f7bdf80ef101fd90d1fe441a33902fe2eda",
      [
       "streams/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -684363,6 +684469,13 @@
       ]
      },
      "scripted": {
+      "SVGMarkerElement-orientType-synchronization.html": [
+       "041421283105b1fbc1cacabbe81267b9babfb5ac",
+       [
+        null,
+        {}
+       ]
+      ],
       "paint-order-computed-value-01.svg": [
        "7ea669f1508283f498e9b38030022deac3b091a0",
        [
@@ -688948,11 +689061,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "2373f84e0e251a967c221ee63a1f7076bb089f78",
+     "b090371e3c30b162eb4fb584e966544520ad7b62",
      [
       "url/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -690235,11 +690352,15 @@
      ]
     ],
     "idlharness-shadowrealm.window.js": [
-     "340da96f749d4910af1c487fa3ae0fa9d91f4d59",
+     "52ad58faa224ec8b0a6daf3eca05a7d69579bd1b",
      [
       "user-timing/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
@@ -692763,11 +692884,15 @@
       ]
      },
      "idlharness-shadowrealm.window.js": [
-      "6f221c8c247fcedec0a0865c6e93b71b24a1f3f1",
+      "26348037f73647988d48857a83dd10847e044409",
       [
        "wasm/jsapi/idlharness-shadowrealm.window.html",
        {
         "script_metadata": [
+         [
+          "script",
+          "/resources/testharness-shadowrealm-outer.js"
+         ],
          [
           "script",
           "/resources/idlharness-shadowrealm.js"
@@ -705905,7 +706030,7 @@
      ]
     ],
     "video-decoder.https.any.js": [
-     "6b77aeae5451d7e745ef7ddc495864a50e763066",
+     "333ac55a9b4a8c7a1bdf5cc946f08fe5a6060547",
      [
       "webcodecs/video-decoder.https.any.html",
       {
@@ -707942,47 +708067,147 @@
      ],
      "es-exceptions": {
       "DOMException-constants.any.js": [
-       "bb846a494eb898aed621181f182c1b125f9aaeae",
+       "9b6978783723ebaa1e925873d71db85c11d927f7",
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-constants.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-constants.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ],
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-constants.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ]
       ],
       "DOMException-constructor-and-prototype.any.js": [
-       "a015470cad6bf7f72541718243e94512671454ad",
+       "011521652654c93a2d9b8a7915e432b55b9f2084",
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-constructor-and-prototype.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-constructor-and-prototype.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ],
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-constructor-and-prototype.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ]
       ],
       "DOMException-constructor-behavior.any.js": [
-       "e9917af2287490c77543146a660d57c822cccf2e",
+       "c4ddabdafd4597aac6f13ad5182b78566045c09a",
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-constructor-behavior.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-constructor-behavior.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ],
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-constructor-behavior.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ]
       ],
       "DOMException-custom-bindings.any.js": [
-       "cd4e5b6341948cb8fad29cc29483dcf6b8444bcd",
+       "d1c86930d4cd8ef57fdc6e6b8bcff03049a389ca",
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
+       ],
+       [
+        "webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.shadowrealm.html",
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ],
        [
         "webidl/ecmascript-binding/es-exceptions/DOMException-custom-bindings.any.worker.html",
-        {}
+        {
+         "script_metadata": [
+          [
+           "global",
+           "window,dedicatedworker,shadowrealm"
+          ]
+         ]
+        }
        ]
       ],
       "exceptions.html": [
@@ -708290,11 +708515,15 @@
      ]
     },
     "idlharness-shadowrealm.window.js": [
-     "ab1ca9a0198720d537744cdc8777205317b41f58",
+     "249d2960823b2614fe15019eb24fc36c45c56a37",
      [
       "webidl/idlharness-shadowrealm.window.html",
       {
        "script_metadata": [
+        [
+         "script",
+         "/resources/testharness-shadowrealm-outer.js"
+        ],
         [
          "script",
          "/resources/idlharness-shadowrealm.js"
