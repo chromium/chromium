@@ -42,8 +42,7 @@ std::pair<float, float> EllipseShape::InlineAndBlockRadiiIncludingMargin()
     const {
   float margin_radius_x = radius_x_ + ShapeMargin();
   float margin_radius_y = radius_y_ + ShapeMargin();
-  if (!RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled() ||
-      IsHorizontalWritingMode(writing_mode_)) {
+  if (IsHorizontalWritingMode(writing_mode_)) {
     return {margin_radius_x, margin_radius_y};
   }
   return {margin_radius_y, margin_radius_x};

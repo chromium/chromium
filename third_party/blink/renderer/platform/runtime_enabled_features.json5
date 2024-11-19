@@ -3934,11 +3934,6 @@
       status: "experimental",
     },
     {
-      // crbug.com/359616076, crbug.com/360158400, and crbug.com/360903551.
-      name: "ShapeOutsideWritingModeFix",
-      status: "stable",
-    },
-    {
       // crbug.com/329677645
       name: "ShapeResultCachedPreviousSafeToBreakOffset",
       status: "stable",
