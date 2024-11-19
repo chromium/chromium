@@ -86,43 +86,6 @@ std::u16string GetFormattedUrl(const GURL& origin) {
       origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
 
-std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type) {
-  if (ShouldCheckPasswords(leak_type)) {
-    return l10n_util::GetStringUTF16(IDS_LEAK_CHECK_CREDENTIALS);
-  }
-
-  return l10n_util::GetStringUTF16(IDS_OK);
-}
-
-std::u16string GetCancelButtonLabel(CredentialLeakType leak_type) {
-  return l10n_util::GetStringUTF16(IDS_CLOSE);
-}
-
-std::u16string GetDescription(CredentialLeakType leak_type) {
-  if (!ShouldCheckPasswords(leak_type)) {
-    return l10n_util::GetStringUTF16(
-        UsesPasswordManagerGoogleBranding()
-            ? IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_BRANDED
-            : IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE_GPM_NON_BRANDED);
-  }
-  if (password_manager::IsPasswordSaved(leak_type)) {
-    return l10n_util::GetStringUTF16(
-        UsesPasswordManagerGoogleBranding()
-            ? IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-            : IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
-  }
-  return l10n_util::GetStringUTF16(
-      UsesPasswordManagerGoogleBranding()
-          ? IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_BRANDED
-          : IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE_GPM_NON_BRANDED);
-}
-
-std::u16string GetTitle(CredentialLeakType leak_type) {
-  return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
-                                       ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
-                                       : IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
-}
-
 std::u16string GetLeakDetectionTooltip() {
   return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_LEAK_HELP_MESSAGE);
 }
@@ -134,10 +97,6 @@ bool ShouldCheckPasswords(CredentialLeakType leak_type) {
   }
 #endif
   return password_manager::IsPasswordUsedOnOtherSites(leak_type);
-}
-
-bool ShouldShowCancelButton(CredentialLeakType leak_type) {
-  return ShouldCheckPasswords(leak_type);
 }
 
 LeakDialogType GetLeakDialogType(CredentialLeakType leak_type) {

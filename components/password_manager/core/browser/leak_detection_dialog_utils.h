@@ -81,26 +81,11 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 // Checks whether the password is synced to a remote store (profile or account).
 bool IsPasswordSynced(CredentialLeakType leak_type);
 
-// Returns the label for the leak dialog accept button.
-std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type);
-
-// Returns the label for the leak dialog cancel button.
-std::u16string GetCancelButtonLabel(CredentialLeakType leak_type);
-
-// Returns the leak dialog message based on leak type.
-std::u16string GetDescription(CredentialLeakType leak_type);
-
-// Returns the leak dialog title based on leak type.
-std::u16string GetTitle(CredentialLeakType leak_type);
-
 // Returns the leak dialog tooltip shown on (?) click.
 std::u16string GetLeakDetectionTooltip();
 
 // Checks whether the leak dialog should prompt user to password checkup.
 bool ShouldCheckPasswords(CredentialLeakType leak_type);
-
-// Checks whether the leak dialog should show cancel button.
-bool ShouldShowCancelButton(CredentialLeakType leak_type);
 
 // Returns the LeakDialogType corresponding to |leak_type|.
 metrics_util::LeakDialogType GetLeakDialogType(CredentialLeakType leak_type);

@@ -149,22 +149,10 @@ class CredentialLeakDialogUtilsTest
   }
 };
 
-TEST_P(CredentialLeakDialogUtilsTest, GetAcceptButtonLabel) {
-  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-  EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().accept_button_id),
-            GetAcceptButtonLabel(GetParam().leak_type));
-}
-
 TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_GetAcceptButtonLabel) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().accept_button_id),
             CreateDialogTraits(GetParam().leak_type)->GetAcceptButtonLabel());
-}
-
-TEST_P(CredentialLeakDialogUtilsTest, GetCancelButtonLabel) {
-  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-  EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().cancel_button_id),
-            GetCancelButtonLabel(GetParam().leak_type));
 }
 
 TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_GetCancelButtonLabel) {
@@ -173,23 +161,10 @@ TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_GetCancelButtonLabel) {
             CreateDialogTraits(GetParam().leak_type)->GetCancelButtonLabel());
 }
 
-TEST_P(CredentialLeakDialogUtilsTest, GetDescription) {
-  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-  std::u16string expected_message =
-      l10n_util::GetStringUTF16(GetParam().leak_message_id);
-  EXPECT_EQ(expected_message, GetDescription(GetParam().leak_type));
-}
-
 TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_GetDescription) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().leak_message_id),
             CreateDialogTraits(GetParam().leak_type)->GetDescription());
-}
-
-TEST_P(CredentialLeakDialogUtilsTest, GetTitle) {
-  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-  EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().leak_title_id),
-            GetTitle(GetParam().leak_type));
 }
 
 TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_GetTitle) {
@@ -208,11 +183,6 @@ TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_ShouldCheckPasswords) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   EXPECT_EQ(GetParam().should_check_passwords,
             CreateDialogTraits(GetParam().leak_type)->ShouldCheckPasswords());
-}
-
-TEST_P(CredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
-  EXPECT_EQ(GetParam().should_show_cancel_button,
-            ShouldShowCancelButton(GetParam().leak_type));
 }
 
 TEST_P(CredentialLeakDialogUtilsTest, LeakDialogTraits_ShouldShowCancelButton) {
@@ -251,24 +221,10 @@ TEST_P(BulkCheckCredentialLeakDialogUtilsTest, ShouldCheckPasswords) {
             ShouldCheckPasswords(GetParam().leak_type));
 }
 
-TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Buttons) {
+TEST_P(BulkCheckCredentialLeakDialogUtilsTest, ShouldCheckPasswords_Traits) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   EXPECT_EQ(GetParam().should_check_passwords,
-            ShouldShowCancelButton(GetParam().leak_type));
-  EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().should_check_passwords
-                                          ? IDS_LEAK_CHECK_CREDENTIALS
-                                          : IDS_OK),
-            GetAcceptButtonLabel(GetParam().leak_type));
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CLOSE),
-            GetCancelButtonLabel(GetParam().leak_type));
-}
-
-TEST_P(BulkCheckCredentialLeakDialogUtilsTest, Title) {
-  SCOPED_TRACE(testing::Message() << GetParam().leak_type);
-  EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().should_check_passwords
-                                          ? IDS_CREDENTIAL_LEAK_TITLE_CHECK_GPM
-                                          : IDS_CREDENTIAL_LEAK_TITLE_CHANGE),
-            GetTitle(GetParam().leak_type));
+            CreateDialogTraits(GetParam().leak_type)->ShouldCheckPasswords());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -340,20 +296,20 @@ class PasswordChangeCredentialLeakDialogUtilsTest
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, ShouldShowCancelButton) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   EXPECT_EQ(GetParam().should_show_cancel_button,
-            ShouldShowCancelButton(GetParam().leak_type));
+            CreateDialogTraits(GetParam().leak_type)->ShouldShowCancelButton());
 }
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, GetAcceptButtonLabel) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().accept_button_id),
-            GetAcceptButtonLabel(GetParam().leak_type));
+            CreateDialogTraits(GetParam().leak_type)->GetAcceptButtonLabel());
 }
 
 TEST_P(PasswordChangeCredentialLeakDialogUtilsTest, GetCancelButtonLabel) {
   SCOPED_TRACE(testing::Message() << GetParam().leak_type);
   if (GetParam().should_show_cancel_button) {
     EXPECT_EQ(l10n_util::GetStringUTF16(GetParam().cancel_button_id),
-              GetCancelButtonLabel(GetParam().leak_type));
+              CreateDialogTraits(GetParam().leak_type)->GetCancelButtonLabel());
   }
 }
 
