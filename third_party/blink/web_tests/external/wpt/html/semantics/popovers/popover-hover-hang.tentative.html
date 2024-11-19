@@ -19,7 +19,7 @@
 <button id=unrelated>Unrelated</button>
 
 <script>
-   promise_test(async (t) => {
+  promise_test(async (t) => {
     menu.showPopover();
     assert_true(menu.matches(':popover-open'));
     await mouseHover(button,100);
@@ -30,5 +30,5 @@
     await mouseHover(unrelated,100);
     assert_true(submenu.matches(':popover-open'));
     // This test passes if nothing crashes/hangs.
-   },'crash test');
+  },'This is a crash test - it has some asserts, but mostly is just checking for crashes');
 </script>
