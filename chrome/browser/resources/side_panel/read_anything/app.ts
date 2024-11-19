@@ -391,8 +391,20 @@ export class AppElement extends AppElementBase {
         return;
       }
 
-      chrome.readingMode.onSelectionChange(
-          anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+      // Only send this selection to the main panel if it is different than the
+      // current main panel selection.
+      const mainPanelAnchor =
+          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.startNodeId);
+      const mainPanelFocus =
+          this.domNodeToAxNodeIdMap_.keyFrom(chrome.readingMode.endNodeId);
+      if (!mainPanelAnchor || !mainPanelAnchor.contains(selection.anchorNode) ||
+          !mainPanelFocus || !mainPanelFocus.contains(selection.focusNode) ||
+          selection.anchorOffset !== chrome.readingMode.startOffset ||
+          selection.focusOffset !== chrome.readingMode.endOffset) {
+        chrome.readingMode.onSelectionChange(
+            anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+      }
+
       // If there's been a selection, clear the current
       // Read Aloud highlight.
       const elements =
