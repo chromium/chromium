@@ -8611,11 +8611,6 @@ crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.
 # Gardener 2024-11-14
 crbug.com/379003897 [ Win11 ] external/wpt/css/css-anchor-position/anchor-parse-valid.html [ Failure Pass ]
 
-# Those tests are flaky on Windows on Chrome new headless
-crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigator-indexed.html [ Crash Pass Timeout ]
-crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigatorlanguage.html [ Crash Pass Timeout ]
-crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/per-global.window.html [ Crash Pass Timeout ]
-crbug.com/379138826 [ Win ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/protocol.https.html [ Crash Pass Timeout ]
 
 # Gardener 2024-11-15
 crbug.com/359319433 [ Win11 ] external/wpt/secure-payment-confirmation/enrollment-in-iframe.sub.https.html [ Failure Pass Skip ]
