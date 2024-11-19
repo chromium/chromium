@@ -1,0 +1,13 @@
+Tests that getTargets returns worker targets.
+[
+    [0] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 
+        type : worker
+        url : 
+    }
+]
+
