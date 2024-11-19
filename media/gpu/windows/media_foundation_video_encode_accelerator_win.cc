@@ -1507,6 +1507,15 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
   DCHECK(imf_output_media_type_);
   DCHECK(imf_input_media_type_);
   DCHECK(encoder_);
+
+  // RTC will pass a very small bitrate(1 bps) to the encoder when its bitrate
+  // allocator assigns zero bitrate as part of initial setup. Ignore the request
+  // to avoid CHECK failures on those BRC creations.
+  if (bitrate_allocation.GetSumBps() <= 1) {
+    DLOG(WARNING) << "Ignoring bitrate allocation request with 1 bps or less.";
+    return;
+  }
+
   if (bitrate_allocation.GetMode() != bitrate_allocation_.GetMode()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
                        "Can't change bitrate mode after Initialize()"});
@@ -2746,7 +2755,15 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     if (codec_ == VideoCodec::kH264) {
       md.h264.emplace().temporal_idx = temporal_id;
     } else if (codec_ == VideoCodec::kHEVC) {
-      md.svc_generic.emplace().temporal_idx = temporal_id;
+      SVCGenericMetadata& svc = md.svc_generic.emplace();
+      svc.temporal_idx = temporal_id;
+      svc.spatial_idx = 0;
+      // We only get the temporal id from NALU header of output bitstream
+      // without extracting the reference structure, so we are not able to
+      // provide the reference flags and refresh flags for HEVC, if the
+      // |follow_svc_spec| flag is false, and RTC will not send dependency
+      // descriptor RTP extension.
+      svc.follow_svc_spec = encoder_produces_svc_spec_compliant_bitstream_;
     } else if (codec_ == VideoCodec::kAV1) {
       SVCGenericMetadata& svc = md.svc_generic.emplace();
       svc.temporal_idx = temporal_id;

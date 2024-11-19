@@ -84,6 +84,19 @@ BASE_FEATURE(kWebRtcAllowH265Receive,
              "WebRtcAllowH265Receive",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, allows H.265 L1T2 to be used for sending WebRTC streams, if the
+// accelerator reports support of encoding in L1T2.
+BASE_FEATURE(kWebRtcH265L1T2,
+             "WebRtcH265L1T2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, allows H.265 L1T3 to be used for sending WebRTC streams, if the
+// accelerator reports support of encoding in L1T3. If this is enabled, L1T2 is
+// also implied to be enabled.
+BASE_FEATURE(kWebRtcH265L1T3,
+             "WebRtcH265L1T3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Kill-switch for using 48 kHz as sample rate for Audio Processing Module
 // processing on Android. When enabled, enforces a 16 kHz sample rate for audio
