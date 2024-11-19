@@ -1791,7 +1791,8 @@ void AutofillAgent::OnProvisionallySaveForm(
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&]() {
-    if (form_element) {
+    if (form_element && !base::FeatureList::IsEnabled(
+                            features::kAutofillOptimizeFormExtraction)) {
       UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
       return;
     }
@@ -1803,15 +1804,19 @@ void AutofillAgent::OnProvisionallySaveForm(
         });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
-    UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillOptimizeFormExtraction)) {
+      UpdateLastInteractedElement(form_util::GetFieldRendererId(element));
+    }
   };
 
   switch (source) {
     case FormTracker::Observer::SaveFormReason::kWillSendSubmitEvent:
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
-      password_autofill_agent_->InformBrowserAboutUserInput(form_element,
-                                                            WebInputElement());
+      password_autofill_agent_->InformBrowserAboutUserInput(
+          form_element, WebInputElement(),
+          OptionalForm(provisionally_saved_form()));
       // TODO(crbug.com/40281981): Figure out if this is still needed, and
       // document the reason, otherwise remove.
       update_submission_data_on_user_edit();
