@@ -1444,6 +1444,16 @@
     "expires": "Jun 1, 2025"
   },
   {
+    "prefix": "dialog-close-when-open-removed-disabled",
+    "owners": ["masonf@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/html/semantics/interactive-elements/the-dialog-element"
+    ],
+    "args": ["--disable-blink-features=DialogCloseWhenOpenRemoved"],
+    "expires": "Jun 1, 2025"
+  },
+  {
     "prefix": "dialog-light-dismiss-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux"],

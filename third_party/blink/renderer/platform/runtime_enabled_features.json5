@@ -1438,7 +1438,8 @@
     },
     {
       // This feature makes the <dialog> element close properly when its "open"
-      // attribute is removed. https://github.com/whatwg/html/issues/5802
+      // attribute is removed. https://github.com/whatwg/html/issues/5802 and
+      // https://github.com/whatwg/html/pull/10124.
       name: "DialogCloseWhenOpenRemoved",
       status: "experimental",
     },

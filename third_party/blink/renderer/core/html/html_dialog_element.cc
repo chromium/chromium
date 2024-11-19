@@ -721,6 +721,7 @@ void HTMLDialogElement::ParseAttribute(
       GetDocument().AddConsoleMessage(console_message);
       close(/*return_value=*/String(), /*ignore_open_attribute=*/true);
     } else {
+      GetDocument().AllOpenDialogs().erase(this);
       if (close_watcher_) {
         close_watcher_->destroy();
         close_watcher_ = nullptr;
