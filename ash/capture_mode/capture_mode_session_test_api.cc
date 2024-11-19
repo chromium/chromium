@@ -165,4 +165,8 @@ CaptureModeSessionTestApi::GetCaptureRegionOverlayController() const {
   return session_->capture_region_overlay_controller_.get();
 }
 
+PillButton* CaptureModeSessionTestApi::GetFeedbackButton() {
+  return session_->feedback_button_.get();
+}
+
 }  // namespace ash

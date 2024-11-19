@@ -379,9 +379,12 @@ class SunfishBehavior : public CaptureModeBehavior {
     return std::make_unique<SunfishCaptureBarView>();
   }
   void OnRegionSelectedOrAdjusted() override {
+    auto* controller = CaptureModeController::Get();
+    controller->MaybeUpdateSearchResultsPanelBounds();
+
     // `CaptureModeController` will perform DLP restriction checks and determine
     // whether the image can be sent for search.
-    CaptureModeController::Get()->PerformCapture(PerformCaptureType::kSunfish);
+    controller->PerformCapture(PerformCaptureType::kSunfish);
   }
   void OnEnterKeyPressed() override {}
 };

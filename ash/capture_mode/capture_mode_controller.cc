@@ -528,20 +528,41 @@ bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
           capture_type == PerformCaptureType::kSearch);
 }
 
-gfx::Rect CalculateSearchResultPanelBounds(aura::Window* root,
+gfx::Rect CalculateSearchResultPanelBounds(const gfx::Rect& work_area,
+                                           const gfx::Rect& captured_region,
                                            const gfx::Rect& feedback_bounds) {
   // TODO: crbug.com/362284723 - Ensure tooltips are visible over overlay
   // container.
-  const gfx::Rect work_area(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
 
-  gfx::Rect bounds(work_area.right() - capture_mode::kSearchResultsPanelWidth -
-                       capture_mode::kPanelWorkAreaSpacing,
+  // Attempt to place the panel on the left by default.
+  gfx::Rect bounds(work_area.x() + capture_mode::kPanelWorkAreaSpacing,
                    work_area.bottom() -
                        capture_mode::kSearchResultsPanelHeight -
                        capture_mode::kPanelWorkAreaSpacing,
                    capture_mode::kSearchResultsPanelWidth,
                    capture_mode::kSearchResultsPanelHeight);
+
+  // If the region would then intersect with the panel, attempt to place the
+  // panel on the right.
+  if (bounds.Intersects(captured_region)) {
+    bounds.set_x(work_area.right() - capture_mode::kSearchResultsPanelWidth -
+                 capture_mode::kPanelWorkAreaSpacing);
+
+    // If the region would still intersect with the panel, choose the side with
+    // the least intersection.
+    if (bounds.Intersects(captured_region)) {
+      // Calculate the horizontal distance from the centerpoint of the work area
+      // to the left and right edges of the capture region. The panel will be
+      // placed on the side with the smaller distance (more space for the
+      // panel).
+      const int center_x = work_area.CenterPoint().x();
+      const int left_dist = center_x - captured_region.x();
+      const int right_dist = captured_region.right() - center_x;
+      if (left_dist < right_dist) {
+        bounds.set_x(work_area.x() + capture_mode::kPanelWorkAreaSpacing);
+      }
+    }
+  }
 
   // If the panel would overlap with the feedback button when it is created,
   // instead place it just above the button.
@@ -676,13 +697,18 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
     if (!is_active) {
       return;
     }
-    const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
-        capture_mode_session_->current_root(),
-        capture_mode_session_->GetFeedbackWidgetScreenBounds());
-    search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
-        capture_mode_session_->current_root(), panel_bounds);
+
+    search_results_panel_widget_ =
+        SearchResultsPanel::CreateWidget(capture_mode_session_->current_root());
 
     RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
+
+    // Setting or updating the bounds here only accounts for newly selected
+    // regions. We also have to update the bounds elsewhere when the region is
+    // adjusted or the display metrics change. We don't want the panel to update
+    // its bounds when we make a multimodal search, as it would reset the panel
+    // back to its default position each time.
+    MaybeUpdateSearchResultsPanelBounds();
   }
 
   // If the panel was not visible beforehand (either the panel was not created
@@ -700,6 +726,25 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                        ->ShouldEndSessionOnShowingSearchResults()) {
     Stop();
   }
+}
+
+void CaptureModeController::MaybeUpdateSearchResultsPanelBounds() {
+  if (!search_results_panel_widget_) {
+    return;
+  }
+
+  CHECK(IsSunfishFeatureEnabledWithFeatureKey());
+
+  // TODO: crbug.com/364718783 - Ensure this works with multi-display.
+  const gfx::Rect work_area =
+      search_results_panel_widget_->GetWorkAreaBoundsInScreen();
+
+  const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
+      work_area, user_capture_region_,
+      capture_mode_session_
+          ? capture_mode_session_->GetFeedbackWidgetScreenBounds()
+          : gfx::Rect());
+  search_results_panel_widget_->SetBounds(panel_bounds);
 }
 
 void CaptureModeController::OnLocatedEventDragged() {

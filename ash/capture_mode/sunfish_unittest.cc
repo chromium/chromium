@@ -37,6 +37,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/auto_reset.h"
@@ -563,10 +564,9 @@ TEST_F(SunfishTest, CaptureBarView) {
 
 // Tests that the search results panel is draggable.
 TEST_F(SunfishTest, DragSearchResultsPanel) {
-  gfx::Rect bounds(100, 100, capture_mode::kSearchResultsPanelWidth,
-                   capture_mode::kSearchResultsPanelHeight);
-  auto widget =
-      SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow(), bounds);
+  auto widget = SearchResultsPanel::CreateWidget(Shell::GetPrimaryRootWindow());
+  widget->SetBounds(gfx::Rect(100, 100, capture_mode::kSearchResultsPanelWidth,
+                              capture_mode::kSearchResultsPanelHeight));
   widget->Show();
 
   auto* search_results_panel =
@@ -1507,6 +1507,102 @@ TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
       kSearchResultsPanelEntryPointHistogram,
       SearchResultsPanelEntryType::kDefaultSearchButton, 1);
   histogram_tester.ExpectTotalCount(kSearchResultsPanelEntryPointHistogram, 2);
+}
+
+// Tests that the panel position is updated properly based on the location of
+// the selected region.
+TEST_F(SunfishTest, PanelBounds) {
+  UpdateDisplay("2000x1000");
+
+  // Start a Sunfish sunfish session, and select a region to create the search
+  // results panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(1000, 400, 100, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->GetSearchResultsPanel());
+
+  // Get the in-screen bounds of the work area and the feedback button.
+  const gfx::Rect work_area =
+      controller->search_results_panel_widget()->GetWorkAreaBoundsInScreen();
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  const gfx::Rect feedback_bounds =
+      session_test_api.GetFeedbackButton()->GetBoundsInScreen();
+
+  // Define the known possible coordinates of the search results panel.
+  const int left_x = work_area.x() + capture_mode::kPanelWorkAreaSpacing;
+  const int right_x = work_area.right() -
+                      capture_mode::kSearchResultsPanelWidth -
+                      capture_mode::kPanelWorkAreaSpacing;
+  const int default_y = work_area.bottom() -
+                        capture_mode::kSearchResultsPanelHeight -
+                        capture_mode::kPanelWorkAreaSpacing;
+  // TODO(hewer): Remove this when the feedback button is removed.
+  const int above_button_y = feedback_bounds.y() -
+                             capture_mode::kSearchResultsPanelHeight -
+                             capture_mode::kPanelButtonSpacing;
+
+  // By default, the panel should appear on the left side.
+  gfx::Rect target_bounds(left_x, default_y,
+                          capture_mode::kSearchResultsPanelWidth,
+                          capture_mode::kSearchResultsPanelHeight);
+  EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
+            target_bounds);
+
+  // Readjust the region on the left so it would intersect with the panel.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::Point(1000, 400));
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_EQ(ui::mojom::CursorType::kNorthWestResize,
+            cursor_manager->GetCursor().type());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(200, 400);
+  event_generator->ReleaseLeftButton();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->GetSearchResultsPanel());
+
+  // The panel should now appear on the right side instead, just above the
+  // feedback button.
+  target_bounds.set_x(right_x);
+  target_bounds.set_y(above_button_y);
+  EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
+            target_bounds);
+
+  // Readjust the region on the right so it would intersect with both panel
+  // positions, with slightly more space on the left side.
+  event_generator->MoveMouseTo(gfx::Point(1100, 400));
+  EXPECT_EQ(ui::mojom::CursorType::kNorthEastResize,
+            cursor_manager->GetCursor().type());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(1900, 400);
+  event_generator->ReleaseLeftButton();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->GetSearchResultsPanel());
+
+  // The panel should appear back on the left side since there is more space.
+  target_bounds.set_x(left_x);
+  target_bounds.set_y(default_y);
+  EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
+            target_bounds);
+
+  // Readjust the region once more, so there is no space on the left side and
+  // a small amount of space on the right side.
+  event_generator->MoveMouseTo(gfx::Point(200, 400));
+  EXPECT_EQ(ui::mojom::CursorType::kNorthWestResize,
+            cursor_manager->GetCursor().type());
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(0, 400);
+  event_generator->ReleaseLeftButton();
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->GetSearchResultsPanel());
+
+  // The panel should appear on the right side since there is more space.
+  target_bounds.set_x(right_x);
+  target_bounds.set_y(above_button_y);
+  EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
+            target_bounds);
 }
 
 class ScannerTest : public AshTestBase {
