@@ -40,7 +40,6 @@ suite('<os-settings-ui> About page', () => {
         '#left os-settings-menu');
     assert(menuEl);
     menu = menuEl;
-    menu.advancedOpened = true;
     flush();
 
     // Force load advanced page container

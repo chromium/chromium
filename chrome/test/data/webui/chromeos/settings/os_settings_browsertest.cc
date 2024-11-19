@@ -1524,8 +1524,8 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMainManagedFootnote) {
   RunSettingsTest("os_settings_main/managed_footnote_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMenuRevamp) {
-  RunSettingsTest("os_settings_menu/os_settings_menu_revamp_test.js");
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMenu) {
+  RunSettingsTest("os_settings_menu/os_settings_menu_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsMenuItem) {

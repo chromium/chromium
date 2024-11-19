@@ -365,7 +365,6 @@ build_webui_tests("build") {
 
     "os_settings_menu/menu_item_test.ts",
     "os_settings_menu/os_settings_menu_test.ts",
-    "os_settings_menu/os_settings_menu_revamp_test.ts",
 
     "os_settings_search_box/os_settings_search_box_test.ts",
     "os_settings_search_box/test_open_window_proxy.ts",
