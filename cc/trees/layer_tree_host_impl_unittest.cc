@@ -1067,7 +1067,8 @@ class TestInputHandlerClient : public InputHandlerClient {
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override { return false; }
   void SetScrollEventDispatchMode(
-      InputHandlerClient::ScrollEventDispatchMode mode) override {}
+      InputHandlerClient::ScrollEventDispatchMode mode,
+      double scroll_deadline_ratio) override {}
 
   gfx::PointF last_set_scroll_offset() { return last_set_scroll_offset_; }
 

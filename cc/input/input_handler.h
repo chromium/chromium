@@ -137,6 +137,11 @@ class CC_EXPORT InputHandlerClient {
     // `kUseScrollPredictorForEmptyQueue`. After which we will resume frame
     // production and enqueuing input.
     kUseScrollPredictorForDeadline,
+
+    // Will perform as `kDispatchScrollEventsImmediately` until the deadline.
+    // However no input arriving after the deadline will dispatch. Event if
+    // frame production has yet to complete.
+    kDispatchScrollEventsUntilDeadline,
   };
 
   InputHandlerClient(const InputHandlerClient&) = delete;
@@ -160,7 +165,8 @@ class CC_EXPORT InputHandlerClient {
   virtual void DeliverInputForDeadline() = 0;
   virtual void DidFinishImplFrame() = 0;
   virtual bool HasQueuedInput() const = 0;
-  virtual void SetScrollEventDispatchMode(ScrollEventDispatchMode mode) = 0;
+  virtual void SetScrollEventDispatchMode(ScrollEventDispatchMode mode,
+                                          double scroll_deadline_ratio) = 0;
 
  protected:
   InputHandlerClient() = default;

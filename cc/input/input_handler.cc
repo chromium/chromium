@@ -55,6 +55,11 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
                  kScrollEventDispatchModeUseScrollPredictorForDeadline) {
     return InputHandlerClient::ScrollEventDispatchMode::
         kUseScrollPredictorForDeadline;
+  } else if (mode_name ==
+             ::features::
+                 kScrollEventDispatchModeDispatchScrollEventsUntilDeadline) {
+    return InputHandlerClient::ScrollEventDispatchMode::
+        kDispatchScrollEventsUntilDeadline;
   }
 
   return InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
@@ -101,7 +106,8 @@ void InputHandler::BindToClient(InputHandlerClient* client) {
   input_handler_client_->SetPrefersReducedMotion(prefers_reduced_motion_);
   if (base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents)) {
     input_handler_client_->SetScrollEventDispatchMode(
-        GetScrollEventDispatchMode());
+        GetScrollEventDispatchMode(),
+        ::features::kWaitForLateScrollEventsDeadlineRatio.Get());
   }
 }
 

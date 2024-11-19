@@ -140,10 +140,18 @@ CC_BASE_EXPORT bool IsCCSlimmingEnabled();
 // Modes for `kWaitForLateScrollEvents` changing event dispatch. Where the
 // default is to just always enqueue scroll events.
 //
-// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` will wait for
-// `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for input.
-// During this time scroll events will be dispatched immediately. At the
-// deadline we will resume frame production and enqueuing input.
+// The ideal goal for both
+// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` and
+// `kScrollEventDispatchModeDispatchScrollEventsUntilDeadline` is that they will
+// wait for `kWaitForLateScrollEventsDeadlineRatio` of the frame interval for
+// input. During this time the first scroll event will be dispatched
+// immediately. Subsequent scroll events will be enqueued. At the deadline we
+// will resume frame production and enqueuing input.
+//
+// `kScrollEventDispatchModeNameDispatchScrollEventsImmediately` relies on
+// `cc::Scheduler` to control the deadline. However this is overridden if we are
+// waiting for Main-thread content. There are also fragile bugs which currently
+// prevent enforcing the deadline if frame production is no longer required.
 //
 // `kScrollEventDispatchModeNameUseScrollPredictorForEmptyQueue` checks when
 // we begin frame production, if the event queue is empty, we will generate a
@@ -155,6 +163,11 @@ CC_BASE_EXPORT bool IsCCSlimmingEnabled();
 // production, we will first attempt to generate a new prediction to dispatch.
 // As in `kScrollEventDispatchModeUseScrollPredictorForEmptyQueue`. After
 // which we will resume frame production and enqueuing input.
+//
+// `kScrollEventDispatchModeDispatchScrollEventsUntilDeadline` relies on
+// `blink::InputHandlerProxy` to directly enforce the deadline. This isolates us
+// from cc scheduling bugs. Allowing us to no longer dispatch events, even if
+// frame production has yet to complete.
 CC_BASE_EXPORT extern const base::FeatureParam<std::string>
     kScrollEventDispatchMode;
 CC_BASE_EXPORT extern const char
@@ -163,6 +176,8 @@ CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[];
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeUseScrollPredictorForDeadline[];
+CC_BASE_EXPORT extern const char
+    kScrollEventDispatchModeDispatchScrollEventsUntilDeadline[];
 
 // Enables GPU-side layer trees for content rendering.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);

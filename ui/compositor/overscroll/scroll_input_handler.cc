@@ -107,6 +107,7 @@ bool ScrollInputHandler::HasQueuedInput() const {
   return false;
 }
 void ScrollInputHandler::SetScrollEventDispatchMode(
-    cc::InputHandlerClient::ScrollEventDispatchMode mode) {}
+    cc::InputHandlerClient::ScrollEventDispatchMode mode,
+    double scroll_deadline_ratio) {}
 
 }  // namespace ui
