@@ -8485,7 +8485,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.SeaPen.WordCount" units="int" expires_after="2024-12-31">
+<histogram name="Ash.SeaPen.WordCount" units="int" expires_after="2025-11-15">
   <owner>pzliu@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
