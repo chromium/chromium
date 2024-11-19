@@ -89,6 +89,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -98,6 +99,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
 @DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabSwitcherPaneUnitTest {
     private static final int TAB_ID = 723849;
@@ -774,6 +776,25 @@ public class TabSwitcherPaneUnitTest {
         listener.afterEnd();
         assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
         verify(mPaneHubController).setSearchBoxBackgroundProperties(false);
+    }
+
+    @Test
+    public void testAnimationListener_nullPaneHubController_doNotSetSearchBox() {
+        mTabModel.addTab(TAB_ID);
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        mTabSwitcherPane.setPaneHubController(null);
+
+        assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
+
+        HubLayoutAnimationListener listener = mTabSwitcherPane.getHubLayoutAnimationListener();
+        listener.beforeStart();
+        assertTrue(mIsAnimatingSupplierCaptor.getValue().get());
+        verify(mPaneHubController, never()).setSearchBoxBackgroundProperties(true);
+
+        listener.afterEnd();
+        assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
+        verify(mPaneHubController, never()).setSearchBoxBackgroundProperties(false);
     }
 
     @Test
