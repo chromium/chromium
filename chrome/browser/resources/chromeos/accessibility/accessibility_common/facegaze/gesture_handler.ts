@@ -96,71 +96,13 @@ export class GestureHandler {
     prefs.forEach(pref => {
       switch (pref.key) {
         case PrefNames.GESTURE_TO_MACRO:
-          if (pref.value) {
-            // Update the whole map from this preference.
-            this.gestureToMacroName_.clear();
-
-            let hasScrollModeAction = false;
-            let hasLongClickAction = false;
-            for (const [gesture, assignedMacro] of Object.entries(pref.value)) {
-              if (assignedMacro === MacroName.UNSPECIFIED) {
-                continue;
-              }
-
-              if (assignedMacro === MacroName.TOGGLE_SCROLL_MODE) {
-                hasScrollModeAction = true;
-              }
-
-              if (assignedMacro === MacroName.MOUSE_LONG_CLICK_LEFT) {
-                hasLongClickAction = true;
-              }
-
-              this.gestureToMacroName_.set(
-                  gesture as FacialGesture, Number(assignedMacro));
-              // Ensure the confidence for this gesture is set to the default,
-              // if it wasn't set yet. This might happen if the user hasn't
-              // opened the settings subpage yet.
-              if (!this.gestureToConfidence_.has(gesture as FacialGesture)) {
-                this.gestureToConfidence_.set(
-                    gesture as FacialGesture,
-                    GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
-              }
-            }
-
-            // If a "toggle" action is removed while the relevant action
-            // is active, then we should toggle out of the action. Otherwise,
-            // the user will be stuck in the action with no way to exit.
-            if (this.mouseController_.isScrollModeActive() &&
-                !hasScrollModeAction) {
-              this.mouseController_.toggleScrollMode();
-            }
-
-            if (this.mouseController_.isLongClickActive() &&
-                !hasLongClickAction) {
-              this.mouseController_.toggleLongClick();
-            }
-          }
+          this.gesturesToMacrosChanged_(pref.value);
           break;
         case PrefNames.GESTURE_TO_CONFIDENCE:
-          if (pref.value) {
-            for (const [gesture, confidence] of Object.entries(pref.value)) {
-              this.gestureToConfidence_.set(
-                  gesture as FacialGesture, Number(confidence) / 100.);
-            }
-          }
+          this.gesturesToConfidencesChanged_(pref.value);
           break;
         case PrefNames.GESTURE_TO_KEY_COMBO:
-          if (pref.value) {
-            // Update the whole map from this preference.
-            this.gesturesToKeyCombos_.clear();
-            for (const [gesture, keyCombinationAsString] of Object.entries(
-                     pref.value)) {
-              const keyCombination =
-                  JSON.parse(keyCombinationAsString as string);
-              this.gesturesToKeyCombos_.set(
-                  gesture as FacialGesture, keyCombination);
-            }
-          }
+          this.gesturesToKeyCombosChanged_(pref.value);
           break;
         default:
           return;
@@ -427,6 +369,77 @@ export class GestureHandler {
     }
 
     return true;
+  }
+
+  private gesturesToMacrosChanged_(bindings: Object): void {
+    if (!bindings) {
+      return;
+    }
+
+    // Update the whole map from this preference.
+    this.gestureToMacroName_.clear();
+
+    let hasScrollModeAction = false;
+    let hasLongClickAction = false;
+    for (const [gesture, assignedMacro] of Object.entries(bindings)) {
+      if (assignedMacro === MacroName.UNSPECIFIED) {
+        continue;
+      }
+
+      if (assignedMacro === MacroName.TOGGLE_SCROLL_MODE) {
+        hasScrollModeAction = true;
+      }
+
+      if (assignedMacro === MacroName.MOUSE_LONG_CLICK_LEFT) {
+        hasLongClickAction = true;
+      }
+
+      this.gestureToMacroName_.set(
+          gesture as FacialGesture, Number(assignedMacro));
+      // Ensure the confidence for this gesture is set to the default,
+      // if it wasn't set yet. This might happen if the user hasn't
+      // opened the settings subpage yet.
+      if (!this.gestureToConfidence_.has(gesture as FacialGesture)) {
+        this.gestureToConfidence_.set(
+            gesture as FacialGesture,
+            GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
+      }
+    }
+
+    // If a "toggle" action is removed while the relevant action
+    // is active, then we should toggle out of the action. Otherwise,
+    // the user will be stuck in the action with no way to exit.
+    if (this.mouseController_.isScrollModeActive() && !hasScrollModeAction) {
+      this.mouseController_.toggleScrollMode();
+    }
+
+    if (this.mouseController_.isLongClickActive() && !hasLongClickAction) {
+      this.mouseController_.toggleLongClick();
+    }
+  }
+
+  private gesturesToConfidencesChanged_(confidences: Object) {
+    if (!confidences) {
+      return;
+    }
+
+    for (const [gesture, confidence] of Object.entries(confidences)) {
+      this.gestureToConfidence_.set(
+          gesture as FacialGesture, Number(confidence) / 100.);
+    }
+  }
+
+  private gesturesToKeyCombosChanged_(keyCombos: Object) {
+    if (!keyCombos) {
+      return;
+    }
+
+    // Update the whole map from this preference.
+    this.gesturesToKeyCombos_.clear();
+    for (const [gesture, keyCombinationAsString] of Object.entries(keyCombos)) {
+      const keyCombination = JSON.parse(keyCombinationAsString as string);
+      this.gesturesToKeyCombos_.set(gesture as FacialGesture, keyCombination);
+    }
   }
 }
 

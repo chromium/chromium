@@ -490,40 +490,33 @@ export class MouseController {
     prefs.forEach(pref => {
       switch (pref.key) {
         case PrefNames.SPD_UP:
-          if (pref.value) {
-            this.spdUp_ = pref.value;
-            this.calcVelocityThreshold_();
+          if (pref.value !== undefined) {
+            this.speedUpChanged_(pref.value);
           }
           break;
         case PrefNames.SPD_DOWN:
-          if (pref.value) {
-            this.spdDown_ = pref.value;
-            this.calcVelocityThreshold_();
+          if (pref.value !== undefined) {
+            this.speedDownChanged_(pref.value);
           }
           break;
         case PrefNames.SPD_LEFT:
-          if (pref.value) {
-            this.spdLeft_ = pref.value;
-            this.calcVelocityThreshold_();
+          if (pref.value !== undefined) {
+            this.speedLeftChanged_(pref.value);
           }
           break;
         case PrefNames.SPD_RIGHT:
-          if (pref.value) {
-            this.spdRight_ = pref.value;
-            this.calcVelocityThreshold_();
+          if (pref.value !== undefined) {
+            this.speedRightChanged_(pref.value);
           }
           break;
         case PrefNames.CURSOR_USE_ACCELERATION:
           if (pref.value !== undefined) {
-            this.useMouseAcceleration_ = pref.value;
+            this.useCursorAccelerationChanged_(pref.value);
           }
           break;
         case PrefNames.VELOCITY_THRESHOLD:
           if (pref.value !== undefined) {
-            // Ensure threshold factor is a decimal value.
-            this.velocityThresholdFactor_ =
-                pref.value / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;
-            this.calcVelocityThreshold_();
+            this.velocityThresholdChanged_(pref.value);
           }
           break;
         default:
@@ -581,6 +574,37 @@ export class MouseController {
     while (this.buffer_.length > this.targetBufferSize_) {
       this.buffer_.shift();
     }
+  }
+
+  private speedUpChanged_(speed: number): void {
+    this.spdUp_ = speed;
+    this.calcVelocityThreshold_();
+  }
+
+  private speedDownChanged_(speed: number): void {
+    this.spdDown_ = speed;
+    this.calcVelocityThreshold_();
+  }
+
+  private speedLeftChanged_(speed: number): void {
+    this.spdLeft_ = speed;
+    this.calcVelocityThreshold_();
+  }
+
+  private speedRightChanged_(speed: number): void {
+    this.spdRight_ = speed;
+    this.calcVelocityThreshold_();
+  }
+
+  private useCursorAccelerationChanged_(useAcceleration: boolean): void {
+    this.useMouseAcceleration_ = useAcceleration;
+  }
+
+  private velocityThresholdChanged_(threshold: number): void {
+    // Ensure threshold factor is a decimal value.
+    this.velocityThresholdFactor_ =
+        threshold / MouseController.MAX_VELOCITY_THRESHOLD_PREF_VALUE;
+    this.calcVelocityThreshold_();
   }
 }
 
