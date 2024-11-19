@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/menu/ui_bundled/action_factory+protected.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -26,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/ui/menu/action_factory+protected.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -67,8 +67,9 @@
 
 - (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
                                        completion:(ProceduralBlock)completion {
-  if (!_browser)
+  if (!_browser) {
     return nil;
+  }
 
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = YES;
@@ -385,17 +386,17 @@
         UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(params);
       };
 
-  return [self actionWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
-                         image:DefaultSymbolWithPointSize(
-                                   kClipboardActionSymbol,
-                                   kSymbolActionPointSize)
-                          type:MenuActionType::SearchCopiedImage
-                         block:^{
-                           ClipboardRecentContent::GetInstance()
-                               ->GetRecentImageFromClipboard(
-                                   base::BindOnce(clipboardAction));
-                         }];
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
+                      image:DefaultSymbolWithPointSize(kClipboardActionSymbol,
+                                                       kSymbolActionPointSize)
+                       type:MenuActionType::SearchCopiedImage
+                      block:^{
+                        ClipboardRecentContent::GetInstance()
+                            ->GetRecentImageFromClipboard(
+                                base::BindOnce(clipboardAction));
+                      }];
 }
 
 - (UIAction*)actionToSearchCopiedURL {
@@ -413,17 +414,17 @@
         });
       };
 
-  return [self actionWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
-                         image:DefaultSymbolWithPointSize(
-                                   kClipboardActionSymbol,
-                                   kSymbolActionPointSize)
-                          type:MenuActionType::VisitCopiedLink
-                         block:^{
-                           ClipboardRecentContent::GetInstance()
-                               ->GetRecentURLFromClipboard(
-                                   base::BindOnce(clipboardAction));
-                         }];
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
+                      image:DefaultSymbolWithPointSize(kClipboardActionSymbol,
+                                                       kSymbolActionPointSize)
+                       type:MenuActionType::VisitCopiedLink
+                      block:^{
+                        ClipboardRecentContent::GetInstance()
+                            ->GetRecentURLFromClipboard(
+                                base::BindOnce(clipboardAction));
+                      }];
 }
 
 - (UIAction*)actionToSearchCopiedText {
@@ -441,17 +442,17 @@
         });
       };
 
-  return [self actionWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
-                         image:DefaultSymbolWithPointSize(
-                                   kClipboardActionSymbol,
-                                   kSymbolActionPointSize)
-                          type:MenuActionType::SearchCopiedText
-                         block:^{
-                           ClipboardRecentContent::GetInstance()
-                               ->GetRecentTextFromClipboard(
-                                   base::BindOnce(clipboardAction));
-                         }];
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
+                      image:DefaultSymbolWithPointSize(kClipboardActionSymbol,
+                                                       kSymbolActionPointSize)
+                       type:MenuActionType::SearchCopiedText
+                      block:^{
+                        ClipboardRecentContent::GetInstance()
+                            ->GetRecentTextFromClipboard(
+                                base::BindOnce(clipboardAction));
+                      }];
 }
 
 - (UIAction*)actionToOpenAIMenu {

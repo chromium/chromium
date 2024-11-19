@@ -3,5 +3,5 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/menu/ui_bundled",
 ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -10,13 +10,13 @@
 #import "base/test/task_environment.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/menu/ui_bundled/action_factory+protected.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_action_type.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/menu/action_factory+protected.h"
-#import "ios/chrome/browser/ui/menu/menu_action_type.h"
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"

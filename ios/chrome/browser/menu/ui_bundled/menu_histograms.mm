@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"

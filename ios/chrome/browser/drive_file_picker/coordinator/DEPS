@@ -6,5 +6,5 @@ include_rules = [
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/drive/model",
-  "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/menu/ui_bundled",
 ]

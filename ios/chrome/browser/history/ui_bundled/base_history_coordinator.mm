@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_mediator.h"
 #import "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver.h"
 #import "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver_delegate_bridge.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -22,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 

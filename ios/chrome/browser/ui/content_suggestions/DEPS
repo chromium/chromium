@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
   "+ios/chrome/browser/ui/omnibox",
   "+ios/chrome/browser/ui/toolbar/buttons",
-  "+ios/chrome/browser/ui/menu",
+  "+ios/chrome/browser/menu/ui_bundled",
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/ui/settings/notifications",
   "+ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h",

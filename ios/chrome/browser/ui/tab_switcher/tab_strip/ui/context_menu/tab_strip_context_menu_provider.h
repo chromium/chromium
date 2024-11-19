@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 
 @class TabGroupItem;
 @class TabSwitcherItem;
