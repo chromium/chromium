@@ -158,6 +158,8 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/floating_sso",
+    "//chrome/browser/ash/floating_sso:test_support",
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/lock/online_reauth",

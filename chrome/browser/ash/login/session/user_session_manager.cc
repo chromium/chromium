@@ -1658,8 +1658,7 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
     // sign in using GAIA (webview) and webview didn't yet initialize.
     if (signin_partition) {
       ProfileAuthData::Transfer(
-          signin_partition, profile->GetDefaultStoragePartition(),
-          transfer_auth_cookies_on_first_login,
+          signin_partition, profile, transfer_auth_cookies_on_first_login,
           transfer_saml_auth_cookies_on_subsequent_login,
           base::BindOnce(
               &UserSessionManager::CompleteProfileCreateAfterAuthTransfer,

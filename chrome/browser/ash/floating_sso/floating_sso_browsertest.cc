@@ -333,6 +333,7 @@ class FloatingSsoTest : public policy::PolicyTest {
     commit_future.Get();
   }
 
+  // TODO(crbug.com/379092376): remove this once Floating SSO is out of beta.
   // This will switch the channel to beta for branded builds, but will be a
   // no-op for non-branded builds which are always set to
   // `version_info::Channel::UNKNOWN`. CQ/CI builders which use branded Chrome

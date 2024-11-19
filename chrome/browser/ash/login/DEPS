@@ -26,6 +26,7 @@ include_rules = [
   "+chrome/browser/ash/boot_times_recorder",
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/drive",
+  "+chrome/browser/ash/floating_sso",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/multidevice_setup",
   "+chrome/browser/ash/net",

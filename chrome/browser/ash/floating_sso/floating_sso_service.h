@@ -64,6 +64,10 @@ class FloatingSsoService : public KeyedService,
   void RunWhenCookiesAreReady(base::OnceClosure callback);
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
+  // Signal that this cookie shouldn't be overridden with remote
+  // entities on initial Sync cycle.
+  void MarkToNotOverride(const net::CanonicalCookie& cookie);
+
   FloatingSsoSyncBridge* GetBridgeForTesting() { return bridge_.get(); }
   bool IsBoundToCookieManagerForTesting() { return receiver_.is_bound(); }
 

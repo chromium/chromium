@@ -133,6 +133,7 @@ bool FloatingSsoService::IsFloatingSsoEnabled() {
   // The feature is restricted to Beta users for the initial testing
   // period. Unknown channel is added to support test execution in CQ,
   // where tests are run on non-branded builds.
+  // TODO(crbug.com/379092376): remove this once Floating SSO is out of beta.
   version_info::Channel channel = chrome::GetChannel();
   if (channel != version_info::Channel::BETA &&
       channel != version_info::Channel::DEV &&
@@ -160,6 +161,13 @@ void FloatingSsoService::RunWhenCookiesAreReady(base::OnceClosure callback) {
     std::move(callback).Run();
   } else {
     on_no_changes_in_progress_callback_ = std::move(callback);
+  }
+}
+
+void FloatingSsoService::MarkToNotOverride(const net::CanonicalCookie& cookie) {
+  std::optional<std::string> storage_key = SerializedKey(cookie);
+  if (storage_key) {
+    bridge_->AddToLocallyPreferredCookies(storage_key.value());
   }
 }
 
