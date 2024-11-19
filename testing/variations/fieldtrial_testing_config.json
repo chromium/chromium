@@ -6234,10 +6234,10 @@
                 {
                     "name": "Enabled_Teamfood",
                     "params": {
+                        "enable-cluster-info-optimization": "true",
                         "file-upload-limit-bytes": "200000000",
                         "send-page-url-for-contextualization": "true",
                         "use-inner-text-as-context": "true",
-                        "use-optimized-request-flow": "true",
                         "use-pdf-interaction-type": "true",
                         "use-pdf-vit-param": "true",
                         "use-pdfs-as-context": "true",
@@ -6245,7 +6245,8 @@
                         "use-webpage-vit-param": "true"
                     },
                     "enable_features": [
-                        "LensOverlayContextualSearchbox"
+                        "LensOverlayContextualSearchbox",
+                        "LensOverlayLatencyOptimizations"
                     ]
                 }
             ]

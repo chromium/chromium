@@ -101,6 +101,20 @@ constexpr char kTimeZone[] = "America/Los_Angeles";
 // The parameter key for gen204 request.
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 
+const base::test::FeatureRefAndParams
+    kDefaultLensOverlayContextualSearchboxParams =
+        base::test::FeatureRefAndParams(
+            lens::features::kLensOverlayContextualSearchbox,
+            {{"use-video-context-for-text-only-requests", "true"},
+             {"use-pdf-vit-param", "true"},
+             {"use-webpage-vit-param", "true"},
+             {"use-pdf-interaction-type", "true"},
+             {"use-webpage-interaction-type", "true"},
+             {"send-lens-inputs-for-contextual-suggest", "true"},
+             {"send-page-url-for-contextualization", "true"},
+             {"send-lens-inputs-for-lens-suggest", "true"},
+             {"send-lens-visual-interaction-data-for-lens-suggest", "true"}});
+
 MATCHER_P(EqualsProto, message, "") {
   std::string expected_serialized, actual_serialized;
   message.SerializeToString(&expected_serialized);
@@ -248,6 +262,15 @@ class LensOverlayQueryControllerTest : public testing::Test {
     return encoded_proto;
   }
 
+  void InitFeaturesWithClusterInfoOptimization() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlayLatencyOptimizations,
+          {{"enable-cluster-info-optimization", "true"}}},
+         kDefaultLensOverlayContextualSearchboxParams},
+        {});
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -275,18 +298,8 @@ class LensOverlayQueryControllerTest : public testing::Test {
     ASSERT_TRUE(U_SUCCESS(error_code));
     latest_suggest_inputs_.Clear();
 
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox,
-        {{"use-video-context-for-text-only-requests", "true"},
-         {"use-optimized-request-flow", "true"},
-         {"use-pdf-vit-param", "true"},
-         {"use-webpage-vit-param", "true"},
-         {"use-pdf-interaction-type", "true"},
-         {"use-webpage-interaction-type", "true"},
-         {"send-lens-inputs-for-contextual-suggest", "true"},
-         {"send-page-url-for-contextualization", "true"},
-         {"send-lens-inputs-for-lens-suggest", "true"},
-         {"send-lens-visual-interaction-data-for-lens-suggest", "true"}});
+    feature_list_.InitWithFeaturesAndParameters(
+        {kDefaultLensOverlayContextualSearchboxParams}, {});
   }
 
   void HandleSuggestInputsResponse(
@@ -348,6 +361,11 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
 // cluster info response to the full image request.
 TEST_F(LensOverlayQueryControllerTest,
        FetchInitialQuery_UsesClusterInfoResponse) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayLatencyOptimizations,
+      {{"enable-cluster-info-optimization", "true"}});
+
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -393,14 +411,15 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(latest_suggest_inputs_.search_session_id(), kTestSearchSessionId);
   ASSERT_EQ(GetEncodedRequestId(query_controller.sent_request_id()),
             latest_suggest_inputs_.encoded_request_id());
-  ASSERT_TRUE(
-      latest_suggest_inputs_.send_gsession_vsrid_for_contextual_suggest());
-  ASSERT_TRUE(latest_suggest_inputs_.send_gsession_vsrid_for_lens_suggest());
-  ASSERT_TRUE(latest_suggest_inputs_.send_vsint_for_lens_suggest());
 }
 
 TEST_F(LensOverlayQueryControllerTest,
        ClusterInfoExpires_RefetchesClusterInfo) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeatureWithParameters(
+      lens::features::kLensOverlayLatencyOptimizations,
+      {{"enable-cluster-info-optimization", "true"}});
+
   // Prep the Primary account.
   signin::IdentityTestEnvironment identity_test_env;
   const AccountInfo primary_account_info =
@@ -480,12 +499,15 @@ TEST_F(LensOverlayQueryControllerTest,
 TEST_F(LensOverlayQueryControllerTest,
        FetchInitialQuery_SuggestInputsHaveFlagValues) {
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      lens::features::kLensOverlayContextualSearchbox,
-      {{"use-optimized-request-flow", "true"},
-       {"send-lens-inputs-for-contextual-suggest", "false"},
-       {"send-lens-inputs-for-lens-suggest", "false"},
-       {"send-lens-visual-interaction-data-for-lens-suggest", "false"}});
+  feature_list_.InitWithFeaturesAndParameters(
+      {{lens::features::kLensOverlayLatencyOptimizations,
+        {{"enable-early-interaction-optimization", "true"},
+         {"enable-cluster-info-optimization", "true"}}},
+       {lens::features::kLensOverlayContextualSearchbox,
+        {{"send-lens-inputs-for-contextual-suggest", "false"},
+         {"send-lens-inputs-for-lens-suggest", "false"},
+         {"send-lens-visual-interaction-data-for-lens-suggest", "false"}}}},
+      {});
 
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
@@ -525,6 +547,7 @@ TEST_F(LensOverlayQueryControllerTest,
 // request included a different server session id.
 TEST_F(LensOverlayQueryControllerTest,
        FetchInteraction_UsesClusterInfoResponse) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -582,6 +605,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchRegionSearchInteraction_ReturnsResponses) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -696,7 +720,8 @@ TEST_F(LensOverlayQueryControllerTest,
   feature_list_.Reset();
   feature_list_.InitAndEnableFeatureWithParameters(
       lens::features::kLensOverlayLatencyOptimizations,
-      {{"enable-early-interaction-optimization", "true"}});
+      {{"enable-early-interaction-optimization", "true"},
+       {"enable-cluster-info-optimization", "true"}});
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -762,6 +787,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchRegionSearchInteractionWithBytes_ReturnsResponse) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -888,6 +914,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchMultimodalSearchInteraction_ReturnsResponses) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -1064,6 +1091,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteractionWithPdfBytes_ReturnsResponse) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -1187,6 +1215,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteractionWithHtml_ReturnsResponse) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -1310,6 +1339,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
 TEST_F(LensOverlayQueryControllerTest,
        FetchTextOnlyInteractionWithHtmlInnerText_ReturnsResponse) {
+  InitFeaturesWithClusterInfoOptimization();
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;

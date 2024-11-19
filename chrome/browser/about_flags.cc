@@ -3133,11 +3133,9 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
 const FeatureEntry::FeatureParam kContextualSearchboxWithPageContent[] = {
     {"use-pdfs-as-context", "true"},
     {"use-inner-text-as-context", "true"},
-    {"use-optimized-request-flow", "true"},
 };
 const FeatureEntry::FeatureParam kContextualSearchboxWithPdfPageContent[] = {
     {"use-pdfs-as-context", "true"},
-    {"use-optimized-request-flow", "true"},
 };
 
 const FeatureEntry::FeatureVariation kContextualSearchboxVariations[] = {
