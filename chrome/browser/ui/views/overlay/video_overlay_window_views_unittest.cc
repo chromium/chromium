@@ -1012,3 +1012,43 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysOrigin) {
   overlay_window().SetSourceTitle(u"google.com");
   EXPECT_EQ(origin->GetText(), u"google.com");
 }
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest,
+       ControlsNeverHideWhileProgressBarIsDragged) {
+  overlay_window().ShowInactive();
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  overlay_window().ForceControlsVisibleForTesting(true);
+
+  // Move time forward to ensure controls layout is completed.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  global_media_controls::MediaProgressView* progress_view =
+      overlay_window().progress_view_for_testing();
+  ASSERT_NE(nullptr, progress_view);
+  EXPECT_TRUE(progress_view->IsDrawn());
+
+  // Start dragging.
+  gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  progress_view->OnMousePressed(pressed_event);
+
+  // Move time forward to ensure drag delay timer has fired.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // While dragging, the controls should remain visible. We'll need to stop
+  // forcing them visible for testing and then wait for the hide timer to fire.
+  overlay_window().StopForcingControlsVisibleForTesting();
+  task_environment()->FastForwardBy(base::Seconds(7));
+  EXPECT_TRUE(overlay_window().GetControlsContainerView()->IsDrawn());
+
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  progress_view->OnMouseReleased(released_event);
+
+  // Once the drag ends, the controls should be able to hide.
+  task_environment()->FastForwardBy(base::Seconds(7));
+  EXPECT_TRUE(overlay_window().GetControlsContainerView()->IsDrawn());
+}

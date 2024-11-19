@@ -696,6 +696,10 @@ void VideoOverlayWindowViews::ForceControlsVisibleForTesting(bool visible) {
   UpdateControlsVisibility(visible);
 }
 
+void VideoOverlayWindowViews::StopForcingControlsVisibleForTesting() {
+  force_controls_visible_.reset();
+}
+
 bool VideoOverlayWindowViews::AreControlsVisible() const {
   return GetControlsContainerView()->GetVisible();
 }
@@ -703,6 +707,13 @@ bool VideoOverlayWindowViews::AreControlsVisible() const {
 void VideoOverlayWindowViews::UpdateControlsVisibility(bool is_visible) {
   if (is_moving_) {
     queued_controls_visibility_status_ = is_visible;
+    return;
+  }
+
+  // We should not change visibility while the progress bar is being dragged, as
+  // this gets us stuck in the `kDragStarted` state.
+  if (progress_view_drag_state_ ==
+      global_media_controls::DragState::kDragStarted) {
     return;
   }
 

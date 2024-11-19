@@ -198,6 +198,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   }
 
   void ForceControlsVisibleForTesting(bool visible);
+  void StopForcingControlsVisibleForTesting();
 
   void set_overlay_view_cb_for_testing(GetOverlayViewCb get_overlay_view_cb) {
     get_overlay_view_cb_ = std::move(get_overlay_view_cb);
