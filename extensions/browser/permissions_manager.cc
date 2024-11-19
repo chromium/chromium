@@ -222,7 +222,7 @@ class PermissionsManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* browser_context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 };
 
@@ -245,9 +245,10 @@ content::BrowserContext* PermissionsManagerFactory::GetBrowserContextToUse(
       browser_context);
 }
 
-KeyedService* PermissionsManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PermissionsManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new PermissionsManager(browser_context);
+  return std::make_unique<PermissionsManager>(browser_context);
 }
 
 }  // namespace

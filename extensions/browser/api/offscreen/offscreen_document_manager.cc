@@ -44,7 +44,7 @@ class OffscreenDocumentManagerFactory
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
@@ -70,9 +70,10 @@ OffscreenDocumentManagerFactory::GetBrowserContextToUse(
   return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
 }
 
-KeyedService* OffscreenDocumentManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OffscreenDocumentManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new OffscreenDocumentManager(context);
+  return std::make_unique<OffscreenDocumentManager>(context);
 }
 
 }  // namespace

@@ -33,7 +33,7 @@ class SessionStorageManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* browser_context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
 };
 
@@ -58,10 +58,11 @@ content::BrowserContext* SessionStorageManagerFactory::GetBrowserContextToUse(
       browser_context);
 }
 
-KeyedService* SessionStorageManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SessionStorageManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new SessionStorageManager(api::storage::session::QUOTA_BYTES,
-                                   browser_context);
+  return std::make_unique<SessionStorageManager>(
+      api::storage::session::QUOTA_BYTES, browser_context);
 }
 
 }  // namespace
