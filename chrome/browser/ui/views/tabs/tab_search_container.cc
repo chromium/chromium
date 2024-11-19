@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -320,9 +321,15 @@ TabSearchContainer::CreateTabDeclutterButton(
                           base::Unretained(this)),
       base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonDismissed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER),
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER),
-      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER),
+      features::IsTabstripDedupeEnabled()
+          ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_WITH_DEDUPE)
+          : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER),
+      features::IsTabstripDedupeEnabled()
+          ? l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER_WITH_DEDUPE)
+          : l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER),
+      features::IsTabstripDedupeEnabled()
+          ? l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER_WITH_DEDUPE)
+          : l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER),
       kTabDeclutterButtonElementId,
       GetFlatEdge(false, tab_search_before_chips));
 
@@ -534,17 +541,13 @@ void TabSearchContainer::OnTabDeclutterButtonDismissed() {
   ExecuteHideTabOrganization(tab_declutter_button_);
 }
 
-void TabSearchContainer::OnTriggerDeclutterUIVisibility(bool should_show) {
+void TabSearchContainer::OnTriggerDeclutterUIVisibility() {
   CHECK(tab_declutter_controller_);
   if (locked_expansion_mode_ != LockedExpansionMode::kNone) {
     return;
   }
 
-  if (should_show) {
-    ShowTabOrganization(tab_declutter_button_);
-  } else {
-    HideTabOrganization(tab_declutter_button_);
-  }
+  ShowTabOrganization(tab_declutter_button_);
 }
 
 DeclutterTriggerCTRBucket TabSearchContainer::GetDeclutterTriggerBucket(

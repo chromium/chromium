@@ -165,7 +165,7 @@ class TabSearchContainer : public views::View,
   void OnToggleActionUIState(const Browser* browser, bool should_show) override;
 
   // TabDeclutterObserver
-  void OnTriggerDeclutterUIVisibility(bool should_show) override;
+  void OnTriggerDeclutterUIVisibility() override;
 
  private:
   void SetLockedExpansionMode(LockedExpansionMode mode,

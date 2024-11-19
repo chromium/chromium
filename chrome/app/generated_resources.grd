@@ -9747,6 +9747,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
         Review inactive tabs
       </message>
+      <message name="IDS_TOOLTIP_TAB_DECLUTTER_WITH_DEDUPE" desc="The tooltip for the Tab Declutter button.">
+        Clean up unused tabs?
+      </message>
+      <message name="IDS_TAB_DECLUTTER_WITH_DEDUPE" desc="The text label of the Tab Declutter button.">
+        Clean up unused tabs?
+      </message>
+      <message name="IDS_ACCNAME_TAB_DECLUTTER_WITH_DEDUPE" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
+        Clean up unused tabs
+      </message>
       <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
         {NUM_DAYS, plural,
           =0 {Visited 0 days ago}

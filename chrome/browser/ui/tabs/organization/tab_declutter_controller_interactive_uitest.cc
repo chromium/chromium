@@ -45,9 +45,8 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
     processed_stale_tabs_ = tabs;
   }
 
-  void OnTriggerDeclutterUIVisibility(bool visible) override {
+  void OnTriggerDeclutterUIVisibility() override {
     trigger_declutter_ui_visibility_count_++;
-    ui_visibility_ = visible;
   }
 
   void OnDuplicateTabsProcessed(std::map<GURL, std::vector<tabs::TabInterface*>>
@@ -57,6 +56,7 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
   }
 
   int stale_tabs_processed_count() const { return stale_tabs_processed_count_; }
+
   int duplicate_tabs_processed_count() const {
     return duplicate_tabs_processed_count_;
   }
@@ -74,16 +74,12 @@ class FakeTabDeclutterObserver : public TabDeclutterObserver {
     return processed_duplicate_tabs_;
   }
 
-  bool ui_visibility() const { return ui_visibility_; }
-
  private:
   int stale_tabs_processed_count_ = 0;
   int duplicate_tabs_processed_count_ = 0;
   int trigger_declutter_ui_visibility_count_ = 0;
   std::vector<tabs::TabInterface*> processed_stale_tabs_;
   std::map<GURL, std::vector<tabs::TabInterface*>> processed_duplicate_tabs_;
-
-  bool ui_visibility_;
 };
 
 class TabDeclutterControllerBrowserTest : public InProcessBrowserTest {
@@ -485,7 +481,11 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
   AddDuplicateTabs(3, duplicate_url_1, 1);
   AddDuplicateTabs(2, duplicate_url_2, 1);
 
+  tab_declutter_controller()->set_next_nudge_valid_time_ticks_for_testing(
+      base::TimeTicks::Min());
   tab_declutter_controller()->GetDeclutterTimerForTesting()->user_task().Run();
+
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 1);
 
   std::map<GURL, std::vector<tabs::TabInterface*>> processed_duplicates =
       fake_observer.processed_duplicate_tabs();
@@ -513,7 +513,11 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
   browser()->tab_strip_model()->SetTabPinned(1, true);
   browser()->tab_strip_model()->AddToNewGroup({3});
 
+  tab_declutter_controller()->set_next_nudge_valid_time_ticks_for_testing(
+      base::TimeTicks::Min());
   tab_declutter_controller()->GetDeclutterTimerForTesting()->user_task().Run();
+
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
 
   std::map<GURL, std::vector<tabs::TabInterface*>> processed_duplicates =
       fake_observer.processed_duplicate_tabs();

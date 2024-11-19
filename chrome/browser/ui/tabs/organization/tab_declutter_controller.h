@@ -70,6 +70,11 @@ class TabDeclutterController {
     return next_nudge_valid_time_ticks_;
   }
 
+  void set_next_nudge_valid_time_ticks_for_testing(
+      base::TimeTicks next_nudge_valid_time_ticks) {
+    next_nudge_valid_time_ticks_ = next_nudge_valid_time_ticks;
+  }
+
   base::TimeDelta nudge_timer_interval() const { return nudge_timer_interval_; }
 
   void OnActionUIDismissed(base::PassKey<TabSearchContainer>);
@@ -95,13 +100,35 @@ class TabDeclutterController {
  private:
   void StartDeclutterTimer();
 
-  bool DeclutterNudgeCriteriaMet(base::span<tabs::TabInterface*> stale_tabs);
+  // Returns whether the nudge should be shown in the tabstrip for declutter.
+  // Note: The calculation for stale tabs and duplicate tabs are considered
+  // independent of each other from the perspective of the controller. This
+  // means that the expected unused tabs for nudge might be different from that
+  // of the webUI in certain edge cases where a duplicate tab is also a stale
+  // tab.
+  bool DeclutterNudgeCriteriaMet(
+      base::span<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs);
 
+  bool DeclutterStaleTabsNudgeCriteriaMet(
+      base::span<tabs::TabInterface*> stale_tabs);
+
+  bool DeclutterDuplicateTabsNudgeCriteriaMet(
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs);
+
+  // Helper for computing `DeclutterNudgeCriteriaMet()` by calculating if there
+  // is a new unused tab from the previous nudge.
+  bool HasNewUnusedTabsForNudge(
+      base::span<tabs::TabInterface*> stale_tabs,
+      std::map<GURL, std::vector<tabs::TabInterface*>> duplicate_tabs) const;
+
+  // Returns if `tabs` has an element not present in `tabs_previous_nudge_`.
+  bool IsNewTabDetectedForNudge(base::span<tabs::TabInterface*> tabs) const;
   void ProcessTabs();
 
-  void ProcessDuplicateTabs();
+  std::map<GURL, std::vector<tabs::TabInterface*>> ProcessDuplicateTabs();
 
-  void ProcessStaleTabs();
+  std::vector<tabs::TabInterface*> ProcessStaleTabs();
 
   void StartNudgeTimer();
 
@@ -121,7 +148,7 @@ class TabDeclutterController {
   // The timer that is responsible for blocking the nudge from showing.
   base::TimeTicks next_nudge_valid_time_ticks_;
   // The list of tabs shown previously in a nudge.
-  std::set<tabs::TabInterface*> stale_tabs_previous_nudge_;
+  std::set<tabs::TabInterface*> tabs_previous_nudge_;
 
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
