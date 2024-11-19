@@ -132,20 +132,11 @@ public interface TabModelSelector {
 
     /**
      * Searches through all children models for the specified Tab and closes the tab if it exists.
+     *
      * @param tab the non-null tab to close
      * @return true if the tab was found
      */
     boolean closeTab(Tab tab);
-
-    /** Close all tabs across all tab models */
-    void closeAllTabs();
-
-    /**
-     * Close all tabs across all tab models
-     * @param uponExit true iff the tabs are being closed upon application exit (after user presses
-     *                 the system back button)
-     */
-    void closeAllTabs(boolean uponExit);
 
     /** Get total tab count across all tab models */
     int getTotalTabCount();

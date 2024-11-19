@@ -699,7 +699,15 @@ public class ChromeTabUtils {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    tabModelSelectorSupplier.get().closeAllTabs();
+                    TabClosureParams params =
+                            TabClosureParams.closeAllTabs().uponExit(false).build();
+                    TabModelSelector selector = tabModelSelectorSupplier.get();
+                    selector.getModel(false)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                    selector.getModel(true)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
                 });
 
         try {

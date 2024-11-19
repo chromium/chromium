@@ -336,19 +336,6 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public void closeAllTabs() {
-        closeAllTabs(false);
-    }
-
-    @Override
-    public void closeAllTabs(boolean uponExit) {
-        TabClosureParams params = TabClosureParams.closeAllTabs().uponExit(uponExit).build();
-        for (int i = 0; i < getModels().size(); i++) {
-            mTabModelInternals.get(i).closeTabs(params);
-        }
-    }
-
-    @Override
     public int getTotalTabCount() {
         int count = 0;
         for (int i = 0; i < getModels().size(); i++) {

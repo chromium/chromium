@@ -206,7 +206,10 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     }
 
     public void closeAndForgetTab() {
-        mTabFactory.getTabModelSelector().closeAllTabs(true);
+        TabClosureParams params = TabClosureParams.closeAllTabs().uponExit(true).build();
+        TabModelSelector selector = mTabFactory.getTabModelSelector();
+        selector.getModel(false).getTabRemover().closeTabs(params, /* allowDialog= */ false);
+        selector.getModel(true).getTabRemover().closeTabs(params, /* allowDialog= */ false);
         mTabPersistencePolicy.deleteMetadataStateFileAsync();
     }
 
