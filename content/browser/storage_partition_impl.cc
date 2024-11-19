@@ -146,6 +146,7 @@
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -764,6 +765,16 @@ StoragePartition::StorageKeyMatcherFunction CreateGenericStorageKeyMatcher(
                              storage_key);
 }
 
+std::vector<GlobalRenderFrameHostId> GetRoutingIdsForOrigin(
+    StoragePartitionImpl* storage_partition,
+    const url::Origin& origin) {
+  scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
+      storage_partition->GetServiceWorkerContext();
+
+  return *service_worker_context->GetWindowClientFrameRoutingIds(
+      blink::StorageKey::CreateFirstParty(origin));
+}
+
 }  // namespace
 
 // Static.
@@ -994,17 +1005,8 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
                              details_vector) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     for (auto& details : details_vector) {
-      scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
-          storage_partition_->GetServiceWorkerContext();
-      std::vector<GlobalRenderFrameHostId> destinations =
-          *service_worker_context->GetWindowClientFrameRoutingIds(
-              blink::StorageKey::CreateFirstParty(
-                  url::Origin::Create(details->url)));
-      if (destinations.empty()) {
-        return;
-      }
-
-      for (GlobalRenderFrameHostId frame_id : destinations) {
+      for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
+               storage_partition_, url::Origin::Create(details->url))) {
         if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
           rfh->OnCookiesAccessed(mojo::Clone(details_vector));
         }
@@ -1036,8 +1038,6 @@ class StoragePartitionImpl::ServiceWorkerTrustTokenAccessObserver
   void OnTrustTokensAccessed(
       network::mojom::TrustTokenAccessDetailsPtr details) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
-        storage_partition_->GetServiceWorkerContext();
 
     url::Origin origin;
     switch (details->which()) {
@@ -1052,14 +1052,8 @@ class StoragePartitionImpl::ServiceWorkerTrustTokenAccessObserver
         break;
     }
 
-    std::vector<GlobalRenderFrameHostId> destinations =
-        *service_worker_context->GetWindowClientFrameRoutingIds(
-            blink::StorageKey::CreateFirstParty(origin));
-    if (destinations.empty()) {
-      return;
-    }
-
-    for (GlobalRenderFrameHostId frame_id : destinations) {
+    for (GlobalRenderFrameHostId frame_id :
+         GetRoutingIdsForOrigin(storage_partition_, origin)) {
       if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
         rfh->OnTrustTokensAccessed(mojo::Clone(details));
       }
@@ -1091,18 +1085,8 @@ class StoragePartitionImpl::ServiceWorkerSharedDictionaryAccessObserver
   void OnSharedDictionaryAccessed(
       network::mojom::SharedDictionaryAccessDetailsPtr details) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    scoped_refptr<ServiceWorkerContextWrapper> service_worker_context =
-        storage_partition_->GetServiceWorkerContext();
-
-    std::vector<GlobalRenderFrameHostId> destinations =
-        *service_worker_context->GetWindowClientFrameRoutingIds(
-            blink::StorageKey::CreateFirstParty(
-                details->isolation_key.frame_origin()));
-    if (destinations.empty()) {
-      return;
-    }
-
-    for (GlobalRenderFrameHostId frame_id : destinations) {
+    for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
+             storage_partition_, details->isolation_key.frame_origin())) {
       if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
         rfh->OnSharedDictionaryAccessed(mojo::Clone(details));
       }
@@ -1111,6 +1095,39 @@ class StoragePartitionImpl::ServiceWorkerSharedDictionaryAccessObserver
 
   // `storage_partition_` owns this object via UniqueReceiverSet
   // (service_worker_shared_dictionary_observers_).
+  raw_ptr<StoragePartitionImpl> storage_partition_;
+};
+
+class StoragePartitionImpl::ServiceWorkerDeviceBoundSessionAccessObserver
+    : public network::mojom::DeviceBoundSessionAccessObserver {
+ public:
+  explicit ServiceWorkerDeviceBoundSessionAccessObserver(
+      StoragePartitionImpl* storage_partition)
+      : storage_partition_(storage_partition) {}
+
+ private:
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+          observer) override {
+    storage_partition_->service_worker_device_bound_session_observers_.Add(
+        std::make_unique<ServiceWorkerDeviceBoundSessionAccessObserver>(
+            storage_partition_),
+        std::move(observer));
+  }
+
+  void OnDeviceBoundSessionAccessed(
+      const net::device_bound_sessions::SessionKey& session) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    for (GlobalRenderFrameHostId frame_id : GetRoutingIdsForOrigin(
+             storage_partition_, url::Origin::Create(session.site.GetURL()))) {
+      if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(frame_id)) {
+        rfh->OnDeviceBoundSessionAccessed(session);
+      }
+    }
+  }
+
+  // `storage_partition_` owns this object via UniqueReceiverSet
+  // (service_worker_device_bound_session_observers_).
   raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
@@ -1855,6 +1872,19 @@ CdmStorageDataModel* StoragePartitionImpl::GetCdmStorageDataModel() {
   return cdm_storage_manager_.get();
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+network::mojom::DeviceBoundSessionManager*
+StoragePartitionImpl::GetDeviceBoundSessionManager() {
+  DCHECK(initialized_);
+  if (!device_bound_session_manager_ ||
+      !device_bound_session_manager_.is_connected()) {
+    // Reset `device_bound_session_manager_` before binding it again.
+    device_bound_session_manager_.reset();
+    GetNetworkContext()->GetDeviceBoundSessionManager(
+        device_bound_session_manager_.BindNewPipeAndPassReceiver());
+  }
+  return device_bound_session_manager_.get();
+}
 
 InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
   DCHECK(initialized_);
@@ -3483,6 +3513,15 @@ StoragePartitionImpl::CreateSharedDictionaryAccessObserverForServiceWorker() {
   mojo::PendingRemote<network::mojom::SharedDictionaryAccessObserver> remote;
   service_worker_shared_dictionary_observers_.Add(
       std::make_unique<ServiceWorkerSharedDictionaryAccessObserver>(this),
+      remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
+mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+StoragePartitionImpl::CreateDeviceBoundSessionObserverForServiceWorker() {
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver> remote;
+  service_worker_device_bound_session_observers_.Add(
+      std::make_unique<ServiceWorkerDeviceBoundSessionAccessObserver>(this),
       remote.InitWithNewPipeAndPassReceiver());
   return remote;
 }

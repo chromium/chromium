@@ -2336,6 +2336,7 @@ if (!is_android) {
       "//components/translate/core/language_detection",
       "//components/trusted_vault",
       "//components/ukm/content",
+      "//components/unexportable_keys",
       "//components/unified_consent",
       "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
       "//components/url_formatter/spoof_checks/top_domains:test_top_bucket_domains",
@@ -5379,6 +5380,10 @@ if (!is_android) {
         "//chrome/browser/ui/webui/whats_new:browser_tests",
         "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       ]
+    }
+
+    if (enable_device_bound_sessions) {
+      sources += [ "../browser/net/device_bound_sessions_browsertest.cc" ]
     }
   }
 }

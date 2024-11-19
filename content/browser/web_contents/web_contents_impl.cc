@@ -3637,6 +3637,32 @@ void WebContentsImpl::OnSharedDictionaryAccessed(
   observers_.NotifyObservers(func, rfh, details);
 }
 
+void WebContentsImpl::OnDeviceBoundSessionAccessed(
+    NavigationHandle* navigation,
+    const net::device_bound_sessions::SessionKey& session) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::OnDeviceBoundSessionAccessed",
+                        "navigation_handle", navigation);
+  // Use a variable to select between overloads.
+  void (WebContentsObserver::*func)(
+      NavigationHandle*, const net::device_bound_sessions::SessionKey&) =
+      &WebContentsObserver::OnDeviceBoundSessionAccessed;
+  observers_.NotifyObservers(func, navigation, session);
+}
+
+void WebContentsImpl::OnDeviceBoundSessionAccessed(
+    RenderFrameHostImpl* rfh,
+    const net::device_bound_sessions::SessionKey& session) {
+  OPTIONAL_TRACE_EVENT1("content",
+                        "WebContentsImpl::OnDeviceBoundSessionAccessed",
+                        "render_frame_host", rfh);
+  // Use a variable to select between overloads.
+  void (WebContentsObserver::*func)(
+      RenderFrameHost*, const net::device_bound_sessions::SessionKey&) =
+      &WebContentsObserver::OnDeviceBoundSessionAccessed;
+  observers_.NotifyObservers(func, rfh, session);
+}
+
 void WebContentsImpl::NotifyStorageAccessed(
     RenderFrameHostImpl* rfh,
     blink::mojom::StorageTypeAccessed storage_type,

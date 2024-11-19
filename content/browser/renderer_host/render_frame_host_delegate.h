@@ -642,6 +642,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void OnSharedDictionaryAccessed(
       RenderFrameHostImpl* render_frame_host,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
+  virtual void OnDeviceBoundSessionAccessed(
+      RenderFrameHostImpl* render_frame_host,
+      const net::device_bound_sessions::SessionKey& session) {}
 
   virtual void NotifyStorageAccessed(
       RenderFrameHostImpl* render_frame_host,

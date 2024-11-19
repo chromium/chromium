@@ -14751,6 +14751,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
          navigation_request->TakeSharedDictionaryAccessObservers()) {
       shared_dictionary_observers_.Add(this, std::move(receiver));
     }
+    for (auto& receiver :
+         navigation_request->TakeDeviceBoundSessionAccessObservers()) {
+      device_bound_session_observers_.Add(this, std::move(receiver));
+    }
 
     // Resets when navigating to a new document. This is needed because
     // RenderFrameHost might be reused for a new document
@@ -17324,6 +17328,14 @@ RenderFrameHostImpl::CreateVibrationManagerListener() {
   return remote;
 }
 
+mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+RenderFrameHostImpl::CreateDeviceBoundSessionObserver() {
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver> remote;
+  device_bound_session_observers_.Add(this,
+                                      remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 #if BUILDFLAG(ENABLE_MDNS)
 void RenderFrameHostImpl::CreateMdnsResponder(
     mojo::PendingReceiver<network::mojom::MdnsResponder> receiver) {
@@ -17346,6 +17358,12 @@ void RenderFrameHostImpl::Clone(
     mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>
         observer) {
   shared_dictionary_observers_.Add(this, std::move(observer));
+}
+
+void RenderFrameHostImpl::Clone(
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+        observer) {
+  device_bound_session_observers_.Add(this, std::move(observer));
 }
 
 void RenderFrameHostImpl::OnCookiesAccessed(
@@ -17383,6 +17401,11 @@ void RenderFrameHostImpl::OnSharedDictionaryAccessed(
 
 void RenderFrameHostImpl::OnVibrate() {
   delegate_->OnVibrate(this);
+}
+
+void RenderFrameHostImpl::OnDeviceBoundSessionAccessed(
+    const net::device_bound_sessions::SessionKey& session) {
+  delegate_->OnDeviceBoundSessionAccessed(this, session);
 }
 
 void RenderFrameHostImpl::SetEmbeddingToken(

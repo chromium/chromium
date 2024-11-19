@@ -329,6 +329,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public network::mojom::CookieAccessObserver,
       public network::mojom::TrustTokenAccessObserver,
       public network::mojom::SharedDictionaryAccessObserver,
+      public network::mojom::DeviceBoundSessionAccessObserver,
       public BucketContext {
  public:
   using JavaScriptDialogCallback =
@@ -2668,6 +2669,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::PendingRemote<device::mojom::VibrationManagerListener>
   CreateVibrationManagerListener();
 
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+  CreateDeviceBoundSessionObserver();
+
   // network::mojom::CookieAccessObserver:
   void OnCookiesAccessed(std::vector<network::mojom::CookieAccessDetailsPtr>
                              details_vector) override;
@@ -2682,6 +2686,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // device::mojom::VibrationManagerListener:
   void OnVibrate() override;
+
+  // network::mojom::DeviceBoundSessionAccessObserver
+  void OnDeviceBoundSessionAccessed(
+      const net::device_bound_sessions::SessionKey& session) override;
 
   void GetSavableResourceLinksFromRenderer();
 
@@ -3536,6 +3544,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // network::mojom::SharedDictionaryAccessObserver
   void Clone(
       mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>
+          observer) override;
+
+  // network::mojom::DeviceBoundSessionAccessObserver
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
           observer) override;
 
   // Resets any waiting state of this RenderFrameHost that is no longer
@@ -5073,8 +5086,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // in this RenderFrameHost. This is done because the first observer is created
   // before the navigation actually commits and because the old routing-id based
   // behaved in the same way as well.
-  // This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
+  // This problem should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
   mojo::ReceiverSet<network::mojom::CookieAccessObserver> cookie_observers_;
 
   // Observers listening to Trust Token access notifications for the current
@@ -5082,8 +5095,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // cleared when a new document is created in this RenderFrameHost. This is
   // done because the first observer is created before the navigation actually
   // commits and because the old routing-id based behaved in the same way as
-  // well. This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
+  // well. This problem should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
   mojo::ReceiverSet<network::mojom::TrustTokenAccessObserver>
       trust_token_observers_;
 
@@ -5092,13 +5105,25 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // not cleared when a new document is created in this RenderFrameHost. This is
   // done because the first observer is created before the navigation actually
   // commits and because the old routing-id based behaved in the same way as
-  // well. This problem should go away with RenderDocumentHost in any case.
-  // TODO(crbug.com/40615943): Remove this warning after the RDH ships.
+  // well. This problem should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
   mojo::ReceiverSet<network::mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observers_;
 
   mojo::ReceiverSet<device::mojom::VibrationManagerListener>
       vibration_manager_listeners_;
+
+  // Observers listening to device bound session access notifications
+  // (https://github.com/WICG/dbsc/blob/main/README.md) for the current
+  // document in this RenderFrameHost. Note: at the moment this set is
+  // not cleared when a new document is created in this
+  // RenderFrameHost. This is done because the first observer is created
+  // before the navigation actually commits and because the old
+  // routing-id based behaved in the same way as well. This problem
+  // should go away with RenderDocument in any case.
+  // TODO(crbug.com/40615943): Remove this warning after the RD ships.
+  mojo::ReceiverSet<network::mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observers_;
 
   // Indicates whether this frame is an outer delegate frame for some other
   // RenderFrameHost. This will be a valid ID if so, and invalid otherwise.

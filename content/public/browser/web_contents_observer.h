@@ -61,6 +61,10 @@ enum class VirtualKeyboardMode;
 }  // namespace mojom
 }  // namespace ui
 
+namespace net::device_bound_sessions {
+struct SessionKey;
+}  // namespace net::device_bound_sessions
+
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
 }  // namespace network::mojom
@@ -532,6 +536,20 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void OnSharedDictionaryAccessed(
       NavigationHandle* navigation_handle,
       const network::mojom::SharedDictionaryAccessDetails& details) {}
+
+  // Called when a network request issued by the navivation accesses a
+  // device bound session
+  // (https://github.com/WICG/dbsc/blob/main/README.md).
+  virtual void OnDeviceBoundSessionAccessed(
+      RenderFrameHost* render_frame_host,
+      const net::device_bound_sessions::SessionKey& session) {}
+
+  // Called when a document accesses a device bound session
+  // (https://github.com/WICG/dbsc/blob/main/README.md) by issuing a
+  // network request.
+  virtual void OnDeviceBoundSessionAccessed(
+      NavigationHandle* navigation_handle,
+      const net::device_bound_sessions::SessionKey& session) {}
 
   // Called when the renderer requests access to storage.
   // Observers will be notified about the type of storage access requested

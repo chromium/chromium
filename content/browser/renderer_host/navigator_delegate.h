@@ -24,6 +24,7 @@ struct UserAgentOverride;
 
 namespace network::mojom {
 class SharedDictionaryAccessDetails;
+class DeviceBoundSession;
 }  // namespace network::mojom
 
 namespace content {
@@ -154,6 +155,12 @@ class NavigatorDelegate {
   virtual void OnSharedDictionaryAccessed(
       NavigationHandle* navigation,
       const network::mojom::SharedDictionaryAccessDetails& details) = 0;
+
+  // Called when a network request issued by this navigation accesses a
+  // device bound session.
+  virtual void OnDeviceBoundSessionAccessed(
+      NavigationHandle* navigation,
+      const net::device_bound_sessions::SessionKey& session) = 0;
 
   // Does a global walk of the session history and all committed/pending-commit
   // origins, and registers origins that match |origin| to their respective

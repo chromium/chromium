@@ -166,6 +166,7 @@
 #include "services/network/public/cpp/supports_loading_mode/supports_loading_mode_parser.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -4893,11 +4894,16 @@ NavigationRequest::CreateNavigationEarlyHintsManagerParams(
       shared_dictionary_observer;
   Clone(shared_dictionary_observer.InitWithNewPipeAndPassReceiver());
 
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer;
+  Clone(device_bound_session_observer.InitWithNewPipeAndPassReceiver());
+
   network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
       URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
           process, tentative_origin, *this, early_hints,
           std::move(cookie_observer), std::move(trust_token_observer),
-          std::move(shared_dictionary_observer));
+          std::move(shared_dictionary_observer),
+          std::move(device_bound_session_observer));
 
   net::IsolationInfo isolation_info = url_loader_factory_params->isolation_info;
 
@@ -5344,7 +5350,8 @@ void NavigationRequest::OnStartChecksComplete(
       static_cast<StoragePartitionImpl*>(partition)
           ->CreateURLLoaderNetworkObserverForNavigationRequest(*this),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
-      std::move(cached_response_head), std::move(interceptor));
+      CreateDeviceBoundSessionObserver(), std::move(cached_response_head),
+      std::move(interceptor));
   DCHECK(!HasRenderFrameHost());
 
   // If needed, perform an early RenderFrameHost swap after notifying observers
@@ -9594,6 +9601,14 @@ NavigationRequest::CreateSharedDictionaryAccessObserver() {
   return remote;
 }
 
+mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+NavigationRequest::CreateDeviceBoundSessionObserver() {
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver> remote;
+  device_bound_session_observers_.Add(this,
+                                      remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 void NavigationRequest::OnCookiesAccessed(
     std::vector<network::mojom::CookieAccessDetailsPtr> details_vector) {
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnCookiesAccessed",
@@ -9676,10 +9691,26 @@ void NavigationRequest::Clone(
   shared_dictionary_observers_.Add(this, std::move(observer));
 }
 
+void NavigationRequest::OnDeviceBoundSessionAccessed(
+    const net::device_bound_sessions::SessionKey& session) {
+  GetDelegate()->OnDeviceBoundSessionAccessed(this, session);
+}
+void NavigationRequest::Clone(
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+        observer) {
+  device_bound_session_observers_.Add(this, std::move(observer));
+}
+
 std::vector<
     mojo::PendingReceiver<network::mojom::SharedDictionaryAccessObserver>>
 NavigationRequest::TakeSharedDictionaryAccessObservers() {
   return shared_dictionary_observers_.TakeReceivers();
+}
+
+std::vector<
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>>
+NavigationRequest::TakeDeviceBoundSessionAccessObservers() {
+  return device_bound_session_observers_.TakeReceivers();
 }
 
 RenderFrameHostImpl* NavigationRequest::GetInitiatorDocumentRenderFrameHost() {
