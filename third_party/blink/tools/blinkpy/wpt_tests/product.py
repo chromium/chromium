@@ -117,7 +117,6 @@ class DesktopProduct(Product):
         super().update_runner_options(options)
         options.binary = self._port.path_to_driver()
         options.binary_args.extend(self.additional_binary_args())
-        options.enable_swiftshader = True
 
     def additional_binary_args(self) -> List[str]:
         # Base args applicable to all embedders.
@@ -134,6 +133,10 @@ class Chrome(DesktopProduct):
 
 class HeadlessShell(DesktopProduct):
     name = 'headless_shell'
+
+    def update_runner_options(self, options: argparse.Namespace):
+        super().update_runner_options(options)
+        options.enable_swiftshader = True
 
     def additional_binary_args(self):
         # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
