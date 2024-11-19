@@ -678,16 +678,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.CredentialExtension.FaviconsFetched" units="count"
-    expires_after="2024-12-01">
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-transactions-eng@google.com</owner>
-  <summary>
-    Recorded when credentials are saved in the CredentialExtension database.
-    Records the number of favicons that have been fetched.
-  </summary>
-</histogram>
-
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
     expires_after="2024-12-01">
   <owner>tmartino@chromium.org</owner>
@@ -748,6 +738,16 @@ chromium-metrics-reviews@google.com.
     Chrome is put in the foreground.
 
     Note: this was expired from 2023-06 to 2023-12. Data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="IOS.CredentialExtension.NumberFaviconsFetched" units="count"
+    expires_after="2024-12-01">
+  <owner>sebsg@chromium.org</owner>
+  <owner>bling-transactions-eng@google.com</owner>
+  <summary>
+    Recorded when credentials are saved in the CredentialExtension database.
+    Records the number of favicons that have been fetched.
   </summary>
 </histogram>
 
