@@ -145,11 +145,6 @@ BASE_FEATURE(kAutocorrectParamsTuning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables using a toggle for enabling autocorrect on ChromeOS.
-BASE_FEATURE(kAutocorrectToggle,
-             "AutocorrectToggle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables using a toggle for enabling autocorrect on ChromeOS.
 BASE_FEATURE(kAutocorrectByDefault,
              "AutocorrectByDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);

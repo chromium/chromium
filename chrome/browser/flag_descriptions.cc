@@ -5987,10 +5987,6 @@ const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
 const char kAutocorrectParamsTuningDescription[] =
     "Enables params tuning experiment for autocorrect on ChromeOS.";
 
-const char kAutocorrectToggleName[] = "CrOS autocorrect toggle";
-const char kAutocorrectToggleDescription[] =
-    "Enables using a toggle for enabling autocorrect on ChromeOS.";
-
 const char kAutocorrectUseReplaceSurroundingTextName[] =
     "Use ReplaceSurroundingText API for autocorrect.";
 const char kAutocorrectUseReplaceSurroundingTextDescription[] =

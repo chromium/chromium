@@ -2667,11 +2667,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "enable-cros-autocorrect-toggle",
-    "owners": [ "zacpartridge@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "enable-cros-autocorrect-use-replace-surrounding-text",
     "owners": [ "hdchuong@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 130

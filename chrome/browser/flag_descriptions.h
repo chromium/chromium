@@ -3464,9 +3464,6 @@ extern const char kAutocorrectByDefaultDescription[];
 extern const char kAutocorrectParamsTuningName[];
 extern const char kAutocorrectParamsTuningDescription[];
 
-extern const char kAutocorrectToggleName[];
-extern const char kAutocorrectToggleDescription[];
-
 extern const char kAutocorrectUseReplaceSurroundingTextName[];
 extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 
