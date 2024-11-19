@@ -92,11 +92,10 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   static void Release(ScriptState*, WritableStreamDefaultWriter*);
 
   // https://streams.spec.whatwg.org/#writable-stream-default-writer-write
-  static ScriptPromiseResolver<IDLUndefined>* Write(
-      ScriptState*,
-      WritableStreamDefaultWriter*,
-      v8::Local<v8::Value> chunk,
-      ExceptionState&);
+  static ScriptPromise<IDLUndefined> Write(ScriptState*,
+                                           WritableStreamDefaultWriter*,
+                                           v8::Local<v8::Value> chunk,
+                                           ExceptionState&);
 
   //
   // Accessors used by ReadableStream and WritableStream. These do
