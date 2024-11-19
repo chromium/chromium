@@ -162,11 +162,6 @@ TEST_F(BluetoothAdapterAndroidTest, ScanFilterTest) {
 
 TEST_F(BluetoothAdapterAndroidTest,
        ChromeBluetoothLeScannerScanWithRealAdapater) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_S) {
-    GTEST_SKIP() << "Android S+ requires runtime permissions that can't be "
-                    "granted automatically, skipping unit test.";
-  }
   InitWithDefaultAdapter();
   if (!adapter_->IsPresent() || !adapter_->IsPowered()) {
     GTEST_SKIP()

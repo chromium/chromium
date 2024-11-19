@@ -743,13 +743,6 @@ TEST_P(BluetoothTestWinrt, ConstructDefaultAdapter) {
 #else
 TEST_F(BluetoothTest, MAYBE_ConstructDefaultAdapter) {
 #endif
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_S) {
-    GTEST_SKIP() << "Android S+ requires runtime permissions that can't be "
-                    "granted automatically, skipping unit test.";
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
   InitWithDefaultAdapter();
   if (!adapter_->IsPresent() || !adapter_->IsPowered()) {
     GTEST_SKIP()
