@@ -16,6 +16,7 @@ source_set("unit_tests") {
     "//components/ip_protection/common:ip_protection_proxy_config_manager_impl_unittest",
     "//components/ip_protection/common:ip_protection_proxy_config_mojo_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_proxy_delegate_unittest",
+    "//components/ip_protection/common:ip_protection_token_direct_fetcher_unittest",
     "//components/ip_protection/common:ip_protection_token_manager_impl_unittest",
     "//components/ip_protection/common:masked_domain_list_manager_unittest",
     "//components/ip_protection/common:mock_blind_sign_auth",

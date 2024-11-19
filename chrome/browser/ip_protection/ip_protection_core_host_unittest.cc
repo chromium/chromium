@@ -261,6 +261,11 @@ class IpProtectionCoreHostTest : public testing::Test {
   raw_ptr<ip_protection::MockBlindSignAuth> bsa_;
 };
 
+// NOTE: Many of these tests are similar those for
+// IpProtectionTokenDirectFetcher, but both make sense. In the fetcher, they
+// serve as unit tests with a fake delegate. Here, they incorporate
+// IpProtectionCoreHost as a delegate.
+
 // The success case: a primary account is available, and BSA gets a token for
 // it.
 TEST_F(IpProtectionCoreHostTest, Success) {
@@ -654,62 +659,6 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
   const std::optional<std::vector<BlindSignedAuthToken>>& tokens =
       tokens_future.Get<std::optional<std::vector<BlindSignedAuthToken>>>();
   ASSERT_TRUE(tokens);
-}
-
-// Backoff calculations.
-TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
-  using enum ip_protection::TryGetAuthTokensResult;
-
-  auto check = [&](ip_protection::TryGetAuthTokensResult result,
-                   std::optional<base::TimeDelta> backoff, bool exponential) {
-    SCOPED_TRACE(::testing::Message()
-                 << "result: " << static_cast<int>(result));
-    EXPECT_EQ(core_host_->CalculateBackoff(result), backoff);
-    if (backoff && exponential) {
-      EXPECT_EQ(core_host_->CalculateBackoff(result), (*backoff) * 2);
-      EXPECT_EQ(core_host_->CalculateBackoff(result), (*backoff) * 4);
-    } else {
-      EXPECT_EQ(core_host_->CalculateBackoff(result), backoff);
-    }
-  };
-
-  check(kSuccess, std::nullopt, false);
-  check(kFailedNotEligible,
-        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
-  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
-        true);
-  check(kFailedBSA401, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
-        true);
-  check(kFailedBSA403,
-        ip_protection::IpProtectionCoreHostHelper::kNotEligibleBackoff, false);
-  check(kFailedBSAOther,
-        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff, true);
-  check(kFailedOAuthTokenTransient,
-        ip_protection::IpProtectionCoreHostHelper::kTransientBackoff, true);
-
-  check(kFailedNoAccount, base::TimeDelta::Max(), false);
-  // The account-related backoffs should not be changed except by account change
-  // events.
-  check(kFailedBSA400, base::TimeDelta::Max(), false);
-  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
-      kTestEmail, signin::ConsentLevel::kSignin);
-  // The backoff time should have been reset.
-  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
-        true);
-
-  check(kFailedOAuthTokenPersistent, base::TimeDelta::Max(), false);
-  check(kFailedBSA400, base::TimeDelta::Max(), false);
-  // Change the refresh token error state to an error state and then back to a
-  // no-error state so that the latter clears the backoff time.
-  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
-  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
-  check(kFailedBSA400, ip_protection::IpProtectionCoreHostHelper::kBugBackoff,
-        true);
 }
 
 TEST_F(IpProtectionCoreHostTest, GetProxyConfigWithApiKey) {

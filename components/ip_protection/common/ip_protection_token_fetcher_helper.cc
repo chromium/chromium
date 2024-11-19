@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ip_protection/common/ip_protection_token_fetcher.h"
+#include "components/ip_protection/common/ip_protection_token_fetcher_helper.h"
 
 #include <optional>
 #include <string>
@@ -14,14 +14,18 @@
 
 namespace ip_protection {
 
-// static
-void IpProtectionTokenFetcher::GetTokensFromBlindSignAuth(
+IpProtectionTokenFetcherHelper::IpProtectionTokenFetcherHelper() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+void IpProtectionTokenFetcherHelper::GetTokensFromBlindSignAuth(
     quiche::BlindSignAuthInterface* blind_sign_auth,
     quiche::BlindSignAuthServiceType service_type,
     std::optional<std::string> access_token,
     uint32_t batch_size,
     quiche::ProxyLayer proxy_layer,
     FetchBlindSignedTokenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   blind_sign_auth->GetTokens(
       std::move(access_token), batch_size, proxy_layer, service_type,
       [callback = std::move(callback)](

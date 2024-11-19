@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/threading/platform_thread.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
@@ -25,6 +26,7 @@ void MockBlindSignAuth::GetTokens(
     quiche::BlindSignAuthServiceType /*service_type*/,
     quiche::SignedTokenCallback callback) {
   get_tokens_called_ = true;
+  last_thread_id_ = base::PlatformThread::CurrentId();
   oauth_token_ = oauth_token ? *oauth_token : "";
   num_tokens_ = num_tokens;
   proxy_layer_ = proxy_layer;
@@ -37,6 +39,11 @@ void MockBlindSignAuth::GetTokens(
   }
 
   std::move(callback)(std::move(result));
+}
+
+bool MockBlindSignAuth::GetTokensCalledInDifferentThread() {
+  return get_tokens_called_ &&
+         last_thread_id_ != base::PlatformThread::CurrentId();
 }
 
 }  // namespace ip_protection

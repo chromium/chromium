@@ -355,20 +355,59 @@ source_set("ip_protection_token_direct_fetcher") {
     "//base",
     "//services/network/public/cpp",
   ]
-  deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+  deps = [
+    ":ip_protection_core_host_helper",
+    ":ip_protection_data_types",
+    ":ip_protection_telemetry",
+    ":ip_protection_token_fetcher_helper",
+    "//components/signin/public/identity_manager:identity_manager",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+}
+
+source_set("ip_protection_token_direct_fetcher_unittest") {
+  testonly = true
+  sources = [ "ip_protection_token_direct_fetcher_unittest.cc" ]
+  deps = [
+    ":ip_protection_core_host_helper",
+    ":ip_protection_data_types",
+    ":ip_protection_token_direct_fetcher",
+    ":mock_blind_sign_auth",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net/third_party/quiche:blind_sign_auth",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
 }
 
 source_set("ip_protection_token_fetcher") {
-  sources = [
-    "ip_protection_token_fetcher.cc",
-    "ip_protection_token_fetcher.h",
-  ]
+  sources = [ "ip_protection_token_fetcher.h" ]
   public_deps = [
     ":ip_protection_core_host_helper",
     "//base",
     "//third_party/abseil-cpp:absl",
   ]
-  deps = [ "//net/third_party/quiche:blind_sign_auth" ]
+  deps = [
+    ":ip_protection_data_types",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
+}
+
+source_set("ip_protection_token_fetcher_helper") {
+  sources = [
+    "ip_protection_token_fetcher_helper.cc",
+    "ip_protection_token_fetcher_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    ":ip_protection_data_types",
+    "//net/third_party/quiche:blind_sign_auth",
+  ]
 }
 
 source_set("ip_protection_token_manager") {

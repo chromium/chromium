@@ -10,45 +10,34 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 
 namespace quiche {
-class BlindSignAuthInterface;
 enum class ProxyLayer;
-enum class BlindSignAuthServiceType;
 struct BlindSignToken;
 }  // namespace quiche
 
 namespace ip_protection {
 
-using FetchBlindSignedTokenCallback = base::OnceCallback<void(
-    absl::StatusOr<std::vector<quiche::BlindSignToken>>)>;
-
 // Interface that manages requesting and fetching blind-signed authentication
-// tokens for IP Protection using the `quiche::BlindSignAuth` library.
+// tokens for IP Protection.
 class IpProtectionTokenFetcher {
  public:
+  using TryGetAuthTokensCallback =
+      base::OnceCallback<void(std::optional<std::vector<BlindSignedAuthToken>>,
+                              std::optional<::base::Time>)>;
+
   virtual ~IpProtectionTokenFetcher() = default;
   IpProtectionTokenFetcher(const IpProtectionTokenFetcher&) = delete;
   IpProtectionTokenFetcher& operator=(const IpProtectionTokenFetcher&) = delete;
 
-  // `FetchBlindSignedToken()` calls into the `quiche::BlindSignAuth` library to
-  // request a blind-signed auth token for use at the IP Protection proxies.
-  virtual void FetchBlindSignedToken(
-      std::optional<std::string> access_token,
-      uint32_t batch_size,
-      quiche::ProxyLayer proxy_layer,
-      FetchBlindSignedTokenCallback callback) = 0;
-
-  // Calls `GetTokens()` on provided `blind_sign_auth` to fetch blind signed
-  // tokens.
-  static void GetTokensFromBlindSignAuth(
-      quiche::BlindSignAuthInterface* blind_sign_auth,
-      quiche::BlindSignAuthServiceType service_type,
-      std::optional<std::string> access_token,
-      uint32_t batch_size,
-      quiche::ProxyLayer proxy_layer,
-      FetchBlindSignedTokenCallback callback);
+  // Try to get a batch of auth tokens. The response callback contains either
+  // a vector of tokens or, on error, a time before which the method should not
+  // be called again.
+  virtual void TryGetAuthTokens(uint32_t batch_size,
+                                ProxyLayer proxy_layer,
+                                TryGetAuthTokensCallback callback) = 0;
 
  protected:
   IpProtectionTokenFetcher() = default;
