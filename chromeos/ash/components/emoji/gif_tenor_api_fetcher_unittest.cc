@@ -181,7 +181,6 @@ class GifTenorApiFetcherTest : public testing::Test {
 };
 
 TEST_F(GifTenorApiFetcherTest, FetchCategories) {
-  task_environment_.RunUntilIdle();
   base::test::TestFuture<tenor::mojom::Status, const std::vector<std::string>&>
       future;
   gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
@@ -204,7 +203,6 @@ TEST_F(GifTenorApiFetcherTest, FetchCategories) {
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
-  task_environment_.RunUntilIdle();
   base::test::TestFuture<tenor::mojom::Status,
                          tenor::mojom::PaginatedGifResponsesPtr>
       future;
@@ -228,7 +226,6 @@ TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
-  task_environment_.RunUntilIdle();
   base::test::TestFuture<tenor::mojom::Status,
                          tenor::mojom::PaginatedGifResponsesPtr>
       future;
@@ -252,7 +249,6 @@ TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
-  task_environment_.RunUntilIdle();
   base::test::TestFuture<tenor::mojom::Status,
                          std::vector<tenor::mojom::GifResponsePtr>>
       future;
