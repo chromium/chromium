@@ -55,6 +55,7 @@ namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
+                               gfx::Size size,
                                SkColorType sk_color_type,
                                SkAlphaType sk_alpha_type,
                                sk_sp<SkColorSpace> sk_color_space)
@@ -62,6 +63,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
+      size_(size),
       sk_color_type_(sk_color_type),
       sk_alpha_type_(sk_alpha_type),
       sk_color_space_(std::move(sk_color_space)),
@@ -264,10 +266,10 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider),
                      filter_quality,
+                     size,
                      sk_color_type,
                      sk_alpha_type,
-                     std::move(sk_color_space)),
-      size_(size) {
+                     std::move(sk_color_space)) {
   if (!shared_image_interface_provider) {
     return;
   }
@@ -301,10 +303,6 @@ CanvasResourceSharedBitmap::~CanvasResourceSharedBitmap() {
 
 bool CanvasResourceSharedBitmap::IsValid() const {
   return shared_mapping_.IsValid();
-}
-
-gfx::Size CanvasResourceSharedBitmap::Size() const {
-  return size_;
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
@@ -408,11 +406,11 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : CanvasResource(std::move(provider),
                      filter_quality,
+                     size,
                      sk_color_type,
                      sk_alpha_type,
                      std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(size),
       is_accelerated_(is_accelerated),
       is_overlay_candidate_(
           shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
@@ -943,6 +941,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider),
                      filter_quality,
+                     transferable_resource.size,
                      viz::ToClosestSkColorType(/*gpu_compositing=*/true,
                                                transferable_resource.format),
                      kPremul_SkAlphaType,
@@ -1084,7 +1083,7 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // Don't generate sync token after the copy so that it's not on critical path.
   raster_interface->CopySharedImage(front_buffer_shared_image_->mailbox(),
                                     back_buffer_shared_image_->mailbox(), 0, 0,
-                                    0, 0, size_.width(), size_.height());
+                                    0, 0, Size().width(), Size().height());
   // Restore shared image access after copy when using legacy GL raster.
   if (!use_oop_rasterization_) {
     raster_interface->BeginSharedImageAccessDirectCHROMIUM(
@@ -1108,11 +1107,11 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider),
                      filter_quality,
+                     size,
                      sk_color_type,
                      sk_alpha_type,
                      std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(size),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
                                  .gpu_rasterization) {
