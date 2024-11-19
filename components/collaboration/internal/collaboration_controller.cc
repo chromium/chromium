@@ -4,6 +4,7 @@
 
 #include "components/collaboration/internal/collaboration_controller.h"
 
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/public/collaboration_service.h"
 
@@ -20,6 +21,26 @@ using GroupDataOrFailureOutcome =
     data_sharing::DataSharingService::GroupDataOrFailureOutcome;
 using StateId = CollaborationController::StateId;
 
+std::string GetStateIdString(StateId state) {
+  switch (state) {
+    case StateId::kPending:
+      return "Pending";
+    case StateId::kAuthenticating:
+      return "Authenticating";
+    case StateId::kCheckingFlowRequirements:
+      return "CheckingFlowRequirements";
+    case StateId::kAddingUserToGroup:
+      return "AddingUserToGroup";
+    case StateId::kWaitingForSyncTabGroup:
+      return "WaitingForSyncTabGroup";
+    case StateId::kOpeningLocalTabGroup:
+      return "OpeningLocalTabGroup";
+    case StateId::kCancel:
+      return "Cancel";
+    case StateId::kError:
+      return "Error";
+  }
+}
 }  // namespace
 
 // This is base class for each state and handles the logic for the state.
@@ -218,11 +239,13 @@ class ErrorState : public ControllerState {
     DCHECK(error.type != ErrorInfo::Type::kUnknown);
     controller->delegate()->ShowError(
         base::BindOnce(&ErrorState::ProcessOutcome,
-                       weak_ptr_factory_.GetWeakPtr()),
+                       local_weak_ptr_factory_.GetWeakPtr()),
         error);
   }
 
-  void OnProcessingFinished() override { controller->Exit(); }
+  void ProcessOutcome(Outcome outcome) override { controller->Exit(); }
+
+  base::WeakPtrFactory<ErrorState> local_weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -242,13 +265,16 @@ CollaborationController::CollaborationController(
       tab_group_sync_service_(tab_group_sync_service),
       delegate_(std::move(delegate)),
       finish_and_delete_(std::move(finish_and_delete)) {
-  // TODO(crbug.com/373403973): Initialize state.
+  current_state_ = std::make_unique<PendingState>(StateId::kPending, this);
+  current_state_->OnEnter(ErrorInfo(ErrorInfo::Type::kUnknown));
 }
 
 CollaborationController::~CollaborationController() = default;
 
 void CollaborationController::TransitionTo(StateId state,
                                            const ErrorInfo& error) {
+  DVLOG(2) << "Transition from " << GetStateIdString(current_state_->id)
+           << " to " << GetStateIdString(state);
   DCHECK(IsValidStateTransition(current_state_->id, state));
   current_state_->OnExit();
   current_state_ = CreateStateObject(state);
@@ -259,6 +285,15 @@ void CollaborationController::Exit() {
   current_state_->OnExit();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(finish_and_delete_)));
+}
+
+void CollaborationController::SetStateForTesting(StateId state) {
+  current_state_ = CreateStateObject(state);
+  current_state_->OnEnter(ErrorInfo(ErrorInfo::Type::kUnknown));
+}
+
+CollaborationController::StateId CollaborationController::GetStateForTesting() {
+  return current_state_->id;
 }
 
 bool CollaborationController::IsValidStateTransition(StateId from, StateId to) {

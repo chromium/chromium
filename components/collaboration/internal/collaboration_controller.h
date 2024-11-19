@@ -102,6 +102,10 @@ class CollaborationController {
   // service.
   void Exit();
 
+  // Helper functions used in tests.
+  void SetStateForTesting(StateId state);
+  StateId GetStateForTesting();
+
  private:
   static constexpr std::array<std::pair<StateId, StateId>, 17>
       kValidTransitions = {{

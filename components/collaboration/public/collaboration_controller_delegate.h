@@ -23,6 +23,8 @@ class CollaborationControllerDelegate {
     explicit ErrorInfo(Type type) : type(type) {}
 
     Type type;
+
+    bool operator==(const ErrorInfo& other) const { return type == other.type; }
   };
 
   enum class Outcome {

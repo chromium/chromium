@@ -30,3 +30,21 @@ source_set("components_unittests_gtest_filter") {
 
   data = [ "components_unittests.filter" ]
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/mock_collaboration_controller_delegate.cc",
+    "test_support/mock_collaboration_controller_delegate.h",
+    "test_support/mock_collaboration_service.cc",
+    "test_support/mock_collaboration_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/collaboration/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

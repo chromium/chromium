@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/collaboration/internal/collaboration_controller.h"
+#include "components/collaboration/test_support/mock_collaboration_controller_delegate.h"
 #include "components/data_sharing/public/features.h"
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -135,7 +136,8 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
                                ParseUrlStatus::kHostOrPathMismatchFailure)));
 
   // Invalid url parsing starts a join flow with empty GroupToken.
-  service_->StartJoinFlow(/*delegate=*/nullptr, url);
+  service_->StartJoinFlow(
+      std::make_unique<MockCollaborationControllerDelegate>(), url);
   const std::map<data_sharing::GroupToken,
                  std::unique_ptr<CollaborationController>>& join_flows =
       service_->GetJoinControllersForTesting();
@@ -145,11 +147,13 @@ TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
   // New join flow will be appended with a valid url parsing.
   EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
       .WillRepeatedly(Return(base::ok(token)));
-  service_->StartJoinFlow(/*delegate=*/nullptr, url);
+  service_->StartJoinFlow(
+      std::make_unique<MockCollaborationControllerDelegate>(), url);
   EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);
 
   // Existing join flow should not start new flow.
-  service_->StartJoinFlow(/*delegate=*/nullptr, url);
+  service_->StartJoinFlow(
+      std::make_unique<MockCollaborationControllerDelegate>(), url);
   EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 2u);
 }
 
