@@ -2671,6 +2671,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SearchByRegionWithUnifiedSidePanelBrowserTest,
+    // TODO(crbug.com/379724243): Re-enable this test
     DISABLED_ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch) {
   SetupNonGoogleRegionSearchEngine();
   SetupUnifiedSidePanel();

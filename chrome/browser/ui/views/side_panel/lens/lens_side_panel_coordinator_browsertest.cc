@@ -279,6 +279,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 
 IN_PROC_BROWSER_TEST_F(
     SearchImageWithUnifiedSidePanel,
+    // TODO(crbug.com/379724243): Re-enable this test
     DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanelFor3PDse) {
   SetupImageSearchEngine();
   SetupUnifiedSidePanel(/**for_google*/ false);
