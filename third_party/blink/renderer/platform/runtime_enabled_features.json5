@@ -5099,6 +5099,11 @@
     {
       name: "WindowDefaultStatus",
     },
+    {
+      name: "WindowOnMoveEvent",
+      status: "experimental",
+      implied_by: ["DesktopPWAsAdditionalWindowingControls"],
+    },
     // Flag guard for change to XML parser to merge adjacent CDATA sections.
     // See https://crrev.com/c/4790343.
     {
