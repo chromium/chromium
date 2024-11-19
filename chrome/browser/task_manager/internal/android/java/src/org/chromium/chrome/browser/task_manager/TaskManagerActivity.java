@@ -42,7 +42,10 @@ public class TaskManagerActivity extends AppCompatActivity {
             public void onTaskAdded(long id) {}
 
             @Override
-            public void onTaskToBeRemoved(long id) {}
+            public void onTaskToBeRemoved(long id) {
+                mem.remove(id);
+                onTasksRefreshed(new long[] {});
+            }
 
             @Override
             public void onTasksRefreshed(long[] taskIds) {

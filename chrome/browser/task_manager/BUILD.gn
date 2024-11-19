@@ -128,6 +128,9 @@ source_set("impl") {
     "providers/browser_process_task_provider.cc",
     "providers/child_process_task.cc",
     "providers/child_process_task_provider.cc",
+    "providers/fallback_task_provider.cc",
+    "providers/render_process_host_task_provider.cc",
+    "providers/spare_render_process_host_task_provider.cc",
     "providers/task.cc",
     "providers/task_provider.cc",
     "sampling/task_group.cc",
@@ -224,10 +227,7 @@ source_set("impl") {
       "//extensions/common",
     ]
     sources += [
-      "providers/fallback_task_provider.cc",
       "providers/per_profile_worker_task_tracker.cc",
-      "providers/render_process_host_task_provider.cc",
-      "providers/spare_render_process_host_task_provider.cc",
       "providers/web_contents/back_forward_cache_task.cc",
       "providers/web_contents/background_contents_tag.cc",
       "providers/web_contents/background_contents_task.cc",

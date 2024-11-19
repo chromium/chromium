@@ -18,7 +18,7 @@ using content::BrowserThread;
 using content::ChildProcessData;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/process_map.h"
+#include "extensions/browser/process_map.h"  // nogncheck
 #endif
 
 namespace task_manager {
