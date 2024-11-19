@@ -27,9 +27,11 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
+import org.chromium.chrome.test.util.TabBinningUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.transit.SoftKeyboardElement;
 
@@ -137,7 +139,13 @@ public class NewTabGroupDialogFacility extends Facility<TabSwitcherStation> {
 
     /** Press "Done" to confirm the tab group name and color. */
     public TabSwitcherGroupCardFacility pressDone() {
+        // The reason we can pass an expected card index is because the tab group has already been
+        // created.
+        TabModel currentModel = mHostStation.getTabModelSelectorSupplier().get().getCurrentModel();
+        int expectedCardIndex = TabBinningUtil.getBinIndex(currentModel, mTabIdsToGroup);
         return mHostStation.swapFacilitySync(
-                this, new TabSwitcherGroupCardFacility(mTabIdsToGroup, mTitle), DONE_BUTTON::click);
+                this,
+                new TabSwitcherGroupCardFacility(expectedCardIndex, mTabIdsToGroup, mTitle),
+                DONE_BUTTON::click);
     }
 }

@@ -24,6 +24,21 @@ import java.util.Set;
 /** Utility class for binning tabs into groups for testing purposes. */
 public class TabBinningUtil {
 
+    /** Return the expected tab group card position in the tab switcher. */
+    public static int getBinIndex(TabModel currentModel, List<Integer> tabIdsInGroup) {
+        Integer firstTabId = tabIdsInGroup.get(0);
+        return getBinIndex(currentModel, firstTabId);
+    }
+
+    /** Return the expected tab card or tab group card position in the tab switcher. */
+    public static int getBinIndex(TabModel currentModel, Integer tabId) {
+        TabBinList tabBinList = TabBinningUtil.binTabsByCard(currentModel);
+        TabBinPosition tabPosition = tabBinList.tabIdToPositionMap.get(tabId);
+
+        assert tabPosition != null;
+        return tabPosition.cardIndexInTabSwitcher;
+    }
+
     /** Places tabs into bins representing how they are grouped in the Tab Switcher. */
     public static TabBinList binTabsByCard(TabModel tabModel) {
         List<TabBin> tabBinList = createListOfTabBins(tabModel);

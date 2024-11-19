@@ -215,6 +215,7 @@ android_library("chrome_java_transit") {
     "javatests/src/org/chromium/chrome/test/transit/hub/IncognitoTabSwitcherStation.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/NewTabGroupDialogFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/RegularTabSwitcherStation.java",
+    "javatests/src/org/chromium/chrome/test/transit/hub/CardAtPositionCondition.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/TabGroupDialogFacility.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/TabListEditorAppMenu.java",
     "javatests/src/org/chromium/chrome/test/transit/hub/TabSwitcherAppMenuFacility.java",

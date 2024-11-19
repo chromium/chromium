@@ -107,7 +107,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
         List<Integer> tabIdsSelected = mListEditor.getAllTabIdsSelected();
         String title = TabGroupUtil.getNumberOfTabsString(tabIdsSelected.size());
         String snackbarMessage = TabGroupUtil.getSnackbarMessageString(tabIdsSelected.size());
-        var card = new TabSwitcherGroupCardFacility(tabIdsSelected, title);
+        var card = new TabSwitcherGroupCardFacility(/* cardIndex= */ null, tabIdsSelected, title);
         var undoSnackbar = new UndoGroupSnackbarFacility(snackbarMessage);
         mHostStation.swapFacilitiesSync(
                 List.of(this, mListEditor, itemOnScreen),

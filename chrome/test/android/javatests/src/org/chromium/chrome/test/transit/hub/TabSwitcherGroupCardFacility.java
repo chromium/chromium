@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import androidx.annotation.Nullable;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -24,18 +25,19 @@ public class TabSwitcherGroupCardFacility extends TabSwitcherCardFacility {
     /**
      * Expect the default title "N tabs".
      *
-     * <p>Equivalent to using the constructor {@link #TabSwitcherGroupCardFacility(List)}.
+     * <p>Equivalent to using the constructor {@link #TabSwitcherGroupCardFacility(Integer, List)}.
      */
     public static final String DEFAULT_N_TABS_TITLE = "_DEFAULT_N_TABS_TITLE";
 
     private final List<Integer> mTabIdsToGroup;
 
-    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup) {
-        this(tabIdsToGroup, DEFAULT_N_TABS_TITLE);
+    public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup) {
+        this(cardIndex, tabIdsToGroup, DEFAULT_N_TABS_TITLE);
     }
 
-    public TabSwitcherGroupCardFacility(List<Integer> tabIdsToGroup, String title) {
+    public TabSwitcherGroupCardFacility(@Nullable Integer cardIndex, List<Integer> tabIdsToGroup, String title) {
         super(
+                cardIndex,
                 title.equals(DEFAULT_N_TABS_TITLE)
                         ? TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size())
                         : title);

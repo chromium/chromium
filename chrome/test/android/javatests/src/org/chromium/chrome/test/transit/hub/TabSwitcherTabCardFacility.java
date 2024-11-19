@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.hub;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.test.transit.page.PageStation;
 
@@ -11,8 +13,8 @@ import org.chromium.chrome.test.transit.page.PageStation;
 public class TabSwitcherTabCardFacility extends TabSwitcherCardFacility {
     private final int mTabId;
 
-    public TabSwitcherTabCardFacility(int tabId, String title) {
-        super(title);
+    public TabSwitcherTabCardFacility(@Nullable Integer cardIndex, int tabId, String title) {
+        super(cardIndex, title);
         mTabId = tabId;
     }
 
