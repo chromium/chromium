@@ -883,34 +883,34 @@ wtf_size_t StringImpl::Find(base::RepeatingCallback<bool(UChar)> match_callback,
 
 template <typename SearchCharacterType, typename MatchCharacterType>
 ALWAYS_INLINE static wtf_size_t FindInternal(
-    const SearchCharacterType* search_characters,
-    const MatchCharacterType* match_characters,
-    wtf_size_t index,
-    wtf_size_t search_length,
-    wtf_size_t match_length) {
+    base::span<const SearchCharacterType> search,
+    base::span<const MatchCharacterType> match,
+    wtf_size_t index) {
   // Optimization: keep a running hash of the strings,
   // only call equal() if the hashes match.
 
+  wtf_size_t match_length = base::checked_cast<wtf_size_t>(match.size());
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = search_length - match_length;
+  wtf_size_t delta =
+      base::checked_cast<wtf_size_t>(search.size() - match.size());
 
   wtf_size_t search_hash = 0;
   wtf_size_t match_hash = 0;
 
-  for (wtf_size_t i = 0; i < match_length; ++i) {
-    search_hash += search_characters[i];
-    match_hash += match_characters[i];
+  for (size_t i = 0; i < match_length; ++i) {
+    search_hash += search[i];
+    match_hash += match[i];
   }
 
   wtf_size_t i = 0;
-  base::span<const MatchCharacterType> match(match_characters, match_length);
   // keep looping until we match
-  while (search_hash != match_hash || !Equal(search_characters + i, match)) {
+  while (search_hash != match_hash ||
+         search.subspan(i, match_length) != match) {
     if (i == delta)
       return kNotFound;
-    search_hash += search_characters[i + match_length];
-    search_hash -= search_characters[i];
+    search_hash += search[i + match_length];
+    search_hash -= search[i];
     ++i;
   }
   return index + i;
@@ -943,16 +943,12 @@ wtf_size_t StringImpl::Find(const StringView& match_string, wtf_size_t index) {
 
   if (Is8Bit()) {
     if (match_string.Is8Bit())
-      return FindInternal(Characters8() + index, match_string.Characters8(),
-                          index, search_length, match_length);
-    return FindInternal(Characters8() + index, match_string.Characters16(),
-                        index, search_length, match_length);
+      return FindInternal(Span8().subspan(index), match_string.Span8(), index);
+    return FindInternal(Span8().subspan(index), match_string.Span16(), index);
   }
   if (match_string.Is8Bit())
-    return FindInternal(Characters16() + index, match_string.Characters8(),
-                        index, search_length, match_length);
-  return FindInternal(Characters16() + index, match_string.Characters16(),
-                      index, search_length, match_length);
+    return FindInternal(Span16().subspan(index), match_string.Span8(), index);
+  return FindInternal(Span16().subspan(index), match_string.Span16(), index);
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
@@ -1077,34 +1073,33 @@ wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) {
 
 template <typename SearchCharacterType, typename MatchCharacterType>
 ALWAYS_INLINE static wtf_size_t ReverseFindInternal(
-    const SearchCharacterType* search_characters,
-    const MatchCharacterType* match_characters,
-    wtf_size_t index,
-    wtf_size_t length,
-    wtf_size_t match_length) {
+    base::span<const SearchCharacterType> search,
+    base::span<const MatchCharacterType> match,
+    wtf_size_t index) {
   // Optimization: keep a running hash of the strings,
   // only call equal if the hashes match.
 
+  wtf_size_t match_length = base::checked_cast<wtf_size_t>(match.size());
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = std::min(index, length - match_length);
+  wtf_size_t delta = std::min(
+      index, base::checked_cast<wtf_size_t>(search.size() - match_length));
 
   wtf_size_t search_hash = 0;
   wtf_size_t match_hash = 0;
   for (wtf_size_t i = 0; i < match_length; ++i) {
-    search_hash += search_characters[delta + i];
-    match_hash += match_characters[i];
+    search_hash += search[delta + i];
+    match_hash += match[i];
   }
 
-  base::span<const MatchCharacterType> match(match_characters, match_length);
   // keep looping until we match
   while (search_hash != match_hash ||
-         !Equal(search_characters + delta, match)) {
+         search.subspan(delta, match_length) != match) {
     if (!delta)
       return kNotFound;
     --delta;
-    search_hash -= search_characters[delta + match_length];
-    search_hash += search_characters[delta];
+    search_hash -= search[delta + match_length];
+    search_hash += search[delta];
   }
   return delta;
 }
@@ -1134,16 +1129,12 @@ wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
 
   if (Is8Bit()) {
     if (match_string.Is8Bit())
-      return ReverseFindInternal(Characters8(), match_string.Characters8(),
-                                 index, our_length, match_length);
-    return ReverseFindInternal(Characters8(), match_string.Characters16(),
-                               index, our_length, match_length);
+      return ReverseFindInternal(Span8(), match_string.Span8(), index);
+    return ReverseFindInternal(Span8(), match_string.Span16(), index);
   }
   if (match_string.Is8Bit())
-    return ReverseFindInternal(Characters16(), match_string.Characters8(),
-                               index, our_length, match_length);
-  return ReverseFindInternal(Characters16(), match_string.Characters16(), index,
-                             our_length, match_length);
+    return ReverseFindInternal(Span16(), match_string.Span8(), index);
+  return ReverseFindInternal(Span16(), match_string.Span16(), index);
 }
 
 bool StringImpl::StartsWith(UChar character) const {
