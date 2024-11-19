@@ -53,6 +53,12 @@ void RecordInvocationResultedInSearch(
 void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                            base::TimeDelta duration);
 
+// Records whether the contextual searchbox was focused in sessions in which it
+// was shown.
+void RecordContextualSearchboxFocusedInSession(
+    bool contextual_searchbox_focused_in_session,
+    lens::PageContentMimeType page_content_type);
+
 // Records the time in foreground of a lens overlay. Both sliced and unsliced.
 void RecordSessionForegroundDuration(
     LensOverlayInvocationSource invocation_source,

@@ -1235,6 +1235,10 @@ void LensOverlayController::OnThumbnailRemovedForTesting() {
   OnThumbnailRemoved();
 }
 
+void LensOverlayController::OnFocusChangedForTesting(bool focused) {
+  OnFocusChanged(focused);
+}
+
 const lens::proto::LensOverlaySuggestInputs&
 LensOverlayController::GetLensSuggestInputsForTesting() {
   return GetLensSuggestInputs();
@@ -1483,11 +1487,11 @@ void LensOverlayController::ContinueCreateInitializationData(
   AddBoundingBoxesToInitializationData(initialization_data.get(), all_bounds);
 
   GetPageContextualization(base::BindOnce(
-      &LensOverlayController::StorePageContentAndContinueIntialization,
+      &LensOverlayController::StorePageContentAndContinueInitialization,
       weak_factory_.GetWeakPtr(), std::move(initialization_data)));
 }
 
-void LensOverlayController::StorePageContentAndContinueIntialization(
+void LensOverlayController::StorePageContentAndContinueInitialization(
     std::unique_ptr<OverlayInitializationData> initialization_data,
     std::vector<uint8_t> bytes,
     lens::PageContentMimeType content_type) {
@@ -1904,6 +1908,10 @@ void LensOverlayController::InitializeOverlayUI(
 
   bool should_show_contextual_search_box =
       !init_data.page_content_bytes_.empty();
+  if (should_show_contextual_search_box) {
+    contextual_searchbox_focused_in_session_ = false;
+  }
+  initial_page_content_type_ = init_data.page_content_type_;
   page_->ShouldShowContextualSearchBox(should_show_contextual_search_box);
 
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
@@ -2122,9 +2130,13 @@ void LensOverlayController::OnFocusChanged(bool focused) {
     return;
   }
 
-  // If the searchbox becomes focused, showing intent to issue a new query,
-  // upload the new page content for contextualization.
-  TryUpdatePageContextualization();
+  if (IsContextualSearchbox()) {
+    contextual_searchbox_focused_in_session_ = true;
+
+    // If the searchbox becomes focused, showing intent to issue a new query,
+    // upload the new page content for contextualization.
+    TryUpdatePageContextualization();
+  }
 }
 
 void LensOverlayController::OnPageBound() {
@@ -2691,6 +2703,13 @@ void LensOverlayController::RecordEndOfSessionMetrics(
   DCHECK(!invocation_time_.is_null());
   base::TimeDelta session_duration = base::TimeTicks::Now() - invocation_time_;
   lens::RecordSessionDuration(invocation_source_, session_duration);
+
+  // UMA contextual searchbox focused in session.
+  if (contextual_searchbox_focused_in_session_.has_value()) {
+    lens::RecordContextualSearchboxFocusedInSession(
+        contextual_searchbox_focused_in_session_.value(),
+        initial_page_content_type_);
+  }
 
   // UKM session end metrics. Includes invocation source, whether the
   // session resulted in a search, and session duration.
