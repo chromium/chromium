@@ -1240,17 +1240,37 @@ export class PrintPreviewModelElement extends PolymerElement {
       return;
     }
 
-    if (savedSettings.customMargins) {
-      // Per crbug.com/40067498 and crbug.com/348806045, the C++ side expects
-      // the custom margins values to be integers, so round them here.
-      savedSettings.customMargins.marginTop =
-          Math.round(savedSettings.customMargins.marginTop);
-      savedSettings.customMargins.marginRight =
-          Math.round(savedSettings.customMargins.marginRight);
-      savedSettings.customMargins.marginBottom =
-          Math.round(savedSettings.customMargins.marginBottom);
-      savedSettings.customMargins.marginLeft =
-          Math.round(savedSettings.customMargins.marginLeft);
+    if (savedSettings.marginsType === MarginsType.CUSTOM) {
+      let valid = false;
+      if (savedSettings.customMargins) {
+        // Per crbug.com/40067498 and crbug.com/348806045, the C++ side expects
+        // the custom margins values to be integers, so round them here.
+        savedSettings.customMargins.marginTop =
+            Math.round(savedSettings.customMargins.marginTop);
+        savedSettings.customMargins.marginRight =
+            Math.round(savedSettings.customMargins.marginRight);
+        savedSettings.customMargins.marginBottom =
+            Math.round(savedSettings.customMargins.marginBottom);
+        savedSettings.customMargins.marginLeft =
+            Math.round(savedSettings.customMargins.marginLeft);
+
+        // The above fix is still insufficient to make the C++ side happy, so
+        // do an additional sanity check here. See crbug.com/379053829.
+        const isValidCustomMarginValue = (value: number) => value >= 0;
+        valid =
+            isValidCustomMarginValue(savedSettings.customMargins.marginTop) &&
+            isValidCustomMarginValue(savedSettings.customMargins.marginRight) &&
+            isValidCustomMarginValue(
+                savedSettings.customMargins.marginBottom) &&
+            isValidCustomMarginValue(savedSettings.customMargins.marginLeft);
+      }
+
+      if (!valid) {
+        // If the sanity check above fails, then fall back to the default
+        // margins type, so the C++ side does not encounter conflicting data.
+        savedSettings.marginsType = MarginsType.DEFAULT;
+        delete savedSettings.customMargins;
+      }
     }
 
     let recentDestinations = savedSettings.recentDestinations || [];
