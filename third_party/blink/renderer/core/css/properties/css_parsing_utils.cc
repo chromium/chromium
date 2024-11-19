@@ -5085,6 +5085,12 @@ CSSValue* ConsumeGapDecorationPropertyList(
     }
   } while (!stream.AtEnd());
 
+  // If there are no values, return nullptr rather than an empty list so that we
+  // use the default value for the property.
+  if (values->length() == 0) {
+    return nullptr;
+  }
+
   return values;
 }
 

@@ -1445,7 +1445,7 @@ void BoxFragmentPainter::PaintColumnRules(const PaintInfo& paint_info,
 
   const Color& rule_color =
       LayoutObject::ResolveColor(style, GetCSSPropertyColumnRuleColor());
-  LayoutUnit rule_thickness(style.ColumnRuleWidth());
+  LayoutUnit rule_thickness(style.ColumnRuleWidth().GetLegacyValue());
 
   // Count all the spanners
   int span_count = 0;

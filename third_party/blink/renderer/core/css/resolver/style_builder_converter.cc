@@ -1742,12 +1742,6 @@ int StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
   return ClampTo<int>(floor(result), 0, LayoutUnit::Max().ToInt());
 }
 
-uint16_t StyleBuilderConverter::ConvertColumnRuleWidth(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return ClampTo<uint16_t>(ConvertBorderWidth(state, value));
-}
-
 LayoutUnit StyleBuilderConverter::ConvertLayoutUnit(
     const StyleResolverState& state,
     const CSSValue& value) {
@@ -2250,34 +2244,37 @@ template <typename T>
 T ConvertGapDecorationPropertyValue(
     StyleResolverState& state,
     const CSSValue& value,
-    const CSSGapDecorationPropertyType property_type,
     bool for_visited_link = false);
 
 template <>
 StyleColor ConvertGapDecorationPropertyValue<StyleColor>(
     StyleResolverState& state,
     const CSSValue& value,
-    const CSSGapDecorationPropertyType property_type,
     bool for_visited_link) {
-  CHECK_EQ(property_type, CSSGapDecorationPropertyType::kColor);
   return StyleBuilderConverter::ConvertStyleColor(state, value,
                                                   for_visited_link);
 }
 
+template <>
+int ConvertGapDecorationPropertyValue<int>(StyleResolverState& state,
+                                           const CSSValue& value,
+                                           bool for_visited_link) {
+  return ClampTo<uint16_t>(
+      StyleBuilderConverter::ConvertBorderWidth(state, value));
+}
+
 template <typename T>
-GapDataList<T> ConvertGapDecorationDataList(
-    StyleResolverState& state,
-    const CSSValue& value,
-    bool for_visited_link,
-    const CSSGapDecorationPropertyType property_type) {
+GapDataList<T> ConvertGapDecorationDataList(StyleResolverState& state,
+                                            const CSSValue& value,
+                                            bool for_visited_link = false) {
   // The `value` will not be a list in two scenarios:
   // 1. When using the legacy 'column-rule-*' properties.
   // 2. When the fast parse path is taken (see
   // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
   // GapDataList with a single Value.
   if (!DynamicTo<CSSValueList>(value)) {
-    return GapDataList<T>(ConvertGapDecorationPropertyValue<T>(
-        state, value, property_type, for_visited_link));
+    return GapDataList<T>(
+        ConvertGapDecorationPropertyValue<T>(state, value, for_visited_link));
   }
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
@@ -2297,7 +2294,7 @@ GapDataList<T> ConvertGapDecorationDataList(
       gap_values.ReserveInitialCapacity(gap_repeat_value->Values().length());
       for (const auto& repeat_value : gap_repeat_value->Values()) {
         gap_values.push_back(ConvertGapDecorationPropertyValue<T>(
-            state, *repeat_value, property_type, for_visited_link));
+            state, *repeat_value, for_visited_link));
       }
 
       std::optional<int> repeat_count = std::nullopt;
@@ -2311,7 +2308,7 @@ GapDataList<T> ConvertGapDecorationDataList(
       gap_data = GapData<T>(value_repeater);
     } else {
       gap_data = GapData<T>(ConvertGapDecorationPropertyValue<T>(
-          state, *curr_value.Get(), property_type, for_visited_link));
+          state, *curr_value.Get(), for_visited_link));
     }
 
     gap_data_list.push_back(gap_data);
@@ -2325,8 +2322,14 @@ StyleBuilderConverter::ConvertGapDecorationColorDataList(
     StyleResolverState& state,
     const CSSValue& value,
     bool for_visited_link) {
-  return ConvertGapDecorationDataList<blink::StyleColor>(
-      state, value, for_visited_link, CSSGapDecorationPropertyType::kColor);
+  return ConvertGapDecorationDataList<blink::StyleColor>(state, value,
+                                                         for_visited_link);
+}
+
+GapDataList<int> StyleBuilderConverter::ConvertGapDecorationWidthDataList(
+    StyleResolverState& state,
+    const CSSValue& value) {
+  return ConvertGapDecorationDataList<int>(state, value);
 }
 
 ShadowData StyleBuilderConverter::ConvertShadow(

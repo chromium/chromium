@@ -3385,6 +3385,13 @@ const CSSValue* GetGapDecorationPropertyValue(const StyleColor& value,
                                                       value_phase);
 }
 
+template <>
+const CSSValue* GetGapDecorationPropertyValue(const int& value,
+                                              const ComputedStyle& style,
+                                              CSSValuePhase value_phase) {
+  return ZoomAdjustedPixelValue(value, style);
+}
+
 template <typename T>
 void PopulateNonRepeaterGapData(CSSValueList* list,
                                 const GapData<T>& gap_data,
@@ -3448,7 +3455,6 @@ const CSSValue* ValueForGapDecorationPropertyDataList(
   }
   return list;
 }
-
 }  // namespace
 
 const CSSValue* ComputedStyleUtils::ValueForGapDecorationColorDataList(
@@ -3456,6 +3462,14 @@ const CSSValue* ComputedStyleUtils::ValueForGapDecorationColorDataList(
     const ComputedStyle& style,
     CSSValuePhase value_phase) {
   return ValueForGapDecorationPropertyDataList(gap_color_list, style,
+                                               value_phase);
+}
+
+const CSSValue* ComputedStyleUtils::ValueForGapDecorationWidthDataList(
+    const GapDataList<int>& gap_width_list,
+    const ComputedStyle& style,
+    CSSValuePhase value_phase) {
+  return ValueForGapDecorationPropertyDataList(gap_width_list, style,
                                                value_phase);
 }
 

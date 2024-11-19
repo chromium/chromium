@@ -157,7 +157,8 @@ bool LengthPropertyFunctions::GetInitialLength(
       return true;
     case CSSPropertyID::kColumnRuleWidth:
       result =
-          Length::Fixed(ComputedStyleInitialValues::InitialColumnRuleWidth());
+          Length::Fixed(ComputedStyleInitialValues::InitialColumnRuleWidth()
+                            .GetLegacyValue());
       return true;
 
     default:
@@ -361,7 +362,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       }
       break;
     case CSSPropertyID::kColumnRuleWidth:
-      result = Length::Fixed(style.ColumnRuleWidth());
+      result = Length::Fixed(style.ColumnRuleWidth().GetLegacyValue());
       success = true;
       break;
     case CSSPropertyID::kWebkitTransformOriginZ:

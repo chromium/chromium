@@ -589,10 +589,10 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   // column-rule-width
-  uint16_t ColumnRuleWidth() const {
+  GapDataList<int> ColumnRuleWidth() const {
     if (ColumnRuleStyle() == EBorderStyle::kNone ||
         ColumnRuleStyle() == EBorderStyle::kHidden) {
-      return 0;
+      return GapDataList<int>(0);
     }
     return ColumnRuleWidthInternal();
   }
@@ -1008,7 +1008,7 @@ class ComputedStyle final : public ComputedStyleBase {
     if (!SpecifiesColumns()) [[likely]] {
       return false;
     }
-    return ColumnRuleWidth() && !ColumnRuleIsTransparent() &&
+    return ColumnRuleWidth().GetLegacyValue() && !ColumnRuleIsTransparent() &&
            BorderStyleIsVisible(ColumnRuleStyle());
   }
 
@@ -2836,7 +2836,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   }
 
   // column-rule-width
-  void SetColumnRuleWidth(uint16_t w) { SetColumnRuleWidthInternal(w); }
+  void SetColumnRuleWidth(GapDataList<int> w) { SetColumnRuleWidthInternal(w); }
 
   // column-width
   void SetColumnWidth(float f) {

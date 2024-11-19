@@ -268,6 +268,10 @@ class CORE_EXPORT ComputedStyleUtils {
       const GapDataList<StyleColor>&,
       const ComputedStyle&,
       CSSValuePhase);
+  static const CSSValue* ValueForGapDecorationWidthDataList(
+      const GapDataList<int>&,
+      const ComputedStyle&,
+      CSSValuePhase);
   static CSSValue* ValueForShadowData(const ShadowData&,
                                       const ComputedStyle&,
                                       bool use_spread,

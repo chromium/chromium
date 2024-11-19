@@ -22,9 +22,12 @@ class CORE_EXPORT GapDataList {
   GapDataList() = default;
 
   static GapDataList DefaultGapColorDataList() {
-    StyleColor color = StyleColor::CurrentColor();
-    auto default_gap_color_list = GapDataList(color);
-    return default_gap_color_list;
+    return GapDataList(StyleColor::CurrentColor());
+  }
+
+  static GapDataList DefaultGapWidthDataList() {
+    constexpr int kDefaultWidth = 3;
+    return GapDataList(kDefaultWidth);
   }
 
   explicit GapDataList(GapDataVector&& gap_data_list)

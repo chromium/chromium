@@ -2314,7 +2314,8 @@ const CSSValue* ColumnRuleWidth::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ZoomAdjustedPixelValue(style.ColumnRuleWidth(), style);
+  return ComputedStyleUtils::ValueForGapDecorationWidthDataList(
+      style.ColumnRuleWidth(), style, value_phase);
 }
 
 const CSSValue* ColumnSpan::ParseSingleValue(
