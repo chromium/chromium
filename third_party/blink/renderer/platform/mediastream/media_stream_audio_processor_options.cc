@@ -31,7 +31,6 @@ bool AudioProcessingProperties::HasSameReconfigurableSettings(
 bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
     const AudioProcessingProperties& other) const {
   return disable_hw_noise_suppression == other.disable_hw_noise_suppression &&
-         goog_audio_mirroring == other.goog_audio_mirroring &&
          auto_gain_control == other.auto_gain_control &&
          noise_suppression == other.noise_suppression &&
          goog_highpass_filter == other.goog_highpass_filter &&
@@ -56,7 +55,6 @@ AudioProcessingProperties::ToAudioProcessingSettings(
 
   out.high_pass_filter = goog_highpass_filter;
   out.multi_channel_capture_processing = multi_channel_capture_processing;
-  out.stereo_mirroring = goog_audio_mirroring;
   return out;
 }
 }  // namespace blink

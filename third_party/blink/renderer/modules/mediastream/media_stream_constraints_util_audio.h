@@ -123,9 +123,6 @@ using AudioDeviceCaptureCapabilities = Vector<AudioDeviceCaptureCapability>;
 //        the same name. "System" is selected only if the device supports it.
 //        If constraint is not specified, "system" is selected if supported,
 //        with exception for experimental system echo cancellation.
-//      - goog_audio_mirroring: This property is mapped directly from the final
-//        value of the goog_audio_mirroring constraint. If no value is
-//        explicitly specified, the default value is false.
 //    The remaining audio-processing properties are directly mapped from the
 //    final value of the corresponding constraints. If no value is explicitly
 //    specified, the default value is the same as the final value of the

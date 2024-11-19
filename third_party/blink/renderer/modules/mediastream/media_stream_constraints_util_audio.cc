@@ -958,7 +958,6 @@ class ProcessingBasedContainer {
 
  private:
   enum BooleanContainerId {
-    kGoogAudioMirroring,
     kGoogNoiseSuppression,
     kGoogHighpassFilter,
     kNumBooleanContainerIds
@@ -976,8 +975,6 @@ class ProcessingBasedContainer {
 
   static constexpr BooleanPropertyContainerInfo
       kBooleanPropertyContainerInfoMap[] = {
-          {kGoogAudioMirroring, &ConstraintSet::goog_audio_mirroring,
-           &AudioProcessingProperties::goog_audio_mirroring},
           {kGoogNoiseSuppression, &ConstraintSet::noise_suppression,
            &AudioProcessingProperties::noise_suppression},
           {kGoogHighpassFilter, &ConstraintSet::goog_highpass_filter,
@@ -1025,8 +1022,6 @@ class ProcessingBasedContainer {
 
     voice_isolation_container_ = VoiceIsolationContainer(voice_isolation_set);
 
-    boolean_containers_[kGoogAudioMirroring] =
-        BooleanContainer(goog_audio_mirroring_set);
     boolean_containers_[kGoogNoiseSuppression] =
         BooleanContainer(noise_suppression_set);
     boolean_containers_[kGoogHighpassFilter] =

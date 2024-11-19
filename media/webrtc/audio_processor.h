@@ -85,7 +85,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       const media::AudioParameters& input_format,
       const media::AudioParameters& output_format,
       rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
-      bool stereo_mirroring,
       bool needs_playout_reference);
 
   ~AudioProcessor();
@@ -200,10 +199,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // The WebRTC audio processing module (APM). Performs the bulk of the audio
   // processing and resampling algorithms.
   const rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing_;
-
-  // If true, then the audio processor should swap the left and right channel of
-  // captured stereo audio.
-  const bool stereo_mirroring_;
 
   // If true, `OnPlayoutData()` should be called.
   const bool needs_playout_reference_;

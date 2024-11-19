@@ -91,8 +91,7 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
   virtual std::string GetMediaStreamSource() { return std::string(); }
   bool IsDeviceCapture() { return GetMediaStreamSource().empty(); }
   static AudioPropertiesBoolMembers GetAudioProcessingProperties() {
-    return {&AudioProcessingProperties::goog_audio_mirroring,
-            &AudioProcessingProperties::auto_gain_control,
+    return {&AudioProcessingProperties::auto_gain_control,
             &AudioProcessingProperties::noise_suppression,
             &AudioProcessingProperties::goog_highpass_filter};
   }
@@ -199,10 +198,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
 
     const auto& properties = result.audio_processing_properties();
     if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_audio_mirroring)) {
-      EXPECT_FALSE(properties.goog_audio_mirroring);
-    }
-    if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::auto_gain_control)) {
       EXPECT_TRUE(properties.auto_gain_control);
     }
@@ -231,10 +226,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     }
 
     const auto& properties = result.audio_processing_properties();
-    if (!Contains(exclude_audio_properties,
-                  &AudioProcessingProperties::goog_audio_mirroring)) {
-      EXPECT_FALSE(properties.goog_audio_mirroring);
-    }
     if (!Contains(exclude_audio_properties,
                   &AudioProcessingProperties::auto_gain_control)) {
       EXPECT_FALSE(properties.auto_gain_control);
@@ -277,17 +268,14 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     ProcessingType expected_type = ProcessingType::kUnprocessed;
     const auto& properties = result.audio_processing_properties();
     bool properties_value = false;
-    // Skip audio mirroring and start directly from auto gain control.
-    for (WTF::wtf_size_t i = 1; i < GetAudioProcessingProperties().size(); ++i)
+    for (WTF::wtf_size_t i = 0; i < GetAudioProcessingProperties().size();
+         ++i) {
       properties_value |= properties.*GetAudioProcessingProperties()[i];
+    }
 
-    // If goog_audio_mirroring is true but all the other properties are false,
-    // we should be expecting kProcessed, however if any of the properties was
-    // true, we should expected kApmProcessed.
-    if (properties.goog_audio_mirroring && !properties_value)
-      expected_type = ProcessingType::kNoApmProcessed;
-    else if (properties_value)
+    if (properties_value) {
       expected_type = ProcessingType::kApmProcessed;
+    }
 
     // Finally, if the chosen echo cancellation type is either AEC3 or AEC2, the
     // only possible processing type to expect is kWebRtcProcessed.
@@ -332,7 +320,6 @@ class MediaStreamConstraintsUtilAudioTestBase : public SimTest {
     EXPECT_TRUE(properties.goog_highpass_filter);
 
     // The following are not audio processing.
-    EXPECT_FALSE(properties.goog_audio_mirroring);
     EXPECT_EQ(GetMediaStreamSource() != blink::kMediaStreamSourceDesktop,
               result.disable_local_echo());
     EXPECT_FALSE(result.render_to_associated_sink());
@@ -622,7 +609,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SingleBoolConstraint) {
 
   const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kAudioProcessingConstraints = {
-          &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
           &MediaTrackConstraintSetPlatform::auto_gain_control,
           &MediaTrackConstraintSetPlatform::noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_highpass_filter,
@@ -1337,7 +1323,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithWebRtc) {
                   properties.goog_highpass_filter);
 
         // The following are not audio processing.
-        EXPECT_FALSE(properties.goog_audio_mirroring);
         EXPECT_EQ(GetMediaStreamSource() != blink::kMediaStreamSourceDesktop,
                   result.disable_local_echo());
         EXPECT_FALSE(result.render_to_associated_sink());
@@ -1393,7 +1378,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, EchoCancellationWithSystem) {
         EXPECT_EQ(value, properties.goog_highpass_filter);
 
         // The following are not audio processing.
-        EXPECT_FALSE(properties.goog_audio_mirroring);
         EXPECT_EQ(GetMediaStreamSource() != blink::kMediaStreamSourceDesktop,
                   result.disable_local_echo());
         EXPECT_FALSE(result.render_to_associated_sink());
@@ -1410,7 +1394,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
        EchoCancellationAndSingleBoolConstraint) {
   const WTF::Vector<blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
       kAudioProcessingConstraints = {
-          &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
           &MediaTrackConstraintSetPlatform::auto_gain_control,
           &MediaTrackConstraintSetPlatform::noise_suppression,
           &MediaTrackConstraintSetPlatform::goog_highpass_filter,
@@ -1522,16 +1505,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, VoiceIsolationControl) {
 // Test advanced constraints sets that can be satisfied.
 TEST_P(MediaStreamConstraintsUtilAudioTest, AdvancedCompatibleConstraints) {
   constraint_factory_.AddAdvanced().render_to_associated_sink.SetExact(true);
-  constraint_factory_.AddAdvanced().goog_audio_mirroring.SetExact(true);
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   CheckDeviceDefaults(result);
   CheckProcessingType(result);
-  CheckBoolDefaults({&AudioCaptureSettings::render_to_associated_sink},
-                    {&AudioProcessingProperties::goog_audio_mirroring}, result);
+  CheckBoolDefaults({&AudioCaptureSettings::render_to_associated_sink}, {},
+                    result);
   CheckEchoCancellationTypeDefault(result);
   EXPECT_TRUE(result.render_to_associated_sink());
-  EXPECT_TRUE(result.audio_processing_properties().goog_audio_mirroring);
 }
 
 // Test that an advanced constraint set that contradicts a previous constraint
@@ -1542,17 +1523,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
   constraint_factory_.AddAdvanced().goog_highpass_filter.SetExact(true);
   auto& advanced2 = constraint_factory_.AddAdvanced();
   advanced2.goog_highpass_filter.SetExact(false);
-  constraint_factory_.AddAdvanced().goog_audio_mirroring.SetExact(true);
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   CheckProcessingType(result);
   CheckDeviceDefaults(result);
-  CheckBoolDefaults({},
-                    {&AudioProcessingProperties::goog_audio_mirroring,
-                     &AudioProcessingProperties::goog_highpass_filter},
+  CheckBoolDefaults({}, {&AudioProcessingProperties::goog_highpass_filter},
                     result);
   CheckEchoCancellationTypeDefault(result);
-  EXPECT_TRUE(result.audio_processing_properties().goog_audio_mirroring);
   EXPECT_TRUE(result.audio_processing_properties().goog_highpass_filter);
 }
 
@@ -1560,18 +1537,14 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
 // set with a boolean constraint is ignored.
 TEST_P(MediaStreamConstraintsUtilAudioTest, AdvancedConflictingLastConstraint) {
   constraint_factory_.AddAdvanced().goog_highpass_filter.SetExact(true);
-  constraint_factory_.AddAdvanced().goog_audio_mirroring.SetExact(true);
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   CheckProcessingType(result);
   CheckDeviceDefaults(result);
-  CheckBoolDefaults({},
-                    {&AudioProcessingProperties::goog_audio_mirroring,
-                     &AudioProcessingProperties::goog_highpass_filter},
+  CheckBoolDefaults({}, {&AudioProcessingProperties::goog_highpass_filter},
                     result);
   CheckEchoCancellationTypeDefault(result);
   // The fourth advanced set is ignored because it contradicts the second set.
-  EXPECT_TRUE(result.audio_processing_properties().goog_audio_mirroring);
   EXPECT_TRUE(result.audio_processing_properties().goog_highpass_filter);
 }
 
@@ -1665,7 +1638,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
     if (!use_defaults) {
       properties.echo_cancellation_type =
           EchoCancellationType::kEchoCancellationDisabled;
-      properties.goog_audio_mirroring = !properties.goog_audio_mirroring;
       properties.auto_gain_control = !properties.auto_gain_control;
       properties.noise_suppression = !properties.noise_suppression;
       properties.goog_highpass_filter = !properties.goog_highpass_filter;
@@ -1678,7 +1650,6 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SourceWithAudioProcessing) {
     const WTF::Vector<
         blink::BooleanConstraint MediaTrackConstraintSetPlatform::*>
         kAudioProcessingConstraints = {
-            &MediaTrackConstraintSetPlatform::goog_audio_mirroring,
             &MediaTrackConstraintSetPlatform::auto_gain_control,
             &MediaTrackConstraintSetPlatform::noise_suppression,
             &MediaTrackConstraintSetPlatform::goog_highpass_filter,

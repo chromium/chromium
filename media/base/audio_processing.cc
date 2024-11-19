@@ -17,8 +17,7 @@ std::string AudioProcessingSettings::ToString() const {
        ", gain control: ", bool_to_yes_no(automatic_gain_control),
        ", high pass filter: ", bool_to_yes_no(high_pass_filter),
        ", multichannel capture processing: ",
-       bool_to_yes_no(multi_channel_capture_processing),
-       ", stereo mirroring: ", bool_to_yes_no(stereo_mirroring)});
+       bool_to_yes_no(multi_channel_capture_processing)});
 }
 
 }  // namespace media

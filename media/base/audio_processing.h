@@ -24,7 +24,6 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   // Multi-channel is not an individual audio effect, but determines whether the
   // processing algorithms should preserve multi-channel input audio.
   bool multi_channel_capture_processing = true;
-  bool stereo_mirroring = false;
 
   bool operator==(const AudioProcessingSettings& b) const {
     return echo_cancellation == b.echo_cancellation &&
@@ -32,17 +31,13 @@ struct MEDIA_EXPORT AudioProcessingSettings {
            automatic_gain_control == b.automatic_gain_control &&
            high_pass_filter == b.high_pass_filter &&
            multi_channel_capture_processing ==
-               b.multi_channel_capture_processing &&
-           stereo_mirroring == b.stereo_mirroring;
+               b.multi_channel_capture_processing;
   }
 
   bool NeedWebrtcAudioProcessing() const {
     // TODO(crbug.com/40205004): Legacy iOS-specific behavior;
     // reconsider.
-#if BUILDFLAG(IS_IOS)
-    if (stereo_mirroring)
-      return true;
-#else
+#if !BUILDFLAG(IS_IOS)
     if (echo_cancellation || automatic_gain_control) {
       return true;
     }
@@ -51,9 +46,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     return noise_suppression || high_pass_filter;
   }
 
-  bool NeedAudioModification() const {
-    return NeedWebrtcAudioProcessing() || stereo_mirroring;
-  }
+  bool NeedAudioModification() const { return NeedWebrtcAudioProcessing(); }
 
   // Deprecated.
   // TODO(crbug.com/40889535): Use `AudioProcessor::NeedsPlayoutReference()`

@@ -254,7 +254,6 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),
       input_format, output_format, std::move(webrtc_audio_processing),
-      settings.stereo_mirroring,
       ApmNeedsPlayoutReference(webrtc_audio_processing.get(), settings));
 }
 
@@ -264,10 +263,8 @@ AudioProcessor::AudioProcessor(
     const media::AudioParameters& input_format,
     const media::AudioParameters& output_format,
     rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
-    bool stereo_mirroring,
     bool needs_playout_reference)
     : webrtc_audio_processing_(webrtc_audio_processing),
-      stereo_mirroring_(stereo_mirroring),
       needs_playout_reference_(needs_playout_reference),
       log_callback_(std::move(log_callback)),
       input_format_(input_format),
@@ -360,13 +357,6 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
           ProcessData(process_bus->channel_ptrs(), process_bus->bus()->frames(),
                       capture_delay, volume, num_preferred_channels,
                       output_bus->channel_ptrs());
-    }
-
-    // Swap channels before interleaving the data.
-    if (stereo_mirroring_ &&
-        output_format_.channel_layout() == media::CHANNEL_LAYOUT_STEREO) {
-      // Swap the first and second channels.
-      output_bus->bus()->SwapChannels(0, 1);
     }
 
     deliver_processed_audio_callback_.Run(*output_bus->bus(),

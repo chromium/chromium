@@ -34,7 +34,6 @@ bool StructTraits<media::mojom::AudioProcessingSettingsDataView,
   out_settings->high_pass_filter = input.high_pass_filter();
   out_settings->multi_channel_capture_processing =
       input.multi_channel_capture_processing();
-  out_settings->stereo_mirroring = input.stereo_mirroring();
   return true;
 }
 

@@ -393,8 +393,6 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
       // Turn off the audio processing.
       properties.DisableDefaultProperties();
     }
-    // Turn on the stereo channels mirroring.
-    properties.goog_audio_mirroring = true;
     scoped_refptr<MediaStreamAudioProcessor> audio_processor(
         new rtc::RefCountedObject<MediaStreamAudioProcessor>(
             mock_capture_callback_.Get(),
@@ -444,10 +442,8 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
               EXPECT_NE(right_channel_energy, 0);
             } else {
               // Stereo output. Output channels are independent.
-              // Note that after stereo mirroring, the _right_ channel is
-              // non-zero.
-              EXPECT_EQ(left_channel_energy, 0);
-              EXPECT_NE(right_channel_energy, 0);
+              EXPECT_NE(left_channel_energy, 0);
+              EXPECT_EQ(right_channel_energy, 0);
             }
           });
       // Process one more frame of audio.
@@ -773,32 +769,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
   scoped_refptr<MediaStreamAudioProcessor> audio_processor =
       CreateAudioProcessorWithProperties(properties);
   EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
-}
-
-#if BUILDFLAG(IS_IOS)
-// TODO(https://crbug.com/1417474): Remove legacy iOS case in
-// AudioProcessingSettings::NeedWebrtcAudioProcessing().
-#define MAYBE_TrueWhenStereoMirroringIsEnabled \
-  DISABLED_TrueWhenStereoMirroringIsEnabled
-#else
-#define MAYBE_TrueWhenStereoMirroringIsEnabled TrueWhenStereoMirroringIsEnabled
-#endif  // BUILDFLAG(IS_IOS)
-TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
-     MAYBE_TrueWhenStereoMirroringIsEnabled) {
-  test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
-  properties.goog_audio_mirroring = true;
-  EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
-
-  // Unlike other settings, audio mirroring is not a WebRTC effect.
-  // This is really an implementation detail of the audio processor, not part of
-  // the API, but it is necessary to have test coverage to avoid inconsistencies
-  // between the static MSAP::WouldModifyAudio and the internals of the audio
-  // processor.
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor =
-      CreateAudioProcessorWithProperties(properties);
-  EXPECT_FALSE(audio_processor->has_webrtc_audio_processing());
 }
 
 #if BUILDFLAG(IS_IOS)
