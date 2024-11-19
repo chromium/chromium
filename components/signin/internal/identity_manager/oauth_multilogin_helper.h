@@ -103,6 +103,11 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   // OAuth tokens for each account ID in `accounts_`, or empty if is not
   // populated yet.
   base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> tokens_;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Token binding challenges received from Gaia. Chrome should try to sign over
+  // each challenge no more than once.
+  base::flat_map<CoreAccountId, std::string> token_binding_challenges_;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   base::OnceCallback<void(SetAccountsInCookieResult)> callback_;
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;

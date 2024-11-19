@@ -859,7 +859,7 @@ void GaiaAuthFetcher::OnOAuthMultiloginFetched(const std::string& data,
                                                int response_code) {
   OAuthMultiloginResult result =
       (net_error == net::Error::OK)
-          ? OAuthMultiloginResult(data)
+          ? OAuthMultiloginResult(data, response_code)
           : OAuthMultiloginResult(OAuthMultiloginResponseStatus::kRetry);
   consumer_->OnOAuthMultiloginFinished(result);
 }

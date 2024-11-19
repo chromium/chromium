@@ -7,21 +7,59 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::net::CanonicalCookie;
+using ::testing::_;
 using ::testing::DoubleNear;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::FieldsAre;
 using ::testing::Property;
-using ::testing::_;
+
+namespace {
+
+constexpr char kInvalidTokensResponseFormat[] =
+    R"()]}'
+        {
+          "status": "%s",
+          "failed_accounts": [
+            {
+              "status": "RECOVERABLE",
+              "obfuscated_id": "account1",
+              "token_binding_retry_response": {
+                "challenge": "test_challenge1"
+              }
+            },
+            {
+              "status": "OK",
+              "obfuscated_id": "account2"
+            },
+            {
+              "status": "RECOVERABLE",
+              "obfuscated_id": "account3",
+              "token_binding_retry_response": {
+                "challenge": "test_challenge3"
+              }
+            },
+            {
+              "status": "NON_RECOVERABLE",
+              "obfuscated_id": "account4"
+            }
+          ]
+        }
+      )";
+
+}  // namespace
 
 TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
-  OAuthMultiloginResult result("");
+  OAuthMultiloginResult result(OAuthMultiloginResponseStatus::kOk);
   // SID: typical response for a domain cookie
   // SAPISID: typical response for a host cookie
   // SSID: not canonical cookie because of the wrong path, should not be added
@@ -192,7 +230,8 @@ TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
             }
           ]
         }
-      )");
+      )",
+                                net::HTTP_OK);
   EXPECT_EQ(result1.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_FALSE(result1.cookies().empty());
 
@@ -212,7 +251,8 @@ TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
             }
           ]
         }
-      )");
+      )",
+                                net::HTTP_OK);
   EXPECT_EQ(result2.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_FALSE(result2.cookies().empty());
 
@@ -231,7 +271,8 @@ TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
             }
           ]
         }
-      )");
+      )",
+                                net::HTTP_OK);
   EXPECT_EQ(result3.status(), OAuthMultiloginResponseStatus::kUnknownStatus);
 }
 
@@ -254,7 +295,7 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
           ]
         }
       )";
-  OAuthMultiloginResult result1(data_error_none);
+  OAuthMultiloginResult result1(data_error_none, net::HTTP_OK);
   EXPECT_EQ(result1.status(), OAuthMultiloginResponseStatus::kOk);
 
   std::string data_error_transient =
@@ -275,7 +316,8 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
           ]
         }
       )";
-  OAuthMultiloginResult result2(data_error_transient);
+  OAuthMultiloginResult result2(data_error_transient,
+                                net::HTTP_SERVICE_UNAVAILABLE);
   EXPECT_EQ(result2.status(), OAuthMultiloginResponseStatus::kRetry);
 
   // "ERROR" is a real response status that Gaia sends. This is a persistent
@@ -298,7 +340,8 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
           ]
         }
       )";
-  OAuthMultiloginResult result3(data_error_persistent);
+  OAuthMultiloginResult result3(data_error_persistent,
+                                net::HTTP_INTERNAL_SERVER_ERROR);
   EXPECT_EQ(result3.status(), OAuthMultiloginResponseStatus::kError);
 
   std::string data_error_invalid_credentials =
@@ -329,9 +372,11 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
           ]
         }
       )";
-  OAuthMultiloginResult result4(data_error_invalid_credentials);
+  OAuthMultiloginResult result4(data_error_invalid_credentials,
+                                net::HTTP_FORBIDDEN);
   EXPECT_EQ(result4.status(), OAuthMultiloginResponseStatus::kInvalidTokens);
-  EXPECT_THAT(result4.failed_gaia_ids(), ElementsAre(Eq("account1")));
+  EXPECT_THAT(result4.failed_accounts(),
+              ElementsAre(FieldsAre("account1", "")));
 
   // Unknown status.
   OAuthMultiloginResult unknown_status(R"()]}'
@@ -350,7 +395,8 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
             }
           ]
         }
-      )");
+      )",
+                                       net::HTTP_OK);
   EXPECT_EQ(unknown_status.status(),
             OAuthMultiloginResponseStatus::kUnknownStatus);
   EXPECT_TRUE(unknown_status.cookies().empty());
@@ -359,25 +405,33 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
 TEST(OAuthMultiloginResultTest, ParseResponseStatus) {
   struct TestCase {
     std::string status_string;
+    int http_response_code;
     OAuthMultiloginResponseStatus expected_status;
   };
 
   std::vector<TestCase> test_cases = {
-      {"FOO", OAuthMultiloginResponseStatus::kUnknownStatus},
-      {"OK", OAuthMultiloginResponseStatus::kOk},
-      {"RETRY", OAuthMultiloginResponseStatus::kRetry},
-      {"INVALID_INPUT", OAuthMultiloginResponseStatus::kInvalidInput},
-      {"INVALID_TOKENS", OAuthMultiloginResponseStatus::kInvalidTokens},
-      {"ERROR", OAuthMultiloginResponseStatus::kError}};
+      {"FOO", net::HTTP_OK, OAuthMultiloginResponseStatus::kUnknownStatus},
+      {"OK", net::HTTP_OK, OAuthMultiloginResponseStatus::kOk},
+      {"RETRY", net::HTTP_SERVICE_UNAVAILABLE,
+       OAuthMultiloginResponseStatus::kRetry},
+      {"RETRY", net::HTTP_BAD_REQUEST,
+       OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge},
+      {"INVALID_INPUT", net::HTTP_BAD_REQUEST,
+       OAuthMultiloginResponseStatus::kInvalidInput},
+      {"INVALID_TOKENS", net::HTTP_FORBIDDEN,
+       OAuthMultiloginResponseStatus::kInvalidTokens},
+      {"ERROR", net::HTTP_INTERNAL_SERVER_ERROR,
+       OAuthMultiloginResponseStatus::kError}};
 
   for (const auto& test_case : test_cases) {
     EXPECT_EQ(test_case.expected_status,
-              ParseOAuthMultiloginResponseStatus(test_case.status_string));
+              ParseOAuthMultiloginResponseStatus(test_case.status_string,
+                                                 test_case.http_response_code));
   }
 }
 
 TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
-  OAuthMultiloginResult result("");
+  OAuthMultiloginResult result(OAuthMultiloginResponseStatus::kOk);
   // SID: typical response for a domain cookie
   // SAPISID: typical response for a host cookie
   // SSID: not canonical cookie because of the wrong path, should not be added
@@ -773,4 +827,29 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
                   Property(&CanonicalCookie::Name, Eq("__Secure-3PAPISID")),
 
                   Property(&CanonicalCookie::Name, Eq("__Host-GAPS"))));
+}
+
+TEST(OAuthMultiloginResultTest, ParseRetryResponseWithTokenBindingChallenge) {
+  OAuthMultiloginResult result(
+      base::StringPrintf(kInvalidTokensResponseFormat, "RETRY"),
+      net::HTTP_BAD_REQUEST);
+  EXPECT_EQ(result.status(),
+            OAuthMultiloginResponseStatus::kRetryWithTokenBindingChallenge);
+  EXPECT_THAT(result.failed_accounts(),
+              ElementsAre(FieldsAre("account1", "test_challenge1"),
+                          FieldsAre("account3", "test_challenge3"),
+                          FieldsAre("account4", std::string())));
+}
+
+TEST(OAuthMultiloginResultTest,
+     ParseInvalidTokensResponseWithTokenBindingChallenge) {
+  // Token binding challenges are ignored if status is INVALID_TOKENS.
+  OAuthMultiloginResult result(
+      base::StringPrintf(kInvalidTokensResponseFormat, "INVALID_TOKENS"),
+      net::HTTP_FORBIDDEN);
+  EXPECT_EQ(result.status(), OAuthMultiloginResponseStatus::kInvalidTokens);
+  EXPECT_THAT(result.failed_accounts(),
+              ElementsAre(FieldsAre("account1", std::string()),
+                          FieldsAre("account3", std::string()),
+                          FieldsAre("account4", std::string())));
 }

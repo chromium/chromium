@@ -47,28 +47,46 @@ enum class OAuthMultiloginResponseStatus {
   // expected to work. The HTTP status code will be 500.
   kError = 5,
 
-  kMaxValue = kError,
+  // One or more of the presented tokens was bound, and the server wants the
+  // client to retry the request by signing over a server-provided challenge.
+  // The client does not need to use exponential backoff but should retry at
+  // most once. The HTTP status code will be 400.
+  kRetryWithTokenBindingChallenge = 6,
+
+  kMaxValue = kRetryWithTokenBindingChallenge,
 };
 
 // Parses the status field of the response.
 COMPONENT_EXPORT(GOOGLE_APIS)
 OAuthMultiloginResponseStatus ParseOAuthMultiloginResponseStatus(
-    const std::string& status);
+    const std::string& status,
+    int http_response_code);
 
 class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
  public:
+  struct FailedAccount {
+    std::string gaia_id;
+
+    // If `token_binding_challenge` is not empty, an account error might be
+    // recovered by retrying the request with a token binding assertion signed
+    // over the challenge.
+    std::string token_binding_challenge;
+  };
+
   // Parses cookies and status from JSON response. Maps status to
   // GoogleServiceAuthError::State values or sets error to
   // UNEXPECTED_SERVER_RESPONSE if JSON string cannot be parsed.
-  OAuthMultiloginResult(const std::string& raw_data);
+  OAuthMultiloginResult(const std::string& raw_data, int http_response_code);
 
-  OAuthMultiloginResult(OAuthMultiloginResponseStatus status);
+  explicit OAuthMultiloginResult(OAuthMultiloginResponseStatus status);
   OAuthMultiloginResult(const OAuthMultiloginResult& other);
   OAuthMultiloginResult& operator=(const OAuthMultiloginResult& other);
   ~OAuthMultiloginResult();
 
   std::vector<net::CanonicalCookie> cookies() const { return cookies_; }
-  std::vector<std::string> failed_gaia_ids() const { return failed_gaia_ids_; }
+  std::vector<FailedAccount> failed_accounts() const {
+    return failed_accounts_;
+  }
   OAuthMultiloginResponseStatus status() const { return status_; }
 
  private:
@@ -76,18 +94,15 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuthMultiloginResult {
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest,
                            ParseRealResponseFromGaia_2021_10);
 
-  // Response body that has a form of JSON contains protection characters
-  // against XSSI that have to be removed. See go/xssi.
-  static std::string_view StripXSSICharacters(const std::string& data);
-
   void TryParseCookiesFromValue(const base::Value::Dict& json_value);
 
-  // If error is INVALID_GAIA_CREDENTIALS response is expected to have a list of
-  // failed accounts for which tokens are not valid.
+  // If `status_` is `kInvalidTokens` or `kRetryWithTokenBindingChallenge`, the
+  // response is expected to have a list of failed accounts for which tokens are
+  // either not valid or required to sign over a token binding challenge.
   void TryParseFailedAccountsFromValue(const base::Value::Dict& json_value);
 
   std::vector<net::CanonicalCookie> cookies_;
-  std::vector<std::string> failed_gaia_ids_;
+  std::vector<FailedAccount> failed_accounts_;
   OAuthMultiloginResponseStatus status_;
 };
 
