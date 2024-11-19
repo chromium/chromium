@@ -443,14 +443,16 @@ bool AppListControllerImpl::IsVisible() {
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  if (IsKioskSession()) {
+    return;
+  }
+
   sunfish_enabled_ = std::make_unique<BooleanPrefMember>();
   sunfish_enabled_->Init(
       prefs::kSunfishEnabled, pref_service,
       base::BindRepeating(&AppListControllerImpl::UpdateSearchBoxUiVisibilities,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  if (IsKioskSession())
-    return;
+  UpdateSearchBoxUiVisibilities();
 
   if (!IsInTabletMode()) {
     DismissAppList();

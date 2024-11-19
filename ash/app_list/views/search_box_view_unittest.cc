@@ -1418,8 +1418,7 @@ class SunfishLauncherButtonGooglerTest : public NoSessionAshTestBase {
 };
 
 // Tests that switching from a non-Googler user to a Googler user does not crash
-// the session.
-// This does NOT test the visibility of the Sunfish button.
+// the session, and updates the Sunfish button visibility.
 TEST_F(SunfishLauncherButtonGooglerTest, NonGooglerToGooglerSwitch) {
   constexpr std::string_view kNonGoogler = "nongoogler@gmail.com";
   constexpr std::string_view kGoogler = "googler@google.com";
@@ -1437,12 +1436,21 @@ TEST_F(SunfishLauncherButtonGooglerTest, NonGooglerToGooglerSwitch) {
   ASSERT_FALSE(home_button->IsShowingAppList());
   LeftClickOn(home_button);
   ASSERT_TRUE(home_button->IsShowingAppList());
+  auto* sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+  EXPECT_FALSE(sunfish_button->GetVisible());
   // Switch to the Googler account.
   session->SwitchActiveUser(kGooglerAccount);
   GetPrimaryShelf()->navigation_widget()->GetHomeButton();
   ASSERT_FALSE(home_button->IsShowingAppList());
   LeftClickOn(home_button);
   ASSERT_TRUE(home_button->IsShowingAppList());
+  sunfish_button =
+      GetAppListTestHelper()->GetBubbleSearchBoxView()->sunfish_button();
+
+  ASSERT_TRUE(sunfish_button);
+  EXPECT_TRUE(sunfish_button->GetVisible());
 }
 
 }  // namespace
