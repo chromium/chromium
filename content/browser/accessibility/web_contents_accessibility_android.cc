@@ -984,7 +984,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
       node->IsTextField(), node->IsEnabled(), node->IsFocusable(),
       node->IsFocused(), node->IsCollapsed(), node->IsExpanded(),
-      node->HasNonEmptyValue(), !node->GetTextContentUTF16().empty(),
+      node->HasNonEmptyValue(), !!node->GetTextContentLengthUTF16(),
       node->IsSeekControl(), node->IsFormDescendant());
 
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
