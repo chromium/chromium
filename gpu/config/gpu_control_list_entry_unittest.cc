@@ -8,7 +8,11 @@
 #include "gpu/config/gpu_control_list.h"
 #include "gpu/config/gpu_control_list_testing_data.h"
 #include "gpu/config/gpu_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::ElementsAre;
+using ::testing::StrEq;
 
 namespace gpu {
 
@@ -73,16 +77,12 @@ TEST_F(GpuControlListEntryTest, DetailedEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_DetailedEntry);
   EXPECT_EQ(kOsMacosx, entry.conditions.os_type);
   EXPECT_STREQ("GpuControlListEntryTest.DetailedEntry", entry.description);
-  EXPECT_EQ(2u, entry.cr_bugs.size());
-  EXPECT_EQ(1024u, entry.cr_bugs[0]);
-  EXPECT_EQ(678u, entry.cr_bugs[1]);
-  EXPECT_EQ(1u, entry.features.size());
-  EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_0));
+  EXPECT_THAT(entry.cr_bugs, ElementsAre(1024u, 678u));
+  EXPECT_THAT(entry.features, ElementsAre(TEST_FEATURE_0));
   EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info(), true));
   EXPECT_TRUE(entry.Contains(kOsMacosx, "10.6.4", gpu_info()));
-  EXPECT_EQ(2u, entry.disabled_extensions.size());
-  EXPECT_STREQ("test_extension1", entry.disabled_extensions[0]);
-  EXPECT_STREQ("test_extension2", entry.disabled_extensions[1]);
+  EXPECT_THAT(entry.disabled_extensions,
+              ElementsAre(StrEq("test_extension1"), StrEq("test_extension2")));
 }
 
 TEST_F(GpuControlListEntryTest, VendorOnAllOsEntry) {
