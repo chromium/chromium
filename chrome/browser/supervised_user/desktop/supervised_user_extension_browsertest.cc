@@ -503,8 +503,72 @@ class ParentApprovalRequestTest
     parent_permission_dialog_appeared_ = true;
   }
 
+  void ClearCustodianPrefs() {
+    // Clears the preferences relating to both custodians.
+    profile()->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianProfileURL);
+    profile()->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianName);
+    profile()->GetPrefs()->ClearPref(prefs::kSupervisedUserCustodianEmail);
+    profile()->GetPrefs()->ClearPref(
+        prefs::kSupervisedUserCustodianObfuscatedGaiaId);
+    profile()->GetPrefs()->ClearPref(
+        prefs::kSupervisedUserCustodianProfileImageURL);
+    profile()->GetPrefs()->ClearPref(
+        prefs::kSupervisedUserSecondCustodianProfileURL);
+    profile()->GetPrefs()->ClearPref(prefs::kSupervisedUserSecondCustodianName);
+    profile()->GetPrefs()->ClearPref(
+        prefs::kSupervisedUserSecondCustodianEmail);
+    profile()->GetPrefs()->ClearPref(
+        prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId);
+    profile()->GetPrefs()->ClearPref(
+        prefs::kSupervisedUserSecondCustodianProfileImageURL);
+  }
+
   bool parent_permission_dialog_appeared_ = false;
 };
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests that installation fails when the custodian info is missing and the
+// right histograms are recorded. Regression test for crbug.com/35071637.
+IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
+                       RequestToInstallExtensionMissingCustodianInfo) {
+  // Set the preferences to the default values from Family Link.
+  supervised_user_test_util::
+      SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("An extension").Build();
+  CHECK(extension);
+
+  ClearCustodianPrefs();
+
+  // Request Approval to add a new extension.
+  base::HistogramTester histogram_tester;
+  SkBitmap icon;
+  auto supervised_user_extensions_delegate =
+      std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
+  supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
+      *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
+      gfx::ImageSkia::CreateFrom1xBitmap(icon),
+      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
+      base::DoNothing());
+
+  // The dialog should not have appeared.
+  EXPECT_FALSE(parent_permission_dialog_appeared_);
+  histogram_tester.ExpectBucketCount(SupervisedUserExtensionsMetricsRecorder::
+                                         kParentPermissionDialogHistogramName,
+                                     SupervisedUserExtensionsMetricsRecorder::
+                                         ParentPermissionDialogState::kFailed,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserExtensionsMetricsRecorder::
+          kParentPermissionDialogHistogramName,
+      SupervisedUserExtensionsMetricsRecorder::ParentPermissionDialogState::
+          kNoParentError,
+      1);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Tests that the method to request extension approval can be triggered
 // without errors for new (uninstalled) extensions that already have been
@@ -512,8 +576,6 @@ class ParentApprovalRequestTest
 // Prevents regressions to b/321016032.
 IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
                        RequestToInstallApprovedExtension) {
-  base::HistogramTester histogram_tester;
-
   // Create and extension and give it parent approval.
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("An extension").Build();
