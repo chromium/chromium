@@ -2696,8 +2696,8 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Timeout ]
+crbug.com/379779783 [ Mac15 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
+crbug.com/379768246 [ Mac15 ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Timeout ]
 crbug.com/379773063 [ Win11-arm64 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.window.html [ Skip Timeout ]
 crbug.com/379758208 [ Mac11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.window.html [ Failure ]
 crbug.com/379758208 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.window.html [ Failure ]
