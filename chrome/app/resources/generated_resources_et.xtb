@@ -2110,7 +2110,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2438853563451647815">Ei ole printeriga ühendatud</translation>
 <translation id="2439152382014731627">Seadme <ph name="DEVICE_TYPE" /> parooli lähtestamine</translation>
 <translation id="2439626940657133600">Akna <ph name="WINDOW_TITLE" /> laadimine</translation>
-<translation id="2440036226025529014">Juhtige kursorit ja klaviatuuri näoliigutuste ja pilgu abil</translation>
 <translation id="2440604414813129000">Vaata a&amp;llikat</translation>
 <translation id="244071666433939959">Rakendused avanevad aknas</translation>
 <translation id="2440823041667407902">Juurdepääs asukohale</translation>
@@ -5532,7 +5531,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4872192066608821120">Paroolide importimiseks valige CSV-fail</translation>
 <translation id="4872212987539553601">Seadistage seadmes krüpteerimine</translation>
 <translation id="4873312501243535625">Meediafaili kontrollija</translation>
-<translation id="4875690134140862902">Tabulaator</translation>
+<translation id="4875690134140862902">Vaheleht</translation>
 <translation id="4876273079589074638">Aidake meie inseneridel seda kokkujooksmist uurida ja see parandada. Võimaluse korral loetlege täpselt tehtud toimingud. Ükski pisiasi pole liiga väike!</translation>
 <translation id="4876305945144899064">Kasutajanimi puudub</translation>
 <translation id="4876327226315760474">See tähendab, et saidi funktsioonid peaksid ootuspäraselt töötama, kuid teil võib olla väiksem sirvimiskaitse.</translation>

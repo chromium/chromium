@@ -2120,7 +2120,6 @@
 <translation id="2438853563451647815">ਪ੍ਰਿੰਟਰ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> ਦਾ ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="2440036226025529014">ਚਿਹਰੇ ਅਤੇ ਅੱਖਾਂ ਦੀ ਹਲਚਲ ਨਾਲ ਕਰਸਰ ਅਤੇ ਕੀ-ਬੋਰਡ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="2440604414813129000">ਸ&amp;ਰੋਤ ਦੇਖੋ</translation>
 <translation id="244071666433939959">ਐਪਾਂ ਵਿੰਡੋ ਵਿੱਚ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ</translation>
 <translation id="2440823041667407902">ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਪਹੁੰਚ</translation>
@@ -2798,6 +2797,7 @@
 <translation id="2904210161403910217">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਿਛਲੀ ਵਾਰ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਬਾਅਦ ਤੋਂ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਬਦਲ ਗਿਆ ਹੈ</translation>
 <translation id="2904506722835398619">ਸਾਈਨ-ਇਨ ਅਤੇ ਸਿੰਕ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2904845070985032877">ਐਨੀਮੇਸ਼ਨਾਂ ਨੂੰ ਰੋਕੋ</translation>
+<translation id="2905556994482999199">ਆਪਣੀ Chromebook ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਸਿਰ ਦੀ ਹਰਕਤ ਅਤੇ ਚਿਹਰੇ ਦੇ ਹਾਵ-ਭਾਵ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="2907619724991574506">ਸਟਾਰਟਅਪ URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ: <ph name="DETAILS" /> ਸਰਵਰ ਸੁਨੇਹਾ: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Word, Excel ਅਤੇ PowerPoint ਫ਼ਾਈਲਾਂ ਖੋਲ੍ਹੋ</translation>
@@ -5560,6 +5560,7 @@
 <translation id="4882919381756638075">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਵੀਡੀਓ ਚੈਟਿੰਗ ਜਿਹੀਆਂ ਸੰਚਾਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤਦੀਆਂ ਹਨ</translation>
 <translation id="4883436287898674711">ਸਾਰੀਆਂ <ph name="WEBSITE_1" /> ਸਾਈਟਾਂ</translation>
 <translation id="48838266408104654">&amp;ਕੰਮ ਪ੍ਰਬੰਧਕ</translation>
+<translation id="4884937942297374058">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਬੰਦ ਹੈ</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਕੋਲ ਸਾਈਟ ਤੱਕ ਕੋਈ ਵਾਧੂ ਪਹੁੰਚ ਨਹੀਂ ਹੈ</translation>
 <translation id="4887424188275796356">ਸਿਸਟਮ ਵਿਊਅਰ ਨਾਲ ਖੋਲ੍ਹੋ</translation>
@@ -5835,7 +5836,7 @@
 <translation id="5093477827231450397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਚਾਹੁੰਦੇ ਕਿ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਸੰਬੰਧੀ ਸੁਝਾਅ ਦੇਣ</translation>
 <translation id="5093569275467863761">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਸਬਫ੍ਰੇਮ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">ਤੁਸੀਂ ਆਪਣੇ ਫ਼ਾਈਲ ਐਪ ਜਾਂ ਹੋਰ ਐਪਾਂ ਤੋਂ ਇਸ ਐਪ ਨਾਲ ਸਮਰਥਿਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੇ ਹੋ। ਇਹ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਕਿ ਕਿਹੜੀਆਂ ਫ਼ਾਈਲਾਂ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਣ, ਇਸ ਲਈ <ph name="BEGIN_LINK" />ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਨੂੰ ਸੈੱਟ ਕਰਨ ਦਾ ਤਰੀਕਾ ਜਾਣੋ<ph name="END_LINK" />।</translation>
-<translation id="5094721898978802975">ਨੇਟਿਵ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨਾਲ ਸਹਿਯੋਗ ਕਰਦੇ ਹੋਏ ਸੰਚਾਰ ਕਰੋੇ</translation>
+<translation id="5094721898978802975">ਨੇਟਿਵ ਐਪਲੀਕੇਸ਼ਨਾਂ ਨਾਲ ਸਹਿਯੋਗ ਕਰਦੇ ਹੋਏ ਸੰਚਾਰ ਕਰੋ</translation>
 <translation id="5095252080770652994">ਪ੍ਰਗਤੀ</translation>
 <translation id="5095507226704905004">ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਕਿਉਂਕਿ ਇਹ ਹੁਣ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="5095848221827496531">ਅਣਚੁਣਿਆ ਕਰੋ</translation>

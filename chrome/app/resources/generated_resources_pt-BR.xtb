@@ -2120,7 +2120,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2438853563451647815">Impressora não conectada</translation>
 <translation id="2439152382014731627">Redefinir senha do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Carregando <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Usar movimentos do rosto e do olhar para controlar o cursor e o teclado</translation>
 <translation id="2440604414813129000">Exibir &amp;código fonte</translation>
 <translation id="244071666433939959">Apps abertos em uma janela</translation>
 <translation id="2440823041667407902">Acesso ao local</translation>
@@ -4094,7 +4093,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3824621460022590830">O token de registro do dispositivo é inválido. Entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Faça login para conferir guias de outros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Lembrar minha escolha para este tipo de arquivo: <ph name="FILE_TYPES" />}one{Lembrar minha escolha para este tipo de arquivo: <ph name="FILE_TYPES" />}other{Lembrar minha escolha para estes tipos de arquivos: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Ver</translation>
+<translation id="3825512074963838982">Visualização</translation>
 <translation id="3825635794653163640">Mostrar ponto no ícone do app para alertas</translation>
 <translation id="3826071569074535339">Permitir o uso de sensores de movimento</translation>
 <translation id="3826086052025847742">Registros do ChromeOS Flex</translation>
@@ -5542,7 +5541,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4872192066608821120">Para importar senhas, selecione um arquivo CSV.</translation>
 <translation id="4872212987539553601">Configurar a criptografia no dispositivo</translation>
 <translation id="4873312501243535625">Verificador de arquivo de mídia</translation>
-<translation id="4875690134140862902">Tab</translation>
+<translation id="4875690134140862902">Guia</translation>
 <translation id="4876273079589074638">Ajude nossos engenheiros a investigar e corrigir a falha. Indique as etapas exatas, se possível. Nenhum detalhe é irrelevante.</translation>
 <translation id="4876305945144899064">Sem nome de usuário</translation>
 <translation id="4876327226315760474">Isso significa que os recursos do site vão funcionar conforme o esperado, mas talvez você tenha menos proteção da navegação.</translation>
@@ -5560,6 +5559,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4882919381756638075">Os sites geralmente usam o microfone para recursos de comunicação, como chat por vídeo</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Gerenciador de tarefas</translation>
+<translation id="4884937942297374058">A proteção reforçada está desativada</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Esta extensão não tem nenhum acesso extra a sites</translation>
 <translation id="4887424188275796356">Abrir com o Visualizador do sistema</translation>

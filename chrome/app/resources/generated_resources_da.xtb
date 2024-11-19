@@ -2120,7 +2120,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2438853563451647815">Ingen forbindelse til printeren</translation>
 <translation id="2439152382014731627">Nulstil adgangskoden til <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> indlæses</translation>
-<translation id="2440036226025529014">Brug ansigts- og blikbevægelser til at styre markør og tastatur</translation>
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="244071666433939959">Apps åbnes i et nyt vindue</translation>
 <translation id="2440823041667407902">Lokationsadgang</translation>
@@ -4094,7 +4093,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3824621460022590830">Tokenet for tilmelding af enhed er ugyldigt. Kontakt enhedens ejer eller administrator. Fejlkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Log ind for at se faner fra andre enheder</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Husk mit valg for denne filtype: <ph name="FILE_TYPES" />}one{Husk mit valg for denne filtype: <ph name="FILE_TYPES" />}other{Husk mit valg for disse filtyper: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Vis</translation>
+<translation id="3825512074963838982">Oversigt</translation>
 <translation id="3825635794653163640">Vis prik på appikon ved appunderretninger</translation>
 <translation id="3826071569074535339">Har tilladelse til at bruge bevægelsessensorer</translation>
 <translation id="3826086052025847742">ChromeOS Flex-logs</translation>
@@ -5654,7 +5653,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Gem aldrig adgangskoder til dette website</translation>
 <translation id="4953808748584563296">Orange standardavatar</translation>
-<translation id="4954652437333037880">Fil</translation>
+<translation id="4954652437333037880">Arkiv</translation>
 <translation id="4955707703665801001">Synlighed for <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Vælg din pinkode</translation>
 <translation id="4956593309300508411">Vil du stoppe delingen?</translation>

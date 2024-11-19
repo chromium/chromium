@@ -2118,7 +2118,6 @@
 <translation id="2438853563451647815">ບໍ່ໄດ້ເຊື່ອມຕໍ່ກັບເຄື່ອງພິມ</translation>
 <translation id="2439152382014731627">ຣີເຊັດລະຫັດຜ່ານ<ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">ກຳລັງໂຫຼດ <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">ໃຊ້ການເຄື່ອນໄຫວຂອງໃບໜ້າ ແລະ ການຈ້ອງເບິ່ງເພື່ອຄວບຄຸມເຄີເຊີ ແລະ ແປ້ນພິມ</translation>
 <translation id="2440604414813129000">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="244071666433939959">ແອັບເປີດໃນໜ້າຈໍ</translation>
 <translation id="2440823041667407902">ການ​ເຂົ້າ​ເຖິງ​ຂໍ້ມູນ​ສະຖານທີ່</translation>
@@ -2794,6 +2793,7 @@
 <translation id="2904210161403910217">ລະຫັດຜ່ານຂອງທ່ານມີການປ່ຽນແປງຕັ້ງແຕ່ທ່ານເຂົ້າສູ່ລະບົບເທື່ອຫຼ້າສຸດ</translation>
 <translation id="2904506722835398619">ຈຳເປັນຕ້ອງເຂົ້າສູ່ລະບົບ ແລະ ຊິ້ງ</translation>
 <translation id="2904845070985032877">ຢຸດອະນິເມຊັນໄວ້ຊົ່ວຄາວ</translation>
+<translation id="2905556994482999199">ໃຊ້ການເຄື່ອນໄຫວຂອງຫົວ ແລະ ການສະແດງອອກທາງໃບໜ້າເພື່ອຄວບຄຸມ Chromebook ຂອງທ່ານ</translation>
 <translation id="2907619724991574506">ເລີ່ມຕົ້ນ URLs</translation>
 <translation id="2907798539022650680">ເຊື່ອມຕໍ່ກັບ '<ph name="NAME" />': <ph name="DETAILS" /> ບໍ່ສໍາເລັດ
     ຂໍ້ຄວາມຈາກເຊີບເວີ: <ph name="SERVER_MSG" /></translation>

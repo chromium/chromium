@@ -1353,7 +1353,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1922496389170590548">Barnets skolekonto</translation>
 <translation id="1923468477587371721">Google-nettsteder som Gmail, Disk og YouTube bruker Google-kontospråket ditt, med mindre du har endret det språket for det individuelle produktet</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
-<translation id="1924637506777872526">Oppretter automatisk fanegrupper basert på de åpne fanene dine</translation>
+<translation id="1924637506777872526">Lager automatisk fanegrupper basert på de åpne fanene dine</translation>
 <translation id="192494336144674234">Åpne med</translation>
 <translation id="1925017091976104802">Trykk på <ph name="MODIFIER_KEY_DESCRIPTION" /> for å lime inn</translation>
 <translation id="1925021887439448749">Skriv inn en egendefinert nettadresse</translation>
@@ -2113,7 +2113,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2438853563451647815">Ikke koblet til skriveren</translation>
 <translation id="2439152382014731627">Tilbakestill <ph name="DEVICE_TYPE" />-passordet</translation>
 <translation id="2439626940657133600">Laster inn <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Bruk ansikts- og blikkbevegelser for å kontrollere markøren og tastaturet</translation>
 <translation id="2440604414813129000">Vis &amp;kilde</translation>
 <translation id="244071666433939959">Apper åpnes i et vindu</translation>
 <translation id="2440823041667407902">Posisjonstilgang</translation>
@@ -3339,7 +3338,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3319863571062685443">Adressen din er lagret</translation>
 <translation id="3320271870899888245">Kan ikke koble til OneDrive. Prøv på nytt.</translation>
 <translation id="3320630259304269485">Safe Browsing (beskyttelse mot farlige nettsteder) og andre sikkerhetsinnstillinger</translation>
-<translation id="3320957378743864387">Nettsteder som ikke får tilby skrivehjelp</translation>
+<translation id="3320957378743864387">Kan ikke tilby skrivehjelp</translation>
 <translation id="3321460131042519426">Slå på tekstbryting</translation>
 <translation id="3321494112580110651">Ser du ikke skriveren din?</translation>
 <translation id="3321776060736518525">Fra <ph name="APP_URL" /></translation>
@@ -4663,7 +4662,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4249248555939881673">Venter på nettverkstilkobling …</translation>
 <translation id="4249373718504745892">Kameraet og mikrofonen er blokkert for denne siden.</translation>
 <translation id="424963718355121712">Apper må leveres fra verten de påvirker</translation>
-<translation id="4249785854468467847">Opplev Chrome på en helt ny måte med AI-funksjoner</translation>
+<translation id="4249785854468467847">Opplev Chrome på en helt ny måte med AI</translation>
 <translation id="4250229828105606438">Skjermbilde</translation>
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4251377547188244181">Registrering som kiosk- og skiltenhet</translation>
@@ -5644,7 +5643,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4951966678293618079">Lagre aldri passord for dette nettstedet</translation>
 <translation id="4953808748584563296">Oransje standardbrukerbilde</translation>
-<translation id="4954652437333037880">Fil</translation>
+<translation id="4954652437333037880">Arkiv</translation>
 <translation id="4955707703665801001">Tilgang for <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Velg PIN-koden din</translation>
 <translation id="4956593309300508411">Vil du slutte å dele?</translation>
@@ -8523,7 +8522,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7049524156282610342">Nettlesingsdata <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ugyldig konfigurasjon av wifi-sone</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Passordet er lagret i Google-kontoen din, <ph name="USER_EMAIL" />}other{Passordene er lagret i Google-kontoen din, <ph name="USER_EMAIL" />}}</translation>
-<translation id="7052147783849658969">Ingen inaktive faner akkurat nå</translation>
+<translation id="7052147783849658969">Ingen inaktive faner nå</translation>
 <translation id="7052762602787632571">&amp;Slett nettlesingsdata…</translation>
 <translation id="705352103640172578">Foss</translation>
 <translation id="7053983685419859001">Blokkér</translation>
@@ -8628,7 +8627,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="713122686776214250">Legg til si&amp;de</translation>
 <translation id="7131431455372521159">Alle TrackPoint-mus er koblet fra</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, venter</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din}other{{PASSWORD_COUNT} passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din}}</translation>
+<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din}other{{PASSWORD_COUNT} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din}}</translation>
 <translation id="7134098520442464001">Forminsk teksten</translation>
 <translation id="7134951043985383439">Lastet ned en farlig fil</translation>
 <translation id="7135729336746831607">Vil du slå på Bluetooth?</translation>
@@ -8771,7 +8770,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7243092385765551741">Vil du slette passnøkkelen?</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (best)</translation>
 <translation id="7246230585855757313">Sett inn sikkerhetsnøkkelen på nytt, og prøv igjen</translation>
-<translation id="7248245317364871465">Foreslår og oppretter automatisk grupper med de åpne fanene dine, slik at det blir enklere å finne det du leter etter</translation>
+<translation id="7248245317364871465">Foreslår og lager automatisk grupper med de åpne fanene dine, slik at det blir enklere å finne det du leter etter</translation>
 <translation id="724835896049478274">Kontoer som er tilgjengelige for Android-apper</translation>
 <translation id="7248802599439396696">Gjør faner inaktive</translation>
 <translation id="7249197363678284330">Endre denne innstillingen i adressefeltet.</translation>
@@ -8868,7 +8867,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7314989823816739632">Romantisk</translation>
 <translation id="7317342082064136423">Bekreft kontoen din</translation>
 <translation id="7317831949569936035">Skoleregistrering</translation>
-<translation id="731827437403763009">Nyskapning innenfor AI</translation>
+<translation id="731827437403763009">AI-innovasjoner</translation>
 <translation id="7319320447721994672">Hvis du besøker nettsteder som bruker informasjonskapsler, må du kanskje aktivere informasjonskapsler midlertidig for at alle funksjonene skal fungere.</translation>
 <translation id="7319983568955948908">Stopp deling</translation>
 <translation id="7320213904474460808">Bruk nettverk som standard</translation>
@@ -10476,7 +10475,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8434837876193928924">Detaljer om fanegruppen</translation>
 <translation id="8436800506934625875">Opprett en alfanumerisk PIN-kode for gjenoppretting for Google Passordlagring</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
-<translation id="8438518537545182071">Valgene forelderen din har gjort, brukes nå for å holde deg tryggere på nettet</translation>
+<translation id="8438518537545182071">Nå brukes valgene forelderen din har gjort, for å holde deg tryggere på nettet</translation>
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439506636278576865">Tilby å oversette nettsider på dette språket</translation>
 <translation id="8440004142066757254">Start casting av videofiler fra enheten din til en annen skjerm</translation>

@@ -2102,7 +2102,6 @@
 <translation id="2438853563451647815">ପ୍ରିଣ୍ଟର ସହ କନେକ୍ଟ କରାଯାଇନାହିଁ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> ପାସୱାର୍ଡ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ଲୋଡ ହେଉଛି</translation>
-<translation id="2440036226025529014">କର୍ସର ଏବଂ କୀବୋର୍ଡକୁ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଚେହେରା ଏବଂ ଆଖିର ମୁଭମେଣ୍ଟକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2440604414813129000">ଉ&amp;ତ୍ସ ଦର୍ଶନ୍ କରନ୍ତୁ</translation>
 <translation id="244071666433939959">ଆପ୍ସ ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲେ</translation>
 <translation id="2440823041667407902">ଲୋକେସନ୍ ଆକ୍ସେସ୍</translation>
@@ -4076,7 +4075,7 @@
 <translation id="3824621460022590830">ଡିଭାଇସ୍ ପଞ୍ଜିକରଣ ଟୋକନ୍ ଅବୈଧ ଅଟେ। ଦୟାକରି ଆପଣଙ୍କ ଡିଭାଇସର ମାଲିକ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ। ତ୍ରୁଟି କୋଡ୍: <ph name="ERROR_CODE" />।</translation>
 <translation id="3824757763656550700">ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକରୁ ଟାବଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ଏହି ଫାଇଲ ପ୍ରକାର ପାଇଁ ମୋ ପସନ୍ଦକୁ ମନେ ରଖ: <ph name="FILE_TYPES" />}other{ଏହି ଫାଇଲ ପ୍ରକାର ପାଇଁ ମୋ ପସନ୍ଦକୁ ମନେ ରଖ: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">ଦେଖନ୍ତୁ</translation>
+<translation id="3825512074963838982">ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="3825635794653163640">ଆପ ଆଲର୍ଟଗୁଡ଼ିକ ପାଇଁ ଆପ ଆଇକନରେ ଡଟ ଦେଖାନ୍ତୁ</translation>
 <translation id="3826071569074535339">ମୋସନ୍ ସେନ୍ସରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="3826086052025847742">ChromeOS Flex ଲଗଗୁଡ଼ିକ</translation>
@@ -4593,7 +4592,7 @@
 <translation id="4198420883535766848">ତାଲିକାରୁ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="4200609364258658652">କପି&amp; ଭିଡିଓ ଫ୍ରେମ</translation>
 <translation id="4200689466366162458">କଷ୍ଟମ୍ ଶଦ୍ଦ</translation>
-<translation id="4200983522494130825">ନୂତନ &amp;ଟ୍ୟାବ୍</translation>
+<translation id="4200983522494130825">ନୂଆଁ &amp;ଟାବ</translation>
 <translation id="4201546031411513170">ସେଟିଂସ୍‌ରେ କ’ଣ ସିଙ୍କ୍ କରିବାକୁ ହେବ ତାହା ଆପଣ ସର୍ବଦା ବାଛି ପାରିବେ।</translation>
 <translation id="4203065553461038553">ଫାଇଲ ନାମ କିମ୍ବା ଲୋକେସନ ବହୁତ ଲମ୍ବା ଅଟେ</translation>
 <translation id="4203769790323223880">କେମେରାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
@@ -5983,7 +5982,7 @@
 <translation id="5208988882104884956">ଅଧା-ଚଉଡ଼ା</translation>
 <translation id="5209320130288484488">କୌଣସି ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="5209513429611499188">ବ୍ୟବହାର ପୃଷ୍ଠା <ph name="USAGE_PAGE" />ରୁ ବ୍ୟବହାର ସହ HID ଡିଭାଇସଗୁଡ଼ିକ</translation>
-<translation id="5210365745912300556">ଟ୍ୟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5210365745912300556">ଟାବ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5213114823401215820">ବନ୍ଦ କରାଯାଇଥିବା ଗୋଷ୍ଠୀକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="5213481667492808996">ଆପଣଙ୍କର '<ph name="NAME" />' ଡାଟା ସେବା ବ୍ୟବହାର କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ</translation>
 <translation id="5213891612754844763">ପ୍ରୋକ୍ସି ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>

@@ -2103,7 +2103,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2438853563451647815">No se conectó a la impresora</translation>
 <translation id="2439152382014731627">Restablecer la contraseña de <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Usar gestos faciales y movimientos de la mirada para controlar el cursor y el teclado</translation>
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="244071666433939959">Apps abiertas en una ventana</translation>
 <translation id="2440823041667407902">Acceso a la ubicación</translation>
@@ -2779,6 +2778,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2904210161403910217">Tu contraseña cambió desde la última vez que accediste</translation>
 <translation id="2904506722835398619">Es necesario acceder y activar la sincronización</translation>
 <translation id="2904845070985032877">Pausar animaciones</translation>
+<translation id="2905556994482999199">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook</translation>
 <translation id="2907619724991574506">Direcciones URL de inicio</translation>
 <translation id="2907798539022650680">Se produjo un error al conectarse a "<ph name="NAME" />": <ph name="DETAILS" />
     Mensaje del servidor: <ph name="SERVER_MSG" /></translation>
@@ -5543,6 +5543,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4882919381756638075">Por lo general, los sitios utilizan el micrófono para habilitar funciones de comunicación, como videochat.</translation>
 <translation id="4883436287898674711">Todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Adminis&amp;trador de tareas</translation>
+<translation id="4884937942297374058">Se desactivó la protección mejorada</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Esta extensión no tiene acceso al sitio</translation>
 <translation id="4887424188275796356">Abrir con el lector del sistema</translation>

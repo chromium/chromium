@@ -2119,7 +2119,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2438853563451647815">Tidak disambungkan kepada pencetak</translation>
 <translation id="2439152382014731627">Tetapkan semula kata laluan <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Memuatkan <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Gunakan pergerakan wajah dan renungan untuk mengawal kursor dan papan kekunci</translation>
 <translation id="2440604414813129000">Lihat s&amp;umber</translation>
 <translation id="244071666433939959">Apl dibuka dalam tetingkap</translation>
 <translation id="2440823041667407902">Akses lokasi</translation>
@@ -2795,6 +2794,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2904210161403910217">Kata laluan anda telah berubah sejak kali terakhir anda log masuk</translation>
 <translation id="2904506722835398619">Log Masuk dan Penyegerakan Diperlukan</translation>
 <translation id="2904845070985032877">Jeda animasi</translation>
+<translation id="2905556994482999199">Gunakan pergerakan kepala dan riak wajah untuk mengawal Chromebook anda</translation>
 <translation id="2907619724991574506">URL Pemula</translation>
 <translation id="2907798539022650680">Gagal untuk menyambung ke '<ph name="NAME" />': <ph name="DETAILS" />
     Mesej pelayan: <ph name="SERVER_MSG" /></translation>

@@ -2104,7 +2104,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2438853563451647815">Nije povezano sa štampačem</translation>
 <translation id="2439152382014731627">Resetujte lozinku za <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> se učitava</translation>
-<translation id="2440036226025529014">Koristite pokrete licem i pogledom da biste kontrolisali kursor i tastaturu</translation>
 <translation id="2440604414813129000">Prikaži i&amp;zvor</translation>
 <translation id="244071666433939959">Aplikacije se otvaraju u prozoru</translation>
 <translation id="2440823041667407902">Pristup lokaciji</translation>
@@ -2780,6 +2779,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2904210161403910217">Lozinka je promenjena od poslednjeg prijavljivanja</translation>
 <translation id="2904506722835398619">Prijavljivanje i sinhronizacija su obavezni</translation>
 <translation id="2904845070985032877">Pauziraj animacije</translation>
+<translation id="2905556994482999199">Koristite pokrete glave i izraze lica da biste kontrolisali Chromebook</translation>
 <translation id="2907619724991574506">URL-ovi za pokretanje</translation>
 <translation id="2907798539022650680">Povezivanje sa „<ph name="NAME" />“ nije uspelo: <ph name="DETAILS" />
     Poruka servera: <ph name="SERVER_MSG" /></translation>

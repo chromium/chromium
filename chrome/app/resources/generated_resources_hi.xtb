@@ -2120,7 +2120,6 @@
 <translation id="2438853563451647815">प्रिंटर से कनेक्ट नहीं है</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> का पासवर्ड रीसेट करें</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड हो रहा है</translation>
-<translation id="2440036226025529014">चेहरे और आंखों के मूवमेंट से कर्सर और कीबोर्ड को कंट्रोल करें</translation>
 <translation id="2440604414813129000">स्रोत देखें</translation>
 <translation id="244071666433939959">ऐप्लिकेशन विंडो में खुलते हैं</translation>
 <translation id="2440823041667407902">जगह की जानकारी का एक्‍सेस दें</translation>
@@ -5558,6 +5557,7 @@
 <translation id="4882919381756638075">आम तौर पर, साइटें, वीडियो चैटिंग जैसी कम्यूनिकेशन सुविधाओं के लिए, आपके माइक्रोफ़ोन का इस्तेमाल करती हैं</translation>
 <translation id="4883436287898674711">सभी <ph name="WEBSITE_1" /> साइटें</translation>
 <translation id="48838266408104654">&amp;कार्य मैनेजर</translation>
+<translation id="4884937942297374058">बेहतर सुरक्षा मोड बंद है</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">इस एक्सटेंशन में किसी दूसरी साइट का ऐक्सेस नहीं है</translation>
 <translation id="4887424188275796356">सिस्टम दर्शक के साथ खोलें</translation>

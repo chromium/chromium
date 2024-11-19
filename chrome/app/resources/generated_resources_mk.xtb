@@ -2120,7 +2120,6 @@
 <translation id="2438853563451647815">Не е поврзано на печатач</translation>
 <translation id="2439152382014731627">Ресетирајте ја лозинката за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Се вчитува <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Користете движење на лицето и погледот за да ги контролирате курсорот и тастатурата</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="244071666433939959">Апликациите се отвораат во прозорец</translation>
 <translation id="2440823041667407902">Пристап до локација</translation>
@@ -2974,7 +2973,7 @@
 <translation id="3029466929721441205">Прикажи ја алатката пенкало на полицата</translation>
 <translation id="3029808567601324798">Време до заклучување</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да преземете ажурирање денес. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}one{<ph name="MANAGER" /> бара да преземете ажурирање пред крајниот рок. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}other{<ph name="MANAGER" /> бара да преземете ажурирање пред крајниот рок. Ажурирањето ќе се преземе автоматски кога ќе се поврзете на интернет.}}</translation>
-<translation id="3030772324014024606">Изменете</translation>
+<translation id="3030772324014024606">Измени</translation>
 <translation id="3030967311408872958">Од зајдисонце до изгрејсонце</translation>
 <translation id="3031417829280473749">Агентката X</translation>
 <translation id="3031532026314193077">Користи допирна подлога и тастатура за кликнување со десно копче</translation>
@@ -6003,7 +6002,7 @@
 <translation id="5208988882104884956">Полуширина</translation>
 <translation id="5209320130288484488">Не се пронајдени уреди</translation>
 <translation id="5209513429611499188">HID-уреди со искористеност од страницата за користење <ph name="USAGE_PAGE" /></translation>
-<translation id="5210365745912300556">Затвори ја картичката</translation>
+<translation id="5210365745912300556">Затвори картичка</translation>
 <translation id="5213114823401215820">Повторно отвори ја затворената група</translation>
 <translation id="5213481667492808996">Услугата за мобилен интернет од <ph name="NAME" /> е спремна за употреба</translation>
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>

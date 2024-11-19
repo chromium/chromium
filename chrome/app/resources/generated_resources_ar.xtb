@@ -2111,7 +2111,6 @@
 <translation id="2438853563451647815">الجهاز غير متصّل بطابعة</translation>
 <translation id="2439152382014731627">إعادة ضبط كلمة مرور <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">جارٍ تحميل <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">استخدام حركات الوجه والنظر للتحكّم في المؤشر ولوحة المفاتيح</translation>
 <translation id="2440604414813129000">عرض الم&amp;صدر</translation>
 <translation id="244071666433939959">يتم فتح التطبيقات في نافذة</translation>
 <translation id="2440823041667407902">تحديد الموقع الجغرافي</translation>
@@ -2787,6 +2786,7 @@
 <translation id="2904210161403910217">تم تغيير كلمة المرور منذ آخر مرة سجّلت فيها الدخول</translation>
 <translation id="2904506722835398619">يجب تسجيل الدخول وتفعيل المزامنة</translation>
 <translation id="2904845070985032877">إيقاف الصور المتحركة مؤقتًا</translation>
+<translation id="2905556994482999199">‏يمكنك استخدام حركات الرأس وتعبيرات الوجه للتحكّم في جهاز Chromebook</translation>
 <translation id="2907619724991574506">‏عناوين URL لبدء التشغيل</translation>
 <translation id="2907798539022650680">تعذّر الاتصال بـ '<ph name="NAME" />': <ph name="DETAILS" />
     رسالة الخادم: <ph name="SERVER_MSG" /></translation>
@@ -4601,7 +4601,7 @@
 <translation id="4198420883535766848">إزالة علامة التبويب من القائمة</translation>
 <translation id="4200609364258658652">نس&amp;خ إطار الفيديو</translation>
 <translation id="4200689466366162458">كلمات مخصصة</translation>
-<translation id="4200983522494130825">علا&amp;مة تبويب جديدة</translation>
+<translation id="4200983522494130825">علامة تبويب جديدة</translation>
 <translation id="4201546031411513170">يمكنك دائمًا اختيار ما تريد مزامنته في الإعدادات.</translation>
 <translation id="4203065553461038553">اسم الملف أو المسار طويل جدًا.</translation>
 <translation id="4203769790323223880">تم رفض طلب الوصول إلى الكاميرا.</translation>
@@ -5531,7 +5531,7 @@
 <translation id="4872192066608821120">‏لاستيراد كلمات مرور، اختَر أحد ملفات CSV.</translation>
 <translation id="4872212987539553601">ضبط إعدادات "التشفير على الجهاز فقط"</translation>
 <translation id="4873312501243535625">مدقق ملف الوسائط</translation>
-<translation id="4875690134140862902">علامات التبويب</translation>
+<translation id="4875690134140862902">علامة تبويب</translation>
 <translation id="4876273079589074638">ساعد مهندسينا في تحري هذا العطل وإصلاحه. واسرد الخطوات الدقيقة إذا كان ذلك ممكنًا. لا توجد تفاصيل صغيرة جدًا!</translation>
 <translation id="4876305945144899064">ليس هناك اسم مستخدم</translation>
 <translation id="4876327226315760474">هذا يعني أنّ ميزات الموقع الإلكتروني يُفترض أن تعمل على النحو المتوقَّع، ولكن قد تكون الحماية أثناء التصفّح أقلّ.</translation>

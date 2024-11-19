@@ -2104,7 +2104,6 @@
 <translation id="2438853563451647815">Није повезано са штампачем</translation>
 <translation id="2439152382014731627">Ресетујте лозинку за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> се учитава</translation>
-<translation id="2440036226025529014">Користите покрете лицем и погледом да бисте контролисали курсор и тастатуру</translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="244071666433939959">Апликације се отварају у прозору</translation>
 <translation id="2440823041667407902">Приступ локацији</translation>
@@ -2780,6 +2779,7 @@
 <translation id="2904210161403910217">Лозинка је промењена од последњег пријављивања</translation>
 <translation id="2904506722835398619">Пријављивање и синхронизација су обавезни</translation>
 <translation id="2904845070985032877">Паузирај анимације</translation>
+<translation id="2905556994482999199">Користите покрете главе и изразе лица да бисте контролисали Chromebook</translation>
 <translation id="2907619724991574506">URL-ови за покретање</translation>
 <translation id="2907798539022650680">Повезивање са „<ph name="NAME" />“ није успело: <ph name="DETAILS" />
     Порука сервера: <ph name="SERVER_MSG" /></translation>

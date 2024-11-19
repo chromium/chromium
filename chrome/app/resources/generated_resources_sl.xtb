@@ -2122,7 +2122,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2438853563451647815">Povezava s tiskalnikom ni vzpostavljena</translation>
 <translation id="2439152382014731627">Ponastavitev gesla za napravo <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Nalaganje: <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Upravljanje kazalca in tipkovnice s premikanjem obraza in pogleda</translation>
 <translation id="2440604414813129000">Ogled v&amp;ira</translation>
 <translation id="244071666433939959">Aplikacije se odprejo v oknu</translation>
 <translation id="2440823041667407902">Dostop do lokacije</translation>
@@ -4096,7 +4095,7 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="3824621460022590830">Žeton za včlanitev naprave je neveljaven. Obrnite se na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se, če si želite ogledati zavihke iz drugih naprav</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapomni si mojo izbiro za to vrsto podatkov: <ph name="FILE_TYPES" />}one{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}two{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}few{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}other{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Ogled</translation>
+<translation id="3825512074963838982">Prikaz</translation>
 <translation id="3825635794653163640">Prikaz pike na ikoni aplikacije za opozorila glede aplikacij</translation>
 <translation id="3826071569074535339">Dovoljena je uporaba tipal gibanja</translation>
 <translation id="3826086052025847742">Dnevniki za ChromeOS Flex</translation>

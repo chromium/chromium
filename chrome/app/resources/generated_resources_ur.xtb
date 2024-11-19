@@ -2108,7 +2108,6 @@
 <translation id="2438853563451647815">پرنٹر سے منسلک نہیں ہے</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> پاس ورڈ ری سیٹ کریں</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> لوڈ ہو رہی ہے</translation>
-<translation id="2440036226025529014">کرسر اور کی بورڈ کو کنٹرول کرنے کے لیے چہرے اور نگاہوں کی حرکت کا استعمال کریں</translation>
 <translation id="2440604414813129000">ما&amp;خذ دیکھیں</translation>
 <translation id="244071666433939959">ایپس ایک نئی ونڈو میں کھلتی ہیں</translation>
 <translation id="2440823041667407902">مقام تک رسائی</translation>
@@ -2784,6 +2783,7 @@
 <translation id="2904210161403910217">پچھلی بار آپ کے سائن ان کرنے کے بعد سے آپ کا پاس ورڈ تبدیل کر دیا گیا ہے</translation>
 <translation id="2904506722835398619">سائن ان اور سنک کرنے کی ضرورت ہے</translation>
 <translation id="2904845070985032877">اینیمیشنز روکیں</translation>
+<translation id="2905556994482999199">‏اپنے Chromebook کو کنٹرول کرنے کے لیے سر کی حرکتوں اور چہرے کے تاثرات کا استعمال کریں</translation>
 <translation id="2907619724991574506">‏شروعاتی URLs</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' سے منسلک ہونے میں ناکام: <ph name="DETAILS" />
     سرور کا پیغام: <ph name="SERVER_MSG" /></translation>
@@ -5545,6 +5545,7 @@
 <translation id="4882919381756638075">سائٹس عام طور پر ویڈیو چیٹ جیسی کمیونیکشن کی خصوصیات کے لیے آپ کا مائيکروفون استعمال کرتی ہیں</translation>
 <translation id="4883436287898674711">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
 <translation id="48838266408104654">&amp;ٹاسک مینیجر</translation>
+<translation id="4884937942297374058">بہتر کردہ حفاظت آف ہے</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">اس ایکسٹینشن کو سائٹ تک اضافی رسائی حاصل نہیں ہے</translation>
 <translation id="4887424188275796356">سسٹم ویور کے ساتھ کھولیں</translation>

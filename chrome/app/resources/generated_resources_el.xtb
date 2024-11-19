@@ -2119,7 +2119,6 @@
 <translation id="2438853563451647815">Δεν υπάρχει σύνδεση με τον εκτυπωτή</translation>
 <translation id="2439152382014731627">Επαναφορά κωδικού πρόσβασης <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Φόρτωση <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Χρησιμοποιήστε την κίνηση του προσώπου και του βλέμματος για να ελέγξετε τον δείκτη και το πληκτρολόγιο</translation>
 <translation id="2440604414813129000">Προβολή κώ&amp;δικα</translation>
 <translation id="244071666433939959">Οι εφαρμογές ανοίγουν σε παράθυρο</translation>
 <translation id="2440823041667407902">Πρόσβαση τοποθεσίας</translation>
@@ -4611,7 +4610,7 @@
 <translation id="4198420883535766848">Κατάργηση καρτέλας από τη λίστα</translation>
 <translation id="4200609364258658652">Αντ&amp;ιγραφή καρέ βίντεο</translation>
 <translation id="4200689466366162458">Προσαρμοσμένες λέξεις</translation>
-<translation id="4200983522494130825">Νέα &amp;καρτέλα</translation>
+<translation id="4200983522494130825">Νέα καρτέλα</translation>
 <translation id="4201546031411513170">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις ρυθμίσεις.</translation>
 <translation id="4203065553461038553">Το όνομα ή η τοποθεσία του αρχείου είναι πολύ μεγάλα</translation>
 <translation id="4203769790323223880">Η πρόσβαση στην κάμερα δεν επιτράπηκε</translation>
@@ -5559,6 +5558,7 @@
 <translation id="4882919381756638075">Οι ιστότοποι χρησιμοποιούν συνήθως το μικρόφωνό σας για λειτουργίες επικοινωνίας, όπως η συνομιλία μέσω βίντεο.</translation>
 <translation id="4883436287898674711">Όλοι οι ιστότοποι <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Διαχείριση Εργασιών</translation>
+<translation id="4884937942297374058">Η Βελτιωμένη προστασία είναι ανενεργή</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Αυτή η επέκταση δεν έχει πρόσθετη πρόσβαση ιστοτόπου</translation>
 <translation id="4887424188275796356">Άνοιγμα με πρόγραμμα προβολής συστήματος</translation>

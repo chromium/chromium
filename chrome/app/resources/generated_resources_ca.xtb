@@ -2106,7 +2106,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2438853563451647815">Sense connexió amb la impressora</translation>
 <translation id="2439152382014731627">Restableix la contrasenya del dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="2439626940657133600">S'està carregant <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Utilitza el moviment de la cara i de la mirada per controlar el cursor i el teclat</translation>
 <translation id="2440604414813129000">Visualitza l'&amp;origen</translation>
 <translation id="244071666433939959">Les aplicacions s'obren en una finestra</translation>
 <translation id="2440823041667407902">Accés a la ubicació</translation>
@@ -2960,7 +2959,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3029466929721441205">Mostra les eines del llapis òptic al prestatge</translation>
 <translation id="3029808567601324798">Temps fins al bloqueig</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que baixis una actualització avui. Es baixarà automàticament quan et connectis a Internet.}other{<ph name="MANAGER" /> requereix que baixis una actualització abans del termini establert. Es baixarà automàticament quan et connectis a Internet.}}</translation>
-<translation id="3030772324014024606">Edita</translation>
+<translation id="3030772324014024606">Editar</translation>
 <translation id="3030967311408872958">De la posta de sol a l'alba</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Fes servir el ratolí tàctil i el teclat per fer clic amb el botó dret</translation>
@@ -3463,7 +3462,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3421835120203732951">Afegeix un perfil nou</translation>
 <translation id="3423111258700187173">Resultats trobats a <ph name="FOLDER_TITLE" /></translation>
 <translation id="3423226218833787854">Més informació sobre aquesta funció d'IA</translation>
-<translation id="3423275441470187644">Confia-hi</translation>
+<translation id="3423275441470187644">Confiança</translation>
 <translation id="3423463006624419153">A <ph name="PHONE_NAME_1" /> i <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Torneu a iniciar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3424969259347320884">Descriu què feies quan la pestanya s'ha bloquejat</translation>
@@ -4078,7 +4077,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="3824621460022590830">El testimoni d'inscripció de dispositius no és vàlid. Contacta amb el propietari o l'administrador del dispositiu. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicia la sessió per veure les pestanyes d'altres dispositius</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recorda la meva selecció per a aquest tipus de fitxer: <ph name="FILE_TYPES" />}other{Recorda la meva selecció per a aquests tipus de fitxers: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Mostra</translation>
+<translation id="3825512074963838982">Veure</translation>
 <translation id="3825635794653163640">Mostra el punt a la icona de l'aplicació per a les alertes d'aplicacions</translation>
 <translation id="3826071569074535339">Amb permís per utilitzar sensors de moviment</translation>
 <translation id="3826086052025847742">Registres de ChromeOS Flex</translation>
@@ -5524,7 +5523,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4872192066608821120">Per importar contrasenyes, selecciona un fitxer CSV</translation>
 <translation id="4872212987539553601">Configura l'encriptació al dispositiu</translation>
 <translation id="4873312501243535625">Comprovador de fitxers multimèdia</translation>
-<translation id="4875690134140862902">Tab</translation>
+<translation id="4875690134140862902">Pestanya</translation>
 <translation id="4876273079589074638">Ajuda els nostres enginyers a investigar i resoldre aquest error. Si pots, enumera els passos amb exactitud. Cap detall no és sobrer!</translation>
 <translation id="4876305945144899064">Sense nom d'usuari</translation>
 <translation id="4876327226315760474">Això significa que les funcions del lloc web haurien de funcionar de la manera prevista, tot i que pot ser que tinguis menys protecció de navegació.</translation>
@@ -5636,7 +5635,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="495170559598752135">Accions</translation>
 <translation id="4951966678293618079">No desis mai les contrasenyes d'aquest lloc web</translation>
 <translation id="4953808748584563296">Avatar taronja predeterminat</translation>
-<translation id="4954652437333037880">Fitxer</translation>
+<translation id="4954652437333037880">Arxiu</translation>
 <translation id="4955707703665801001">Visibilitat de <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Tria un PIN</translation>
 <translation id="4956593309300508411">Vols deixar de compartir?</translation>

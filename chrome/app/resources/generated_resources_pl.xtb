@@ -2092,7 +2092,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2438853563451647815">Brak połączenia z drukarką</translation>
 <translation id="2439152382014731627">Resetuj hasło urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Ładuję: <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Steruj kursorem i klawiaturą za pomocą gestów z wykorzystaniem twarzy i oczu</translation>
 <translation id="2440604414813129000">Wyświetl ź&amp;ródło</translation>
 <translation id="244071666433939959">Aplikacje otwierają się w oknie</translation>
 <translation id="2440823041667407902">Dostęp do lokalizacji</translation>
@@ -2766,6 +2765,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2904210161403910217">Twoje hasło zostało zmienione od ostatniego logowania</translation>
 <translation id="2904506722835398619">Wymagane zalogowanie i synchronizacja</translation>
 <translation id="2904845070985032877">Wstrzymaj animacje</translation>
+<translation id="2905556994482999199">Używaj ruchów głowy i mimiki do sterowania Chromebookiem</translation>
 <translation id="2907619724991574506">Startowe adresy URL</translation>
 <translation id="2907798539022650680">Nie udało się połączyć z „<ph name="NAME" />”: <ph name="DETAILS" />
     Komunikat serwera: <ph name="SERVER_MSG" /></translation>
@@ -4578,7 +4578,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4198420883535766848">Usuń kartę z listy</translation>
 <translation id="4200609364258658652">Kopiu&amp;j klatkę wideo</translation>
 <translation id="4200689466366162458">Słowa niestandardowe</translation>
-<translation id="4200983522494130825">Nowa &amp;karta</translation>
+<translation id="4200983522494130825">Nowa karta</translation>
 <translation id="4201546031411513170">W ustawieniach możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="4203065553461038553">Nazwa lub lokalizacja pliku jest za długa</translation>
 <translation id="4203769790323223880">Kamera nie jest dozwolona</translation>
@@ -5525,6 +5525,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883436287898674711">Wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Menedżer zadań</translation>
+<translation id="4884937942297374058">Silniejsza ochrona jest wyłączona</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">To rozszerzenie nie ma dodatkowego dostępu do stron</translation>
 <translation id="4887424188275796356">Otwórz w przeglądarce systemowej</translation>

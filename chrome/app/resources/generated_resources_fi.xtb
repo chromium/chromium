@@ -2118,7 +2118,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2438853563451647815">Ei yhdistetty tulostimeen</translation>
 <translation id="2439152382014731627">Salasanan vaihtaminen: <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Ladataan <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Ohjaa kohdistinta ja näppäimistöä kasvojen ja katseen liikkeillä</translation>
 <translation id="2440604414813129000">Näytä a&amp;lkuperä</translation>
 <translation id="244071666433939959">Sovellukset avautuvat ikkunassa</translation>
 <translation id="2440823041667407902">Sijaintitietojen käyttöoikeus</translation>
@@ -5538,7 +5537,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4872192066608821120">Jos haluat tuoda salasanoja, valitse CSV-tiedosto</translation>
 <translation id="4872212987539553601">Ota käyttöön laitepohjainen salaus</translation>
 <translation id="4873312501243535625">Mediatiedostojen tarkistaja</translation>
-<translation id="4875690134140862902">Sarkain</translation>
+<translation id="4875690134140862902">Välilehti</translation>
 <translation id="4876273079589074638">Auta tiimiämme tutkimaan kaatumista ja korjaamaan virheet. Kerro toimista niin tarkasti kuin mahdollista. Kaikista yksityiskohdista on hyötyä.</translation>
 <translation id="4876305945144899064">Ei käyttäjänimeä</translation>
 <translation id="4876327226315760474">Tämä tarkoittaa, että sivuston ominaisuuksien pitäisi toimia odotetulla tavalla, mutta selaussuojaus saattaa olla heikompi.</translation>
@@ -5556,6 +5555,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4882919381756638075">Sivustot käyttävät mikrofonia yleensä kommunikaatio-ominaisuuksiin, kuten videopuheluihin</translation>
 <translation id="4883436287898674711">Kaikki verkkotunnuksen <ph name="WEBSITE_1" /> sivustot</translation>
 <translation id="48838266408104654">&amp;Tehtävänhallinta</translation>
+<translation id="4884937942297374058">Parannettu suojaus on pois päältä</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Tällä laajennuksella ei ole pääsyä muille sivustoille</translation>
 <translation id="4887424188275796356">Avaa järjestelmän oletussovelluksessa</translation>
@@ -5650,7 +5650,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="495170559598752135">Toiminnot</translation>
 <translation id="4951966678293618079">Älä koskaan tallenna tämän sivuston salasanoja</translation>
 <translation id="4953808748584563296">Oranssi oletusavatar</translation>
-<translation id="4954652437333037880">Tiedosto</translation>
+<translation id="4954652437333037880">Arkisto</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> / näkyvyys</translation>
 <translation id="4955710816792587366">Valitse PIN-koodi</translation>
 <translation id="4956593309300508411">Lopetetaanko jakaminen?</translation>

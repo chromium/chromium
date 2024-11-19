@@ -448,7 +448,7 @@
 <translation id="1296911687402551044">ရွေးထားသောတဘ်ကို ပင်ထိုးရန်</translation>
 <translation id="1297175357211070620">ခရီးဆုံး</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" /> အတွက် အကြံပြုချက် ပို့ရန်</translation>
-<translation id="129808599775632797">ပြုပြင် ပြောင်းလဲမှုများ</translation>
+<translation id="129808599775632797">ပြင်ဆင်မှုများ</translation>
 <translation id="130097046531636712">၎င်းသည် နောက်ခံလုပ်ဆောင်ချက်နှင့် ချောမွေ့စွာ လှိမ့်ခြင်းကဲ့သို့ ဖန်တီးပြသချက်အား ကန့်သတ်ခြင်းဖြင့် ဘက်ထရီသက်တမ်းကို တိုးစေသည်</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> က အောက်ပါဖိုင်များကို တည်းဖြတ်နိုင်သည်</translation>
 <translation id="130174306655812048">“Ok Google, what song is this?” ဟု မေးကြည့်ပါ</translation>
@@ -2117,7 +2117,6 @@
 <translation id="2438853563451647815">ပရင်တာသို့ ချိတ်ဆက်မထားပါ</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> ကို ဖွင့်နေသည်</translation>
-<translation id="2440036226025529014">ကာဆာနှင့် ကီးဘုတ်ကို ထိန်းချုပ်ရန်အတွက် မျက်နှာနှင့် စူးစိုက်ကြည့်ခြင်း လှုပ်ရှားမှု သုံးရန်</translation>
 <translation id="2440604414813129000">ရင်း&amp;မြစ်ကို ကြည့်ရန်</translation>
 <translation id="244071666433939959">အက်ပ်များကို ဝင်းဒိုးတွင်ဖွင့်သည်</translation>
 <translation id="2440823041667407902">တည်နေရာ ရယူသုံးမှု</translation>
@@ -4609,7 +4608,7 @@
 <translation id="4198420883535766848">တဘ်ကို စာရင်းမှဖယ်ရှားရန်</translation>
 <translation id="4200609364258658652">ဗီဒီယိုဖရိမ် မိတ္တူကူးရန်</translation>
 <translation id="4200689466366162458">မိမိကိုယ်ပိုင်စကားလုံး</translation>
-<translation id="4200983522494130825">တဘ် &amp; အသစ်</translation>
+<translation id="4200983522494130825">တဘ် &amp;အသစ်</translation>
 <translation id="4201546031411513170">စင့်ခ်လုပ်မည့်အရာကို ဆက်တင်များတွင် အချိန်မရွေး ရွေးချယ်နိုင်သည်။</translation>
 <translation id="4203065553461038553">ဖိုင်အမည် သို့မဟုတ် တည်နေရာမှာ ရှည်လွန်းနေသည်</translation>
 <translation id="4203769790323223880">ကင်မရာ ခွင့်ပြုမထားပါ</translation>
@@ -6854,7 +6853,7 @@
 <translation id="5842497610951477805">ဘလူးတုသ်ကို ဖွင့်ရန်</translation>
 <translation id="5844284118433003733">သင်လက်မှတ်ထိုးဝင်သောအခါ လုံခြုံရေးဆိုင်ရာ ဖြစ်ရပ်တစ်ခု ဖြစ်ပေါ်ပြီးနောက် Gmail တွင် ကာကွယ်မှု တိုးမြှင့်ခြင်းကဲ့သို့ Google ဝန်ဆောင်မှုများတွင် သင့်ကို ကာကွယ်ပေးရန် ဤဒေတာကို သင့် Google Account တွင် လင့်ခ်ချိတ်ပါသည်။</translation>
 <translation id="5844574845205796324">စူးစမ်းလေ့လာရန်အတွက် အကြောင်းအရာအသစ် အကြံပြုရန်</translation>
-<translation id="5844685625984052392">ယုံကြည်ရနိုင်ဖွယ်ရှိသည်</translation>
+<translation id="5844685625984052392">စမ်းကြည့်နိုင်သည်</translation>
 <translation id="5846200638699387931">ဆက်နွယ်မှု ဝါကျဖွဲ့စည်းပုံ အမှားအယွင်း- <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">အရိပ်မပါ</translation>
 <translation id="5846504156837627898">ဝဘ်ဆိုက်ခွင့်ပြုချက်များ စီမံရန်</translation>

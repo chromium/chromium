@@ -4307,7 +4307,7 @@ Mer information:
 <translation id="8763986294015493060">Stäng alla inkognitofönster som är öppna för närvarande</translation>
 <translation id="8766943070169463815">Ett arbetsblad för autentisering av användaruppgifter för säker betalning har öppnats</translation>
 <translation id="8767765348545497220">Stäng hjälpbubblan</translation>
-<translation id="8767881944435256294">{COUNT,plural, =1{1 betalningsmetod}other{# betalningsmetoder}}</translation>
+<translation id="8767881944435256294">{COUNT,plural, =1{1 betalningsmetod}other{# betalningsmetod}}</translation>
 <translation id="8768225988514678921">Knappen Skapa presentation: aktivera om du snabbt vill skapa en ny Google-presentation i Presentationer</translation>
 <translation id="8770286973007342895">Gräsklippare</translation>
 <translation id="8772387130037509473">Yoga och pilates</translation>

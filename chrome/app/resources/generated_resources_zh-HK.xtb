@@ -2119,7 +2119,6 @@
 <translation id="2438853563451647815">未連線至打印機</translation>
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">載入緊 <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">透過面部和視線移動來控制游標和鍵盤</translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244071666433939959">應用程式會在視窗中開啟</translation>
 <translation id="2440823041667407902">位置資料存取權</translation>
@@ -5548,6 +5547,7 @@
 <translation id="4882919381756638075">網站通常會使用麥克風來提供視像通訊等通訊功能</translation>
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="48838266408104654">工作管理員(&amp;T)</translation>
+<translation id="4884937942297374058">已關閉強化保護功能</translation>
 <translation id="4884987973312178454">6 倍</translation>
 <translation id="4885692421645694729">此擴充程式沒有額外的網站存取權</translation>
 <translation id="4887424188275796356">使用系統檢視器開啟</translation>

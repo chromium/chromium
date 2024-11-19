@@ -1446,7 +1446,7 @@
 <translation id="1982851102516626421">คุณออกจากระบบแล้ว</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}และ{field_2}}other{{field_1} {field_2} และ{field_3}}}</translation>
 <translation id="1984417487208496350">ไม่มีการปกป้อง (ไม่แนะนำ)</translation>
-<translation id="198507684520034826">ความช่วยเหลือ</translation>
+<translation id="198507684520034826">วิธีใช้</translation>
 <translation id="1986836014090708999">การตั้งค่าตำแหน่งขั้นสูง</translation>
 <translation id="1987317783729300807">บัญชี</translation>
 <translation id="1987574314042117472">เลือกและติดตั้งแอปยอดนิยม</translation>
@@ -2106,7 +2106,6 @@
 <translation id="2438853563451647815">ไม่ได้เชื่อมต่อเครื่องพิมพ์</translation>
 <translation id="2439152382014731627">รีเซ็ตรหัสผ่าน <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">กำลังโหลด <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">ใช้การขยับใบหน้าและการจ้องมองเพื่อควบคุมเคอร์เซอร์และแป้นพิมพ์</translation>
 <translation id="2440604414813129000">ดูโ&amp;ค้ดต้นฉบับ</translation>
 <translation id="244071666433939959">แอปเปิดในหน้าต่าง</translation>
 <translation id="2440823041667407902">การเข้าถึงตำแหน่ง</translation>
@@ -2782,6 +2781,7 @@
 <translation id="2904210161403910217">มีการเปลี่ยนแปลงรหัสผ่านในการลงชื่อเข้าใช้ครั้งล่าสุด</translation>
 <translation id="2904506722835398619">ต้องลงชื่อเข้าใช้และซิงค์</translation>
 <translation id="2904845070985032877">หยุดภาพเคลื่อนไหวชั่วคราว</translation>
+<translation id="2905556994482999199">ใช้การเคลื่อนไหวของศีรษะและการแสดงสีหน้าเพื่อควบคุม Chromebook</translation>
 <translation id="2907619724991574506">URL เริ่มต้นทำงาน</translation>
 <translation id="2907798539022650680">การเชื่อมต่อกับ "<ph name="NAME" />" ล้มเหลว: <ph name="DETAILS" />
     ข้อความเซิร์ฟเวอร์: <ph name="SERVER_MSG" /></translation>
@@ -4078,7 +4078,7 @@
 <translation id="3824621460022590830">โทเค็นการลงทะเบียนอุปกรณ์ไม่ถูกต้อง โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="3824757763656550700">ลงชื่อเข้าใช้เพื่อดูแท็บจากอุปกรณ์อื่นๆ</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทนี้ <ph name="FILE_TYPES" />}other{จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทต่อไปนี้ <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">ดู</translation>
+<translation id="3825512074963838982">มุมมอง</translation>
 <translation id="3825635794653163640">แสดงจุดบนไอคอนแอปสำหรับการแจ้งเตือนของแอป</translation>
 <translation id="3826071569074535339">ได้รับอนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="3826086052025847742">บันทึก ChromeOS Flex</translation>
@@ -4596,7 +4596,7 @@
 <translation id="4198420883535766848">นำแท็บออกจากรายการ</translation>
 <translation id="4200609364258658652">คัดลอกเฟรมวิดีโอ</translation>
 <translation id="4200689466366162458">คำที่กำหนดเอง</translation>
-<translation id="4200983522494130825">แ&amp;ท็บใหม่</translation>
+<translation id="4200983522494130825">แท็บ&amp;ใหม่</translation>
 <translation id="4201546031411513170">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอในการตั้งค่า</translation>
 <translation id="4203065553461038553">ชื่อหรือตำแหน่งของไฟล์ยาวเกินไป</translation>
 <translation id="4203769790323223880">ไม่อนุญาตให้ใช้กล้องถ่ายรูป</translation>
@@ -5543,6 +5543,7 @@
 <translation id="4882919381756638075">โดยปกติแล้วเว็บไซต์จะใช้ไมโครโฟนเพื่อดำเนินการตามฟีเจอร์ในการสื่อสาร เช่น วิดีโอแชท</translation>
 <translation id="4883436287898674711">ไซต์ <ph name="WEBSITE_1" /> ทั้งหมด</translation>
 <translation id="48838266408104654">&amp;ตัวจัดการงาน</translation>
+<translation id="4884937942297374058">การปกป้องที่ดียิ่งขึ้นปิดอยู่</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">ส่วนขยายนี้ไม่มีการเข้าถึงเว็บไซต์เพิ่มเติม</translation>
 <translation id="4887424188275796356">เปิดด้วยเครื่องมือดูระบบ</translation>

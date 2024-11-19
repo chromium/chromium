@@ -2107,7 +2107,6 @@
 <translation id="2438853563451647815">Прынтар не падключаны</translation>
 <translation id="2439152382014731627">Скінуць пароль для <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />: ідзе загрузка</translation>
-<translation id="2440036226025529014">Выкарыстоўваць рухі твару і вачэй для кіравання курсорам і выкарыстання клавіятуры</translation>
 <translation id="2440604414813129000">Паказаць зы&amp;ходны тэкст</translation>
 <translation id="244071666433939959">Праграмы адкрываюцца ў новым акне</translation>
 <translation id="2440823041667407902">Доступ да даных геалакацыі</translation>
@@ -2783,6 +2782,7 @@
 <translation id="2904210161403910217">З моманту апошняга ўваходу ваш пароль быў зменены</translation>
 <translation id="2904506722835398619">Неабходна ўвайсці і ўключыць сінхранізацыю</translation>
 <translation id="2904845070985032877">Прыпыніць анімацыю</translation>
+<translation id="2905556994482999199">Кіраваць прыладай Chromebook рухамі галавой і мімікай твару</translation>
 <translation id="2907619724991574506">Пачатковыя URL-адрасы</translation>
 <translation id="2907798539022650680">Не ўдалося падключыцца да "<ph name="NAME" />": <ph name="DETAILS" />
     Паведамленне сервера: <ph name="SERVER_MSG" /></translation>
@@ -5545,6 +5545,7 @@
 <translation id="4882919381756638075">Сайты звычайна выкарыстоўваюць мікрафон для функцый сувязі (напрыклад, для відэачата)</translation>
 <translation id="4883436287898674711">Усе сайты <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Менеджар заданняў</translation>
+<translation id="4884937942297374058">Палепшаная абарона выключана</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">У гэтага пашырэння няма дадатковага доступу да сайтаў</translation>
 <translation id="4887424188275796356">Адкрыць з дапамогай сістэмнага сродку прагляду</translation>

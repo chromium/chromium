@@ -2106,7 +2106,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2438853563451647815">Niet verbonden met printer</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-wachtwoord resetten</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> laden</translation>
-<translation id="2440036226025529014">Gebruik gezichts- en blikbewegingen om de cursor en het toetsenbord te bedienen</translation>
 <translation id="2440604414813129000">Br&amp;on bekijken</translation>
 <translation id="244071666433939959">Apps worden geopend in een venster</translation>
 <translation id="2440823041667407902">Locatietoegang</translation>
@@ -2782,6 +2781,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2904210161403910217">Je wachtwoord is gewijzigd sinds de laatste keer dat je hebt ingelogd</translation>
 <translation id="2904506722835398619">Inloggen en synchronisatie vereist</translation>
 <translation id="2904845070985032877">Animaties pauzeren</translation>
+<translation id="2905556994482999199">Gebruik hoofdbewegingen en gezichtsuitdrukkingen om je Chromebook te bedienen</translation>
 <translation id="2907619724991574506">Start-URL's</translation>
 <translation id="2907798539022650680">Kan geen verbinding maken met '<ph name="NAME" />': <ph name="DETAILS" />
     Melding van de server: <ph name="SERVER_MSG" /></translation>

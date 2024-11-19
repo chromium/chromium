@@ -654,7 +654,7 @@
 <translation id="4092709865241032354">‏برای اینکه «مدیر گذرواژه Google» اطلاعات ورود به سیستم شما را ذخیره کند، نام کاربری‌تان در این سایت را اضافه کنید</translation>
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
 <translation id="4096227151372679484">جریان ذخیره نشانک به‌صورت نیمه باز شده است</translation>
-<translation id="4105527135143631701">‏برگ به‌روزرسانی «مدیر گذرواژه Google» باز شد</translation>
+<translation id="4105527135143631701">‏به‌روزرسانی «مدیر گذرواژه Google» باز شد</translation>
 <translation id="4108314971463891922">دنبال کردن</translation>
 <translation id="4113030288477039509">مدیریت شده توسط سرپرست‌تان</translation>
 <translation id="4116038641877404294">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را بارگیری کنید</translation>
@@ -1252,7 +1252,7 @@
 <translation id="6813446258015311409">‏ورود به سیستم Chrome، باز شد.</translation>
 <translation id="6817747507826986771">به‌سرعت این صفحه را هم‌رسانی کنید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>
 <translation id="6820686453637990663">CVC</translation>
-<translation id="6820942662346226299">‏برگ به‌روزرسانی «مدیر گذرواژه Google» بسته شد</translation>
+<translation id="6820942662346226299">‏به‌روزرسانی «مدیر گذرواژه Google» بسته شد</translation>
 <translation id="6828070228333235514">توقف پیگیری قیمت</translation>
 <translation id="6830728435402077660">امن نیست</translation>
 <translation id="6831043979455480757">ترجمه</translation>
@@ -1446,7 +1446,7 @@
 <translation id="7612619742409846846">‏ثبت ورودشده در Google به‌عنوان</translation>
 <translation id="7612989789287281429">درحال وارد کردن شما به سیستم…</translation>
 <translation id="7619072057915878432">به‌دلیل نقص‌هایی در شبکه، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
-<translation id="762537095495606755">گذرواژه‌ها در این دستگاه ازکار خواهد افتاد</translation>
+<translation id="762537095495606755">«گذرواژه‌ها» در این دستگاه ازکار خواهد افتاد</translation>
 <translation id="7626032353295482388">‏به Chrome خوش آمدید</translation>
 <translation id="7628417132421583481">رفتن به «مدیر گذرواژه»</translation>
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
@@ -1534,7 +1534,7 @@
 <translation id="8015452622527143194">برگرداندن همه‌چیز در صفحه به‌اندازه پیش‌فرض</translation>
 <translation id="8017431260099661477">پیوند دعوت باز نشد</translation>
 <translation id="8026238112629815203">نحوه ذخیره شدن گذرواژه‌ها در این دستگاه را تغییر دادیم</translation>
-<translation id="8027395186860110042">ممکن است گذرواژه‌ها به‌زودی ازکار بیفتد</translation>
+<translation id="8027395186860110042">ممکن است «گذرواژه‌ها» به‌زودی ازکار بیفتد</translation>
 <translation id="8027863900915310177">انتخاب مکان بارگیری</translation>
 <translation id="8030852056903932865">تأیید</translation>
 <translation id="8032569120109842252">دنبال می‌کنید</translation>
@@ -1604,9 +1604,9 @@
 <translation id="8281886186245836920">رد شدن</translation>
 <translation id="8282297628636750033">استفاده از زمینه تاریک برای سایت‌ها، هرگاه ممکن باشد</translation>
 <translation id="8282950411412455249">رفتن به «تنظیمات ایمنی»</translation>
-<translation id="8306751933352925837">‏گذرواژه‌ها به‌زودی در این دستگاه ازکار خواهد افتاد. برای ادامه استفاده از گذرواژه‌هایتان، «خدمات Google Play» را به‌روز کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="8306751933352925837">‏«گذرواژه‌ها» به‌زودی در این دستگاه ازکار خواهد افتاد. برای ادامه استفاده از گذرواژه‌هایتان، «خدمات Google Play» را به‌روز کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8307517230426267469">‫<ph name="GIVEN_NAME" /> برگه «<ph name="TAB_NAME" />» را برداشت</translation>
-<translation id="8310451567823644042">گذرواژه‌ها به‌زودی ازکار خواهد افتاد</translation>
+<translation id="8310451567823644042">«گذرواژه‌ها» به‌زودی ازکار خواهد افتاد</translation>
 <translation id="831192587911042850">وب‌سایت فعلی را به فهرست وب‌سایت‌هایی که دنبال می‌کنید اضافه می‌کند.</translation>
 <translation id="8342727528718219152">‏‫Chrome درباره سایت‌هایی که ممکن است اعلان‌های زیادی ارسال کنند به شما اطلاع می‌دهد</translation>
 <translation id="834313815369870491">سایت‌هایی که هرگز ترجمه نمی‌شوند</translation>
@@ -1741,7 +1741,7 @@
 <translation id="8963117664422609631">رفتن به تنظیمات سایت</translation>
 <translation id="8965591936373831584">در انتظار</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>
-<translation id="897061774231912216">‏گذرواژه‌ها به‌زودی ازکار خواهد افتاد زیرا «خدمات Google Play» دردسترس نیست. برای استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google» خود، بااستفاده از دستگاه دیگری به سیستم وارد شوید یا به passwords.google.com بروید.</translation>
+<translation id="897061774231912216">‏«گذرواژه‌ها» به‌زودی ازکار خواهد افتاد زیرا «خدمات Google Play» دردسترس نیست. برای استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google» خود، بااستفاده از دستگاه دیگری به سیستم وارد شوید یا به passwords.google.com بروید.</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="8972098258593396643">در پوشه پیش‌فرض بارگیری شود؟</translation>
 <translation id="8982113230057126145">«رأی مخالف» بازخوردی با این معنا ارسال می‌کند که شما این خلاصه را نمی‌پسندید</translation>

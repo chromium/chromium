@@ -2106,7 +2106,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2438853563451647815">Não tem ligação estabelecida à impressora</translation>
 <translation id="2439152382014731627">Repor palavra-passe do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">A carregar <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Use o movimento do rosto e do olhar para controlar o cursor e o teclado</translation>
 <translation id="2440604414813129000">Ver fonte</translation>
 <translation id="244071666433939959">As apps são abertas numa janela</translation>
 <translation id="2440823041667407902">Acesso à localização</translation>
@@ -2782,6 +2781,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2904210161403910217">A sua palavra-passe foi alterada desde a última vez que iniciou sessão</translation>
 <translation id="2904506722835398619">Precisa de iniciar sessão e sincronizar</translation>
 <translation id="2904845070985032877">Pausar animações</translation>
+<translation id="2905556994482999199">Use movimentos da cabeça e expressões faciais para controlar o Chromebook</translation>
 <translation id="2907619724991574506">URLs de arranque</translation>
 <translation id="2907798539022650680">Falha ao ligar a "<ph name="NAME" />": <ph name="DETAILS" />
     Mensagem do servidor: <ph name="SERVER_MSG" /></translation>
@@ -2961,7 +2961,7 @@ Quer pará-lo?</translation>
 <translation id="3029466929721441205">Mostrar ferramentas da caneta stylus na prateleira</translation>
 <translation id="3029808567601324798">Tempo até ao bloqueio</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requer que transfira uma atualização hoje. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}other{<ph name="MANAGER" /> requer que transfira uma atualização antes do prazo. A atualização será transferida automaticamente quando estabelecer ligação à Internet.}}</translation>
-<translation id="3030772324014024606">Editar</translation>
+<translation id="3030772324014024606">Edição</translation>
 <translation id="3030967311408872958">Do pôr do sol ao nascer do sol</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Use o touchpad e o teclado para clicar com o botão direito do rato</translation>
@@ -4081,7 +4081,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Inicie sessão para ver os separadores de outros dispositivos</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Ver</translation>
+<translation id="3825512074963838982">Visualização</translation>
 <translation id="3825635794653163640">Mostrar ponto no ícone da app para alertas de apps</translation>
 <translation id="3826071569074535339">Com autorização para utilizar sensores de movimentos</translation>
 <translation id="3826086052025847742">Registos do ChromeOS Flex</translation>
@@ -5547,6 +5547,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4882919381756638075">Normalmente, os sites utilizam o seu microfone para funcionalidades de comunicação como chat de vídeo.</translation>
 <translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestor de &amp;Tarefas</translation>
+<translation id="4884937942297374058">A Proteção melhorada está desativada</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Esta extensão não tem acesso adicional a sites</translation>
 <translation id="4887424188275796356">Abrir com o System Viewer</translation>

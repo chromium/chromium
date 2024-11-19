@@ -1446,7 +1446,7 @@
 <translation id="1982851102516626421">你已登出帳戶</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1}和{field_2}}other{{field_1}、{field_2}和{field_3}}}</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
-<translation id="198507684520034826">說明</translation>
+<translation id="198507684520034826">輔助說明</translation>
 <translation id="1986836014090708999">進階位置資訊設定</translation>
 <translation id="1987317783729300807">帳戶</translation>
 <translation id="1987574314042117472">選取並安裝熱門應用程式</translation>
@@ -2106,7 +2106,6 @@
 <translation id="2438853563451647815">未連上印表機</translation>
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">正在載入<ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">使用臉部表情和視線移動控制游標和鍵盤</translation>
 <translation id="2440604414813129000">檢視原始碼(&amp;O)</translation>
 <translation id="244071666433939959">應用程式會在視窗中開啟</translation>
 <translation id="2440823041667407902">位置資訊存取權</translation>
@@ -4077,7 +4076,7 @@
 <translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3824757763656550700">登入即可查看在其他裝置上開啟的分頁</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">查看</translation>
+<translation id="3825512074963838982">顯示方式</translation>
 <translation id="3825635794653163640">在應用程式圖示上顯示代表快訊的圓點</translation>
 <translation id="3826071569074535339">可以使用動作感應器</translation>
 <translation id="3826086052025847742">ChromeOS Flex 記錄</translation>
@@ -7910,7 +7909,7 @@
 <translation id="6635674640674343739">無法建立網路連線。請檢查網路連線，然後再試一次。</translation>
 <translation id="663569763553406962">查看哪些擴充功能可讀取或變更網站</translation>
 <translation id="6635944431854494329">裝置擁有者可依序前往「設定」&gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google] 來控管這項功能。</translation>
-<translation id="6636258750460740634">歷史記錄</translation>
+<translation id="6636258750460740634">瀏覽記錄</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6640268266988685324">開啟分頁</translation>

@@ -297,7 +297,7 @@
 <translation id="5553374991681107062">Legutóbbi</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> letiltva</translation>
-<translation id="560980142378233747">Ez azt jelenti, hogy a webhely funkcióinak a várt módon kell működniük, de előfordulhat, hogy kevésbé lesz hatékony a böngészési védelem. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
+<translation id="560980142378233747">Ez azt jelenti, hogy a webhely funkciói valószínűleg a várt módon fognak működni, de előfordulhat, hogy kevésbé lesz hatékony a böngészési védelem. <ph name="BEGIN_LINK" />Visszajelzés küldése<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Bemutató</translation>
 <translation id="5649053991847567735">Automatikus letöltések</translation>
 <translation id="5668404140385795438">Felülbírálja a webhely kérelmét, mely megakadályozná a nagyítást</translation>

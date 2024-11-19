@@ -1741,7 +1741,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>
 <translation id="8965591936373831584">venter</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
-<translation id="897061774231912216">Passord slutter å fungere snart fordi Google Play-tjenester ikke er tilgjengelige. For å bruke passord som er lagret i Google-kontoen din, logg på med en annen enhet, eller gå til passwords.google.com.</translation>
+<translation id="897061774231912216">Passord slutter å fungere snart fordi Google Play-tjenester ikke er tilgjengelig. For å bruke passord som er lagret i Google-kontoen din, logg på med en annen enhet, eller gå til passwords.google.com.</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
 <translation id="8982113230057126145">Tommel ned sender tilbakemelding om at du ikke liker dette sammendraget</translation>

@@ -187,7 +187,7 @@
 <translation id="2452444014801043526">अत्यन्तै ठुलो फोन बोकेका व्यक्ति</translation>
 <translation id="2464079411014186876">आइसक्रिम</translation>
 <translation id="2464089476039395325">HTTP को प्रोक्सी</translation>
-<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, निष्क्रिय छ</translation>
+<translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, अफ छ</translation>
 <translation id="2468402215065996499">तामागोची</translation>
 <translation id="2468470447085858632">फाइल सिंक गर्ने सुविधा प्रयोग गरी Google Drive मा भएका आफ्ना फाइलहरू अफलाइन एक्सेस गर्नुहोस्</translation>
 <translation id="2470939964922472929">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो। नयाँ PIN सेटअप गर्न तपाईंको मोबाइल सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्।</translation>
@@ -593,7 +593,7 @@
 <translation id="5508696409934741614">डटहरू</translation>
 <translation id="5522908512596376669">फाइलको सूचीको दृश्य परिवर्तन गरी सूची दृश्य बनाइयो।</translation>
 <translation id="5524517123096967210">फाइल पढ्न सकिएन।</translation>
-<translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> छवि</translation>
+<translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> फोटो</translation>
 <translation id="5534520101572674276">परिमाण हिसाब गर्दै</translation>
 <translation id="554153475311314364">ग्रिक लिपि रूपान्तरण</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> वटा फोल्डर चयन गरिएका छन्</translation>
@@ -1013,7 +1013,7 @@
 <translation id="8577897833047451336">क्रोएसियाली</translation>
 <translation id="8578308463707544055">इन्डोनेसियाली</translation>
 <translation id="8600173386174225982">फाइलको सूचीको दृश्य परिवर्तन गरी थम्बनेल दृश्य बनाइयो।</translation>
-<translation id="8601932370724196034">Crostini छवि फाइल</translation>
+<translation id="8601932370724196034">Crostini फोटो फाइल</translation>
 <translation id="8609695766746872526">आइसल्यान्डिक</translation>
 <translation id="8630384863424041081">आफ्नो SIM कार्डको PIN वा टेलिफोन कम्पनीले उपलब्ध गराएको डिफल्ट PIN हाल्नुहोस्। यस सम्बन्धमा सहायता प्राप्त गर्न आफ्नो टेलिफोन कम्पनीमा सम्पर्क गर्नुहोस्।</translation>
 <translation id="863903787380594467">PIN मिलेन। तपाईं अझै <ph name="RETRIES" /> पटक प्रयास गर्न सक्नुहुन्छ।</translation>

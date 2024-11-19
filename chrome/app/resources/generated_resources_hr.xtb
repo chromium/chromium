@@ -2109,7 +2109,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2438853563451647815">Niste povezani s pisačem</translation>
 <translation id="2439152382014731627">Poništi zaporku za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Učitava se stranica <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Koristi pokrete licem i pogledom za upravljanje pokazivačem i tipkovnicom</translation>
 <translation id="2440604414813129000">Pogledaj i&amp;zvor</translation>
 <translation id="244071666433939959">Aplikacije se otvaraju u prozoru</translation>
 <translation id="2440823041667407902">Pristup lokaciji</translation>
@@ -2785,6 +2784,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2904210161403910217">Vaša se zaporka promijenila od vaše posljednje prijave</translation>
 <translation id="2904506722835398619">Potrebna je prijava i sinkronizacija</translation>
 <translation id="2904845070985032877">Pauziraj animacije</translation>
+<translation id="2905556994482999199">Upravljajte Chromebookom pomoću pokreta glave i izraza lica</translation>
 <translation id="2907619724991574506">URL-ovi za pokretanje</translation>
 <translation id="2907798539022650680">Povezivanje s mrežom "<ph name="NAME" />" nije uspjelo: <ph name="DETAILS" />
     Poruka poslužitelja: <ph name="SERVER_MSG" /></translation>
@@ -2963,7 +2963,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3029466929721441205">Prikaz alata pisaljke na polici</translation>
 <translation id="3029808567601324798">Vrijeme za zaključavanje</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> traži da danas preuzmete ažuriranje. Ažuriranje će se preuzeti automatski kad se povežete s internetom.}one{<ph name="MANAGER" /> traži da preuzmete ažuriranje prije roka. Ažuriranje će se preuzeti automatski kad se povežete s internetom.}few{<ph name="MANAGER" /> traži da preuzmete ažuriranje prije roka. Ažuriranje će se preuzeti automatski kad se povežete s internetom.}other{<ph name="MANAGER" /> traži da preuzmete ažuriranje prije roka. Ažuriranje će se preuzeti automatski kad se povežete s internetom.}}</translation>
-<translation id="3030772324014024606">Uredite</translation>
+<translation id="3030772324014024606">Uređivanje</translation>
 <translation id="3030967311408872958">Od zalaska do izlaska sunca</translation>
 <translation id="3031417829280473749">Agentica X</translation>
 <translation id="3031532026314193077">Kliknite desnom tipkom na dodirnoj podlozi i tipkovnici</translation>
@@ -4082,7 +4082,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="3824621460022590830">Oznaka za registraciju uređaja nije važeća. Obratite se vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se da biste vidjeli kartice s drugih uređaja</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Upamti moj izbor za ovu vrstu datoteke: <ph name="FILE_TYPES" />.}one{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}few{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}other{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}}</translation>
-<translation id="3825512074963838982">Pregledajte</translation>
+<translation id="3825512074963838982">Prikaz</translation>
 <translation id="3825635794653163640">Prikaži točku na ikoni aplikacije za upozorenja aplikacije</translation>
 <translation id="3826071569074535339">Dopuštena je upotreba senzora kretanja</translation>
 <translation id="3826086052025847742">Zapisnici na ChromeOS Flexu</translation>
@@ -5529,7 +5529,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4872192066608821120">Da biste uvezli zaporke, odaberite CSV datoteku</translation>
 <translation id="4872212987539553601">Postavljanje šifriranja na uređaju</translation>
 <translation id="4873312501243535625">Provjera medijskih datoteka</translation>
-<translation id="4875690134140862902">Tab</translation>
+<translation id="4875690134140862902">Kartica</translation>
 <translation id="4876273079589074638">Pomognite našim inženjerima da istraže i isprave rušenje. Navedite točne korake ako možete. Svaka je pojedinost važna!</translation>
 <translation id="4876305945144899064">Nema korisničkog imena</translation>
 <translation id="4876327226315760474">To znači da značajke web-lokacije trebaju funkcionirati prema očekivanjima, no možda ćete imati manje zaštite pregledavanja.</translation>

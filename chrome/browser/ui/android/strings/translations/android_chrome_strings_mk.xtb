@@ -902,7 +902,7 @@
 <translation id="5204967432542742771">Внеси лозинка</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Се презема датотека…}one{Се преземаат # датотека…}other{Се преземаат # датотеки…}}</translation>
 <translation id="5210286577605176222">Скокнете на претходната картичка</translation>
-<translation id="5210365745912300556">Затвори ја картичката</translation>
+<translation id="5210365745912300556">Затвори картичка</translation>
 <translation id="5215957675041756913">Контролирајте ги вашите податоци и сметка</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и друго <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи не сте го отвориле сајтот неодамна</translation>
 <translation id="5222676887888702881">Одјави се</translation>

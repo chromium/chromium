@@ -2122,7 +2122,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2438853563451647815">Neprijungta prie spausdintuvo</translation>
 <translation id="2439152382014731627">Iš naujo nustatyti „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
 <translation id="2439626940657133600">Įkeliama „<ph name="WINDOW_TITLE" />“</translation>
-<translation id="2440036226025529014">Naudokite veido ir žvilgsnio judesius žymekliui ir klaviatūrai valdyti</translation>
 <translation id="2440604414813129000">Rodyti š&amp;altinį</translation>
 <translation id="244071666433939959">Programos atidaromos lange</translation>
 <translation id="2440823041667407902">Prieiga prie vietovės</translation>
@@ -2798,6 +2797,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2904210161403910217">Nuo paskutinio karto, kai buvote prisijungę, pasikeitė slaptažodis</translation>
 <translation id="2904506722835398619">Reikia prisijungti ir sinchronizuoti</translation>
 <translation id="2904845070985032877">Pristabdyti animacijas</translation>
+<translation id="2905556994482999199">Naudoti galvos judesius ir veido išraiškas „Chromebook“ įrenginiui valdyti</translation>
 <translation id="2907619724991574506">Paleidimo URL</translation>
 <translation id="2907798539022650680">Nepavyko prisijungti prie „<ph name="NAME" />“: <ph name="DETAILS" />
     Serverio pranešimas: <ph name="SERVER_MSG" /></translation>

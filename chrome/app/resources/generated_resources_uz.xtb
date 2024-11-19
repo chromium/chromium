@@ -2108,7 +2108,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2438853563451647815">Printerga ulanmagan</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolini almashtirish</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> yuklanmoqda</translation>
-<translation id="2440036226025529014">Kursor va klaviaturani yuz va nigoh bilan boshqaring</translation>
 <translation id="2440604414813129000">Sahifa &amp;kodini ko‘rish</translation>
 <translation id="244071666433939959">Ilovalar yangi oynada ochiladi.</translation>
 <translation id="2440823041667407902">Joylashuv ma’lumotidan foyd-sh</translation>
@@ -2784,6 +2783,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2904210161403910217">Hisobga oxirgi marta kirilganidan beri parolingiz oʻzgargan</translation>
 <translation id="2904506722835398619">Hisobga kirib, sinxronlashni yoqing</translation>
 <translation id="2904845070985032877">Animatsiyalarni pauza qilish</translation>
+<translation id="2905556994482999199">Chromebookni bosh harakatlari va chehra belgilari yordamida boshqaring</translation>
 <translation id="2907619724991574506">Ishga tushirish URL manzillari</translation>
 <translation id="2907798539022650680">“<ph name="NAME" />” tarmog‘iga ulanmadi: <ph name="DETAILS" />
     Server xabari: <ph name="SERVER_MSG" /></translation>
@@ -4598,7 +4598,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4198420883535766848">Varaqni roʻyxatdan olib tashlash</translation>
 <translation id="4200609364258658652">Video kadridan nusxa olish</translation>
 <translation id="4200689466366162458">Boshqa so‘zlar</translation>
-<translation id="4200983522494130825">Yangi &amp;ichki oyna</translation>
+<translation id="4200983522494130825">Yangi &amp;varaq</translation>
 <translation id="4201546031411513170">Nimani sinxronlashni istalgan vaqtda sozlamalar orqali tanlash mumkin.</translation>
 <translation id="4203065553461038553">Fayl nomi yoki joylashuvi juda uzun</translation>
 <translation id="4203769790323223880">Kameradan foydalanishga ruxsat berilmagan</translation>
@@ -5545,6 +5545,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4882919381756638075">Saytlar odatda video chat kabi aloqa xizmatlarida mikrofondan foydalanadi</translation>
 <translation id="4883436287898674711">Barcha <ph name="WEBSITE_1" /> saytlari</translation>
 <translation id="48838266408104654">&amp;Vazifalar menejeri</translation>
+<translation id="4884937942297374058">Kuchaytirilgan himoya oʻchiq</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Bu kengaytmaning saytlarga qoʻshimcha ruxsati yoʻq</translation>
 <translation id="4887424188275796356">Standart ko‘rish dasturida ochish</translation>
@@ -5988,7 +5989,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5208988882104884956">Yarim qalinlik</translation>
 <translation id="5209320130288484488">Qurilmalar topilmadi</translation>
 <translation id="5209513429611499188"><ph name="USAGE_PAGE" /> foydalanish sahifasidan ishlatilgan HID qurilmalar</translation>
-<translation id="5210365745912300556">Tabni yopish</translation>
+<translation id="5210365745912300556">Varaqni yopish</translation>
 <translation id="5213114823401215820">Yopilgan guruhni qayta ochish</translation>
 <translation id="5213481667492808996">“<ph name="NAME" />” internet paketingiz faollashtirildi</translation>
 <translation id="5213891612754844763">Proksi-server sozlamalari</translation>

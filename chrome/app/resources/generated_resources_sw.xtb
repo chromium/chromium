@@ -2116,7 +2116,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2438853563451647815">Haijaunganishwa kwenye printa</translation>
 <translation id="2439152382014731627">Kubadilisha nenosiri la <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Inapakia <ph name="WINDOW_TITLE" /></translation>
-<translation id="2440036226025529014">Tumia mijongeo ya uso na macho kudhibiti kiteuzi na kibodi</translation>
 <translation id="2440604414813129000">Tazama &amp;asili</translation>
 <translation id="244071666433939959">Programu hufunguka kwenye dirisha</translation>
 <translation id="2440823041667407902">Ufikiaji wa eneo</translation>
@@ -2970,7 +2969,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3029466929721441205">Onyesha zana za Stylus kwenye rafu</translation>
 <translation id="3029808567601324798">Muda wa kufunga</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> inahitaji upakue sasisho leo. Sasisho litapakuliwa kiotomatiki utakapounganisha kwenye intaneti.}other{<ph name="MANAGER" /> inahitaji upakue sasisho kabla ya tarehe ya mwisho. Sasisho litapakuliwa kiotomatiki utakapounganisha kwenye intaneti.}}</translation>
-<translation id="3030772324014024606">Badilisha</translation>
+<translation id="3030772324014024606">Hariri</translation>
 <translation id="3030967311408872958">Machweo hadi mapambazuko</translation>
 <translation id="3031417829280473749">Wakala X</translation>
 <translation id="3031532026314193077">Tumia padi ya kugusa na kibodi ili kubofya kulia</translation>
@@ -5135,7 +5134,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4581774856936278355">Hitilafu imetokea wakati wa kurejesha Linux</translation>
 <translation id="4582297591746054421">Tovuti husoma ubao wako wa kunakili kwa ajili ya vipengele kama vile kudumisha muundo wa maandishi uliyoyanakili</translation>
 <translation id="4582563038311694664">Weka upya mipangilio yote</translation>
-<translation id="4584770411839426377">Dirisha</translation>
+<translation id="4584770411839426377">Kidirisha</translation>
 <translation id="4585793705637313973">Badilisha ukurasa</translation>
 <translation id="4586275095964870617">Imeshindwa kufungua <ph name="URL" /> katika kivinjari mbadala. Tafadhali wasiliana na msimamizi wako wa mfumo.</translation>
 <translation id="4587589328781138893">Tovuti</translation>

@@ -2103,7 +2103,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2438853563451647815">Nicht mit dem Drucker verbunden</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-Passwort zurücksetzen</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> wird geladen</translation>
-<translation id="2440036226025529014">Cursor und Tastatur mit Gesichts- und Blickbewegungen steuern</translation>
 <translation id="2440604414813129000">Quelltext an&amp;zeigen</translation>
 <translation id="244071666433939959">Apps werden in einem neuen Fenster geöffnet</translation>
 <translation id="2440823041667407902">Standortzugriff</translation>
@@ -4075,7 +4074,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="3824621460022590830">Geräteregistrierungstoken ist ungültig. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Anmelden, um Tabs von anderen Geräten zu sehen</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Meine Auswahl für diesen Dateityp merken: <ph name="FILE_TYPES" />}other{Meine Auswahl für diese Dateitypen merken: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Ansehen</translation>
+<translation id="3825512074963838982">Darstellung</translation>
 <translation id="3825635794653163640">Punkt für App-Benachrichtigungen auf App-Symbol anzeigen</translation>
 <translation id="3826071569074535339">Dürfen Bewegungssensoren verwenden</translation>
 <translation id="3826086052025847742">ChromeOS Flex-Protokolle</translation>

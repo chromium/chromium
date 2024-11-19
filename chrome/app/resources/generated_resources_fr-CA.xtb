@@ -2107,7 +2107,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2438853563451647815">Aucune imprimante connectée</translation>
 <translation id="2439152382014731627">Réinitialiser le mot de passe de votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> en cours de chargement…</translation>
-<translation id="2440036226025529014">Utilisez les mouvements du visage et des yeux pour contrôler le curseur et le clavier</translation>
 <translation id="2440604414813129000">Afficher le code s&amp;ource</translation>
 <translation id="244071666433939959">Les applications s'ouvrent dans une fenêtre</translation>
 <translation id="2440823041667407902">Accès à la localisation</translation>
@@ -2963,7 +2962,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3029466929721441205">Afficher les outils de stylet sur l'étagère</translation>
 <translation id="3029808567601324798">Il est temps de verrouiller</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> exige que vous téléchargiez une mise à jour aujourd'hui. La mise à jour sera automatiquement téléchargée lorsque vous vous connecterez à Internet.}one{<ph name="MANAGER" /> exige que vous téléchargiez une mise à jour avant l'échéance. La mise à jour sera automatiquement téléchargée lorsque vous vous connecterez à Internet.}other{<ph name="MANAGER" /> exige que vous téléchargiez une mise à jour avant l'échéance. La mise à jour sera automatiquement téléchargée lorsque vous vous connecterez à Internet.}}</translation>
-<translation id="3030772324014024606">Modifier</translation>
+<translation id="3030772324014024606">Édition</translation>
 <translation id="3030967311408872958">Du coucher au lever du soleil</translation>
 <translation id="3031417829280473749">Agente X</translation>
 <translation id="3031532026314193077">Utilisez le pavé tactile et le clavier pour faire un clic droit</translation>
@@ -4083,7 +4082,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="3824621460022590830">Le jeton d'inscription d'appareil n'est pas valide. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Connectez-vous pour voir les onglets d'autres appareils</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mémoriser mon choix pour ce type de fichier : <ph name="FILE_TYPES" />}one{Mémoriser mon choix pour ce type de fichier : <ph name="FILE_TYPES" />}other{Mémoriser mon choix pour ces types de fichiers : <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Afficher</translation>
+<translation id="3825512074963838982">Présentation</translation>
 <translation id="3825635794653163640">Afficher un point sur l'icône de l'application pour les alertes d'application</translation>
 <translation id="3826071569074535339">Autorisés à utiliser les capteurs de mouvement</translation>
 <translation id="3826086052025847742">Journaux de ChromeOS Flex</translation>
@@ -4685,7 +4684,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4263223596040212967">Vérifiez la disposition de votre clavier et réessayez.</translation>
 <translation id="4263470758446311292">Obtenez des économies maximales de mémoire. Vos onglets deviennent inactifs après une plus courte période.</translation>
 <translation id="4263824086525632">Aurore boréale</translation>
-<translation id="4265096510956307240">Confirmer que c'est bien vous</translation>
+<translation id="4265096510956307240">Confirmer votre identité</translation>
 <translation id="4265301768135164545">Vous pouvez également configurer un profil eSIM <ph name="BEGIN_LINK" />manuellement<ph name="END_LINK" /></translation>
 <translation id="426564820080660648">Pour rechercher des mises à jour, veuillez utiliser une connexion Ethernet, Wi-Fi ou de données mobiles.</translation>
 <translation id="426652736638196239">Ce IBAN sera enregistré sur cet appareil uniquement</translation>
@@ -5174,7 +5173,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4617001782309103936">Trop court</translation>
 <translation id="4617270414136722281">Options de l'extension</translation>
 <translation id="4617880081511131945">Impossible d'établir la connexion</translation>
-<translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
+<translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4619615317237390068">Onglets ouverts sur d'autres appareils</translation>
 <translation id="4620757807254334872">souris</translation>
 <translation id="4620809267248568679">Une extension impose la valeur attribuée à ce paramètre.</translation>
@@ -5548,6 +5547,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4882919381756638075">Les sites utilisent généralement votre micro pour proposer des fonctionnalités de communication, comme le clavardage vidéo</translation>
 <translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">Gestionnaire de &amp;tâches</translation>
+<translation id="4884937942297374058">La protection renforcée est désactivée</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Cette extension n'a pas d'accès de site supplémentaire</translation>
 <translation id="4887424188275796356">Ouvrir avec le lecteur système</translation>
@@ -8917,7 +8917,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7352651011704765696">Une erreur s’est produite</translation>
 <translation id="7352664183151911163">Dans vos applications et le navigateur Chrome</translation>
 <translation id="7353261921908507769">Vos contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les autoriserez pas.</translation>
-<translation id="7353432112255316844">Confirmer que c'est bien vous</translation>
+<translation id="7353432112255316844">Confirmer votre identité</translation>
 <translation id="735361434055555355">Installation de Linux en cours…</translation>
 <translation id="7354120289251608189">Vous pouvez maintenant modifier le style de votre navigateur au besoin.</translation>
 <translation id="7356506068433555887">Palmier</translation>
@@ -10410,7 +10410,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8383614331548401927">Récap de bienvenue</translation>
 <translation id="8386091599636877289">Politique introuvable.</translation>
 <translation id="8387361103813440603">Non autorisés à consulter votre position</translation>
-<translation id="8387617938027387193">Confirmez que c'est vous</translation>
+<translation id="8387617938027387193">Confirmer votre identité</translation>
 <translation id="8388770971141403598">Les profils secondaires ne sont pas pris en charge</translation>
 <translation id="8389492867173948260">Permettez à cette extension de lire et de modifier toutes vos données sur les sites Web que vous consultez :</translation>
 <translation id="8390392581097975659">Installation du logiciel du numériseur en cours…</translation>

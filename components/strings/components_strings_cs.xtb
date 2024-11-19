@@ -2603,7 +2603,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="569000877158168851">Hodnota DnsOverHttpsTemplates je relevantní a použije se pouze v případě, že je zásada DnsOverHttpsMode nastavená na hodnotu <ph name="SECURE_DNS_MODE_AUTOMATIC" /> nebo <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="5691848789297492617">Uložení karty je otevřené na celou výšku.</translation>
 <translation id="5695542892312572833">Chcete nákup ověřit a dokončit pomocí Windows Hello?</translation>
-<translation id="5697827549745555938">Uložené informace a tato stránka se odešlou do Googlu k posouzení, zda automatické vyplňování můžete s tímto formulářem pomoci. Data mohou vidět kontroloři, kteří tuto funkci pomáhají zlepšovat.</translation>
+<translation id="5697827549745555938">Uložené informace a tato stránka se odešlou do Googlu k posouzení, zda automatické vyplňování může s tímto formulářem pomoci. Data mohou vidět kontroloři, kteří tuto funkci pomáhají zlepšovat.</translation>
 <translation id="5699628521141772782">Mléčné výrobky a vejce</translation>
 <translation id="5700761515355162635">Soubory cookie třetích stran jsou povoleny</translation>
 <translation id="5701381305118179107">Na střed</translation>

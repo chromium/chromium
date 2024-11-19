@@ -2108,7 +2108,6 @@
 <translation id="2438853563451647815">මුද්‍රකයට සම්බන්ධ නැත</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> මුරපදය යළි සකසන්න</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> පූරණය කරමින්</translation>
-<translation id="2440036226025529014">කර්සරය සහ යතුරු පුවරුව පාලනය කිරීමට මුහුණ සහ බැල්ම චලනය භාවිතා කරන්න</translation>
 <translation id="2440604414813129000">මූලය පෙන්වන්න (&amp;o)</translation>
 <translation id="244071666433939959">යෙදුම් කවුළුවක් තුළ විවෘත වේ</translation>
 <translation id="2440823041667407902">ස්ථානය ප්‍රවේශය</translation>
@@ -2962,7 +2961,7 @@
 <translation id="3029466929721441205">අල්මාරිය තුළ පන්හිඳ මෙවලම් පෙන්වන්න</translation>
 <translation id="3029808567601324798">අඟුලු දැමීමට කාලයයි</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> හට ඔබ අද යාවත්කාලීනයක් බාගැනීමට අවශ්‍යයි. ඔබ අන්තර්ජාලයට සම්බන්ධ වන විට යාවත්කාලීනය ස්වයංක්‍රියව බාගනු ඇත.}one{<ph name="MANAGER" /> හට නියමිත වේලාවට පෙර ඔබ යාවත්කාලීනයක් බාගැනීම අවශ්‍යයි. ඔබ අන්තර්ජාලයට සම්බන්ධ වන විට යාවත්කාලීනය ස්වයංක්‍රියව බාගනු ඇත.}other{<ph name="MANAGER" /> හට නියමිත වේලාවට පෙර ඔබ යාවත්කාලීනයක් බාගැනීම අවශ්‍යයි. ඔබ අන්තර්ජාලයට සම්බන්ධ වන විට යාවත්කාලීනය ස්වයංක්‍රියව බාගනු ඇත.}}</translation>
-<translation id="3030772324014024606">සංස්කරණය කරන්න</translation>
+<translation id="3030772324014024606">සංස්කරණය</translation>
 <translation id="3030967311408872958">හිරු බැසීමේ සිට හිරු නැගීම</translation>
 <translation id="3031417829280473749">X ඒජන්ත</translation>
 <translation id="3031532026314193077">දකුණු ක්ලික් කිරීමට ස්පර්ශ පුවරුව සහ යතුරු පුවරුව භාවිත කරන්න</translation>
@@ -4080,7 +4079,7 @@
 <translation id="3824621460022590830">උපාංග ලියාපදිංචි කිරීමේ ටෝකනය වලංගු නැත. කරුණාකර ඔබේ උපාංගයේ හිමිකරු හෝ පරිපාලක සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">වෙනත් උපාංගවලින් පටිති බැලීමට පුරන්න</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{මෙම ගොනු වර්ගය සඳහා මගේ තේරීම මතක තබා ගන්න: <ph name="FILE_TYPES" />}one{මෙම ගොනු වර්ග සඳහා මාගේ තේරීම මතක තබා ගන්න: <ph name="FILE_TYPES" />}other{මෙම ගොනු වර්ග සඳහා මාගේ තේරීම මතක තබා ගන්න: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">බලන්න</translation>
+<translation id="3825512074963838982">බැලීම</translation>
 <translation id="3825635794653163640">යෙදුම් ඇඟවීම් සඳහා යෙදුම් නිරූපකය මත තිත පෙන්වන්න</translation>
 <translation id="3826071569074535339">චලන සංවේදක භාවිත කිරීමට ඉඩ දේ</translation>
 <translation id="3826086052025847742">ChromeOS Flex ලොග</translation>
@@ -5529,7 +5528,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4872192066608821120">මුරපද ආයාත කිරීමට, CSV ගොනුවක් තෝරන්න</translation>
 <translation id="4872212987539553601">උපාංගය මත සංකේතනය පිහිටුවන්න</translation>
 <translation id="4873312501243535625">මාධ්‍ය ගොනු පරීක්ෂක</translation>
-<translation id="4875690134140862902">පටිත්ත</translation>
+<translation id="4875690134140862902">ටැබය</translation>
 <translation id="4876273079589074638">අපේ ඉංජිනේරුවන්ට මෙම බිඳ වැටීම විමර්ශනය කර හදන්න උදවු කරන්න. ඔබට හැකි නම් හරියටම පියවර ලැයිස්තුගත කරන්න. කිසිදු විස්තරයක් කුඩා නොවේ!</translation>
 <translation id="4876305945144899064">පරිශීලක නමක් නැත</translation>
 <translation id="4876327226315760474">මෙයින් අදහස් කරන්නේ අඩවි විශේෂාංග බලාපොරොත්තු වූ පරිදි ක්‍රියා කළ යුතු නමුත් ඔබට අඩු බ්‍රවුස් කිරීමේ ආරක්ෂාවක් තිබිය හැකි බවයි.</translation>
@@ -5547,6 +5546,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4882919381756638075">අඩවි සාමාන්‍යයෙන් වීඩියෝ කතාබහ වැනි සන්නිවේදන විශේෂාංග සඳහා ඔබගේ මයික්‍රෆෝනය භාවිත කරයි</translation>
 <translation id="4883436287898674711">සියලු <ph name="WEBSITE_1" /> අඩවි</translation>
 <translation id="48838266408104654">&amp;කාර්ය කළමනාකරු</translation>
+<translation id="4884937942297374058">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාවිරහිතයි</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">මෙම දිගුවට අතිරේක අඩවි ප්‍රවේශ නැත</translation>
 <translation id="4887424188275796356">පද්ධති නැරඹුම සමඟ විවෘත කරන්න</translation>

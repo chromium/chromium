@@ -1446,7 +1446,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1982851102516626421">Accesso non eseguito</translation>
 <translation id="1983074053702805575">{count,plural, =1{{field_1}}=2{{field_1} e {field_2}}other{{field_1}, {field_2} e {field_3}}}</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
-<translation id="198507684520034826">Guida</translation>
+<translation id="198507684520034826">Aiuto</translation>
 <translation id="1986836014090708999">Impostazioni di geolocalizzazione avanzate</translation>
 <translation id="1987317783729300807">Account</translation>
 <translation id="1987574314042117472">Seleziona e installa le app più apprezzate</translation>
@@ -2106,7 +2106,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
 <translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
-<translation id="2440036226025529014">Usa l'espressione facciale e il movimento dello sguardo per controllare il cursore e la tastiera</translation>
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
 <translation id="244071666433939959">Le app si aprono in una finestra</translation>
 <translation id="2440823041667407902">Accesso alla posizione</translation>
@@ -2782,6 +2781,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2904210161403910217">La tua password è cambiata dall'ultima volta che hai eseguito l'accesso</translation>
 <translation id="2904506722835398619">Accesso e sincronizzazione necessari</translation>
 <translation id="2904845070985032877">Metti in pausa le animazioni</translation>
+<translation id="2905556994482999199">Usa i movimenti della testa e le espressioni facciali per controllare Chromebook</translation>
 <translation id="2907619724991574506">URL di avvio</translation>
 <translation id="2907798539022650680">Connessione a "<ph name="NAME" />" non riuscita: <ph name="DETAILS" />
     Messaggio del server: <ph name="SERVER_MSG" /></translation>
@@ -4080,7 +4080,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="3824621460022590830">Token di registrazione dei dispositivi non valido. Contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Accedi per visualizzare le schede di altri dispositivi</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ricorda la mia scelta per questo tipo di file: <ph name="FILE_TYPES" />}other{Ricorda la mia scelta per questi tipi di file: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825512074963838982">Visualizza</translation>
+<translation id="3825512074963838982">Vista</translation>
 <translation id="3825635794653163640">Mostra il punto sull'icona dell'app per gli avvisi relativi alle app</translation>
 <translation id="3826071569074535339">Possono utilizzare i sensori di movimento</translation>
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
@@ -5527,7 +5527,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4872192066608821120">Per importare le password, seleziona un file CSV</translation>
 <translation id="4872212987539553601">Configura la crittografia on-device</translation>
 <translation id="4873312501243535625">Media File Checker</translation>
-<translation id="4875690134140862902">Tab</translation>
+<translation id="4875690134140862902">Scheda</translation>
 <translation id="4876273079589074638">Aiuta i nostri ingegneri a effettuare accertamenti e risolvere il problema che causa l'arresto anomalo. Se puoi, elenca i passaggi esatti fornendo il maggior numero possibile di dettagli.</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
 <translation id="4876327226315760474">Ciò significa che le funzionalità del sito dovrebbero funzionare come previsto, ma potresti avere meno protezione durante la navigazione.</translation>

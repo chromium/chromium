@@ -2118,7 +2118,6 @@
 <translation id="2438853563451647815">प्रिंटरशी कनेक्ट केले नाही</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> पासवर्ड रीसेट करा</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड करत आहे</translation>
-<translation id="2440036226025529014">कर्सर आणि कीबोर्ड नियंत्रित करण्यासाठी चेहऱ्याची व नजरेची हालचाल वापरा</translation>
 <translation id="2440604414813129000">स्त्रो&amp;त पहा</translation>
 <translation id="244071666433939959">अ‍ॅप्स विंडोमध्ये उघडतात</translation>
 <translation id="2440823041667407902">स्थान ॲक्सेस</translation>
@@ -2794,6 +2793,7 @@
 <translation id="2904210161403910217">तुम्ही मागील वेळी साइन इन केल्यापासून तुमचा पासवर्ड बदलला आहे</translation>
 <translation id="2904506722835398619">साइन इन आणि सिंक करणे आवश्यक आहे</translation>
 <translation id="2904845070985032877">अ‍ॅनिमेशन थांबवा</translation>
+<translation id="2905556994482999199">तुमचे Chromebook नियंत्रित करण्यासाठी डोक्याच्या हालचाली किंवा चेहर्‍यावरील हावभाव वापरा</translation>
 <translation id="2907619724991574506">सुरू URL</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' शी कनेक्ट करण्यात अयशस्वी: <ph name="DETAILS" />
     सर्व्हर संदेश: <ph name="SERVER_MSG" /></translation>

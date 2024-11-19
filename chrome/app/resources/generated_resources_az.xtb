@@ -2105,7 +2105,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2438853563451647815">Printerə qoşulmayıb</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolunu sıfırlayın</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> yüklənir</translation>
-<translation id="2440036226025529014">Kursor və klaviaturanı idarə etmək üçün üz və baxış hərəkətindən istifadə edin</translation>
 <translation id="2440604414813129000">Mənbəyə baxın</translation>
 <translation id="244071666433939959">Tətbiqlər bir pəncərədə açılır</translation>
 <translation id="2440823041667407902">Məkan girişi</translation>
@@ -4595,7 +4594,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4198420883535766848">Tabı siyahıdan çıxarın</translation>
 <translation id="4200609364258658652">Videoçərçivəni kopyalayın</translation>
 <translation id="4200689466366162458">Fərdi sözlər</translation>
-<translation id="4200983522494130825">Yeni panel</translation>
+<translation id="4200983522494130825">Yeni &amp;panel</translation>
 <translation id="4201546031411513170">Sinxronizasiya seçimlərini ayarlarda edə bilərsiniz.</translation>
 <translation id="4203065553461038553">Fayl adı və ya məkan çox uzundur</translation>
 <translation id="4203769790323223880">Kameraya icazə verilmir</translation>
@@ -5525,7 +5524,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4872192066608821120">Parolları import etmək üçün CSV faylı seçin</translation>
 <translation id="4872212987539553601">Cihazda şifrələməni ayarlayın</translation>
 <translation id="4873312501243535625">Media Fayl Yoxlayıcı</translation>
-<translation id="4875690134140862902">Tab</translation>
+<translation id="4875690134140862902">Sayt paneli</translation>
 <translation id="4876273079589074638">Bu xətanın araşdırılması və aradan qaldırılması üçün mühəndislərimizə yardım edin. Bunu edə bilərsinizsə, dəqiq mərhələləri qeyd edin. Heç bir xırdalığı gözdən qaçırmayın!</translation>
 <translation id="4876305945144899064">İstifadəçi adı yoxdur</translation>
 <translation id="4876327226315760474">Sayt funksiyaları düzgün işləməlidir, lakin axtarış zamanı qoruma səviyyəsi aşağı ola bilər.</translation>
