@@ -19,7 +19,14 @@ class _Context:
     self.proxy_class = java_types.JavaClass(
         f'{self.jni_obj.java_class.full_name_with_slashes}Jni')
     self.type_resolver = java_types.TypeResolver(self.proxy_class)
-    self.type_resolver.imports = jni_obj.GetClassesToBeImported()
+    imports = jni_obj.GetClassesToBeImported() + [
+        java_types.JavaClass('org/jni_zero/CheckDiscard'),
+        java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),
+        java_types.JavaClass('org/jni_zero/NativeLibraryLoadedStatus'),
+    ]
+    if not per_file_natives:
+      imports.append(gen_jni_class)
+    self.type_resolver.imports = imports
 
 
 def _implicit_array_class_param(native, type_resolver):
@@ -91,18 +98,11 @@ public static void setInstanceForTesting({ctx.interface_name} impl) {{
 
 
 def _imports(sb, ctx):
-  classes = {
-      'org.jni_zero.CheckDiscard',
-      'org.jni_zero.JniTestInstanceHolder',
-      'org.jni_zero.NativeLibraryLoadedStatus',
-  }
-  if not ctx.per_file_natives:
-    classes.add(ctx.gen_jni_class.full_name_with_dots)
-
+  classes = set()
   for c in ctx.type_resolver.imports:
-    # Since this is pure Java, the class generated here will go through jarjar
-    # and thus we want to avoid prefixes.
-    c = c.class_without_prefix
+    # Since this is Java, the class generated here will go through jarjar
+    # and thus we want to avoid prefixes (with the exception of GEN_JNI).
+    c = c if c is ctx.gen_jni_class else c.class_without_prefix
     if c.is_nested:
       # We will refer to all nested classes by OuterClass.InnerClass. We do this
       # to reduce risk of naming collisions.
