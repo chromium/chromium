@@ -474,10 +474,6 @@ extern bool UseLensOverlayForImageSearch();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseLensOverlayForVideoFrameSearch();
 
-// Returns whether to enable the find-in-page entry point.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsFindInPageEntryPointEnabled();
-
 // Returns whether to enable the omnibox entry point.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsOmniboxEntryPointEnabled();
@@ -583,10 +579,6 @@ extern bool GetLensOverlayEnableInFullscreen();
 // The corner radius in pixels for the vertex corners of the segmentation mask.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlaySegmentationMaskCornerRadius();
-
-// Number identifying variant sets of strings to use in the find bar.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetLensOverlayFindBarStringsVariant();
 
 // Whether to show the translate button in the Lens Overlay to allow translation
 // of the screenshot of the page.

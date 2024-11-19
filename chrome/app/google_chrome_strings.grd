@@ -2007,39 +2007,6 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
 
         <!-- Entrypoint Strings -->
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE"
-          desc="Text
-    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
-    to search anything on the page via Google Lens.">
-          Search anything on this page
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_1"
-          desc="Text
-    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
-    to search any image or text via Google Lens.">
-          Search any image or text with Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_2"
-          desc="Text
-    that is shown in the CTRL+F dialog next to the Google Lens button. Informs the user to click
-    to select images or text to search with Google Lens.">
-          Select images/text to search with Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL"
-          desc="Label
-    for the Google Lens button in the CTRL+F dialog.">
-          Google Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_1"
-          desc="Label
-    for the button in the CTRL+F dialog to open Google Lens.">
-          Open Lens
-        </message>
-        <message name="IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_2"
-          desc="Label
-    for the button in the CTRL+F dialog inviting the user to try Google Lens.">
-          Try Lens
-        </message>
         <message name="IDS_CONTENT_CONTEXT_LENS_OVERLAY"
           desc="The name of the Lens overlay command in the content area context menu">
           Search with Google Lens

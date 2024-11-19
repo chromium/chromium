@@ -157,9 +157,6 @@ const base::FeatureParam<bool> kUseLensOverlayForImageSearch{
 const base::FeatureParam<bool> kUseLensOverlayForVideoFrameSearch{
     &kLensOverlay, "use-for-video-frame-search", true};
 
-const base::FeatureParam<bool> kIsFindInPageEntryPointEnabled{
-    &kLensOverlay, "find-in-page-entry-point", false};
-
 const base::FeatureParam<bool> kIsOmniboxEntryPointEnabled{
     &kLensOverlay, "omnibox-entry-point", true};
 
@@ -240,9 +237,6 @@ const base::FeatureParam<bool> kLensOverlayEnableInFullscreen{
 
 constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
     &kLensOverlay, "segmentation-mask-corner-radius", 12};
-
-constexpr base::FeatureParam<int> kLensOverlayFindBarStringsVariant{
-    &kLensOverlay, "find-bar-strings-variant", 0};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayImageContextMenuActionsEnableCopyAsImage{
@@ -695,10 +689,6 @@ bool UseLensOverlayForVideoFrameSearch() {
   return kUseLensOverlayForVideoFrameSearch.Get();
 }
 
-bool IsFindInPageEntryPointEnabled() {
-  return kIsFindInPageEntryPointEnabled.Get();
-}
-
 bool IsOmniboxEntryPointEnabled() {
   return kIsOmniboxEntryPointEnabled.Get();
 }
@@ -781,10 +771,6 @@ bool GetLensOverlayEnableInFullscreen() {
 
 int GetLensOverlaySegmentationMaskCornerRadius() {
   return kLensOverlaySegmentationMaskCornerRadius.Get();
-}
-
-int GetLensOverlayFindBarStringsVariant() {
-  return kLensOverlayFindBarStringsVariant.Get();
 }
 
 bool IsLensOverlayTranslateButtonEnabled() {

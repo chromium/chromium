@@ -19,8 +19,6 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -31,8 +29,6 @@
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
-#include "components/lens/lens_features.h"
-#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -75,7 +71,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kTextField);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kPreviousButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kNextButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kCloseButtonElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FindBarView, kLensButtonElementId);
 
 class FindBarMatchCountLabel : public views::Label {
   METADATA_HEADER(FindBarMatchCountLabel, views::Label)
@@ -314,74 +309,6 @@ FindBarView::FindBarView(FindBarHost* host) {
     SetBorder(std::move(border));
   }
 
-  if (lens::features::IsFindInPageEntryPointEnabled() &&
-      host->browser_view()
-          ->browser()
-          ->GetFeatures()
-          .lens_overlay_entry_point_controller()
-          ->IsEnabled()) {
-    const gfx::VectorIcon& icon =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-        vector_icons::kGoogleLensMonochromeLogoIcon;
-#else
-        vector_icons::kSearchChromeRefreshIcon;
-#endif
-    views::Label* hint_text;
-    auto lens_container =
-        views::Builder<views::BoxLayoutView>()
-            .CopyAddressTo(&lens_entrypoint_container_)
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetBorder(
-                views::CreateEmptyBorder(gfx::Insets::TLBR(12, 16, 12, 16)))
-            .SetBackground(views::CreateThemedRoundedRectBackground(
-                ui::kColorSysNeutralContainer,
-                {0, 0, corner_radius, corner_radius}))
-            .AddChildren(
-                views::Builder<views::Label>()
-                    .CopyAddressTo(&hint_text)
-                    .SetText(l10n_util::GetStringUTF16(
-                        GetLensOverlayFindBarMessageIds()))
-                    .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
-                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                    .SetTextStyle(views::style::STYLE_HINT),
-                views::Builder<views::MdTextButton>()
-                    .SetImageModel(views::Button::STATE_NORMAL,
-                                   ui::ImageModel::FromVectorIcon(icon))
-                    .SetText(l10n_util::GetStringUTF16(
-                        GetLensOverlayFindBarButtonLabelIds()))
-                    .SetBgColorIdOverride(ui::kColorSysNeutralContainer)
-                    .SetCallback(base::BindRepeating(
-                        [](FindBarView* find_bar) {
-                          FindBarController* const find_bar_controller =
-                              find_bar->find_bar_host_->GetFindBarController();
-                          content::WebContents* const web_contents =
-                              find_bar_controller->web_contents();
-                          LensOverlayController* const controller =
-                              LensOverlayController::GetController(
-                                  web_contents);
-                          CHECK(controller);
-
-                          controller->ShowUI(
-                              lens::LensOverlayInvocationSource::kFindInPage);
-                          UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
-                              web_contents->GetBrowserContext(),
-                              lens::features::kLensOverlay);
-
-                          find_bar_controller->EndFindSession(
-                              find_in_page::SelectionAction::kClear,
-                              find_in_page::ResultAction::kClear);
-                          find_in_page::FindTabHelper::FromWebContents(
-                              web_contents)
-                              ->set_find_ui_active(false);
-                        },
-                        base::Unretained(this)))
-                    .SetProperty(views::kElementIdentifierKey,
-                                 kLensButtonElementId))
-            .Build();
-    lens_container->SetFlexForView(hint_text, 1);
-    AddChildView(std::move(lens_container));
-  }
-
   find_text_->SetFontList(
       views::Textfield::GetDefaultFontList().DeriveWithWeight(
           gfx::Font::Weight::MEDIUM));
@@ -572,8 +499,6 @@ void FindBarView::Find(const std::u16string& search_text) {
   if (!web_contents)
     return;
 
-  UpdateLensButtonVisibility(search_text);
-
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
 
@@ -612,50 +537,6 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
   bool enable_buttons = !find_text_->GetText().empty() && !no_match;
   find_previous_button_->SetEnabled(enable_buttons);
   find_next_button_->SetEnabled(enable_buttons);
-}
-
-void FindBarView::UpdateLensButtonVisibility(
-    const std::u16string& search_text) {
-  // Exit early if the Lens button is disabled via finch.
-  if (!lens_entrypoint_container_) {
-    return;
-  }
-
-  bool visibility_changed =
-      search_text.empty() != lens_entrypoint_container_->GetVisible();
-  if (!visibility_changed) {
-    // The visibility didn't change, so exit early so we don't force unnecessary
-    // repaints.
-    return;
-  }
-
-  // Show the entrypoint if there is no search_text.
-  lens_entrypoint_container_->SetVisible(search_text.empty());
-
-  // Notify the parent to re-layout with out new size.
-  find_bar_host_->MoveWindowIfNecessary();
-}
-
-int FindBarView::GetLensOverlayFindBarMessageIds() {
-  switch (lens::features::GetLensOverlayFindBarStringsVariant()) {
-    case 1:
-      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_1;
-    case 2:
-      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE_2;
-    default:
-      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_MESSAGE;
-  }
-}
-
-int FindBarView::GetLensOverlayFindBarButtonLabelIds() {
-  switch (lens::features::GetLensOverlayFindBarStringsVariant()) {
-    case 1:
-      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_1;
-    case 2:
-      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL_2;
-    default:
-      return IDS_LENS_OVERLAY_FIND_IN_PAGE_ENTRYPOINT_LABEL;
-  }
 }
 
 BEGIN_METADATA(FindBarView)
