@@ -548,7 +548,7 @@ void DownloadController::EnableVerifyAppsDone(
     download::DownloadItem* item,
     safe_browsing::VerifyAppsEnabledResult result) {
   base::UmaHistogramEnumeration(
-      "SBClientDownload.AndroidAppVerificationPromptResult", result);
+      "SBClientDownload.AndroidAppVerificationPromptResult2", result);
 
   if (app_verification_prompt_download_ != nullptr) {
     app_verification_prompt_download_ = nullptr;

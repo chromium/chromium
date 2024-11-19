@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Shown" summary="shown"/>
 </variants>
 
-<histogram name="SBClientDownload.AndroidAppVerificationPromptResult"
+<histogram name="SBClientDownload.AndroidAppVerificationPromptResult2"
     enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
