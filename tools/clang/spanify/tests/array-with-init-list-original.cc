@@ -81,3 +81,52 @@ void test_with_strings() {
   std::string buf0[] = {"1", "2", "3"};
   buf0[index] = "4";
 }
+
+void test_with_const() {
+  // Expected rewrite:
+  // const auto data = std::to_array<bool>({false, true});
+  const bool data[] = {false, true};
+  (void)data[0];
+}
+
+void test_with_static() {
+  // Expected rewrite:
+  // static auto data = std::to_array<int>({1, 2, 3});
+  static int data[] = {1, 2, 3};
+  (void)data[0];
+}
+
+void test_with_constexpr() {
+  // Expected rewrite:
+  // constexpr const auto data = std::to_array<int>({1, 2, 3});
+  constexpr const int data[] = {1, 2, 3};
+  (void)data[0];
+}
+
+void test_with_volatile() {
+  // Expected rewrite:
+  // auto data = std::to_array<volatile int>({1, 2, 3});
+  volatile int data[] = {1, 2, 3};
+  (void)data[0];
+}
+
+void test_with_all_qualifiers() {
+  // Expected rewrite:
+  // static const auto data = std::to_array<volatile int>({1, 2, 3});
+  static const volatile int data[] = {1, 2, 3};
+  (void)data[0];
+}
+
+void test_with_const_char() {
+  // Expected rewrite:
+  // static auto data = std::to_array<const char*>({" B", " kB", " MB"});
+  static const char* data[] = {" B", " kB", " MB"};
+  (void)data[0];
+}
+
+void test_with_constant_const_char() {
+  // Expected rewrite:
+  // static const auto data = std::to_array<const char*>({" B", " kB", " MB"});
+  static const char* const data[] = {" B", " kB", " MB"};
+  (void)data[0];
+}

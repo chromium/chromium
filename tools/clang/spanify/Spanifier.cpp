@@ -813,7 +813,7 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
       array_variable->getNameAsString();
   const std::string& array_size_as_string =
       GetArraySize(array_type_loc, source_manager, ast_context);
-  const clang::QualType& element_type = array_type->getElementType();
+  const clang::QualType& original_element_type = array_type->getElementType();
 
   std::stringstream qualifier_string;
   if (array_variable->isConstexpr()) {
@@ -822,9 +822,19 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   if (array_variable->isStaticLocal()) {
     qualifier_string << "static ";
   }
-  // `const int buf[] = ...` must be `const std::array<int,...> buf = ...`.
-  if (!element_type->isPointerOrReferenceType() &&
-      element_type.isConstant(ast_context)) {
+
+  // Move const qualifier from the element type to the array type.
+  // This is equivalent, because std::array provides a 'const' overload for the
+  // operator[].
+  // -       reference operator[](size_type pos);
+  // - const_reference operator[](size_type pos) const;
+  //
+  // Note: The `volatile` qualifier is not moved to the array type. It is kept
+  //       in the element type. This is correct.
+  //       Anyway, Chrome doesn't have any volatile arrays at the moment.
+  clang::QualType new_element_type = original_element_type;
+  new_element_type.removeLocalConst();
+  if (original_element_type.isConstant(ast_context)) {
     qualifier_string << "const ";
   }
 
@@ -838,14 +848,15 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
   //   - Multi-dimensional array with redundant struct/class keyword
   std::string element_type_as_string;
   const auto& [unnamed_class, class_definition] = maybeGetUnnamedAndDefinition(
-      element_type, array_variable, array_variable_as_string, ast_context);
+      new_element_type, array_variable, array_variable_as_string, ast_context);
   if (!unnamed_class.empty()) {
     element_type_as_string = unnamed_class;
-  } else if (element_type->isElaboratedTypeSpecifier()) {
-    // If the `element_type` is an elaborated type with a keyword, i.e.
+  } else if (original_element_type->isElaboratedTypeSpecifier()) {
+    // If the `original_element_type` is an elaborated type with a keyword, i.e.
     // `struct`, `class`, `union`, we will create another ElaboratedType
     // without the keyword. So `struct funcHasName` will be `funcHasHame`.
-    auto* original_type = element_type->getAs<clang::ElaboratedType>();
+    auto* original_type = new_element_type->getAs<clang::ElaboratedType>();
+
     // Create a new ElaboratedType without 'struct', 'class', 'union'
     // keywords.
     auto new_element_type = ast_context.getElaboratedType(
@@ -859,9 +870,9 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
         nullptr);
     element_type_as_string = GetTypeAsString(new_element_type, ast_context);
   } else {
-    element_type_as_string =
-        RewriteCArrayToStdArray(element_type, array_type_loc.getElementLoc(),
-                                source_manager, ast_context);
+    element_type_as_string = RewriteCArrayToStdArray(
+        new_element_type, array_type_loc.getElementLoc(), source_manager,
+        ast_context);
   }
 
   const clang::InitListExpr* init_list_expr = GetArrayInitList(array_variable);
@@ -888,13 +899,13 @@ Node getNodeFromArrayType(const MatchFinder::MatchResult& result) {
 
   const char* include_path = kArrayIncludePath;
   std::string replacement_text;
-  if (element_type->isAnyCharacterType() &&
-      element_type.isConstant(ast_context) &&
+  if (original_element_type->isAnyCharacterType() &&
+      original_element_type.isConstant(ast_context) &&
       clang::dyn_cast_or_null<clang::StringLiteral>(
           array_variable->getInit())) {
-    replacement_text =
-        llvm::formatv("{0} {1}", GetStringViewType(element_type, ast_context),
-                      array_variable_as_string);
+    replacement_text = llvm::formatv(
+        "{0} {1}", GetStringViewType(new_element_type, ast_context),
+        array_variable_as_string);
     include_path = kStringViewIncludePath;
   } else if (init_list_expr) {
     clang::Rewriter rw(source_manager, ast_context.getLangOpts());
