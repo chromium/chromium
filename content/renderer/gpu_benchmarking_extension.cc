@@ -401,13 +401,10 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
                        bool precise_scrolling_deltas,
                        bool scroll_by_page,
                        bool cursor_visible,
-                       bool scroll_by_percentage,
                        int modifiers,
                        float vsync_offset_ms,
                        int input_event_pattern) {
   DCHECK(!(precise_scrolling_deltas && scroll_by_page));
-  DCHECK(!(precise_scrolling_deltas && scroll_by_percentage));
-  DCHECK(!(scroll_by_page && scroll_by_percentage));
   if (ThrowIfPointOutOfBounds(context, args, gfx::Point(start_x, start_y),
                               "Start point not in bounds")) {
     return false;
@@ -449,15 +446,13 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
       static_cast<content::mojom::InputEventPattern>(input_event_pattern);
   gesture_params.prevent_fling = prevent_fling;
 
-  if (scroll_by_page)
+  if (scroll_by_page) {
     gesture_params.granularity = ui::ScrollGranularity::kScrollByPage;
-  else if (precise_scrolling_deltas)
+  } else if (precise_scrolling_deltas) {
     gesture_params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
-  else if (scroll_by_percentage)
-    gesture_params.granularity = ui::ScrollGranularity::kScrollByPercentage;
-  else
+  } else {
     gesture_params.granularity = ui::ScrollGranularity::kScrollByPixel;
-
+  }
   gesture_params.anchor.SetPoint(start_x, start_y);
 
   DCHECK(gesture_source_type !=
@@ -835,13 +830,12 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
          gesture_source_type ==
              GestureSourceTypeAsInt(
                  content::mojom::GestureSourceType::kMouseInput));
-  // Scroll by percentage only for mouse inputs.
-  DCHECK(!scroll_by_percentage ||
-         gesture_source_type ==
-             GestureSourceTypeAsInt(
-                 content::mojom::GestureSourceType::kMouseInput));
-  // Scroll by percentage does not require speed in pixels
-  DCHECK(!scroll_by_percentage || (speed_in_pixels_s == 800));
+  // The percent-based scrolling feature is deprecated. Passing
+  // scroll_by_percentage doesn't do anything. Code deletion is tracked in
+  // crbug.com/359747082. Since the catapult/ is using the parameter when
+  // calling chrome.gpuBenchmarking.smoothScrollBy(), it will be removed in a
+  // separate CL.
+  DCHECK(!scroll_by_percentage);
 
   std::optional<gfx::Vector2dF> pixels_to_scrol_vector =
       ToVector(direction, pixels_to_scroll);
@@ -864,8 +858,7 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
       &context, args, input_injector_, pixels_to_scrol_vector.value(), callback,
       gesture_source_type, speed_in_pixels_s, true /* prevent_fling */, start_x,
       start_y, fling_velocity, precise_scrolling_deltas, scroll_by_page,
-      cursor_visible, scroll_by_percentage, modifiers, vsync_offset_ms,
-      input_event_pattern);
+      cursor_visible, modifiers, vsync_offset_ms, input_event_pattern);
 }
 
 // SmoothScrollByXY does not take direction as one of the arguments, and
@@ -928,11 +921,12 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
          gesture_source_type ==
              GestureSourceTypeAsInt(
                  content::mojom::GestureSourceType::kMouseInput));
-  // Scroll by percentage only for mouse inputs.
-  DCHECK(!scroll_by_percentage ||
-         gesture_source_type ==
-             GestureSourceTypeAsInt(
-                 content::mojom::GestureSourceType::kMouseInput));
+  // The percent-based scrolling feature is deprecated. Passing
+  // scroll_by_percentage doesn't do anything. Code deletion is tracked in
+  // crbug.com/359747082. Since the catapult/ is using the parameter when
+  // calling chrome.gpuBenchmarking.smoothScrollBy(), it will be removed in a
+  // separate CL.
+  DCHECK(!scroll_by_percentage);
 
   gfx::Vector2dF distances(pixels_to_scroll_x, pixels_to_scroll_y);
   gfx::Vector2dF fling_velocity(0, 0);
@@ -962,7 +956,7 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
       &context, args, input_injector_, distances, callback, gesture_source_type,
       speed_in_pixels_s, true /* prevent_fling */, start_x, start_y,
       fling_velocity, precise_scrolling_deltas, scroll_by_page, cursor_visible,
-      scroll_by_percentage, modifiers, vsync_offset_ms, input_event_pattern);
+      modifiers, vsync_offset_ms, input_event_pattern);
 }
 
 bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
@@ -1054,9 +1048,8 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
       callback, gesture_source_type, speed_in_pixels_s,
       false /* prevent_fling */, start_x, start_y,
       fling_velocity_vector.value(), true /* precise_scrolling_deltas */,
-      false /* scroll_by_page */, true /* cursor_visible */,
-      false /* scroll_by_percentage */, 0 /* modifiers */, vsync_offset_ms,
-      input_event_pattern);
+      false /* scroll_by_page */, true /* cursor_visible */, 0 /* modifiers */,
+      vsync_offset_ms, input_event_pattern);
 }
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {

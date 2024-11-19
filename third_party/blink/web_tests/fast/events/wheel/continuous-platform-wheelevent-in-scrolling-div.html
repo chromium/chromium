@@ -20,7 +20,6 @@
 <script src='../../../resources/gesture-util.js'></script>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
 <div id="overflow">
     <div class="block"></div>
     <div class="block"></div>
@@ -28,8 +27,8 @@
 </div>
 
 <script>
-const SCROLL_TOP = isPercentBasedScrollingEnabled() ? pixelsPerTick() * 2 : 200;
-const SCROLL_LEFT = isPercentBasedScrollingEnabled() ? pixelsPerTick() : 100;
+const SCROLL_TOP = 200;
+const SCROLL_LEFT = 100;
 const SOURCE = GestureSourceType.MOUSE_INPUT;
 const NUM_TICKS_X = SCROLL_LEFT / pixelsPerTick();
 const NUM_TICKS_Y = SCROLL_TOP / pixelsPerTick();
@@ -41,29 +40,24 @@ let last_event = null;
 const overflowElement = document.getElementById("overflow");
 overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
 
-const { x: expectedScrollLeft, y: expectedScrollTop } = calculateExpectedScroll(
-  overflowElement, SCROLL_LEFT, SCROLL_TOP
-);
-
 function mousewheelHandler(e) {
   last_event = e;
 }
 
 promise_test(async () => {
   await gestureScroll(() => {
-    return smoothScroll(SCROLL_LEFT, 100, 110, SOURCE, 'right', SPEED_INSTANT, !isPercentBasedScrollingEnabled());
+    return smoothScroll(SCROLL_LEFT, 100, 110, SOURCE, 'right', SPEED_INSTANT);
   }, overflowElement);
-  assert_approx_equals(overflowElement.scrollLeft, Math.round(expectedScrollLeft * 100) / 100, 0.001);
+  assert_equals(overflowElement.scrollLeft, SCROLL_LEFT);
   assert_equals(last_event.wheelDeltaX, -Math.floor(EXPECTED_WHEEL_DELTA_X));
   assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_X));
 
   last_event = null;
 
   await gestureScroll(() => {
-    return smoothScroll(SCROLL_TOP, 100, 110, SOURCE, 'down', SPEED_INSTANT,
-                        !isPercentBasedScrollingEnabled());
+    return smoothScroll(SCROLL_TOP, 100, 110, SOURCE, 'down', SPEED_INSTANT);
   }, overflowElement);
-  assert_approx_equals(overflowElement.scrollTop, Math.round(expectedScrollTop * 100) / 100, 0.001);
+  assert_equals(overflowElement.scrollTop, SCROLL_TOP);
   assert_equals(last_event.wheelDeltaY, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
   assert_equals(last_event.wheelDelta, -Math.floor(EXPECTED_WHEEL_DELTA_Y));
 }, 'This test checks the wheel delta value of wheel events, which should be ' +

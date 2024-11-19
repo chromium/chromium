@@ -294,9 +294,6 @@ function pointerActionButtonId(button_str) {
 // https://crbug.com/893608
 const SPEED_INSTANT = 400000;
 
-// Constant wheel delta value when percent based scrolling is enabled
-const WHEEL_DELTA = 100;
-
 // kMinFractionToStepWhenPaging constant from cc/input/scroll_utils.h
 const MIN_FRACTION_TO_STEP_WHEN_PAGING = 0.875;
 
@@ -332,17 +329,6 @@ function smoothScroll(pixels_to_scroll, start_x, start_y, gesture_source_type,
                             start_y, gesture_source_type, speed_in_pixels_s,
                             precise_scrolling_deltas, scroll_by_page,
                             cursor_visible, scroll_by_percentage, modifier_keys);
-}
-
-// Perform a percent based scroll using smoothScrollWithXY
-function percentScroll(percent_to_scroll_x, percent_to_scroll_y, start_x, start_y, gesture_source_type) {
-  return smoothScrollWithXY(percent_to_scroll_x, percent_to_scroll_y, start_x, start_y,
-    gesture_source_type,
-    undefined /* speed_in_pixels_s - not defined for percent based scrolls */,
-    false /* precise_scrolling_deltas */,
-    false /* scroll_by_page */,
-    true /* cursor_visible */,
-    true /* scroll_by_percentage */);
 }
 
 // modifier_keys means the keys pressed while doing the mouse wheel scroll, it

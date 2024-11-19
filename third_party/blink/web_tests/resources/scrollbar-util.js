@@ -65,50 +65,7 @@ function resetScrollOffset(scrollElement) {
   }
 }
 
-// Returns the expected CSS pixels delta of a percent-based scroll of a
-// |scroller| element.
-function getScrollbarButtonScrollDelta(scroller) {
-  if (!internals.runtimeFlags.percentBasedScrollingEnabled) {
-    return { x: SCROLLBAR_SCROLL_PIXELS, y: SCROLLBAR_SCROLL_PIXELS };
-  }
-
-  percentBasedDelta = (size) => {
-    return internals.runtimeFlags.fractionalScrollOffsetsEnabled ? {
-      x: SCROLLBAR_SCROLL_PERCENTAGE * size.x,
-      y: SCROLLBAR_SCROLL_PERCENTAGE * size.y
-    } : {
-      x: Math.round(SCROLLBAR_SCROLL_PERCENTAGE * size.x),
-      y: Math.round(SCROLLBAR_SCROLL_PERCENTAGE * size.y)
-    }
-  };
-
-  clamp = (x, min, max) => Math.min(Math.max(x, min), max)
-
-  scroller_size = {x: scroller.clientWidth, y: scroller.clientHeight};
-
-  // All percent-based scroll clamping is made in physical pixels.
-  pixel_delta = percentBasedDelta(scaleCssToPhysicalPixels(scroller_size));
-
-  // Note that, window.inner* matches the size of the innerViewport, and won't
-  // match the VisualViewport's dimensions at the C++ code in the presence of
-  // UI elements that resize it (e.g. chromeOS OSKs).
-  // Note also that window.inner* isn't affected by pinch-zoom, so converting
-  // to Blink pixels is enough to get its actual size in Physical pixels.
-  max_delta = percentBasedDelta(scaleCssToBlinkPixels({
-    x: window.innerWidth, y: window.innerHeight}));
-
-  pixel_delta.x = Math.min(pixel_delta.x, max_delta.x);
-  pixel_delta.y = Math.min(pixel_delta.y, max_delta.y);
-
-  return scalePhysicalToCssPixels(pixel_delta);
-}
-
-// The percentage scrollbar arrows will scroll, if percent-based scrolling
-// is enabled.
-const SCROLLBAR_SCROLL_PERCENTAGE = 0.125;
-
-// The number of pixels scrollbar arrows will scroll when percent-based
-// scrolling is not enabled.
+// The number of pixels scrollbar arrows will scroll.
 const SCROLLBAR_SCROLL_PIXELS = 40;
 
 function hasScrollbarArrows() {

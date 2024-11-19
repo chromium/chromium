@@ -51,22 +51,21 @@ window.onload = () => {
     }
 
     await waitForScrollReset(standardDiv);
-    const SCROLL_AMOUNT = getScrollbarButtonScrollDelta(standardDiv);
+    const SCROLL_AMOUNT = SCROLLBAR_SCROLL_PIXELS;
 
     // Testing vertical scroll.
     let buttonPos = downArrow(standardDiv);
     await clickScroll(buttonPos.x, buttonPos.y, standardDiv);
-    // TODO(arakeri): Replace with assert_equals once crbug.com/1056083 is fixed.
-    assert_approx_equals(standardDiv.scrollTop, SCROLL_AMOUNT.y, 1,
-                         "Vertical click scrolling failed.");
+    assert_equals(standardDiv.scrollTop, SCROLL_AMOUNT,
+                  "Vertical click scrolling failed.");
 
     await raf();
 
     // Testing horizontal scroll.
     buttonPos = leftArrow(standardDiv);
     await clickScroll(buttonPos.x, buttonPos.y, standardDiv);
-    assert_approx_equals(standardDiv.scrollLeft, -SCROLL_AMOUNT.x, 1,
-                         "Horizontal click scrolling failed.");
+    assert_equals(standardDiv.scrollLeft, -SCROLL_AMOUNT,
+                  "Horizontal click scrolling failed.");
   }, "Test click on rtl scrollbar arrows.");
 
   promise_test (async () => {

@@ -5,7 +5,6 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<script src="../../../resources/percent-based-util.js"></script>
 </head>
 <body>
 <span id="parent">
@@ -46,25 +45,14 @@ promise_test(async () => {
 
   await gestureScroll(() => {
     return smoothScroll(
-      pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT, !isPercentBasedScrollingEnabled()
-    );
+      pixelsToScroll, x, y, GestureSourceType.MOUSE_INPUT, 'downright',
+      SPEED_INSTANT);
   }, testDiv);
 
-  if (isPercentBasedScrollingEnabled()) {
-    const {
-      x: expectedScrollLeft,
-      y: expectedScrollTop,
-    } = calculateExpectedScroll(testDiv, pixelsToScroll, pixelsToScroll);
-
-    // Windows and Linux values appear to be slightly different
-    assert_approx_equals(testDiv.scrollTop, expectedScrollTop, 0.05);
-    assert_approx_equals(testDiv.scrollLeft, expectedScrollLeft, 0.1);
-  } else {
-    assert_true(!!deltaX);
-    assert_true(!!deltaY);
-    assert_equals(testDiv.scrollLeft, deltaX);
-    assert_equals(testDiv.scrollTop, deltaY);
-  }
+  assert_true(!!deltaX);
+  assert_true(!!deltaY);
+  assert_equals(testDiv.scrollLeft, deltaX);
+  assert_equals(testDiv.scrollTop, deltaY);
 }, "Tests the basic functionality of the standard wheel event");
 
 let testEvent;

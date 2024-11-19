@@ -55,7 +55,6 @@ fast/forms/validation-bubble-appearance-rtl-ui.html
 fast/forms/validation-bubble-appearance-wrap.html
 fast/ruby/ruby-position-modern-japanese-fonts.html
 fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html
-fast/scrolling/percentage-mousewheel-scroll-on-iframe.html
 http/tests/devtools/service-workers/sw-navigate-useragent.js
 http/tests/inspector-protocol/network/disabled-cache-navigation.js
 http/tests/navigation/location-change-repeated-from-blank.html
