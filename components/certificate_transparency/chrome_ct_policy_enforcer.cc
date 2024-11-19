@@ -350,9 +350,10 @@ std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
   DCHECK(log_info_.find(log_id) != log_info_.end());
   const OperatorHistoryEntry& log_history =
       log_info_.at(log_id).operator_history;
-  for (auto operator_entry : log_history.previous_operators_) {
-    if (timestamp < operator_entry.second)
+  for (const auto& operator_entry : log_history.previous_operators_) {
+    if (timestamp < operator_entry.second) {
       return operator_entry.first;
+    }
   }
   // Either the log has only ever had one operator, or the timestamp is after
   // the last operator change.
