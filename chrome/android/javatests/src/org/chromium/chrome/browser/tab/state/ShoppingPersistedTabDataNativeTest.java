@@ -45,15 +45,9 @@ public class ShoppingPersistedTabDataNativeTest {
         final Tab tab0 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(0, profile);
         final Tab tab1 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(1, profile);
         final Tab tab2 = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(2, profile);
-        ShoppingPersistedTabData shoppingPersistedTabData0 =
-                ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(
-                        tab0);
-        ShoppingPersistedTabData shoppingPersistedTabData1 =
-                ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(
-                        tab1);
-        ShoppingPersistedTabData shoppingPersistedTabData2 =
-                ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(
-                        tab2);
+        ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(tab0);
+        ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(tab1);
+        ShoppingPersistedTabDataTestUtils.createSavedShoppingPersistedTabDataOnUiThread(tab2);
         // Treat Tabs 0 and 2 as being live, assume Tab 1 was destroyed but its stored
         // ShoppingPersistedTabData was not removed.
         ThreadUtils.runOnUiThreadBlocking(

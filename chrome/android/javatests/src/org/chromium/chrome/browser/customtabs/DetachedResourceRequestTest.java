@@ -695,7 +695,6 @@ public class DetachedResourceRequestTest {
 
     private void setUpTestServerWithListener(EmbeddedTestServer.ConnectionListener listener) {
         mServer = new EmbeddedTestServer();
-        final CallbackHelper readFromSocketCallback = new CallbackHelper();
         mServer.initializeNative(mContext, EmbeddedTestServer.ServerHTTPSSetting.USE_HTTP);
         mServer.setConnectionListener(listener);
         mServer.addDefaultHandlers("");

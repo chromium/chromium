@@ -106,18 +106,15 @@ public class CustomTabsTestUtils {
     public static CustomTabsConnection warmUpAndWait() throws TimeoutException {
         CustomTabsConnection connection = setUpConnection();
         final CallbackHelper startupCallbackHelper = new CallbackHelper();
-        CustomTabsSession session =
-                bindWithCallback(
-                                new CustomTabsCallback() {
-                                    @Override
-                                    public void extraCallback(String callbackName, Bundle args) {
-                                        if (callbackName.equals(
-                                                CustomTabsConnection.ON_WARMUP_COMPLETED)) {
-                                            startupCallbackHelper.notifyCalled();
-                                        }
-                                    }
-                                })
-                        .session;
+        bindWithCallback(
+                new CustomTabsCallback() {
+                    @Override
+                    public void extraCallback(String callbackName, Bundle args) {
+                        if (callbackName.equals(CustomTabsConnection.ON_WARMUP_COMPLETED)) {
+                            startupCallbackHelper.notifyCalled();
+                        }
+                    }
+                });
         Assert.assertTrue(connection.warmup(0));
         startupCallbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
         return connection;

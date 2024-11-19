@@ -427,8 +427,6 @@ public class TabModelMergingTest {
                         mActivity2.getTabModelSelector().getCurrentTab());
 
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabModelSelectorImpl tabModelSelector =
-                (TabModelSelectorImpl) mActivity2.getTabModelSelector();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity2

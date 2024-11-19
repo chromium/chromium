@@ -413,9 +413,7 @@ public class BottomSheetControllerTest {
     @Feature({"BottomSheetController"})
     public void testSheetGoneAfterTransitioningToAndFromSwitcher() throws TimeoutException {
         // Open a second tab.
-        Tab tab1 = mActivity.getActivityTab();
         openNewTabInForeground();
-        Tab tab2 = mActivity.getActivityTab();
 
         requestContentInSheet(mLowPriorityContent, true);
         assertEquals(
