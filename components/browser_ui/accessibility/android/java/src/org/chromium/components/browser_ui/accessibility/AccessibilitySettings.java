@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility.settings;
+package org.chromium.components.browser_ui.accessibility;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,11 +14,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.R;
-import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
-import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
-import org.chromium.components.browser_ui.accessibility.PageZoomUma;
-import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;

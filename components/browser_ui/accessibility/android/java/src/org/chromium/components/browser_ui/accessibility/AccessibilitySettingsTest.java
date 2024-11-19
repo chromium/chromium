@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility.settings;
+package org.chromium.components.browser_ui.accessibility;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -11,12 +11,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings.PREF_FORCE_ENABLE_ZOOM;
-import static org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import static org.chromium.components.browser_ui.accessibility.AccessibilitySettings.PREF_FORCE_ENABLE_ZOOM;
+import static org.chromium.components.browser_ui.accessibility.AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS;
 
 import android.app.Instrumentation;
-import android.content.Intent;
+import android.content.Context;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
 
@@ -34,22 +40,22 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.R;
-import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
-import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
+import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.content.browser.HostZoomMapImpl;
+import org.chromium.content.browser.HostZoomMapImplJni;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.ViewUtils;
@@ -61,7 +67,7 @@ import org.chromium.ui.widget.ChromeImageButton;
  * <p>TODO(crbug.com/40214849): This tests the class in //components/browser_ui, but we don't have a
  * good way of testing with native code there.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Features.DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS,
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
@@ -72,23 +78,49 @@ public class AccessibilitySettingsTest {
     private PageZoomPreference mPageZoomPref;
 
     @Rule
-    public SettingsActivityTestRule<AccessibilitySettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(AccessibilitySettings.class);
+    public BlankUiTestActivitySettingsTestRule mSettingsActivityTestRule =
+            new BlankUiTestActivitySettingsTestRule();
+
+    @Mock private BrowserContextHandle mContextHandleMock;
+
+    @Mock private AccessibilitySettingsDelegate mDelegate;
+    @Mock private AccessibilitySettingsDelegate.IntegerPreferenceDelegate mIntegerPrefMock;
+    @Mock private AccessibilitySettingsDelegate.BooleanPreferenceDelegate mBoolPrefMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
+
+    @Mock private HostZoomMapImpl.Natives mHostZoomMapBridgeMock;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapBridgeMock);
+
+        when(mDelegate.getBrowserContextHandle()).thenReturn(mContextHandleMock);
+        when(mDelegate.getForceEnableZoomAccessibilityDelegate()).thenReturn(mBoolPrefMock);
+        when(mDelegate.getReaderAccessibilityDelegate()).thenReturn(mBoolPrefMock);
+        when(mDelegate.getTextSizeContrastAccessibilityDelegate()).thenReturn(mIntegerPrefMock);
+        when(mDelegate.getSiteSettingsNavigation()).thenReturn(mSettingsNavigationMock);
+
         // Enable screen reader to display all settings options.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(true));
+        when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(true);
 
-        mSettingsActivityTestRule.startSettingsActivity();
-        mAccessibilitySettings = mSettingsActivityTestRule.getFragment();
+        mSettingsActivityTestRule.launchPreference(
+                AccessibilitySettings.class,
+                null,
+                (fragment) -> {
+                    ((AccessibilitySettings) fragment).setDelegate(mDelegate);
+                });
+        mAccessibilitySettings =
+                (AccessibilitySettings) mSettingsActivityTestRule.getPreferenceFragment();
     }
 
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> AccessibilityState.setIsScreenReaderEnabledForTesting(false));
+        when(mDelegate.shouldShowImageDescriptionsSetting()).thenReturn(false);
     }
 
     // Generic AccessibilitySettings tests (no feature flag dependency).
@@ -103,6 +135,10 @@ public class AccessibilitySettingsTest {
         Assert.assertNotNull(forceEnableZoomPref);
         Assert.assertNotNull(forceEnableZoomPref.getOnPreferenceChangeListener());
 
+        // The delegate has been called to fetch value when creating the page. Clear the invocations
+        // so we can verify the correct number of invocations on user click.
+        clearInvocations(mDelegate);
+
         // First scroll to the Force Enable Zoom preference, then click.
         onView(withId(R.id.recycler_view))
                 .perform(
@@ -112,13 +148,9 @@ public class AccessibilitySettingsTest {
         Assert.assertTrue(
                 "Force enable zoom option was not toggled", forceEnableZoomPref.isChecked());
 
-        // Assert that UserPref was updated.
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        Assert.assertTrue(
-                                "Force enable zoom user pref was not updated on toggle",
-                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
-                                        .getBoolean(Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM)));
+        // On user click, we should fetch the setting delegate and set the value once.
+        verify(mDelegate).getForceEnableZoomAccessibilityDelegate();
+        verify(mBoolPrefMock).setValue(true);
     }
 
     @Test
@@ -157,23 +189,24 @@ public class AccessibilitySettingsTest {
         Assert.assertTrue(
                 "Image Descriptions option should be visible", imageDescriptionsPref.isVisible());
 
-        Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(new IntentFilter(Intent.ACTION_MAIN), null, true);
-
         // First scroll to the Image Descriptions preference, then click.
         onView(withId(R.id.recycler_view))
                 .perform(
                         RecyclerViewActions.scrollTo(
-                                hasDescendant(
-                                        withText(R.string.image_descriptions_settings_title))));
-        onView(withText(R.string.image_descriptions_settings_title)).perform(click());
+                                hasDescendant(withText("Image descriptions"))));
+        onView(withText("Image descriptions")).perform(click());
 
-        // The activity is blocked, so just wait for the ActivityMonitor to capture an Intent.
         CriteriaHelper.pollInstrumentationThread(
-                () -> monitor.getHits() >= 1, "Clicking image descriptions should open subpage");
-
-        InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
+                () -> {
+                    onView(withText("Only on Wi-Fi"))
+                            .check(
+                                    (v, e) ->
+                                            Assert.assertEquals(
+                                                    "Clicking image descriptions should open"
+                                                            + " subpage",
+                                                    View.VISIBLE,
+                                                    v.getVisibility()));
+                });
     }
 
     // Tests related to Page Zoom feature.
@@ -247,10 +280,6 @@ public class AccessibilitySettingsTest {
         Assert.assertNotNull(zoomInfoPref);
         Assert.assertNotNull(zoomInfoPref.getOnPreferenceClickListener());
 
-        Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation()
-                        .addMonitor(new IntentFilter(), null, false);
-
         // First scroll to the "Saved zoom levels" preference, then click.
         onView(withId(R.id.recycler_view))
                 .perform(
@@ -258,12 +287,7 @@ public class AccessibilitySettingsTest {
                                 hasDescendant(withText(R.string.zoom_info_preference_title))));
         onView(withText(R.string.zoom_info_preference_title)).perform(click());
 
-        // The activity is blocked, so just wait for the ActivityMonitor to capture an Intent.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> monitor.getHits() >= 1,
-                "Clicking 'Saved zoom levels' should open Site Settings page.");
-
-        InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
+        verify(mSettingsNavigationMock).startSettings(any(Context.class), any(), any(Bundle.class));
     }
 
     @Test

@@ -130,7 +130,7 @@ for the previous order (main_preferences_legacy). -->
         android:order="23"
         android:title="@string/theme_settings" />
     <Preference
-        android:fragment="org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings"
+        android:fragment="org.chromium.components.browser_ui.accessibility.AccessibilitySettings"
         android:key="accessibility"
         android:order="24"
         android:title="@string/prefs_accessibility"/>

@@ -126,7 +126,7 @@ with the new order (main_preferences). -->
         android:order="22"
         android:title="@string/toolbar_shortcut"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings"
+        android:fragment="org.chromium.components.browser_ui.accessibility.AccessibilitySettings"
         android:key="accessibility"
         android:order="23"
         android:title="@string/prefs_accessibility"/>
