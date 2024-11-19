@@ -136,7 +136,7 @@ TEST(SegmentReaderTest, readPastEndThenRead) {
   char reference_data[kDataSize];
   PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  data->Append(base::span(reference_data).subspan(0, kDefaultSegmentTestSize));
+  data->Append(base::span(reference_data).first(kDefaultSegmentTestSize));
   data->Append(base::span(reference_data)
                    .subspan(kDefaultSegmentTestSize, kDefaultSegmentTestSize));
 

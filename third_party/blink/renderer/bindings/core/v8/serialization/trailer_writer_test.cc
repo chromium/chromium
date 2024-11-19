@@ -32,9 +32,9 @@ TEST(TrailerWriterTest, ExposedInterfaces) {
   // Duplicates should be removed, but we're otherwise indifferent to the order.
   auto trailer = writer.MakeTrailerData();
   ASSERT_EQ(trailer.size(), 7u);
-  EXPECT_THAT(base::make_span(trailer).first(5u),
+  EXPECT_THAT(base::span(trailer).first<5>(),
               ElementsAre(0xA0, 0x00, 0x00, 0x00, 0x02));
-  EXPECT_THAT(base::make_span(trailer).subspan(5, 2),
+  EXPECT_THAT((base::span(trailer).subspan<5, 2>()),
               UnorderedElementsAre(kImageBitmapTag, kCryptoKeyTag));
 }
 

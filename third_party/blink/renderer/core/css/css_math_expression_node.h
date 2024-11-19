@@ -728,7 +728,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
   // Helper for iterating from the 2nd to the last operands
   base::span<const Member<const CSSMathExpressionNode>> SecondToLastOperands()
       const {
-    return base::span(operands_).subspan(1);
+    return base::span(operands_).subspan<1>();
   }
 
   Operands operands_;

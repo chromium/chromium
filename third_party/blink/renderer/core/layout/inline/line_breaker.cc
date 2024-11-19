@@ -1805,7 +1805,7 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
     // determined by `line_info->Results()`. Check if they match.
     auto results = base::make_span(line_info->Results());
     DCHECK_EQ(item_result, &results.back());
-    results = results.subspan(0, results.size() - 1);
+    results = results.first(results.size() - 1);
     bool is_at_mid_word = false;
     for (const InlineItemResult& result : base::Reversed(results)) {
       DCHECK(!result.can_break_after);

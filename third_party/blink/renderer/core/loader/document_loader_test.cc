@@ -412,8 +412,8 @@ TEST_P(DocumentLoaderTest, MultiChunkNoReentrancy) {
       EXPECT_EQ(34u, data.size())
           << "foo.html was not served in a single chunk";
       // Chunk the reply into one byte chunks.
-      for (size_t i = 0; i < data.size(); ++i) {
-        original_client->DidReceiveDataForTesting(data.subspan(i, 1));
+      for (; !data.empty(); data = data.subspan<1>()) {
+        original_client->DidReceiveDataForTesting(data.first<1>());
       }
     }
   } delegate;

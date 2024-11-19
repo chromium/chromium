@@ -339,7 +339,7 @@ class ResponseBodyLoader::Buffer final
     // Send as much of the chunk as possible without exceeding |max_chunk_size|.
     base::span<const char> span(current_chunk);
     span = span.subspan(offset_in_current_chunk_);
-    span = span.subspan(0, std::min(span.size(), max_chunk_size));
+    span = span.first(std::min(span.size(), max_chunk_size));
     owner_->DidReceiveData(span);
 
     size_t sent_size = span.size();

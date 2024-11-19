@@ -1192,7 +1192,7 @@ String StylePropertySerializer::FontValue() const {
   const CSSValue* first = property_set_.GetPropertyCSSValue(*longhands[0]);
   if (const auto* system_font =
           DynamicTo<cssvalue::CSSPendingSystemFontValue>(first)) {
-    for (const CSSProperty* const longhand : longhands.subspan(1)) {
+    for (const CSSProperty* const longhand : longhands.subspan<1>()) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
       if (!base::ValuesEquivalent(first, value)) {
         return g_empty_string;
@@ -1200,7 +1200,7 @@ String StylePropertySerializer::FontValue() const {
     }
     return GetCSSValueNameAs<String>(system_font->SystemFontId());
   } else {
-    for (const CSSProperty* const longhand : longhands.subspan(1)) {
+    for (const CSSProperty* const longhand : longhands.subspan<1>()) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
       if (value->IsPendingSystemFontValue()) {
         return g_empty_string;

@@ -327,7 +327,7 @@ class InlinedStringBuffer {
       DCHECK_LE(begin, end);
       DCHECK_LT(end, begin + inlined->size());
       return String(
-          base::span(*inlined).subspan(0, static_cast<size_t>(end - begin)));
+          base::span(*inlined).first(static_cast<size_t>(end - begin)));
     }
     auto& outlined = std::get<OutlinedArray>(buffer_);
     DCHECK_EQ(begin(), outlined.Characters());

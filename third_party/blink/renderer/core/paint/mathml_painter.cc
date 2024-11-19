@@ -101,7 +101,7 @@ void MathMLPainter::PaintRadicalSymbol(const PaintInfo& info,
                                        PhysicalOffset paint_offset) {
   LayoutUnit base_child_width;
   LayoutUnit base_child_ascent;
-  if (box_fragment_.Children().size() > 0) {
+  if (!box_fragment_.Children().empty()) {
     const auto& base_child =
         To<PhysicalBoxFragment>(*box_fragment_.Children()[0]);
     base_child_width = base_child.Size().width;

@@ -615,7 +615,7 @@ TEST(VectorTest, AppendContainers) {
 
   result.AppendVector(empty_vector);
   result.AppendRange(other_array.end(), other_array.end());
-  result.AppendSpan(base::span(other_c_array).subspan(4));
+  result.AppendSpan(base::span(other_c_array).subspan<4>());
   EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
 }
 

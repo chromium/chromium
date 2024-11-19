@@ -281,7 +281,7 @@ TEST_F(BlobDataHandleTest, CreateFromFile) {
 
 TEST_F(BlobDataHandleTest, CreateFromEmptyElements) {
   auto data = std::make_unique<BlobData>();
-  data->AppendBytes(base::span(small_test_data_).subspan(0, 0));
+  data->AppendBytes({});
   data->AppendBlob(empty_blob_, 0, 0);
 
   TestCreateBlob(std::move(data), {});
