@@ -56,11 +56,6 @@ const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
     "WebViewIpProtectionExclusionCriteria",
     /*WebviewExclusionPolicy::kNone*/ 0};
 
-// Enable display cutout support for Android P and above.
-BASE_FEATURE(kWebViewDisplayCutout,
-             "WebViewDisplayCutout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Fetch Hand Writing icon lazily.
 BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
              "WebViewLazyFetchHandWritingIcon",

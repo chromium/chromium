@@ -213,9 +213,6 @@ public final class ProductionSupportedFlagList {
                 "Only allow extra headers added via loadUrl() to be sent to the same origin "
                         + "as the original request."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
-                "Enables display cutout (notch) support in WebView for Android P and above."),
-        Flag.baseFeature(
                 BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                 "Accelerate all canvases in webview."),
         Flag.baseFeature(
@@ -1061,7 +1058,8 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
                         + " finished."),
         Flag.baseFeature("SyntheticResponseReportUnexpectedHeader"),
-        Flag.baseFeature("SelectParserRelaxation",
+        Flag.baseFeature(
+                "SelectParserRelaxation",
                 "Enables new HTML parser behavior for the <select> element."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

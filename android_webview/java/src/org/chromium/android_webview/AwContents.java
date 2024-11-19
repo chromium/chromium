@@ -1352,8 +1352,7 @@ public class AwContents implements SmartClipProvider {
                                 }
                             },
                             containerView);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-                    && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISPLAY_CUTOUT)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 mDisplayCutoutController =
                         new AwDisplayCutoutController(
                                 new AwDisplayCutoutController.Delegate() {
