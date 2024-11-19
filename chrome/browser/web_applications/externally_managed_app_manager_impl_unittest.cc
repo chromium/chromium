@@ -305,7 +305,11 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManager {
             externally_managed_app_manager_impl_->GetNextInstallationLaunchURL(
                 install_url);
         const auto install_source = install_options().install_source;
-        if (!provider_->registrar_unsafe().IsInstalled(*app_id)) {
+        if (!provider_->registrar_unsafe().IsInstallState(
+                *app_id,
+                {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                 proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                 proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
           auto web_app =
               test::CreateWebApp(install_url, WebAppManagement::kPolicy);
           {

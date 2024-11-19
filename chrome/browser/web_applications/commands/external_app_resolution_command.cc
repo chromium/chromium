@@ -370,7 +370,10 @@ void ExternalAppResolutionCommand::OnLockUpgradedFinalizeInstall(
   finalize_options.add_to_quick_launch_bar =
       install_params_->add_to_quick_launch_bar;
 
-  if (apps_lock_->registrar().IsInstalled(app_id_)) {
+  if (apps_lock_->registrar().IsInstallState(
+          app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     // If an installation is triggered for the same app but with a
     // different install_url, then we overwrite the manifest fields.
     // If icon downloads fail, then we would not overwrite the icon

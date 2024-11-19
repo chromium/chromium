@@ -329,7 +329,11 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
       return;
     }
 
-    if (lock.registrar().IsInstalled(app_id.value())) {
+    if (lock.registrar().IsInstallState(
+            app_id.value(),
+            {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+             proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
       if (install_options.placeholder_resolution_behavior ==
               PlaceholderResolutionBehavior::kWaitForAppWindowsClosed &&
           lock.ui_manager().GetNumWindowsForApp(app_id.value()) != 0) {

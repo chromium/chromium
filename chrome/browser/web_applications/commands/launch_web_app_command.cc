@@ -51,7 +51,11 @@ LaunchWebAppCommand::~LaunchWebAppCommand() = default;
 
 void LaunchWebAppCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
-  if (!lock_->registrar().IsInstalled(params_.app_id)) {
+  if (!lock_->registrar().IsInstallState(
+          params_.app_id,
+          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     GetMutableDebugValue().Set("error", "not_installed");
     CompleteAndSelfDestruct(CommandResult::kFailure, nullptr, nullptr,
                             apps::LaunchContainer::kLaunchContainerNone);

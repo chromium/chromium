@@ -456,7 +456,10 @@ TEST_F(FileHandlingSubManagerConfigureAndExecuteTest,
     EXPECT_FALSE(fake_os_integration().IsFileExtensionHandled(
         profile(), app_id, app_name, extension));
   }
-  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   // The file handling continues to not be registered.
   SynchronizeOsOptions options;

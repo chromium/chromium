@@ -265,7 +265,10 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
   StartWebAppProvider();
 
-  EXPECT_TRUE(registrar().IsInstalled(app_id));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   const WebApp* app = registrar().GetAppById(app_id);
 
   EXPECT_EQ(app_id, app->app_id());
@@ -277,24 +280,36 @@ TEST_F(WebAppRegistrarTest, InitWithApps) {
 
   EXPECT_FALSE(registrar().is_empty());
 
-  EXPECT_TRUE(registrar().IsInstalled(app_id2));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   const WebApp* app2 = registrar().GetAppById(app_id2);
   EXPECT_EQ(app_id2, app2->app_id());
   EXPECT_FALSE(registrar().is_empty());
   EXPECT_EQ(CountApps(registrar().GetApps()), 2);
 
   Uninstall(app_id);
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id));
   EXPECT_FALSE(registrar().is_empty());
 
   // Check that app2 is still registered.
   app2 = registrar().GetAppById(app_id2);
-  EXPECT_TRUE(registrar().IsInstalled(app_id2));
+  EXPECT_TRUE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(app_id2, app2->app_id());
 
   Uninstall(app_id2);
-  EXPECT_FALSE(registrar().IsInstalled(app_id2));
+  EXPECT_FALSE(registrar().IsInstallState(
+      app_id2, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(nullptr, registrar().GetAppById(app_id2));
   EXPECT_TRUE(registrar().is_empty());
   EXPECT_EQ(CountApps(registrar().GetApps()), 0);

@@ -112,7 +112,10 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 
   // If the app_id is changing, then it should exist in the database.
   DCHECK(app_id_ == app_id || !app_id ||
-         provider_->registrar_unsafe().IsInstalled(*app_id) ||
+         provider_->registrar_unsafe().IsInstallState(
+             *app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
     return;

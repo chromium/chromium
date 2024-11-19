@@ -58,7 +58,10 @@ void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
   const WebAppRegistrar& registrar = lock_->registrar();
-  if (!registrar.IsInstalled(app_id_)) {
+  if (!registrar.IsInstallState(
+          app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     ReportResultAndDestroy(CommandResult::kFailure);
     return;
   }
@@ -98,7 +101,10 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     const SiteDataSizeCollector::QuotaStorageUsageInfoList&
         quota_storage_info_list) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!lock_->registrar().IsInstalled(app_id_)) {
+  if (!lock_->registrar().IsInstallState(
+          app_id_, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                    proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                    proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     // (crbug/1480755): This crash is not expected as the app is checked for
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not

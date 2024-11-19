@@ -13,7 +13,11 @@
 namespace web_app::migrations {
 
 void MigrateAdobeExpressFromOemInstallToDefault(WebAppSyncBridge* sync_bridge) {
-  if (!sync_bridge->registrar().IsInstalled(ash::kAdobeExpressAppId)) {
+  if (!sync_bridge->registrar().IsInstallState(
+          ash::kAdobeExpressAppId,
+          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return;
   }
 

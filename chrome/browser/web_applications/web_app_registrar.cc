@@ -343,8 +343,12 @@ std::optional<webapps::AppId> WebAppRegistrar::LookupExternalAppId(
 }
 
 bool WebAppRegistrar::HasExternalApp(const webapps::AppId& app_id) const {
-  if (!IsInstalled(app_id))
+  if (!IsInstallState(app_id,
+                      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;
+  }
 
   const WebApp* web_app = GetAppById(app_id);
   // If the external config map is filled, then the app was
@@ -355,8 +359,12 @@ bool WebAppRegistrar::HasExternalApp(const webapps::AppId& app_id) const {
 bool WebAppRegistrar::HasExternalAppWithInstallSource(
     const webapps::AppId& app_id,
     ExternalInstallSource install_source) const {
-  if (!IsInstalled(app_id))
+  if (!IsInstallState(app_id,
+                      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;
+  }
 
   const WebApp* web_app = GetAppById(app_id);
   return web_app &&
@@ -972,8 +980,12 @@ bool WebAppRegistrar::IsIsolated(const webapps::AppId& app_id) const {
 
 bool WebAppRegistrar::IsInstalledByDefaultManagement(
     const webapps::AppId& app_id) const {
-  if (!IsInstalled(app_id))
+  if (!IsInstallState(
+          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return false;
+  }
 
   const WebApp* web_app = GetAppById(app_id);
   DCHECK(web_app);
@@ -1138,7 +1150,11 @@ std::optional<content::StoragePartitionConfig>
 WebAppRegistrar::SaveAndGetInMemoryControlledFramePartitionConfig(
     const IsolatedWebAppUrlInfo& url_info,
     const std::string& partition_name) {
-  if (!IsInstalled(url_info.app_id())) {
+  if (!IsInstallState(
+          url_info.app_id(),
+          {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return std::nullopt;
   }
 
@@ -1396,7 +1412,10 @@ bool WebAppRegistrar::IsPreferredAppForCapturingUrl(
 }
 
 bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
-  if (!IsInstalled(app_id)) {
+  if (!IsInstallState(app_id,
+                      {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;
   }
   const WebApp* web_app = GetAppById(app_id);
