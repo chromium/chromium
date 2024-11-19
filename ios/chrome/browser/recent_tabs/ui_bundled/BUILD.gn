@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("recent_tabs") {
+source_set("coordinator") {
   sources = [
     "closed_tabs_observer_bridge.h",
     "closed_tabs_observer_bridge.mm",
@@ -15,7 +15,7 @@ source_set("recent_tabs") {
     "recent_tabs_menu_helper.mm",
   ]
   deps = [
-    ":recent_tabs_ui",
+    ":ui",
     "//base",
     "//components/feature_engagement/public",
     "//components/sessions",
@@ -59,14 +59,14 @@ source_set("recent_tabs") {
   public_deps = [ "//components/sync_sessions" ]
 }
 
-source_set("recent_tabs_ui_constants") {
+source_set("ui_constants") {
   sources = [
     "recent_tabs_constants.h",
     "recent_tabs_constants.mm",
   ]
 }
 
-source_set("recent_tabs_ui") {
+source_set("ui") {
   sources = [
     "recent_tabs_consumer.h",
     "recent_tabs_menu_provider.h",
@@ -78,7 +78,7 @@ source_set("recent_tabs_ui") {
     "sessions_sync_user_state.h",
   ]
   deps = [
-    ":recent_tabs_ui_constants",
+    ":ui_constants",
     "//base",
     "//components/prefs",
     "//components/search_engines",
@@ -93,6 +93,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/recent_tabs/ui_bundled/resources",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:session_util",
@@ -119,7 +120,6 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
-    "//ios/chrome/browser/ui/recent_tabs/resources",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/resources",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/colors",
@@ -138,8 +138,8 @@ source_set("unit_tests") {
     "recent_tabs_mediator_unittest.mm",
   ]
   deps = [
-    ":recent_tabs",
-    ":recent_tabs_ui",
+    ":coordinator",
+    ":ui",
     "//base",
     "//base/test:test_support",
     "//components/browser_sync",
@@ -213,7 +213,7 @@ source_set("eg2_tests") {
   sources = [ "recent_tabs_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    ":recent_tabs_ui_constants",
+    ":ui_constants",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//components/policy:policy_code_generate",

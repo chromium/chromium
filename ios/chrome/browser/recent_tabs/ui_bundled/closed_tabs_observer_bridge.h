@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_CLOSED_TABS_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_UI_RECENT_TABS_CLOSED_TABS_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_CLOSED_TABS_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_CLOSED_TABS_OBSERVER_BRIDGE_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,7 +12,7 @@
 // Objective-C protocol equivalent of the sessions::TabRestoreServiceObserver
 // C++ class. Those methods are called through the bridge. The method names are
 // the same as the C++ ones.
-@protocol ClosedTabsObserving<NSObject>
+@protocol ClosedTabsObserving <NSObject>
 - (void)tabRestoreServiceChanged:(sessions::TabRestoreService*)service;
 - (void)tabRestoreServiceDestroyed:(sessions::TabRestoreService*)service;
 @end
@@ -41,4 +41,4 @@ class ClosedTabsObserverBridge : public sessions::TabRestoreServiceObserver {
 
 }  // namespace recent_tabs
 
-#endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_CLOSED_TABS_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_CLOSED_TABS_OBSERVER_BRIDGE_H_

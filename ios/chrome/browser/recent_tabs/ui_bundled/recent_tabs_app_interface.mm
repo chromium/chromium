@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_app_interface.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"

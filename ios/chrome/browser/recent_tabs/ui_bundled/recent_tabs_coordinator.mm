@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
 
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
@@ -12,6 +12,13 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_coordinator_delegate.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_mediator.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_helper.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_provider.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -33,13 +40,6 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_mediator.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_helper.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"

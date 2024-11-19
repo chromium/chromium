@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_CONSUMER_H_
+#define IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/sessions_sync_user_state.h"
 
 namespace sessions {
 class TabRestoreService;
 }
 
 // RecentTabs Consumer interface.
-@protocol RecentTabsConsumer<NSObject>
+@protocol RecentTabsConsumer <NSObject>
 
 // Refreshes the table view to match the current sync state.
 - (void)refreshUserState:(SessionsSyncUserState)state;
@@ -31,4 +31,4 @@ class TabRestoreService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_CONSUMER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller.h"
 
 #import <objc/runtime.h>
 
@@ -34,6 +34,11 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_menu_provider.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_presentation_delegate.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_delegate.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_table_view_controller_ui_delegate.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
@@ -83,11 +88,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_menu_provider.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_presentation_delegate.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_ui_delegate.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
@@ -257,13 +257,15 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)setPreventUpdates:(BOOL)preventUpdates {
-  if (_preventUpdates == preventUpdates)
+  if (_preventUpdates == preventUpdates) {
     return;
+  }
 
   _preventUpdates = preventUpdates;
 
-  if (preventUpdates)
+  if (preventUpdates) {
     return;
+  }
   [self loadModel];
   [self.tableView reloadData];
 }
@@ -319,10 +321,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   [self.tableView
       performBatchUpdates:^{
-        if (self.searchTerms.length)
+        if (self.searchTerms.length) {
           [self updateSessionSections];
-        else
+        } else {
           [self updateOtherDevicesSectionForState:self.sessionState];
+        }
       }
                completion:nil];
 }
@@ -407,8 +410,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Iterates through all the TabRestoreService entries and adds items to the
 // recently closed tabs section. This method performs no UITableView operations.
 - (void)addRecentlyClosedTabItems {
-  if (!self.tabRestoreService)
+  if (!self.tabRestoreService) {
     return;
+  }
 
   if (!self.searchTerms.length) {
     // A manual item refresh is necessary when tab search is disabled or when
@@ -812,8 +816,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (NSInteger)sectionIdentifierForSession:
     (synced_sessions::DistantSession const*)distantSession {
   for (NSUInteger i = 0; i < [self numberOfSessions]; i++) {
-    if (_displayedTabs[i].session_tag == distantSession->tag)
+    if (_displayedTabs[i].session_tag == distantSession->tag) {
       return i + kFirstSessionSectionIdentifier;
+    }
   }
   NOTREACHED();
 }
@@ -885,8 +890,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   _searchTerms = searchTerms;
 
-  if (self.preventUpdates)
+  if (self.preventUpdates) {
     return;
+  }
 
   TabsSearchService* search_service =
       TabsSearchServiceFactory::GetForProfile(self.profile);
@@ -1037,15 +1043,17 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [UIView setAnimationsEnabled:NO];
     if (newSessionState ==
         SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS) {
-      [self.tableView performBatchUpdates:^{
-        [self updateSessionSections];
-      }
-                               completion:nil];
+      [self.tableView
+          performBatchUpdates:^{
+            [self updateSessionSections];
+          }
+                   completion:nil];
     } else {
-      [self.tableView performBatchUpdates:^{
-        [self updateOtherDevicesSectionForState:newSessionState];
-      }
-                               completion:nil];
+      [self.tableView
+          performBatchUpdates:^{
+            [self updateOtherDevicesSectionForState:newSessionState];
+          }
+                   completion:nil];
     }
     [UIView setAnimationsEnabled:animationsWereEnabled];
   }
@@ -1061,18 +1069,20 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)refreshRecentlyClosedTabs {
-  if (self.preventUpdates)
+  if (self.preventUpdates) {
     return;
+  }
 
   // Do not try to reload section if it doesn't exist.
   if (![self recentlyClosedTabsSectionExists]) {
     return;
   }
 
-  [self.tableView performBatchUpdates:^{
-    [self updateRecentlyClosedSection];
-  }
-                           completion:nil];
+  [self.tableView
+      performBatchUpdates:^{
+        [self updateRecentlyClosedSection];
+      }
+               completion:nil];
 }
 
 - (void)setTabRestoreService:(sessions::TabRestoreService*)tabRestoreService {
@@ -1180,8 +1190,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ(tableView, self.tableView);
-  UITableViewCell* cell =
-      [super tableView:tableView cellForRowAtIndexPath:indexPath];
+  UITableViewCell* cell = [super tableView:tableView
+                     cellForRowAtIndexPath:indexPath];
   NSInteger itemTypeSelected =
       [self.tableViewModel itemTypeForIndexPath:indexPath];
   // If SigninPromo will be shown, `self.signinPromoViewMediator` must know.
@@ -1277,8 +1287,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     contextMenuConfigurationForRowAtIndexPath:(NSIndexPath*)indexPath
                                         point:(CGPoint)point {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  if (itemType != ItemTypeRecentlyClosed && itemType != ItemTypeSessionTabData)
+  if (itemType != ItemTypeRecentlyClosed &&
+      itemType != ItemTypeSessionTabData) {
     return nil;
+  }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   TableViewURLItem* URLItem =
@@ -1298,8 +1310,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   UIView* header = [interaction view];
   NSInteger tappedHeaderSectionIdentifier = header.tag;
 
-  if (![self isSessionSectionIdentifier:tappedHeaderSectionIdentifier])
+  if (![self isSessionSectionIdentifier:tappedHeaderSectionIdentifier]) {
     return [[UIContextMenuConfiguration alloc] init];
+  }
 
   return
       [self.menuProvider contextMenuConfigurationForHeaderWithSectionIdentifier:
@@ -1318,8 +1331,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       TableViewURLItem* URLItem =
           base::apple::ObjCCastStrict<TableViewURLItem>(item);
       GURL gurl;
-      if (URLItem.URL)
+      if (URLItem.URL) {
         gurl = URLItem.URL.gurl;
+      }
       return [[URLInfo alloc] initWithURL:gurl title:URLItem.title];
     }
 
@@ -1348,8 +1362,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (NSInteger)numberOfRecentlyClosedTabs {
-  if (!self.tabRestoreService)
+  if (!self.tabRestoreService) {
     return 0;
+  }
   return _recentlyClosedItems.size();
 }
 
@@ -1359,8 +1374,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       SectionIdentifierRecentlyClosedTabs);
   NSInteger index = indexPath.row;
   DCHECK_LE(index, [self numberOfRecentlyClosedTabs]);
-  if (!self.tabRestoreService)
+  if (!self.tabRestoreService) {
     return SessionID::InvalidValue();
+  }
 
   return _recentlyClosedItems[index].first;
 }
@@ -1393,8 +1409,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - Distant Sessions helpers
 
 - (NSUInteger)numberOfSessions {
-  if (!_syncedSessions)
+  if (!_syncedSessions) {
     return 0;
+  }
   return _displayedTabs.size();
 }
 
@@ -1459,8 +1476,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   NSString* timeString;
   base::TimeDelta last_used_delta;
-  if (base::Time::Now() > time)
+  if (base::Time::Now() > time) {
     last_used_delta = base::Time::Now() - time;
+  }
 
   if (last_used_delta.InMicroseconds() < base::Time::kMicrosecondsPerMinute) {
     timeString = l10n_util::GetNSString(IDS_IOS_OPEN_TABS_RECENTLY_SYNCED);
@@ -1476,8 +1494,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   NSInteger today = [[NSCalendar currentCalendar] component:NSCalendarUnitDay
                                                    fromDate:[NSDate date]];
-  NSInteger dateDay =
-      [[NSCalendar currentCalendar] component:NSCalendarUnitDay fromDate:date];
+  NSInteger dateDay = [[NSCalendar currentCalendar] component:NSCalendarUnitDay
+                                                     fromDate:date];
 
   if (today == dateDay) {
     timeString = base::SysUTF16ToNSString(
@@ -1513,8 +1531,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // above recent tabs. This can happen when a user simultaneously taps a
   // distant tab and "enable sync". The sync settings UI appears first and we
   // should not dismiss it to show a distant tab.
-  if (self.presentedViewController)
+  if (self.presentedViewController) {
     return;
+  }
 
   sync_sessions::OpenTabsUIDelegate* openTabs =
       SessionSyncServiceFactory::GetForProfile(self.profile)
@@ -1566,8 +1585,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
   // and we should not dismiss it to restore a recently closed tab.
-  if (self.presentedViewController)
+  if (self.presentedViewController) {
     return;
+  }
 
   base::RecordAction(
       base::UserMetricsAction("MobileRecentTabManagerRecentTabOpened"));
@@ -1600,8 +1620,9 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
   // and we should not dismiss it to restore a recently closed tab.
-  if (self.presentedViewController)
+  if (self.presentedViewController) {
     return;
+  }
 
   base::RecordAction(
       base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
@@ -1681,8 +1702,8 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   NSArray* items =
       [self.tableViewModel itemsInSectionWithIdentifier:sectionIdentifier];
   for (NSUInteger i = 0; i < [items count]; i++) {
-    NSIndexPath* tabIndexPath =
-        [NSIndexPath indexPathForRow:i inSection:sectionIndex];
+    NSIndexPath* tabIndexPath = [NSIndexPath indexPathForRow:i
+                                                   inSection:sectionIndex];
     [cellIndexPathsToDeleteOrInsert addObject:tabIndexPath];
   }
 

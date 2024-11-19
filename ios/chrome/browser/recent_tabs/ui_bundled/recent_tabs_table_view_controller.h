@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -81,4 +81,4 @@ struct DistantSession;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_RECENT_TABS_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_RECENT_TABS_UI_BUNDLED_RECENT_TABS_TABLE_VIEW_CONTROLLER_H_

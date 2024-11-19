@@ -18,6 +18,8 @@
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_app_interface.h"
+#import "ios/chrome/browser/recent_tabs/ui_bundled/recent_tabs_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
@@ -30,8 +32,6 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_app_interface.h"
-#import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -80,11 +80,13 @@ void SignOut() {
 void OpenRecentTabsPanel() {
   // At least one tab is needed to be able to open the recent tabs panel.
   if ([ChromeEarlGrey isIncognitoMode]) {
-    if ([ChromeEarlGrey incognitoTabCount] == 0)
+    if ([ChromeEarlGrey incognitoTabCount] == 0) {
       [ChromeEarlGrey openNewIncognitoTab];
+    }
   } else {
-    if ([ChromeEarlGrey mainTabCount] == 0)
+    if ([ChromeEarlGrey mainTabCount] == 0) {
       [ChromeEarlGrey openNewTab];
+    }
   }
 
   [ChromeEarlGreyUI openToolsMenu];
