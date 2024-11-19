@@ -1688,13 +1688,11 @@ void ChromeShelfController::ShelfItemAdded(int index) {
       item.package_id = ShelfControllerHelper::GetAppPackageId(
           latest_active_profile_, id.app_id);
     }
-    if (!BrowserAppShelfControllerShouldHandleApp(id.app_id,
-                                                  latest_active_profile_)) {
-      ash::ShelfItemStatus status = GetAppState(id.app_id);
-      if (status != item.status && status != ash::STATUS_CLOSED) {
-        needs_update = true;
-        item.status = status;
-      }
+
+    ash::ShelfItemStatus status = GetAppState(id.app_id);
+    if (status != item.status && status != ash::STATUS_CLOSED) {
+      needs_update = true;
+      item.status = status;
     }
 
     ash::AppStatus app_status =
