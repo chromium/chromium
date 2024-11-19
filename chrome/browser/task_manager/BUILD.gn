@@ -14,6 +14,8 @@ source_set("task_manager") {
   sources = [
     "providers/browser_process_task.h",
     "providers/browser_process_task_provider.h",
+    "providers/child_process_task.h",
+    "providers/child_process_task_provider.h",
     "providers/fallback_task_provider.h",
     "providers/per_profile_worker_task_tracker.h",
     "providers/render_process_host_task_provider.h",
@@ -78,8 +80,6 @@ source_set("task_manager") {
   }
   if (!is_android) {
     sources += [
-      "providers/child_process_task.h",
-      "providers/child_process_task_provider.h",
       "providers/web_contents/back_forward_cache_task.h",
       "providers/web_contents/background_contents_tag.h",
       "providers/web_contents/background_contents_task.h",
@@ -126,6 +126,8 @@ source_set("impl") {
   sources = [
     "providers/browser_process_task.cc",
     "providers/browser_process_task_provider.cc",
+    "providers/child_process_task.cc",
+    "providers/child_process_task_provider.cc",
     "providers/task.cc",
     "providers/task_provider.cc",
     "sampling/task_group.cc",
@@ -222,8 +224,6 @@ source_set("impl") {
       "//extensions/common",
     ]
     sources += [
-      "providers/child_process_task.cc",
-      "providers/child_process_task_provider.cc",
       "providers/fallback_task_provider.cc",
       "providers/per_profile_worker_task_tracker.cc",
       "providers/render_process_host_task_provider.cc",
