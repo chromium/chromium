@@ -57,6 +57,7 @@ void WorkerDevToolsManager::WorkerCreated(
       process_id,
       /*url=*/GURL(), /*name=*/"", host->GetToken().value(), /*parent_id=*/"",
       /*destroyed_callback=*/base::DoNothing());
+  base::UmaHistogramCounts1000("Worker.DevTools.AgentHost.Size", hosts_.size());
 
   devtools_instrumentation::ThrottleWorkerMainScriptFetch(
       host->GetToken().value(), ancestor_render_frame_host_id,
