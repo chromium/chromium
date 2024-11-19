@@ -35,8 +35,6 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
               FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
   RegisterPixAllowlist();
-  client_->SetUiEventListener(base::BindRepeating(
-      &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
 }
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
@@ -61,6 +59,8 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
     return;
   }
   has_payflow_started_ = true;
+  client_->SetUiEventListener(base::BindRepeating(
+      &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
   ukm_source_id_ = ukm_source_id;
   trigger_source_ = TriggerSource::kCopyEvent;
   // Check whether the domain for the render_frame_host_url is allowlisted.
