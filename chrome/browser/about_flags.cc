@@ -865,22 +865,14 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
      switches::kTopChromeTouchUiEnabled}};
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kCctSignInPromptRateLimited[] = {
-    {"cadence_day", "14"},
-    {"show_limit", "2"},
-    {"user_act_count", "2"},
-    {"if_allowed_by_embedder", "false"},
-    {"if_enabled_by_embedder", "true"}};
 const FeatureEntry::FeatureParam kCctSignInPromptAlways[] = {
     {"cadence_day", "0"},
     {"show_limit", "10000"},
     {"user_act_count", "10000"},
-    {"if_allowed_by_embedder", "false"},
+    {"if_allowed_by_embedder", "true"},
     {"if_enabled_by_embedder", "true"}};
 
 const FeatureEntry::FeatureVariation kCctSignInPromptVariations[] = {
-    {"rate-limited", kCctSignInPromptRateLimited,
-     std::size(kCctSignInPromptRateLimited), nullptr},
     {"always show", kCctSignInPromptAlways, std::size(kCctSignInPromptAlways),
      nullptr}};
 #endif
