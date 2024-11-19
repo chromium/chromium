@@ -43,7 +43,7 @@ class PrivateNetworkDevicePermissionContextFactory
   ~PrivateNetworkDevicePermissionContextFactory() override;
 
   // BrowserContextKeyedServiceFactory methods:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
