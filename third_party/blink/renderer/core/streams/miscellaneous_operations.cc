@@ -104,10 +104,10 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
 
 class TrivialStreamAlgorithm final : public StreamAlgorithm {
  public:
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
-    return PromiseResolveWithUndefined(script_state);
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
+    return ToResolvedUndefinedPromise(script_state);
   }
 };
 
@@ -122,9 +122,9 @@ class JavaScriptStreamAlgorithmWithoutExtraArg final : public StreamAlgorithm {
   // CreateAlgorithmFromUnderlyingMethod() in the standard, but it is
   // determined when the algorithm is called rather than when the algorithm is
   // created.
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // This method technically supports any number of arguments, but we only
     // call it with 0 or 1 in practice.
     DCHECK_GE(argc, 0);
@@ -160,9 +160,9 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
 
   // |argc| is equivalent to the "algoArgCount" argument to
   // CreateAlgorithmFromUnderlyingMethod() in the standard,
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     DCHECK_GE(argc, 0);
     DCHECK_LE(argc, 1);
     auto* isolate = script_state->GetIsolate();
@@ -433,11 +433,12 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(
                                          &arg0);
 }
 
-CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState* script_state,
-                                               v8::Local<v8::Function> method,
-                                               v8::Local<v8::Object> recv,
-                                               int argc,
-                                               v8::Local<v8::Value> argv[]) {
+CORE_EXPORT ScriptPromise<IDLUndefined> PromiseCall(
+    ScriptState* script_state,
+    v8::Local<v8::Function> method,
+    v8::Local<v8::Object> recv,
+    int argc,
+    v8::Local<v8::Value> argv[]) {
   DCHECK_GE(argc, 0);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch trycatch(isolate);
@@ -454,11 +455,12 @@ CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState* script_state,
   // 5. If returnValue is an abrupt completion, return a promise rejected with
   //    returnValue.[[Value]].
   if (!result_maybe.ToLocal(&result)) {
-    return PromiseReject(script_state, trycatch.Exception());
+    return ScriptPromise<IDLUndefined>::Reject(script_state,
+                                               trycatch.Exception());
   }
 
   // 6. Otherwise, return a promise resolved with returnValue.[[Value]].
-  return PromiseResolve(script_state, result);
+  return ScriptPromise<IDLUndefined>::FromV8Value(script_state, result);
 }
 
 CORE_EXPORT double ValidateAndNormalizeHighWaterMark(

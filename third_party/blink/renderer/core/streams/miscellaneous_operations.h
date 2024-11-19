@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_MISCELLANEOUS_OPERATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_MISCELLANEOUS_OPERATIONS_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -105,11 +106,12 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(ScriptState*,
 // "F" is called |method| here
 // "V" is called |recv| here
 // "args" becomes |argc| and |argv| here.
-CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState*,
-                                               v8::Local<v8::Function> method,
-                                               v8::Local<v8::Object> recv,
-                                               int argc,
-                                               v8::Local<v8::Value> argv[]);
+CORE_EXPORT ScriptPromise<IDLUndefined> PromiseCall(
+    ScriptState*,
+    v8::Local<v8::Function> method,
+    v8::Local<v8::Object> recv,
+    int argc,
+    v8::Local<v8::Value> argv[]);
 
 // Unlike in the standard, the caller needs to handle the conversion of the
 // value to a Number.

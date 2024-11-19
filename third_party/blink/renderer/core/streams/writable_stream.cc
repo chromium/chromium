@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/streams/count_queuing_strategy.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/pipe_options.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/transferable_streams.h"
@@ -589,14 +588,14 @@ void WritableStream::FinishErroring(ScriptState* script_state,
   auto promise = stream->writable_stream_controller_->AbortSteps(
       script_state, abort_request->Reason(isolate));
 
-  class ResolvePromiseFunction final : public PromiseHandler {
+  class ResolvePromiseFunction final
+      : public ThenCallable<IDLUndefined, ResolvePromiseFunction> {
    public:
     ResolvePromiseFunction(WritableStream* stream,
                            ScriptPromiseResolver<IDLUndefined>* resolver)
         : stream_(stream), resolver_(resolver) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       // 13. Upon fulfillment of promise,
       //      a. Resolve abortRequest.[[promise]] with undefined.
       resolver_->Resolve();
@@ -609,7 +608,7 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       visitor->Trace(resolver_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolvePromiseFunction>::Trace(visitor);
     }
 
    private:
@@ -617,14 +616,14 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
 
-  class RejectPromiseFunction final : public PromiseHandler {
+  class RejectPromiseFunction final
+      : public ThenCallable<IDLAny, RejectPromiseFunction> {
    public:
     RejectPromiseFunction(WritableStream* stream,
                           ScriptPromiseResolver<IDLUndefined>* resolver)
         : stream_(stream), resolver_(resolver) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> reason) override {
+    void React(ScriptState* script_state, ScriptValue reason) {
       // 14. Upon rejection of promise with reason reason,
       //      a. Reject abortRequest.[[promise]] with reason.
       resolver_->Reject(reason);
@@ -637,7 +636,7 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       visitor->Trace(resolver_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectPromiseFunction>::Trace(visitor);
     }
 
    private:
@@ -645,11 +644,11 @@ void WritableStream::FinishErroring(ScriptState* script_state,
     Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
   };
 
-  StreamThenPromise(script_state, promise,
-                    MakeGarbageCollected<ResolvePromiseFunction>(
-                        stream, abort_request->GetResolver()),
-                    MakeGarbageCollected<RejectPromiseFunction>(
-                        stream, abort_request->GetResolver()));
+  promise.Then(script_state,
+               MakeGarbageCollected<ResolvePromiseFunction>(
+                   stream, abort_request->GetResolver()),
+               MakeGarbageCollected<RejectPromiseFunction>(
+                   stream, abort_request->GetResolver()));
 }
 
 void WritableStream::FinishInFlightWrite(ScriptState* script_state,

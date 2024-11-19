@@ -81,14 +81,13 @@ void UnderlyingStartAlgorithm::Trace(Visitor* visitor) const {
   visitor->Trace(controller_);
 }
 
-v8::Local<v8::Promise> UnderlyingPullAlgorithm::Run(
+ScriptPromise<IDLUndefined> UnderlyingPullAlgorithm::Run(
     ScriptState* script_state,
     int argc,
     v8::Local<v8::Value> argv[]) {
   DCHECK_EQ(argc, 0);
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
-  return source_->Pull(script_state, exception_state).V8Promise();
+  return source_->Pull(script_state,
+                       PassThroughException(script_state->GetIsolate()));
 }
 
 void UnderlyingPullAlgorithm::Trace(Visitor* visitor) const {
@@ -96,19 +95,16 @@ void UnderlyingPullAlgorithm::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
 }
 
-v8::Local<v8::Promise> UnderlyingCancelAlgorithm::Run(
+ScriptPromise<IDLUndefined> UnderlyingCancelAlgorithm::Run(
     ScriptState* script_state,
     int argc,
     v8::Local<v8::Value> argv[]) {
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> reason =
       argc > 0 ? argv[0] : v8::Undefined(isolate).As<v8::Value>();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
-  return source_
-      ->CancelWrapper(script_state, ScriptValue(isolate, reason),
-                      exception_state)
-      .V8Promise();
+  return source_->CancelWrapper(
+      script_state, ScriptValue(isolate, reason),
+      PassThroughException(script_state->GetIsolate()));
 }
 
 void UnderlyingCancelAlgorithm::Trace(Visitor* visitor) const {
