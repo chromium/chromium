@@ -81,8 +81,19 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
   // Calls the request's Complete() and tells the delegate that `stream` is
   // ready. Used when there is an existing QUIC/SPDY session that can serve
   // the request.
-  void CallRequestComplete(std::unique_ptr<HttpStream> stream,
-                           NextProto negotiated_protocol);
+  void CallRequestCompleteAndStreamReady(std::unique_ptr<HttpStream> stream,
+                                         NextProto negotiated_protocol);
+
+  // Calls the request's stream failed callback.
+  void CallOnStreamFailed(int status,
+                          const NetErrorDetails& net_error_details,
+                          ResolveErrorInfo resolve_error_info);
+
+  // Calls the request's certificate error callback.
+  void CallOnCertificateError(int status, const SSLInfo& ssl_info);
+
+  // Calls the request's client auth callback.
+  void CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info);
 
   // Sets the result of `job`.
   void SetJobResult(Job* job, int status);

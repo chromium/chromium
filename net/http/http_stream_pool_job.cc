@@ -129,56 +129,11 @@ void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
       ->proxy_resolution_service()
       ->ReportSuccess(proxy_info_);
 
-  // Always use PostTask to align the behavior with HttpStreamFactory::Job, see
-  // https://crrev.com/2827533002.
-  // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Job::CallOnStreamReady, weak_ptr_factory_.GetWeakPtr(),
-                     std::move(stream), negotiated_protocol));
-}
-
-void HttpStreamPool::Job::OnStreamFailed(
-    int status,
-    const NetErrorDetails& net_error_details,
-    ResolveErrorInfo resolve_error_info) {
-  // Always use PostTask to align the behavior with HttpStreamFactory::Job, see
-  // https://crrev.com/2827533002.
-  // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Job::CallOnStreamFailed, weak_ptr_factory_.GetWeakPtr(),
-                     status, net_error_details, resolve_error_info));
-}
-
-void HttpStreamPool::Job::OnCertificateError(int status,
-                                             const SSLInfo& ssl_info) {
-  // Always use PostTask to align the behavior with HttpStreamFactory::Job, see
-  // https://crrev.com/2827533002.
-  // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Job::CallOnCertificateError,
-                     weak_ptr_factory_.GetWeakPtr(), status, ssl_info));
-}
-
-void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
-  // Always use PostTask to align the behavior with HttpStreamFactory::Job, see
-  // https://crrev.com/2827533002.
-  // TODO(crbug.com/346835898): Avoid using PostTask here if possible.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&Job::CallOnNeedsClientAuth,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                base::RetainedRef(cert_info)));
-}
-
-void HttpStreamPool::Job::CallOnStreamReady(std::unique_ptr<HttpStream> stream,
-                                            NextProto negotiated_protocol) {
   CHECK(delegate_);
   delegate_->OnStreamReady(this, std::move(stream), negotiated_protocol);
 }
 
-void HttpStreamPool::Job::CallOnStreamFailed(
+void HttpStreamPool::Job::OnStreamFailed(
     int status,
     const NetErrorDetails& net_error_details,
     ResolveErrorInfo resolve_error_info) {
@@ -187,13 +142,13 @@ void HttpStreamPool::Job::CallOnStreamFailed(
                             resolve_error_info);
 }
 
-void HttpStreamPool::Job::CallOnCertificateError(int status,
-                                                 const SSLInfo& ssl_info) {
+void HttpStreamPool::Job::OnCertificateError(int status,
+                                             const SSLInfo& ssl_info) {
   CHECK(delegate_);
   delegate_->OnCertificateError(this, status, ssl_info);
 }
 
-void HttpStreamPool::Job::CallOnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
+void HttpStreamPool::Job::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   CHECK(delegate_);
   delegate_->OnNeedsClientAuth(this, cert_info);
 }
