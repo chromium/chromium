@@ -28,9 +28,9 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
-#include "chrome/browser/task_manager/providers/worker_task_provider.h"
 #endif  // !BUIDLFLAG(IS_ANDROID)
 
+#include "chrome/browser/task_manager/providers/worker_task_provider.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -86,11 +86,11 @@ TaskManagerImpl::TaskManagerImpl()
 
   primary_subproviders.push_back(
       std::make_unique<SpareRenderProcessHostTaskProvider>());
+  primary_subproviders.push_back(std::make_unique<WorkerTaskProvider>());
 
 // TODO(crbug.com/379192565): Research whether the following providers make
 // sense on Android and otherwise remove this TODO.
 #if !BUILDFLAG(IS_ANDROID)
-  primary_subproviders.push_back(std::make_unique<WorkerTaskProvider>());
   primary_subproviders.push_back(std::make_unique<WebContentsTaskProvider>());
 #endif
 

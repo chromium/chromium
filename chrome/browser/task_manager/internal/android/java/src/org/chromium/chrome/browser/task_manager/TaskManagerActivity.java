@@ -54,9 +54,13 @@ public class TaskManagerActivity extends AppCompatActivity {
                 }
                 StringBuilder txt = new StringBuilder();
                 for (Map.Entry<Long, Long> e : mem.entrySet()) {
+                    long taskId = e.getKey();
+                    String title = mBridge.getTitle(taskId);
                     txt.append("Task ");
-                    txt.append(e.getKey());
-                    txt.append("'s memory footprint usage = ");
+                    txt.append(taskId);
+                    txt.append(" [");
+                    txt.append(title);
+                    txt.append("] memory footprint = ");
                     txt.append(e.getValue());
                     txt.append("\n");
                 }

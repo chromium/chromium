@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/jni_string.h"
 #include "chrome/browser/task_manager/android/task_manager_observer_android.h"
 #include "chrome/browser/task_manager/internal/android/jni/TaskManagerServiceBridge_jni.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -25,6 +26,14 @@ static void JNI_TaskManagerServiceBridge_RemoveObserver(JNIEnv* env,
   task_manager::TaskManagerObserverAndroid* delegate =
       reinterpret_cast<task_manager::TaskManagerObserverAndroid*>(ptr);
   delete delegate;
+}
+
+static jni_zero::ScopedJavaLocalRef<jstring>
+JNI_TaskManagerServiceBridge_GetTitle(JNIEnv* env,
+                                      task_manager::TaskId task_id) {
+  return base::android::ConvertUTF16ToJavaString(
+      env,
+      task_manager::TaskManagerInterface::GetTaskManager()->GetTitle(task_id));
 }
 
 static jlong JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(

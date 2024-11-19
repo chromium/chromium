@@ -129,10 +129,13 @@ source_set("impl") {
     "providers/child_process_task.cc",
     "providers/child_process_task_provider.cc",
     "providers/fallback_task_provider.cc",
+    "providers/per_profile_worker_task_tracker.cc",
     "providers/render_process_host_task_provider.cc",
     "providers/spare_render_process_host_task_provider.cc",
     "providers/task.cc",
     "providers/task_provider.cc",
+    "providers/worker_task.cc",
+    "providers/worker_task_provider.cc",
     "sampling/task_group.cc",
     "sampling/task_group_sampler.cc",
     "sampling/task_manager_impl.cc",
@@ -227,7 +230,6 @@ source_set("impl") {
       "//extensions/common",
     ]
     sources += [
-      "providers/per_profile_worker_task_tracker.cc",
       "providers/web_contents/back_forward_cache_task.cc",
       "providers/web_contents/background_contents_tag.cc",
       "providers/web_contents/background_contents_task.cc",
@@ -255,8 +257,6 @@ source_set("impl") {
       "providers/web_contents/web_contents_tag.cc",
       "providers/web_contents/web_contents_tags_manager.cc",
       "providers/web_contents/web_contents_task_provider.cc",
-      "providers/worker_task.cc",
-      "providers/worker_task_provider.cc",
       "web_contents_tags.cc",
     ]
   }

@@ -37,6 +37,10 @@ class TaskManagerServiceBridge {
     // Following methods for fetching task information mirror the functions in
     // task_manager_interface.h. See the file for details.
 
+    String getTitle(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getTitle(taskId);
+    }
+
     long getMemoryFootprintUsage(long taskId) {
         return TaskManagerServiceBridgeJni.get().getMemoryFootprintUsage(taskId);
     }
@@ -59,6 +63,8 @@ class TaskManagerServiceBridge {
                 TaskManagerObserver observer, int refreshTimeMillis, @RefreshType int refreshType);
 
         void removeObserver(long pointer);
+
+        String getTitle(long taskid);
 
         long getMemoryFootprintUsage(long taskId);
     }
