@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <memory>
 #include <string_view>
 #include <vector>
