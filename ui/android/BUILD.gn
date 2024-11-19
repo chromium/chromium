@@ -531,7 +531,6 @@ android_library("ui_java_test_support") {
     "javatests/src/org/chromium/ui/test/transit/SoftKeyboardCondition.java",
     "javatests/src/org/chromium/ui/test/transit/SoftKeyboardElement.java",
     "javatests/src/org/chromium/ui/test/util/BlankUiTestActivity.java",
-    "javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java",
     "javatests/src/org/chromium/ui/test/util/DeviceRestriction.java",
     "javatests/src/org/chromium/ui/test/util/GmsCoreVersionRestriction.java",
     "javatests/src/org/chromium/ui/test/util/MockitoHelper.java",
