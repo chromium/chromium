@@ -286,7 +286,9 @@ public class TabRemoverImpl implements TabRemover {
         if (createdPlaceholders) {
             undoRunnable =
                     () -> {
-                        params.undoRunnable.run();
+                        if (params.undoRunnable != null) {
+                            params.undoRunnable.run();
+                        }
                         tabModel.getTabRemover()
                                 .forceCloseTabs(
                                         TabClosureParams.closeTabs(placeholderTabs)

@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -362,6 +364,30 @@ public class TabRemoverImplUnitTest {
 
         newParams.undoRunnable.run();
         verify(mUndoRunnable).run();
+        verify(mMockTabRemover)
+                .forceCloseTabs(
+                        argThat(
+                                (TabClosureParams placeholderCloseParams) -> {
+                                    return placeholderCloseParams.tabs.equals(placeholderTabs);
+                                }));
+    }
+
+    @Test
+    public void testUpdateTabClosureParams_Placeholder_CloseTab_NullUndoRunnable() {
+        Tab tab0 = mTabModel.addTab(/* id= */ 0);
+        Tab tab1 = mTabModel.addTab(/* id= */ 1);
+        TabClosureParams params = TabClosureParams.closeTab(tab0).allowUndo(true).build();
+        List<Tab> placeholderTabs = List.of(tab1);
+        TabClosureParams newParams =
+                TabRemoverImpl.fixupTabClosureParams(
+                        mTabModel, params, placeholderTabs, /* preventUndo= */ false);
+        assertNotEquals(params, newParams);
+        assertEquals(params.tabCloseType, newParams.tabCloseType);
+        assertEquals(params.tabs, newParams.tabs);
+        assertNotNull(newParams.undoRunnable);
+
+        newParams.undoRunnable.run();
+        verify(mUndoRunnable, never()).run();
         verify(mMockTabRemover)
                 .forceCloseTabs(
                         argThat(

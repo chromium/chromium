@@ -661,6 +661,7 @@ public class ChromeTabCreator extends TabCreator {
                 break;
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
             case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
             case TabLaunchType.FROM_RECENT_TABS:
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
                 // On low end devices tabs are backgrounded in a frozen state, so we set the
