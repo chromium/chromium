@@ -4978,7 +4978,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Search: <ph name="SEARCH_QUERY">%s<ex>Weather in San Francisco</ex></ph>
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_TILE_NAVIGATE" desc="Announces that interacting with a Tile takes the user to specific website.">
-        Navigate: <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph>: <ph name="WEBSITE_URL">%2$s<ex>https://www.nps.gov/crla</ex></ph>
+        <ph name="WEBSITE_TITLE">%1$s<ex>Crater Lake National Park (U.S. National Park Service)</ex></ph>: <ph name="WEBSITE_URL">%2$s<ex>https://www.nps.gov/crla</ex></ph>
       </message>
       <message name="IDS_ACCESSIBILITY_OMNIBOX_MOST_VISITED_LIST" desc="Category name of the most visited sites. Announced as: 'amazon.com, 1 of 10 in list Most Visited Sites, 10 items.'">
         Most visited sites
