@@ -7,53 +7,55 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EarconId} from '../common/earcon_id.js';
 
+type Rect = chrome.automation.Rect;
+
 /**
  * Base class for implementing earcons.
  * When adding earcons, please add them to chromevox/common/earcon_id.js.
  */
-export class AbstractEarcons {
+export abstract class AbstractEarcons {
   /**
    * Plays the specified earcon sound.
-   * @param {EarconId} earcon An earcon identifier.
-   * @param {chrome.automation.Rect=} opt_location A location associated with
+   * @param earcon An earcon identifier.
+   * @param opt_location A location associated with
    *     the earcon such as a control's bounding rectangle.
    */
-  playEarcon(earcon, opt_location) {}
+  abstract playEarcon(earcon: EarconId, opt_location?: Rect): void;
 
   /**
    * Cancels the specified earcon sound.
-   * @param {EarconId} earcon An earcon identifier.
+   * @param earcon An earcon identifier.
    */
-  cancelEarcon(earcon) {}
+  abstract cancelEarcon(earcon: EarconId): void;
 
   /**
    * Whether or not earcons are available.
-   * @return {boolean} True if earcons are available.
+   * @return True if earcons are available.
    */
-  earconsAvailable() {
+  earconsAvailable(): boolean {
     return true;
   }
 
   /**
    * Whether or not earcons are enabled.
-   * @return {boolean} True if earcons are enabled.
+   * @return True if earcons are enabled.
    */
-  get enabled() {
+  get enabled(): boolean {
     return LocalStorage.getBoolean('earcons');
   }
 
   /**
    * Set whether or not earcons are enabled.
-   * @param {boolean} value True turns on earcons, false turns off earcons.
+   * @param value True turns on earcons, false turns off earcons.
    */
-  set enabled(value) {
+  set enabled(value: boolean) {
     LocalStorage.set('earcons', value);
   }
 
   /**
    * Toggle the current enabled state and announces the new state to the user.
    */
-  toggle() {}
+  abstract toggle(): void;
 }
 
 TestImportManager.exportForTesting(AbstractEarcons);
