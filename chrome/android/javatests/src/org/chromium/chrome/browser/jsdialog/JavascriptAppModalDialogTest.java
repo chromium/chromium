@@ -240,10 +240,12 @@ public class JavascriptAppModalDialogTest {
                 () -> {
                     ChromeTabbedActivity activity = sActivityTestRule.getActivity();
                     activity.getCurrentTabModel()
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(activity.getActivityTab())
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         // Closing the tab should have dismissed the dialog.

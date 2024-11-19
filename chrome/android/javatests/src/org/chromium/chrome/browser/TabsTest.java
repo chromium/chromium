@@ -572,7 +572,12 @@ public class TabsTest {
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
         ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> model.closeTabs(TabClosureParams.closeTab(tab).build()));
+                (Runnable)
+                        () ->
+                                model.getTabRemover()
+                                        .closeTabs(
+                                                TabClosureParams.closeTab(tab).build(),
+                                                /* allowDialog= */ false));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -658,7 +663,10 @@ public class TabsTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    model.closeTabs(TabClosureParams.closeTab(newTab).build());
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(newTab).build(),
+                                    /* allowDialog= */ false);
                 });
 
         Assert.assertEquals("oldTab should have been focused.", 1, focusListener.getTimesFocused());
@@ -819,7 +827,12 @@ public class TabsTest {
         Assert.assertEquals("Too many tabs at startup", 1, model.getCount());
 
         ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> model.closeTabs(TabClosureParams.closeTab(tab).build()));
+                (Runnable)
+                        () ->
+                                model.getTabRemover()
+                                        .closeTabs(
+                                                TabClosureParams.closeTab(tab).build(),
+                                                /* allowDialog= */ false));
 
         Assert.assertTrue("notifyChanged() was not called", mNotifyChangedCalled);
     }
@@ -926,7 +939,10 @@ public class TabsTest {
                     Assert.assertFalse(tab.isDestroyed());
 
                     selector.getModel(/* incognito= */ false)
-                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(true).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(true).build(),
+                                    /* allowDialog= */ false);
                     Assert.assertTrue(tab.isClosing());
                     Assert.assertFalse(tab.isDestroyed());
                 });

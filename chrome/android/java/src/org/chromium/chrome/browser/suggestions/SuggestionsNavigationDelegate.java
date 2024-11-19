@@ -100,7 +100,10 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
         if (result.index == TabList.INVALID_TAB_INDEX) return false;
 
         tabModel.setIndex(result.index, TabSelectionType.FROM_USER);
-        tabModel.closeTabs(TabClosureParams.closeTab(mTab).allowUndo(false).build());
+        tabModel.getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
         return true;
     }
 }

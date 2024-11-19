@@ -190,10 +190,12 @@ public class ShowNtpAtStartupTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getCurrentTabModel()
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(lastActiveTab)
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
         Assert.assertEquals(2, cta.getCurrentTabModel().getCount());
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
@@ -209,10 +211,12 @@ public class ShowNtpAtStartupTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getCurrentTabModel()
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(newTrackingTab)
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
         Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
@@ -402,10 +406,12 @@ public class ShowNtpAtStartupTest {
                 () -> {
                     cta.getTabModelSelector()
                             .getModel(false)
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(lastActiveTab)
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
         assertTrue(
                 "The single tab card does not show that it is changed and needs a "

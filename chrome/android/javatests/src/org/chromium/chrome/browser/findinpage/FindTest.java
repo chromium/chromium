@@ -80,7 +80,10 @@ public class FindTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getModel(true)
-                            .closeTabs(TabClosureParams.closeAllTabs().build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
     }
 

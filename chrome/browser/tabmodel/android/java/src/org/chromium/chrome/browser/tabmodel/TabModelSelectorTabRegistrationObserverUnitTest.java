@@ -287,7 +287,10 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
         mTabModelSelector
                 .getModel(false)
-                .closeTabs(TabClosureParams.closeTab(normalTab1).allowUndo(true).build());
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(normalTab1).allowUndo(true).build(),
+                        /* allowDialog= */ false);
         mTabModelSelector.getModel(false).commitTabClosure(normalTab1.getId());
         verify(observer).onTabUnregistered(normalTab1);
     }

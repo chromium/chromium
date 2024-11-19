@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -158,7 +159,10 @@ public class SuggestionsNavigationDelegateUnitTest {
         Assert.assertTrue(
                 mSuggestionsNavigationDelegate.maybeSelectTabWithUrl(JUnitTestGURLs.URL_2));
         verify(tabModel).setIndex(eq(1), anyInt());
-        verify(tabModel).closeTabs(argThat(params -> params.tabs.get(0) == mTab));
+        verify(tabModel.getTabRemover())
+                .closeTabs(
+                        argThat(params -> params.tabs.get(0) == mTab),
+                        /* allowDialog= */ eq(false));
     }
 
     private TabModel createTabModelFromList(List<GURL> urlList) {
@@ -169,6 +173,8 @@ public class SuggestionsNavigationDelegateUnitTest {
             lenient().doReturn(tab).when(tabModel).getTabAt(i);
         }
         lenient().doReturn(urlList.size()).when(tabModel).getCount();
+        TabRemover tabRemover = mock(TabRemover.class);
+        lenient().doReturn(tabRemover).when(tabModel).getTabRemover();
         return tabModel;
     }
 }

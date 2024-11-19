@@ -98,10 +98,10 @@ public class ArchivedTabCreatorTest {
                             sActivityTestRule
                                     .getActivity()
                                     .getCurrentTabModel()
+                                    .getTabRemover()
                                     .closeTabs(
-                                            TabClosureParams.closeTab(tab)
-                                                    .allowUndo(false)
-                                                    .build());
+                                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                            /* allowDialog= */ false);
                             return mTabCreator.createFrozenTab(state, tab.getId(), /* index= */ 0);
                         });
         assertNotNull(frozenTab);

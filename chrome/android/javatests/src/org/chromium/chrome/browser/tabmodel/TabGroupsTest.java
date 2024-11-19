@@ -366,7 +366,11 @@ public class TabGroupsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabModel.setIndex(2, TabSelectionType.FROM_USER);
-                    mTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
 
         List<Tab> noTabs = getCurrentTabs();

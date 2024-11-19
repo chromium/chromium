@@ -600,7 +600,10 @@ public class HistoricalTabSaverImplTest {
                     TabState state = TabStateExtractor.from(tab);
                     mActivity
                             .getCurrentTabModel()
-                            .closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                     frozen[0] =
                             mActivity.getCurrentTabCreator().createFrozenTab(state, tab.getId(), 1);
                 });

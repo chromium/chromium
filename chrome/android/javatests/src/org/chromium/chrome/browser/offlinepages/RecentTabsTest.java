@@ -31,8 +31,6 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
-import java.util.concurrent.Callable;
-
 /** Integration tests for the Last 1 feature of Offline Pages. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -124,15 +122,12 @@ public class RecentTabsTest {
         Assert.assertTrue(tabModel.supportsPendingClosures());
 
         // Requests closing of the tab allowing for closure undo and checks it's actually closing.
-        boolean closeTabReturnValue =
-                ThreadUtils.runOnUiThreadBlocking(
-                        new Callable<Boolean>() {
-                            @Override
-                            public Boolean call() {
-                                return tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
-                            }
-                        });
-        Assert.assertTrue(closeTabReturnValue);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        tabModel.getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).build(),
+                                        /* allowDialog= */ false));
         Assert.assertTrue(tab.isHidden());
         Assert.assertTrue(tab.isClosing());
 

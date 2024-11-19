@@ -213,10 +213,12 @@ public class IncognitoDataTestUtils {
         if (activity == null) return;
         activity.getTabModelSelector()
                 .getModel(false)
-                .closeTabs(TabClosureParams.closeAllTabs().build());
+                .getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
         activity.getTabModelSelector()
                 .getModel(true)
-                .closeTabs(TabClosureParams.closeAllTabs().build());
+                .getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
     }
 
     // Warming up CCT so that the native is initialized before we access feature flags.

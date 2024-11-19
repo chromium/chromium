@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
@@ -66,6 +67,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
@@ -103,6 +105,7 @@ public class TabPersistentStoreIntegrationTest {
     @Mock private Resources mResources;
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
 
     private PausedExecutorService mExecutor = new PausedExecutorService();
 
@@ -145,6 +148,7 @@ public class TabPersistentStoreIntegrationTest {
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
         RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
         PersistedTabDataJni.setInstanceForTesting(mPersistedTabDataJni);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         TabTestUtils.mockTabJni();
         mOrchestrator.onNativeLibraryReady(mTabContentManager);
     }
@@ -186,7 +190,8 @@ public class TabPersistentStoreIntegrationTest {
         assertTrue(tabStateFile.exists());
 
         // Close the tab
-        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure
@@ -212,7 +217,8 @@ public class TabPersistentStoreIntegrationTest {
         TabModel tabModel = mTabModelSelector.getModel(false);
         Tab tab = MockTab.createAndInitialize(TAB_ID, mProfile, TabLaunchType.FROM_CHROME_UI);
         tabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
         runAllAsyncTasks();
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
 
@@ -238,7 +244,8 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close tab.
-        tabModel.closeTabs(TabClosureParams.closeTab(tab).build());
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeTab(tab).build(), /* allowDialog= */ false);
         runAllAsyncTasks();
 
         // Step to test: Commit tab closure.
@@ -271,7 +278,8 @@ public class TabPersistentStoreIntegrationTest {
 
         int timesMetadataSavedBefore = timesMetadataSaved.intValue();
         // Step to test: Close all tabs.
-        tabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+        tabModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
         runAllAsyncTasks();
 
         // Step to test: Commit tabs closure.

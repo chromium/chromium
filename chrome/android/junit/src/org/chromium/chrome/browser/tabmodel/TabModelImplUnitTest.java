@@ -162,7 +162,8 @@ public class TabModelImplUnitTest {
 
                     @Override
                     public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
-                        mTabModelSelector.getModel(isIncognito).closeTabs(tabClosureParams);
+                        ((TabModelImpl) mTabModelSelector.getModel(isIncognito))
+                                .closeTabs(tabClosureParams);
                     }
 
                     @Override

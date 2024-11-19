@@ -245,10 +245,12 @@ public class JavascriptTabModalDialogTest {
                 () -> {
                     mActivity
                             .getCurrentTabModel()
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(mActivity.getActivityTab())
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         // Closing the tab should have dismissed the dialog.

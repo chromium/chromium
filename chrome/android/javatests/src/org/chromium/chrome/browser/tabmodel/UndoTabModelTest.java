@@ -138,7 +138,10 @@ public class UndoTabModelTest {
                             });
 
                     // Take action.
-                    model.closeTabs(TabClosureParams.closeTab(tab).allowUndo(undoable).build());
+                    model.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(undoable).build(),
+                                    /* allowDialog= */ false);
                 });
 
         boolean didMakePending = undoable && model.supportsPendingClosures();

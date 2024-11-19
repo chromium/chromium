@@ -552,7 +552,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getStripLayoutTabsForTesting().length == TEST_TAB_TITLES.length);
 
         // Close all tabs
-        mModel.closeTabs(TabClosureParams.closeAllTabs().build());
+        mModel.getTabRemover()
+                .closeTabs(TabClosureParams.closeAllTabs().build(), /* allowDialog= */ false);
 
         // Notify strip of tab closure
         mStripLayoutHelper.willCloseAllTabs();
@@ -2966,7 +2967,10 @@ public class StripLayoutHelperTest {
         // Remove tab from model and verify that the tab strip has not yet updated.
         int closedTabId = 1;
         int expectedNumTabs = tabCount;
-        mModel.closeTabs(TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build());
+        mModel.getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(mModel.getTabAt(closedTabId)).build(),
+                        /* allowDialog= */ false);
         assertEquals(
                 "Tab strip should not yet have changed.",
                 expectedNumTabs,

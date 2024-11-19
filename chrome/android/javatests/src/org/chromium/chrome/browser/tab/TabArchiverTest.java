@@ -141,7 +141,11 @@ public class TabArchiverTest {
         runOnUiThreadBlocking(
                 () -> {
                     // Clear out all archived tabs between tests.
-                    mArchivedTabModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mArchivedTabModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
     }
 
