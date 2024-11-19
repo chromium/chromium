@@ -630,26 +630,6 @@ void BrowsingTopicsServiceImpl::ValidateCalculationSchedule() {
         "HoursSinceScheduledTime",
         elapsed_since_scheduled_time.InHours(),
         /*exclusive_max=*/30);
-    base::UmaHistogramBoolean(
-        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
-        "CalculationTimerIsRunning",
-        schedule_calculate_timer_.IsRunning());
-
-    base::TimeDelta remaining_time_in_calculator_timer =
-        schedule_calculate_timer_.desired_run_time() - base::Time::Now();
-
-    base::UmaHistogramBoolean(
-        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
-        "RemainingTimeInCalculationTimerIsPositive",
-        remaining_time_in_calculator_timer.is_positive());
-
-    if (remaining_time_in_calculator_timer.is_positive()) {
-      base::UmaHistogramExactLinear(
-          "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
-          "RemainingDaysInCalculationTimer",
-          remaining_time_in_calculator_timer.InDays(),
-          /*exclusive_max=*/30);
-    }
 
     recorded_calculation_did_not_occur_metrics_ = true;
   }
