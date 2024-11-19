@@ -149,7 +149,16 @@ WebUIDataSourceImpl::WebUIDataSourceImpl(const std::string& source_name)
     : URLDataSourceImpl(source_name,
                         std::make_unique<InternalDataSource>(this)),
       source_name_(source_name),
-      default_resource_(kNonExistentResource) {}
+      default_resource_(kNonExistentResource) {
+  // |source_name| is assumed to match one of the following patterns:
+  //
+  // some-host
+  // chrome-untrusted://some-host/
+  // some-scheme://
+  //
+  // Source names of the form "some-scheme://" are explicitly disallowed.
+  CHECK(!source_name.ends_with("://"));
+}
 
 WebUIDataSourceImpl::~WebUIDataSourceImpl() = default;
 

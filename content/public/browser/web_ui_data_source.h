@@ -45,8 +45,11 @@ class WebUIDataSource {
   //  - chrome://source_name/*
   //  - chrome-untrusted://<host>/*
   //    (source_name is of the form "chrome-untrusted://<host>")
-  //  - scheme://*
-  //    (source_name is of the form "scheme://")
+  //
+  // Though the parent class URLDataSource supports source names like
+  // "your-scheme://" which would serve URLs of the form
+  // "your-scheme://anything", this is explicitly disallowed for
+  // WebUIDataSource for simplicity.
   CONTENT_EXPORT static WebUIDataSource* CreateAndAdd(
       BrowserContext* browser_context,
       const std::string& source_name);

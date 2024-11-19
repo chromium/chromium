@@ -46,8 +46,6 @@ INSTANTIATE_TEST_SUITE_P(
     URLDataManagerBackendTest,
     testing::Values(TestCase{"chrome://test-data-source/", "test-data-source"},
                     TestCase{"chrome-untrusted://test-data-source/",
-                             "chrome-untrusted://test-data-source/"},
-                    TestCase{"test-data-source://any-host/",
-                             "test-data-source://"}));
+                             "chrome-untrusted://test-data-source/"}));
 
 }  // namespace content
