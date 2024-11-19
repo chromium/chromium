@@ -52,7 +52,7 @@ dependencies = [
 
 [[package]]
 name = "flate2"
-version = "1.0.34"
+version = "1.0.35"
 dependencies = [
  "cloudflare-zlib-sys",
  "crc32fast",
@@ -93,9 +93,9 @@ dependencies = [
 
 [[package]]
 name = "libz-rs-sys"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6fe3b2b1132d0a04912e2ea4f1196212562ba7775abe9f3b32d49489b17b75d"
+checksum = "39cc71ac688c22a9f5730a38171ac94795c071ac81d1a0ab5537f6ef164fff30"
 dependencies = [
  "zlib-rs",
 ]
@@ -193,6 +193,6 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "zlib-rs"
-version = "0.3.0"
+version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4bf919c619da9eaede02291295e9c5ae230fc7b5f2a5f4257ff859b075111faf"
+checksum = "2ca4a9dc6566c9224cc161dedc5577bd81f4a9ee0f9fbe80592756d096b07ee5"
