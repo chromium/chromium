@@ -136,6 +136,9 @@ std::vector<const char*> GetEnabledToggles(
           "ignore_imported_ahardwarebuffer_vulkan_image_size");
     }
 #endif
+
+    // Use a single VkPipelineCache inside dawn.
+    enabled_toggles.push_back("vulkan_monolithic_pipeline_cache");
   }
 
   // Skip expensive swiftshader vkCmdDraw* for tests.
