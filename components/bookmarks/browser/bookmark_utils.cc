@@ -20,7 +20,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -279,67 +278,6 @@ void CopyToClipboard(
       model->Remove(node, source, FROM_HERE);
     }
   }
-}
-
-// Updates `title` such that `url` and `title` pair are unique among the
-// children of `parent`.
-void MakeTitleUnique(const BookmarkModel* model,
-                     const BookmarkNode* parent,
-                     const GURL& url,
-                     std::u16string* title) {
-  std::unordered_set<std::u16string> titles;
-  std::u16string original_title_lower = base::i18n::ToLower(*title);
-  for (const auto& node : parent->children()) {
-    if (node->is_url() && (url == node->url()) &&
-        base::StartsWith(base::i18n::ToLower(node->GetTitle()),
-                         original_title_lower,
-                         base::CompareCase::SENSITIVE)) {
-      titles.insert(node->GetTitle());
-    }
-  }
-
-  if (titles.find(*title) == titles.end())
-    return;
-
-  for (size_t i = 0; i < titles.size(); i++) {
-    const std::u16string new_title(*title +
-                                   base::ASCIIToUTF16(base::StringPrintf(
-                                       " (%lu)", (unsigned long)(i + 1))));
-    if (titles.find(new_title) == titles.end()) {
-      *title = new_title;
-      return;
-    }
-  }
-  NOTREACHED();
-}
-
-void PasteFromClipboard(BookmarkModel* model,
-                        const BookmarkNode* parent,
-                        size_t index) {
-  if (!parent)
-    return;
-
-  BookmarkNodeData bookmark_data;
-  if (!bookmark_data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste)) {
-    GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
-    if (!url.is_valid())
-      return;
-    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
-    node.SetTitle(base::ASCIIToUTF16(url.spec()));
-    bookmark_data = BookmarkNodeData(&node);
-  }
-  DCHECK_LE(index, parent->children().size());
-  ScopedGroupBookmarkActions group_paste(model);
-
-  if (bookmark_data.size() == 1 &&
-      model->IsBookmarked(bookmark_data.elements[0].url)) {
-    MakeTitleUnique(model,
-                    parent,
-                    bookmark_data.elements[0].url,
-                    &bookmark_data.elements[0].title);
-  }
-
-  CloneBookmarkNode(model, bookmark_data.elements, parent, index, true);
 }
 
 bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node) {

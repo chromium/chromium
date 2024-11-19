@@ -246,36 +246,6 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
 
 // Copy and paste is not yet supported on iOS. http://crbug.com/228147
 #if !BUILDFLAG(IS_IOS)
-TEST_F(BookmarkUtilsTest, PasteBookmarkFromURL) {
-  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  const std::u16string url_text = u"http://www.google.com/";
-  const BookmarkNode* new_folder =
-      model->AddFolder(model->bookmark_bar_node(), 0, u"New_Folder");
-
-  // Write blank text to clipboard.
-  {
-    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(std::u16string());
-  }
-  // Now we shouldn't be able to paste from the clipboard.
-  EXPECT_FALSE(CanPasteFromClipboard(model.get(), new_folder));
-
-  // Write some valid url to the clipboard.
-  {
-    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteText(url_text);
-  }
-  // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(CanPasteFromClipboard(model.get(), new_folder));
-
-  PasteFromClipboard(model.get(), new_folder, 0);
-  ASSERT_EQ(1u, new_folder->children().size());
-
-  // Url for added node should be same as url_text.
-  EXPECT_EQ(url_text,
-            ASCIIToUTF16(new_folder->children().front()->url().spec()));
-}
-
 // TODO(crbug.com/40651002): Fix flakes and re-enable this test.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_CopyPaste DISABLED_CopyPaste
@@ -305,78 +275,6 @@ TEST_F(BookmarkUtilsTest, MAYBE_CopyPaste) {
 
   // Now we shouldn't be able to paste from the clipboard.
   EXPECT_FALSE(CanPasteFromClipboard(model.get(), model->bookmark_bar_node()));
-}
-
-// Test for updating title such that url and title pair are unique among the
-// children of parent.
-TEST_F(BookmarkUtilsTest, MakeTitleUnique) {
-  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  const std::u16string url_text = u"http://www.google.com/";
-  const std::u16string title_text = u"foobar";
-  const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-
-  const BookmarkNode* node =
-      model->AddURL(bookmark_bar_node, 0, title_text, GURL(url_text));
-
-  EXPECT_EQ(url_text,
-            ASCIIToUTF16(bookmark_bar_node->children()[0]->url().spec()));
-  EXPECT_EQ(title_text, bookmark_bar_node->children()[0]->GetTitle());
-
-  // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
-  nodes.push_back(node);
-  CopyToClipboard(model.get(), nodes, false,
-                  metrics::BookmarkEditSource::kOther,
-                  /*is_off_the_record=*/false);
-
-  // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(CanPasteFromClipboard(model.get(), bookmark_bar_node));
-
-  PasteFromClipboard(model.get(), bookmark_bar_node, 1);
-  ASSERT_EQ(2u, bookmark_bar_node->children().size());
-
-  // Url for added node should be same as url_text.
-  EXPECT_EQ(url_text,
-            ASCIIToUTF16(bookmark_bar_node->children()[1]->url().spec()));
-  // Title for added node should be numeric subscript suffix with copied node
-  // title.
-  EXPECT_EQ(u"foobar (1)", bookmark_bar_node->children()[1]->GetTitle());
-}
-
-TEST_F(BookmarkUtilsTest, CopyPasteMetaInfo) {
-  std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
-  const BookmarkNode* node = model->AddURL(model->other_node(), 0, u"foo bar",
-                                           GURL("http://www.google.com"));
-  model->SetNodeMetaInfo(node, "somekey", "somevalue");
-  model->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
-
-  // Copy a node to the clipboard.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
-  nodes.push_back(node);
-  CopyToClipboard(model.get(), nodes, false,
-                  metrics::BookmarkEditSource::kOther,
-                  /*is_off_the_record=*/false);
-
-  // Paste node to a different folder.
-  const BookmarkNode* folder =
-      model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
-  EXPECT_EQ(0u, folder->children().size());
-
-  // And make sure we can paste a bookmark from the clipboard.
-  EXPECT_TRUE(CanPasteFromClipboard(model.get(), folder));
-
-  PasteFromClipboard(model.get(), folder, 0);
-  ASSERT_EQ(1u, folder->children().size());
-
-  // Verify that the pasted node contains the same meta info.
-  const BookmarkNode* pasted = folder->children().front().get();
-  ASSERT_TRUE(pasted->GetMetaInfoMap());
-  EXPECT_EQ(2u, pasted->GetMetaInfoMap()->size());
-  std::string value;
-  EXPECT_TRUE(pasted->GetMetaInfo("somekey", &value));
-  EXPECT_EQ("somevalue", value);
-  EXPECT_TRUE(pasted->GetMetaInfo("someotherkey", &value));
-  EXPECT_EQ("someothervalue", value);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)

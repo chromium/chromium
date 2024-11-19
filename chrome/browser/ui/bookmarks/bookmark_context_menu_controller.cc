@@ -21,6 +21,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -424,8 +425,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_PASTE: {
-      // TODO(b/369304373): Update `PasteFromClipboard` to accept/handle a
-      // `BookmarkParentFolder::PermanentFolderType` for merged surfaces.
       size_t index;
       const BookmarkNode* paste_target =
           bookmarks::GetParentForNewNodes(parent_, selection_, &index);
@@ -433,8 +432,13 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         return;
       }
 
-      bookmarks::PasteFromClipboard(bookmark_service_->bookmark_model(),
-                                    paste_target, index);
+      // TODO(crbug.com/369304373): Use
+      // `BookmarkUIOperationsHelperMergedSurfaces` once
+      // `bookmarks::GetParentForNewNodes()` is migrated to return
+      // `BookmarkParentFolder`.
+      BookmarkUIOperationsHelperNonMergedSurfaces(
+          bookmark_service_->bookmark_model(), paste_target)
+          .PasteFromClipboard(index);
       break;
     }
 

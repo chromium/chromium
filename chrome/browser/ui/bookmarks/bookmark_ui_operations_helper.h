@@ -49,7 +49,6 @@ class BookmarkUIOperationsHelper {
  protected:
   virtual bookmarks::BookmarkModel* model() = 0;
   virtual void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                                    const base::FilePath& profile_path,
                                     size_t index_to_add_at) = 0;
   virtual void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                                     const base::FilePath& profile_path,
@@ -85,10 +84,13 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
 
   ~BookmarkUIOperationsHelperNonMergedSurfaces() override;
 
+  // Pastes from the clipboard. The new nodes are added to `parent`.
+  // The nodes are inserted at `index`.
+  void PasteFromClipboard(size_t index);
+
  protected:
   bookmarks::BookmarkModel* model() override;
   void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                            const base::FilePath& profile_path,
                             size_t index_to_add_at) override;
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
@@ -124,7 +126,6 @@ class BookmarkUIOperationsHelperMergedSurfaces
  protected:
   bookmarks::BookmarkModel* model() override;
   void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
-                            const base::FilePath& profile_path,
                             size_t index_to_add_at) override;
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,

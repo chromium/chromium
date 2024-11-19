@@ -22,13 +22,18 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 
 namespace {
 
+using base::ASCIIToUTF16;
+using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
 BookmarkParentFolder NodeToBookmarkParentFolder(const BookmarkNode* node) {
@@ -57,6 +62,7 @@ template <class T>
 class BookmarkUIOperationsHelperTest : public testing::Test {
  public:
   BookmarkUIOperationsHelperTest() {
+    ui::TestClipboard::CreateForCurrentThread();
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
@@ -71,7 +77,9 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     model_->LoadEmptyForTest();
   }
 
-  ~BookmarkUIOperationsHelperTest() override = default;
+  ~BookmarkUIOperationsHelperTest() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
 
   TestingProfile* profile() { return profile_.get(); }
   bookmarks::BookmarkModel* model() { return model_; }
@@ -188,5 +196,131 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, DropBookmarksFromAnotherProfile) {
   EXPECT_EQ(newly_copied_node->url(), folder_child_node->url());
   EXPECT_EQ(folder->children()[1].get(), folder_child_node);
 }
+
+// `BookmarkNodeData` has a different implementation on Mac. It doesn't use
+// `TestClipboard` if it is set. Given the clipboard is a shared resource,
+// testing on Mac will be flaky. Refactoring is required to be able to test
+// copy/paste to clipboard on Mac.
+#if !BUILDFLAG(IS_MAC)
+TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
+  BookmarkModel* model = this->model();
+  const std::u16string url_text = u"http://www.google.com/";
+  const BookmarkNode* new_folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"New_Folder");
+  // Write blank text to clipboard.
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(std::u16string());
+  }
+
+  // Now we shouldn't be able to paste from the clipboard.
+  EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
+  EXPECT_FALSE(bookmarks::CanPasteFromClipboard(model, new_folder));
+
+  // Write some valid url to the clipboard.
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(url_text);
+  }
+  // Now we should be able to paste from the clipboard.
+  EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, new_folder));
+
+  if (std::is_same<TypeParam,
+                   BookmarkUIOperationsHelperMergedSurfaces>::value) {
+    // Not supported yet.
+    GTEST_SKIP();
+  }
+  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, new_folder);
+  helper.PasteFromClipboard(0);
+  ASSERT_EQ(1u, new_folder->children().size());
+
+  // Url for added node should be same as url_text.
+  EXPECT_EQ(url_text,
+            ASCIIToUTF16(new_folder->children().front()->url().spec()));
+}
+
+// Test for updating title such that url and title pair are unique among the
+// children of parent.
+TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
+  const std::u16string url_text = u"http://www.google.com/";
+  const std::u16string title_text = u"foobar";
+  BookmarkModel* model = this->model();
+  const BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+
+  const BookmarkNode* node =
+      model->AddURL(bookmark_bar_node, 0, title_text, GURL(url_text));
+
+  EXPECT_EQ(url_text,
+            ASCIIToUTF16(bookmark_bar_node->children()[0]->url().spec()));
+  EXPECT_EQ(title_text, bookmark_bar_node->children()[0]->GetTitle());
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
+                             bookmarks::metrics::BookmarkEditSource::kOther,
+                             /*is_off_the_record=*/false);
+
+  // Now we should be able to paste from the clipboard.
+  EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, bookmark_bar_node));
+
+  if (std::is_same<TypeParam,
+                   BookmarkUIOperationsHelperMergedSurfaces>::value) {
+    // Not supported yet.
+    GTEST_SKIP();
+  }
+  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, bookmark_bar_node);
+  helper.PasteFromClipboard(1);
+  ASSERT_EQ(2u, bookmark_bar_node->children().size());
+
+  // Url for added node should be same as url_text.
+  EXPECT_EQ(url_text,
+            ASCIIToUTF16(bookmark_bar_node->children()[1]->url().spec()));
+  // Title for added node should be numeric subscript suffix with copied node
+  // title.
+  EXPECT_EQ(u"foobar (1)", bookmark_bar_node->children()[1]->GetTitle());
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* node = model->AddURL(model->other_node(), 0, u"foo bar",
+                                           GURL("http://www.google.com"));
+  model->SetNodeMetaInfo(node, "somekey", "somevalue");
+  model->SetNodeMetaInfo(node, "someotherkey", "someothervalue");
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
+                             bookmarks::metrics::BookmarkEditSource::kOther,
+                             /*is_off_the_record=*/false);
+
+  // Paste node to a different folder.
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
+  EXPECT_EQ(0u, folder->children().size());
+
+  // And make sure we can paste a bookmark from the clipboard.
+  EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, folder));
+
+  if (std::is_same<TypeParam,
+                   BookmarkUIOperationsHelperMergedSurfaces>::value) {
+    // Not supported yet.
+    GTEST_SKIP();
+  }
+  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, folder);
+
+  helper.PasteFromClipboard(0);
+  ASSERT_EQ(1u, folder->children().size());
+
+  // Verify that the pasted node contains the same meta info.
+  const BookmarkNode* pasted = folder->children().front().get();
+  ASSERT_TRUE(pasted->GetMetaInfoMap());
+  EXPECT_EQ(2u, pasted->GetMetaInfoMap()->size());
+  std::string value;
+  EXPECT_TRUE(pasted->GetMetaInfo("somekey", &value));
+  EXPECT_EQ("somevalue", value);
+  EXPECT_TRUE(pasted->GetMetaInfo("someotherkey", &value));
+  EXPECT_EQ("someothervalue", value);
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace

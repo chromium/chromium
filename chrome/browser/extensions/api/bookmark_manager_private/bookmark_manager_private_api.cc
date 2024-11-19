@@ -433,7 +433,8 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   if (!highest_index)
     highest_index = parent_node->children().size();
 
-  bookmarks::PasteFromClipboard(model, parent_node, highest_index);
+  BookmarkUIOperationsHelperNonMergedSurfaces(model, parent_node)
+      .PasteFromClipboard(highest_index);
   return NoArguments();
 }
 

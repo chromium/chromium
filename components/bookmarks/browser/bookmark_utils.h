@@ -79,13 +79,6 @@ void CopyToClipboard(
     metrics::BookmarkEditSource source,
     bool is_off_the_record);
 
-// Pastes from the clipboard. The new nodes are added to `parent`, unless
-// `parent` is null in which case this does nothing. The nodes are inserted
-// at `index`.
-void PasteFromClipboard(BookmarkModel* model,
-                        const BookmarkNode* parent,
-                        size_t index);
-
 // Returns true if the user can copy from the pasteboard.
 bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node);
 
