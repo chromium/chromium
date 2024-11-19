@@ -4303,6 +4303,24 @@ const FeatureEntry::FeatureVariation kServiceWorkerAutoPreloadVariations[] = {
      std::size(kServiceWorkerAutoPreload_SWNotRunningOnly), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kEnableFingerprintingProtectionFilter_WithLogging[] = {
+        {"activation_level", "enabled"},
+        {"enable_console_logging", "true"}};
+const FeatureEntry::FeatureParam
+    kEnableFingerprintingProtectionFilter_DryRunWithLogging[] = {
+        {"activation_level", "dry_run"},
+        {"enable_console_logging", "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableFingerprintingProtectionFilterVariations[] = {
+        {" - with Console Logs",
+         kEnableFingerprintingProtectionFilter_WithLogging,
+         std::size(kEnableFingerprintingProtectionFilter_WithLogging), nullptr},
+        {" - Dry Run with Console Logs",
+         kEnableFingerprintingProtectionFilter_DryRunWithLogging,
+         std::size(kEnableFingerprintingProtectionFilter_DryRunWithLogging),
+         nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10951,8 +10969,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFingerprintingProtectionBlocklistName,
      flag_descriptions::kEnableFingerprintingProtectionBlocklistDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(fingerprinting_protection_filter::features::
-                            kEnableFingerprintingProtectionFilter)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         fingerprinting_protection_filter::features::
+             kEnableFingerprintingProtectionFilter,
+         kEnableFingerprintingProtectionFilterVariations,
+         "EnableFingerprintingProtectionFilter")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-forest-feature", flag_descriptions::kForestFeatureName,
