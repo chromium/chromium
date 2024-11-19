@@ -1025,6 +1025,8 @@ crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/* [ Retry
 
 ## Volteer ##
 crbug.com/1507164 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
+crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
+crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/extensions/oes-draw-buffers-indexed.html [ RetryOnFailure ]
 
 #####################
