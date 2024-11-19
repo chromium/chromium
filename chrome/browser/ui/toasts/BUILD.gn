@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
+    "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/side_panel",

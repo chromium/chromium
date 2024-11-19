@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -39,12 +40,6 @@
 #include "chrome/browser/ui/views/user_education/low_usage_promo.h"
 #include "components/plus_addresses/resources/vector_icons.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-// TODO(crbug.com/379125549): Remove forward declaration and directly include
-// chrome/browser/ui/chrome_pages.h once circular dependency is resolved.
-namespace chrome {
-GURL GetSettingsUrl(std::string_view sub_page);
-}
 
 ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();
