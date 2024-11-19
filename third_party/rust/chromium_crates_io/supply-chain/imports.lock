@@ -7,6 +7,12 @@ when = "2024-11-07"
 user-id = 55123
 user-login = "rust-lang-owner"
 
+[[publisher.libc]]
+version = "0.2.164"
+when = "2024-11-16"
+user-id = 55123
+user-login = "rust-lang-owner"
+
 [[publisher.windows-sys]]
 version = "0.52.0"
 when = "2023-11-15"
