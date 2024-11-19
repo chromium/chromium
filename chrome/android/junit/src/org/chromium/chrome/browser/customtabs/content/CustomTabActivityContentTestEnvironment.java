@@ -159,6 +159,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activity.getCompositorViewHolderSupplier()).thenReturn(compositorViewHolderSupplier);
         when(activity.areTabModelsInitialized()).thenReturn(true);
         when(activity.getCustomTabDelegateFactory()).thenReturn(customTabDelegateFactory);
+        when(activity.getCustomTabTabPersistencePolicy()).thenReturn(tabPersistencePolicy);
+        when(activity.getCustomTabActivityTabFactory()).thenReturn(tabFactory);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -169,7 +171,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     }
 
     public CustomTabActivityTabController createTabController() {
-        return new CustomTabActivityTabController(activity, tabPersistencePolicy, tabFactory);
+        return new CustomTabActivityTabController(activity);
     }
 
     public CustomTabActivityNavigationController createNavigationController(

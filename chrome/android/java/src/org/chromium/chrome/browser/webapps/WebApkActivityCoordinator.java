@@ -8,8 +8,7 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
-import dagger.Lazy;
-
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
@@ -29,7 +28,7 @@ import javax.inject.Inject;
 @ActivityScope
 public class WebApkActivityCoordinator implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final Lazy<WebApkUpdateManager> mWebApkUpdateManager;
+    private final Supplier<WebApkUpdateManager> mWebApkUpdateManager;
 
     @Inject
     public WebApkActivityCoordinator(
@@ -37,12 +36,11 @@ public class WebApkActivityCoordinator implements DestroyObserver {
             WebappDisclosureController unused_disclosureController,
             DisclosureInfobar unused_disclosureInfobar,
             WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
-            Lazy<WebApkUpdateManager> webApkUpdateManager,
             BaseCustomTabActivity activity) {
         // The unused_ params are present just to initialize them.
 
         mIntentDataProvider = activity.getIntentDataProvider();
-        mWebApkUpdateManager = webApkUpdateManager;
+        mWebApkUpdateManager = activity::getWebApkUpdateManager;
 
         deferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {

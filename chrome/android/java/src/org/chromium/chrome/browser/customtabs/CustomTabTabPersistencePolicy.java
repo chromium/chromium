@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
 
@@ -20,8 +21,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
-import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -43,10 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
-import javax.inject.Inject;
-
 /** Handles the Custom Tab specific behaviors of tab persistence. */
-@ActivityScope
 public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private static final String TAG = "tabmodel";
 
@@ -65,10 +61,9 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     private SequencedTaskRunner mTaskRunner;
     private boolean mDestroyed;
 
-    @Inject
-    public CustomTabTabPersistencePolicy(ChromeActivity activity) {
+    public CustomTabTabPersistencePolicy(Activity activity, Bundle savedInstanceState) {
         mTaskId = activity.getTaskId();
-        mShouldRestore = activity.getSavedInstanceState() != null;
+        mShouldRestore = savedInstanceState != null;
     }
 
     /**

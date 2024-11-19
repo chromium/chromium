@@ -27,11 +27,6 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public ChromeActivity provideChromeActivity() {
-        return mActivity;
-    }
-
-    @Provides
     public Resources provideResources() {
         return mActivity.getResources();
     }

@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
+import org.chromium.chrome.browser.webapps.WebApkUpdateManager;
 import org.chromium.chrome.browser.webapps.WebappActionsNotificationManager;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -121,7 +122,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabActivityTabController mTabController;
     protected CustomTabActivityTabProvider mTabProvider;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
-    protected CustomTabActivityTabFactory mTabFactory;
+    private CustomTabActivityTabFactory mTabFactory;
     protected CustomTabIntentHandler mCustomTabIntentHandler;
     protected CustomTabNightModeStateController mNightModeStateController;
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
@@ -147,6 +148,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private SplashController mSplashController;
     private CustomTabCompositorContentInitializer mCustomTabCompositorContentInitializer;
     private CustomTabBottomBarDelegate mCustomTabBottomBarDelegate;
+    private CustomTabTabPersistencePolicy mCustomTabTabPersistencePolicy;
+    private WebApkUpdateManager mWebApkUpdateManager;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -386,10 +389,24 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getBottomSheetController(),
                         getAuthTabVerifier(),
                         getBrowserControlsManager());
+
+        mTabFactory =
+                new CustomTabActivityTabFactory(
+                        this,
+                        getCustomTabTabPersistencePolicy(),
+                        getWindowAndroid(),
+                        getProfileProviderSupplier(),
+                        getCustomTabDelegateFactory(),
+                        getIntentDataProvider(),
+                        this,
+                        getTabModelSelectorSupplier(),
+                        getCompositorViewHolderSupplier(),
+                        getCipherFactory());
+
         mToolbarCoordinator = component.resolveToolbarCoordinator();
         mNavigationController = component.resolveNavigationController();
         mTabController = component.resolveTabController();
-        mTabFactory = component.resolveTabFactory();
+
         mCustomTabIntentHandler = component.resolveIntentHandler();
 
         mNavigationController.setFinishHandler(
@@ -433,7 +450,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         }
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
-        mTabFactory.setActivityType(getActivityType());
+        getCustomTabActivityTabFactory().setActivityType(getActivityType());
         getCustomTabDelegateFactory()
                 .setEphemeralTabCoordinatorSupplier(
                         mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
@@ -657,24 +674,24 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected TabModelOrchestrator createTabModelOrchestrator() {
-        return mTabFactory.createTabModelOrchestrator();
+        return getCustomTabActivityTabFactory().createTabModelOrchestrator();
     }
 
     @Override
     protected void destroyTabModels() {
-        if (mTabFactory != null) {
-            mTabFactory.destroyTabModelOrchestrator();
+        if (getCustomTabActivityTabFactory() != null) {
+            getCustomTabActivityTabFactory().destroyTabModelOrchestrator();
         }
     }
 
     @Override
     protected void createTabModels() {
-        mTabFactory.createTabModels();
+        getCustomTabActivityTabFactory().createTabModels();
     }
 
     @Override
     protected Pair<ChromeTabCreator, ChromeTabCreator> createTabCreators() {
-        return mTabFactory.createTabCreators();
+        return getCustomTabActivityTabFactory().createTabCreators();
     }
 
     @Override
@@ -685,7 +702,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     public void initializeCompositor() {
         super.initializeCompositor();
-        mTabFactory.getTabModelOrchestrator().onNativeLibraryReady(getTabContentManager());
+        getCustomTabActivityTabFactory()
+                .getTabModelOrchestrator()
+                .onNativeLibraryReady(getTabContentManager());
     }
 
     @Override
@@ -1134,5 +1153,26 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabDelegateFactory getCustomTabDelegateFactory() {
         return mDelegateFactory;
+    }
+
+    public CustomTabTabPersistencePolicy getCustomTabTabPersistencePolicy() {
+        if (mCustomTabTabPersistencePolicy == null) {
+            mCustomTabTabPersistencePolicy =
+                    new CustomTabTabPersistencePolicy(this, getSavedInstanceState());
+        }
+        return mCustomTabTabPersistencePolicy;
+    }
+
+    public WebApkUpdateManager getWebApkUpdateManager() {
+        if (mWebApkUpdateManager == null) {
+            mWebApkUpdateManager =
+                    new WebApkUpdateManager(
+                            this, getActivityTabProvider(), getLifecycleDispatcher());
+        }
+        return mWebApkUpdateManager;
+    }
+
+    public CustomTabActivityTabFactory getCustomTabActivityTabFactory() {
+        return mTabFactory;
     }
 }

@@ -20,10 +20,8 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -38,19 +36,16 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-import javax.inject.Inject;
-
 /**
  * Creates {@link Tab}, {@link TabModelSelector}, and {@link ChromeTabCreator}s in the context of a
  * Custom Tab activity.
  */
-@ActivityScope
 public class CustomTabActivityTabFactory {
     private final Activity mActivity;
     private final CustomTabTabPersistencePolicy mPersistencePolicy;
     private final ActivityWindowAndroid mActivityWindowAndroid;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
-    private final Supplier<CustomTabDelegateFactory> mCustomTabDelegateFactory;
+    private final CustomTabDelegateFactory mCustomTabDelegateFactory;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final TabCreatorManager mTabCreatorManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -60,19 +55,27 @@ public class CustomTabActivityTabFactory {
     @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
     @ActivityType int mActivityType;
 
-    @Inject
     public CustomTabActivityTabFactory(
-            BaseCustomTabActivity activity, CustomTabTabPersistencePolicy persistencePolicy) {
+            Activity activity,
+            CustomTabTabPersistencePolicy persistencePolicy,
+            ActivityWindowAndroid activityWindowAndroid,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            CustomTabDelegateFactory customTabDelegateFactory,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            TabCreatorManager tabCreatorManager,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            CipherFactory cipherFactory) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
-        mActivityWindowAndroid = activity.getWindowAndroid();
-        mProfileProviderSupplier = activity.getProfileProviderSupplier();
-        mCustomTabDelegateFactory = activity::getCustomTabDelegateFactory;
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mTabCreatorManager = activity;
-        mTabModelSelectorSupplier = activity.getTabModelSelectorSupplier();
-        mCompositorViewHolderSupplier = activity.getCompositorViewHolderSupplier();
-        mCipherFactory = activity.getCipherFactory();
+        mActivityWindowAndroid = activityWindowAndroid;
+        mProfileProviderSupplier = profileProviderSupplier;
+        mCustomTabDelegateFactory = customTabDelegateFactory;
+        mIntentDataProvider = intentDataProvider;
+        mTabCreatorManager = tabCreatorManager;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mCipherFactory = cipherFactory;
     }
 
     public void setActivityType(int activityType) {
@@ -131,7 +134,7 @@ public class CustomTabActivityTabFactory {
         return new ChromeTabCreator(
                 mActivity,
                 mActivityWindowAndroid,
-                mCustomTabDelegateFactory::get,
+                () -> mCustomTabDelegateFactory,
                 mProfileProviderSupplier,
                 incognito,
                 AsyncTabParamsManagerSingleton.getInstance(),

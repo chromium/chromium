@@ -115,18 +115,15 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private CookiesFetcher mCookiesFetcher;
 
     @Inject
-    public CustomTabActivityTabController(
-            BaseCustomTabActivity activity,
-            CustomTabTabPersistencePolicy persistencePolicy,
-            CustomTabActivityTabFactory tabFactory) {
+    public CustomTabActivityTabController(BaseCustomTabActivity activity) {
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
         mCustomTabDelegateFactory = activity::getCustomTabDelegateFactory;
         mActivity = activity;
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mCompositorViewHolder = activity.getCompositorViewHolderSupplier();
-        mTabPersistencePolicy = persistencePolicy;
-        mTabFactory = tabFactory;
+        mTabPersistencePolicy = activity.getCustomTabTabPersistencePolicy();
+        mTabFactory = activity.getCustomTabActivityTabFactory();
         mCustomTabObserver = activity.getCustomTabObserver();
         mTabNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
         mActivityTabProvider = activity.getActivityTabProvider();

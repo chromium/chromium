@@ -9,10 +9,8 @@ import dagger.Subcomponent;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
-import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
@@ -34,8 +32,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     CustomTabActivityTabController resolveTabController();
 
-    CustomTabActivityTabFactory resolveTabFactory();
-
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
 
     CustomTabIntentHandler resolveIntentHandler();
@@ -54,7 +50,4 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     // TWA only
     TrustedWebActivityCoordinator resolveTrustedWebActivityCoordinator();
-
-    // For testing
-    CustomTabTabPersistencePolicy resolveTabPersistencePolicy();
 }
