@@ -16,7 +16,7 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
-    "one_google_bar.js",
-    "background_image.js",
+    "one_google_bar.ts",
+    "background_image.ts",
   ]
 }

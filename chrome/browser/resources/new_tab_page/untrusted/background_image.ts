@@ -7,9 +7,9 @@
  * image in order to send that time to the main NTP frame for metrics logging.
  */
 
-let loadTime;
+let loadTime: number;
 
-function sendLoadTime(time) {
+function sendLoadTime(time: number) {
   window.parent.postMessage(
       {
         frameType: 'background-image',
@@ -20,6 +20,8 @@ function sendLoadTime(time) {
       'chrome://new-tab-page');
 }
 
+// The function is used in background_image.html.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function onImageLoad() {
   document.body.toggleAttribute('shown', true);
   loadTime = Date.now();
