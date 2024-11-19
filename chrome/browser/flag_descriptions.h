@@ -81,6 +81,9 @@ extern const char kAndroidAppIntegrationV2Description[];
 extern const char kAndroidAppIntegrationWithFaviconName[];
 extern const char kAndroidAppIntegrationWithFaviconDescription[];
 
+extern const char kAndroidBcivBottomControlsName[];
+extern const char kAndroidBcivBottomControlsDescription[];
+
 extern const char kAndroidBottomToolbarName[];
 extern const char kAndroidBottomToolbarDescription[];
 

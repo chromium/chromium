@@ -178,6 +178,7 @@ VIZ_COMMON_EXPORT bool Use90HzSwapChainCountFor72fps();
 VIZ_COMMON_EXPORT bool IsCrosContentAdjustedRefreshRateEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)
+VIZ_COMMON_EXPORT bool IsBcivBottomControlsEnabled();
 VIZ_COMMON_EXPORT bool IsBrowserControlsInVizEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 

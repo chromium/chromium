@@ -277,10 +277,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         offsetTagsInfo.mTopControlsHairlineHeight =
                                 mControlContainer.getToolbarHairlineHeight();
 
+                        // Notify observers of changes before passing tags to native. This allows
+                        // observers to set fields used later for creating OffsetTagConstraints.
+                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
                         webContents.notifyControlsConstraintsChanged(
                                 oldOffsetTagsInfo, offsetTagsInfo);
-
-                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
                     }
 
                     @Override

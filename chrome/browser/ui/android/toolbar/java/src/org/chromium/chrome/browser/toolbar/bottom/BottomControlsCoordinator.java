@@ -18,6 +18,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -27,11 +28,15 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsViewBinder.ViewH
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 import org.chromium.ui.widget.Toast;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The root coordinator for the bottom controls component. This component is intended for use with
@@ -105,8 +110,15 @@ public class BottomControlsCoordinator implements BackPressHandler {
         mSceneLayer = new ScrollingBottomViewSceneLayer(root, root.getTopShadowHeight());
         PropertyModelChangeProcessor.create(
                 model, new ViewHolder(root, mSceneLayer), BottomControlsViewBinder::bind);
-        layoutManager.createCompositorMCP(
-                model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP);
+        if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
+            Set<PropertyKey> exclusions = new HashSet();
+            exclusions.add(BottomControlsProperties.ANDROID_VIEW_VISIBLE);
+            layoutManager.createCompositorMCPWithExclusions(
+                    model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP, exclusions);
+        } else {
+            layoutManager.createCompositorMCP(
+                    model, mSceneLayer, BottomControlsViewBinder::bindCompositorMCP);
+        }
         int bottomControlsHeightId = R.dimen.bottom_controls_height;
 
         View container = root.findViewById(R.id.bottom_container_slot);

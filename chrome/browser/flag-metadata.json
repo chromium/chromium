@@ -180,6 +180,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "android-browser-controls-in-viz-bottom-controls",
+    "owners": [ "peilinwang@google.com", "kylechar@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "android-elegant-text-height",
     "owners": [ "twellington@chromium.org", "clank-app-team@google.com" ],
     "expiry_milestone": 134

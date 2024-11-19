@@ -33,6 +33,7 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If this flag is enabled, AndroidBrowserControlsInViz must also be enabled.
 BASE_FEATURE(kAndroidBcivBottomControls,
              "AndroidBcivBottomControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -657,6 +658,10 @@ bool ShouldUseDCompSurfacesForDelegatedInk() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+bool IsBcivBottomControlsEnabled() {
+  return base::FeatureList::IsEnabled(features::kAndroidBcivBottomControls);
+}
+
 bool IsBrowserControlsInVizEnabled() {
   return base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz);
 }

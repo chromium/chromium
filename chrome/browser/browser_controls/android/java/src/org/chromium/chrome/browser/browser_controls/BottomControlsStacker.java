@@ -121,6 +121,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     private int mTotalHeightFromSetter = INVALID_HEIGHT;
     private int mTotalMinHeightFromSetter = INVALID_HEIGHT;
 
+    private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.BOTH;
+
     /**
      * Construct the coordination class that's used to position different UIs into the bottom
      * controls.
@@ -171,6 +173,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     /** Returns the calculated total min height of all visible layers. */
     public int getTotalMinHeight() {
         return mTotalMinHeight;
+    }
+
+    /** Returns the state of the browser controls. */
+    public @BrowserControlsState int getBrowserControlsState() {
+        return mBrowserControlsState;
     }
 
     /**
@@ -296,6 +303,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints) {
+        mBrowserControlsState = constraints;
         if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
             for (int layerType : STACK_ORDER) {
                 BottomControlsLayer layer = mLayers.get(layerType);

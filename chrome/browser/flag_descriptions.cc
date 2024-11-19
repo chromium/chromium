@@ -94,6 +94,12 @@ const char kAndroidAppIntegrationWithFaviconDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search with "
     "favicons.";
 
+const char kAndroidBcivBottomControlsName[] =
+    "Browser controls in viz for bottom controls";
+const char kAndroidBcivBottomControlsDescription[] =
+    "Let viz move bottom browser controls when scrolling. If this flag is "
+    "enabled, AndroidBrowserControlsInViz must also be enabled.";
+
 const char kAndroidBottomToolbarName[] = "Bottom Toolbar";
 const char kAndroidBottomToolbarDescription[] =
     "If enabled, displays the toolbar at the bottom.";
