@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeActive2.Foreground"
-    units="ms" expires_after="2025-01-29">
+    units="ms" expires_after="2025-05-18">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -555,7 +555,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebCore.IndexedDB.Transaction.{TransactionType}.TimeQueued.Foreground"
-    units="ms" expires_after="2025-01-29">
+    units="ms" expires_after="2025-05-18">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
