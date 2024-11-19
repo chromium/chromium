@@ -10,14 +10,18 @@
 class ChromeAccountManagerService;
 @protocol IdentityChooserConsumer;
 @protocol SystemIdentity;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // A mediator object that monitors updates of chrome identities, and updates the
 // IdentityChooserViewController.
 @interface IdentityChooserMediator : NSObject
 
 // The designated initializer.
-- (instancetype)initWithAccountManagerService:
-    (ChromeAccountManagerService*)accountManagerService
+- (instancetype)
+    initWithIdentityManager:(signin::IdentityManager*)identityManager
+      accountManagerService:(ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

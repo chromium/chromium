@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_transition_delegate.h"
@@ -81,11 +82,14 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   ProfileIOS* profile = self.browser->GetProfile();
   if (profile->IsOffTheRecord()) {
     profile = profile->GetOriginalProfile();
-  };
+  }
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
-      initWithAccountManagerService:accountManagerService];
+      initWithIdentityManager:identityManager
+        accountManagerService:accountManagerService];
 
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.
