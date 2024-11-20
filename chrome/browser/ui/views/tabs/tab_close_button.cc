@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -61,6 +62,8 @@ TabCloseButton::TabCloseButton(PressedCallback pressed_callback,
   SetAnimationDuration(base::TimeDelta());
   views::InkDrop::Get(this)->GetInkDrop()->SetHoverHighlightFadeDuration(
       base::TimeDelta());
+
+  image_container_view()->DestroyLayer();
 
   // The ink drop highlight path is the same as the focus ring highlight path,
   // but needs to be explicitly mirrored for RTL.
@@ -140,6 +143,20 @@ void TabCloseButton::OnGestureEvent(ui::GestureEvent* event) {
   // start consuming gestures.
   LabelButton::OnGestureEvent(event);
   event->SetHandled();
+}
+
+void TabCloseButton::AddLayerToRegion(ui::Layer* new_layer,
+                                      views::LayerRegion region) {
+  image_container_view()->SetPaintToLayer();
+  image_container_view()->layer()->SetFillsBoundsOpaquely(false);
+  ink_drop_container()->SetVisible(true);
+  ink_drop_container()->AddLayerToRegion(new_layer, region);
+}
+
+void TabCloseButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
+  ink_drop_container()->RemoveLayerFromRegions(old_layer);
+  ink_drop_container()->SetVisible(false);
+  image_container_view()->DestroyLayer();
 }
 
 gfx::Size TabCloseButton::CalculatePreferredSize(
