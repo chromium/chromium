@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
+#include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -39,79 +40,41 @@
 
 namespace {
 
+// The fake server session id.
+constexpr char kTestServerSessionId[] = "server_session_id";
+
+// The fake search session id.
+constexpr char kTestSearchSessionId[] = "search_session_id";
+
+// The fake suggest signals.
+constexpr char kTestSuggestSignals[] = "encoded_image_signals";
+
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithImage[] = "/test_visual.html";
 constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
 
-lens::mojom::TextPtr CreateTestText(const std::vector<std::string>& words) {
-  // Create a Line.
-  lens::mojom::LinePtr line = lens::mojom::Line::New();
+lens::Text CreateTestText(const std::vector<std::string>& words) {
+  lens::Text text;
+  text.set_content_language("es");
+  // Create a paragraph.
+  lens::TextLayout::Paragraph* paragraph =
+      text.mutable_text_layout()->add_paragraphs();
+  // Create a line.
+  lens::TextLayout::Line* line = paragraph->add_lines();
 
   for (size_t i = 0; i < words.size(); ++i) {
-    lens::mojom::WordPtr word = lens::mojom::Word::New();
-    word->plain_text = words[i];
-    word->text_separator = " ";
-    word->geometry = lens::mojom::Geometry::New(
-        lens::mojom::CenterRotatedBox::New(
-            gfx::RectF(0.1 * i, 0.1, 0.1, 0.1), 0.0,
-            lens::mojom::CenterRotatedBox_CoordinateType::kNormalized),
-        std::vector<lens::mojom::PolygonPtr>());
-
-    line->words.push_back(std::move(word));
+    lens::TextLayout::Word* word = line->add_words();
+    word->set_plain_text(words[i]);
+    word->set_text_separator(" ");
+    word->mutable_geometry()->mutable_bounding_box()->set_center_x(0.1 * i);
+    word->mutable_geometry()->mutable_bounding_box()->set_center_y(0.1);
+    word->mutable_geometry()->mutable_bounding_box()->set_width(0.1);
+    word->mutable_geometry()->mutable_bounding_box()->set_height(0.1);
+    word->mutable_geometry()->mutable_bounding_box()->set_coordinate_type(
+        lens::NORMALIZED);
   }
-
-  // Add line with words to a paragraph.
-  lens::mojom::ParagraphPtr paragraph = lens::mojom::Paragraph::New();
-  paragraph->lines.push_back(std::move(line));
-
-  // Create text with the paragraph.
-  lens::mojom::TextPtr text =
-      lens::mojom::Text::New(lens::mojom::TextLayout::New(), "es");
-  text->text_layout->paragraphs.push_back(std::move(paragraph));
   return text;
 }
-
-class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
- public:
-  explicit LensOverlayQueryControllerFake(
-      lens::LensOverlayFullImageResponseCallback full_image_callback,
-      lens::LensOverlayUrlResponseCallback url_callback,
-      lens::LensOverlaySuggestInputsCallback suggest_inputs_callback,
-      lens::LensOverlayThumbnailCreatedCallback thumbnail_created_callback,
-      variations::VariationsClient* variations_client,
-      signin::IdentityManager* identity_manager,
-      Profile* profile,
-      lens::LensOverlayInvocationSource invocation_source,
-      bool use_dark_mode,
-      lens::LensOverlayGen204Controller* gen204_controller)
-      : LensOverlayQueryController(full_image_callback,
-                                   url_callback,
-                                   suggest_inputs_callback,
-                                   thumbnail_created_callback,
-                                   variations_client,
-                                   identity_manager,
-                                   profile,
-                                   invocation_source,
-                                   use_dark_mode,
-                                   gen204_controller) {}
-
-  void StartQueryFlow(
-      const SkBitmap& screenshot,
-      GURL page_url,
-      std::optional<std::string> page_title,
-      std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
-      base::span<const uint8_t> underlying_content_bytes,
-      lens::PageContentMimeType underlying_content_type,
-      float ui_scale_factor) override {
-    // Send response for full image callback / HandleStartQueryResponse.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(full_image_callback_,
-                       std::vector<lens::mojom::OverlayObjectPtr>(),
-                       CreateTestText({"This", "is", "test", "text."}),
-                       /*is_error=*/false));
-  }
-};
 
 // Stubs out network requests.
 class LensOverlayControllerFake : public LensOverlayController {
@@ -142,10 +105,30 @@ class LensOverlayControllerFake : public LensOverlayController {
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller) override {
     auto fake_query_controller =
-        std::make_unique<LensOverlayQueryControllerFake>(
+        std::make_unique<lens::TestLensOverlayQueryController>(
             full_image_callback, url_callback, suggest_inputs_callback,
             thumbnail_created_callback, variations_client, identity_manager,
             profile, invocation_source, use_dark_mode, gen204_controller);
+
+    // Set up the fake responses for the query controller.
+    lens::LensOverlayServerClusterInfoResponse cluster_info_response;
+    cluster_info_response.set_server_session_id(kTestServerSessionId);
+    cluster_info_response.set_search_session_id(kTestSearchSessionId);
+    fake_query_controller->set_fake_cluster_info_response(
+        cluster_info_response);
+
+    lens::LensOverlayObjectsResponse objects_response;
+    objects_response.mutable_text()->CopyFrom(
+        CreateTestText({"This", "is", "test", "text."}));
+    objects_response.mutable_cluster_info()->set_server_session_id(
+        kTestServerSessionId);
+    objects_response.mutable_cluster_info()->set_search_session_id(
+        kTestSearchSessionId);
+    fake_query_controller->set_fake_objects_response(objects_response);
+
+    lens::LensOverlayInteractionResponse interaction_response;
+    interaction_response.set_encoded_response(kTestSuggestSignals);
+    fake_query_controller->set_fake_interaction_response(interaction_response);
     return fake_query_controller;
   }
 };

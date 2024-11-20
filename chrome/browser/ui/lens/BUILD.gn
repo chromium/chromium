@@ -169,6 +169,18 @@ source_set("lens") {
   }
 }
 
+source_set("test_query_controller") {
+  sources = [
+    "test_lens_overlay_query_controller.cc",
+    "test_lens_overlay_query_controller.h",
+  ]
+
+  deps = [
+    ":lens",
+    "//google_apis/common",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -178,6 +190,7 @@ source_set("browser_tests") {
   ]
   deps = [
     ":lens",
+    ":test_query_controller",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -238,6 +251,7 @@ source_set("interactive_ui_tests") {
   ]
   deps = [
     ":lens",
+    ":test_query_controller",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
@@ -274,6 +288,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":lens",
+    ":test_query_controller",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
