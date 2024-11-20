@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_with/search_with_mediator.h"
+#import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h"
 #import "ios/chrome/browser/screen_time/model/screen_time_buildflags.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
-#import "ios/chrome/browser/ui/search_with/search_with_mediator.h"
 #import "url/gurl.h"
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)

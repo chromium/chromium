@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
 
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_delegate.h"
+#import "ios/chrome/browser/search_with/ui_bundled/search_with_delegate.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"
-#import "ios/chrome/browser/ui/search_with/search_with_delegate.h"
 
 @implementation BrowserEditMenuHandler
 

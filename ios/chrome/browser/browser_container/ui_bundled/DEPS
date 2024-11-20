@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/ui/fullscreen",
   "+ios/chrome/browser/ui/partial_translate",
-  "+ios/chrome/browser/ui/search_with",
+  "+ios/chrome/browser/search_with/ui_bundled",
   "+ios/chrome/browser/link_to_text/model/link_to_text_payload.h",
   "+ios/chrome/browser/link_to_text/ui_bundled",
   "+ios/chrome/browser/overlays/model/public",

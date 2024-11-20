@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SEARCH_WITH_SEARCH_WITH_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_SEARCH_WITH_SEARCH_WITH_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SEARCH_WITH_UI_BUNDLED_SEARCH_WITH_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SEARCH_WITH_UI_BUNDLED_SEARCH_WITH_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/search_with/search_with_delegate.h"
+#import "ios/chrome/browser/search_with/ui_bundled/search_with_delegate.h"
 
 @protocol ApplicationCommands;
 class TemplateURLService;
@@ -32,4 +32,4 @@ class WebStateList;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SEARCH_WITH_SEARCH_WITH_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_WITH_UI_BUNDLED_SEARCH_WITH_MEDIATOR_H_
