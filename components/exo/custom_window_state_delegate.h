@@ -28,8 +28,6 @@ class CustomWindowStateDelegate : public ash::WindowStateDelegate {
   // ash::WindowStateDelegate:
   bool ToggleFullscreen(ash::WindowState* window_state) override;
   void ToggleLockedFullscreen(ash::WindowState* window_state) override;
-  std::unique_ptr<ash::PresentationTimeRecorder> OnDragStarted(
-      int component) override;
   void OnDragFinished(bool cancel, const gfx::PointF& location) override;
 
  private:

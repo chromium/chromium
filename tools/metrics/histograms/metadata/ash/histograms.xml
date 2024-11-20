@@ -5223,27 +5223,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.InteractiveWindowResize.Lacros.TimeToPresent" units="ms"
-    expires_after="2024-12-18">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    Similar to Ash.InteractiveWindowResize.TimeToPresent but tracks the resize
-    latency for lacros windows by measuring configure -&gt; ack -&gt; present
-    time.
-  </summary>
-</histogram>
-
-<histogram name="Ash.InteractiveWindowResize.Lacros.TimeToPresent.MaxLatency"
-    units="ms" expires_after="2024-12-18">
-  <owner>xiyuan@chromium.org</owner>
-  <owner>oshima@chromium.org</owner>
-  <summary>
-    Maximum time of Ash.InteractiveWindowResize.Lacros.TimeToPresent during an
-    interactive resize.
-  </summary>
-</histogram>
-
 <histogram name="Ash.InteractiveWindowResize.TimeToPresent" units="ms"
     expires_after="2025-11-18">
   <owner>xiyuan@chromium.org</owner>
