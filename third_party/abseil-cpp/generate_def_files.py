@@ -27,6 +27,9 @@ import sys
 import tempfile
 import time
 
+assert sys.platform != 'win32', \
+  "This doesn't work on Windows due to https://crbug.com/3790230222"
+
 # Matches mangled symbols containing 'absl' or starting with 'Absl'. This is
 # a good enough heuristic to select Abseil symbols to list in the .def file.
 # See https://learn.microsoft.com/en-us/cpp/build/reference/decorated-names,
