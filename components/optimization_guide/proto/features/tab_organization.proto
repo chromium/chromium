@@ -34,7 +34,7 @@ message TabOrganizationLoggingData {
   reserved 4, 5;
 }
 
-// Next ID: 6
+// Next ID: 8
 message TabOrganizationRequest {
   // The ungrouped tabs that are requested to be organized.
   repeated Tab tabs = 1;
@@ -53,6 +53,13 @@ message TabOrganizationRequest {
   // grouping the tabs. For now it is an experimental field and should not be
   // used in prod.
   TabOrganizationModelStrategy model_strategy = 5;
+
+  // The direct user instruction about how the tabs should be organized.
+  string user_command = 6;
+
+  // The previous responses from the model. On the client side, we will only
+  // send a few (less than 3) of them.
+  repeated TabOrganizationResponse previous_responses = 7;
 
   // The clustering algorithm that the user prefers the model to use for
   // grouping the tabs.
