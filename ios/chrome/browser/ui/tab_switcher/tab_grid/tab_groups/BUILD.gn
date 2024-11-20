@@ -118,6 +118,7 @@ source_set("tab_groups_ui") {
     "recent_activity_log_item.mm",
     "recent_activity_view_controller.h",
     "recent_activity_view_controller.mm",
+    "tab_group_presentation_commands.h",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
     "tab_groups_panel_cell.h",

@@ -15,6 +15,7 @@
 // The completion block to be called when the share button is tapped. CollabID
 // is the ID of the group that the user is invited to. IsSignedIn is YES if the
 // user is signed in.
+// TODO(crbug.com/6035036) : Remove it once cleaned downstream.
 @property(nonatomic, copy) void (^completionBlock)
     (NSString* collabID, BOOL isSignedIn);
 

@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_presentation_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_grid_delegate.h"
@@ -44,6 +45,10 @@ constexpr CGFloat kOriginScale = 0.1;
 // Navigation bar.
 constexpr CGFloat kDotSize = 12;
 constexpr CGFloat kSpace = 8;
+
+// FacePile constraints.
+constexpr CGFloat kFacePileWidth = 84;
+constexpr CGFloat kFacePileHeight = 44;
 
 }  // namespace
 
@@ -228,12 +233,6 @@ constexpr CGFloat kSpace = 8;
   return UIStatusBarStyleLightContent;
 }
 
-- (void)didTapPlusButton {
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridTabGroupCreateNewTab"));
-  [self openNewTab];
-}
-
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self updateGridInsets];
@@ -294,6 +293,18 @@ constexpr CGFloat kSpace = 8;
 
 #pragma mark - Private
 
+// The plus button has been tapped.
+- (void)didTapPlusButton {
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridTabGroupCreateNewTab"));
+  [self openNewTab];
+}
+
+// The facePile button has been tapped.
+- (void)didTapFacePileButton {
+  [self.presentationHandler showShareKitFlow];
+}
+
 // Returns the navigation item which contain the back button.
 - (UINavigationItem*)configuredBackButton {
   UINavigationItem* back = [[UINavigationItem alloc] init];
@@ -315,17 +326,30 @@ constexpr CGFloat kSpace = 8;
   dotsItem.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
-  UIBarButtonItem* facePileButton;
+  UIBarButtonItem* facePileBarButton;
   UIViewController* facePile = self.facePile;
   if (facePile) {
-    [self addChildViewController:facePile];
-    facePileButton = [[UIBarButtonItem alloc] initWithCustomView:facePile.view];
+    facePile.view.userInteractionEnabled = NO;
+    UIButton* facePileButton =
+        [[UIButton alloc] initWithFrame:facePile.view.bounds];
+    [facePileButton addTarget:self
+                       action:@selector(didTapFacePileButton)
+             forControlEvents:UIControlEventTouchUpInside];
+    [facePileButton addSubview:facePile.view];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [facePileButton.widthAnchor constraintEqualToConstant:kFacePileWidth],
+      [facePileButton.heightAnchor constraintEqualToConstant:kFacePileHeight],
+    ]];
+
+    facePileBarButton =
+        [[UIBarButtonItem alloc] initWithCustomView:facePileButton];
     [facePile didMoveToParentViewController:self];
   }
 
   if (IsTabGroupIndicatorEnabled()) {
-    if (facePileButton) {
-      navigationItem.rightBarButtonItems = @[ dotsItem, facePileButton ];
+    if (facePileBarButton) {
+      navigationItem.rightBarButtonItems = @[ dotsItem, facePileBarButton ];
     } else {
       navigationItem.rightBarButtonItems = @[ dotsItem ];
     }

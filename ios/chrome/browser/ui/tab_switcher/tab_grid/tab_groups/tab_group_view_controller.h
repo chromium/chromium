@@ -14,6 +14,7 @@
 class TabGroup;
 @protocol TabGroupsCommands;
 @protocol TabGroupMutator;
+@protocol TabGroupPresentationCommands;
 
 // Tab group view controller displaying one group.
 @interface TabGroupViewController
@@ -21,6 +22,9 @@ class TabGroup;
 
 // Mutator used to send notification to the tab group  model.
 @property(nonatomic, weak) id<TabGroupMutator> mutator;
+
+// Handler for actions within the view controller.
+@property(nonatomic, weak) id<TabGroupPresentationCommands> presentationHandler;
 
 // The embedded grid view controller.
 @property(nonatomic, readonly) TabGroupGridViewController* gridViewController;

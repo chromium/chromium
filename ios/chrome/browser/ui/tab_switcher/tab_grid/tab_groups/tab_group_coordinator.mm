@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_positioner.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_presentation_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_view_controller.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -39,7 +40,8 @@ constexpr CGFloat kTabGroupDismissalDuration = 0.25;
 constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }  // namespace
 
-@interface TabGroupCoordinator () <GridViewControllerDelegate>
+@interface TabGroupCoordinator () <GridViewControllerDelegate,
+                                   TabGroupPresentationCommands>
 @end
 
 @implementation TabGroupCoordinator {
@@ -325,6 +327,21 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   // No-op
 }
 
+#pragma mark - TabGroupPresentationCommands
+
+- (void)showShareKitFlow {
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+
+  NSString* savedCollabID =
+      tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
+  if (savedCollabID) {
+    [self manageGroup:savedCollabID];
+  }
+  [self shareGroup];
+}
+
 #pragma mark - Private
 
 // Share the current group.
@@ -381,6 +398,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                shared:isShared
              tabGroup:_tabGroup];
   _viewController.gridViewController.delegate = self;
+  _viewController.presentationHandler = self;
 
   // Prevent the face pile from being set up for tab groups that are not shared
   // and cannot be shared.
@@ -398,14 +416,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   ShareKitFacePileConfiguration* config =
       [[ShareKitFacePileConfiguration alloc] init];
   config.collabID = savedCollabID;
-  __weak __typeof(self) weakSelf = self;
-  config.completionBlock = ^(NSString* collabID, BOOL isSignedIn) {
-    if (collabID) {
-      [weakSelf manageGroup:collabID];
-    } else {
-      [weakSelf shareGroup];
-    }
-  };
   _viewController.facePile = shareKitService->FacePile(config);
 }
 
