@@ -121,10 +121,10 @@ void CreateAndAddNTPTilesInternalsHTMLSource(Profile* profile) {
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
+      "script-src chrome://resources 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate;");
+      "trusted-types lit-html-desktop;");
 }
 
 }  // namespace
