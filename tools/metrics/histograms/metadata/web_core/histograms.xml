@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaApi"
     enum="FullscreenLockState" expires_after="2025-04-20">
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time a
@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaBrowserUi"
     enum="FullscreenLockState" expires_after="2025-04-20">
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records whether keyboard/pointer locks are engaged each time the
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebCore.Fullscreen.WebsiteStateAtApiRequest"
     enum="WebsiteStateAtFullscreenRequest" expires_after="2025-04-13">
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric records the state of the website origin when it requests to

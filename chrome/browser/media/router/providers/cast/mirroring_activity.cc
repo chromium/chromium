@@ -89,8 +89,6 @@ constexpr char kHistogramStartFailureAccessCodeManualEntry[] =
     "MediaRouter.CastStreaming.Start.Failure.AccessCodeManualEntry";
 constexpr char kHistogramStartFailureAccessCodeRememberedDevice[] =
     "MediaRouter.CastStreaming.Start.Failure.AccessCodeRememberedDevice";
-constexpr char kHistogramStartFailureNative[] =
-    "MediaRouter.CastStreaming.Start.Failure.Native";
 constexpr char kHistogramStartSuccess[] =
     "MediaRouter.CastStreaming.Start.Success";
 constexpr char kHistogramStartSuccessAccessCodeManualEntry[] =
@@ -505,9 +503,6 @@ void MirroringActivity::OnError(SessionError error) {
       route_.media_sink_id(), route_.media_source().id(),
       route_.presentation_id());
   if (will_start_mirroring_timestamp_) {
-    // An error was encountered while attempting to start mirroring.
-    base::UmaHistogramEnumeration(kHistogramStartFailureNative, error);
-
     // Record the error for access code discovery types.
     CastDiscoveryType discovery_type = cast_data_.discovery_type;
     if (discovery_type == CastDiscoveryType::kAccessCodeManualEntry) {

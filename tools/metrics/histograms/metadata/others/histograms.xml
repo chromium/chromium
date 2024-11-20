@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="AccessCodeCast.Ui.TabSwitcherUsageType"
     enum="AccessCodeCastUiTabSwitcherUsage" expires_after="2025-05-11">
   <owner>ahmedmoussa@google.com</owner>
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric is recorded once per AccessCodeCast tab mirroring session. It
@@ -442,7 +442,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="AccessCodeCast.Ui.TabSwitchingCount" units="count"
     expires_after="2025-05-11">
   <owner>ahmedmoussa@google.com</owner>
-  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     This metric is recorded once per AccessCodeCast tab mirroring session. It
