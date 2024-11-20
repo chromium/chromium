@@ -188,6 +188,7 @@
 #include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/find_in_page.h"
@@ -2698,6 +2699,25 @@ void WebLocalFrameImpl::SendPings(const WebURL& destination_url) {
     // DynamicTo<HTMLAnchorElementBase>?
     if (auto* html_anchor = DynamicTo<HTMLAnchorElement>(anchor))
       html_anchor->SendPings(destination_url);
+  }
+}
+
+void WebLocalFrameImpl::SendAttributionSrc(
+    const std::optional<Impression>& impression,
+    bool did_navigate) {
+  auto* frame = GetFrame();
+  DCHECK(frame);
+
+  if (AttributionSrcLoader* attribution_src_loader =
+          frame->GetAttributionSrcLoader()) {
+    HTMLAnchorElementBase* anchor = nullptr;
+    if (Node* node = ContextMenuNodeInner(); did_navigate && node) {
+      anchor = DynamicTo<HTMLAnchorElementBase>(
+          node->EnclosingLinkEventParentOrSelf());
+    }
+
+    attribution_src_loader->RegisterFromContextMenuNavigation(impression,
+                                                              anchor);
   }
 }
 

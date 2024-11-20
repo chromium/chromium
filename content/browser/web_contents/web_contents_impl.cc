@@ -6032,7 +6032,9 @@ void WebContentsImpl::ReplaceMisspelling(const std::u16string& word) {
   input_handler->ReplaceMisspelling(word);
 }
 
-void WebContentsImpl::NotifyContextMenuClosed(const GURL& link_followed) {
+void WebContentsImpl::NotifyContextMenuClosed(
+    const GURL& link_followed,
+    const std::optional<blink::Impression>& impression) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::NotifyContextMenuClosed");
   RenderFrameHost* focused_frame = GetFocusedFrame();
   if (!focused_frame) {
@@ -6040,7 +6042,7 @@ void WebContentsImpl::NotifyContextMenuClosed(const GURL& link_followed) {
   }
 
   if (context_menu_client_) {
-    context_menu_client_->ContextMenuClosed(link_followed);
+    context_menu_client_->ContextMenuClosed(link_followed, impression);
   }
 
   context_menu_client_.reset();

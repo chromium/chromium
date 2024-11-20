@@ -443,7 +443,8 @@ void RenderViewContextMenuBase::MenuClosed(ui::SimpleMenuModel* source) {
     return;
 
   source_web_contents_->SetShowingContextMenu(false);
-  source_web_contents_->NotifyContextMenuClosed(params_.link_followed);
+  source_web_contents_->NotifyContextMenuClosed(params_.link_followed,
+                                                params_.impression);
   for (auto& observer : observers_) {
     observer.OnMenuClosed();
   }

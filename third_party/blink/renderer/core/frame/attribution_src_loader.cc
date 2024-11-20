@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "components/attribution_reporting/attribution_src_request_status.h"
@@ -78,6 +79,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -454,8 +456,8 @@ void AttributionSrcLoader::Register(
     HTMLElement* element,
     network::mojom::ReferrerPolicy referrer_policy) {
   CreateAndSendRequests(ParseAttributionSrc(attribution_src, element),
-                        /*attribution_src_token=*/std::nullopt,
-                        referrer_policy);
+                        /*attribution_src_token=*/std::nullopt, referrer_policy,
+                        DataHostSharedRemote());
 }
 
 std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
@@ -483,8 +485,8 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
   const Impression impression;
 
   if (CreateAndSendRequests(std::move(attribution_src_urls),
-                            impression.attribution_src_token,
-                            referrer_policy)) {
+                            impression.attribution_src_token, referrer_policy,
+                            DataHostSharedRemote())) {
     return impression;
   }
 
@@ -523,10 +525,90 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
       /*element=*/nullptr, has_transient_user_activation, referrer_policy);
 }
 
+std::optional<Impression> AttributionSrcLoader::PrepareContextMenuNavigation(
+    const KURL& navigation_url,
+    HTMLAnchorElementBase* anchor) {
+  if (!anchor) {
+    return std::nullopt;
+  }
+
+  const AtomicString& attribution_src =
+      anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+  if (attribution_src.IsNull()) {
+    return std::nullopt;
+  }
+
+  Vector<KURL> urls = ParseAttributionSrc(attribution_src, anchor);
+
+  if (urls.empty() &&
+      !CanRegister(navigation_url, anchor, /*request_id=*/std::nullopt)) {
+    return std::nullopt;
+  }
+
+  Impression impression;
+
+  if (!urls.empty()) {
+    auto& entry = context_menu_data_hosts_.emplace_back(
+        impression.attribution_src_token, DataHostSharedRemote());
+
+    PrepareNavigationDataHost(urls, impression.attribution_src_token,
+                              entry.second);
+  }
+
+  return impression;
+}
+
+void AttributionSrcLoader::RegisterFromContextMenuNavigation(
+    const std::optional<Impression>& impression,
+    HTMLAnchorElementBase* anchor) {
+  if (!impression.has_value()) {
+    context_menu_data_hosts_.clear();
+    return;
+  }
+
+  // This vector should almost always have size at most 1, so linear search is
+  // acceptable.
+  auto entry = base::ranges::find(context_menu_data_hosts_,
+                                  impression->attribution_src_token,
+                                  &ContextMenuDataHostEntry::first);
+  if (entry == context_menu_data_hosts_.end()) {
+    return;
+  }
+  if (!anchor) {
+    context_menu_data_hosts_.erase(entry);
+    return;
+  }
+
+  DataHostSharedRemote data_host = std::move(entry->second);
+  DCHECK(data_host.is_bound());
+  context_menu_data_hosts_.erase(entry);
+
+  const AtomicString& attribution_src =
+      anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
+  if (attribution_src.IsNull()) {
+    return;
+  }
+
+  // Adapted from `HTMLAnchorElementBase::HandleClick()`.
+  auto referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+  if (anchor->HasRel(kRelationNoReferrer)) {
+    referrer_policy = network::mojom::ReferrerPolicy::kNever;
+  } else if (anchor->FastHasAttribute(html_names::kReferrerpolicyAttr)) {
+    SecurityPolicy::ReferrerPolicyFromString(
+        anchor->FastGetAttribute(html_names::kReferrerpolicyAttr),
+        kSupportReferrerPolicyLegacyKeywords, &referrer_policy);
+  }
+
+  CreateAndSendRequests(ParseAttributionSrc(attribution_src, anchor),
+                        impression->attribution_src_token, referrer_policy,
+                        std::move(data_host));
+}
+
 bool AttributionSrcLoader::CreateAndSendRequests(
     Vector<KURL> urls,
     std::optional<AttributionSrcToken> attribution_src_token,
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    DataHostSharedRemote data_host) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached() || urls.empty()) {
     return false;
@@ -534,21 +616,42 @@ bool AttributionSrcLoader::CreateAndSendRequests(
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-                      WrapPersistentIfNeeded(this), std::move(urls),
-                      attribution_src_token, referrer_policy));
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+        WrapPersistentIfNeeded(this), std::move(urls), attribution_src_token,
+        referrer_policy, std::move(data_host)));
     return false;
   }
 
-  return DoRegistration(urls, attribution_src_token, referrer_policy);
+  return DoRegistration(urls, attribution_src_token, referrer_policy,
+                        std::move(data_host));
+}
+
+void AttributionSrcLoader::PrepareNavigationDataHost(
+    const Vector<KURL>& urls,
+    const AttributionSrcToken attribution_src_token,
+    DataHostSharedRemote& data_host) {
+  mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
+  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+      &conversion_host);
+
+  if (KeepaliveResponsesHandledInBrowser()) {
+    conversion_host->NotifyNavigationWithBackgroundRegistrationsWillStart(
+        attribution_src_token,
+        /*expected_registrations=*/urls.size());
+  }
+
+  conversion_host->RegisterNavigationDataHost(
+      data_host.BindNewPipeAndPassReceiver(), attribution_src_token);
 }
 
 bool AttributionSrcLoader::DoRegistration(
     const Vector<KURL>& urls,
     const std::optional<AttributionSrcToken> attribution_src_token,
-    network::mojom::ReferrerPolicy referrer_policy) {
+    network::mojom::ReferrerPolicy referrer_policy,
+    DataHostSharedRemote data_host) {
   DCHECK(!urls.empty());
+  DCHECK(!data_host.is_bound() || attribution_src_token.has_value());
 
   if (!local_frame_->IsAttached()) {
     return false;
@@ -558,29 +661,22 @@ bool AttributionSrcLoader::DoRegistration(
                                ? RegistrationEligibility::kSource
                                : RegistrationEligibility::kSourceOrTrigger;
 
-  mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
-  local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-      &conversion_host);
+  const auto source_type = attribution_src_token.has_value()
+                               ? SourceType::kNavigation
+                               : SourceType::kEvent;
 
-  mojo::SharedRemote<attribution_reporting::mojom::blink::DataHost> data_host;
+  if (!data_host.is_bound()) {
+    if (attribution_src_token.has_value()) {
+      PrepareNavigationDataHost(urls, *attribution_src_token, data_host);
+    } else {
+      mojo::AssociatedRemote<mojom::blink::AttributionHost> conversion_host;
+      local_frame_->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
+          &conversion_host);
 
-  if (KeepaliveResponsesHandledInBrowser() &&
-      attribution_src_token.has_value()) {
-    conversion_host->NotifyNavigationWithBackgroundRegistrationsWillStart(
-        *attribution_src_token,
-        /*expected_registrations=*/urls.size());
-  }
-
-  SourceType source_type;
-  if (attribution_src_token.has_value()) {
-    conversion_host->RegisterNavigationDataHost(
-        data_host.BindNewPipeAndPassReceiver(), *attribution_src_token);
-    source_type = SourceType::kNavigation;
-  } else {
-    conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
-                                      eligibility,
-                                      /*is_for_background_requests=*/true);
-    source_type = SourceType::kEvent;
+      conversion_host->RegisterDataHost(data_host.BindNewPipeAndPassReceiver(),
+                                        eligibility,
+                                        /*is_for_background_requests=*/true);
+    }
   }
 
   for (const KURL& url : urls) {

@@ -146,6 +146,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       const override;
   bool IsInFencedFrameTree() const override;
   void SendPings(const WebURL& destination_url) override;
+  void SendAttributionSrc(const std::optional<Impression>&,
+                          bool did_navigate) override;
   void StartReload(WebFrameLoadType) override;
   void ClearActiveFindMatchForTesting() override;
   void EnableViewSourceMode(bool enable) override;

@@ -174,6 +174,12 @@ void ContextMenuController::Trace(Visitor* visitor) const {
 }
 
 void ContextMenuController::ClearContextMenu() {
+  if (auto* selected_web_frame =
+          WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame())) {
+    selected_web_frame->SendAttributionSrc(/*impression=*/std::nullopt,
+                                           /*did_navigate=*/false);
+  }
+
   if (menu_provider_)
     menu_provider_->ContextMenuCleared();
   menu_provider_ = nullptr;
@@ -332,12 +338,18 @@ void ContextMenuController::CustomContextMenuAction(uint32_t action) {
   CustomContextMenuItemSelected(action);
 }
 
-void ContextMenuController::ContextMenuClosed(const KURL& link_followed) {
-  if (link_followed.IsValid()) {
-    WebLocalFrameImpl* selected_web_frame =
-        WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame());
-    if (selected_web_frame)
+void ContextMenuController::ContextMenuClosed(
+    const KURL& link_followed,
+    const std::optional<Impression>& impression) {
+  if (auto* selected_web_frame =
+          WebLocalFrameImpl::FromFrame(hit_test_result_.InnerNodeFrame())) {
+    if (link_followed.IsValid()) {
       selected_web_frame->SendPings(link_followed);
+    }
+    if (impression.has_value()) {
+      selected_web_frame->SendAttributionSrc(impression,
+                                             link_followed.IsValid());
+    }
   }
   ClearContextMenu();
 }
@@ -768,23 +780,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     data.link_text = anchor->innerText().Utf8();
 
-    if (const AtomicString& attribution_src_value =
-            anchor->FastGetAttribute(html_names::kAttributionsrcAttr);
-        !attribution_src_value.IsNull()) {
-      // TODO(crbug.com/1381123): Support background attributionsrc requests
-      // if attribute value is non-empty.
-
-      // An impression should be attached to the navigation regardless of
-      // whether a background request would have been allowed or attempted.
-      if (!data.impression) {
-        if (AttributionSrcLoader* attribution_src_loader =
-                selected_frame->GetAttributionSrcLoader();
-            attribution_src_loader->CanRegister(result.AbsoluteLinkURL(),
-                                                /*element=*/anchor,
-                                                /*request_id=*/std::nullopt)) {
-          data.impression = blink::Impression();
-        }
-      }
+    if (AttributionSrcLoader* attribution_src_loader =
+            selected_frame->GetAttributionSrcLoader()) {
+      data.impression = attribution_src_loader->PrepareContextMenuNavigation(
+          result.AbsoluteLinkURL(), anchor);
     }
   }
 
