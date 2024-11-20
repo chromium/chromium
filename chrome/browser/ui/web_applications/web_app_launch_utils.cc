@@ -116,6 +116,16 @@
 
 namespace web_app {
 namespace {
+
+// Causes all new auxiliary browser contexts to share the same window container
+// type as where they were created from. For example, if an aux context was
+// created from standalone PWA, then the new context will be created in a new
+// window of the same PWA.
+// If this is off, then all auxiliary contexts will be created as browser tabs.
+const base::FeatureParam<bool> kEnableAuxContextKeepSameContainer{
+    &features::kPwaNavigationCapturing, "aux_context_keep_same_container",
+    /*default_value=*/false};
+
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            Browser* target_browser,
                                            const webapps::AppId& app_id,
@@ -294,6 +304,27 @@ void MaybePopulateNavigationHandlingInfoForRedirects(
     web_app::NavigationCapturingInformationForwarder::CreateForWebContents(
         web_contents, redirection_info, std::move(launched_app_id));
   }
+}
+
+// Keeping auxiliary contexts in an 'app' container was causing problems on
+// initial Canary testing, see https://crbug.com/379181271 for more information.
+// Either this will be rolled out separately or removed.
+bool ShouldDisableAuxiliaryBrowsingContextHandling(
+    const std::optional<webapps::AppId>& source_browser_app_id,
+    const GURL& url) {
+  // This is however needed on ChromeOS to support the ChromeOsWebAppExperiments
+  // code, see ChromeOsWebAppExperimentsNavigationBrowserTest for tests with
+  // this on.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (source_browser_app_id.has_value() &&
+      ::web_app::ChromeOsWebAppExperiments::
+          IsNavigationCapturingReimplEnabledForSourceApp(*source_browser_app_id,
+                                                         url)) {
+    return true;
+  }
+#endif
+  return apps::features::IsNavigationCapturingReimplEnabled() &&
+         kEnableAuxContextKeepSameContainer.Get();
 }
 
 bool IsNavigationCapturingReimplExperimentEnabled(
@@ -1519,6 +1550,10 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   // context. Only needs to be handled if it is triggered in the context of an
   // app browser.
   if (IsAuxiliaryBrowsingContext(params)) {
+    if (!ShouldDisableAuxiliaryBrowsingContextHandling(source_browser_app_id,
+                                                       params.url)) {
+      return AppNavigationResult::CapturingDisabled();
+    }
     debug_data.Set("is_auxiliary_browsing_context", true);
     if (source_browser_app_id.has_value()) {
       Browser* app_window = CreateWebAppWindowFromNavigationParams(
