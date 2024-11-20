@@ -1575,11 +1575,13 @@ bool ui::IsNSRange(id value) {
   return [self children];
 }
 
+// LINT.IfChange(accessibilityVisibleColumns)
 - (NSArray*)visibleColumns {
   if (![self instanceActive])
     return nil;
   return [self columns];
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleColumns)
 
 - (NSArray*)visibleRows {
   if (![self instanceActive])

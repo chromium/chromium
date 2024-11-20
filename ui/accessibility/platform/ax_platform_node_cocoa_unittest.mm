@@ -473,6 +473,22 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowIndexRange) {
   EXPECT_EQ(range.length, 1UL);    // Only one row in this simple setup
 }
 
+// accessibilityVisibleColumns on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleColumns) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kColumn
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* column = GetCocoaNode(2);
+  NSArray* columns = [table accessibilityVisibleColumns];
+  EXPECT_EQ([columns count], 1UL);
+  EXPECT_EQ([[columns firstObject] node]->GetUniqueId(),
+            [column node]->GetUniqueId());
+}
+
 // accessibilityVisibleCells on a table.
 TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleCells) {
   ui::TestAXTreeUpdate update(std::string(R"HTML(

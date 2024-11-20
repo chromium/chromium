@@ -283,6 +283,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityRowCount" : NSAccessibilityRowCountAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
+      @"accessibilityVisibleColumns" : NSAccessibilityVisibleColumnsAttribute,
       @"accessibilityVisibleCells" : NSAccessibilityVisibleCellsAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
       @"isAccessibilityExpanded" : NSAccessibilityExpandedAttribute,
@@ -2946,6 +2947,22 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
   return NSMakeRange(0, 0);
 }
+
+// LINT.IfChange(accessibilityVisibleColumns)
+- (NSArray*)accessibilityVisibleColumns {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  NSMutableArray* columns = [[NSMutableArray alloc] init];
+  for (AXPlatformNodeCocoa* child in [self accessibilityChildren]) {
+    if ([[child accessibilityRole] isEqualToString:NSAccessibilityColumnRole]) {
+      [columns addObject:child];
+    }
+  }
+  return columns;
+}
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityVisibleColumns)
 
 // LINT.IfChange(accessibilityVisibleCells)
 - (NSArray*)accessibilityVisibleCells {
