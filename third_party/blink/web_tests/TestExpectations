@@ -2648,7 +2648,7 @@ crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-di
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash Failure ]
-crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.html [ Crash ]
+crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.html [ Crash Failure Timeout ]
 
 # This test is flaky on Linux only
@@ -2670,8 +2670,8 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # DCHECKs: https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel/1852480/overview
-crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_avc [ Crash ]
-crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash ]
+crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.html?h264_avc [ Crash Failure ]
+crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html?h264_avc [ Crash Failure ]
 
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
@@ -2694,6 +2694,9 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hwb.html [ Cr
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-lab.html [ Crash Failure Pass ]
 crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Crash Failure Pass Timeout ]
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Failure Pass ]
+
+# Sometimes flaky when run with headless shell via ChromeDriver.
+crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/379779783 [ Mac15 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
