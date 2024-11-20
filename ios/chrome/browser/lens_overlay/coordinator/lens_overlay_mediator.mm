@@ -114,6 +114,8 @@
         [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];
       }
     } else if (_navigationManager) {
+      // Hide the Lens selection as the omnibox content no longer reflect it.
+      [self.lensHandler hideUserSelection];
       _navigationManager->LoadUnimodalOmniboxNavigation(destinationURL, text);
     }
   } else {  // Multimodal query.
