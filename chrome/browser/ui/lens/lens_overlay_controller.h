@@ -988,7 +988,8 @@ class LensOverlayController : public LensSearchboxClient,
   std::unique_ptr<OverlayInitializationData> initialization_data_;
 
   // Invocation source for the lens overlay.
-  lens::LensOverlayInvocationSource invocation_source_;
+  lens::LensOverlayInvocationSource invocation_source_ =
+      lens::LensOverlayInvocationSource::kAppMenu;
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.

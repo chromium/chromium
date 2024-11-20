@@ -50,8 +50,10 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
+#include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
+#include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -4002,6 +4004,36 @@ class LensOverlayControllerBrowserPDFTest
         [&]() { return controller->state() == State::kOff; }));
   }
 };
+
+// Regression test for crbug.com/360710001. Asserts the overlay lens page will
+// load in a tab without crashing.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       OverlayWebUILoadsInTab) {
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to the lens overlay WebUI and wait for load to finish.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUILensOverlayUntrustedURL)));
+  EXPECT_TRUE(active_contents->GetWebUI()
+                  ->GetController()
+                  ->GetAs<lens::LensOverlayUntrustedUI>());
+}
+
+// Regression test for crbug.com/360710001. Asserts the side panel lens page
+// will load in a tab without crashing.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       SidePanelWebUILoadsInTab) {
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to the lens overlay WebUI and wait for load to finish.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUILensUntrustedSidePanelURL)));
+  EXPECT_TRUE(active_contents->GetWebUI()
+                  ->GetController()
+                  ->GetAs<lens::LensSidePanelUntrustedUI>());
+}
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
                        ContextMenuOpensOverlay) {

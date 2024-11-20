@@ -17,9 +17,11 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
+class LensOverlayController;
+
 namespace ui {
 class ColorChangeHandler;
-}
+}  // namespace ui
 
 namespace lens {
 class LensOverlayUntrustedUI;
@@ -78,6 +80,8 @@ class LensOverlayUntrustedUI
   static constexpr std::string GetWebUIName() { return "LensOverlayUntrusted"; }
 
  private:
+  LensOverlayController& GetLensOverlayController();
+
   // lens::mojom::LensPageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,

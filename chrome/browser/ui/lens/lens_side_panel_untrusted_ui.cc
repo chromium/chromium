@@ -132,45 +132,21 @@ void LensSidePanelUntrustedUI::BindInterface(
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
-    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui()->GetWebContents());
-  // TODO(crbug.com/360724768): This should not need to be null-checked and
-  // exists here as a temporary solution to handle situations where lens may be
-  // loaded in an unsupported context (e.g. browser tab). Remove this once work
-  // to restrict WebUI loading to relevant contexts has landed.
-  if (!controller) {
-    return;
-  }
-  auto handler = std::make_unique<RealboxHandler>(
-      std::move(receiver), Profile::FromWebUI(web_ui()),
-      web_ui()->GetWebContents(),
-      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/controller,
-      /*omnibox_controller=*/nullptr);
-  controller->SetSidePanelSearchboxHandler(std::move(handler));
-}
-
-void LensSidePanelUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }
 
-void LensSidePanelUntrustedUI::CreateSidePanelPageHandler(
-    mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
-    mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
-  LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui()->GetWebContents());
-  // TODO(crbug.com/360724768): This should not need to be null-checked and
-  // exists here as a temporary solution to handle situations where lens may be
-  // loaded in an unsupported context (e.g. browser tab). Remove this once work
-  // to restrict WebUI loading to relevant contexts has landed.
-  if (!controller) {
-    return;
-  }
-  // Once the interface is bound, we want to connect this instance with the
-  // appropriate instance of LensOverlayController.
-  controller->BindSidePanel(std::move(receiver), std::move(page));
+void LensSidePanelUntrustedUI::BindInterface(
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
+  LensOverlayController& controller = GetLensOverlayController();
+
+  auto handler = std::make_unique<RealboxHandler>(
+      std::move(receiver), Profile::FromWebUI(web_ui()),
+      web_ui()->GetWebContents(),
+      /*metrics_reporter=*/nullptr, /*lens_searchbox_client=*/&controller,
+      /*omnibox_controller=*/nullptr);
+  controller.SetSidePanelSearchboxHandler(std::move(handler));
 }
 
 void LensSidePanelUntrustedUI::BindInterface(
@@ -182,17 +158,30 @@ void LensSidePanelUntrustedUI::BindInterface(
   help_bubble_handler_factory_receiver_.Bind(std::move(receiver));
 }
 
-void LensSidePanelUntrustedUI::CreateGhostLoaderPage(
-    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+LensOverlayController& LensSidePanelUntrustedUI::GetLensOverlayController() {
   LensOverlayController* controller =
       LensOverlayController::GetController(web_ui()->GetWebContents());
-  // TODO(crbug.com/360724768): See above.
-  if (!controller) {
-    return;
-  }
+  CHECK(controller);
+  return *controller;
+}
+
+void LensSidePanelUntrustedUI::CreateSidePanelPageHandler(
+    mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
+    mojo::PendingRemote<lens::mojom::LensSidePanelPage> page) {
+  LensOverlayController& controller = GetLensOverlayController();
+
   // Once the interface is bound, we want to connect this instance with the
   // appropriate instance of LensOverlayController.
-  controller->BindSidePanelGhostLoader(std::move(page));
+  controller.BindSidePanel(std::move(receiver), std::move(page));
+}
+
+void LensSidePanelUntrustedUI::CreateGhostLoaderPage(
+    mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
+  LensOverlayController& controller = GetLensOverlayController();
+
+  // Once the interface is bound, we want to connect this instance with the
+  // appropriate instance of LensOverlayController.
+  controller.BindSidePanelGhostLoader(std::move(page));
 }
 
 void LensSidePanelUntrustedUI::CreateHelpBubbleHandler(

@@ -18,9 +18,11 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
+class LensOverlayController;
+
 namespace ui {
 class ColorChangeHandler;
-}
+}  // namespace ui
 
 namespace lens {
 
@@ -84,6 +86,8 @@ class LensSidePanelUntrustedUI
   }
 
  private:
+  LensOverlayController& GetLensOverlayController();
+
   // lens::mojom::LensSidePanelPageHandlerFactory:
   void CreateSidePanelPageHandler(
       mojo::PendingReceiver<lens::mojom::LensSidePanelPageHandler> receiver,
