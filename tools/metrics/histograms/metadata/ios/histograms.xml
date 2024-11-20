@@ -2167,6 +2167,15 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.Module.Click.SendTabPromo" units="index"
+    expires_after="2025-05-20">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the rank index of the Send Tab Promo module when a user taps on it.
+  </summary>
+</histogram>
+
 <histogram name="IOS.MagicStack.Module.Click.Shortcuts" units="index"
     expires_after="2025-05-11">
   <owner>thegreenfrog@chromium.org</owner>

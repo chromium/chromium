@@ -60,7 +60,9 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kSendTabPromo:
-      // TODO(crbug.com/343495516): log metrics.
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementSendTabPromoIndexHistogram, index,
+          kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kShortcuts:
       UMA_HISTOGRAM_EXACT_LINEAR(
