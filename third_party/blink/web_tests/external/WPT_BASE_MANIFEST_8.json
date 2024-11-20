@@ -5940,6 +5940,13 @@
      ]
     },
     "parts": {
+     "dom-parts-parseparts-002-crash.tentative.html": [
+      "bd2a0b588ba7fc6337727e3a5cb44299412a34b4",
+      [
+       null,
+       {}
+      ]
+     ],
      "dom-parts-parseparts-crash.tentative.html": [
       "e0f7782e23a183ee1a81af3b602ed0daf21c9158",
       [
@@ -345726,6 +345733,10 @@
       "92ae71d83fcbea52e4120ed28af5438dd54d4509",
       []
      ],
+     "pseudo-replaced-elements-expected.txt": [
+      "fda4480a7fb75113d71ecafb982a833a3293d638",
+      []
+     ],
      "reference": {
       "active-selection-011-ref.html": [
        "f655188892aad87b574bb76a127278da6ddb2dd1",
@@ -366260,10 +366271,6 @@
      ],
      "basic-dom-part-declarative-brace-syntax.tentative-expected.txt": [
       "55de3686e939f25fa0a848fd4047d177a572598f",
-      []
-     ],
-     "dom-parts-parseparts-crash-002.tentative.html": [
-      "bd2a0b588ba7fc6337727e3a5cb44299412a34b4",
       []
      ],
      "resources": {
@@ -483073,6 +483080,13 @@
      },
      "placeholder-inherit.html": [
       "cf1c100fdafc430e302e799116f6135b294f40d2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "pseudo-replaced-elements.html": [
+      "8b5f994841b8e8e4f3aea05465926ee429a5718a",
       [
        null,
        {}
@@ -611928,7 +611942,7 @@
        ],
        "customizable-select": {
         "button-in-popover.tentative.html": [
-         "0a71fd76452ca78479b3809c8bfc8f438e8a8194",
+         "32d7c072ce5df5bd44b2d4f581b4244910fe879c",
          [
           null,
           {
@@ -612015,6 +612029,16 @@
         ],
         "select-keyboard-behavior.tentative.html": [
          "f6722a70637d4cb0447512775a38236c9326d4be",
+         [
+          null,
+          {
+           "testdriver": true,
+           "timeout": "long"
+          }
+         ]
+        ],
+        "select-keyboard-focus-change-for-hidden-options.tentative.html": [
+         "0067d8d7e8f167e20205c7f99c56a9fa2a3d1ee8",
          [
           null,
           {
@@ -613972,8 +613996,8 @@
         }
        ]
       ],
-      "popover-hover-crash-hang.tentative.html": [
-       "60309398db0011227a89f4485f147d253358439f",
+      "popover-hover-hang.tentative.html": [
+       "7868fa71a55b2e5be6fc07a68de43f341e53b31f",
        [
         null,
         {
