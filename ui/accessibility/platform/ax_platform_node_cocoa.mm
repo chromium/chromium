@@ -283,6 +283,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityRowCount" : NSAccessibilityRowCountAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
       @"accessibilitySortDirection" : NSAccessibilitySortDirectionAttribute,
+      @"accessibilityVisibleCells" : NSAccessibilityVisibleCellsAttribute,
       @"isAccessibilityDisclosed" : NSAccessibilityDisclosingAttribute,
       @"isAccessibilityExpanded" : NSAccessibilityExpandedAttribute,
       @"isAccessibilityFocused" : NSAccessibilityFocusedAttribute,
@@ -2945,6 +2946,28 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   }
   return NSMakeRange(0, 0);
 }
+
+// LINT.IfChange(accessibilityVisibleCells)
+- (NSArray*)accessibilityVisibleCells {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* table = [self nodeDelegate];
+  if (!table) {
+    return nil;
+  }
+
+  NSMutableArray* cells = [[NSMutableArray alloc] init];
+  for (int32_t id : table->GetTableUniqueCellIds()) {
+    ui::AXPlatformNode* cell = table->GetFromNodeID(id);
+    if (cell) {
+      [cells addObject:cell->GetNativeViewAccessible()];
+    }
+  }
+  return cells;
+}
+// LINT.ThenChange(ui/accessibility/platform/browser_accessibility_cocoa.mm:accessibilityVisibleCells)
 
 //
 // End of NSAccessibility protocol.

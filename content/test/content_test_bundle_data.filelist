@@ -5617,6 +5617,8 @@ data/accessibility/mac/methods/accessibility-title-ui-element.html
 data/accessibility/mac/methods/accessibility-title.html
 data/accessibility/mac/methods/accessibility-url-expected.txt
 data/accessibility/mac/methods/accessibility-url.html
+data/accessibility/mac/methods/accessibility-visible-cells-expected.txt
+data/accessibility/mac/methods/accessibility-visible-cells.html
 data/accessibility/mac/methods/is-accessibility-disclosed-expected.txt
 data/accessibility/mac/methods/is-accessibility-disclosed.html
 data/accessibility/mac/methods/is-accessibility-element-expected.txt

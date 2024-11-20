@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
@@ -470,6 +471,23 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowIndexRange) {
   NSRange range = [cell accessibilityRowIndexRange];
   EXPECT_EQ(range.location, 0UL);  // Row index should start at 0
   EXPECT_EQ(range.length, 1UL);    // Only one row in this simple setup
+}
+
+// accessibilityVisibleCells on a table.
+TEST_P(AXPlatformNodeCocoaTest, AccessibilityVisibleCells) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kTable
+    ++++2 kRow
+    ++++++3 kCell
+  )HTML"));
+  Init(update);
+
+  AXPlatformNodeCocoa* table = GetCocoaNode(1);
+  AXPlatformNodeCocoa* cell = GetCocoaNode(3);
+  NSArray* cells = [table accessibilityVisibleCells];
+  EXPECT_EQ([cells count], 1UL);
+  EXPECT_EQ([[cells firstObject] node]->GetUniqueId(),
+            [cell node]->GetUniqueId());
 }
 
 // Non-header cells should not support accessibilitySortDirection, even if

@@ -1554,6 +1554,7 @@ bool ui::IsNSRange(id value) {
   return nil;
 }
 
+// LINT.IfChange(accessibilityVisibleCells)
 - (NSArray*)visibleCells {
   if (![self instanceActive])
     return nil;
@@ -1566,6 +1567,7 @@ bool ui::IsNSRange(id value) {
   }
   return ret;
 }
+// LINT.ThenChange(ui/accessibility/platform/ax_platform_node_cocoa.mm:accessibilityVisibleCells)
 
 - (NSArray*)visibleChildren {
   if (![self instanceActive])

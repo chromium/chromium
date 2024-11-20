@@ -562,6 +562,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   virtual std::vector<int32_t> GetColHeaderNodeIds(int col_index) const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds() const;
   virtual std::vector<int32_t> GetRowHeaderNodeIds(int row_index) const;
+  virtual std::vector<AXNodeID> GetTableUniqueCellIds() const;
   virtual AXPlatformNode* GetTableCaption() const;
 
   //
