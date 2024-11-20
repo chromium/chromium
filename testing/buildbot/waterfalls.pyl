@@ -1382,6 +1382,67 @@
       'chrome-tester-service-account',
     ],
     'machines': {
+      'model_validation-linux': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'linux',
+      },
+      'model_validation-mac-arm64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_arm64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'mac',
+      },
+      'model_validation-mac-x64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'mac_default_x64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'mac',
+      },
+      'model_validation-win-arm64': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'win-arm64',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_matrix_tests',
+        },
+        'os_type': 'win',
+      },
+      'model_validation-win32': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'win',
+      },
+      'model_validation-win64': {
+        'mixins': [
+          'chrome-intelligence-swarming-pool',
+          'win10',
+        ],
+        'test_suites': {
+           'isolated_scripts': 'model_validation_gce_matrix_tests',
+        },
+        'os_type': 'win',
+      },
       'optimization_guide-android-arm64': {
         'mixins': [
           'android',

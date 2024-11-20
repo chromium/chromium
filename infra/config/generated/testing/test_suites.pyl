@@ -2516,6 +2516,17 @@
       'views_unittests': {},
     },
 
+    'ondevice_stability_tests_light_suite': {
+      'ondevice_stability_tests_light': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'linux_args': [
+          '--no-xvfb',
+        ],
+      },
+    },
+
     'ondevice_stability_tests_suite': {
       'ondevice_stability_tests': {
         'mixins': [
@@ -3289,6 +3300,46 @@
       'gpu_noop_sleep_telemetry_test': {
         'variants': [
           'CROS_GPU_SKYRIM_RELEASE_LKGM',
+        ],
+      },
+    },
+
+    'model_validation_gce_matrix_tests': {
+      'model_validation_tests_light_suite': {
+        'mixins': [
+          'gce',
+        ],
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+      'ondevice_stability_tests_light_suite': {
+        'mixins': [
+          'nvidia_geforce_gtx_1660',
+        ],
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+    },
+
+    'model_validation_matrix_tests': {
+      'model_validation_tests_light_suite': {
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
+        ],
+      },
+      'ondevice_stability_tests_light_suite': {
+        'variants': [
+          'CHANNEL_BETA',
+          'CHANNEL_DEV',
+          'CHANNEL_STABLE',
         ],
       },
     },
