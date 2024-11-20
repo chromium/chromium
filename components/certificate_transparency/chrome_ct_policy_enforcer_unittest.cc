@@ -176,7 +176,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
       std::map<std::string, LogInfo>* log_info) {
     for (size_t i = 0; i < scts.size(); i++) {
       OperatorHistoryEntry entry;
-      entry.current_operator_ = "Operator " + base::NumberToString(i);
+      entry.current_operator = "Operator " + base::NumberToString(i);
       LogInfo info;
       info.operator_history = entry;
       info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -696,7 +696,7 @@ TEST_F(ChromeCTPolicyEnforcerTest,
   std::map<std::string, LogInfo> log_info;
   for (auto sct : scts) {
     OperatorHistoryEntry entry;
-    entry.current_operator_ = "Operator";
+    entry.current_operator = "Operator";
     LogInfo info;
     info.operator_history = entry;
     info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -734,7 +734,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   // Set all logs to the same operator.
   for (auto sct : scts) {
     OperatorHistoryEntry entry;
-    entry.current_operator_ = "Same Operator";
+    entry.current_operator = "Same Operator";
     LogInfo info;
     info.operator_history = entry;
     info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -742,7 +742,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, ConformsToPolicyDueToOperatorSwitch) {
   }
   // Set the previous operator of one of the logs to a different one, with an
   // end time after the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Different Operator", scts[1]->timestamp + base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
@@ -763,7 +763,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToPolicyDueToOperatorSwitch) {
 
   // Set the previous operator of one of the logs to the same as the other log,
   // with an end time after the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
@@ -783,9 +783,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitches) {
   FillOperatorHistoryWithDiverseOperators(scts, &log_info);
   // Set multiple previous operators, the first should be ignored since it
   // stopped operating before the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Different Operator", scts[1]->timestamp - base::Seconds(1));
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Operator 0", scts[1]->timestamp + base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
@@ -804,7 +804,7 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   // Set all logs to the same operator.
   for (auto sct : scts) {
     OperatorHistoryEntry entry;
-    entry.current_operator_ = "Same Operator";
+    entry.current_operator = "Same Operator";
     LogInfo info;
     info.operator_history = entry;
     info.log_type = network::mojom::CTLogInfo::LogType::kRFC6962;
@@ -812,9 +812,9 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
   }
   // Set multiple previous operators, all of them should be ignored since they
   // all stopped operating before the SCT timestamp.
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Different Operator", scts[1]->timestamp - base::Seconds(2));
-  log_info[scts[1]->log_id].operator_history.previous_operators_.emplace_back(
+  log_info[scts[1]->log_id].operator_history.previous_operators.emplace_back(
       "Yet Another Different Operator", scts[1]->timestamp - base::Seconds(1));
 
   scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =

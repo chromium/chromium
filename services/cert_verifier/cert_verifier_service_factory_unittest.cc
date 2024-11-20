@@ -693,9 +693,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
 
     std::map<std::string, certificate_transparency::LogInfo> log_info =
         policy_enforcer->log_info_for_testing();
-    EXPECT_EQ(log_info[log1_id].operator_history.current_operator_,
+    EXPECT_EQ(log_info[log1_id].operator_history.current_operator,
               kLog1Operator);
-    EXPECT_EQ(log_info[log2_id].operator_history.current_operator_,
+    EXPECT_EQ(log_info[log2_id].operator_history.current_operator,
               kLog2Operator);
   }
 
@@ -744,9 +744,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     // CTPolicyEnforcer doesn't parse the key, so it accepts both logs.
     std::map<std::string, certificate_transparency::LogInfo> log_info =
         policy_enforcer->log_info_for_testing();
-    EXPECT_EQ(log_info[log1_id].operator_history.current_operator_,
+    EXPECT_EQ(log_info[log1_id].operator_history.current_operator,
               kLog1Operator);
-    EXPECT_EQ(log_info[log3_id].operator_history.current_operator_,
+    EXPECT_EQ(log_info[log3_id].operator_history.current_operator,
               kLog3Operator);
   }
 }
@@ -818,10 +818,10 @@ TEST(CertVerifierServiceFactoryTest, CTPolicyEnforcerConfig) {
       policy_enforcer->log_info_for_testing();
 
   for (auto log : policy_enforcer->disqualified_logs_for_testing()) {
-    EXPECT_EQ(log_info[log.first].operator_history.current_operator_,
+    EXPECT_EQ(log_info[log.first].operator_history.current_operator,
               "Not Google Either");
     EXPECT_TRUE(
-        log_info[log.first].operator_history.previous_operators_.empty());
+        log_info[log.first].operator_history.previous_operators.empty());
   }
 }
 
@@ -876,16 +876,16 @@ TEST(CertVerifierServiceFactoryTest,
       policy_enforcer->log_info_for_testing();
 
   EXPECT_EQ(log_info_map[crypto::SHA256HashString("0000")]
-                .operator_history.current_operator_,
+                .operator_history.current_operator,
             "Forever Operator");
   EXPECT_TRUE(log_info_map[crypto::SHA256HashString("0000")]
-                  .operator_history.previous_operators_.empty());
+                  .operator_history.previous_operators.empty());
 
   EXPECT_EQ(log_info_map[crypto::SHA256HashString("AAAA")]
-                .operator_history.current_operator_,
+                .operator_history.current_operator,
             "Changed Operator");
   EXPECT_THAT(log_info_map[crypto::SHA256HashString("AAAA")]
-                  .operator_history.previous_operators_,
+                  .operator_history.previous_operators,
               ::testing::ElementsAre(
                   ::testing::Pair("Operator 0", base::Time::FromTimeT(0)),
                   ::testing::Pair("Operator 1", base::Time::FromTimeT(1)),
