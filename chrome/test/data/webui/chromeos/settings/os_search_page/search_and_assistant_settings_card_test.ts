@@ -5,8 +5,6 @@
 /**
  * @fileoverview
  * Suite of browser tests for the Search and Assistant settings card element.
- * This suite of tests runs when the OsSettingsRevampWayfinding feature flag is
- * both enabled and disabled.
  */
 
 import {IronCollapseElement, OsSettingsRoutes, Router, routes, SearchAndAssistantSettingsCardElement, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
@@ -23,10 +21,7 @@ interface SubpageTriggerData {
 }
 
 suite('<search-and-assistant-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const defaultRoute =
-      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.OS_SEARCH;
+  const defaultRoute = routes.SYSTEM_PREFERENCES;
 
   let searchAndAssistantSettingsCard: SearchAndAssistantSettingsCardElement;
 
@@ -445,49 +440,39 @@ suite('<search-and-assistant-settings-card>', () => {
         });
   });
 
-  if (isRevampWayfindingEnabled) {
-    test('Content recommendations toggle is visible', () => {
-      createSearchAndAssistantCard();
-      const contentRecommendationsToggle =
-          searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-              '#contentRecommendationsToggle');
-      assertTrue(isVisible(contentRecommendationsToggle));
-    });
+  test('Content recommendations toggle is visible', () => {
+    createSearchAndAssistantCard();
+    const contentRecommendationsToggle =
+        searchAndAssistantSettingsCard.shadowRoot!.querySelector(
+            '#contentRecommendationsToggle');
+    assertTrue(isVisible(contentRecommendationsToggle));
+  });
 
-    test('Content recommendations toggle reflects pref value', () => {
-      createSearchAndAssistantCard();
-      const fakePrefs = {
-        settings: {
-          suggested_content_enabled: {
-            value: true,
-          },
+  test('Content recommendations toggle reflects pref value', () => {
+    createSearchAndAssistantCard();
+    const fakePrefs = {
+      settings: {
+        suggested_content_enabled: {
+          value: true,
         },
-      };
-      searchAndAssistantSettingsCard.prefs = fakePrefs;
-      flush();
+      },
+    };
+    searchAndAssistantSettingsCard.prefs = fakePrefs;
+    flush();
 
-      const contentRecommendationsToggle =
-          searchAndAssistantSettingsCard.shadowRoot!
-              .querySelector<SettingsToggleButtonElement>(
-                  '#contentRecommendationsToggle');
-      assertTrue(!!contentRecommendationsToggle);
+    const contentRecommendationsToggle =
+        searchAndAssistantSettingsCard.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>(
+                '#contentRecommendationsToggle');
+    assertTrue(!!contentRecommendationsToggle);
 
-      assertTrue(contentRecommendationsToggle.checked);
-      assertTrue(searchAndAssistantSettingsCard.get(
-          'prefs.settings.suggested_content_enabled.value'));
+    assertTrue(contentRecommendationsToggle.checked);
+    assertTrue(searchAndAssistantSettingsCard.get(
+        'prefs.settings.suggested_content_enabled.value'));
 
-      contentRecommendationsToggle.click();
-      assertFalse(contentRecommendationsToggle.checked);
-      assertFalse(searchAndAssistantSettingsCard.get(
-          'prefs.settings.suggested_content_enabled.value'));
-    });
-  } else {
-    test('Content recommendations toggle is not stamped', () => {
-      createSearchAndAssistantCard();
-      const contentRecommendationsToggle =
-          searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-              '#contentRecommendationsToggle');
-      assertNull(contentRecommendationsToggle);
-    });
-  }
+    contentRecommendationsToggle.click();
+    assertFalse(contentRecommendationsToggle.checked);
+    assertFalse(searchAndAssistantSettingsCard.get(
+        'prefs.settings.suggested_content_enabled.value'));
+  });
 });

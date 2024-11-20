@@ -354,7 +354,6 @@ build_webui_tests("build") {
     "os_reset_page/test_os_reset_browser_proxy.ts",
 
     "os_search_page/google_assistant_subpage_test.ts",
-    "os_search_page/os_search_page_test.ts",
     "os_search_page/search_and_assistant_settings_card_test.ts",
     "os_search_page/search_engine_test.ts",
     "os_search_page/search_subpage_test.ts",

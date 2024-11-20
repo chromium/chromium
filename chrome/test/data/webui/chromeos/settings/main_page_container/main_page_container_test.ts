@@ -164,10 +164,6 @@ suite('<main-page-container>', () => {
           elementName: 'settings-personalization-page',
         },
         {
-          pageName: 'kSearchAndAssistant',
-          elementName: 'os-settings-search-page',
-        },
-        {
           pageName: 'kPrivacyAndSecurity',
           elementName: 'os-settings-privacy-page',
         },

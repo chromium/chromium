@@ -377,9 +377,6 @@ SearchSection::~SearchSection() {
 }
 
 void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"enableMagicBoost", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST},
       {"enableMagicBoostDesc", IDS_OS_SETTINGS_ENABLE_MAGIC_BOOST_DESCRIPTION},
@@ -397,17 +394,13 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableLobster", IDS_OS_SETTINGS_ENABLE_LOBSTER},
       {"enableLobsterDesc", IDS_OS_SETTINGS_ENABLE_LOBSTER_DESCRIPTION},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"osSearchEngineLabel", kIsRevampEnabled
-                                  ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
-                                  : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
+      {"osSearchEngineLabel", IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
       {"searchSubpageTitle", IDS_SETTINGS_SEARCH_SUBPAGE_TITLE},
       {"searchGoogleAssistant", IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT},
       {"searchGoogleAssistantEnabled",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON
-                        : IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ENABLED},
+       IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
       {"searchGoogleAssistantDisabled",
-       kIsRevampEnabled ? IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF
-                        : IDS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_DISABLED},
+       IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
       {"searchGoogleAssistantOn", IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_ON},
       {"searchGoogleAssistantOff", IDS_OS_SETTINGS_SEARCH_GOOGLE_ASSISTANT_OFF},
   };

@@ -1499,10 +1499,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeDisabled,
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSearchPage) {
-  RunSettingsTest("os_search_page/os_search_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsSearchPageGoogleAssistantSubpage) {
   RunSettingsTest("os_search_page/google_assistant_subpage_test.js");

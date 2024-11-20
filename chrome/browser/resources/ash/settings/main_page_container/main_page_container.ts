@@ -22,7 +22,6 @@ import '../os_apps_page/os_apps_page.js';
 import '../os_bluetooth_page/os_bluetooth_page.js';
 import '../os_people_page/os_people_page.js';
 import '../os_privacy_page/os_privacy_page.js';
-import '../os_search_page/os_search_page.js';
 import '../personalization_page/personalization_page.js';
 import '../system_preferences_page/system_preferences_page.js';
 // clang-format on

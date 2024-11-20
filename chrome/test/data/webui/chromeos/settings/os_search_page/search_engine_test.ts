@@ -11,8 +11,6 @@ import {clearBody} from '../utils.js';
 import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 suite(`<${SettingsSearchEngineElement.is}>`, () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let searchEngineElement: SettingsSearchEngineElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
   let searchEngineInfo: SearchEnginesInfo;
@@ -88,12 +86,7 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
     assertTrue(!!linkRow);
     assertTrue(linkRow.external);
 
-    if (isRevampWayfindingEnabled) {
-      assertEquals(
-          'Set search engine in Chrome browser settings', linkRow.label);
-    } else {
-      assertEquals('Preferred search engine', linkRow.label);
-    }
+    assertEquals('Set search engine in Chrome browser settings', linkRow.label);
 
     // Sublabel should display the default search engine name.
     assertEquals('SearchEngine0', linkRow.subLabel);

@@ -218,7 +218,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_LANGUAGES: Route;
   OS_PRINTING: Route;
   OS_PRIVACY: Route;
-  OS_SEARCH: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
   PASSPOINT_DETAIL: Route;
@@ -703,15 +702,6 @@ export function createRoutes(): OsSettingsRoutes {
           r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
           Subpage.kAppLanguages);
     }
-
-    // Search and Assistant section.
-    r.OS_SEARCH = createSection(
-        r.BASIC, routesMojom.SEARCH_AND_ASSISTANT_SECTION_PATH,
-        Section.kSearchAndAssistant);
-    r.SEARCH_SUBPAGE = createSubpage(
-        r.OS_SEARCH, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
-    r.GOOGLE_ASSISTANT = createSubpage(
-        r.OS_SEARCH, routesMojom.ASSISTANT_SUBPAGE_PATH, Subpage.kAssistant);
 
     // Printing section.
     r.OS_PRINTING = createSection(

@@ -229,14 +229,6 @@
       </page-displayer>
     </template>
     <template is="dom-if"
-        if="[[shouldStampPage_(pageAvailability, Section.kSearchAndAssistant)]]"
-        restamp>
-      <page-displayer section="[[Section.kSearchAndAssistant]]">
-        <os-settings-search-page prefs="{{prefs}}">
-        </os-settings-search-page>
-      </page-displayer>
-    </template>
-    <template is="dom-if"
         if="[[shouldStampPage_(pageAvailability, Section.kPrivacyAndSecurity)]]"
         restamp>
       <page-displayer section="[[Section.kPrivacyAndSecurity]]">

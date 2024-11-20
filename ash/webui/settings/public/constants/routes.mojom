@@ -15,7 +15,7 @@ enum Section {
   kPeople = 3,
   kDevice = 4,
   kPersonalization = 5,
-  kSearchAndAssistant = 6,
+  // Note: Value 6 was for deprecated kSearchAndAssistant. Do not reuse.
   kApps = 7,
   // Note: Value 8 was for deprecated kCrostini. Do not reuse.
   // Note: Value 9 was for deprecated Plugin VM section - see

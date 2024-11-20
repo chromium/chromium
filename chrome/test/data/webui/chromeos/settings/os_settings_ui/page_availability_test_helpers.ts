@@ -65,12 +65,6 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
     availableForGuest: true,
   },
   {
-    name: 'kSearchAndAssistant',
-    availableBeforeRevamp: true,
-    availableAfterRevamp: false,
-    availableForGuest: true,
-  },
-  {
     name: 'kPrivacyAndSecurity',
     availableBeforeRevamp: true,
     availableAfterRevamp: true,
