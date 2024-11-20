@@ -198,9 +198,11 @@ void MimeHandlerViewGuest::CreateInnerPage(
   // responsible for managing its own zoom. This is necessary for OOP PDF, as
   // otherwise the UI is zoomed and the calculations to determine the PDF size
   // mix zoomed and unzoomed units.
-  content::HostZoomMap::Get(guest_site_instance.get())
-      ->SetZoomLevelForHostAndScheme(kExtensionScheme, stream_->extension_id(),
-                                     0);
+  if (guest_site_instance) {
+    content::HostZoomMap::Get(guest_site_instance.get())
+        ->SetZoomLevelForHostAndScheme(kExtensionScheme,
+                                       stream_->extension_id(), 0);
+  }
 
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     std::move(callback).Run(std::move(owned_this),

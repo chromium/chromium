@@ -260,11 +260,8 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
   void CreateRenderProcessForExtension(const extensions::Extension* extension) {
     std::unique_ptr<content::MockRenderProcessHostFactory> rph_factory(
         new content::MockRenderProcessHostFactory());
-    scoped_refptr<content::SiteInstance> site_instance(
-        extensions::ProcessManager::Get(profile_)->GetSiteInstanceForURL(
-            extensions::BackgroundInfo::GetBackgroundURL(extension)));
-    content::RenderProcessHost* rph =
-        rph_factory->CreateRenderProcessHost(profile_, site_instance.get());
+    content::RenderProcessHost* rph = rph_factory->CreateRenderProcessHost(
+        profile_, /*site_instance=*/nullptr);
 
     // Fake that the RenderProcessHost is hosting the gcm app.
     extensions::ProcessMap::Get(profile_)->Insert(extension->id(),

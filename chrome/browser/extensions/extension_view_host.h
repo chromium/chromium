@@ -40,6 +40,7 @@ class ExtensionViewHost
   // hosted in ExternalTabContainer objects, which do not instantiate Browsers.
   ExtensionViewHost(const Extension* extension,
                     content::SiteInstance* site_instance,
+                    content::BrowserContext* browser_context,
                     const GURL& url,
                     mojom::ViewType host_type,
                     Browser* browser);
@@ -59,6 +60,10 @@ class ExtensionViewHost
   void OnDidStopFirstLoad() override;
   void LoadInitialURL() override;
   bool IsBackgroundPage() const override;
+
+  // content::WebContentsObserver:
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // content::WebContentsDelegate
   content::WebContents* OpenURLFromTab(

@@ -14,9 +14,11 @@ namespace extensions {
 OffscreenDocumentHost::OffscreenDocumentHost(
     const Extension& extension,
     content::SiteInstance* site_instance,
+    content::BrowserContext* browser_context,
     const GURL& url)
     : ExtensionHost(&extension,
                     site_instance,
+                    browser_context,
                     url,
                     mojom::ViewType::kOffscreenDocument) {
   DCHECK_EQ(url::Origin::Create(url), extension.origin());

@@ -199,7 +199,9 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
 void ExtensionWebContentsObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   if (base::FeatureList::IsEnabled(
-          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+          extensions_features::kRemoveCoreSiteInstance)) {
+    // If the primordial SiteInstance in ProcessManager is not used, we need
+    // to wait until `ReadyToCommitNavigation()` to set up the render frame.
     return;
   }
   SetUpRenderFrameHost(render_frame_host);
@@ -216,7 +218,7 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (base::FeatureList::IsEnabled(
-          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+          extensions_features::kRemoveCoreSiteInstance)) {
     SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
   }
 

@@ -40,9 +40,11 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
       ProcessManager::Get(profile)->GetSiteInstanceForURL(url);
   return view_type == mojom::ViewType::kExtensionSidePanel
              ? std::make_unique<ExtensionSidePanelViewHost>(
-                   extension, site_instance.get(), url, browser, web_contents)
-             : std::make_unique<ExtensionViewHost>(
-                   extension, site_instance.get(), url, view_type, browser);
+                   extension, site_instance.get(), url, profile, browser,
+                   web_contents)
+             : std::make_unique<ExtensionViewHost>(extension,
+                                                   site_instance.get(), profile,
+                                                   url, view_type, browser);
 }
 
 // Creates a view host for an extension in an incognito window. Returns NULL

@@ -9,6 +9,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/types/optional_util.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
@@ -98,6 +99,12 @@ bool ProcessMap::Contains(const ExtensionId& extension_id_in,
 
 bool ProcessMap::Contains(int process_id) const {
   return base::Contains(items_, process_id);
+}
+
+bool ProcessMap::ExtensionHasProcess(const ExtensionId& extension_id) const {
+  return base::ranges::find_if(items_, [extension_id](const auto& entry) {
+           return entry.second == extension_id;
+         }) != items_.end();
 }
 
 const Extension* ProcessMap::GetEnabledExtensionByProcessID(
