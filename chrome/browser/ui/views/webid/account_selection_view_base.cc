@@ -455,6 +455,15 @@ void AccountHoverButton::OnThemeChanged() {
 }
 
 void AccountHoverButton::OnPressed(const ui::Event& event) {
+  // We do not disable the button which has been clicked because otherwise,
+  // focus wouldn't be able to remain on the selected account row and causes the
+  // focus to move to the cancel button. Since the button is not disabled, it is
+  // possible for the button to be clicked again and we would ignore these
+  // future clicks.
+  if (has_been_clicked_) {
+    return;
+  }
+
   // Log the metric before invoking the callback since the callback may
   // destroy this object.
   base::UmaHistogramCustomCounts("Blink.FedCm.AccountChosenPosition.Desktop",
