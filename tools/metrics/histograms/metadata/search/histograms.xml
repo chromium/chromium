@@ -622,18 +622,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen"
-    enum="Boolean" expires_after="2025-11-01">
-  <owner>gangwu@chromium.org</owner>
-  <owner>contextual-search-eng@google.com</owner>
-  <summary>
-    Records whether the user opened the panel when it was shown for sync-enabled
-    users only (this is an approximation for the population that logs to UKM).
-    Recorded for all gestures for users with sync enabled when the UX is hidden.
-    Implemented for Android. (Expired in M76. Revived in M120.)
-  </summary>
-</histogram>
-
 <histogram name="Search.ContextualSearch.UnifiedConsent.PreviouslyUndecided"
     enum="Boolean" expires_after="2025-11-01">
   <owner>gangwu@chromium.org</owner>

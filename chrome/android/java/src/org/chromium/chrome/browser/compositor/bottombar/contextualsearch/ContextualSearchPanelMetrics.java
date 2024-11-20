@@ -92,9 +92,6 @@ public class ContextualSearchPanelMetrics {
                 if (!isChained) mResultsSeenExperiments = null;
             }
 
-            if (mWasActivatedByTap) {
-                ContextualSearchUma.logTapResultsSeen(mWasSearchContentViewSeen, profile);
-            }
             ContextualSearchUma.logAllResultsSeen(mWasSearchContentViewSeen);
             if (mWasSearchContentViewSeen) {
                 ContextualSearchUma.logAllSearches(/* wasRelatedSearches= */ false);
