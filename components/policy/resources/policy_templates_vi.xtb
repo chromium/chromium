@@ -1179,6 +1179,7 @@ Nếu bạn đặt chính sách này thành Bắt buộc, thì sau khi đăng nh
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, thì sau khi đăng nhập vào tài khoản được quản lý, người dùng có thể thấy một bong bóng yêu cầu họ tạo hồ sơ mới. Họ có thể đóng bong bóng này và tiếp tục duyệt web trong môi trường không được quản lý. Bong bóng này được kiểm soát theo chính sách <ph name="SIGNIN_INTERCEPTION_ENABLED_POLICY_NAME" />.
 
 Chính sách này không có hiệu lực khi đặt ở cấp độ thiết bị.</translation>
+<translation id="1834796168555733063">Tắt tính năng lưu khoá truy cập bằng trình quản lý mật khẩu</translation>
 <translation id="1836380138559328229">Lưu thông tin đăng nhập Wi-Fi đang hoạt động ở cấp thiết bị</translation>
 <translation id="1837165432382702436">Chiều cao của trang (tính bằng micromet)</translation>
 <translation id="1838910874018595451">Cấu hình điền sẵn cho phiếu yêu cầu hỗ trợ Kerberos</translation>
@@ -3951,6 +3952,7 @@ Xin lưu ý rằng chính sách này sẽ không có hiệu lực nếu bạn đ
 
  Nếu bạn không đặt chính sách này hay đặt thành một giá trị trống hoặc không hợp lệ, giá trị <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> bổ sung sẽ không được thêm vào yêu cầu lệnh in.
 </translation>
+<translation id="3896591584655529057">Bật tính năng lưu khoá truy cập bằng trình quản lý mật khẩu</translation>
 <translation id="3897218615484393758">Giới hạn thời gian mà người dùng đã xác thực qua SAML có thể đăng nhập ở chế độ ngoại tuyến trên màn hình khóa</translation>
 <translation id="3897860452756794695">Thao tác offsetParent mới sẽ được sử dụng.</translation>
 <translation id="3898345958122666461">Tắt NTLMv2</translation>
@@ -8606,6 +8608,11 @@ Lưu ý: Nếu bạn đang dùng chính sách này để hệ thống tự độ
       Nếu một tiện ích không có trong danh sách hoặc nếu bạn không đặt danh sách này, thì lệnh gọi đến API sẽ không thực hiện được kèm theo mã lỗi.</translation>
 <translation id="718956142899066210">Các loại kết nối được cho phép để cập nhật</translation>
 <translation id="7190286937411178540">Bật tính năng hỗ trợ tiếp cận về làm nổi bật tiêu điểm bằng bàn phím</translation>
+<translation id="7190595750461561896">Chính sách này kiểm soát khả năng trình duyệt lưu khoá truy cập trong trình quản lý mật khẩu tích hợp sẵn. Chính sách này không giới hạn quyền truy cập hoặc thay đổi nội dung của khoá truy cập đã lưu trong trình quản lý mật khẩu. Nếu bạn đặt chính sách <ph name="POLICY_NAME" /> thành Tắt, thì nhìn chung, tính năng lưu vào trình quản lý mật khẩu tích hợp sẵn sẽ bị tắt (trong đó có cả khoá truy cập và mật khẩu). Do đó, chính sách này không áp dụng được.
+
+Nếu bạn đặt chính sách này thành Bật hoặc không đặt, thì người dùng có thể lưu khoá truy cập vào trình quản lý mật khẩu tích hợp sẵn nếu đã đăng nhập vào <ph name="PRODUCT_NAME" />.
+
+Nếu bạn đặt chính sách này thành Tắt, thì người dùng sẽ không thể lưu khoá truy cập vào trình quản lý mật khẩu tích hợp sẵn. Tuy nhiên, những khoá truy cập đã lưu trước đó sẽ vẫn hoạt động.</translation>
 <translation id="719398790886719721">Tắt quyền truy cập gốc vào các máy ảo Linux</translation>
 <translation id="7194407337890404814">Tên nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="7196336906814426783">Chính sách này thiết lập một loạt các khoảng thời gian hằng tuần để lên lịch tạm ngưng tự động. Khi một khoảng thời gian bắt đầu, thiết bị <ph name="PRODUCT_OS_NAME" /> sẽ chuyển sang chế độ tạm ngưng và hoạt động lại khi khoảng thời gian này kết thúc.
@@ -11174,6 +11181,7 @@ Chính sách này không còn được dùng trong M69 và đã bị thay bằng
 
       Chính sách này chỉ là biện pháp tạm thời và sẽ bị xóa trong các phiên bản <ph name="PRODUCT_NAME" /> sau này. Sau khi chính sách này bị xóa, <ph name="PRODUCT_NAME" /> luôn có thể truy vấn các loại DNS khác.</translation>
 <translation id="9167719789236691545">Tắt Drive trong ứng dụng Tệp dành cho <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="9171359005568194889">Bật lưu khoá truy cập cho trình quản lý mật khẩu</translation>
 <translation id="9172648973829444124">Buộc bật chế độ Chỉ giao thức HTTPS ở chế độ Cân bằng</translation>
 <translation id="9172911925443428317">Không cho phép hiển thị quảng cáo Xếp hạng trong App Store</translation>
 <translation id="9173133289347070466">Khảo sát trong sản phẩm <ph name="PRODUCT_NAME" /> thu thập phản hồi của người dùng đối với trình duyệt. Các câu trả lời khảo sát không được liên kết với tài khoản người dùng.

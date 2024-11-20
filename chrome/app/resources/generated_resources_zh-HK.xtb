@@ -2793,6 +2793,7 @@
 <translation id="2904210161403910217">密碼已在您上次登入後變更</translation>
 <translation id="2904506722835398619">需要登入和同步</translation>
 <translation id="2904845070985032877">暫停動畫</translation>
+<translation id="2905556994482999199">透過頭部動作和面部表情控制 Chromebook</translation>
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
@@ -6356,6 +6357,7 @@
 <translation id="5473099001878321374">如繼續操作，即表示您亦允許此裝置自動下載和安裝來自 Google、您子女的流動網絡供應商和裝置製造商的更新內容和應用程式，當中可能會使用流動數據，部分應用程式可能會提供應用程式內購買。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 必須包含至少 1 個字元}other{PIN 必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即連接 Wi-Fi 並下載更新，或使用按用量收費連線的下載更新 (可能需支付費用)。</translation>
+<translation id="5476957746413745956">分別調整各個方向的速度</translation>
 <translation id="5477089831058413614">設定 <ph name="DEVICE_TYPE" /> 熱點</translation>
 <translation id="5481273127572794904">不允許自動下載多個檔案</translation>
 <translation id="5481682542063333508">提供撰寫協助</translation>
