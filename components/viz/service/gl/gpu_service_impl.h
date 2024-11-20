@@ -145,17 +145,25 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void UpdateGPUInfo();
   void UpdateGPUInfoGL();
 
+#if BUILDFLAG(IS_ANDROID)
   void InitializeWithHost(
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
       gpu::GpuProcessShmCount use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
       mojom::GpuServiceCreationParamsPtr creation_params,
-#if BUILDFLAG(IS_ANDROID)
       gpu::SyncPointManager* sync_point_manager = nullptr,
       gpu::SharedImageManager* shared_image_manager = nullptr,
       gpu::Scheduler* scheduler = nullptr,
-#endif
       base::WaitableEvent* shutdown_event = nullptr);
+#else
+  void InitializeWithHost(
+      mojo::PendingRemote<mojom::GpuHost> gpu_host,
+      gpu::GpuProcessShmCount use_shader_cache_shm_count,
+      scoped_refptr<gl::GLSurface> default_offscreen_surface,
+      mojom::GpuServiceCreationParamsPtr creation_params,
+      base::WaitableEvent* shutdown_event = nullptr);
+#endif
+
   void Bind(mojo::PendingReceiver<mojom::GpuService> pending_receiver);
 
   scoped_refptr<gpu::SharedContextState> GetContextState();
@@ -490,6 +498,16 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     base::WeakPtr<ClientGmbInterfaceImpl> weak_ptr_;
     base::WeakPtrFactory<ClientGmbInterfaceImpl> weak_ptr_factory_{this};
   };
+
+  void InitializeWithHostInternal(
+      mojo::PendingRemote<mojom::GpuHost> gpu_host,
+      gpu::GpuProcessShmCount use_shader_cache_shm_count,
+      scoped_refptr<gl::GLSurface> default_offscreen_surface,
+      mojom::GpuServiceCreationParamsPtr creation_params,
+      gpu::SyncPointManager* sync_point_manager,
+      gpu::SharedImageManager* shared_image_manager,
+      gpu::Scheduler* scheduler,
+      base::WaitableEvent* shutdown_event);
 
   // Private helper methods to create objects needed by this class during init.
   gpu::SyncPointManager* CreateSyncPointManager();

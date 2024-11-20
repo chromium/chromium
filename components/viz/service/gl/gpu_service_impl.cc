@@ -546,25 +546,16 @@ void GpuServiceImpl::UpdateGPUInfoGL() {
   gpu_host_->DidUpdateGPUInfo(gpu_info_);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void GpuServiceImpl::InitializeWithHost(
     mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
     gpu::GpuProcessShmCount use_shader_cache_shm_count,
     scoped_refptr<gl::GLSurface> default_offscreen_surface,
     mojom::GpuServiceCreationParamsPtr creation_params,
-#if BUILDFLAG(IS_ANDROID)
     gpu::SyncPointManager* sync_point_manager,
     gpu::SharedImageManager* shared_image_manager,
     gpu::Scheduler* scheduler,
-#endif
     base::WaitableEvent* shutdown_event) {
-#if !BUILDFLAG(IS_ANDROID)
-  // On platforms other than Android these objects are *always* created
-  // internally.
-  gpu::SyncPointManager* sync_point_manager = nullptr;
-  gpu::SharedImageManager* shared_image_manager = nullptr;
-  gpu::Scheduler* scheduler = nullptr;
-#endif
-
   if (!sync_point_manager) {
     sync_point_manager = CreateSyncPointManager();
   }
@@ -578,18 +569,59 @@ void GpuServiceImpl::InitializeWithHost(
 #endif
   }
 
-  if (scheduler) {
-    scheduler_ = scheduler;
-  } else {
-    scheduler_ = CreateScheduler(sync_point_manager);
+  if (!scheduler) {
+    scheduler = CreateScheduler(sync_point_manager);
   }
 
-  shutdown_event_ = shutdown_event;
-  if (!shutdown_event_) {
-    shutdown_event_ = CreateShutdownEvent();
+  if (!shutdown_event) {
+    shutdown_event = CreateShutdownEvent();
   }
 
+  InitializeWithHostInternal(
+      std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
+      default_offscreen_surface, std::move(creation_params), sync_point_manager,
+      shared_image_manager, scheduler, shutdown_event);
+}
+#else
+void GpuServiceImpl::InitializeWithHost(
+    mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+    gpu::GpuProcessShmCount use_shader_cache_shm_count,
+    scoped_refptr<gl::GLSurface> default_offscreen_surface,
+    mojom::GpuServiceCreationParamsPtr creation_params,
+    base::WaitableEvent* shutdown_event) {
+  gpu::SyncPointManager* sync_point_manager = CreateSyncPointManager();
+#if BUILDFLAG(IS_OZONE)
+  gpu::SharedImageManager* shared_image_manager =
+      CreateSharedImageManager(creation_params->supports_overlays);
+#else
+  gpu::SharedImageManager* shared_image_manager = CreateSharedImageManager();
+#endif
+  gpu::Scheduler* scheduler = CreateScheduler(sync_point_manager);
+
+  if (!shutdown_event) {
+    shutdown_event = CreateShutdownEvent();
+  }
+
+  InitializeWithHostInternal(
+      std::move(pending_gpu_host), std::move(use_shader_cache_shm_count),
+      default_offscreen_surface, std::move(creation_params), sync_point_manager,
+      shared_image_manager, scheduler, shutdown_event);
+}
+#endif
+
+void GpuServiceImpl::InitializeWithHostInternal(
+    mojo::PendingRemote<mojom::GpuHost> pending_gpu_host,
+    gpu::GpuProcessShmCount use_shader_cache_shm_count,
+    scoped_refptr<gl::GLSurface> default_offscreen_surface,
+    mojom::GpuServiceCreationParamsPtr creation_params,
+    gpu::SyncPointManager* sync_point_manager,
+    gpu::SharedImageManager* shared_image_manager,
+    gpu::Scheduler* scheduler,
+    base::WaitableEvent* shutdown_event) {
   DCHECK(main_runner_->BelongsToCurrentThread());
+
+  scheduler_ = scheduler;
+  shutdown_event_ = shutdown_event;
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
   gpu_host->DidInitialize(gpu_info_, gpu_feature_info_,

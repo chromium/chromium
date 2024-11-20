@@ -201,15 +201,20 @@ void VizMainImpl::CreateGpuService(
         discardable_shared_memory_manager_.get());
   }
 
+#if BUILDFLAG(IS_ANDROID)
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
       gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
       gpu_init_->TakeDefaultOffscreenSurface(), std::move(params),
-#if BUILDFLAG(IS_ANDROID)
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
-      dependencies_.scheduler,
-#endif
+      dependencies_.scheduler, dependencies_.shutdown_event);
+#else
+  gpu_service_->InitializeWithHost(
+      gpu_host.Unbind(),
+      gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
+      gpu_init_->TakeDefaultOffscreenSurface(), std::move(params),
       dependencies_.shutdown_event);
+#endif
 
   gpu_service_->Bind(std::move(pending_receiver));
 
