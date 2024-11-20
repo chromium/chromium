@@ -7,6 +7,7 @@
 #import <algorithm>
 #import <vector>
 
+#import "base/base_paths.h"
 #import "base/check_op.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
@@ -461,6 +462,8 @@ SafeBrowsingService* ApplicationContextImpl::GetSafeBrowsingService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!safe_browsing_service_) {
     safe_browsing_service_ = base::MakeRefCounted<SafeBrowsingServiceImpl>();
+    safe_browsing_service_->Initialize(
+        base::PathService::CheckedGet(ios::DIR_USER_DATA));
   }
   return safe_browsing_service_.get();
 }

@@ -13,10 +13,12 @@
 #import "ios/web/public/web_state.h"
 
 SafeBrowsingClientImpl::SafeBrowsingClientImpl(
+    PrefService* pref_service,
     safe_browsing::RealTimeUrlLookupService* lookup_service,
     safe_browsing::HashRealTimeService* hash_real_time_service,
     PrerenderService* prerender_service)
-    : lookup_service_(lookup_service),
+    : pref_service_(pref_service),
+      lookup_service_(lookup_service),
       hash_real_time_service_(hash_real_time_service),
       prerender_service_(prerender_service) {}
 
@@ -24,6 +26,10 @@ SafeBrowsingClientImpl::~SafeBrowsingClientImpl() = default;
 
 base::WeakPtr<SafeBrowsingClient> SafeBrowsingClientImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+PrefService* SafeBrowsingClientImpl::GetPrefs() {
+  return pref_service_;
 }
 
 SafeBrowsingService* SafeBrowsingClientImpl::GetSafeBrowsingService() {

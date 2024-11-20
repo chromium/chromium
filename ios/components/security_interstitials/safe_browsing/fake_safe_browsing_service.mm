@@ -198,11 +198,17 @@ FakeSafeBrowsingService::FakeSafeBrowsingService() = default;
 
 FakeSafeBrowsingService::~FakeSafeBrowsingService() = default;
 
-void FakeSafeBrowsingService::Initialize(
+void FakeSafeBrowsingService::Initialize(const base::FilePath& user_data_path) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+}
+
+void FakeSafeBrowsingService::OnBrowserStateCreated(
     PrefService* prefs,
-    const base::FilePath& user_data_path,
-    safe_browsing::SafeBrowsingMetricsCollector*
-        safe_browsing_metrics_collector) {
+    safe_browsing::SafeBrowsingMetricsCollector* metrics_collector) {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+}
+
+void FakeSafeBrowsingService::OnBrowserStateDestroyed(PrefService* prefs) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
 

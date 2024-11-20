@@ -8,6 +8,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class PrefService;
+
 namespace safe_browsing {
 class HashRealTimeService;
 class RealTimeUrlLookupService;
@@ -33,6 +35,8 @@ class SafeBrowsingClient : public KeyedService {
  public:
   // Returns this as a weak pointer.
   virtual base::WeakPtr<SafeBrowsingClient> AsWeakPtr() = 0;
+  // Returns the PrefService.
+  virtual PrefService* GetPrefs() = 0;
   // Gets the safe browsing service for this client. Must not be nullptr.
   virtual SafeBrowsingService* GetSafeBrowsingService() = 0;
   // Gets the real time url look up service. Clients may return nullptr.

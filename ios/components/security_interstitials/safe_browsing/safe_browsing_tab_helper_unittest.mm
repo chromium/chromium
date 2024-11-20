@@ -41,7 +41,8 @@ class SafeBrowsingTabHelperTest
     : public testing::TestWithParam<SafeBrowsingDecisionTimingWithAsync> {
  protected:
   SafeBrowsingTabHelperTest()
-      : browser_state_(std::make_unique<web::FakeBrowserState>()) {
+      : browser_state_(std::make_unique<web::FakeBrowserState>()),
+        client_(/*pref_service=*/nullptr) {
     use_async_safe_browsing_ = IsAsyncEnabled();
     scoped_feature_list_.InitWithFeatureState(
         safe_browsing::kSafeBrowsingAsyncRealTimeCheck,

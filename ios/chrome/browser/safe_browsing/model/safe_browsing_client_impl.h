@@ -15,6 +15,7 @@ class PrerenderService;
 class SafeBrowsingClientImpl : public SafeBrowsingClient {
  public:
   SafeBrowsingClientImpl(
+      PrefService* pref_Service,
       safe_browsing::RealTimeUrlLookupService* lookup_service,
       safe_browsing::HashRealTimeService* hash_real_time_service,
       PrerenderService* prerender_service);
@@ -23,6 +24,7 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
 
   // SafeBrowsingClient implementation.
   base::WeakPtr<SafeBrowsingClient> AsWeakPtr() override;
+  PrefService* GetPrefs() override;
   SafeBrowsingService* GetSafeBrowsingService() override;
   safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
       override;
@@ -34,6 +36,7 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
                                               const GURL& url) override;
 
  private:
+  raw_ptr<PrefService> pref_service_;
   raw_ptr<safe_browsing::RealTimeUrlLookupService> lookup_service_;
   raw_ptr<safe_browsing::HashRealTimeService> hash_real_time_service_;
   raw_ptr<PrerenderService> prerender_service_;

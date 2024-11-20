@@ -64,7 +64,6 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
-#import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -75,7 +74,6 @@
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/public/provider/chrome/browser/additional_features/additional_features_controller.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -398,16 +396,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
         application_context_->GetLocalState(),
         application_context_->GetSharedURLLoaderFactory());
   }
-
-  // Ensure that Safe Browsing is initialized.
-  SafeBrowsingService* safe_browsing_service =
-      application_context_->GetSafeBrowsingService();
-  safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
-      SafeBrowsingMetricsCollectorFactory::GetForProfile(last_used_profile);
-  safe_browsing_service->Initialize(
-      last_used_profile->GetPrefs(),
-      base::PathService::CheckedGet(ios::DIR_USER_DATA),
-      safe_browsing_metrics_collector);
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {

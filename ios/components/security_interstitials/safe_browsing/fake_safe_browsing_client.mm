@@ -7,13 +7,18 @@
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
 #import "ios/web/public/web_state.h"
 
-FakeSafeBrowsingClient::FakeSafeBrowsingClient()
-    : safe_browsing_service_(base::MakeRefCounted<FakeSafeBrowsingService>()) {}
+FakeSafeBrowsingClient::FakeSafeBrowsingClient(PrefService* pref_service)
+    : safe_browsing_service_(base::MakeRefCounted<FakeSafeBrowsingService>()),
+      pref_service_(pref_service) {}
 
 FakeSafeBrowsingClient::~FakeSafeBrowsingClient() = default;
 
 base::WeakPtr<SafeBrowsingClient> FakeSafeBrowsingClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+PrefService* FakeSafeBrowsingClient::GetPrefs() {
+  return pref_service_;
 }
 
 SafeBrowsingService* FakeSafeBrowsingClient::GetSafeBrowsingService() {

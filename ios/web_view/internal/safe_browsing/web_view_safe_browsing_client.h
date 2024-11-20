@@ -5,16 +5,18 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_SAFE_BROWSING_WEB_VIEW_SAFE_BROWSING_CLIENT_H_
 #define IOS_WEB_VIEW_INTERNAL_SAFE_BROWSING_WEB_VIEW_SAFE_BROWSING_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 
 class WebViewSafeBrowsingClient : public SafeBrowsingClient {
  public:
-  WebViewSafeBrowsingClient();
+  explicit WebViewSafeBrowsingClient(PrefService* prefs);
 
   ~WebViewSafeBrowsingClient() override;
 
   // SafeBrowsingClient implementation.
   base::WeakPtr<SafeBrowsingClient> AsWeakPtr() override;
+  PrefService* GetPrefs() override;
   SafeBrowsingService* GetSafeBrowsingService() override;
   safe_browsing::RealTimeUrlLookupService* GetRealTimeUrlLookupService()
       override;
@@ -26,6 +28,8 @@ class WebViewSafeBrowsingClient : public SafeBrowsingClient {
                                               const GURL& url) override;
 
  private:
+  raw_ptr<PrefService> prefs_;
+
   // Must be last.
   base::WeakPtrFactory<WebViewSafeBrowsingClient> weak_factory_{this};
 };

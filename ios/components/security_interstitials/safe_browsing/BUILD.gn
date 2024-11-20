@@ -11,6 +11,8 @@ source_set("safe_browsing") {
     "safe_browsing_client.h",
     "safe_browsing_error.h",
     "safe_browsing_error.mm",
+    "safe_browsing_helper.cc",
+    "safe_browsing_helper.h",
     "safe_browsing_query_manager.h",
     "safe_browsing_query_manager.mm",
     "safe_browsing_service.h",
