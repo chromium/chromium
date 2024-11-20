@@ -70,7 +70,6 @@ bool BufferPool::AddBlockBuffer(
     absl::MutexLock lock(&mutex_);
     auto [it, inserted] = mappings_.insert({id, std::move(mapping)});
     if (!inserted) {
-      ABSL_ASSERT(buffer_callbacks_.empty());
       return false;
     }
 
