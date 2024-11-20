@@ -46,9 +46,8 @@ struct CreditCardSuggestionSummary {
 };
 
 // Generates suggestions for all available credit cards based on the
-// `trigger_field_type`, `trigger_field`, `trigger_source`,
-// `four_digit_combinations_in_dom`. `summary` contains metadata about the
-// returned suggestions.
+// `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
+// `summary` contains metadata about the returned suggestions.
 // `autofilled_last_four_digits_in_form_for_suggestion_filtering` is a list of
 // card number last four that will be used for suggestion filtering. This is
 // used to avoid showing suggestions that is unrelated to the cards that have
@@ -57,7 +56,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source,
     CreditCardSuggestionSummary& summary,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
@@ -66,12 +64,11 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
         autofilled_last_four_digits_in_form_for_suggestion_filtering);
 
 // Generates suggestions for all available credit cards based on the
-// `trigger_field_type`, `trigger_field` and `trigger_source`.
-// `summary` contains metadata about the returned suggestions.
-// `last_four_set_for_cvc_suggestion_filtering` is a set of card number last
-// four that will be used for suggestion filtering. This is used to avoid
-// showing suggestions that is unrelated to the cards that have already been
-// autofilled in the form.
+// `trigger_field_type` and `trigger_field`. `summary` contains metadata about
+// the returned suggestions. `last_four_set_for_cvc_suggestion_filtering` is a
+// set of card number last four that will be used for suggestion filtering. This
+// is used to avoid showing suggestions that is unrelated to the cards that have
+// already been autofilled in the form.
 // TODO(crbug.com/40916587): Implement last four extraction from the DOM.
 std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const AutofillClient& client,
@@ -80,7 +77,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const std::vector<std::u16string>&
         autofilled_last_four_digits_in_form_for_suggestion_filtering,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary);

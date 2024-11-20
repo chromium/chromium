@@ -787,23 +787,26 @@ void BrowserAutofillManager::OnUserAcceptedCardsFromAccountOption() {
 
 void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
     const FormData& form,
-    const FormFieldData& field_data) {
+    const FormFieldData& field) {
   external_delegate_->OnQuery(
-      form, field_data, /*caret_bounds=*/gfx::Rect(),
+      form, field, /*caret_bounds=*/gfx::Rect(),
       AutofillSuggestionTriggerSource::kShowCardsFromAccount,
       /*update_datalist=*/false);
-  AutofillField* autofill_field = GetAutofillField(form, field_data);
-  FieldType field_type = autofill_field
-                             ? autofill_field->Type().GetStorableType()
-                             : CREDIT_CARD_NUMBER;
-  DCHECK_EQ(FieldTypeGroup::kCreditCard, GroupTypeOfFieldType(field_type));
+  FormStructure* form_structure;
+  AutofillField* autofill_field;
+  if (!GetCachedFormAndField(form.global_id(), field.global_id(),
+                             &form_structure, &autofill_field)) {
+    return;
+  }
+  DCHECK_EQ(FieldTypeGroup::kCreditCard,
+            GroupTypeOfFieldType(autofill_field->Type().GetStorableType()));
 
   autofill_metrics::SuggestionRankingContext ranking_context;
   auto cards = GetCreditCardSuggestions(
-      form, field_data, field_type,
+      form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
       AutofillSuggestionTriggerSource::kShowCardsFromAccount, ranking_context);
   DCHECK(!cards.empty());
-  external_delegate_->OnSuggestionsReturned(field_data.global_id(), cards,
+  external_delegate_->OnSuggestionsReturned(field.global_id(), cards,
                                             std::move(ranking_context));
 }
 
@@ -2905,9 +2908,9 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
 
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormData& form,
-    const FormStructure* form_structure,
+    const FormStructure& form_structure,
     const FormFieldData& trigger_field,
-    const AutofillField* trigger_autofill_field,
+    const AutofillField& trigger_autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2936,80 +2939,50 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 #endif
   metrics_->address_form_event_logger.OnDidPollSuggestions(trigger_field);
 
-  const FieldType trigger_field_type =
-      trigger_autofill_field ? trigger_autofill_field->Type().GetStorableType()
-                             : UNKNOWN_TYPE;
-  // Given the current `trigger_field` and previous suggestions shown (if any),
-  // compute what type of address suggestions granularity shall be currently
-  // offered.
-  SuggestionType current_suggestion_type = [&] {
-    if (!IsAddressType(trigger_field_type)) {
-      // If Autofill was triggered from a field that is not classified as
-      // address, `current_suggestion_type is irrelevant and we just use
-      // `SuggestionType::kAddressEntry` as a placeholder.
-      return SuggestionType::kAddressEntry;
-    }
-    if (trigger_field.is_autofilled() &&
-        trigger_autofill_field->autofilled_type() ==
-            trigger_autofill_field->Type().GetStorableType() &&
-        IsAddressFieldSwappingEnabled()) {
-      // If the user triggers suggestions on an autofilled field filled
-      // traditionally with data matching its classification, field-by-field
-      // filling suggestions should be shown so that the user could easily
-      // correct values to something present in different stored addresses.
-      return SuggestionType::kAddressFieldByFieldFilling;
-    }
-    return SuggestionType::kAddressEntry;
-  }();
+  // If the user triggers suggestions on an autofilled field, field-by-field
+  // filling suggestions should be shown so that the user could easily correct
+  // values to something present in different stored addresses.
+  SuggestionType current_suggestion_type =
+      (trigger_field.is_autofilled() && IsAddressFieldSwappingEnabled())
+          ? SuggestionType::kAddressFieldByFieldFilling
+          : SuggestionType::kAddressEntry;
 
   FieldTypeSet field_types = [&] {
-    if (!IsAddressType(trigger_field_type)) {
-      // Since Autofill was triggered from a field that is not classified as
-      // address, we consider the `field_types` (i.e, the fields found in the
-      // "form") to be a single unclassified field. Note that in this flow it is
-      // not used and only holds semantic value.
-      // TODO(crbug.com/339543182): Is this special case reasonable? Shouldn't
-      // we pass the fields that are available?
-      return FieldTypeSet{UNKNOWN_TYPE};
-    }
     // If the FormData and FormStructure do not have the same size, we assume
     // as a fallback that all fields are fillable.
     base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
         skip_reasons;
-    size_t num_fields = form_structure ? form_structure->field_count() : 0;
-    if (form_structure && form.fields().size() == num_fields) {
+    if (form.fields().size() == form_structure.field_count()) {
       skip_reasons = form_filler_->GetFieldFillingSkipReasons(
-          form.fields(), *form_structure, *trigger_autofill_field,
-          /*field_types_to_fill=*/current_suggestion_type ==
-                  SuggestionType::kAddressEntry
+          form.fields(), form_structure, trigger_autofill_field,
+          current_suggestion_type == SuggestionType::kAddressEntry
               ? kAllFieldTypes
-              : FieldTypeSet{trigger_field_type},
+              : FieldTypeSet{trigger_autofill_field.Type().GetStorableType()},
           /*type_groups_originally_filled=*/std::nullopt,
           FillingProduct::kAddress,
-          /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
-              AutofillSuggestionTriggerSource::kManualFallbackAddress,
           /*is_refill=*/false, /*is_expired_credit_card=*/false);
     }
     FieldTypeSet field_types;
-    for (size_t i = 0; i < num_fields; ++i) {
-      if (auto it = skip_reasons.find(form_structure->field(i)->global_id());
+    for (size_t i = 0; i < form_structure.field_count(); ++i) {
+      if (auto it = skip_reasons.find(form_structure.field(i)->global_id());
           it == skip_reasons.end() || it->second.empty()) {
-        field_types.insert(form_structure->field(i)->Type().GetStorableType());
+        field_types.insert(form_structure.field(i)->Type().GetStorableType());
       }
     }
     return field_types;
   }();
 
-  return GetSuggestionsForProfiles(client(), field_types, trigger_field,
-                                   trigger_field_type, current_suggestion_type,
-                                   trigger_source,
-                                   std::move(plus_address_email_override));
+  return GetSuggestionsForProfiles(
+      client(), field_types, trigger_field,
+      trigger_autofill_field.Type().GetStorableType(), current_suggestion_type,
+      std::move(plus_address_email_override));
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormData& form,
+    const FormStructure& form_structure,
     const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
+    const AutofillField& autofill_trigger_field,
     AutofillSuggestionTriggerSource trigger_source,
     autofill_metrics::SuggestionRankingContext& ranking_context) {
   metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
@@ -3021,18 +2994,13 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   std::vector<std::u16string> last_four_list_for_cvc_suggestion_filtering;
 
   // Preprocess the form to extract info about card number field.
-  if (FormStructure* cached_form = FindCachedFormById(form.global_id())) {
-    for (const FormFieldData& field : form.fields()) {
-      AutofillField* autofill_field =
-          cached_form->GetFieldById(field.global_id());
-      if (!autofill_field ||
-          autofill_field->Type().GetStorableType() != CREDIT_CARD_NUMBER) {
-        continue;
-      }
+  for (const FormFieldData& field : form.fields()) {
+    if (const AutofillField* autofill_field =
+            form_structure.GetFieldById(field.global_id());
+        autofill_field &&
+        autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER) {
       card_number_field_value += SanitizeCreditCardFieldValue(field.value());
-      if (field.is_autofilled()) {
-        is_card_number_autofilled = true;
-      }
+      is_card_number_autofilled |= field.is_autofilled();
     }
   }
   if (is_card_number_autofilled && card_number_field_value.size() >= 4) {
@@ -3047,7 +3015,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
            is_card_number_autofilled;
   };
 
-  if (data_util::IsCreditCardExpirationType(trigger_field_type) &&
+  if (data_util::IsCreditCardExpirationType(
+          autofill_trigger_field.Type().GetStorableType()) &&
       !ShouldOfferSuggestionsForExpirationTypeField()) {
     return {};
   }
@@ -3058,8 +3027,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      client(), trigger_field, trigger_field_type, trigger_source, summary,
-      ShouldShowScanCreditCard(form, trigger_field),
+      client(), trigger_field, autofill_trigger_field.Type().GetStorableType(),
+      summary, ShouldShowScanCreditCard(form, trigger_field),
       ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
       four_digit_combinations_in_dom_,
       last_four_list_for_cvc_suggestion_filtering);
@@ -3276,21 +3245,18 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
   }
 
   std::vector<Suggestion> suggestions;
-  if (FillingProductSet{FillingProduct::kCreditCard,
-                        FillingProduct::kStandaloneCvc}
-          .contains(context.filling_product)) {
-    FieldType trigger_field_type =
-        autofill_field ? autofill_field->Type().GetStorableType()
-                       : UNKNOWN_TYPE;
-    suggestions = GetCreditCardSuggestions(form, field, trigger_field_type,
-                                           trigger_source, ranking_context);
-  } else if (context.filling_product == FillingProduct::kAddress) {
-    // Profile suggestions fill ac=unrecognized fields only when triggered
-    // through manual fallbacks. As such, suggestion labels differ depending on
-    // the `trigger_source`.
-    suggestions = GetProfileSuggestions(form, form_structure, field,
-                                        autofill_field, trigger_source,
-                                        std::move(plus_address_email_override));
+  if (form_structure && autofill_field) {
+    if (FillingProductSet{FillingProduct::kCreditCard,
+                          FillingProduct::kStandaloneCvc}
+            .contains(context.filling_product)) {
+      suggestions = GetCreditCardSuggestions(form, CHECK_DEREF(form_structure),
+                                             field, CHECK_DEREF(autofill_field),
+                                             trigger_source, ranking_context);
+    } else if (context.filling_product == FillingProduct::kAddress) {
+      suggestions = GetProfileSuggestions(
+          form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
+          trigger_source, std::move(plus_address_email_override));
+    }
   }
 
   if (EvaluateAblationStudy(suggestions, autofill_field, context)) {

@@ -221,7 +221,7 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source) const;
   virtual void OnUserAcceptedCardsFromAccountOption();
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
-                                          const FormFieldData& field_data);
+                                          const FormFieldData& field);
 
   virtual void FillOrPreviewCreditCardForm(
       mojom::ActionPersistence action_persistence,
@@ -531,20 +531,23 @@ class BrowserAutofillManager : public AutofillManager {
   // field.
   std::vector<Suggestion> GetProfileSuggestions(
       const FormData& form,
-      const FormStructure* form_structure,
+      const FormStructure& form_structure,
       const FormFieldData& trigger_field,
-      const AutofillField* trigger_autofill_field,
+      const AutofillField& trigger_autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       std::optional<std::string> plus_address_email_override);
 
   // Returns a list of values from the stored credit cards that match
-  // `trigger_field_type` and the value of `trigger_field` and returns the
-  // labels of the matching credit cards. `ranking_context` contains information
-  // regarding the ranking of suggestions and is used for metrics logging.
+  // the type and value of `trigger_field` and returns the labels of the
+  // matching credit cards. `ranking_context` contains information regarding the
+  // ranking of suggestions and is used for metrics logging.
+  // TODO(crbug.com/40227496): Keep only one of `form` or `form_structure` and
+  // `trigger_field` or `autofill_trigger_field`.
   std::vector<Suggestion> GetCreditCardSuggestions(
       const FormData& form,
+      const FormStructure& form_structure,
       const FormFieldData& trigger_field,
-      FieldType trigger_field_type,
+      const AutofillField& autofill_trigger_field,
       AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 

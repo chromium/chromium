@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -106,9 +107,9 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     AutofillField* autofill_field;
     CHECK(manager_->GetCachedFormAndField(form.global_id(), field.global_id(),
                                           &form_structure, &autofill_field));
-    return manager_->GetProfileSuggestions(form, form_structure, field,
-                                           autofill_field, trigger_source,
-                                           std::move(plus_address_override));
+    return manager_->GetProfileSuggestions(
+        form, CHECK_DEREF(form_structure), field, CHECK_DEREF(autofill_field),
+        trigger_source, std::move(plus_address_override));
   }
 
   void set_votes_uploader(std::unique_ptr<VotesUploader> votes_uploader) {

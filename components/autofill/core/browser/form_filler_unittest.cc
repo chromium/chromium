@@ -531,9 +531,8 @@ TEST_F(FormFillerTest, FillOrPreviewDataModelFormCallsDidFillOrPreviewForm) {
   FillAutofillFormData(form, form.fields().front(), &profile);
 }
 
-// Tests that for autocomplete=unrecognized fields:
-// - Are not filled by default.
-// - Are filled through manual fallbacks.
+// Tests that for autocomplete=unrecognized fields are not filled by default,
+// but are filled if they are the filling trigger field.
 TEST_F(FormFillerTest,
        FillAddressForm_AutocompleteUnrecognizedFillingBehavior) {
   // Create a form where the middle name field has autocomplete=unrecognized.
@@ -548,8 +547,8 @@ TEST_F(FormFillerTest,
   ASSERT_EQ(form_structure->field(1)->html_type(),
             HtmlFieldType::kUnrecognized);
 
-  // Fill the `form` regularly and expect that everything but the middle name
-  // gets filled.
+  // Fill `form` from the first name field and expect that the middle name field
+  // isn't filled and the rest is.
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields()[0], &profile).fields();
@@ -559,14 +558,10 @@ TEST_F(FormFillerTest,
   EXPECT_THAT(filled_fields[2],
               AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
 
-  // Fill the `form` as-if through manual fallbacks. Expect that every field
-  // gets filled.
-  EXPECT_CALL(autofill_driver_, ApplyFormAction)
-      .WillOnce(DoAll(SaveArgElementsTo<2>(&filled_fields),
-                      Return(base::flat_set<FieldGlobalId>{})));
-  browser_autofill_manager_->FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
-      profile, {.trigger_source = AutofillTriggerSource::kManualFallback});
+  // Fill `form` from the middle name field and expect that all fields are
+  // filled.
+  filled_fields =
+      FillAutofillFormData(form, form.fields()[1], &profile).fields();
 
   EXPECT_THAT(filled_fields[0],
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));

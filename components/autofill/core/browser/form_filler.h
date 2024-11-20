@@ -84,7 +84,6 @@ class FormFiller {
       std::optional<DenseSet<FieldTypeGroup>> type_group_originally_filled,
       FieldTypeSet field_types_to_fill = kAllFieldTypes,
       FillingProduct filling_product = FillingProduct::kNone,
-      bool skip_unrecognized_autocomplete_fields = false,
       bool is_refill = false,
       bool is_expired_credit_card = false);
 
@@ -109,7 +108,6 @@ class FormFiller {
       const FieldTypeSet& field_types_to_fill,
       std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
       FillingProduct filling_product,
-      bool skip_unrecognized_autocomplete_fields,
       bool is_refill,
       bool is_expired_credit_card) const;
 

@@ -882,7 +882,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source,
     CreditCardSuggestionSummary& summary,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
@@ -913,7 +912,7 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     suggestions = GetCreditCardOrCvcFieldSuggestions(
         client, trigger_field, four_digit_combinations_in_dom,
         autofilled_last_four_digits_in_form_for_suggestion_filtering,
-        trigger_field_type, trigger_source, should_show_scan_credit_card,
+        trigger_field_type, should_show_scan_credit_card,
         should_show_cards_from_account, summary);
   }
 
@@ -927,7 +926,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
     const std::vector<std::u16string>&
         autofilled_last_four_digits_in_form_for_suggestion_filtering,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source,
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary) {

@@ -43,7 +43,6 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     SuggestionType suggestion_type,
-    AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override);
 
 // Generates a footer suggestion "Manage addresses..." menu item which will
@@ -56,9 +55,7 @@ std::vector<AutofillProfile> GetProfilesToSuggestForTest(
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const FieldTypeSet& field_types,
-    AutofillSuggestionTriggerSource trigger_source =
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+    const FieldTypeSet& field_types);
 
 // Exposes `CreateSuggestionsFromProfiles` in tests.
 std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(

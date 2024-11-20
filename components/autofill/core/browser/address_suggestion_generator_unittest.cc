@@ -46,9 +46,6 @@ using testing::IsEmpty;
 using testing::Matcher;
 using testing::Property;
 
-constexpr AutofillSuggestionTriggerSource kDefaultTriggerSource =
-    AutofillSuggestionTriggerSource::kFormControlElementClicked;
-
 constexpr char kAddressesSuppressedHistogramName[] =
     "Autofill.AddressesSuppressedForDisuse";
 
@@ -774,7 +771,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   // Expect that suggestions are prefix matched.
   std::vector<Suggestion> address_suggestions = GetSuggestionsForProfiles(
       *autofill_client(), {NAME_FIRST}, triggering_field, NAME_FIRST,
-      SuggestionType::kAddressEntry, kDefaultTriggerSource, std::nullopt);
+      SuggestionType::kAddressEntry, std::nullopt);
   EXPECT_EQ(address_suggestions.size(), 3ul);
   EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
 }
@@ -786,7 +783,7 @@ TEST_F(AddressSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   field.set_is_autofilled(true);
   std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
       *autofill_client(), {NAME_FIRST}, field, NAME_FIRST,
-      SuggestionType::kAddressEntry, kDefaultTriggerSource, std::nullopt);
+      SuggestionType::kAddressEntry, std::nullopt);
   EXPECT_THAT(suggestions,
               ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntry),
                           EqualsSuggestion(SuggestionType::kSeparator),
@@ -801,8 +798,7 @@ TEST_F(AddressSuggestionGeneratorTest,
   autofill_client()->set_test_addresses({profile});
   std::vector<Suggestion> suggestions = GetSuggestionsForProfiles(
       *autofill_client(), /*field_types=*/{NAME_FIRST}, FormFieldData(),
-      NAME_FIRST, SuggestionType::kAddressEntry, kDefaultTriggerSource,
-      std::nullopt);
+      NAME_FIRST, SuggestionType::kAddressEntry, std::nullopt);
 
   // There should be one `SuggestionType::kDevtoolsTestAddresses`, one
   // `SuggestionType::kSeparator` and one `SuggestionType::kManageAddress`.

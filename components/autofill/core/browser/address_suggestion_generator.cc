@@ -418,8 +418,7 @@ std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
 ProfilesToSuggestOptions GetProfilesToSuggestOptions(
     FieldType trigger_field_type,
     const std::u16string& trigger_field_contents,
-    bool trigger_field_is_autofilled,
-    AutofillSuggestionTriggerSource trigger_source) {
+    bool trigger_field_is_autofilled) {
   // By default, disused profiles are excluded only if the normalized field
   // value is empty.
   bool should_excluded_disused_addresses =
@@ -614,15 +613,13 @@ std::vector<Suggestion> GetSuggestionsForProfiles(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     SuggestionType suggestion_type,
-    AutofillSuggestionTriggerSource trigger_source,
     std::optional<std::string> plus_address_email_override) {
   std::vector<AutofillProfile> profiles_to_suggest = GetProfilesToSuggest(
       client.GetPersonalDataManager().address_data_manager(),
       trigger_field_type, trigger_field.value(), trigger_field.is_autofilled(),
       field_types,
       GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
-                                  trigger_field.is_autofilled(),
-                                  trigger_source));
+                                  trigger_field.is_autofilled()));
   const std::string gaia_email =
       client.GetIdentityManager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
@@ -663,13 +660,12 @@ std::vector<AutofillProfile> GetProfilesToSuggestForTest(
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
-    const FieldTypeSet& field_types,
-    AutofillSuggestionTriggerSource trigger_source) {
+    const FieldTypeSet& field_types) {
   return GetProfilesToSuggest(
       address_data, trigger_field_type, field_contents, field_is_autofilled,
       field_types,
       GetProfilesToSuggestOptions(trigger_field_type, field_contents,
-                                  field_is_autofilled, trigger_source));
+                                  field_is_autofilled));
 }
 
 std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(

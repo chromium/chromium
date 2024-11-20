@@ -159,7 +159,6 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     const std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
     FieldTypeSet field_types_to_fill,
     FillingProduct filling_product,
-    bool skip_unrecognized_autocomplete_fields,
     bool is_refill,
     bool is_expired_credit_card) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
@@ -184,9 +183,9 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   add_if(autofill_field.only_fill_when_focused() && !is_trigger_field,
          FieldFillingSkipReason::kNotFocused);
 
-  // Address fields with unrecognized autocomplete attribute) are only filled
-  // when triggered through manual fallbacks.
-  add_if(!is_trigger_field && skip_unrecognized_autocomplete_fields &&
+  // An address fields with unrecognized autocomplete attribute) is only filled
+  // when it is the field triggering the filling operation.
+  add_if(!is_trigger_field &&
              autofill_field.ShouldSuppressSuggestionsAndFillingByDefault(),
          FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute);
 
@@ -306,7 +305,6 @@ FormFiller::GetFieldFillingSkipReasons(
     const FieldTypeSet& field_types_to_fill,
     std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
     FillingProduct filling_product,
-    bool skip_unrecognized_autocomplete_fields,
     bool is_refill,
     bool is_expired_credit_card) const {
   // Counts the number of times a type was seen in the section to be filled.
@@ -327,8 +325,7 @@ FormFiller::GetFieldFillingSkipReasons(
         GetFillingSkipReasonsForField(
             fields[i], *form_structure.field(i), trigger_field, type_count,
             type_groups_originally_filled, field_types_to_fill, filling_product,
-            skip_unrecognized_autocomplete_fields, is_refill,
-            is_expired_credit_card);
+            is_refill, is_expired_credit_card);
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
@@ -484,7 +481,6 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
               field_types_to_fill,
               /*type_groups_originally_filled=*/std::nullopt,
               FillingProduct::kPredictionImprovements,
-              /*skip_unrecognized_autocomplete_fields=*/false,
               /*is_refill=*/false,
               /*is_expired_credit_card=*/false),
           {},
@@ -614,11 +610,7 @@ void FormFiller::FillOrPreviewForm(
           trigger_details.field_types_to_fill,
           filling_context ? filling_context->type_groups_originally_filled
                           : std::optional<DenseSet<FieldTypeGroup>>(),
-          filling_product,
-          /*skip_unrecognized_autocomplete_fields=*/
-          trigger_details.trigger_source !=
-              AutofillTriggerSource::kManualFallback,
-          is_refill,
+          filling_product, is_refill,
           filling_product == FillingProduct::kCreditCard &&
               absl::get<const CreditCard*>(profile_or_credit_card)
                   ->IsExpired(AutofillClock::Now()));
