@@ -199,7 +199,7 @@ class PLATFORM_EXPORT CanvasResource
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
                  cc::PaintFlags::FilterQuality,
                  gfx::Size size,
-                 SkColorType sk_color_type,
+                 viz::SharedImageFormat format,
                  SkAlphaType sk_alpha_type,
                  sk_sp<SkColorSpace> sk_color_space);
 

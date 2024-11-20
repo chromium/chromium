@@ -56,7 +56,7 @@ namespace blink {
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
                                gfx::Size size,
-                               SkColorType sk_color_type,
+                               viz::SharedImageFormat format,
                                SkAlphaType sk_alpha_type,
                                sk_sp<SkColorSpace> sk_color_space)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
@@ -64,7 +64,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
       size_(size),
-      format_(viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type)),
+      format_(format),
       sk_alpha_type_(sk_alpha_type),
       color_space_(sk_color_space ? gfx::ColorSpace(*sk_color_space)
                                   : gfx::ColorSpace::CreateSRGB()),
@@ -264,12 +264,13 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider,
     cc::PaintFlags::FilterQuality filter_quality)
-    : CanvasResource(std::move(provider),
-                     filter_quality,
-                     size,
-                     sk_color_type,
-                     sk_alpha_type,
-                     std::move(sk_color_space)) {
+    : CanvasResource(
+          std::move(provider),
+          filter_quality,
+          size,
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+          sk_alpha_type,
+          std::move(sk_color_space)) {
   if (!shared_image_interface_provider) {
     return;
   }
@@ -400,12 +401,13 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
-    : CanvasResource(std::move(provider),
-                     filter_quality,
-                     size,
-                     sk_color_type,
-                     sk_alpha_type,
-                     std::move(sk_color_space)),
+    : CanvasResource(
+          std::move(provider),
+          filter_quality,
+          size,
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+          sk_alpha_type,
+          std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
       is_overlay_candidate_(
@@ -938,8 +940,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     : CanvasResource(std::move(provider),
                      filter_quality,
                      transferable_resource.size,
-                     viz::ToClosestSkColorType(/*gpu_compositing=*/true,
-                                               transferable_resource.format),
+                     transferable_resource.format,
                      kPremul_SkAlphaType,
                      transferable_resource.color_space.ToSkColorSpace()),
       client_si_(std::move(client_si)),
@@ -1099,12 +1100,13 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality)
-    : CanvasResource(std::move(provider),
-                     filter_quality,
-                     size,
-                     sk_color_type,
-                     sk_alpha_type,
-                     std::move(sk_color_space)),
+    : CanvasResource(
+          std::move(provider),
+          filter_quality,
+          size,
+          viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
+          sk_alpha_type,
+          std::move(sk_color_space)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()
