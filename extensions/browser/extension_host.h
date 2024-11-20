@@ -60,7 +60,6 @@ class ExtensionHost : public DeferredStartRenderHost,
 
   ExtensionHost(const Extension* extension,
                 content::SiteInstance* site_instance,
-                content::BrowserContext* browser_context,
                 const GURL& url,
                 mojom::ViewType host_type);
 

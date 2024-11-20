@@ -421,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
         ProcessManager::Get(profile())
             ->GetSiteInstanceForURL(offscreen_url)
             .get(),
-        profile(), offscreen_url);
+        offscreen_url);
     offscreen_document->CreateRendererSoon();
     offscreen_waiter.WaitForHostCompletedFirstLoad();
   }

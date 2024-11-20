@@ -271,13 +271,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ProcessOverflow) {
   extensions::ProcessManager* process_manager =
       extensions::ProcessManager::Get(browser()->profile());
   content::RenderProcessHost* extension1_host =
-      (*process_manager->GetRenderFrameHostsForExtension(extension1->id())
-            .begin())
-          ->GetProcess();
+      process_manager->GetSiteInstanceForURL(extension1_url)->GetProcess();
   content::RenderProcessHost* extension2_host =
-      (*process_manager->GetRenderFrameHostsForExtension(extension2->id())
-            .begin())
-          ->GetProcess();
+      process_manager->GetSiteInstanceForURL(extension2_url)->GetProcess();
 
   // WebUI only shares with other same-site WebUI.
   EXPECT_EQ(ntp1_host, ntp2_host);

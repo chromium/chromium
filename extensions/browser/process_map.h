@@ -100,10 +100,6 @@ class ProcessMap : public KeyedService {
   bool Contains(const ExtensionId& extension_id, int process_id) const;
   bool Contains(int process_id) const;
 
-  // Returns true if an extension with the given `extension_id` has any
-  // associated tracked process.
-  bool ExtensionHasProcess(const ExtensionId& extension_id) const;
-
   // Returns a pointer to an enabled extension running in `process_id` or
   // nullptr.
   const Extension* GetEnabledExtensionByProcessID(int process_id) const;

@@ -2023,7 +2023,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
           extensions::ProcessManager::Get(browser()->profile())
               ->GetSiteInstanceForURL(offscreen_url)
               .get(),
-          browser()->profile(), offscreen_url);
+          offscreen_url);
   {
     extensions::ExtensionHostTestHelper offscreen_waiter(browser()->profile(),
                                                          extension->id());
