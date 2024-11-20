@@ -76,6 +76,10 @@ class PresentationAvailabilityStateTestingContext final {
   PresentationAvailabilityStateTestingContext() = default;
   ~PresentationAvailabilityStateTestingContext() = default;
 
+  ExecutionContext* GetExecutionContext() {
+    return testing_scope_.GetExecutionContext();
+  }
+
   ScriptState* GetScriptState() { return testing_scope_.GetScriptState(); }
 
   const ExceptionContext& GetExceptionContext() {
@@ -150,10 +154,11 @@ class PresentationAvailabilityStateTest : public testing::Test {
     }
   }
 
-  void RequestAvailabilityAndAddObservers(
-      ScriptPromiseResolver<PresentationAvailability>* resolver) {
+  void RequestAvailabilityAndAddObservers(ExecutionContext* execution_context) {
     for (auto& mock_observer : mock_observers_) {
-      state_->RequestAvailability(mock_observer->Urls(), resolver);
+      state_->RequestAvailability(
+          MakeGarbageCollected<PresentationAvailability>(
+              execution_context, mock_observer->Urls(), false));
       state_->AddObserver(mock_observer);
     }
   }
@@ -161,21 +166,12 @@ class PresentationAvailabilityStateTest : public testing::Test {
   // Tests that PresenationService is called for getAvailability(urls), after
   // `urls` change state to `states`. This function takes ownership of
   // `promise`.
-  void TestRequestAvailability(
-      const Vector<KURL>& urls,
-      const Vector<ScreenAvailability>& states,
-      ScriptPromiseResolver<PresentationAvailability>* resolver) {
+  void TestRequestAvailability(const Vector<ScreenAvailability>& states,
+                               PresentationAvailability* availability) {
+    auto urls = availability->Urls();
     DCHECK_EQ(urls.size(), states.size());
 
-    for (const auto& url : urls) {
-      EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
-          .Times(1);
-      EXPECT_CALL(mock_presentation_service_,
-                  StopListeningForScreenAvailability(url))
-          .Times(1);
-    }
-
-    state_->RequestAvailability(urls, resolver);
+    state_->RequestAvailability(availability);
     for (wtf_size_t i = 0; i < urls.size(); i++) {
       ChangeURLState(urls[i], states[i]);
     }
@@ -206,10 +202,8 @@ TEST_F(PresentationAvailabilityStateTest, RequestAvailability) {
                 StopListeningForScreenAvailability(url));
   }
 
-  state_->RequestAvailability(
-      urls_,
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext()));
+  state_->RequestAvailability(MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), urls_, false));
   state_->UpdateAvailability(url1_, ScreenAvailability::AVAILABLE);
 
   for (const auto& url : urls_) {
@@ -263,170 +257,247 @@ TEST_F(PresentationAvailabilityStateTest,
   EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
       .Times(1);
 
-  state_->RequestAvailability(
-      Vector<KURL>({url1_}),
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext()));
+  state_->RequestAvailability(MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), Vector<KURL>({url1_}), false));
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesAvailable) {
   PresentationAvailabilityStateTestingContext context;
+  EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
+      .Times(1);
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), Vector<KURL>({url1_}), false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::AVAILABLE}, resolver);
+  TestRequestAvailability({ScreenAvailability::AVAILABLE}, availability);
   context.WaitForPromiseFulfillment(promise);
   auto* presentation_availability =
       context.GetPromiseResolutionAsPresentationAvailability(promise);
   EXPECT_TRUE(presentation_availability->value());
+
+  EXPECT_CALL(mock_presentation_service_,
+              StopListeningForScreenAvailability(url1_))
+      .Times(1);
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesNotCompatible) {
   PresentationAvailabilityStateTestingContext context;
+  EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
+      .Times(1);
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), Vector<KURL>({url1_}), false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::SOURCE_NOT_SUPPORTED},
-                          resolver);
+  TestRequestAvailability({ScreenAvailability::SOURCE_NOT_SUPPORTED},
+                          availability);
   context.WaitForPromiseFulfillment(promise);
   auto* presentation_availability =
       context.GetPromiseResolutionAsPresentationAvailability(promise);
   EXPECT_FALSE(presentation_availability->value());
+
+  EXPECT_CALL(mock_presentation_service_,
+              StopListeningForScreenAvailability(url1_))
+      .Times(1);
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesUnavailable) {
   PresentationAvailabilityStateTestingContext context;
+  EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
+      .Times(1);
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), Vector<KURL>({url1_}), false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::UNAVAILABLE}, resolver);
+  TestRequestAvailability({ScreenAvailability::UNAVAILABLE}, availability);
   context.WaitForPromiseFulfillment(promise);
   auto* presentation_availability =
       context.GetPromiseResolutionAsPresentationAvailability(promise);
   EXPECT_FALSE(presentation_availability->value());
+
+  EXPECT_CALL(mock_presentation_service_,
+              StopListeningForScreenAvailability(url1_))
+      .Times(1);
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityOneUrlBecomesUnsupported) {
   PresentationAvailabilityStateTestingContext context;
+  EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url1_))
+      .Times(1);
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), Vector<KURL>({url1_}), false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
-  TestRequestAvailability({url1_}, {ScreenAvailability::DISABLED}, resolver);
+  TestRequestAvailability({ScreenAvailability::DISABLED}, availability);
   context.WaitForPromiseRejection(promise);
+
+  EXPECT_CALL(mock_presentation_service_,
+              StopListeningForScreenAvailability(url1_))
+      .Times(1);
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesAvailable) {
   PresentationAvailabilityStateTestingContext context;
+  Vector<KURL> urls = {url1_, url2_};
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
+        .Times(1);
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), urls, false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
   TestRequestAvailability(
-      {url1_, url2_},
-      {ScreenAvailability::AVAILABLE, ScreenAvailability::AVAILABLE}, resolver);
+      {ScreenAvailability::AVAILABLE, ScreenAvailability::AVAILABLE},
+      availability);
   context.WaitForPromiseFulfillment(promise);
   auto* presentation_availability =
       context.GetPromiseResolutionAsPresentationAvailability(promise);
   EXPECT_TRUE(presentation_availability->value());
+
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_,
+                StopListeningForScreenAvailability(url))
+        .Times(1);
+  }
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesUnavailable) {
   PresentationAvailabilityStateTestingContext context;
+  Vector<KURL> urls = {url1_, url2_};
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
+        .Times(1);
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), urls, false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
   TestRequestAvailability(
-      {url1_, url2_},
       {ScreenAvailability::UNAVAILABLE, ScreenAvailability::UNAVAILABLE},
-      resolver);
+      availability);
   context.WaitForPromiseFulfillment(promise);
   auto* presentation_availability =
       context.GetPromiseResolutionAsPresentationAvailability(promise);
   EXPECT_FALSE(presentation_availability->value());
+
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_,
+                StopListeningForScreenAvailability(url))
+        .Times(1);
+  }
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesNotCompatible) {
   PresentationAvailabilityStateTestingContext context;
+  Vector<KURL> urls = {url1_, url2_};
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
+        .Times(1);
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), urls, false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
   auto promise = resolver->Promise();
 
-  TestRequestAvailability({url1_, url2_},
-                          {ScreenAvailability::SOURCE_NOT_SUPPORTED,
+  TestRequestAvailability({ScreenAvailability::SOURCE_NOT_SUPPORTED,
                            ScreenAvailability::SOURCE_NOT_SUPPORTED},
-                          resolver);
+                          availability);
   context.WaitForPromiseFulfillment(promise);
   auto* presentation_availability =
       context.GetPromiseResolutionAsPresentationAvailability(promise);
   EXPECT_FALSE(presentation_availability->value());
+
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_,
+                StopListeningForScreenAvailability(url))
+        .Times(1);
+  }
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest,
        RequestAvailabilityMultipleUrlsAllBecomesUnsupported) {
   PresentationAvailabilityStateTestingContext context;
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  auto promise = resolver->Promise();
-
-  TestRequestAvailability(
-      {url1_, url2_},
-      {ScreenAvailability::DISABLED, ScreenAvailability::DISABLED}, resolver);
-  context.WaitForPromiseRejection(promise);
-}
-
-TEST_F(PresentationAvailabilityStateTest,
-       RequestAvailabilityReturnsDirectlyForAlreadyListeningUrls) {
-  PresentationAvailabilityStateTestingContext context;
-  // First getAvailability() call.
-  auto* resolver1 =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  auto promise1 = resolver1->Promise();
-
-  Vector<ScreenAvailability> state_seq = {ScreenAvailability::UNAVAILABLE,
-                                          ScreenAvailability::AVAILABLE,
-                                          ScreenAvailability::UNAVAILABLE};
-  TestRequestAvailability({url1_, url2_, url3_}, state_seq, resolver1);
-  context.WaitForPromiseFulfillment(promise1);
-  auto* presentation_availability1 =
-      context.GetPromiseResolutionAsPresentationAvailability(promise1);
-  EXPECT_FALSE(presentation_availability1->value());
-
-  // Second getAvailability() call.
-  for (const auto& url : mock_observer3_->Urls()) {
+  Vector<KURL> urls = {url1_, url2_};
+  for (const auto& url : urls) {
     EXPECT_CALL(mock_presentation_service_, ListenForScreenAvailability(url))
         .Times(1);
   }
 
-  auto* resolver2 =
+  auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
           context.GetScriptState(), context.GetExceptionContext());
-  auto promise2 = resolver2->Promise();
-  state_->RequestAvailability(mock_observer3_->Urls(), resolver2);
-  context.WaitForPromiseFulfillment(promise2);
-  auto* presentation_availability2 =
-      context.GetPromiseResolutionAsPresentationAvailability(promise2);
-  EXPECT_TRUE(presentation_availability2->value());
+  auto* availability = MakeGarbageCollected<PresentationAvailability>(
+      context.GetExecutionContext(), urls, false);
+  availability->AddResolver(resolver);
+  state_->AddObserver(availability);
+  auto promise = resolver->Promise();
+
+  TestRequestAvailability(
+      {ScreenAvailability::DISABLED, ScreenAvailability::DISABLED},
+      availability);
+  context.WaitForPromiseRejection(promise);
+
+  for (const auto& url : urls) {
+    EXPECT_CALL(mock_presentation_service_,
+                StopListeningForScreenAvailability(url))
+        .Times(1);
+  }
+  state_->RemoveObserver(availability);
 }
 
 TEST_F(PresentationAvailabilityStateTest, StartListeningListenToEachURLOnce) {
@@ -436,10 +507,7 @@ TEST_F(PresentationAvailabilityStateTest, StartListeningListenToEachURLOnce) {
         .Times(1);
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  RequestAvailabilityAndAddObservers(resolver);
+  RequestAvailabilityAndAddObservers(context.GetExecutionContext());
 }
 
 TEST_F(PresentationAvailabilityStateTest, StopListeningListenToEachURLOnce) {
@@ -459,10 +527,7 @@ TEST_F(PresentationAvailabilityStateTest, StopListeningListenToEachURLOnce) {
   EXPECT_CALL(*mock_observer3_,
               AvailabilityChanged(ScreenAvailability::UNAVAILABLE));
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  RequestAvailabilityAndAddObservers(resolver);
+  RequestAvailabilityAndAddObservers(context.GetExecutionContext());
 
   // Clean up callbacks.
   ChangeURLState(url2_, ScreenAvailability::UNAVAILABLE);
@@ -491,10 +556,7 @@ TEST_F(PresentationAvailabilityStateTest,
               StopListeningForScreenAvailability(url3_))
       .Times(0);
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  RequestAvailabilityAndAddObservers(resolver);
+  RequestAvailabilityAndAddObservers(context.GetExecutionContext());
 
   for (auto& mock_observer : mock_observers_) {
     state_->AddObserver(mock_observer);
@@ -523,10 +585,7 @@ TEST_F(PresentationAvailabilityStateTest,
   EXPECT_CALL(*mock_observer1_,
               AvailabilityChanged(ScreenAvailability::AVAILABLE));
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  RequestAvailabilityAndAddObservers(resolver);
+  RequestAvailabilityAndAddObservers(context.GetExecutionContext());
 
   ChangeURLState(url1_, ScreenAvailability::AVAILABLE);
 
@@ -552,10 +611,7 @@ TEST_F(PresentationAvailabilityStateTest,
                 AvailabilityChanged(ScreenAvailability::AVAILABLE));
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  RequestAvailabilityAndAddObservers(resolver);
+  RequestAvailabilityAndAddObservers(context.GetExecutionContext());
 
   ChangeURLState(url2_, ScreenAvailability::AVAILABLE);
 
@@ -574,10 +630,7 @@ TEST_F(PresentationAvailabilityStateTest,
         .Times(1);
   }
 
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
-          context.GetScriptState(), context.GetExceptionContext());
-  RequestAvailabilityAndAddObservers(resolver);
+  RequestAvailabilityAndAddObservers(context.GetExecutionContext());
   for (auto& mock_observer : mock_observers_) {
     EXPECT_CALL(*mock_observer,
                 AvailabilityChanged(ScreenAvailability::SOURCE_NOT_SUPPORTED));

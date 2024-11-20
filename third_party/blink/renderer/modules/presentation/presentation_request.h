@@ -68,6 +68,7 @@ class MODULES_EXPORT PresentationRequest final
 
  private:
   Vector<KURL> urls_;
+  Member<PresentationAvailability> availability_;
 };
 
 }  // namespace blink
