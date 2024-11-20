@@ -1,0 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package test.fuzzing.speech_synthesis_fuzzing;
+
+// A fuzzer case for speech_synthesis_in_process_fuzzer.cc.
+message FuzzCase {
+  string text = 1;
+  string lang = 2;
+}

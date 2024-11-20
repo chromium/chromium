@@ -78,6 +78,10 @@ if (!is_android) {
     ]
     testcase_proto_kind = "test.fuzzing.page_load_fuzzing.FuzzCase"
   }
+  in_process_proto_fuzzer("speech_synthesis_in_process_fuzzer") {
+    sources = [ "speech_synthesis_in_process_fuzzer.cc" ]
+    proto_source = "speech_synthesis_in_process_fuzzer.proto"
+  }
   in_process_proto_fuzzer("kombucha_in_process_fuzzer") {
     sources = [
       "kombucha_in_process_fuzzer.cc",
