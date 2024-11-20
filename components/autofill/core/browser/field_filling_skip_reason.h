@@ -22,7 +22,7 @@ enum class FieldFillingSkipReason : uint8_t {
   kValuePrefilled = 6,
   kUserFilledFields = 7,
   kAlreadyAutofilled = 8,
-  kNoFillableGroup = 9,
+  // kNoFillableGroup = 9, // DEPRECATED
   kRefillNotInInitialFill = 10,
   // kExpiredCards = 11, // DEPRECATED
   kFillingLimitReachedType = 12,

@@ -19,14 +19,10 @@ namespace {
 
 constexpr int kNumberFieldsToShowInSuggestionLabel = 2;
 
-// Ignore `FieldFillingSkipReason::kNoFillableGroup` during filling because
-// `kFieldTypesToFill` contains `UNKNOWN_TYPE` which would result in false
-// positives.
 // TODO(crbug.com/364808228): Remove.
 constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
     kIgnorableSkipReasons = {
-        autofill::FieldFillingSkipReason::kNotInFilledSection,
-        autofill::FieldFillingSkipReason::kNoFillableGroup};
+        autofill::FieldFillingSkipReason::kNotInFilledSection};
 
 // Checks if the cached predictions for a given `form` and Autofill profile have
 // at least one matching autofill suggestion for the specified `field_type`.

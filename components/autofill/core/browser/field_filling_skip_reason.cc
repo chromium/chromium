@@ -29,8 +29,6 @@ std::string_view GetSkipFieldFillLogMessage(
       return "Skipped: User filled the field";
     case FieldFillingSkipReason::kAlreadyAutofilled:
       return "Skipped: Field is already autofilled.";
-    case FieldFillingSkipReason::kNoFillableGroup:
-      return "Skipped: Field type has no fillable group";
     case FieldFillingSkipReason::kRefillNotInInitialFill:
       return "Skipped: Refill field group different from initial filling group";
     case FieldFillingSkipReason::kFillingLimitReachedType:

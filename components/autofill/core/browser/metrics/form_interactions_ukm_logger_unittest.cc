@@ -372,7 +372,7 @@ TEST_F(FieldLogUkmMetricTest, AddressSubmittedFormLogEvents) {
       const auto* const entry = field_entries[i].get();
 
       FieldFillingSkipReason status =
-          i == 2 ? FieldFillingSkipReason::kNoFillableGroup
+          i == 2 ? FieldFillingSkipReason::kFieldTypeUnrelated
                  : FieldFillingSkipReason::kNotSkipped;
       DenseSet<AutofillStatus> autofill_status_vector;
       int field_log_events_count = 0;

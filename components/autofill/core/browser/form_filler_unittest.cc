@@ -1727,8 +1727,8 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
                       Return(std::vector<FieldGlobalId>())));
   browser_autofill_manager_->FillOrPreviewFormWithPredictionImprovements(
       mojom::ActionPersistence::kFill,
-      /*ignorable_skip_reasons=*/{FieldFillingSkipReason::kNoFillableGroup},
-      form, form.fields().front(), values_to_fill);
+      /*ignorable_skip_reasons=*/{}, form, form.fields().front(),
+      values_to_fill);
   ASSERT_EQ(filled_fields.size(), 2u);
   EXPECT_EQ(filled_fields[0].value(), u"Doe");
   EXPECT_EQ(filled_fields[1].value(), u"100 John Doe Rd");

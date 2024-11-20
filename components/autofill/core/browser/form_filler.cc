@@ -271,17 +271,15 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
              !AllowPaymentSwapping(trigger_field, autofill_field, is_refill),
          FieldFillingSkipReason::kAlreadyAutofilled);
 
-  FieldTypeGroup field_group_type = autofill_field.Type().group();
-  add_if(field_group_type == FieldTypeGroup::kNoGroup,
-         FieldFillingSkipReason::kNoFillableGroup);
+  FieldType field_type = autofill_field.Type().GetStorableType();
 
   // On a refill, only fill fields from type groups that were present during
   // the initial fill.
   add_if(is_refill && type_groups_originally_filled.has_value() &&
-             !base::Contains(*type_groups_originally_filled, field_group_type),
+             !base::Contains(*type_groups_originally_filled,
+                             GroupTypeOfFieldType(field_type)),
          FieldFillingSkipReason::kRefillNotInInitialFill);
 
-  FieldType field_type = autofill_field.Type().GetStorableType();
   // A field with a specific type is only allowed to be filled a limited
   // number of times given by |TypeValueFormFillingLimit(field_type)|.
   add_if(++type_count[field_type] > TypeValueFormFillingLimit(field_type),
