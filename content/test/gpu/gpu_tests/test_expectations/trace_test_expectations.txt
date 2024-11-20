@@ -215,7 +215,6 @@ crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTes
 
 # Fail or flaky on Windows and Linux. Flaky timeout on Mac.
 crbug.com/371949935 [ graphite-disabled win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
-crbug.com/371949935 [ graphite-enabled intel-0x4680 no-clang-coverage release-x64 target-cpu-64 win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ graphite-enabled no-clang-coverage qualcomm-0x41333430 release target-cpu-64 win11 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ linux renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ mac ] TraceTest_ViewTransitionsCapture [ Failure ]
