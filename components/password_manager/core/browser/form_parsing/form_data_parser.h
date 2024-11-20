@@ -210,10 +210,13 @@ class FormDataParser {
 // origin |url|.
 std::string GetSignonRealm(const GURL& url);
 
-// Find the first element in |username_predictions| (i.e. the most reliable
-// prediction) that occurs in |processed_fields| and has interactability level
-// at least |username_max|.
-const autofill::FormFieldData* FindUsernameInPredictions(
+// Find the first element in HTML-based `username_predictions` (i.e. the most
+// reliable prediction) that occurs in `processed_fields` and has
+// interactability level at least `username_max`.
+// TODO(crbug.com/380032954): Rename `username_predictions` into
+// html_parser_result, here in the form parser code and in
+// html_based_username_detector.cc to avoid confusion with other predictions.
+const autofill::FormFieldData* FindUsernameInHtmlParserResult(
     const std::vector<autofill::FieldRendererId>& username_predictions,
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max);

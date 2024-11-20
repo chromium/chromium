@@ -1217,8 +1217,8 @@ FormParsingResult FormDataParser::ParseAndReturnParsingResult(
     // analysis.
     if (!username_found_before_heuristic) {
       const FormFieldData* username_field_by_context =
-          FindUsernameInPredictions(form_data.username_predictions(),
-                                    processed_fields, username_max);
+          FindUsernameInHtmlParserResult(form_data.username_predictions(),
+                                         processed_fields, username_max);
       if (username_field_by_context &&
           !(mode == FormDataParser::Mode::kSaving &&
             username_field_by_context->value().empty())) {
@@ -1320,7 +1320,7 @@ std::string GetSignonRealm(const GURL& url) {
   return url.ReplaceComponents(rep).spec();
 }
 
-const FormFieldData* FindUsernameInPredictions(
+const FormFieldData* FindUsernameInHtmlParserResult(
     const std::vector<autofill::FieldRendererId>& username_predictions,
     const std::vector<ProcessedField>& processed_fields,
     Interactability username_max) {
