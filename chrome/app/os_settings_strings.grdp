@@ -971,9 +971,6 @@
 
   <!-- Personalization Page (OS settings) -->
   <message name="IDS_OS_SETTINGS_PERSONALIZATION" desc="Name of the OS settings page which displays personalization preferences.">
-    Personalization
-  </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_PERSONALIZATION" desc="Name of the OS settings page which displays personalization preferences.">
     Wallpaper and style
   </message>
   <message name="IDS_OS_SETTINGS_PERSONALIZATION_MENU_ITEM_DESCRIPTION" desc="Description for the Personalization menu item in the left menu.">
@@ -986,12 +983,9 @@
     Set your wallpaper &amp; style
   </message>
   <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
-    Personalize wallpaper, screen saver, accent colors, and more
-  </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
     Personalize wallpaper, screen saver, dark theme, and more
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_OPEN_PERSONALIZATION_HUB_SUBTITLE_GUEST_MODE" desc="Description for the link to open personalization hub in guest mode.">
+  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE_GUEST_MODE" desc="Description for the link to open personalization hub in guest mode.">
     Personalize wallpaper, dark theme, and more
   </message>
 
