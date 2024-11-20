@@ -169,6 +169,17 @@ std::string Base64DecodeData(const std::string& data) {
   return decoded;
 }
 
+// Returns true if a local state seed should be used.
+bool ShouldUseLocalStateSeed() {
+// TODO(crbug.com/379327745): Remove build flag directive when early boot can
+// participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
+  return true;
+#else
+  return base::FieldTrialList::FindFullName(kSeedFileTrial) != kSeedFilesGroup;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 // Sample seeds and the server produced delta between them to verify that the
 // client code is able to decode the deltas produced by the server.
 struct {
@@ -253,7 +264,9 @@ void CheckRegularSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
                                         TestVariationsSeedStore& seed_store) {
   EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data,
               Not(IsEmpty()));
-  EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  }
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsLastFetchTime));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSeedDate));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSeedSignature));
@@ -264,7 +277,9 @@ void CheckRegularSeedAndSeedPrefsAreCleared(
     TestVariationsSeedStore& seed_store) {
   EXPECT_THAT(seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data,
               IsEmpty());
-  EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
+  }
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsLastFetchTime));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSeedDate));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSeedSignature));
@@ -275,8 +290,10 @@ void CheckSafeSeedAndSeedPrefsAreSet(const TestingPrefServiceSimple& prefs,
   EXPECT_THAT(
       seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data,
       Not(IsEmpty()));
-  EXPECT_FALSE(
-      PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_FALSE(
+        PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
+  }
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedFetchTime));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedLocale));
@@ -293,7 +310,10 @@ void CheckSafeSeedAndSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs,
   EXPECT_THAT(
       seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data,
       IsEmpty());
-  EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_TRUE(
+        PrefHasDefaultValue(prefs, prefs::kVariationsSafeCompressedSeed));
+  }
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedFetchTime));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedLocale));
@@ -396,7 +416,10 @@ TEST_P(LoadSeedDataAllGroupsTest, LoadSeed_ValidSeed) {
   EXPECT_EQ(seed_data, SerializeSeed(loaded_seed));
   EXPECT_EQ(seed_data, loaded_seed_data);
   EXPECT_EQ(base64_seed_signature, loaded_base64_seed_signature);
-  // Make sure the seed data from prefs or SeedReaderWriter hasn't been changed.
+  // Make sure the seed data hasn't been changed.
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_EQ(base64_seed, prefs_.GetString(prefs::kVariationsCompressedSeed));
+  }
   EXPECT_EQ(expected_seed,
             seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
 }
@@ -729,8 +752,8 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Combine(::testing::Bool(),
                            ::testing::Values(kSeedFilesGroup))));
 
-// Verifies that clients in SeedFiles trial group write latest seeds to
-// local state prefs and a seed file.
+// Verifies that clients in SeedFiles trial group write latest seeds to a seed
+// file.
 TEST_P(StoreSeedDataSeedFilesGroupTest, StoreSeedData) {
   // Initialize SeedStore with test local state prefs and SeedReaderWriter.
   TestVariationsSeedStore seed_store(&prefs_, temp_dir_.GetPath());
@@ -744,9 +767,13 @@ TEST_P(StoreSeedDataSeedFilesGroupTest, StoreSeedData) {
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
 
+// TODO(crbug.com/379327745): Remove build flag directive when early boot can
+// participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
   // Make sure seed in local state prefs matches the one created.
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsCompressedSeed),
             GzipAndBase64Encode(serialized_seed));
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Make sure seed in seed file matches the one created.
   std::string seed_file_data;
@@ -929,8 +956,10 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
   ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
 
   // Verify that the pref has a sentinel value, rather than the full string.
-  EXPECT_EQ(kIdenticalToSafeSeedSentinel,
-            prefs_.GetString(prefs::kVariationsCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_EQ(kIdenticalToSafeSeedSentinel,
+              prefs_.GetString(prefs::kVariationsCompressedSeed));
+  }
   EXPECT_EQ(kIdenticalToSafeSeedSentinel,
             seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
 
@@ -1045,8 +1074,10 @@ TEST_P(LoadSafeSeedDataAllGroupsTest, LoadSafeSeed_ValidSeed) {
   EXPECT_EQ(original_state->is_low_end_device, client_state->is_low_end_device);
 
   // Make sure the seed hasn't been changed.
-  EXPECT_EQ(base64_seed,
-            prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_EQ(base64_seed,
+              prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
+  }
   EXPECT_EQ(expected_seed,
             seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data);
 }
@@ -1348,8 +1379,10 @@ TEST_P(StoreInvalidSafeSeedTest, StoreSafeSeed) {
   EXPECT_EQ(seed_file_data, expected_seed);
 
   // Verify that none of the safe seed prefs were overwritten.
-  EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeCompressedSeed),
-            expected_seed);
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeCompressedSeed),
+              expected_seed);
+  }
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedSignature),
             expected_signature);
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedLocale),
@@ -1443,11 +1476,15 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest, StoreSafeSeed_ValidSignature) {
   EXPECT_EQ(seed_file_data, Gzip(expected_seed));
 
   // Verify that safe-seed-related prefs were successfully stored.
+// TODO(crbug.com/379327745): Remove build flag directive when early boot can
+// participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
   std::string decoded_compressed_seed;
   ASSERT_TRUE(
       base::Base64Decode(prefs_.GetString(prefs::kVariationsSafeCompressedSeed),
                          &decoded_compressed_seed));
   EXPECT_EQ(Gzip(expected_seed), decoded_compressed_seed);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedSignature),
             expected_signature);
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedLocale),
@@ -1502,8 +1539,12 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
 
   // Verify the latest seed value was copied before the safe seed was
   // overwritten.
+// TODO(crbug.com/379327745): Remove build flag directive when early boot can
+// participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(base64_old_seed,
             prefs_.GetString(prefs::kVariationsCompressedSeed));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(compressed_old_seed,
             seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
   // Verify that loading the stored seed returns the old seed value.
@@ -1516,10 +1557,13 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
   EXPECT_EQ(old_seed_data, SerializeSeed(loaded_seed));
   EXPECT_EQ(old_seed_data, loaded_seed_data);
 
-  // Verify that the safe seed prefs indeed contain the new seed's serialized
-  // value.
+  // Verify that the seed file indeed contains the new seed's serialized value.
+// TODO(crbug.com/379327745): Remove build flag directive when early boot can
+// participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(GzipAndBase64Encode(new_seed_data),
             prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
+#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(Gzip(new_seed_data),
             seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data);
   VariationsSeed loaded_safe_seed;
@@ -1708,8 +1752,10 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
 
   // Verify the latest seed value was migrated to a sentinel value, rather than
   // the full string.
-  EXPECT_EQ(kIdenticalToSafeSeedSentinel,
-            prefs_.GetString(prefs::kVariationsCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_EQ(kIdenticalToSafeSeedSentinel,
+              prefs_.GetString(prefs::kVariationsCompressedSeed));
+  }
   EXPECT_EQ(kIdenticalToSafeSeedSentinel,
             seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
 
@@ -1725,8 +1771,10 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
 
   // Verify that the safe seed from prefs and SeedReaderWriter is unchanged
   // and that the last fetch time was copied from the latest seed.
-  EXPECT_EQ(base64_seed,
-            prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
+  if (ShouldUseLocalStateSeed()) {
+    EXPECT_EQ(base64_seed,
+              prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
+  }
   EXPECT_EQ(expected_seed,
             seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data);
   VariationsSeed loaded_safe_seed;

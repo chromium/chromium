@@ -28,8 +28,8 @@ class EntropyProviders;
 // Trial and group names for the seed file experiment.
 const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
-const char kControlGroup[] = "Control_V5";
-const char kSeedFilesGroup[] = "SeedFiles_V5";
+const char kControlGroup[] = "Control_V6";
+const char kSeedFilesGroup[] = "SeedFiles_V6";
 
 // Represents a seed and its storage format where clients using
 // seed-file-based seeds store compressed data and those using
@@ -104,8 +104,12 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Reads seed data from a seed file, and if the read is successful,
   // populates `seed_data_`. May also schedule a seed file write for
   // some clients on the first run and for clients that are in the seed
-  // file experiment's treatment group for the first time.
+  // file experiment's treatment group for the first time. For non-crOS clients,
+  // if `seed_pref_` is present in `local state_`, additionally clears it.
   void ReadSeedFile();
+
+  // Returns true if a seed file should be used.
+  bool ShouldUseSeedFile() const;
 
   // Pref service used to persist seeds.
   raw_ptr<PrefService> local_state_;

@@ -776,13 +776,12 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
         kIdenticalToSafeSeedSentinel) {
       // For the below call to StoreValidatedSeed(), there are two possibilities
       // to consider:
-      //  (1) The client is in the SeedFile experiment's treatment group. In
-      //  this case, StoreValidatedSeed() updates both the seed file and local
-      //  state.
-      //  (2) The client is either not in the experiment or is in its control or
-      //  default group. In this case, |previous_safe_seed.data| is ignored.
-      // TODO(crbug.com/378486434): Update the above comment once
-      // local-state-based seeds are cleared for treatment-group clients.
+      //  (1) The client is in the SeedFile trial treatment group. In this case,
+      //  StoreValidatedSeed() updates the seed file and ignores the local state
+      //  seed.
+      //  (2) The client is either not in the experiment or is in its
+      //  control or default group. In this case, |previous_safe_seed.data| is
+      //  ignored.
       seed_reader_writer_->StoreValidatedSeed(
           previous_safe_seed.data,
           local_state_->GetString(prefs::kVariationsSafeCompressedSeed));

@@ -27,13 +27,6 @@ namespace {
 // information.
 constexpr char kSeedWriterHistogramSuffix[] = "VariationsSeedsV1";
 
-// Returns true if a seed file should be used.
-bool ShouldUseSeedFile() {
-  // Use the plain FieldTrialList API here because the trial is registered
-  // client-side in VariationsSeedStore SetUpSeedFileTrial().
-  return base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
-}
-
 // Serializes and returns seed data used during write to disk. Will be run
 // asynchronously on a background thread.
 std::optional<std::string> DoSerialize(std::string seed_data) {
@@ -121,28 +114,45 @@ SeedReaderWriter::~SeedReaderWriter() {
 void SeedReaderWriter::StoreValidatedSeed(std::string_view compressed_seed_data,
                                           std::string_view base64_seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->SetString(seed_pref_, base64_seed_data);
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(compressed_seed_data);
+    // TODO(crbug.com/379327745): Remove build flag directive when early boot
+    // can participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
+    // Maintain local state for CrOS clients because CrOS early boot code paths
+    // do not provide entropy providers. Without entropy, clients use a
+    // local-state-based seed during early boot despite possibly being in the
+    // treatment group when using Chrome.
+    local_state_->SetString(seed_pref_, base64_seed_data);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  } else {
+    local_state_->SetString(seed_pref_, base64_seed_data);
   }
 }
 
 void SeedReaderWriter::ClearSeed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  local_state_->ClearPref(seed_pref_);
   // TODO(crbug.com/372009105): Remove if-statements when experiment has ended.
-  if (!seed_writer_) {
-    return;
-  }
-
-  // Although only clients in the treatment group write seeds to dedicated seed
-  // files, attempt to clear the seed file for all groups here. If a client
-  // switches experiment groups or channels, their device could have a seed file
-  // with stale seed data.
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(std::string());
-  } else if (base::PathExists(seed_writer_->path())) {
-    DeleteSeedFile();
+    // TODO(crbug.com/379327745): Remove build flag directive when early boot
+    // can participate in treatment group behavior.
+#if BUILDFLAG(IS_CHROMEOS)
+    // Maintain local state for CrOS clients because CrOS early boot code paths
+    // do not provide entropy providers. Without entropy, clients use a
+    // local-state-based seed during early boot despite possibly being in the
+    // treatment group when using Chrome.
+    local_state_->ClearPref(seed_pref_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  } else {
+    local_state_->ClearPref(seed_pref_);
+    // Although only clients in the treatment group write seeds to dedicated
+    // seed files, attempt to delete the seed file for clients with
+    // Local-State-based seeds. If a client switches experiment groups or
+    // channels, their device could have a seed file with stale seed data.
+    if (seed_writer_ && base::PathExists(seed_writer_->path())) {
+      DeleteSeedFile();
+    }
   }
 }
 
@@ -180,30 +190,26 @@ SeedReaderWriter::GetSerializedDataProducerForBackgroundSequence() {
 
 void SeedReaderWriter::ScheduleSeedFileWrite(std::string_view seed_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (seed_writer_) {
-    // Set `seed_data_`, this will be used later by the background serialization
-    // and can be changed multiple times before a scheduled write completes, in
-    // which case the background serializer will use the `seed_data_` set at the
-    // last call of this function.
-    seed_data_ = seed_data;
-    // `seed_writer_` will eventually call
-    // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
-    // a callback that will be run asynchronously. This callback will be used to
-    // call the DoSerialize() function which will return the seed data to write
-    // to the file. This write will also be asynchronous and on a different
-    // thread. Note that it is okay to call this while a write is already
-    // occurring in a background thread and that this will result in a new write
-    // being scheduled.
-    seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
-  }
+  // Set `seed_data_`, this will be used later by the background serialization
+  // and can be changed multiple times before a scheduled write completes, in
+  // which case the background serializer will use the `seed_data_` set at the
+  // last call of this function.
+  seed_data_ = seed_data;
+  // `seed_writer_` will eventually call
+  // GetSerializedDataProducerForBackgroundSequence() on *this* object to get
+  // a callback that will be run asynchronously. This callback will be used to
+  // call the DoSerialize() function which will return the seed data to write
+  // to the file. This write will also be asynchronous and on a different
+  // thread. Note that it is okay to call this while a write is already
+  // occurring in a background thread and that this will result in a new write
+  // being scheduled.
+  seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
 }
 
 void SeedReaderWriter::DeleteSeedFile() {
-  if (seed_writer_) {
-    file_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                  seed_writer_->path()));
-  }
+  file_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
+                                seed_writer_->path()));
 }
 
 void SeedReaderWriter::ReadSeedFile() {
@@ -237,6 +243,28 @@ void SeedReaderWriter::ReadSeedFile() {
                         ? "Safe"
                         : "Latest"}),
       success);
+
+  // Maintain local state regardless of client's trial group for CrOS because
+  // CrOS clients cannot be in the treatment during early boot as the code path
+  // does not provide an entropy provider. This may lead to a case where a
+  // client is inelligible for the treatment group during early boot and uses a
+  // local-state-based seed. The same client may then launch Chrome, join the
+  // treatment group, and clear their local-state-based seed. Upon booting CrOS,
+  // that client will then be using an empty/ cleared local-state-based seed.
+  // TODO(crbug.com/379327745): Remove build flag directive when early boot can
+  // participate in treatment group behavior.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Clients using a seed file should clear seed from local state as it will no
+  // longer be used.
+  local_state_->ClearPref(seed_pref_);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+bool SeedReaderWriter::ShouldUseSeedFile() const {
+  // Use the plain FieldTrialList API here because the trial is registered
+  // client-side in VariationsSeedStore SetUpSeedFileTrial().
+  return seed_writer_ &&
+         base::FieldTrialList::FindFullName(kSeedFileTrial) == kSeedFilesGroup;
 }
 
 }  // namespace variations
