@@ -367,7 +367,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     return RulesetService::WriteRuleset(
                GetExpectedVersionDirPath(indexed_version), license_path,
                test_ruleset_pair.indexed.contents) ==
-           RulesetService::IndexAndWriteRulesetResult::SUCCESS;
+           RulesetService::IndexAndWriteRulesetResult::kSuccess;
   }
 
   void DeleteObsoleteRulesets(const base::FilePath& indexed_ruleset_base_dir,
@@ -821,7 +821,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_Persisted) {
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
+      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::kSuccess),
+      1);
 }
 
 // Test the scenario where a faulty copy of the ruleset resides on disk, that
@@ -886,7 +887,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
+      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::kSuccess),
+      1);
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,
@@ -918,7 +920,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           FAILED_OPENING_UNINDEXED_RULESET),
+                           kFailedOpeningUnindexedRuleset),
       1);
 }
 
@@ -951,7 +953,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           FAILED_PARSING_UNINDEXED_RULESET),
+                           kFailedParsingUnindexedRuleset),
       1);
 }
 
@@ -1003,7 +1005,7 @@ TEST_F(SubresourceFilteringRulesetServiceDeathTest, NewRuleset_IndexingCrash) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           ABORTED_BECAUSE_SENTINEL_FILE_PRESENT),
+                           kAbortedBecauseSentinelFilePresent),
       1);
 }
 
@@ -1036,7 +1038,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_WriteFailure) {
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(IndexAndWriteRulesetResult::FAILED_REPLACE_FILE), 1);
+      static_cast<int>(IndexAndWriteRulesetResult::kFailedReplaceFile), 1);
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,
