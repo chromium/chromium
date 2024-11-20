@@ -40,13 +40,6 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, label inference considers strings entirely made up of  '(', ')'
-// and '-' as valid labels.
-// TODO(crbug.com/40220393): Cleanup when launched.
-BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-             "AutofillConsiderPhoneNumberSeparatorsValidLabels",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, no prefix matching is applied to filter credit card number
 // suggestions.
 // TODO(crbug.com/338932642): Clean up.

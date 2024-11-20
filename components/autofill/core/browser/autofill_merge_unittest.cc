@@ -178,7 +178,7 @@ void AutofillMergeTest::SetUp() {
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_, /*history_service=*/nullptr);
   scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels},
+      /*enabled_features=*/{},
       /*disabled_features=*/{});
 }
 
