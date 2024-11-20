@@ -16,7 +16,7 @@
 // This fuzzer uses DomatoLPM to generate JS based on an existing Domato
 // rule.
 class WebcodecsInProcessFuzzer
-    : public InProcessProtoFuzzer<
+    : public InProcessBinaryProtoFuzzer<
           domatolpm::generated::webcodecs_fuzzer_grammar::fuzzcase> {
  public:
   using FuzzCase = domatolpm::generated::webcodecs_fuzzer_grammar::fuzzcase;

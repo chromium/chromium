@@ -74,7 +74,7 @@ constexpr uint64_t kControlsReachedDomain = 0;
 // See the discussion about the custom mutator to see the main cost of
 // identifying controls by name.
 class AtspiInProcessFuzzer
-    : public InProcessProtoFuzzer<test::fuzzing::atspi_fuzzing::FuzzCase> {
+    : public InProcessTextProtoFuzzer<test::fuzzing::atspi_fuzzing::FuzzCase> {
  public:
   AtspiInProcessFuzzer();
   void SetUpOnMainThread() override;
@@ -167,7 +167,7 @@ AtspiInProcessFuzzer::AtspiInProcessFuzzer() {
 }
 
 void AtspiInProcessFuzzer::SetUpOnMainThread() {
-  InProcessProtoFuzzer<
+  InProcessTextProtoFuzzer<
       test::fuzzing::atspi_fuzzing::FuzzCase>::SetUpOnMainThread();
   LoadAPage();
   // LoadAPage will wait until the load event has completed, but we also
