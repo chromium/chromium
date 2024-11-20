@@ -51,14 +51,14 @@ class TabModel final : public SupportsHandles<TabModel>,
   void OnRemovedFromModel();
 
   TabStripModel* owning_model() const { return owning_model_; }
-  tabs::TabModel* opener() const { return opener_; }
+  tabs::TabInterface* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
-  void set_opener(tabs::TabModel* opener) { opener_ = opener; }
+  void set_opener(tabs::TabInterface* opener) { opener_ = opener; }
   void set_reset_opener_on_active_tab_change(
       bool reset_opener_on_active_tab_change) {
     reset_opener_on_active_tab_change_ = reset_opener_on_active_tab_change;
@@ -86,7 +86,6 @@ class TabModel final : public SupportsHandles<TabModel>,
   // features do not need to handle the situation of existing outside the
   // context of a tab strip.
   void DestroyTabFeatures();
-  TabFeatures* tab_features() { return tab_features_.get(); }
 
   // Returns a pointer to the parent TabCollection. This method is specifically
   // designed to be accessible only within the collection tree that has the
@@ -184,7 +183,7 @@ class TabModel final : public SupportsHandles<TabModel>,
   // model or is in the process of being closed.
   raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<TabStripModel> soon_to_be_owning_model_ = nullptr;
-  raw_ptr<tabs::TabModel> opener_ = nullptr;
+  raw_ptr<tabs::TabInterface> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
   bool blocked_ = false;

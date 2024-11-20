@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
                        MoveGroupToNewWindowDisabledWhenOnlyGroup) {
   TabStripModel* tsm = browser()->tab_strip_model();
   for (int index = tsm->count() - 1; index >= 0; --index) {
-    if (tsm->GetTabAtIndex(index)->group() != group_) {
+    if (tsm->GetTabAtIndex(index)->GetGroup() != group_) {
       tsm->CloseWebContentsAt(index, TabCloseTypes::CLOSE_NONE);
     }
   }

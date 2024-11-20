@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -197,8 +198,8 @@ class ListenerDeferredTest : public InProcessBrowserTest,
     return model;
   }
 
-  raw_ptr<tabs::TabModel> other_tab_;
-  raw_ptr<tabs::TabModel> test_tab_;
+  raw_ptr<tabs::TabInterface> other_tab_;
+  raw_ptr<tabs::TabInterface> test_tab_;
   std::optional<tab_groups::TabGroupId> local_group_id_;
   std::optional<base::Uuid> saved_tab_guid_;
 };

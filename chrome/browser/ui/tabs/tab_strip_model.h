@@ -335,7 +335,7 @@ class TabStripModel : public TabGroupController {
   content::WebContents* GetActiveWebContents() const;
 
   // Returns the currently active Tab, or NULL if there is none.
-  tabs::TabModel* GetActiveTab() const;
+  tabs::TabInterface* GetActiveTab() const;
 
   // Returns the WebContents at the specified index, or NULL if there is
   // none.
@@ -366,7 +366,7 @@ class TabStripModel : public TabGroupController {
 
   // Returns the WebContents that opened the WebContents at |index|, or NULL if
   // there is no opener on record.
-  tabs::TabModel* GetOpenerOfTabAt(const int index) const;
+  tabs::TabInterface* GetOpenerOfTabAt(const int index) const;
 
   // Changes the |opener| of the WebContents at |index|.
   // Note: |opener| must be in this tab strip. Also a tab must not be its own
@@ -686,11 +686,11 @@ class TabStripModel : public TabGroupController {
 
   // Convert between tabs and indices.
   int GetIndexOfTab(const tabs::TabInterface* tab) const;
-  tabs::TabModel* GetTabAtIndex(int index) const;
+  tabs::TabInterface* GetTabAtIndex(int index) const;
 
   // TODO(349161508) remove this method once tabs dont need to be converted
   // into webcontents.
-  tabs::TabModel* GetTabForWebContents(
+  tabs::TabInterface* GetTabForWebContents(
       const content::WebContents* contents) const;
 
  private:
@@ -700,7 +700,7 @@ class TabStripModel : public TabGroupController {
   struct MoveNotification {
     int initial_index;
     std::optional<tab_groups::TabGroupId> intial_group;
-    raw_ptr<const tabs::TabModel> tab;
+    raw_ptr<const tabs::TabInterface> tab;
     TabStripSelectionChange selection_change;
   };
 
@@ -714,6 +714,8 @@ class TabStripModel : public TabGroupController {
     // Owns this.
     raw_ptr<TabStripModel> model_;
   };
+
+  tabs::TabModel* GetTabModelAtIndex(int index) const;
 
   // Perform tasks associated with changes to the model. Change the Active Index
   // and notify observers.
@@ -919,7 +921,7 @@ class TabStripModel : public TabGroupController {
   // and `final_group` and updates the `group_model_`.
   void TabGroupStateChanged(
       int index,
-      tabs::TabModel* tab,
+      tabs::TabInterface* tab,
       const std::optional<tab_groups::TabGroupId> initial_group,
       const std::optional<tab_groups::TabGroupId> new_group);
 

@@ -76,7 +76,7 @@ class LensOverlayTest : public LensWebUIBrowserTest {
     auto* controller = browser()
                            ->tab_strip_model()
                            ->GetActiveTab()
-                           ->tab_features()
+                           ->GetTabFeatures()
                            ->lens_overlay_controller();
     ASSERT_EQ(controller->state(), State::kOff);
 

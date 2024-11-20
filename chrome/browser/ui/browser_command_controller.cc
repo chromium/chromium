@@ -2054,14 +2054,14 @@ Profile* BrowserCommandController::profile() {
 
 void BrowserCommandController::ShowCustomizeChromeSidePanel(
     std::optional<CustomizeChromeSection> section) {
-  tabs::TabModel* tab = browser_->tab_strip_model()->GetActiveTab();
-  if (!tab || !tab->tab_features() ||
-      !tab->tab_features()->customize_chrome_side_panel_controller()) {
+  tabs::TabInterface* tab = browser_->tab_strip_model()->GetActiveTab();
+  if (!tab || !tab->GetTabFeatures() ||
+      !tab->GetTabFeatures()->customize_chrome_side_panel_controller()) {
     return;
   }
 
   customize_chrome::SidePanelController* side_panel_controller =
-      tab->tab_features()->customize_chrome_side_panel_controller();
+      tab->GetTabFeatures()->customize_chrome_side_panel_controller();
 
   if (!side_panel_controller ||
       !side_panel_controller->IsCustomizeChromeEntryAvailable()) {

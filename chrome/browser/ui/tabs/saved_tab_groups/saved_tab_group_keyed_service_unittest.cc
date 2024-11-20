@@ -173,7 +173,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedTabIsListenedTo) {
   SavedTabGroupWebContentsListener* listener1 =
       browser_1->tab_strip_model()
           ->GetTabAtIndex(0)
-          ->tab_features()
+          ->GetTabFeatures()
           ->saved_tab_group_web_contents_listener();
   EXPECT_TRUE(listener1->saved_group());
 

@@ -2594,7 +2594,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   auto* controller = browser()
                          ->tab_strip_model()
                          ->GetActiveTab()
-                         ->tab_features()
+                         ->GetTabFeatures()
                          ->lens_overlay_controller();
   ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
 
