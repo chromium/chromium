@@ -333,6 +333,13 @@ TEST_F(SessionTest, NotDeferredIncludedSubdomainHostCraving) {
   ASSERT_FALSE(session->ShouldDeferRequest(request.get()));
 }
 
+TEST_F(SessionTest, CreationDate) {
+  auto session = Session::CreateIfValid(CreateValidParams(), kTestUrl);
+  ASSERT_TRUE(session);
+  // Make sure it's set to a plausible value.
+  EXPECT_LT(base::Time::Now() - base::Days(1), session->creation_date());
+}
+
 }  // namespace
 
 }  // namespace net::device_bound_sessions

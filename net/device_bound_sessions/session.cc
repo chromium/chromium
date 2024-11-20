@@ -34,12 +34,14 @@ Session::Session(Id id,
                  SessionInclusionRules inclusion_rules,
                  std::vector<CookieCraving> cookie_cravings,
                  bool should_defer_when_expired,
+                 base::Time creation_date,
                  base::Time expiry_date)
     : id_(id),
       refresh_url_(refresh),
       inclusion_rules_(std::move(inclusion_rules)),
       cookie_cravings_(std::move(cookie_cravings)),
       should_defer_when_expired_(should_defer_when_expired),
+      creation_date_(creation_date),
       expiry_date_(expiry_date) {}
 
 Session::~Session() = default;
@@ -79,6 +81,7 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
     }
   }
 
+  session->set_creation_date(base::Time::Now());
   session->set_expiry_date(base::Time::Now() + kSessionTtl);
 
   return session;
@@ -117,6 +120,12 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
     cravings.push_back(std::move(*craving));
   }
 
+  auto creation_date = base::Time::Now();
+  if (proto.has_creation_time()) {
+    creation_date = base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(proto.creation_time()));
+  }
+
   auto expiry_date = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(proto.expiry_time()));
   if (base::Time::Now() > expiry_date) {
@@ -125,7 +134,8 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
 
   std::unique_ptr<Session> result(new Session(
       Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
-      std::move(cravings), proto.should_defer_when_expired(), expiry_date));
+      std::move(cravings), proto.should_defer_when_expired(), creation_date,
+      expiry_date));
 
   return result;
 }
@@ -135,6 +145,8 @@ proto::Session Session::ToProto() const {
   session_proto.set_id(*id_);
   session_proto.set_refresh_url(refresh_url_.spec());
   session_proto.set_should_defer_when_expired(should_defer_when_expired_);
+  session_proto.set_creation_time(
+      creation_date_.ToDeltaSinceWindowsEpoch().InMicroseconds());
   session_proto.set_expiry_time(
       expiry_date_.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
@@ -238,6 +250,7 @@ bool Session::IsEqualForTesting(const Session& other) const {
   return id_ == other.id_ && refresh_url_ == other.refresh_url_ &&
          inclusion_rules_ == other.inclusion_rules_ &&
          should_defer_when_expired_ == other.should_defer_when_expired_ &&
+         creation_date_ == other.creation_date_ &&
          expiry_date_ == other.expiry_date_ &&
          key_id_or_error_ == other.key_id_or_error_ &&
          cached_challenge_ == other.cached_challenge_;
