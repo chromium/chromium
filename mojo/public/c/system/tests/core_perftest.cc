@@ -259,13 +259,13 @@ TEST_F(CorePerftest, NoOp) {
                                    this);
 }
 
-TEST_F(CorePerftest, MessagePipe_CreateAndClose) {
+TEST_F(CorePerftest, MessagePipeCreateAndClose) {
   mojo::test::IterateAndReportPerf("MessagePipe_CreateAndClose", nullptr,
                                    &CorePerftest::MessagePipe_CreateAndClose,
                                    this);
 }
 
-TEST_F(CorePerftest, MessagePipe_WriteAndRead) {
+TEST_F(CorePerftest, MessagePipeWriteAndRead) {
   [[maybe_unused]] MojoResult result =
       MojoCreateMessagePipe(nullptr, &h0_, &h1_);
   assert(result == MOJO_RESULT_OK);
@@ -291,7 +291,7 @@ TEST_F(CorePerftest, MessagePipe_WriteAndRead) {
   assert(result == MOJO_RESULT_OK);
 }
 
-TEST_F(CorePerftest, MessagePipe_EmptyRead) {
+TEST_F(CorePerftest, MessagePipeEmptyRead) {
   [[maybe_unused]] MojoResult result =
       MojoCreateMessagePipe(nullptr, &h0_, &h1_);
   assert(result == MOJO_RESULT_OK);
@@ -304,7 +304,7 @@ TEST_F(CorePerftest, MessagePipe_EmptyRead) {
 }
 
 #if !defined(WIN32)
-TEST_F(CorePerftest, MessagePipe_Threaded) {
+TEST_F(CorePerftest, MessagePipeThreaded) {
   DoMessagePipeThreadedTest(1u, 1u, 100u);
   DoMessagePipeThreadedTest(2u, 2u, 100u);
   DoMessagePipeThreadedTest(3u, 3u, 100u);
