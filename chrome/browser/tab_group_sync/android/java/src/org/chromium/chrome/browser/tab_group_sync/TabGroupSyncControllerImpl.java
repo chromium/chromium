@@ -16,6 +16,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.url.GURL;
@@ -25,7 +26,8 @@ import org.chromium.url.GURL;
  * changes to remote. This is a per-activity object and hence responsible for handling updates for
  * current window only.
  */
-public final class TabGroupSyncController implements TabGroupUiActionHandler {
+public final class TabGroupSyncControllerImpl
+        implements TabGroupSyncController, TabGroupUiActionHandler {
     /**
      * A delegate in helping out with creating and navigating tabs in response to remote updates
      * from sync. The tab will be created in a background state and will not be navigated
@@ -102,7 +104,7 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
             };
 
     /** Constructor. */
-    public TabGroupSyncController(
+    public TabGroupSyncControllerImpl(
             TabModelSelector tabModelSelector,
             TabGroupSyncService tabGroupSyncService,
             PrefService prefService,
@@ -132,7 +134,7 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
                 mCallbackController.makeCancelable(selector -> onTabStateInitialized()));
     }
 
-    /** Called when the activity is getting destroyed. */
+    @Override
     public void destroy() {
         mCallbackController.destroy();
         if (mLocalObserver != null) mLocalObserver.destroy();

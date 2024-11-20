@@ -42,14 +42,15 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.ArrayList;
 
-/** Unit tests for the {@link TabGroupSyncController}. */
+/** Unit tests for the {@link TabGroupSyncControllerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabGroupSyncControllerUnitTest {
+public class TabGroupSyncControllerImplUnitTest {
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final int TAB_ID_1 = 1;
 
@@ -99,7 +100,7 @@ public class TabGroupSyncControllerUnitTest {
 
     private void createController() {
         mController =
-                new TabGroupSyncController(
+                new TabGroupSyncControllerImpl(
                         mTabModelSelector,
                         mTabGroupSyncService,
                         mPrefService,

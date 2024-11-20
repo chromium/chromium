@@ -57,6 +57,7 @@ include_rules = [
   "+components/privacy_sandbox/android",
   "+components/query_tiles",
   "+components/safe_browsing/android/java",
+  "+components/saved_tab_groups/public/android/java",
   "+components/security_interstitials/content/android",
   "+components/signin/public/android",
   "+components/site_engagement/content/android",

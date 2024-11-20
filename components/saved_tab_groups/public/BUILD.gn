@@ -150,6 +150,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncController.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
     ]
