@@ -172,15 +172,6 @@ BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kFetchListFamilyMembersWithCapability,
-             "FetchListFamilyMembersWithCapability",
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kUseFamilyMemberRolePrefsForFeedback,
              "UseFamilyMemberRolePrefsForFeedback",
              base::FEATURE_ENABLED_BY_DEFAULT);

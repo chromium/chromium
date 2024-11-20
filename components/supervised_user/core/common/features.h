@@ -112,11 +112,6 @@ BASE_DECLARE_FEATURE(
     kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
 #endif
 
-// Updates the ListFamilyMembers service to fetch family account info for
-// accounts with the relevant capability rather than just for supervised
-// accounts.
-BASE_DECLARE_FEATURE(kFetchListFamilyMembersWithCapability);
-
 // Uses `prefs::kFamilyLinkUserMemberRole` to populate the family member role
 // for feedback if it is available.
 BASE_DECLARE_FEATURE(kUseFamilyMemberRolePrefsForFeedback);
