@@ -46,16 +46,16 @@ ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
   };
 }
 
-ControlledFrameContextMenusImpl.prototype.create = function() {
-  let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
-  let result =
-      $Function.apply(ControlledFrameInternal.contextMenusCreate, null, args);
-  if (bindingUtil.hasLastError()) {
-    result = bindingUtil.getLastErrorMessage();
-    bindingUtil.clearLastError();
-  }
-  return result;
+// Controlled Frame has its own internal definition of Context Menus create().
+ControlledFrameContextMenusImpl.prototype.createImpl = function() {
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  return $Function.apply(
+      ControlledFrameInternal.contextMenusCreate, null, args);
 }
+
+ControlledFrameContextMenusImpl.prototype.create =
+    ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(
+        ControlledFrameContextMenusImpl.prototype.createImpl, "create");
 
 ControlledFrameContextMenusImpl.prototype.remove =
     ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased(

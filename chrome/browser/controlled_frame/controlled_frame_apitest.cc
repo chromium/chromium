@@ -83,16 +83,15 @@ const content::EvalJsResult CreateContextMenuItem(
     const std::string& id,
     const std::string& title) {
   return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.create) {
           reject('FAIL: frame, frame.contextMenus, or ' +
               'frame.contextMenus.create is undefined');
           return;
         }
-        frame.contextMenus.create(
-            { title: $2, id: $1 },
-            () => { resolve('SUCCESS'); });
+        await frame.contextMenus.create({ title: $2, id: $1 });
+        resolve('SUCCESS');
       });
     )",
                                                        id, title));
