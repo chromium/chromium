@@ -9,10 +9,13 @@
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/syscall_broker/broker_process.h"
+#include "sandbox/linux/system_headers/linux_prctl.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 
 using sandbox::bpf_dsl::Allow;
+using sandbox::bpf_dsl::Arg;
+using sandbox::bpf_dsl::If;
 using sandbox::bpf_dsl::ResultExpr;
 using sandbox::bpf_dsl::Trap;
 using sandbox::syscall_broker::BrokerProcess;
@@ -46,6 +49,13 @@ ResultExpr SpeechRecognitionProcessPolicy::EvaluateSyscall(
 #if defined(__NR_getdents)
     case __NR_getdents:
       return Allow();
+#endif
+#if defined(__NR_prctl)
+    case __NR_prctl: {
+      const Arg<int> option(0);
+      return If(option == PR_CAPBSET_READ, Allow())
+          .Else(BPFBasePolicy::EvaluateSyscall(system_call_number));
+    }
 #endif
     default:
       auto* sandbox_linux = SandboxLinux::GetInstance();

@@ -37,6 +37,10 @@
 #define PR_SET_PTRACER_ANY ((unsigned long)-1)
 #endif
 
+#if !defined(PR_CAPBSET_READ)
+#define PR_CAPBSET_READ 23
+#endif
+
 #if !defined(PR_SVE_GET_VL)
 #define PR_SVE_GET_VL 51
 #endif
