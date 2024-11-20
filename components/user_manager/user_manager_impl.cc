@@ -1564,9 +1564,12 @@ bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
     return false;
   }
 
+  // Update `user` profile profs before profile created notification so that
+  // observers could get profile prefs via `user`.
   CHECK(!user->GetProfilePrefs());
-  user->SetProfileIsCreated();
   user->SetProfilePrefs(prefs);
+
+  user->SetProfileIsCreated();
 
   if (IsUserLoggedIn() && !IsLoggedInAsGuest() && !IsLoggedInAsAnyKioskApp()) {
     multi_user_sign_in_policy_controller_.StartObserving(user);
