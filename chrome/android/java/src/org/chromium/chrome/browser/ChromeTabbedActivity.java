@@ -1904,9 +1904,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     }
                 } else {
                     TabModelUtils.setIndex(tabModel, tabIndex);
+                    LayoutManagerChrome layoutManager = getLayoutManager();
                     // If the tab-switcher is displayed, hide it to show the tab.
-                    if (getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)) {
-                        getLayoutManager().showLayout(LayoutType.BROWSING, /* animate= */ false);
+                    if (layoutManager != null
+                            && layoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                        layoutManager.showLayout(LayoutType.BROWSING, /* animate= */ false);
                     }
                 }
                 break;
