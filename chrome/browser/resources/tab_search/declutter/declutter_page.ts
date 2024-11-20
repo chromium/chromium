@@ -17,7 +17,7 @@ import type {Tab} from '../tab_search.mojom-webui.js';
 import {DeclutterCTREvent} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
-import type {TabSearchItemElement} from '../tab_search_item.js';
+import {TabSearchItemElement} from '../tab_search_item.js';
 
 import {getCss} from './declutter_page.css.js';
 import {getHtml} from './declutter_page.html.js';
@@ -173,16 +173,24 @@ export class DeclutterPageElement extends CrLitElement {
   }
 
   protected onTabFocus_(e: FocusEvent) {
-    if (e.target instanceof HTMLElement) {
-      e.target.classList.toggle('selected', true);
+    if (e.target instanceof TabSearchItemElement) {
+      const tabSearchItem: TabSearchItemElement = e.target;
+      tabSearchItem.classList.toggle('selected', true);
+      const closeButton =
+          tabSearchItem.shadowRoot!.querySelector('#closeButton')!;
+      closeButton.setAttribute('aria-selected', 'true');
     } else {
       throw new Error('Invalid onTabFocus_ target type: ' + typeof e.target);
     }
   }
 
   protected onTabBlur_(e: FocusEvent) {
-    if (e.target instanceof HTMLElement) {
-      e.target.classList.toggle('selected', false);
+    if (e.target instanceof TabSearchItemElement) {
+      const tabSearchItem: TabSearchItemElement = e.target;
+      tabSearchItem.classList.toggle('selected', false);
+      const closeButton =
+          tabSearchItem.shadowRoot!.querySelector('#closeButton')!;
+      closeButton.setAttribute('aria-selected', 'false');
     } else {
       throw new Error('Invalid onTabBlur_ target type: ' + typeof e.target);
     }
