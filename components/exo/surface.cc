@@ -19,6 +19,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -124,9 +125,18 @@ bool FormatHasAlpha(gfx::BufferFormat format) {
 // TODO(crbug.com/369003507): Remove this check once we found the root
 // cause of crash on specific hatch platform.
 bool ShouldDisableOverlay(gfx::BufferFormat format) {
-  static bool is_enabled =
-      base::FeatureList::IsEnabled(kDisableNonYUVOverlaysFromExo);
-  if (!is_enabled) {
+  static bool is_blocked_device = false;
+  static bool is_initialized = false;
+  if (!is_initialized) {
+    is_initialized = true;
+    std::string device_model = base::SysInfo::HardwareModelName();
+    if (device_model == "DRALLION" || device_model == "HATCH") {
+      // We only disable overlays for affected devices reported in this bug.
+      is_blocked_device = true;
+    }
+  }
+
+  if (!is_blocked_device) {
     return false;
   }
   switch (format) {
