@@ -193,6 +193,128 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.CoralService.Error.{EngineType}" enum="CoralStatus"
+    expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The return value of a Group request to the coral service for individual
+    engines of the service. The coral service is a pipeline of 3 engines:
+    Embedding, Clustering, and TitleGeneration. If any engine returns an error
+    when processing the request, the service returns the corresponding error as
+    response. It is recorded when the {EngineType} finishes processing a request
+    (success or failure).
+  </summary>
+  <token key="EngineType">
+    <variant name="ClusteringEngine"/>
+    <variant name="EmbeddingEngine"/>
+    <variant name="TitleGenerationEngine"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.CoralService.Error.{OperationType}"
+    enum="CoralStatus" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The return value of a {OperationType} request to the coral service, hosted
+    by the odml daemon. It is recorded when any request to coral service
+    completes (success or failure).
+  </summary>
+  <token key="OperationType">
+    <variant name="CacheEmbeddings"/>
+    <variant name="Group"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Platform.CoralService.Latency.EmbeddingEngine.GenerateEmbedding"
+    units="ms" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by the generate embedding step of the embedding engine in
+    coral service. This only counts the latency of the inference itself; model
+    loading latency isn't counted. This is recorded when a generate embedding
+    operation completes with a successful return status.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.Latency.EmbeddingEngine.LoadModel"
+    units="ms" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by the load model step of the embedding engine in coral
+    service. The embedding model needs to be loaded for the embedding engine to
+    process requests, so a load model operation will be instantiated if the
+    engine receives a request while the model hasn't been loaded. This is
+    recorded when a load model operation completes with a successful return
+    status.
+  </summary>
+</histogram>
+
+<histogram
+    name="Platform.CoralService.Latency.TitleGenerationEngine.GenerateTitle"
+    units="ms" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by the generate title step of the title generation engine
+    in coral service. This only counts the latency of the inference itself;
+    model loading latency isn't counted. This is recorded when a generate title
+    operation completes with a successful return status.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.Latency.TitleGenerationEngine.LoadModel"
+    units="ms" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by the load model step of the title generation engine in
+    coral service. The title generation model needs to be loaded for the engine
+    to process requests, so a load model operation will be instantiated if the
+    engine receives a request while the model hasn't been loaded. This is
+    recorded when a load model operation completes with a successful return
+    status.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.Latency.{EngineType}" units="ms"
+    expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by a Group request to the coral service for individual
+    engines of the service. The coral service is a pipeline of 3 engines:
+    Embedding, Clustering, and TitleGeneration, and the latency of the service
+    is roughly the summation of all 3 engines. This is a breakdown of latency
+    taken by individual engines. It is recorded when the {EngineType} finishes
+    processing a Group request with successful return status.
+  </summary>
+  <token key="EngineType">
+    <variant name="ClusteringEngine"/>
+    <variant name="EmbeddingEngine"/>
+    <variant name="TitleGenerationEngine"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.CoralService.Latency.{OperationType}" units="ms"
+    expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Milliseconds taken by a {OperationType} request to the coral service, hosted
+    by the odml daemon. It is recorded when any request to coral service
+    completes with successful return status.
+  </summary>
+  <token key="OperationType">
+    <variant name="CacheEmbeddings"/>
+    <variant name="Group"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.CrashCollector.AddWeightResult"
     enum="CrosCrashCollectorAddWeightResult" expires_after="2025-03-09">
   <owner>iby@chromium.org</owner>

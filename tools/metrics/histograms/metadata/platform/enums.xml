@@ -168,6 +168,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kError"/>
 </enum>
 
+<enum name="CoralStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Load Model Failed"/>
+  <int value="3" label="Invalid Arguments"/>
+  <int value="4" label="Model Execution Failed"/>
+  <int value="5" label="Clustering Error"/>
+</enum>
+
 <enum name="Cr50BoardIdFlags">
   <int value="-1" label="Unprogrammed (0xffffffff)"/>
   <int value="16" label="test pre-pvt (0x10)"/>
