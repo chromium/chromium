@@ -178,6 +178,14 @@ public class TabGroupColorViewProvider implements Destroyable {
         }
 
         mFrameLayout.invalidate();
+
+        if (mSharedImageTilesCoordinator != null) {
+            mSharedImageTilesCoordinator.updateColorStyle(
+                    new SharedImageTilesColor(
+                            SharedImageTilesColor.Style.TAB_GROUP,
+                            ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                    mContext, mColorId, mIsIncognito)));
+        }
     }
 
     private void maybeCreateAndAttachSharedImageTiles() {
@@ -198,12 +206,14 @@ public class TabGroupColorViewProvider implements Destroyable {
         Integer groupSharedState = mSharedGroupObserver.getGroupSharedStateSupplier().get();
         if (!shouldShowSharedImageTiles(groupSharedState)) return;
 
-        // TODO(crbug.com/370942731): update the type and color.
         mSharedImageTilesCoordinator =
                 new SharedImageTilesCoordinator(
                         mContext,
                         SharedImageTilesType.SMALL,
-                        SharedImageTilesColor.DEFAULT,
+                        new SharedImageTilesColor(
+                                SharedImageTilesColor.Style.TAB_GROUP,
+                                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                                        mContext, mColorId, mIsIncognito)),
                         mDataSharingService);
         mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
 

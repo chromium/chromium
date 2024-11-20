@@ -55,11 +55,12 @@ public class SharedImageTilesCoordinator {
     public SharedImageTilesCoordinator(
             Context context,
             @SharedImageTilesType int type,
-            @SharedImageTilesColor int color,
+            SharedImageTilesColor color,
             @NonNull DataSharingService dataSharingService) {
         mModel =
                 new PropertyModel.Builder(SharedImageTilesProperties.ALL_KEYS)
-                        .with(SharedImageTilesProperties.COLOR_THEME, color)
+                        .with(SharedImageTilesProperties.TYPE, type)
+                        .with(SharedImageTilesProperties.COLOR_STYLE, color)
                         .build();
         mContext = context;
         mDataSharingService = dataSharingService;
@@ -71,6 +72,15 @@ public class SharedImageTilesCoordinator {
 
         PropertyModelChangeProcessor.create(mModel, mView, SharedImageTilesViewBinder::bind);
         new SharedImageTilesMediator(mModel);
+    }
+
+    /**
+     * Update the color style of the current view.
+     *
+     * @param color The updated {@link SharedImageTilesColor}.
+     */
+    public void updateColorStyle(SharedImageTilesColor color) {
+        mModel.set(SharedImageTilesProperties.COLOR_STYLE, color);
     }
 
     /** Cleans up any resources or observers this class used. */
@@ -182,9 +192,6 @@ public class SharedImageTilesCoordinator {
                     SharedImageTilesProperties.REMAINING_TILES,
                     mAvailableMemberCount - maxTilesToShowWithNumberTile);
         }
-
-        // Re-style everything.
-        mModel.set(SharedImageTilesProperties.TYPE, mType);
     }
 
     /** Get the view component of SharedImageTiles. */
