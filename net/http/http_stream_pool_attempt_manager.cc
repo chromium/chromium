@@ -900,9 +900,6 @@ void HttpStreamPool::AttemptManager::MaybeAttemptConnection(
           pool()->stream_attempt_params(), *ip_endpoint);
     }
 
-    net_log().AddEventReferencingSource(
-        NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START,
-        attempt->net_log().source());
     net_log().AddEvent(
         NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ATTEMPT_START, [&] {
           base::Value::Dict dict = GetStatesAsNetLogParams();
