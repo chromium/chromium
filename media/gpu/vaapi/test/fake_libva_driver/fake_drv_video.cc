@@ -38,6 +38,24 @@ struct Capability {
   VAConfigAttrib attrib_list[MAX_CAPABILITY_ATTRIBUTES];
 };
 const struct Capability kCapabilities[] = {
+    {VAProfileH264ConstrainedBaseline,
+     VAEntrypointVLD,
+     1,
+     {
+         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420},
+     }},
+    {VAProfileH264Main,
+     VAEntrypointVLD,
+     1,
+     {
+         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420},
+     }},
+    {VAProfileH264High,
+     VAEntrypointVLD,
+     1,
+     {
+         {VAConfigAttribRTFormat, VA_RT_FORMAT_YUV420},
+     }},
     {VAProfileAV1Profile0,
      VAEntrypointVLD,
      1,
@@ -864,7 +882,7 @@ VAStatus FakeCreateSurfaces2(VADriverContextP ctx,
   return VA_STATUS_SUCCESS;
 }
 
-#define MAX_PROFILES 9
+#define MAX_PROFILES 12
 #define MAX_ENTRYPOINTS 8
 #define MAX_CONFIG_ATTRIBUTES 32
 #if MAX_CAPABILITY_ATTRIBUTES >= MAX_CONFIG_ATTRIBUTES

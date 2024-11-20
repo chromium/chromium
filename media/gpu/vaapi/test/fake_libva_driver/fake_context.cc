@@ -9,6 +9,7 @@
 #include "media/gpu/vaapi/test/fake_libva_driver/av1_decoder_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_config.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/h264_decoder_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/no_op_context_delegate.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
 
@@ -39,6 +40,11 @@ std::unique_ptr<media::internal::ContextDelegate> CreateDelegate(
     case VAProfileAV1Profile0:
       return std::make_unique<media::internal::Av1DecoderDelegate>(
           config.GetProfile());
+    case VAProfileH264ConstrainedBaseline:
+    case VAProfileH264Main:
+    case VAProfileH264High:
+      return std::make_unique<media::internal::H264DecoderDelegate>(
+          picture_width, picture_height, config.GetProfile());
     default:
       break;
   }
