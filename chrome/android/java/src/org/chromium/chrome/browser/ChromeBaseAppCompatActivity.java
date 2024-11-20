@@ -108,8 +108,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
+    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
-    private EdgeToEdgeManager mEdgeToEdgeManager;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -157,12 +157,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BundleUtils.restoreLoadedSplits(savedInstanceState);
 
-        mInsetObserver = createInsetObserver();
-        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
-            mEdgeToEdgeLayoutCoordinator = getEdgeToEdgeLayoutCoordinator();
-        }
-        mEdgeToEdgeManager = new EdgeToEdgeManager(this, supportsEdgeToEdge());
-
+        mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
         initializeNightModeStateProvider();
@@ -176,6 +171,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
 
         setDefaultTaskDescription();
+
+        mInsetObserver = createInsetObserver();
+        if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            mEdgeToEdgeLayoutCoordinator = getEdgeToEdgeLayoutCoordinator();
+        }
+        new EdgeToEdgeManager(mEdgeToEdgeStateProvider, supportsEdgeToEdge());
     }
 
     @Override
@@ -348,6 +349,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // Note that if you're adding new overlays here, it's quite likely they're needed
         // in org.chromium.chrome.browser.WarmupManager#applyContextOverrides for Custom Tabs
         // UI that's pre-inflated using a themed application context as part of CCT warmup.
+        // Note: this should be called before any calls to `Window#getDecorView`.
         DynamicColors.applyToActivityIfAvailable(this);
 
         DeferredStartupHandler.getInstance()
@@ -518,7 +520,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * edge-to-edge state.
      */
     protected EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
-        return mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
+        return mEdgeToEdgeStateProvider;
     }
 
     /** Returns the {@link InsetObserver} for observing changes to the system insets. */
