@@ -1980,19 +1980,10 @@ TEST_F(ArcVmClientAdapterTest, DisableDownloadProviderEnforced) {
   EXPECT_TRUE(request.mini_instance_request().disable_download_provider());
 }
 
-TEST_F(ArcVmClientAdapterTest, BroadcastPreANRDefault) {
+TEST_F(ArcVmClientAdapterTest, BroadcastPreANR) {
   StartMiniArc();
   const auto& request = GetTestConciergeClient()->start_arc_vm_request();
   EXPECT_FALSE(request.enable_broadcast_anr_prenotify());
-}
-
-TEST_F(ArcVmClientAdapterTest, BroadcastPreANREnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kVmBroadcastPreNotifyANR, true);
-
-  StartMiniArc();
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.enable_broadcast_anr_prenotify());
 }
 
 TEST_F(ArcVmClientAdapterTest, TrimVmMemorySuccess) {

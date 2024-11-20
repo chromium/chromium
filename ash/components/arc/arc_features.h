@@ -82,7 +82,6 @@ BASE_DECLARE_FEATURE(kVmMemorySize);
 extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
 extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;
 extern const base::FeatureParam<int> kVmMemorySizePercentage;
-BASE_DECLARE_FEATURE(kVmBroadcastPreNotifyANR);
 BASE_DECLARE_FEATURE(kVmmSwapoutGhostWindow);
 BASE_DECLARE_FEATURE(kVmmSwapKeyboardShortcut);
 BASE_DECLARE_FEATURE(kVmmSwapPolicy);

@@ -371,12 +371,6 @@ const base::FeatureParam<int> kVmMemorySizeMaxMiB{&kVmMemorySize, "max_mib",
 const base::FeatureParam<int> kVmMemorySizePercentage{&kVmMemorySize,
                                                       "ram_percentage", 100};
 
-// Controls experimental key to enable pre-ANR handling for BroadcastQueue in
-// ARCVM.
-BASE_FEATURE(kVmBroadcastPreNotifyANR,
-             "ArcVmBroadcastPreAnrHandling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls experimental key to enable ghost window when launch app under ARCVM
 // swap out state.
 BASE_FEATURE(kVmmSwapoutGhostWindow,

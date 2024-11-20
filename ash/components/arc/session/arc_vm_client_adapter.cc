@@ -451,9 +451,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
         ShouldUseArcAttestation());
   }
 
-  request.set_enable_broadcast_anr_prenotify(
-      base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR));
-
   request.set_enable_virtio_blk_data(start_params.use_virtio_blk_data);
 
   // Enable block IO scheduler for virtio-blk /data devices.
