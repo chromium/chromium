@@ -135,8 +135,7 @@ class CC_EXPORT RenderSurfaceImpl {
   // After this is called for all clip-escaping layers,
   // `common_ancestor_clip_id_` is the lowest common ancestor of OwningEffect's
   // clip node and all contributing layers' clips. It will be used as the
-  // render surface's clip. For now this is behind the
-  // RenderSurfaceCommonAncestorClip feature.
+  // render surface's clip.
   void set_common_ancestor_clip_id(int id) {
     DCHECK_NE(id, ClipTreeIndex());
     DCHECK(id < ClipTreeIndex() || id == kInvalidPropertyNodeId);
@@ -147,18 +146,8 @@ class CC_EXPORT RenderSurfaceImpl {
                ? ClipTreeIndex()
                : common_ancestor_clip_id_;
   }
-
-  // TODO(wangxianzhu): Remove this when removing the
-  // RenderSurfaceCommonAncestorClip feature.
-  void set_has_contributing_layer_that_escapes_clip(
-      bool contributing_layer_escapes_clip) {
-    has_contributing_layer_that_escapes_clip_ = contributing_layer_escapes_clip;
-  }
   bool has_contributing_layer_that_escapes_clip() const {
-    return common_ancestor_clip_id_ != kInvalidPropertyNodeId ||
-           // TODO(wangxianzhu): Remove this when removing the
-           // RenderSurfaceCommonAncestorClip feature.
-           has_contributing_layer_that_escapes_clip_;
+    return common_ancestor_clip_id_ != kInvalidPropertyNodeId;
   }
 
   void set_is_render_surface_list_member(bool is_render_surface_list_member) {
@@ -331,10 +320,6 @@ class CC_EXPORT RenderSurfaceImpl {
   // ancestor of the effect's clip node and the clip nodes of all contributing
   // layers. Otherwise `ClipTreeIndex()` is already the common ancestor clip.
   int common_ancestor_clip_id_ = kInvalidPropertyNodeId;
-  // Is used to decide if the surface is clipped.
-  // TODO(wangxianzhu): Remove this when removing the
-  // RenderSurfaceCommonAncestorClip feature.
-  bool has_contributing_layer_that_escapes_clip_ : 1 = false;
 
   bool surface_property_changed_ : 1 = false;
   bool ancestor_property_changed_ : 1 = false;

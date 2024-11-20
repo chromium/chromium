@@ -23,12 +23,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSynchronizedScrolling);
 // unified scroll with main-thread repaint reasons.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMainRepaintScrollPrefersNewContent);
 
-
-// Whether RenderSurface::common_ancestor_clip_id() is used to clip to the
-// common ancestor clip when any contributing layer escapes the clip of the
-// render surface's owning effect.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kRenderSurfaceCommonAncestorClip);
-
 // When enabled, the scheduler will allow deferring impl invalidation frames
 // for N frames (default 1) to reduce contention with main frames, allowing
 // main a chance to commit.
