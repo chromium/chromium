@@ -443,6 +443,26 @@ std::vector<CapturedSiteParams> GetCapturedSites(
   return sites;
 }
 
+std::optional<base::Value::Dict> ReadRecipeFile(
+    const base::FilePath& recipe_file_path) {
+  // Read the text of the recipe file.
+  base::ScopedAllowBlockingForTesting for_testing;
+  std::string json_text;
+  if (!base::ReadFileToString(recipe_file_path, &json_text)) {
+    ADD_FAILURE() << "Failed to read recipe file '" << recipe_file_path << "'!";
+    return std::nullopt;
+  }
+
+  // Convert the file text into a json object.
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
+  if (!parsed_json) {
+    ADD_FAILURE() << "Failed to deserialize json text!";
+    return std::nullopt;
+  }
+  DCHECK(parsed_json->is_dict());
+  return std::move(*parsed_json).TakeDict();
+}
+
 std::string FilePathToUTF8(const base::FilePath::StringType& str) {
 #if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(str);
@@ -1059,28 +1079,16 @@ void TestRecipeReplayer::CleanupSiteData() {
 bool TestRecipeReplayer::ReplayRecordedActions(
     const base::FilePath& recipe_file_path,
     const std::optional<base::FilePath>& command_file_path) {
-  // Read the text of the recipe file.
-  base::ScopedAllowBlockingForTesting for_testing;
-  std::string json_text;
-  if (!base::ReadFileToString(recipe_file_path, &json_text)) {
-    ADD_FAILURE() << "Failed to read recipe file '" << recipe_file_path << "'!";
+  std::optional<base::Value::Dict> recipe = ReadRecipeFile(recipe_file_path);
+  if (!recipe) {
     return false;
   }
-
-  // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
-  if (!parsed_json) {
-    ADD_FAILURE() << "Failed to deserialize json text!";
+  if (!InitializeBrowserToExecuteRecipe(recipe.value())) {
     return false;
   }
-
-  DCHECK(parsed_json->is_dict());
-  base::Value::Dict recipe = std::move(*parsed_json).TakeDict();
-  if (!InitializeBrowserToExecuteRecipe(recipe))
-    return false;
 
   // Iterate through and execute each action in the recipe.
-  base::Value::List* action_list = recipe.FindList("actions");
+  base::Value::List* action_list = recipe.value().FindList("actions");
   if (!action_list) {
     ADD_FAILURE() << "Failed to extract action list from the recipe!";
     return false;

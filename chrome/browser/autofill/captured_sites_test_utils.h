@@ -91,6 +91,10 @@ struct GetParamAsString {
   }
 };
 
+// Reads the recipe file and returns the recipe as a base::Value::Dict.
+std::optional<base::Value::Dict> ReadRecipeFile(
+    const base::FilePath& recipe_file_path);
+
 std::optional<base::FilePath> GetCommandFilePath();
 
 // Prints tips on how to run captured-site tests.
