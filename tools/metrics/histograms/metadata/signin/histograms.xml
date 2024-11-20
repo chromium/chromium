@@ -916,6 +916,19 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.CctAccountMismatchNoticeSuppressed"
+    enum="SuppressedReason" expires_after="2025-04-13">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    When CCT is launched from an eligible 1P app and there is a mismatch between
+    the account signed in to Chrome and the account signed in to the app that
+    launched Chrome, a mismatch notice might be displayed. However, this notice
+    might be suppressed for a number of reasons. Records when the CCT account
+    mismatch notice is suppressed and why.
+  </summary>
+</histogram>
+
 <histogram name="Signin.ChromeSignoutConfirmationPrompt.{Variant}"
     enum="ChromeSignoutConfirmationChoice" expires_after="2025-04-20">
   <owner>droger@chromium.org</owner>
