@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "base/version.h"
 
 namespace ash {
 
@@ -89,15 +88,10 @@ WallpaperInfo::WallpaperInfo(
                ? WallpaperType::kDaily
                : WallpaperType::kOnline),
       date(base::Time::Now()),
+      asset_id(target_variant.asset_id),
       collection_id(online_wallpaper_params.collection_id),
       unit_id(online_wallpaper_params.unit_id),
-      variants(online_wallpaper_params.variants) {
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    version = GetSupportedVersion(type);
-  } else {
-    asset_id = target_variant.asset_id;
-  }
-}
+      variants(online_wallpaper_params.variants) {}
 
 WallpaperInfo::WallpaperInfo(
     const GooglePhotosWallpaperParams& google_photos_wallpaper_params)
@@ -110,9 +104,6 @@ WallpaperInfo::WallpaperInfo(
     location = google_photos_wallpaper_params.id;
     dedup_key = google_photos_wallpaper_params.dedup_key;
   }
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    version = GetSupportedVersion(type);
-  }
 }
 
 WallpaperInfo::WallpaperInfo(const std::string& in_location,
@@ -124,11 +115,7 @@ WallpaperInfo::WallpaperInfo(const std::string& in_location,
       user_file_path(in_user_file_path),
       layout(in_layout),
       type(in_type),
-      date(in_date) {
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    version = GetSupportedVersion(type);
-  }
-}
+      date(in_date) {}
 
 WallpaperInfo::WallpaperInfo(const WallpaperInfo& other) = default;
 WallpaperInfo& WallpaperInfo::operator=(const WallpaperInfo& other) = default;
@@ -137,16 +124,6 @@ WallpaperInfo::WallpaperInfo(WallpaperInfo&& other) = default;
 WallpaperInfo& WallpaperInfo::operator=(WallpaperInfo&& other) = default;
 
 bool WallpaperInfo::MatchesSelection(const WallpaperInfo& other) const {
-  if (features::IsVersionWallpaperInfoEnabled()) {
-    // Checks for exact match of the version here to avoid unexpected data
-    // mismatch between two WallpaperInfos. Any difference in version should
-    // surface to the callers of this function so they can decide how to handle
-    // it.
-    if (!version.IsValid() || !other.version.IsValid() ||
-        version != other.version) {
-      return false;
-    }
-  }
   // |location| are skipped on purpose in favor of |unit_id| as
   // online wallpapers can vary across devices due to their color mode. Other
   // wallpaper types still require location to be equal.
@@ -240,12 +217,6 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
   WallpaperInfo info;
   info.type = wallpaper_type;
 
-  const std::string* version =
-      dict.FindString(WallpaperInfo::kNewWallpaperVersionNodeName);
-  if (version) {
-    info.version = base::Version(*version);
-  }
-
   int64_t date_val;
   if (!base::StringToInt64(*date_string, &date_val)) {
     return std::nullopt;
@@ -269,9 +240,6 @@ std::optional<WallpaperInfo> WallpaperInfo::FromDict(
 
 base::Value::Dict WallpaperInfo::ToDict() const {
   base::Value::Dict wallpaper_info_dict;
-  if (version.IsValid()) {
-    wallpaper_info_dict.Set(kNewWallpaperVersionNodeName, version.GetString());
-  }
   if (asset_id.has_value()) {
     wallpaper_info_dict.Set(kNewWallpaperAssetIdNodeName,
                             base::NumberToString(asset_id.value()));
@@ -324,7 +292,6 @@ std::ostream& operator<<(std::ostream& os, const WallpaperInfo& info) {
   os << "  collection_id: " << info.collection_id << std::endl;
   os << "  unit_id: " << info.unit_id.value_or(-1) << std::endl;
   os << "  variants_size: " << info.variants.size() << std::endl;
-  os << "  version: " << info.version.GetString() << std::endl;
   return os;
 }
 
