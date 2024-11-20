@@ -147,6 +147,8 @@ std::string GetStringNameForOptimizationType(
       return "FormsAnnotations";
     case proto::OptimizationType::TEXT_CLASSIFIER_ENTITY_DETECTION:
       return "TextClassifierEntityDetection";
+    case proto::OptimizationType::OPTIMIZATION_GUIDE_ICON_VIEW:
+      return "OptimizationGuideIconView";
   }
 
   // The returned string is used to record histograms for the optimization type.

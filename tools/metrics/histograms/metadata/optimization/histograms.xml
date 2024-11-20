@@ -239,6 +239,9 @@ chromium-metrics-reviews@google.com.
       summary="Provides trust data related to the merchant -- version 2."/>
   <variant name="MetadataFetchValidation"
       summary="Validates metadata fetch on navigation"/>
+  <variant name="OptimizationGuideIconView"
+      summary="Provides information for what to show in the debug
+               optimization guide icon view."/>
   <variant name="PageEntities"
       summary="Provides the entities that are present on the page"/>
   <variant name="PageInsights"

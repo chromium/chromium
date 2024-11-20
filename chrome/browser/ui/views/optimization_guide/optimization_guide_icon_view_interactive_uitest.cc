@@ -12,7 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
+#include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -28,14 +28,16 @@ class OptimizationGuideIconViewTestBase : public InProcessBrowserTest {
       const OptimizationGuideIconViewTestBase&) = delete;
   ~OptimizationGuideIconViewTestBase() override = default;
 
-  void SetUpEnabledHint(const GURL& url, const std::string& title) {
-    optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
-    page_entities_metadata.set_alternative_title(title);
+  void SetUpEnabledHint(const GURL& url, const std::string& label) {
+    optimization_guide::proto::OptimizationGuideIconViewMetadata
+        icon_view_metadata;
+    icon_view_metadata.set_cue_label(label);
     optimization_guide::OptimizationMetadata metadata;
-    metadata.SetAnyMetadataForTesting(page_entities_metadata);
+    metadata.SetAnyMetadataForTesting(icon_view_metadata);
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
-        ->AddHintForTesting(url, optimization_guide::proto::PAGE_ENTITIES,
-                            metadata);
+        ->AddHintForTesting(
+            url, optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW,
+            metadata);
   }
 
   OptimizationGuideIconView* optimization_guide_icon_view() {
@@ -71,12 +73,12 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideIconViewTest,
 IN_PROC_BROWSER_TEST_F(OptimizationGuideIconViewTest, ShowsOnEnabledPage) {
   // Set up enabled hint and navigate to an enabled page.
   const GURL url = GURL("https://enabled.com/");
-  SetUpEnabledHint(url, "title");
+  SetUpEnabledHint(url, "label");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   OptimizationGuideIconView* icon_view = optimization_guide_icon_view();
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_EQ(icon_view->GetText(), u"title");
+  EXPECT_EQ(icon_view->GetText(), u"label");
 
   // Now, navigate to disabled page. View should not be visible.
   ASSERT_TRUE(
@@ -86,11 +88,11 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideIconViewTest, ShowsOnEnabledPage) {
 
   // Navigate to another enabled page - make sure label is dynamic.
   const GURL url2 = GURL("https://enabled.com/different");
-  SetUpEnabledHint(url2, "anothertitle");
+  SetUpEnabledHint(url2, "anotherlabel");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
   EXPECT_TRUE(icon_view->GetVisible());
-  EXPECT_EQ(icon_view->GetText(), u"anothertitle");
+  EXPECT_EQ(icon_view->GetText(), u"anotherlabel");
 }
 
 class OptimizationGuideIconViewDisabledTest
@@ -109,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideIconViewDisabledTest,
                        NotCreatedWhenDisabled) {
   // Set up enabled hint and navigate to an enabled page.
   const GURL url = GURL("https://enabled.com/");
-  SetUpEnabledHint(url, "title");
+  SetUpEnabledHint(url, "label");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   OptimizationGuideIconView* icon_view = optimization_guide_icon_view();

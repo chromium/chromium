@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "IconViewMetadataProto";
+
+package optimization_guide.proto;
+
+// Optimization metadata associated with providing information about
+// what to show in the optimization guide icon view.
+message OptimizationGuideIconViewMetadata {
+  // The label to show in the icon view.
+  //
+  // It is expected to have at most 5 words.
+  optional string cue_label = 1;
+}

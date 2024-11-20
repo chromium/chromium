@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
-#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
+#include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -54,15 +54,14 @@ const gfx::VectorIcon& OptimizationGuideIconView::GetVectorIcon() const {
 void OptimizationGuideIconView::UpdateImpl() {
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
 
-  std::optional<optimization_guide::proto::PageEntitiesMetadata> metadata =
-      GetMetadata();
+  std::optional<optimization_guide::proto::OptimizationGuideIconViewMetadata>
+      metadata = GetMetadata();
   SetVisible(metadata.has_value());
-  SetLabel(metadata.has_value()
-               ? base::UTF8ToUTF16(metadata->alternative_title())
-               : u"");
+  SetLabel(metadata.has_value() ? base::UTF8ToUTF16(metadata->cue_label())
+                                : u"");
 }
 
-std::optional<optimization_guide::proto::PageEntitiesMetadata>
+std::optional<optimization_guide::proto::OptimizationGuideIconViewMetadata>
 OptimizationGuideIconView::GetMetadata() const {
   if (!optimization_guide_service_) {
     return std::nullopt;
@@ -72,17 +71,15 @@ OptimizationGuideIconView::GetMetadata() const {
     return std::nullopt;
   }
 
-  // TODO: crbug.com/379138286 - Move this to the appropriate prototyping target
-  // when ready.
   optimization_guide::OptimizationMetadata metadata;
   auto decision = optimization_guide_service_->CanApplyOptimization(
       web_contents->GetLastCommittedURL(),
-      optimization_guide::proto::PAGE_ENTITIES, &metadata);
+      optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW, &metadata);
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return std::nullopt;
   }
-  return metadata
-      .ParsedMetadata<optimization_guide::proto::PageEntitiesMetadata>();
+  return metadata.ParsedMetadata<
+      optimization_guide::proto::OptimizationGuideIconViewMetadata>();
 }
 
 BEGIN_METADATA(OptimizationGuideIconView)

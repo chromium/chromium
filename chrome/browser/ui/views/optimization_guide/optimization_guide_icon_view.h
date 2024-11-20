@@ -16,7 +16,7 @@ class Browser;
 class OptimizationGuideKeyedService;
 
 namespace optimization_guide::proto {
-class PageEntitiesMetadata;
+class OptimizationGuideIconViewMetadata;
 }  // namespace optimization_guide::proto
 
 // This icon appears in the location bar when the current page has a page
@@ -41,8 +41,8 @@ class OptimizationGuideIconView : public PageActionIconView {
 
  private:
   // Returns the metadata, if available, for the current web contents.
-  std::optional<optimization_guide::proto::PageEntitiesMetadata> GetMetadata()
-      const;
+  std::optional<optimization_guide::proto::OptimizationGuideIconViewMetadata>
+  GetMetadata() const;
 
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_service_;
 
