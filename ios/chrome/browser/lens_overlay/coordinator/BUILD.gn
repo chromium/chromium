@@ -98,7 +98,6 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
-    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/web/public/navigation",
     "//ui/base",
   ]
