@@ -92,20 +92,14 @@ class GifTenorApiFetcher {
       GetCategoriesCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
-  void OnCategoriesJsonParsed(GetCategoriesCallback callback,
-                              data_decoder::DataDecoder::ValueOrError result);
   void TenorGifsApiResponseHandler(
       TenorGifsApiCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
-  void OnGifsJsonParsed(TenorGifsApiCallback callback,
-                        data_decoder::DataDecoder::ValueOrError result);
   void FetchGifsByIdsResponseHandler(
       GetGifsByIdsCallback callback,
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
-  void OnGifsByIdsJsonParsed(GetGifsByIdsCallback callback,
-                             data_decoder::DataDecoder::ValueOrError result);
 
   const EndpointFetcherCreator endpoint_fetcher_creator_;
   base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
