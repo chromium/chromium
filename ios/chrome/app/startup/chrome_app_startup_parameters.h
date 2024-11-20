@@ -99,6 +99,7 @@ enum MobileSessionCallerApp {
 // returns nil.
 + (instancetype)startupParametersWithURL:(NSURL*)URL
                        sourceApplication:(NSString*)appID
+                         applicationMode:(ApplicationModeForTabOpening)mode
                     forceApplicationMode:(BOOL)forceApplicationMode;
 
 // Returns the MobileSessionCallerApp for the given bundle ID.

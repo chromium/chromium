@@ -250,6 +250,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
 + (instancetype)startupParametersWithURL:(NSURL*)completeURL
                        sourceApplication:(NSString*)appID
+                         applicationMode:(ApplicationModeForTabOpening)mode
                     forceApplicationMode:(BOOL)forceApplicationMode {
   GURL parsedURL = net::GURLWithNSURL(completeURL);
 

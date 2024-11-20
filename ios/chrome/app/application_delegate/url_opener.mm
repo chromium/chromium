@@ -43,23 +43,26 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
   ChromeAppStartupParameters* params;
 
   if (IsIncognitoModeDisabled(prefService)) {
-    params =
-        [ChromeAppStartupParameters startupParametersWithURL:URL
-                                           sourceApplication:sourceApplication
-                                        forceApplicationMode:YES];
+    params = [ChromeAppStartupParameters
+        startupParametersWithURL:URL
+               sourceApplication:sourceApplication
+                 applicationMode:ApplicationModeForTabOpening::NORMAL
+            forceApplicationMode:YES];
     params.applicationMode = ApplicationModeForTabOpening::NORMAL;
 
   } else if (IsIncognitoModeForced(prefService)) {
-    params =
-        [ChromeAppStartupParameters startupParametersWithURL:URL
-                                           sourceApplication:sourceApplication
-                                        forceApplicationMode:YES];
+    params = [ChromeAppStartupParameters
+        startupParametersWithURL:URL
+               sourceApplication:sourceApplication
+                 applicationMode:ApplicationModeForTabOpening::INCOGNITO
+            forceApplicationMode:YES];
     params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
   } else {
-    params =
-        [ChromeAppStartupParameters startupParametersWithURL:URL
-                                           sourceApplication:sourceApplication
-                                        forceApplicationMode:NO];
+    params = [ChromeAppStartupParameters
+        startupParametersWithURL:URL
+               sourceApplication:sourceApplication
+                 applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+            forceApplicationMode:NO];
   }
 
   MobileSessionCallerApp callerApp = [params callerApp];
