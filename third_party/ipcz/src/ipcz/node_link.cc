@@ -474,8 +474,12 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
   if (auto* v1 = accept.v1()) {
     remote_features = Features::Deserialize(accept, v1->remote_features);
   }
-  auto transport = MakeRefCounted<DriverTransport>(
-      accept.TakeDriverObject(accept.v0()->transport));
+  DriverObject transport_object =
+      accept.TakeDriverObject(accept.v0()->transport);
+  if (!transport_object.is_valid()) {
+    return false;
+  }
+  auto transport = MakeRefCounted<DriverTransport>(std::move(transport_object));
   node()->AcceptIntroduction(
       *this, accept.v0()->name, accept.v0()->link_side,
       accept.v0()->remote_node_type, accept.v0()->remote_protocol_version,
