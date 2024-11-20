@@ -36,6 +36,7 @@
 #import "components/password_manager/core/common/passwords_directory_util_ios.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
@@ -1680,6 +1681,12 @@ void BeginMemoryExperimentationAfterDelay() {
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
   PrefService* localState = applicationContext->GetLocalState();
 
+  // Clear the list of recently active profiles. When profiles are loaded by
+  // -attachProfileToScene:profileManager:attributesStorage:localState: they
+  // will be added to the list. This avoids loading profiles that are not in
+  // use.
+  localState->SetList(prefs::kLastActiveProfiles, base::Value::List());
+
   for (SceneState* sceneState in self.appState.connectedScenes) {
     [self attachProfileToScene:sceneState
                 profileManager:manager
@@ -1721,6 +1728,11 @@ void BeginMemoryExperimentationAfterDelay() {
         _profileControllers.insert(std::make_pair(profileName, controller));
     DCHECK(insertion_result.second);
     iterator = insertion_result.first;
+
+    // Insert the profile in the list of recently active profile, ensuring
+    // it is loaded at application startup.
+    ScopedListPrefUpdate update(localState, prefs::kLastActiveProfiles);
+    update->Append(base::Value(profileName));
 
     // Start loading the profile.
     [controller loadProfileNamed:profileName usingManager:manager];

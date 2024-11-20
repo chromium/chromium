@@ -43,12 +43,6 @@ void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
 
   // Update the number of created profile.
   prefs_->SetInteger(prefs::kNumberOfProfiles, sorted_keys_.size());
-
-  // Insert the newly created profile in the list of last active profiles.
-  {
-    ScopedListPrefUpdate update(prefs_, prefs::kLastActiveProfiles);
-    update->Append(base::Value(name));
-  }
 }
 
 void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
@@ -69,12 +63,6 @@ void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
     }
 
     *update = std::move(dict);
-  }
-
-  // Remove the profile from the list of last active profiles (if present).
-  {
-    ScopedListPrefUpdate update(prefs_, prefs::kLastActiveProfiles);
-    update->EraseValue(base::Value(name));
   }
 
   // Update the number of created profile.
