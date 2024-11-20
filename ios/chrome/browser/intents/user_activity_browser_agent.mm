@@ -667,7 +667,8 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
   } else if ([shortcut_item.type isEqualToString:kShortcutNewIncognitoSearch]) {
     base::RecordAction(
         UserMetricsAction("ApplicationShortcut.NewIncognitoSearchPressed"));
-    startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+    [startup_params setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+                  forceApplicationMode:NO];
     startup_params.postOpeningAction = FOCUS_OMNIBOX;
     connection_information_.startupParameters = startup_params;
     return YES;
@@ -716,18 +717,15 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
     BOOL incognito) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ApplicationModeForTabOpening application_mode;
-  BOOL application_mode_forced = NO;
   if (incognito) {
     application_mode = ApplicationModeForTabOpening::INCOGNITO;
-    application_mode_forced = YES;
   } else {
     application_mode = ApplicationModeForTabOpening::NORMAL;
-    application_mode_forced = YES;
   }
   AppStartupParameters* startup_params =
       [[AppStartupParameters alloc] initWithURLs:webpage_urls
                                  applicationMode:application_mode
-                            forceApplicationMode:application_mode_forced];
+                            forceApplicationMode:NO];
   [connection_information_ setStartupParameters:startup_params];
 
   if (application_is_active && IsProfileStateReady(browser_)) {
@@ -742,9 +740,12 @@ void UserActivityBrowserAgent::OpenRequestedURLs(
   [startup_information_ resetFirstUserActionRecorder];
 
   if (![connection_information_ startupParameters]) {
-    startup_params.applicationMode = ApplicationModeForTabOpening::UNDETERMINED;
+    [startup_params
+          setApplicationMode:ApplicationModeForTabOpening::UNDETERMINED
+        forceApplicationMode:NO];
     if (incognito) {
-      startup_params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
+      [startup_params setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+                    forceApplicationMode:NO];
     }
     [connection_information_ setStartupParameters:startup_params];
   }

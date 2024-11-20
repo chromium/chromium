@@ -208,4 +208,20 @@
   }
 }
 
+- (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
+      forceApplicationMode:(BOOL)forceApplicationMode {
+  if (forceApplicationMode) {
+    if (applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
+      self.unexpectedMode =
+          _applicationMode == ApplicationModeForTabOpening::NORMAL;
+
+    } else if (applicationMode == ApplicationModeForTabOpening::NORMAL) {
+      self.unexpectedMode =
+          _applicationMode == ApplicationModeForTabOpening::INCOGNITO;
+    }
+  }
+  _applicationMode = applicationMode;
+  _forceApplicationMode = forceApplicationMode;
+}
+
 @end

@@ -138,6 +138,11 @@ class GURL;
 // the it becomes `kAvailable`.
 - (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block;
 
+// Sets the application mode. The application mode will be forced if
+// `forceApplicationMode` is YES.
+- (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
+      forceApplicationMode:(BOOL)forceApplicationMode;
+
 @end
 
 #endif  // IOS_CHROME_APP_APP_STARTUP_PARAMETERS_H_
