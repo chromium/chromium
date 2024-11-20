@@ -815,15 +815,21 @@ def main(argv):
                    kt_files +
                    [options.warnings_as_errors, options.jar_info_exclude_globs])
 
-  # Use md5_check for |pass_changes| feature.
-  md5_check.CallAndWriteDepfileIfStale(lambda changes: _OnStaleMd5(
-      changes, options, javac_cmd, javac_args, java_files, kt_files),
-                                       options,
-                                       depfile_deps=depfile_deps,
-                                       input_paths=input_paths,
-                                       input_strings=input_strings,
-                                       output_paths=output_paths,
-                                       pass_changes=True)
+  do_it = lambda changes: _OnStaleMd5(changes, options, javac_cmd, javac_args,
+                                      java_files, kt_files)
+  # Incremental build optimization doesn't work for ErrorProne. Skip md5 check.
+  if options.enable_errorprone:
+    do_it(None)
+    action_helpers.write_depfile(options.depfile, output_paths[0], depfile_deps)
+  else:
+    # Use md5_check for |pass_changes| feature.
+    md5_check.CallAndWriteDepfileIfStale(do_it,
+                                         options,
+                                         depfile_deps=depfile_deps,
+                                         input_paths=input_paths,
+                                         input_strings=input_strings,
+                                         output_paths=output_paths,
+                                         pass_changes=True)
   return 0
 
 
