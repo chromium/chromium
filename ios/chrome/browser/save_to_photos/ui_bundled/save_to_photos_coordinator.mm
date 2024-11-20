@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_coordinator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 
 #import <StoreKit/StoreKit.h>
 
@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -28,8 +30,6 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/referrer.h"

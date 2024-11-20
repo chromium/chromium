@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -29,8 +31,6 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/photos/test_photos_service.h"

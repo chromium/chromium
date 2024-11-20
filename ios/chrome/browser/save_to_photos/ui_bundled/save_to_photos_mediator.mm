@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
 
 #import <UIKit/UIKit.h>
 
@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
+#import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator_delegate.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
