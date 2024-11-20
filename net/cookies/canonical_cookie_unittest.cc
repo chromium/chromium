@@ -721,7 +721,7 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   EXPECT_EQ(partition_key_with_nonce, cookie->PartitionKey());
 }
 
-TEST(CanonicalCookieTest, CreateWithPartitioned_Localhost) {
+TEST(CanonicalCookieTest, CreateWithPartitionedLocalhost) {
   GURL url("http://localhost:8000/foo/bar.html");
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
@@ -2225,7 +2225,7 @@ TEST(CanonicalCookieTest, IncludeCookiesWithoutSameSiteMustBeSecure) {
               {CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE}));
 }
 
-TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
+TEST(CanonicalCookieTest, IncludeForRequestURLSameSiteNoneMetrics) {
   constexpr bool delegate_treats_url_as_trustworthy = false;
   const base::Time now = base::Time::Now();
   const auto make_cookie = [now](CookieSameSite same_site) {
@@ -2299,7 +2299,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
 
 // Test that the CookieInclusionStatus warning for inclusion changed by
 // cross-site redirect context downgrade is applied correctly.
-TEST(CanonicalCookieTest, IncludeForRequestURL_RedirectDowngradeWarning) {
+TEST(CanonicalCookieTest, IncludeForRequestURLRedirectDowngradeWarning) {
   using Context = CookieOptions::SameSiteCookieContext;
   using ContextType = Context::ContextType;
 
@@ -2434,7 +2434,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_RedirectDowngradeWarning) {
 
 // Test that the correct inclusion status is generated when a cookie's source
 // scheme does(n't) match the url's.
-TEST(CanonicalCookieTest, IncludeForRequestURL_SchemeBoundStatus) {
+TEST(CanonicalCookieTest, IncludeForRequestURLSchemeBoundStatus) {
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
   CookieOptions options;
@@ -2567,7 +2567,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SchemeBoundStatus) {
 
 // Test that the correct inclusion status is generated when a cookie's source
 // port does(n't) match the url's.
-TEST(CanonicalCookieTest, IncludeForRequestURL_PortBoundStatus) {
+TEST(CanonicalCookieTest, IncludeForRequestURLPortBoundStatus) {
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
   CookieOptions options;
@@ -2632,7 +2632,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_PortBoundStatus) {
 }
 
 // Test that domain cookies match any request url port.
-TEST(CanonicalCookieTest, IncludeForRequestURL_DomainCookiesPortMatch) {
+TEST(CanonicalCookieTest, IncludeForRequestURLDomainCookiesPortMatch) {
   base::Time creation_time = base::Time::Now();
   std::optional<base::Time> server_time = std::nullopt;
   CookieOptions options;
@@ -3640,7 +3640,7 @@ TEST(CanonicalCookieTest, BuildCookieAttributesLine) {
 }
 
 // Confirm that input arguments are reflected in the output cookie.
-TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
+TEST(CanonicalCookieTest, CreateSanitizedCookieInputs) {
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
   base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
   base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
@@ -3761,7 +3761,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Inputs) {
 }
 
 // Make sure sanitization and blocking of cookies works correctly.
-TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
+TEST(CanonicalCookieTest, CreateSanitizedCookieLogic) {
   base::Time two_hours_ago = base::Time::Now() - base::Hours(2);
   base::Time one_hour_ago = base::Time::Now() - base::Hours(1);
   base::Time one_hour_from_now = base::Time::Now() + base::Hours(1);
@@ -4475,7 +4475,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
 }
 
 // Regression test for https://crbug.com/362535230.
-TEST(CanonicalCookieTest, CreateSanitizedCookie_NoncanonicalDomain) {
+TEST(CanonicalCookieTest, CreateSanitizedCookieNoncanonicalDomain) {
   CookieInclusionStatus status;
 
   std::unique_ptr<CanonicalCookie> cc = CanonicalCookie::CreateSanitizedCookie(
@@ -4491,7 +4491,7 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_NoncanonicalDomain) {
 
 // Make sure that the source scheme and port are set correctly for cookies that
 // are marked as "Secure".
-TEST(CanonicalCookieTest, Create_SourceSchemePort) {
+TEST(CanonicalCookieTest, CreateSourceSchemePort) {
   GURL secure_url("https://example.com");
   GURL insecure_url("http://example.com");
   GURL insecure_url_custom_port("http://example.com:123");
@@ -4578,7 +4578,7 @@ TEST(CanonicalCookieTest, Create_SourceSchemePort) {
 
 // Make sure that the source scheme and port are set correctly for cookies that
 // are marked as "Secure".
-TEST(CanonicalCookieTest, CreateSanitizedCookie_SourceSchemePort) {
+TEST(CanonicalCookieTest, CreateSanitizedCookieSourceSchemePort) {
   GURL secure_url("https://example.com");
   GURL insecure_url("http://example.com");
   GURL insecure_url_custom_port("http://example.com:123");
@@ -5477,7 +5477,7 @@ TEST(CanonicalCookieTest, IsSetPermittedEffectiveSameSite) {
                                 false));
 }
 
-TEST(CanonicalCookieTest, IsSetPermitted_AllowedToAccessSecureCookies) {
+TEST(CanonicalCookieTest, IsSetPermittedAllowedToAccessSecureCookies) {
   GURL url("https://www.example.com/test");
   GURL insecure_url("http://www.example.com/test");
   GURL localhost_url("http://localhost/test");
@@ -5529,7 +5529,7 @@ TEST(CanonicalCookieTest, IsSetPermitted_AllowedToAccessSecureCookies) {
   }
 }
 
-TEST(CanonicalCookieTest, IsSetPermitted_SameSiteNone_Metrics) {
+TEST(CanonicalCookieTest, IsSetPermittedSameSiteNoneMetrics) {
   constexpr bool delegate_treats_url_as_trustworthy = false;
   const base::Time now = base::Time::Now();
   const auto make_cookie = [now](CookieSameSite same_site) {
@@ -5594,7 +5594,7 @@ TEST(CanonicalCookieTest, IsSetPermitted_SameSiteNone_Metrics) {
 
 // Test that the CookieInclusionStatus warning for inclusion changed by
 // cross-site redirect context downgrade is applied correctly.
-TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
+TEST(CanonicalCookieTest, IsSetPermittedInContextRedirectDowngradeWarning) {
   using Context = CookieOptions::SameSiteCookieContext;
   using ContextType = Context::ContextType;
 

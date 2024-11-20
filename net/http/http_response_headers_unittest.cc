@@ -564,7 +564,7 @@ INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          PersistenceTest,
                          testing::ValuesIn(persistence_tests));
 
-TEST(HttpResponseHeadersTest, EnumerateHeader_Coalesced) {
+TEST(HttpResponseHeadersTest, EnumerateHeaderCoalesced) {
   // Ensure that commas in quoted strings are not regarded as value separators.
   // Ensure that whitespace following a value is trimmed properly.
   std::string headers =
@@ -606,7 +606,7 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Coalesced) {
   EXPECT_FALSE(parsed->EnumerateHeader(&iter, "cache-control", &value));
 }
 
-TEST(HttpResponseHeadersTest, EnumerateHeader_Challenge) {
+TEST(HttpResponseHeadersTest, EnumerateHeaderChallenge) {
   // Even though WWW-Authenticate has commas, it should not be treated as
   // coalesced values.
   std::string headers =
@@ -633,7 +633,7 @@ TEST(HttpResponseHeadersTest, EnumerateHeader_Challenge) {
   EXPECT_FALSE(parsed->EnumerateHeader(&iter, "WWW-Authenticate", &value));
 }
 
-TEST(HttpResponseHeadersTest, EnumerateHeader_DateValued) {
+TEST(HttpResponseHeadersTest, EnumerateHeaderDateValued) {
   // The comma in a date valued header should not be treated as a
   // field-value separator.
   std::string headers =

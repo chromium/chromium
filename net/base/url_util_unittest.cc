@@ -896,7 +896,7 @@ TEST(UrlUtilTest, GetIdentityFromURL) {
 }
 
 // Try extracting a username which was encoded with UTF8.
-TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
+TEST(UrlUtilTest, GetIdentityFromURLUTF8) {
   GURL url(u"http://foo:\x4f60\x597d@blah.com");
 
   EXPECT_EQ("foo", url.username());

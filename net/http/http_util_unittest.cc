@@ -159,7 +159,7 @@ TEST(HttpUtilTest, HeadersIterator) {
   EXPECT_FALSE(it.GetNext());
 }
 
-TEST(HttpUtilTest, HeadersIterator_MalformedLine) {
+TEST(HttpUtilTest, HeadersIteratorMalformedLine) {
   std::string headers = "foo: 1\n: 2\n3\nbar: 4";
 
   HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\n");
@@ -175,7 +175,7 @@ TEST(HttpUtilTest, HeadersIterator_MalformedLine) {
   EXPECT_FALSE(it.GetNext());
 }
 
-TEST(HttpUtilTest, HeadersIterator_MalformedName) {
+TEST(HttpUtilTest, HeadersIteratorMalformedName) {
   std::string headers = "[ignore me] /: 3\r\n";
 
   HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
@@ -183,7 +183,7 @@ TEST(HttpUtilTest, HeadersIterator_MalformedName) {
   EXPECT_FALSE(it.GetNext());
 }
 
-TEST(HttpUtilTest, HeadersIterator_MalformedNameFollowedByValidLine) {
+TEST(HttpUtilTest, HeadersIteratorMalformedNameFollowedByValidLine) {
   std::string headers = "[ignore me] /: 3\r\nbar: 4\n";
 
   HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
@@ -195,7 +195,7 @@ TEST(HttpUtilTest, HeadersIterator_MalformedNameFollowedByValidLine) {
   EXPECT_FALSE(it.GetNext());
 }
 
-TEST(HttpUtilTest, HeadersIterator_AdvanceTo) {
+TEST(HttpUtilTest, HeadersIteratorAdvanceTo) {
   std::string headers = "foo: 1\r\n: 2\r\n3\r\nbar: 4";
 
   HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
@@ -207,7 +207,7 @@ TEST(HttpUtilTest, HeadersIterator_AdvanceTo) {
   EXPECT_FALSE(it.GetNext());  // should be at end of headers
 }
 
-TEST(HttpUtilTest, HeadersIterator_Reset) {
+TEST(HttpUtilTest, HeadersIteratorReset) {
   std::string headers = "foo: 1\r\n: 2\r\n3\r\nbar: 4";
   HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\r\n");
   // Search past "foo".
@@ -238,7 +238,7 @@ TEST(HttpUtilTest, ValuesIterator) {
   EXPECT_FALSE(it.GetNext());
 }
 
-TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
+TEST(HttpUtilTest, ValuesIteratorEmptyValues) {
   std::string values = ", foopy , \t ,,,";
 
   HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);
@@ -269,7 +269,7 @@ TEST(HttpUtilTest, ValuesIterator_EmptyValues) {
   EXPECT_FALSE(it_with_empty_values.GetNext());
 }
 
-TEST(HttpUtilTest, ValuesIterator_Blanks) {
+TEST(HttpUtilTest, ValuesIteratorBlanks) {
   std::string values = " \t ";
 
   HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/true);

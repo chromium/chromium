@@ -1325,7 +1325,7 @@ TEST_P(HttpNetworkTransactionTest, StatusLineJunk5Bytes) {
 }
 
 // Same as StatusLineJunk4Bytes, except the read chunks are smaller.
-TEST_P(HttpNetworkTransactionTest, StatusLineJunk4Bytes_Slow) {
+TEST_P(HttpNetworkTransactionTest, StatusLineJunk4BytesSlow) {
   MockRead data_reads[] = {
       MockRead("\n"),
       MockRead("\n"),
@@ -14813,7 +14813,7 @@ TEST_P(HttpNetworkTransactionTest, HTTPSBadCertificateViaHttpsProxy) {
   EXPECT_EQ(100, response->headers->GetContentLength());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgent) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestUserAgent) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -14852,7 +14852,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgent) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgentOverTunnel) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestUserAgentOverTunnel) {
   // Test user agent values, used both for the request header of the original
   // request, and the value returned by the HttpUserAgentSettings. nullptr means
   // no request header / no HttpUserAgentSettings object.
@@ -14922,7 +14922,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_UserAgentOverTunnel) {
   }
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_Referer) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestReferer) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -14961,7 +14961,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_Referer) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_PostContentLengthZero) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestPostContentLengthZero) {
   HttpRequestInfo request;
   request.method = "POST";
   request.url = GURL("http://www.example.org/");
@@ -14998,7 +14998,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_PostContentLengthZero) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_PutContentLengthZero) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestPutContentLengthZero) {
   HttpRequestInfo request;
   request.method = "PUT";
   request.url = GURL("http://www.example.org/");
@@ -15035,7 +15035,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_PutContentLengthZero) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_HeadContentLengthZero) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestHeadContentLengthZero) {
   HttpRequestInfo request;
   request.method = "HEAD";
   request.url = GURL("http://www.example.org/");
@@ -15071,7 +15071,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_HeadContentLengthZero) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_CacheControlNoCache) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestCacheControlNoCache) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15110,7 +15110,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_CacheControlNoCache) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_CacheControlValidateCache) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestCacheControlValidateCache) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15148,7 +15148,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_CacheControlValidateCache) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeaders) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestExtraHeaders) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15186,7 +15186,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeaders) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeadersStripped) {
+TEST_P(HttpNetworkTransactionTest, BuildRequestExtraHeadersStripped) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15228,7 +15228,7 @@ TEST_P(HttpNetworkTransactionTest, BuildRequest_ExtraHeadersStripped) {
   EXPECT_THAT(rv, IsOk());
 }
 
-TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
+TEST_P(HttpNetworkTransactionTest, SOCKS4HTTPGET) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15286,7 +15286,7 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET) {
   EXPECT_EQ("Payload", response_text);
 }
 
-TEST_P(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
+TEST_P(HttpNetworkTransactionTest, SOCKS4SSLGET) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
@@ -15349,7 +15349,7 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_SSL_GET) {
   EXPECT_EQ("Payload", response_text);
 }
 
-TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET_no_PAC) {
+TEST_P(HttpNetworkTransactionTest, SOCKS4HTTPGETNoPAC) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15404,7 +15404,7 @@ TEST_P(HttpNetworkTransactionTest, SOCKS4_HTTP_GET_no_PAC) {
   EXPECT_EQ("Payload", response_text);
 }
 
-TEST_P(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
+TEST_P(HttpNetworkTransactionTest, SOCKS5HTTPGET) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://www.example.org/");
@@ -15474,7 +15474,7 @@ TEST_P(HttpNetworkTransactionTest, SOCKS5_HTTP_GET) {
   EXPECT_EQ("Payload", response_text);
 }
 
-TEST_P(HttpNetworkTransactionTest, SOCKS5_SSL_GET) {
+TEST_P(HttpNetworkTransactionTest, SOCKS5SSLGET) {
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("https://www.example.org/");
@@ -19767,7 +19767,7 @@ TEST_P(HttpNetworkTransactionTest, SSLWriteCertError) {
 //  2) TLS False Start is disabled.
 //  3) The initial TLS handshake requests a client certificate.
 //  4) The client supplies an invalid/unacceptable certificate.
-TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_NoFalseStart) {
+TEST_P(HttpNetworkTransactionTest, ClientAuthCertCacheDirectNoFalseStart) {
   HttpRequestInfo request_info;
   request_info.url = GURL("https://www.example.com/");
   request_info.method = "GET";
@@ -19858,7 +19858,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_NoFalseStart) {
 //  2) TLS False Start is enabled.
 //  3) The initial TLS handshake requests a client certificate.
 //  4) The client supplies an invalid/unacceptable certificate.
-TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
+TEST_P(HttpNetworkTransactionTest, ClientAuthCertCacheDirectFalseStart) {
   HttpRequestInfo request_info;
   request_info.url = GURL("https://www.example.com/");
   request_info.method = "GET";
@@ -19976,7 +19976,7 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Direct_FalseStart) {
 //  3) The HTTPS proxy requests a client certificate.
 //  4) The client supplies an invalid/unacceptable certificate for the
 //     proxy.
-TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
+TEST_P(HttpNetworkTransactionTest, ClientAuthCertCacheProxyFail) {
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://proxy:70", TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -27748,7 +27748,7 @@ TEST_P(HttpNetworkTransactionTest, RequestWithNoAdditionalDnsAliases) {
 }
 
 // Test behavior of SetProxyInfoInResponse with a direct connection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponseDirect) {
   ProxyInfo proxy_info;
   proxy_info.UseDirect();
   HttpResponseInfo response_info;
@@ -27759,7 +27759,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
 }
 
 // Test behavior of SetProxyInfoInResponse with a proxied connection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponseProxied) {
   ProxyInfo proxy_info;
   ProxyChain proxy_chain =
       ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS, "prx", 443);
@@ -27772,7 +27772,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
 }
 
 // Test behavior of SetProxyInfoInResponse with an empty ProxyInfo.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponseEmpty) {
   ProxyInfo empty_proxy_info;
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(empty_proxy_info,
@@ -27784,7 +27784,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
 
 // Test behavior of SetProxyInfoInResponse with a proxied connection for IP
 // protection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionProxied) {
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponseIpProtectionProxied) {
   ProxyInfo proxy_info;
   ProxyChain ip_protection_proxy_chain =
       ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -27799,7 +27799,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionProxied) {
 
 // Test behavior of SetProxyInfoInResponse with a direct connection for IP
 // protection.
-TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtectionDirect) {
+TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponseIpProtectionDirect) {
   ProxyInfo proxy_info;
   const ProxyChain kIpProtectionDirectChain = ProxyChain::ForIpProtection({});
   proxy_info.UseProxyChain(kIpProtectionDirectChain);

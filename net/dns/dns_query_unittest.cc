@@ -156,7 +156,7 @@ TEST(DnsQueryTest, Block128Padding) {
   EXPECT_EQ(parsed_query.qtype(), dns_protocol::kTypeAAAA);
 }
 
-TEST(DnsQueryTest, Block128Padding_LongName) {
+TEST(DnsQueryTest, Block128PaddingLongName) {
   std::optional<std::vector<uint8_t>> qname =
       dns_names_util::DottedNameToNetwork(
           "really.long.domain.name.that.will.push.us.past.the.128.byte.block."

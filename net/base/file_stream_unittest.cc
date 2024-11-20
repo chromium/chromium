@@ -222,7 +222,7 @@ TEST_F(FileStreamTest, Read) {
   EXPECT_EQ(kTestData, data_read);
 }
 
-TEST_F(FileStreamTest, Read_EarlyDelete) {
+TEST_F(FileStreamTest, ReadEarlyDelete) {
   std::optional<int64_t> file_size = base::GetFileSize(temp_file_path());
   ASSERT_TRUE(file_size.has_value());
 
@@ -249,7 +249,7 @@ TEST_F(FileStreamTest, Read_EarlyDelete) {
   }
 }
 
-TEST_F(FileStreamTest, Read_FromOffset) {
+TEST_F(FileStreamTest, ReadFromOffset) {
   std::optional<int64_t> file_size = base::GetFileSize(temp_file_path());
   ASSERT_TRUE(file_size.has_value());
 
@@ -312,7 +312,7 @@ TEST_F(FileStreamTest, Write) {
   EXPECT_EQ(kTestData, data_read);
 }
 
-TEST_F(FileStreamTest, Write_EarlyDelete) {
+TEST_F(FileStreamTest, WriteEarlyDelete) {
   auto stream = std::make_unique<FileStream>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
@@ -341,7 +341,7 @@ TEST_F(FileStreamTest, Write_EarlyDelete) {
   }
 }
 
-TEST_F(FileStreamTest, Write_FromOffset) {
+TEST_F(FileStreamTest, WriteFromOffset) {
   std::optional<int64_t> file_size = base::GetFileSize(temp_file_path());
   ASSERT_TRUE(file_size.has_value());
 

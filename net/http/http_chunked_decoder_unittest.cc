@@ -127,7 +127,7 @@ TEST(HttpChunkedDecoderTest, Incremental2) {
   RunTest(inputs, std::size(inputs), "hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, LF_InsteadOf_CRLF) {
+TEST(HttpChunkedDecoderTest, LFInsteadOfCRLF) {
   // Compatibility: [RFC 7230 - Invalid]
   // {Firefox3} - Valid
   // {IE7, Safari3.1, Opera9.51} - Invalid
@@ -168,7 +168,7 @@ TEST(HttpChunkedDecoderTest, TrailersUnfinished) {
   RunTest(inputs, std::size(inputs), "hello", false, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TooBig) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeTooBig) {
   const char* const inputs[] = {
     // This chunked body is not terminated.
     // However we will fail decoding because the chunk-size
@@ -179,7 +179,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TooBig) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_0X) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSize0X) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {Safari3.1, IE7} - Invalid
@@ -190,7 +190,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_0X) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, ChunkSize_TrailingSpace) {
+TEST(HttpChunkedDecoderTest, ChunkSizeTrailingSpace) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {IE7, Safari3.1, Firefox3, Opera 9.51} - Valid
@@ -202,7 +202,7 @@ TEST(HttpChunkedDecoderTest, ChunkSize_TrailingSpace) {
   RunTest(inputs, std::size(inputs), "hello", true, 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingTab) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeTrailingTab) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {IE7, Safari3.1, Firefox3, Opera 9.51} - Valid
@@ -212,7 +212,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingTab) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingFormFeed) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeTrailingFormFeed) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230- Invalid]:
     // {Safari3.1} - Invalid
@@ -223,7 +223,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingFormFeed) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingVerticalTab) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeTrailingVerticalTab) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {Safari 3.1} - Invalid
@@ -234,7 +234,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingVerticalTab) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingNonHexDigit) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeTrailingNonHexDigit) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {Safari 3.1} - Invalid
@@ -245,7 +245,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_TrailingNonHexDigit) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_LeadingSpace) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeLeadingSpace) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {IE7} - Invalid
@@ -264,7 +264,7 @@ TEST(HttpChunkedDecoderTest, InvalidLeadingSeparator) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_NoSeparator) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeNoSeparator) {
   const char* const inputs[] = {
     "5\r\nhello",
     "1\r\n \r\n",
@@ -273,7 +273,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_NoSeparator) {
   RunTestUntilFailure(inputs, std::size(inputs), 1);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_Negative) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizeNegative) {
   const char* const inputs[] = {
     "8\r\n12345678\r\n-5\r\nhello\r\n",
     "0\r\n\r\n"
@@ -281,7 +281,7 @@ TEST(HttpChunkedDecoderTest, InvalidChunkSize_Negative) {
   RunTestUntilFailure(inputs, std::size(inputs), 0);
 }
 
-TEST(HttpChunkedDecoderTest, InvalidChunkSize_Plus) {
+TEST(HttpChunkedDecoderTest, InvalidChunkSizePlus) {
   const char* const inputs[] = {
     // Compatibility [RFC 7230 - Invalid]:
     // {IE7, Safari 3.1} - Invalid

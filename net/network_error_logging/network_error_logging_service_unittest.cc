@@ -1280,7 +1280,7 @@ TEST_P(NetworkErrorLoggingServiceTest, InvalidHeaderData) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, "0");
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, NoReportingService_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, NoReportingServiceSignedExchange) {
   service_ = NetworkErrorLoggingService::Create(store_.get());
 
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeader_);
@@ -1293,7 +1293,7 @@ TEST_P(NetworkErrorLoggingServiceTest, NoReportingService_SignedExchange) {
       kNak_, false, "sxg.failed", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, NoPolicyForOrigin_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, NoPolicyForOriginSignedExchange) {
   service()->QueueSignedExchangeReport(MakeSignedExchangeReportDetails(
       kNak_, false, "sxg.failed", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
 
@@ -1303,7 +1303,7 @@ TEST_P(NetworkErrorLoggingServiceTest, NoPolicyForOrigin_SignedExchange) {
   EXPECT_TRUE(reports().empty());
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, SuccessFraction0_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, SuccessFraction0SignedExchange) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderSuccessFraction0_);
 
   // Make the rest of the test run synchronously.
@@ -1320,7 +1320,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessFraction0_SignedExchange) {
   EXPECT_TRUE(reports().empty());
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueuedSignedExchange) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderSuccessFraction1_);
 
   // Make the rest of the test run synchronously.
@@ -1374,7 +1374,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
       sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueuedSignedExchange) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeader_);
 
   // Make the rest of the test run synchronously.
@@ -1428,7 +1428,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
       sxg_body->Find(NetworkErrorLoggingService::kCertUrlKey)->GetList()[0]);
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomain_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomainSignedExchange) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeaderIncludeSubdomains_);
 
   // Make the rest of the test run synchronously.
@@ -1440,7 +1440,7 @@ TEST_P(NetworkErrorLoggingServiceTest, MismatchingSubdomain_SignedExchange) {
   EXPECT_TRUE(reports().empty());
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, MismatchingIPAddress_SignedExchange) {
+TEST_P(NetworkErrorLoggingServiceTest, MismatchingIPAddressSignedExchange) {
   service()->OnHeader(kNak_, kOrigin_, kServerIP_, kHeader_);
 
   // Make the rest of the test run synchronously.

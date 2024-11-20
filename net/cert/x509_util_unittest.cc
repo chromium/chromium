@@ -154,7 +154,7 @@ TEST(X509UtilTest, CreateSelfSigned) {
 // This is a test case based on
 // http://blogs.msdn.com/b/openspecification/archive/2013/03/26/ntlm-and-channel-binding-hash-aka-exteneded-protection-for-authentication.aspx
 // There doesn't seem to be too many public test vectors for channel bindings.
-TEST(X509UtilTest, CreateChannelBindings_SHA1) {
+TEST(X509UtilTest, CreateChannelBindingsSHA1) {
   // Certificate:
   //     Data:
   //         Version: 3 (0x2)
@@ -230,7 +230,7 @@ TEST(X509UtilTest, CreateChannelBindings_SHA1) {
   EXPECT_EQ(expected_channel_bindings, channel_bindings);
 }
 
-TEST(X509UtilTest, CreateChannelBindings_SHA256) {
+TEST(X509UtilTest, CreateChannelBindingsSHA256) {
   // Certificate:
   //  Data:
   //      Version: 3 (0x2)
@@ -338,7 +338,7 @@ TEST(X509UtilTest, CreateChannelBindings_SHA256) {
   EXPECT_EQ(expected_channel_bindings, channel_bindings);
 }
 
-TEST(X509UtilTest, CreateChannelBindings_SHA384) {
+TEST(X509UtilTest, CreateChannelBindingsSHA384) {
   // Certificate:
   //  Data:
   //      Version: 3 (0x2)
@@ -454,7 +454,7 @@ TEST(X509UtilTest, CreateChannelBindings_SHA384) {
   EXPECT_EQ(expected_channel_bindings, channel_bindings);
 }
 
-TEST(X509UtilTest, CreateChannelBindings_SHA512) {
+TEST(X509UtilTest, CreateChannelBindingsSHA512) {
   // Certificate:
   //  Data:
   //      Version: 3 (0x2)
@@ -565,7 +565,7 @@ TEST(X509UtilTest, CreateChannelBindings_SHA512) {
   EXPECT_EQ(expected_channel_bindings, channel_bindings);
 }
 
-TEST(X509UtilTest, CreateChannelBindings_Unsupported_MD4) {
+TEST(X509UtilTest, CreateChannelBindingsUnsupportedMD4) {
   // Certificate:
   //  Data:
   //      Version: 3 (0x2)

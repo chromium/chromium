@@ -8,7 +8,7 @@
 
 namespace disk_cache {
 
-TEST_F(DiskCacheTest, CacheAddr_Size) {
+TEST_F(DiskCacheTest, CacheAddrSize) {
   Addr addr1(0);
   EXPECT_FALSE(addr1.is_initialized());
 
@@ -16,7 +16,7 @@ TEST_F(DiskCacheTest, CacheAddr_Size) {
   EXPECT_EQ(sizeof(uint32_t), sizeof(addr1));
 }
 
-TEST_F(DiskCacheTest, CacheAddr_ValidValues) {
+TEST_F(DiskCacheTest, CacheAddrValidValues) {
   Addr addr2(BLOCK_1K, 3, 5, 25);
   EXPECT_EQ(BLOCK_1K, addr2.file_type());
   EXPECT_EQ(3, addr2.num_blocks());
@@ -25,7 +25,7 @@ TEST_F(DiskCacheTest, CacheAddr_ValidValues) {
   EXPECT_EQ(1024, addr2.BlockSize());
 }
 
-TEST_F(DiskCacheTest, CacheAddr_InvalidValues) {
+TEST_F(DiskCacheTest, CacheAddrInvalidValues) {
   Addr addr3(BLOCK_4K, 0x44, 0x41508, 0x952536);
   EXPECT_EQ(BLOCK_4K, addr3.file_type());
   EXPECT_EQ(4, addr3.num_blocks());
@@ -34,7 +34,7 @@ TEST_F(DiskCacheTest, CacheAddr_InvalidValues) {
   EXPECT_EQ(4096, addr3.BlockSize());
 }
 
-TEST_F(DiskCacheTest, CacheAddr_SanityCheck) {
+TEST_F(DiskCacheTest, CacheAddrSanityCheck) {
   // First a few valid values.
   EXPECT_TRUE(Addr(0).SanityCheck());
   EXPECT_TRUE(Addr(0x80001000).SanityCheck());

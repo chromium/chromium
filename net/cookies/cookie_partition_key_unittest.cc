@@ -391,7 +391,7 @@ TEST_P(CookiePartitionKeyTest, Equality) {
             CookiePartitionKey::FromURLForTesting(GURL("https://b.foo.com")));
 }
 
-TEST_P(CookiePartitionKeyTest, Equality_WithAncestorChain) {
+TEST_P(CookiePartitionKeyTest, EqualityWithAncestorChain) {
   CookiePartitionKey key1 = CookiePartitionKey::FromURLForTesting(
       GURL("https://foo.com"), kSameSite, std::nullopt);
   CookiePartitionKey key2 = CookiePartitionKey::FromURLForTesting(
@@ -402,7 +402,7 @@ TEST_P(CookiePartitionKeyTest, Equality_WithAncestorChain) {
                       GURL("https://foo.com"), kSameSite, std::nullopt));
 }
 
-TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
+TEST_P(CookiePartitionKeyTest, EqualityWithNonce) {
   SchemefulSite top_level_site =
       SchemefulSite(GURL("https://toplevelsite.com"));
   SchemefulSite frame_site = SchemefulSite(GURL("https://cookiesite.com"));

@@ -1256,7 +1256,7 @@ TEST_F(DnsTransactionTest, NoDomain) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTestWithMockTime, Timeout_FastTimeout) {
+TEST_F(DnsTransactionTestWithMockTime, TimeoutFastTimeout) {
   config_.attempts = 3;
   ConfigureFactory();
 
@@ -1574,7 +1574,7 @@ TEST_F(DnsTransactionTest, ConnectFailure) {
   EXPECT_FALSE(session_->udp_tracker()->low_entropy());
 }
 
-TEST_F(DnsTransactionTest, ConnectFailure_SocketLimitReached) {
+TEST_F(DnsTransactionTest, ConnectFailureSocketLimitReached) {
   // Prep socket factory for a single socket with connection failure.
   MockConnect connect_data;
   connect_data.result = ERR_INSUFFICIENT_RESOURCES;
@@ -2101,7 +2101,7 @@ TEST_F(DnsTransactionTest, HttpsNotAvailableThenHttpFallback) {
 }
 
 // Fail first DoH server, then no fallbacks marked available in AUTOMATIC mode.
-TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailable_Automatic) {
+TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailableAutomatic) {
   config_.secure_dns_mode = SecureDnsMode::kAutomatic;
   ConfigureDohServers(true /* use_post */, 3 /* num_doh_servers */,
                       false /* make_available */);
@@ -2148,7 +2148,7 @@ TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailable_Automatic) {
 
 // Test a secure transaction failure in SECURE mode when other DoH servers are
 // only available for fallback because of
-TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailable_Secure) {
+TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailableSecure) {
   config_.secure_dns_mode = SecureDnsMode::kSecure;
   ConfigureDohServers(true /* use_post */, 3 /* num_doh_servers */,
                       false /* make_available */);
@@ -2206,7 +2206,7 @@ TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailable_Secure) {
   }
 }
 
-TEST_F(DnsTransactionTest, MaxHttpsFailures_NonConsecutive) {
+TEST_F(DnsTransactionTest, MaxHttpsFailuresNonConsecutive) {
   config_.attempts = 1;
   ConfigureDohServers(false /* use_post */);
   {
@@ -2276,7 +2276,7 @@ TEST_F(DnsTransactionTest, MaxHttpsFailures_NonConsecutive) {
   }
 }
 
-TEST_F(DnsTransactionTest, MaxHttpsFailures_Consecutive) {
+TEST_F(DnsTransactionTest, MaxHttpsFailuresConsecutive) {
   config_.attempts = 1;
   ConfigureDohServers(false /* use_post */);
   {
@@ -2643,7 +2643,7 @@ TEST_F(DnsTransactionTest, HttpsPostLookupWithLog) {
 
 // Test for when a slow DoH response is delayed until after the initial fallback
 // period (but succeeds before the full timeout period).
-TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponse_SingleAttempt) {
+TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponseSingleAttempt) {
   config_.doh_attempts = 1;
   ConfigureDohServers(false /* use_post */);
 
@@ -2711,7 +2711,7 @@ TEST_F(DnsTransactionTestWithMockTime,
 
 // Test for when a slow DoH response is delayed until after the initial fallback
 // period but a retry is configured.
-TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponse_TwoAttempts) {
+TEST_F(DnsTransactionTestWithMockTime, SlowHttpsResponseTwoAttempts) {
   config_.doh_attempts = 2;
   ConfigureDohServers(false /* use_post */);
 
@@ -2929,7 +2929,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails) {
 
 // Test for when the last of multiple HTTPS attempts fails (SERVFAIL), and a
 // previous attempt never completes.
-TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_Timeout) {
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsTimeout) {
   config_.doh_attempts = 2;
   ConfigureDohServers(false /* use_post */);
 
@@ -2978,7 +2978,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_Timeout) {
 
 // Test for when the last of multiple HTTPS attempts fails (SERVFAIL) before
 // a previous attempt can complete, but fast timeouts is enabled.
-TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFails_FastTimeout) {
+TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsFastTimeout) {
   config_.doh_attempts = 2;
   ConfigureDohServers(false /* use_post */);
 
@@ -3075,7 +3075,7 @@ TEST_F(DnsTransactionTestWithMockTime, LastHttpsAttemptFailsLast) {
   helper.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, TcpLookup_UdpRetry) {
+TEST_F(DnsTransactionTest, TcpLookupUdpRetry) {
   AddAsyncQueryAndRcode(kT0HostName, kT0Qtype,
                         dns_protocol::kRcodeNOERROR | dns_protocol::kFlagTC);
   AddQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype, kT0ResponseDatagram,
@@ -3087,7 +3087,7 @@ TEST_F(DnsTransactionTest, TcpLookup_UdpRetry) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTest, TcpLookup_UdpRetry_WithLog) {
+TEST_F(DnsTransactionTest, TcpLookupUdpRetryWithLog) {
   AddAsyncQueryAndRcode(kT0HostName, kT0Qtype,
                         dns_protocol::kRcodeNOERROR | dns_protocol::kFlagTC);
   AddQueryAndResponse(0 /* id */, kT0HostName, kT0Qtype, kT0ResponseDatagram,
@@ -3103,7 +3103,7 @@ TEST_F(DnsTransactionTest, TcpLookup_UdpRetry_WithLog) {
   EXPECT_EQ(observer.dict_count(), 7);
 }
 
-TEST_F(DnsTransactionTest, TcpLookup_LowEntropy) {
+TEST_F(DnsTransactionTest, TcpLookupLowEntropy) {
   socket_factory_->diverse_source_ports_ = false;
 
   for (int i = 0; i <= DnsUdpTracker::kPortReuseThreshold; ++i) {
@@ -3165,7 +3165,7 @@ TEST_F(DnsTransactionTest, TCPMalformed) {
   helper0.RunUntilComplete();
 }
 
-TEST_F(DnsTransactionTestWithMockTime, TcpTimeout_UdpRetry) {
+TEST_F(DnsTransactionTestWithMockTime, TcpTimeoutUdpRetry) {
   ConfigureFactory();
   AddAsyncQueryAndRcode(kT0HostName, kT0Qtype,
                         dns_protocol::kRcodeNOERROR | dns_protocol::kFlagTC);
@@ -3181,7 +3181,7 @@ TEST_F(DnsTransactionTestWithMockTime, TcpTimeout_UdpRetry) {
   EXPECT_TRUE(helper0.has_completed());
 }
 
-TEST_F(DnsTransactionTestWithMockTime, TcpTimeout_LowEntropy) {
+TEST_F(DnsTransactionTestWithMockTime, TcpTimeoutLowEntropy) {
   ConfigureFactory();
   socket_factory_->diverse_source_ports_ = false;
 
@@ -3719,7 +3719,7 @@ TEST_F(DnsTransactionTestWithMockTime, MultipleProbeRunners) {
   EXPECT_EQ(runner2->GetDelayUntilNextProbeForTest(0), base::TimeDelta());
 }
 
-TEST_F(DnsTransactionTestWithMockTime, MultipleProbeRunners_SeparateContexts) {
+TEST_F(DnsTransactionTestWithMockTime, MultipleProbeRunnersSeparateContexts) {
   // Each RequestContext uses its own transient IsolationInfo. Since there's
   // typically only one RequestContext per URLRequestContext, there's no
   // advantage in using the same IsolationInfo across RequestContexts.
@@ -3956,7 +3956,7 @@ TEST_F(DnsTransactionTestWithMockTime, CancelAllOfMultipleProbeRunners) {
   EXPECT_FALSE(doh_itr->AttemptAvailable());
 }
 
-TEST_F(DnsTransactionTestWithMockTime, CancelDohProbe_AfterSuccess) {
+TEST_F(DnsTransactionTestWithMockTime, CancelDohProbeAfterSuccess) {
   ConfigureDohServers(true /* use_post */, 1 /* num_doh_servers */,
                       false /* make_available */);
   AddQueryAndResponse(0 /* id */, kT4HostName, kT4Qtype, kT4ResponseDatagram,

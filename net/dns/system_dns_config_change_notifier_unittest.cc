@@ -136,7 +136,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification) {
   notifier_->RemoveObserver(&observer);
 }
 
-TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification_Multiple) {
+TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotificationMultiple) {
   TestObserver observer;
 
   notifier_->AddObserver(&observer);
@@ -176,7 +176,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveInitialNotification) {
 
 // If multiple configs have been read before adding an Observer, should notify
 // it only of the most recent.
-TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveInitialNotification_Multiple) {
+TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveInitialNotificationMultiple) {
   LoadConfig(kConfig);
   LoadConfig(kConfig2, true /* already_loaded */);
 
@@ -256,7 +256,7 @@ TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig) {
 
 // All invalid configs are considered the same for notifications, so only expect
 // a single notification on multiple config invalidations.
-TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfig_Multiple) {
+TEST_F(SystemDnsConfigChangeNotifierTest, UnloadedConfigMultiple) {
   LoadConfig(kConfig);
 
   TestObserver observer;

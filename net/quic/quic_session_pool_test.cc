@@ -6594,7 +6594,7 @@ void QuicSessionPoolTest::TestSimplePortMigrationOnPathDegrading() {
   quic_data2.ExpectAllWriteDataConsumed();
 }
 
-TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
+TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimitIQUICStyle) {
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 

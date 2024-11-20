@@ -2082,7 +2082,7 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
 
 // Test that cookies are annotated with the appropriate exclusion reason when
 // privacy mode is enabled.
-TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
+TEST_F(URLRequestHttpJobTest, PrivacyModeExclusionReason) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 

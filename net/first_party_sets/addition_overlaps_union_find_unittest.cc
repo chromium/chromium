@@ -14,12 +14,12 @@ TEST(AdditionOverlapsUnionFindUnittest, InvalidNumSets) {
   EXPECT_CHECK_DEATH(AdditionOverlapsUnionFind(-1));
 }
 
-TEST(AdditionOverlapsUnionFindUnittest, EmptyUnionFind_Union_BoundsCheckFails) {
+TEST(AdditionOverlapsUnionFindUnittest, EmptyUnionFindUnionBoundsCheckFails) {
   AdditionOverlapsUnionFind union_find(0);
   EXPECT_CHECK_DEATH(union_find.Union(0, 0));
 }
 
-TEST(AdditionOverlapsUnionFindUnittest, Union_BoundsCheckFails) {
+TEST(AdditionOverlapsUnionFindUnittest, UnionBoundsCheckFails) {
   AdditionOverlapsUnionFind union_find(3);
 
   // Test lower bound of [0, |num_sets|)
@@ -37,7 +37,7 @@ TEST(AdditionOverlapsUnionFindUnittest, SetsAreTheirInitRepresentatives) {
       AdditionOverlapsUnionFind::SetsMap({{0, {}}, {1, {}}, {2, {}}, {3, {}}}));
 }
 
-TEST(AdditionOverlapsUnionFindUnittest, Union_ChoosesLesserSetIndex) {
+TEST(AdditionOverlapsUnionFindUnittest, UnionChoosesLesserSetIndex) {
   AdditionOverlapsUnionFind union_find(3);
 
   union_find.Union(1, 2);
@@ -50,7 +50,7 @@ TEST(AdditionOverlapsUnionFindUnittest, Union_ChoosesLesserSetIndex) {
                                         }));
 }
 
-TEST(AdditionOverlapsUnionFindUnittest, Union_NoOp_SameSet) {
+TEST(AdditionOverlapsUnionFindUnittest, UnionNoOpSameSet) {
   AdditionOverlapsUnionFind uf(4);
   for (int i = 0; i < 4; i++) {
     uf.Union(i, i);
@@ -60,7 +60,7 @@ TEST(AdditionOverlapsUnionFindUnittest, Union_NoOp_SameSet) {
       AdditionOverlapsUnionFind::SetsMap({{0, {}}, {1, {}}, {2, {}}, {3, {}}}));
 }
 
-TEST(AdditionOverlapsUnionFindUnittest, Union_NoOp_SharedRepresentative) {
+TEST(AdditionOverlapsUnionFindUnittest, UnionNoOpSharedRepresentative) {
   AdditionOverlapsUnionFind union_find(4);
 
   union_find.Union(0, 2);

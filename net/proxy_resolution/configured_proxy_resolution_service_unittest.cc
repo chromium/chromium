@@ -999,7 +999,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PAC) {
 
 // Test that the proxy resolver does not see the URL's username/password
 // or its reference section.
-TEST_F(ConfiguredProxyResolutionServiceTest, PAC_NoIdentityOrHash) {
+TEST_F(ConfiguredProxyResolutionServiceTest, PACNoIdentityOrHash) {
   auto config_service =
       std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
 
@@ -1034,7 +1034,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PAC_NoIdentityOrHash) {
   // ConfiguredProxyResolutionService will cancel the outstanding request.
 }
 
-TEST_F(ConfiguredProxyResolutionServiceTest, PAC_FailoverWithoutDirect) {
+TEST_F(ConfiguredProxyResolutionServiceTest, PACFailoverWithoutDirect) {
   auto config_service =
       std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
   MockAsyncProxyResolver resolver;
@@ -1083,7 +1083,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PAC_FailoverWithoutDirect) {
 
 // Test that if the execution of the PAC script fails (i.e. javascript runtime
 // error), and the PAC settings are non-mandatory, that we fall-back to direct.
-TEST_F(ConfiguredProxyResolutionServiceTest, PAC_RuntimeError) {
+TEST_F(ConfiguredProxyResolutionServiceTest, PACRuntimeError) {
   auto config_service =
       std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
   MockAsyncProxyResolver resolver;
@@ -1142,7 +1142,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PAC_RuntimeError) {
 //
 // The important check of this test is to make sure that DIRECT is not somehow
 // cached as being a bad proxy.
-TEST_F(ConfiguredProxyResolutionServiceTest, PAC_FailoverAfterDirect) {
+TEST_F(ConfiguredProxyResolutionServiceTest, PACFailoverAfterDirect) {
   auto config_service =
       std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
   MockAsyncProxyResolver resolver;
@@ -1197,7 +1197,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, PAC_FailoverAfterDirect) {
   EXPECT_TRUE(info.is_empty());
 }
 
-TEST_F(ConfiguredProxyResolutionServiceTest, PAC_ConfigSourcePropagates) {
+TEST_F(ConfiguredProxyResolutionServiceTest, PACConfigSourcePropagates) {
   // Test whether the ProxyConfigSource set by the ProxyConfigService is applied
   // to ProxyInfo after the proxy is resolved via a PAC script.
   ProxyConfig config =
@@ -1832,7 +1832,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallbackToDirect) {
   EXPECT_FALSE(info.Fallback(ERR_PROXY_CONNECTION_FAILED, NetLogWithSource()));
 }
 
-TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback_BadConfig) {
+TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallbackBadConfig) {
   // Test proxy failover when the configuration is bad.
 
   auto config_service =
@@ -1937,7 +1937,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback_BadConfig) {
   EXPECT_EQ(3, delegate.num_resolve_proxy_called());
 }
 
-TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback_BadConfigMandatory) {
+TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallbackBadConfigMandatory) {
   // Test proxy failover when the configuration is bad.
 
   ProxyConfig config(

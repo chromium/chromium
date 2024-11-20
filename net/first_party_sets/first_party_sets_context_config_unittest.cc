@@ -24,13 +24,13 @@ MATCHER_P(OverridesTo, entry, "") {
 
 namespace net {
 
-TEST(FirstPartySetsContextConfigTest, FindOverride_empty) {
+TEST(FirstPartySetsContextConfigTest, FindOverrideEmpty) {
   EXPECT_EQ(FirstPartySetsContextConfig().FindOverride(
                 SchemefulSite(GURL("https://example.test"))),
             std::nullopt);
 }
 
-TEST(FirstPartySetsContextConfigTest, FindOverride_irrelevant) {
+TEST(FirstPartySetsContextConfigTest, FindOverrideIrrelevant) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
   SchemefulSite foo(GURL("https://foo.test"));
@@ -41,7 +41,7 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_irrelevant) {
             std::nullopt);
 }
 
-TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
+TEST(FirstPartySetsContextConfigTest, FindOverrideDeletion) {
   SchemefulSite example(GURL("https://example.test"));
 
   EXPECT_THAT(
@@ -50,7 +50,7 @@ TEST(FirstPartySetsContextConfigTest, FindOverride_deletion) {
       Optional(FirstPartySetEntryOverride()));
 }
 
-TEST(FirstPartySetsContextConfigTest, FindOverride_modification) {
+TEST(FirstPartySetsContextConfigTest, FindOverrideModification) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, std::nullopt);
 
@@ -70,7 +70,7 @@ TEST(FirstPartySetsContextConfigTest, Contains) {
   EXPECT_FALSE(config.Contains(decoy));
 }
 
-TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_FullIteration) {
+TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntryFullIteration) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite foo(GURL("https://foo.test"));
 
@@ -87,7 +87,7 @@ TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_FullIteration) {
   EXPECT_EQ(count, 2);
 }
 
-TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntry_EarlyReturn) {
+TEST(FirstPartySetsContextConfigTest, ForEachCustomizationEntryEarlyReturn) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite foo(GURL("https://foo.test"));
 

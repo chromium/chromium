@@ -1619,7 +1619,7 @@ TEST_P(SSLClientSocketReadTest, Read) {
 
 // Tests that SSLClientSocket properly handles when the underlying transport
 // synchronously fails a transport write in during the handshake.
-TEST_F(SSLClientSocketTest, Connect_WithSynchronousError) {
+TEST_F(SSLClientSocketTest, ConnectWithSynchronousError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
@@ -1646,7 +1646,7 @@ TEST_F(SSLClientSocketTest, Connect_WithSynchronousError) {
 // synchronously returns an error code - such as if an intermediary terminates
 // the socket connection uncleanly.
 // This is a regression test for http://crbug.com/238536
-TEST_P(SSLClientSocketReadTest, Read_WithSynchronousError) {
+TEST_P(SSLClientSocketReadTest, ReadWithSynchronousError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1696,7 +1696,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithSynchronousError) {
 // asynchronously returns an error code while writing data - such as if an
 // intermediary terminates the socket connection uncleanly.
 // This is a regression test for http://crbug.com/249848
-TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousError) {
+TEST_P(SSLClientSocketVersionTest, WriteWithSynchronousError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1761,7 +1761,7 @@ TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousError) {
 // the write error will not be returned to the client until a future Read or
 // Write operation, SSLClientSocket should not spin attempting to re-write on
 // the socket. This is a regression test for part of https://crbug.com/381160.
-TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousErrorNoRead) {
+TEST_P(SSLClientSocketVersionTest, WriteWithSynchronousErrorNoRead) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, SSLServerConfig()));
 
@@ -1819,7 +1819,7 @@ TEST_P(SSLClientSocketVersionTest, Write_WithSynchronousErrorNoRead) {
 
 // Test the full duplex mode, with Read and Write pending at the same time.
 // This test also serves as a regression test for http://crbug.com/29815.
-TEST_P(SSLClientSocketReadTest, Read_FullDuplex) {
+TEST_P(SSLClientSocketReadTest, ReadFullDuplex) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1862,7 +1862,7 @@ TEST_P(SSLClientSocketReadTest, Read_FullDuplex) {
 // Read() and Write() callbacks. If the socket is deleted by the Read()
 // callback, the Write() callback should not be invoked.
 // Regression test for http://crbug.com/232633
-TEST_P(SSLClientSocketReadTest, Read_DeleteWhilePendingFullDuplex) {
+TEST_P(SSLClientSocketReadTest, ReadDeleteWhilePendingFullDuplex) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -1946,7 +1946,7 @@ TEST_P(SSLClientSocketReadTest, Read_DeleteWhilePendingFullDuplex) {
 // transport socket after a failing write. This can occur if we have a Write
 // error in a SPDY socket.
 // Regression test for http://crbug.com/335557
-TEST_P(SSLClientSocketReadTest, Read_WithWriteError) {
+TEST_P(SSLClientSocketReadTest, ReadWithWriteError) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2033,7 +2033,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithWriteError) {
 
 // Tests that SSLClientSocket fails the handshake if the underlying
 // transport is cleanly closed.
-TEST_F(SSLClientSocketTest, Connect_WithZeroReturn) {
+TEST_F(SSLClientSocketTest, ConnectWithZeroReturn) {
   // There is no need to vary by TLS version because this test never reads a
   // response from the server.
   ASSERT_TRUE(
@@ -2061,7 +2061,7 @@ TEST_F(SSLClientSocketTest, Connect_WithZeroReturn) {
 // Tests that SSLClientSocket returns a Read of size 0 if the underlying socket
 // is cleanly closed, but the peer does not send close_notify.
 // This is a regression test for https://crbug.com/422246
-TEST_P(SSLClientSocketReadTest, Read_WithZeroReturn) {
+TEST_P(SSLClientSocketReadTest, ReadWithZeroReturn) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2092,7 +2092,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithZeroReturn) {
 // Tests that SSLClientSocket cleanly returns a Read of size 0 if the
 // underlying socket is cleanly closed asynchronously.
 // This is a regression test for https://crbug.com/422246
-TEST_P(SSLClientSocketReadTest, Read_WithAsyncZeroReturn) {
+TEST_P(SSLClientSocketReadTest, ReadWithAsyncZeroReturn) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2131,7 +2131,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithAsyncZeroReturn) {
 
 // Tests that fatal alerts from the peer are processed. This is a regression
 // test for https://crbug.com/466303.
-TEST_P(SSLClientSocketReadTest, Read_WithFatalAlert) {
+TEST_P(SSLClientSocketReadTest, ReadWithFatalAlert) {
   SSLServerConfig server_config = GetServerConfig();
   server_config.alert_after_handshake_for_testing = SSL_AD_INTERNAL_ERROR;
   ASSERT_TRUE(
@@ -2148,7 +2148,7 @@ TEST_P(SSLClientSocketReadTest, Read_WithFatalAlert) {
             ReadAndWaitForCompletion(sock_.get(), buf.get(), 4096));
 }
 
-TEST_P(SSLClientSocketReadTest, Read_SmallChunks) {
+TEST_P(SSLClientSocketReadTest, ReadSmallChunks) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2174,7 +2174,7 @@ TEST_P(SSLClientSocketReadTest, Read_SmallChunks) {
   } while (rv > 0);
 }
 
-TEST_P(SSLClientSocketReadTest, Read_ManySmallRecords) {
+TEST_P(SSLClientSocketReadTest, ReadManySmallRecords) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2224,7 +2224,7 @@ TEST_P(SSLClientSocketReadTest, Read_ManySmallRecords) {
   ASSERT_EQ(rv, 8192);
 }
 
-TEST_P(SSLClientSocketReadTest, Read_Interrupted) {
+TEST_P(SSLClientSocketReadTest, ReadInterrupted) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2249,7 +2249,7 @@ TEST_P(SSLClientSocketReadTest, Read_Interrupted) {
   EXPECT_GT(rv, 0);
 }
 
-TEST_P(SSLClientSocketReadTest, Read_FullLogging) {
+TEST_P(SSLClientSocketReadTest, ReadFullLogging) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
 
@@ -2937,7 +2937,7 @@ class FakePeerAddressSocket : public WrappedStreamSocket {
 
 }  // namespace
 
-TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
+TEST_F(SSLClientSocketTest, SessionResumptionRSA) {
   for (bool use_rsa : {false, true}) {
     SCOPED_TRACE(use_rsa);
 

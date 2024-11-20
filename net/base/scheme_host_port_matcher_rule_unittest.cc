@@ -225,7 +225,7 @@ TEST(SchemeHostPortMatcherRuleTest, SuffixMatchingTest) {
             suffix_matching_rule->Evaluate(GURL("http://foobaz")));
 }
 
-TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPHostRule_IPv4) {
+TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPHostRuleIPv4) {
   std::unique_ptr<SchemeHostPortMatcherRule> rule =
       SchemeHostPortMatcherRule::FromUntrimmedRawString("192.168.1.1");
 
@@ -288,7 +288,7 @@ TEST(SchemeHostPortMatcherRuleTest,
             rule->Evaluate(GURL("https://192.168.1.1")));
 }
 
-TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPHostRule_IPv6) {
+TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPHostRuleIPv6) {
   std::unique_ptr<SchemeHostPortMatcherRule> rule =
       SchemeHostPortMatcherRule::FromUntrimmedRawString(
           "[3ffe:2a00:100:7031:0:0::1]");
@@ -361,7 +361,7 @@ TEST(SchemeHostPortMatcherRuleTest,
             rule->Evaluate(GURL("ftp://[3ffe:2a00:100:7031::1]")));
 }
 
-TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPBlockRule_IPv4) {
+TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPBlockRuleIPv4) {
   std::unique_ptr<SchemeHostPortMatcherRule> rule =
       SchemeHostPortMatcherRule::FromUntrimmedRawString("192.168.1.1/16");
 
@@ -387,7 +387,7 @@ TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPBlockRule_IPv4) {
             rule->Evaluate(GURL("http://192.168.1.1.xx")));
 }
 
-TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPBlockRule_IPv6) {
+TEST(SchemeHostPortMatcherRuleTest, SchemeHostPortMatcherIPBlockRuleIPv6) {
   std::unique_ptr<SchemeHostPortMatcherRule> rule =
       SchemeHostPortMatcherRule::FromUntrimmedRawString("a:b:c:d::/48");
 
@@ -468,7 +468,7 @@ TEST(SchemeHostPortMatcherRuleTest, ParseInvalidPort) {
 // depending on the context, and here it is expected to be unbracketed to match
 // macOS. It would be fine to support bracketed too, however none of the
 // grammars we parse need that.
-TEST(SchemeHostPortMatcherRuleTest, ParseBracketedCIDR_IPv6) {
+TEST(SchemeHostPortMatcherRuleTest, ParseBracketedCIDRIPv6) {
   std::unique_ptr<SchemeHostPortMatcherRule> rule =
       SchemeHostPortMatcherRule::FromUntrimmedRawString("[a:b:c:d::]/48");
   EXPECT_EQ(nullptr, rule);
