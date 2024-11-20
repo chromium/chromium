@@ -156,7 +156,6 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     const webrtc::AudioProcessing::Config config =
         *audio_processor.GetAudioProcessingModuleConfigForTesting();
 
-    EXPECT_TRUE(config.high_pass_filter.enabled);
     EXPECT_FALSE(config.pre_amplifier.enabled);
     EXPECT_TRUE(config.echo_canceller.enabled);
 
@@ -803,19 +802,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
   properties.noise_suppression = true;
-  EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
-
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor =
-      CreateAudioProcessorWithProperties(properties);
-  EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
-}
-
-TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
-     TrueWhenHighpassFilterIsEnabled) {
-  test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
-  properties.goog_highpass_filter = true;
   EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
 
   scoped_refptr<MediaStreamAudioProcessor> audio_processor =

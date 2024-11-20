@@ -20,7 +20,6 @@ struct MEDIA_EXPORT AudioProcessingSettings {
   bool echo_cancellation = true;
   bool noise_suppression = true;
   bool automatic_gain_control = true;
-  bool high_pass_filter = true;
   // Multi-channel is not an individual audio effect, but determines whether the
   // processing algorithms should preserve multi-channel input audio.
   bool multi_channel_capture_processing = true;
@@ -29,7 +28,6 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     return echo_cancellation == b.echo_cancellation &&
            noise_suppression == b.noise_suppression &&
            automatic_gain_control == b.automatic_gain_control &&
-           high_pass_filter == b.high_pass_filter &&
            multi_channel_capture_processing ==
                b.multi_channel_capture_processing;
   }
@@ -43,7 +41,7 @@ struct MEDIA_EXPORT AudioProcessingSettings {
     }
 #endif
 
-    return noise_suppression || high_pass_filter;
+    return noise_suppression;
   }
 
   bool NeedAudioModification() const { return NeedWebrtcAudioProcessing(); }

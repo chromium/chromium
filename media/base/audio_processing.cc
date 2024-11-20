@@ -15,7 +15,6 @@ std::string AudioProcessingSettings::ToString() const {
       {"aec: ", bool_to_yes_no(echo_cancellation),
        ", ns: ", bool_to_yes_no(noise_suppression),
        ", gain control: ", bool_to_yes_no(automatic_gain_control),
-       ", high pass filter: ", bool_to_yes_no(high_pass_filter),
        ", multichannel capture processing: ",
        bool_to_yes_no(multi_channel_capture_processing)});
 }
