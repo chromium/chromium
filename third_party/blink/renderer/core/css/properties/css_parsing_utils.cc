@@ -2503,25 +2503,22 @@ static bool ConsumeDeprecatedGradientColorStop(
   {
     CSSParserTokenStream::BlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    double position;
     if (id == CSSValueID::kFrom || id == CSSValueID::kTo) {
-      position = (id == CSSValueID::kFrom) ? 0 : 1;
+      double position = (id == CSSValueID::kFrom) ? 0 : 1;
+      stop.offset_ = CSSNumericLiteralValue::Create(
+          position, CSSPrimitiveValue::UnitType::kNumber);
     } else {
       DCHECK(id == CSSValueID::kColorStop);
-      if (CSSPrimitiveValue* percent_value = ConsumePercent(
-              stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
-        position = percent_value->GetDoubleValue() / 100.0;
-      } else if (!ConsumeNumberRaw(stream, context, position)) {
+      stop.offset_ = ConsumeNumberOrPercent(
+          stream, context, CSSPrimitiveValue::ValueRange::kAll);
+      if (!stop.offset_) {
         return false;
       }
-
       if (!ConsumeCommaIncludingWhitespace(stream)) {
         return false;
       }
     }
 
-    stop.offset_ = CSSNumericLiteralValue::Create(
-        position, CSSPrimitiveValue::UnitType::kNumber);
     stop.color_ = ConsumeDeprecatedGradientStopColor(stream, context);
     if (!stream.AtEnd()) {
       return false;
