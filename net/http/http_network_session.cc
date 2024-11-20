@@ -426,6 +426,18 @@ CommonConnectJobParams HttpNetworkSession::CreateCommonConnectJobParams(
       &params_.ignore_certificate_errors, &params_.enable_early_data);
 }
 
+void HttpNetworkSession::ApplyTestingFixedPort(
+    url::SchemeHostPort& endpoint) const {
+  bool using_ssl = GURL::SchemeIsCryptographic(endpoint.scheme());
+  if (!using_ssl && params().testing_fixed_http_port != 0) {
+    endpoint = url::SchemeHostPort(endpoint.scheme(), endpoint.host(),
+                                   params().testing_fixed_http_port);
+  } else if (using_ssl && params().testing_fixed_https_port != 0) {
+    endpoint = url::SchemeHostPort(endpoint.scheme(), endpoint.host(),
+                                   params().testing_fixed_https_port);
+  }
+}
+
 ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
     SocketPoolType pool_type) {
   switch (pool_type) {

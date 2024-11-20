@@ -1495,8 +1495,10 @@ void HttpStreamFactory::JobController::SwitchToHttpStreamPool() {
 
   bool disable_cert_network_fetches =
       !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+  url::SchemeHostPort destination(origin_url_);
+  session_->ApplyTestingFixedPort(destination);
   HttpStreamPoolRequestInfo pool_request_info(
-      url::SchemeHostPort(origin_url_), request_info_.privacy_mode,
+      std::move(destination), request_info_.privacy_mode,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, disable_cert_network_fetches,
       alternative_service_info_, request_info_.is_http1_allowed,
