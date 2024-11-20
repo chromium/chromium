@@ -2959,8 +2959,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
               ? kAllFieldTypes
               : FieldTypeSet{trigger_autofill_field.Type().GetStorableType()},
           /*type_groups_originally_filled=*/std::nullopt,
-          FillingProduct::kAddress,
-          /*is_refill=*/false, /*is_expired_credit_card=*/false);
+          FillingProduct::kAddress, /*is_refill=*/false);
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure.field_count(); ++i) {

@@ -159,8 +159,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     const std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
     FieldTypeSet field_types_to_fill,
     FillingProduct filling_product,
-    bool is_refill,
-    bool is_expired_credit_card) {
+    bool is_refill) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
   const bool is_trigger_field =
       autofill_field.global_id() == trigger_field.global_id();
@@ -227,11 +226,6 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
          FieldFillingSkipReason::kRefillNotInInitialFill);
 
   FieldType field_type = autofill_field.Type().GetStorableType();
-  // Don't fill expired cards expiration date.
-  add_if(data_util::IsCreditCardExpirationType(field_type) &&
-             is_expired_credit_card,
-         FieldFillingSkipReason::kExpiredCards);
-
   // Only fill fields whose types are included in `field_types_to_fill`.
   add_if(!field_types_to_fill.contains(field_type),
          FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet);
@@ -305,8 +299,7 @@ FormFiller::GetFieldFillingSkipReasons(
     const FieldTypeSet& field_types_to_fill,
     std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
     FillingProduct filling_product,
-    bool is_refill,
-    bool is_expired_credit_card) const {
+    bool is_refill) const {
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
   base::flat_map<FieldType, size_t> type_count;
@@ -325,7 +318,7 @@ FormFiller::GetFieldFillingSkipReasons(
         GetFillingSkipReasonsForField(
             fields[i], *form_structure.field(i), trigger_field, type_count,
             type_groups_originally_filled, field_types_to_fill, filling_product,
-            is_refill, is_expired_credit_card);
+            is_refill);
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
@@ -481,8 +474,7 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
               field_types_to_fill,
               /*type_groups_originally_filled=*/std::nullopt,
               FillingProduct::kPredictionImprovements,
-              /*is_refill=*/false,
-              /*is_expired_credit_card=*/false),
+              /*is_refill=*/false),
           {},
           [&ignorable_skip_reasons](
               const std::pair<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
@@ -610,10 +602,7 @@ void FormFiller::FillOrPreviewForm(
           trigger_details.field_types_to_fill,
           filling_context ? filling_context->type_groups_originally_filled
                           : std::optional<DenseSet<FieldTypeGroup>>(),
-          filling_product, is_refill,
-          filling_product == FillingProduct::kCreditCard &&
-              absl::get<const CreditCard*>(profile_or_credit_card)
-                  ->IsExpired(AutofillClock::Now()));
+          filling_product, is_refill);
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar

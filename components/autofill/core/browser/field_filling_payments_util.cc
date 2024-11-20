@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
@@ -371,6 +372,14 @@ std::u16string GetFillingValueForCreditCardForInput(
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
+  // Do not fill expired CC expiration dates.
+  if (data_util::IsCreditCardExpirationType(field.Type().GetStorableType()) &&
+      credit_card.IsExpired(base::Time::Now())) {
+    if (failure_to_fill) {
+      *failure_to_fill += "Autofill doesn't fill expired CC expiration dates. ";
+    }
+    return u"";
+  }
   if (field.form_control_type() == FormControlType::kInputMonth) {
     return GetExpirationForMonthControl(credit_card);
   }

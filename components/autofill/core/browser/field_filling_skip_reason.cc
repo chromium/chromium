@@ -33,8 +33,6 @@ std::string_view GetSkipFieldFillLogMessage(
       return "Skipped: Field type has no fillable group";
     case FieldFillingSkipReason::kRefillNotInInitialFill:
       return "Skipped: Refill field group different from initial filling group";
-    case FieldFillingSkipReason::kExpiredCards:
-      return "Skipped: Expired expiration date for credit card";
     case FieldFillingSkipReason::kFillingLimitReachedType:
       return "Skipped: Field type filling limit reached";
     case FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet:

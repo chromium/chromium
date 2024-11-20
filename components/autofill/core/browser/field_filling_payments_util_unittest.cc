@@ -366,7 +366,7 @@ TEST_P(ExpirationYearTest, FillExpirationYearInput) {
   field.set_max_length(test_case.field_max_length);
 
   CreditCard credit_card = test::GetCreditCard();
-  credit_card.SetExpirationDateFromString(u"12/2023");
+  credit_card.SetExpirationDateFromString(u"12/2050");
   EXPECT_EQ(
       test_case.expected_value,
       GetFillingValueForCreditCard(credit_card, kAppLocale,
@@ -382,33 +382,33 @@ INSTANTIATE_TEST_SUITE_P(
         // length (0) or if it's greater than 1.
         FieldFillingPaymentsUtilTestCase{
             HtmlFieldType::kCreditCardExp2DigitYear,
-            /* default value */ 0, u"23"},
+            /* default value */ 0, u"50"},
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp2DigitYear, 2, u"23"},
+            HtmlFieldType::kCreditCardExp2DigitYear, 2, u"50"},
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp2DigitYear, 12, u"23"},
+            HtmlFieldType::kCreditCardExp2DigitYear, 12, u"50"},
         // A field predicted as a 2 digit expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp2DigitYear, 1, u"3"},
+            HtmlFieldType::kCreditCardExp2DigitYear, 1, u"0"},
         // A field predicted as a 4 digit expiration year should fill the 4
         // digits of the expiration year if the field has an unspecified max
         // length (0) or if it's greater than 3 .
         FieldFillingPaymentsUtilTestCase{
             HtmlFieldType::kCreditCardExp4DigitYear,
-            /* default value */ 0, u"2023"},
+            /* default value */ 0, u"2050"},
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp4DigitYear, 4, u"2023"},
+            HtmlFieldType::kCreditCardExp4DigitYear, 4, u"2050"},
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp4DigitYear, 12, u"2023"},
+            HtmlFieldType::kCreditCardExp4DigitYear, 12, u"2050"},
         // A field predicted as a 4 digits expiration year should fill the last
         // 2 digits of the expiration year if the field has a max length of 2.
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp4DigitYear, 2, u"23"},
+            HtmlFieldType::kCreditCardExp4DigitYear, 2, u"50"},
         // A field predicted as a 4 digits expiration year should fill the last
         // digit of the expiration year if the field has a max length of 1.
         FieldFillingPaymentsUtilTestCase{
-            HtmlFieldType::kCreditCardExp4DigitYear, 1, u"3"}));
+            HtmlFieldType::kCreditCardExp4DigitYear, 1, u"0"}));
 
 struct FillUtilExpirationDateTestCase {
   const char* name;
@@ -493,7 +493,7 @@ TEST_P(ExpirationDateTest, FillExpirationDateInput) {
   }
 
   CreditCard credit_card = test::GetCreditCard();
-  credit_card.SetExpirationDateFromString(u"03/2022");
+  credit_card.SetExpirationDateFromString(u"03/2050");
   std::u16string value_to_fill = GetFillingValueForCreditCard(
       credit_card, kAppLocale, mojom::ActionPersistence::kFill, field);
   EXPECT_EQ(!value_to_fill.empty(), test_case.expected_response);
@@ -511,7 +511,7 @@ INSTANTIATE_TEST_SUITE_P(
             // fill with a format of MM/YY
             FillUtilExpirationDateTestCase{
                 "Test 1", HtmlFieldType::kCreditCardExpDate2DigitYear,
-                /* default value */ 0, u"03/22", true},
+                /* default value */ 0, u"03/50", true},
             // Unsupported max lengths of 1-3, fail
             FillUtilExpirationDateTestCase{
                 "Test 2", HtmlFieldType::kCreditCardExpDate2DigitYear, 1, u"",
@@ -525,20 +525,20 @@ INSTANTIATE_TEST_SUITE_P(
             // A max length of 4 indicates a format of MMYY.
             FillUtilExpirationDateTestCase{
                 "Test 5", HtmlFieldType::kCreditCardExpDate2DigitYear, 4,
-                u"0322", true},
+                u"0350", true},
             // Desired case of proper max length >= 5
             FillUtilExpirationDateTestCase{
                 "Test 6", HtmlFieldType::kCreditCardExpDate2DigitYear, 5,
-                u"03/22", true},
+                u"03/50", true},
             // If kAutofillEnableExpirationDateImprovements is enabled, the
             // overall type comes from
             // HtmlFieldType::kCreditCardExpDate2DigitYear and therefore, we
-            // fill 03/22.
+            // fill 03/50.
             FillUtilExpirationDateTestCase{
                 .name = "Test 7",
                 .field_type = HtmlFieldType::kCreditCardExpDate2DigitYear,
                 .field_max_length = 6,
-                .expected_value = u"03/22",
+                .expected_value = u"03/50",
                 .expected_response = true,
                 .for_expiration_date_improvements_experiment = true},
             // If kAutofillEnableExpirationDateImprovements is disabled, the max
@@ -547,18 +547,18 @@ INSTANTIATE_TEST_SUITE_P(
                 .name = "Test 8",
                 .field_type = HtmlFieldType::kCreditCardExpDate2DigitYear,
                 .field_max_length = 6,
-                .expected_value = u"032022",
+                .expected_value = u"032050",
                 .expected_response = true,
                 .for_expiration_date_improvements_experiment = false},
             // If kAutofillEnableExpirationDateImprovements is enabled, the
             // overall type comes from
             // HtmlFieldType::kCreditCardExpDate2DigitYear and therefore, we
-            // fill 03/22.
+            // fill 03/50.
             FillUtilExpirationDateTestCase{
                 .name = "Test 9",
                 .field_type = HtmlFieldType::kCreditCardExpDate2DigitYear,
                 .field_max_length = 7,
-                .expected_value = u"03/22",
+                .expected_value = u"03/50",
                 .expected_response = true,
                 .for_expiration_date_improvements_experiment = true},
             // If kAutofillEnableExpirationDateImprovements is disabled, the max
@@ -567,19 +567,19 @@ INSTANTIATE_TEST_SUITE_P(
                 .name = "Test 10",
                 .field_type = HtmlFieldType::kCreditCardExpDate2DigitYear,
                 .field_max_length = 7,
-                .expected_value = u"03/2022",
+                .expected_value = u"03/2050",
                 .expected_response = true,
                 .for_expiration_date_improvements_experiment = false},
             FillUtilExpirationDateTestCase{
                 "Test 11", HtmlFieldType::kCreditCardExpDate2DigitYear, 12,
-                u"03/22", true},
+                u"03/50", true},
 
             // A field predicted as a expiration date w/ 4 digit year should
             // fill with a format of MM/YYYY unless it has max-length of: 4: Use
             // format MMYY 5: Use format MM/YY 6: Use format MMYYYY
             FillUtilExpirationDateTestCase{
                 "Test 12", HtmlFieldType::kCreditCardExpDate4DigitYear,
-                /* default value */ 0, u"03/2022", true},
+                /* default value */ 0, u"03/2050", true},
             // Unsupported max lengths of 1-3, fail
             FillUtilExpirationDateTestCase{
                 "Test 13", HtmlFieldType::kCreditCardExpDate4DigitYear, 1, u"",
@@ -593,32 +593,32 @@ INSTANTIATE_TEST_SUITE_P(
             // A max length of 4 indicates a format of MMYY.
             FillUtilExpirationDateTestCase{
                 "Test 16", HtmlFieldType::kCreditCardExpDate4DigitYear, 4,
-                u"0322", true},
+                u"0350", true},
             // A max length of 5 indicates a format of MM/YY.
             FillUtilExpirationDateTestCase{
                 "Test 17", HtmlFieldType::kCreditCardExpDate4DigitYear, 5,
-                u"03/22", true},
+                u"03/50", true},
             // A max length of 6 indicates a format of MMYYYY.
             FillUtilExpirationDateTestCase{
                 "Test 18", HtmlFieldType::kCreditCardExpDate4DigitYear, 6,
-                u"032022", true},
+                u"032050", true},
             // Desired case of proper max length >= 7
             FillUtilExpirationDateTestCase{
                 "Test 19", HtmlFieldType::kCreditCardExpDate4DigitYear, 7,
-                u"03/2022", true},
+                u"03/2050", true},
             FillUtilExpirationDateTestCase{
                 "Test 20", HtmlFieldType::kCreditCardExpDate4DigitYear, 12,
-                u"03/2022", true},
+                u"03/2050", true},
 
             // Tests for features::kAutofillFillCreditCardAsPerFormatString:
 
             // Base case works regardless of capitalization.
             FillUtilExpirationDateTestCase{
                 "Test 21", HtmlFieldType::kCreditCardExpDate2DigitYear, 0,
-                u"03/22", true, "mm/yy"},
+                u"03/50", true, "mm/yy"},
             FillUtilExpirationDateTestCase{
                 "Test 22", HtmlFieldType::kCreditCardExpDate2DigitYear, 0,
-                u"03/22", true, "MM/YY"},
+                u"03/50", true, "MM/YY"},
             // If we expect a 4 digit expiration date, we consider only the
             // separator of the the placeholder once
             // kAutofillEnableExpirationDateImprovements is launched.
@@ -626,12 +626,12 @@ INSTANTIATE_TEST_SUITE_P(
             // If kAutofillEnableExpirationDateImprovements is enabled, the
             // overall type comes from
             // HtmlFieldType::kCreditCardExpDate4DigitYear and therefore, we
-            // fill 03/2022.
+            // fill 03/2050.
             FillUtilExpirationDateTestCase{
                 .name = "Test 23",
                 .field_type = HtmlFieldType::kCreditCardExpDate4DigitYear,
                 .field_max_length = 0,
-                .expected_value = u"03/2022",
+                .expected_value = u"03/2050",
                 .expected_response = true,
                 .opt_label = "MM/YY",
                 .for_expiration_date_improvements_experiment = true},
@@ -641,64 +641,64 @@ INSTANTIATE_TEST_SUITE_P(
                 .name = "Test 24",
                 .field_type = HtmlFieldType::kCreditCardExpDate4DigitYear,
                 .field_max_length = 0,
-                .expected_value = u"03/22",
+                .expected_value = u"03/50",
                 .expected_response = true,
                 .opt_label = "MM/YY",
                 .for_expiration_date_improvements_experiment = false},
             // Whitespaces are respected.
             FillUtilExpirationDateTestCase{
                 "Test 25", HtmlFieldType::kCreditCardExpDate2DigitYear, 0,
-                u"03 / 22", true, "MM / YY"},
+                u"03 / 50", true, "MM / YY"},
             // Whitespaces are stripped if that makes the string fit.
             FillUtilExpirationDateTestCase{
                 "Test 26", HtmlFieldType::kCreditCardExpDate2DigitYear, 5,
-                u"03/22", true, "MM / YY"},
+                u"03/50", true, "MM / YY"},
             // Different separators work.
             FillUtilExpirationDateTestCase{
                 "Test 27", HtmlFieldType::kCreditCardExpDate2DigitYear, 0,
-                u"03-22", true, "MM-YY"},
+                u"03-50", true, "MM-YY"},
             // Four year expiration years work.
             FillUtilExpirationDateTestCase{
                 "Test 28", HtmlFieldType::kCreditCardExpDate4DigitYear, 0,
-                u"03-2022", true, "MM-YYYY"},
+                u"03-2050", true, "MM-YYYY"},
             // Some extra text around the pattern does not matter.
             FillUtilExpirationDateTestCase{
                 "Test 29", HtmlFieldType::kCreditCardExpDate2DigitYear, 0,
-                u"03/22", true, "Credit card in format MM/YY."},
+                u"03/50", true, "Credit card in format MM/YY."},
             // Fallback to the length based filling in case the maxlength is too
             // low.
             FillUtilExpirationDateTestCase{
                 "Test 30", HtmlFieldType::kCreditCardExpDate4DigitYear, 5,
-                u"03/22", true, "MM/YYYY"},
+                u"03/50", true, "MM/YYYY"},
             // Empty strings are handled gracefully.
             FillUtilExpirationDateTestCase{
                 "Test 31", HtmlFieldType::kCreditCardExpDate4DigitYear, 5,
-                u"03/22", true, ""},
+                u"03/50", true, ""},
 
             // Test manual server overrides:
             // Even if the label indicates a mm/yy, a server override for a 4
             // digit year should be honored if it fits.
             FillUtilExpirationDateTestCase{
                 "Test 32", HtmlFieldType::kCreditCardExpDate2DigitYear, 0,
-                u"03/2022", true, "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+                u"03/2050", true, "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
             // Follow the server if it overrides a shorter date format.
             FillUtilExpirationDateTestCase{
                 "Test 33", HtmlFieldType::kCreditCardExpDate4DigitYear, 0,
-                u"03/22", true, "mm/yyyy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                u"03/50", true, "mm/yyyy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
             // Follow the server but preserve the separator if possible.
             FillUtilExpirationDateTestCase{
                 "Test 34", HtmlFieldType::kCreditCardExpDate4DigitYear, 0,
-                u"03 - 22", true, "mm - yyyy",
+                u"03 - 50", true, "mm - yyyy",
                 CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
             // Follow the server but preserve the separator if possible, even if
             // that means that whitespaces need to be pruned.
             FillUtilExpirationDateTestCase{
                 "Test 35", HtmlFieldType::kCreditCardExpDate4DigitYear, 5,
-                u"03-22", true, "mm - yy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
+                u"03-50", true, "mm - yy", CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
             // If the server format just does not fit, fall back to heuristics.
             FillUtilExpirationDateTestCase{
                 "Test 36", HtmlFieldType::kCreditCardExpDate4DigitYear, 4,
-                u"0322", true, "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}),
+                u"0350", true, "mm/yy", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}),
         testing::Bool()));
 
 struct FillWithExpirationMonthTestCase {
@@ -905,12 +905,12 @@ TEST_F(FieldFillingPaymentsUtilTest,
 TEST_F(FieldFillingPaymentsUtilTest,
        FillSelectControlWithTwoDigitCreditCardYear) {
   AutofillField field = CreateTestSelectAutofillField(
-      {"12", "13", "14", "15", "16", "17", "18", "19"},
+      {"45", "46", "47", "48", "49", "50", "51", "52"},
       CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
   CreditCard credit_card = test::GetCreditCard();
-  credit_card.SetExpirationYear(2017);
-  EXPECT_EQ(u"17", GetFillingValueForCreditCard(credit_card, kAppLocale,
+  credit_card.SetExpirationYear(2050);
+  EXPECT_EQ(u"50", GetFillingValueForCreditCard(credit_card, kAppLocale,
                                                 mojom::ActionPersistence::kFill,
                                                 field));
 }
@@ -953,14 +953,14 @@ TEST_F(FieldFillingPaymentsUtilTest, FillMonthControl) {
 
   // Try a month with two digits.
   CreditCard credit_card = test::GetCreditCard();
-  credit_card.SetExpirationDateFromString(u"12/2017");
-  EXPECT_EQ(u"2017-12", GetFillingValueForCreditCard(
+  credit_card.SetExpirationDateFromString(u"12/2050");
+  EXPECT_EQ(u"2050-12", GetFillingValueForCreditCard(
                             credit_card, kAppLocale,
                             mojom::ActionPersistence::kFill, field));
 
   // Try a month with a leading zero.
-  credit_card.SetExpirationDateFromString(u"03/2019");
-  EXPECT_EQ(u"2019-03", GetFillingValueForCreditCard(
+  credit_card.SetExpirationDateFromString(u"03/2050");
+  EXPECT_EQ(u"2050-03", GetFillingValueForCreditCard(
                             credit_card, kAppLocale,
                             mojom::ActionPersistence::kFill, field));
 }
@@ -1147,14 +1147,14 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualMonth) {
 
   // A month with two digits should return two dots.
   CreditCard credit_card = test::GetVirtualCard();
-  credit_card.SetExpirationDateFromString(u"12/2017");
+  credit_card.SetExpirationDateFromString(u"12/2050");
   EXPECT_EQ(
       kMidlineEllipsis2DotsWithoutPadding,
       GetFillingValueForCreditCard(credit_card, kAppLocale,
                                    mojom::ActionPersistence::kPreview, field));
 
   // A month with one digit should still return two dots.
-  credit_card.SetExpirationDateFromString(u"03/2019");
+  credit_card.SetExpirationDateFromString(u"03/2050");
   EXPECT_EQ(
       kMidlineEllipsis2DotsWithoutPadding,
       GetFillingValueForCreditCard(credit_card, kAppLocale,
@@ -1181,7 +1181,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualYear) {
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
   CreditCard credit_card = test::GetVirtualCard();
-  credit_card.SetExpirationDateFromString(u"12/2017");
+  credit_card.SetExpirationDateFromString(u"12/2050");
   EXPECT_EQ(
       kMidlineEllipsis4DotsWithoutPadding,
       GetFillingValueForCreditCard(credit_card, kAppLocale,
@@ -1234,7 +1234,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedYear) {
                            CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
   CreditCard credit_card = test::GetVirtualCard();
-  credit_card.SetExpirationDateFromString(u"12/2017");
+  credit_card.SetExpirationDateFromString(u"12/2050");
   EXPECT_EQ(
       kMidlineEllipsis2DotsWithoutPadding,
       GetFillingValueForCreditCard(credit_card, kAppLocale,
@@ -1251,7 +1251,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualDate) {
   // A date that has a year containing four digits should return two dots for
   // month and four dots for year.
   CreditCard credit_card = test::GetVirtualCard();
-  credit_card.SetExpirationDateFromString(u"12/2017");
+  credit_card.SetExpirationDateFromString(u"12/2050");
   std::u16string slash = u"/";
   std::u16string expected =
       base::StrCat({kMidlineEllipsis2DotsWithoutPadding, slash,
@@ -1281,7 +1281,7 @@ TEST_F(FieldFillingPaymentsUtilTest, PreviewVirtualShortenedDate) {
                            CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 
   CreditCard credit_card = test::GetVirtualCard();
-  credit_card.SetExpirationDateFromString(u"12/2017");
+  credit_card.SetExpirationDateFromString(u"12/2050");
   // Expected: MMYY = ••••. Unlikely case
   std::u16string expected = kMidlineEllipsis4DotsWithoutPadding;
   EXPECT_EQ(expected, GetFillingValueForCreditCard(

@@ -84,8 +84,7 @@ class FormFiller {
       std::optional<DenseSet<FieldTypeGroup>> type_group_originally_filled,
       FieldTypeSet field_types_to_fill = kAllFieldTypes,
       FillingProduct filling_product = FillingProduct::kNone,
-      bool is_refill = false,
-      bool is_expired_credit_card = false);
+      bool is_refill = false);
 
   // Resets states that FormFiller holds and maintains.
   void Reset();
@@ -108,8 +107,7 @@ class FormFiller {
       const FieldTypeSet& field_types_to_fill,
       std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
       FillingProduct filling_product,
-      bool is_refill,
-      bool is_expired_credit_card) const;
+      bool is_refill) const;
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual
