@@ -36,7 +36,7 @@ suite('SearchboxBackButton', () => {
     assertTrue(isVisible(
         searchboxGhostLoaderElement.shadowRoot!.querySelector<HTMLElement>(
             '#loadingState')!));
-    testBrowserProxy.page.notifyAutocompleteStopTimerTriggered();
+    testBrowserProxy.page.showErrorState();
     await waitAfterNextRender(searchboxGhostLoaderElement);
     // After autocomplete stop timer has been triggered, the ghost loader
     // should switch to showing the error state.

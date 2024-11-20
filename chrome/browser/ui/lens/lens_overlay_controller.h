@@ -795,7 +795,7 @@ class LensOverlayController : public LensSearchboxClient,
                             bool is_zero_prefix_suggestion) override;
   void OnFocusChanged(bool focused) override;
   void OnPageBound() override;
-  void OnAutocompleteStopTimerTriggered() override;
+  void ShowGhostLoaderErrorState() override;
 
   // Called anytime the side panel opens. Used to close lens overlay when
   // another side panel opens.

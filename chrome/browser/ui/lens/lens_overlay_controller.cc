@@ -2178,12 +2178,15 @@ void LensOverlayController::OnPageBound() {
   }
 }
 
-void LensOverlayController::OnAutocompleteStopTimerTriggered() {
+void LensOverlayController::ShowGhostLoaderErrorState() {
+  if (!IsContextualSearchbox()) {
+    return;
+  }
   if (overlay_ghost_loader_page_) {
-    overlay_ghost_loader_page_->NotifyAutocompleteStopTimerTriggered();
+    overlay_ghost_loader_page_->ShowErrorState();
   }
   if (side_panel_ghost_loader_page_) {
-    side_panel_ghost_loader_page_->NotifyAutocompleteStopTimerTriggered();
+    side_panel_ghost_loader_page_->ShowErrorState();
   }
 }
 

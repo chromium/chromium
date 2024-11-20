@@ -612,6 +612,17 @@ void RealboxHandler::OnAutocompleteStopTimerTriggered(
   // Only notify the lens controller when autocomplete stop timer is triggered
   // for zero suggest inputs.
   if (lens_searchbox_client_ && input.IsZeroSuggest()) {
-    lens_searchbox_client_->OnAutocompleteStopTimerTriggered();
+    lens_searchbox_client_->ShowGhostLoaderErrorState();
+  }
+}
+
+void RealboxHandler::OnResultChanged(AutocompleteController* controller,
+                                     bool default_match_changed) {
+  SearchboxHandler::OnResultChanged(controller, default_match_changed);
+  // Show the ghost loader error state if the result is empty on the last async
+  // pass of the autocomplete controller (there will not be anymore updates).
+  if (lens_searchbox_client_ && controller->done() &&
+      controller->result().empty()) {
+    lens_searchbox_client_->ShowGhostLoaderErrorState();
   }
 }
