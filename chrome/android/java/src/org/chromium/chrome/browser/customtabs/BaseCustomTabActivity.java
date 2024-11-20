@@ -42,6 +42,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.sharing.TwaSharingController;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -64,6 +66,8 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabContro
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStrategy;
+import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHandlingStrategy;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
@@ -128,7 +132,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabActivityTabProvider mTabProvider;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     private CustomTabActivityTabFactory mTabFactory;
-    protected CustomTabIntentHandler mCustomTabIntentHandler;
+    private CustomTabIntentHandler mCustomTabIntentHandler;
     protected CustomTabNightModeStateController mNightModeStateController;
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
@@ -157,6 +161,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private WebApkUpdateManager mWebApkUpdateManager;
     private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
     private TrustedWebActivityModel mTrustedWebActivityModel;
+    private CustomTabIntentHandlingStrategy mCustomTabIntentHandlingStrategy;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -457,7 +462,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         mToolbarCoordinator = component.resolveToolbarCoordinator();
 
-        mCustomTabIntentHandler = component.resolveIntentHandler();
+        mCustomTabIntentHandler =
+                new CustomTabIntentHandler(
+                        getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(),
+                        getCustomTabIntentHandlingStrategy(),
+                        this,
+                        getCustomTabMinimizationManagerHolder());
 
         getCustomTabActivityNavigationController()
                 .setFinishHandler(
@@ -1278,5 +1289,31 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabMinimizationManagerHolder getCustomTabMinimizationManagerHolder() {
         return mMinimizationManagerHolder;
+    }
+
+    public CustomTabIntentHandlingStrategy getCustomTabIntentHandlingStrategy() {
+        if (mCustomTabIntentHandlingStrategy == null) {
+            assert getCustomTabActivityNavigationController() != null;
+            mCustomTabIntentHandlingStrategy =
+                    new DefaultCustomTabIntentHandlingStrategy(
+                            getCustomTabActivityTabProvider(),
+                            getCustomTabActivityNavigationController(),
+                            getCustomTabObserver());
+            if (getActivityType() == ActivityType.TRUSTED_WEB_ACTIVITY
+                    || getActivityType() == ActivityType.WEB_APK) {
+                TwaSharingController controller =
+                        new TwaSharingController(
+                                getCustomTabActivityTabProvider(),
+                                getCustomTabActivityNavigationController(),
+                                getVerifier());
+                mCustomTabIntentHandlingStrategy =
+                        new TwaIntentHandlingStrategy(mCustomTabIntentHandlingStrategy, controller);
+            }
+        }
+        return mCustomTabIntentHandlingStrategy;
+    }
+
+    public CustomTabIntentHandler getCustomTabIntentHandler() {
+        return mCustomTabIntentHandler;
     }
 }

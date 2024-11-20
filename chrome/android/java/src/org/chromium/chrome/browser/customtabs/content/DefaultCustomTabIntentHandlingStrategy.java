@@ -7,31 +7,28 @@ package org.chromium.chrome.browser.customtabs.content;
 import android.text.TextUtils;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabAuthUrlHeuristics;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-
-import javax.inject.Inject;
 
 /**
  * Default implementation of {@link CustomTabIntentHandlingStrategy}. Navigates the Custom Tab to
  * urls provided in intents.
  */
-@ActivityScope
 public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHandlingStrategy {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
     private final CustomTabObserver mCustomTabObserver;
 
-    @Inject
-    public DefaultCustomTabIntentHandlingStrategy(BaseCustomTabActivity activity) {
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        mNavigationController = activity.getCustomTabActivityNavigationController();
-        mCustomTabObserver = activity.getCustomTabObserver();
+    public DefaultCustomTabIntentHandlingStrategy(
+            CustomTabActivityTabProvider tabProvider,
+            CustomTabActivityNavigationController navigationController,
+            CustomTabObserver customTabObserver) {
+        mTabProvider = tabProvider;
+        mNavigationController = navigationController;
+        mCustomTabObserver = customTabObserver;
     }
 
     @Override

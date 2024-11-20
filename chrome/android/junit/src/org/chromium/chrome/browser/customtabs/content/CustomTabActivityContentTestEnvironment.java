@@ -214,9 +214,13 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
-        when(activity.getCustomTabActivityNavigationController()).thenReturn(navigationController);
         return new CustomTabIntentHandler(
-                new DefaultCustomTabIntentHandlingStrategy(activity), activity);
+                tabProvider,
+                intentDataProvider,
+                new DefaultCustomTabIntentHandlingStrategy(
+                        tabProvider, navigationController, customTabObserver),
+                activity,
+                mMinimizationManagerHolder);
     }
 
     public void warmUp() {

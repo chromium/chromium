@@ -55,14 +55,12 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
     @Inject
     public CustomTabSessionHandler(
-            Lazy<CustomTabToolbarCoordinator> toolbarCoordinator,
-            CustomTabIntentHandler intentHandler,
-            BaseCustomTabActivity activity) {
+            Lazy<CustomTabToolbarCoordinator> toolbarCoordinator, BaseCustomTabActivity activity) {
         mIntentDataProvider = activity.getIntentDataProvider();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
         mBottomBarDelegate = activity::getCustomTabBottomBarDelegate;
-        mIntentHandler = intentHandler;
+        mIntentHandler = activity.getCustomTabIntentHandler();
         mActivity = activity;
         activity.getLifecycleDispatcher().register(this);
 
