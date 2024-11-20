@@ -474,17 +474,17 @@ scoped_refptr<StringImpl> StringImpl::Fill(UChar character) {
 
 scoped_refptr<StringImpl> StringImpl::FoldCase() {
   CHECK_LE(length_, static_cast<wtf_size_t>(numeric_limits<int32_t>::max()));
-  int32_t length = length_;
 
   if (Is8Bit()) {
     // Do a faster loop for the case where all the characters are ASCII.
-    LChar* data;
-    scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
+    base::span<LChar> data8;
+    scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data8);
     LChar ored = 0;
 
-    for (int32_t i = 0; i < length; ++i) {
-      LChar c = Characters8()[i];
-      data[i] = ToASCIILower(c);
+    const base::span<const LChar> source8 = Span8();
+    for (size_t i = 0; i < source8.size(); ++i) {
+      const LChar c = source8[i];
+      data8[i] = ToASCIILower(c);
       ored |= c;
     }
 
@@ -493,32 +493,38 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
 
     // Do a slower implementation for cases that include non-ASCII Latin-1
     // characters.
-    for (int32_t i = 0; i < length; ++i)
-      data[i] = static_cast<LChar>(unicode::ToLower(Characters8()[i]));
-
+    for (size_t i = 0; i < source8.size(); ++i) {
+      data8[i] = static_cast<LChar>(unicode::ToLower(source8[i]));
+    }
     return new_impl;
   }
 
   // Do a faster loop for the case where all the characters are ASCII.
-  UChar* data;
-  scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data);
+  base::span<UChar> data16;
+  scoped_refptr<StringImpl> new_impl = CreateUninitialized(length_, data16);
   UChar ored = 0;
-  for (int32_t i = 0; i < length; ++i) {
-    UChar c = Characters16()[i];
+
+  const base::span<const UChar> source16 = Span16();
+  for (size_t i = 0; i < source16.size(); ++i) {
+    const UChar c = source16[i];
+    data16[i] = ToASCIILower(c);
     ored |= c;
-    data[i] = ToASCIILower(c);
   }
   if (!(ored & ~0x7F))
     return new_impl;
 
   // Do a slower implementation for cases that include non-ASCII characters.
   bool error;
-  int32_t real_length =
-      unicode::FoldCase(data, length, Characters16(), length_, &error);
-  if (!error && real_length == length)
+  const int32_t real_length = unicode::FoldCase(
+      data16.data(), static_cast<int32_t>(data16.size()), source16.data(),
+      static_cast<int32_t>(source16.size()), &error);
+  if (!error && real_length == static_cast<int32_t>(data16.size())) {
     return new_impl;
-  new_impl = CreateUninitialized(real_length, data);
-  unicode::FoldCase(data, real_length, Characters16(), length_, &error);
+  }
+  new_impl = CreateUninitialized(real_length, data16);
+  unicode::FoldCase(data16.data(), static_cast<int32_t>(data16.size()),
+                    source16.data(), static_cast<int32_t>(source16.size()),
+                    &error);
   if (error)
     return this;
   return new_impl;
