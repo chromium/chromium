@@ -116,7 +116,8 @@ std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
 
 // Allows overriding the ShareKitService factory. The real factory will be
 // used if this hook returns null.
-std::unique_ptr<ShareKitService> CreateShareKitService();
+std::unique_ptr<ShareKitService> CreateShareKitService(
+    tab_groups::TabGroupSyncService* sync_service);
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.

@@ -396,6 +396,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
++ (id<GREYMatcher>)saveButton {
+  return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:(IDS_SAVE)];
+}
+
++ (id<GREYMatcher>)navigationBarSaveButton {
+  return grey_allOf(
+      grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+      [self saveButton],
+      grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
+}
+
 + (id<GREYMatcher>)closeTabMenuButton {
   return grey_allOf(
       [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:

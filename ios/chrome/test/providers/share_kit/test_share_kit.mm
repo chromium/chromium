@@ -12,7 +12,7 @@ namespace ios::provider {
 
 std::unique_ptr<ShareKitService> CreateShareKitService(
     std::unique_ptr<ShareKitServiceConfiguration> configuration) {
-  return std::make_unique<TestShareKitService>();
+  return std::make_unique<TestShareKitService>(configuration->sync_service);
 }
 
 }  // namespace ios::provider

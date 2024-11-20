@@ -54,14 +54,16 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+
   // Give the opportunity for the test hook to override the service from
   // the provider (allowing EG tests to use a test ShareKitService).
-  if (auto share_kit_service = tests_hook::CreateShareKitService()) {
+  if (auto share_kit_service =
+          tests_hook::CreateShareKitService(sync_service)) {
     return share_kit_service;
   }
 
-  tab_groups::TabGroupSyncService* sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   FaviconLoader* favicon_loader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 

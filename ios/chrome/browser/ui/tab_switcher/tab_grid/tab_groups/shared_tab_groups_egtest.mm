@@ -15,7 +15,9 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using chrome_test_util::CreateTabGroupAtIndex;
+using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
+using chrome_test_util::NavigationBarSaveButton;
 using chrome_test_util::ShareGroupButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 
@@ -25,8 +27,14 @@ namespace {
 // keyboard default can differ iPhone vs iPad, simulator vs device.
 NSString* const kGroup1Name = @"1group";
 
+// Matcher for the Share flow view.
 id<GREYMatcher> FakeShareFlowView() {
-  return grey_accessibilityID(kFakeShareFlowViewControllerIdentifier);
+  return grey_accessibilityID(kFakeShareFlowIdentifier);
+}
+
+// Matcher for the Manage flow view.
+id<GREYMatcher> FakeManageFlowView() {
+  return grey_accessibilityID(kFakeManageFlowIdentifier);
 }
 
 }  // namespace
@@ -44,11 +52,14 @@ id<GREYMatcher> FakeShareFlowView() {
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+  // Add the flag to use FakeTabGroupSyncService.
+  config.additional_args.push_back(
+      "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
   return config;
 }
 
-// Checks opening the Share flow from the Tab Grid.
-- (void)testShareGroup {
+// Checks opening the Share flow from the Tab Grid and cancelling.
+- (void)testShareGroupButCancel {
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
@@ -61,7 +72,7 @@ id<GREYMatcher> FakeShareFlowView() {
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       performAction:grey_tap()];
 
-  // Check that this opened the fake Share flow.
+  // Verify that this opened the fake Share flow.
   [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -71,6 +82,68 @@ id<GREYMatcher> FakeShareFlowView() {
 
   // Verify that it closed the Share flow.
   [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify that the group is not shared by checking that the context menu
+  // offers to Share rather than Manage the group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Checks opening the Share flow from the Tab Grid and actually sharing. Then
+// checks opening the Manage flow.
+- (void)testShareGroupAndManageGroup {
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Creates a tab group with an item at 0.
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  // Share the first group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify that the group is shared by checking that the context menu offers to
+  // Manage rather than Share the group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Manage the group.
+  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that it opened the Manage flow.
+  [[EarlGrey selectElementWithMatcher:FakeManageFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the Manage flow.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Manage flow.
+  [[EarlGrey selectElementWithMatcher:FakeManageFlowView()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -105,8 +178,10 @@ id<GREYMatcher> FakeShareFlowView() {
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
       performAction:grey_longPress()];
 
-  // Verify that there is no Share button.
+  // Verify that there is no Share or Manage button.
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
       assertWithMatcher:grey_nil()];
 }
 
