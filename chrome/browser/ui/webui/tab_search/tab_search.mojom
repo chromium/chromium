@@ -313,10 +313,6 @@ interface PageHandler {
   // list section.
   SaveRecentlyClosedExpandedPref(bool expanded);
 
-  // Set the user preference for which tab the tab search UI should display
-  // when next shown.
-  SetTabSearchSection(TabSearchSection section);
-
   // Set the user preference for which feature the tab organization selector
   // should display when next shown.
   SetOrganizationFeature(TabOrganizationFeature feature);

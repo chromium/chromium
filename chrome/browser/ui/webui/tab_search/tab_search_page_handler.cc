@@ -746,15 +746,6 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
                : TabSearchRecentlyClosedToggleAction::kCollapse);
 }
 
-void TabSearchPageHandler::SetTabSearchSection(
-    tab_search::mojom::TabSearchSection section) {
-  if (section != tab_search::mojom::TabSearchSection::kNone) {
-    Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
-        tab_search_prefs::kTabSearchTabIndex,
-        tab_search_prefs::GetIntFromTabSearchSection(section));
-  }
-}
-
 void TabSearchPageHandler::SetOrganizationFeature(
     tab_search::mojom::TabOrganizationFeature feature) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(

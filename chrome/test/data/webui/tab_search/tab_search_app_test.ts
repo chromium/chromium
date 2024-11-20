@@ -28,31 +28,10 @@ suite('TabOrganizationPageTest', () => {
     document.body.appendChild(tabSearchApp);
   });
 
-  test('Switching tabs calls setTabIndex', async () => {
-    await testProxy.whenCalled('setTabSearchSection');
-    testProxy.resetResolver('setTabSearchSection');
-
-    const crTabs = tabSearchApp.shadowRoot!.querySelector('cr-tabs');
-    assertTrue(!!crTabs);
-    assertEquals(0, crTabs.selected);
-
-    const allTabs = crTabs.shadowRoot!.querySelectorAll<HTMLElement>('.tab');
-    assertEquals(2, allTabs.length);
-    const newTabIndex = 1;
-    const unselectedTab = allTabs[newTabIndex]!;
-
-    unselectedTab.click();
-    await crTabs.updateComplete;
-
-    const [section] = await testProxy.whenCalled('setTabSearchSection');
-    assertEquals(TabSearchSection.kOrganize, section);
-    assertEquals(newTabIndex, crTabs.selected);
-  });
-
   test('Setting tab index from callback router', async () => {
     const crTabs = tabSearchApp.shadowRoot!.querySelector('cr-tabs');
     assertTrue(!!crTabs);
-    assertEquals(-1, crTabs.selected);
+    assertEquals(0, crTabs.selected);
 
     testProxy.getCallbackRouterRemote().tabSearchSectionChanged(
         TabSearchSection.kOrganize);

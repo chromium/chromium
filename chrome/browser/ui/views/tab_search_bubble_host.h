@@ -55,7 +55,7 @@ class TabSearchBubbleHost : public views::WidgetObserver,
   bool ShowTabSearchBubble(
       bool triggered_by_keyboard_shortcut = false,
       tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kNone,
+          tab_search::mojom::TabSearchSection::kSearch,
       tab_search::mojom::TabOrganizationFeature organization_feature =
           tab_search::mojom::TabOrganizationFeature::kNone);
   void CloseTabSearchBubble();

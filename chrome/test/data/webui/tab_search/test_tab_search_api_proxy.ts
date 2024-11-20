@@ -35,7 +35,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'restartSession',
       'switchToTab',
       'saveRecentlyClosedExpandedPref',
-      'setTabSearchSection',
       'setOrganizationFeature',
       'startTabGroupTutorial',
       'triggerFeedback',
@@ -142,10 +141,6 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   saveRecentlyClosedExpandedPref(expanded: boolean) {
     this.methodCalled('saveRecentlyClosedExpandedPref', [expanded]);
-  }
-
-  setTabSearchSection(section: TabSearchSection) {
-    this.methodCalled('setTabSearchSection', [section]);
   }
 
   setOrganizationFeature(feature: TabOrganizationFeature) {

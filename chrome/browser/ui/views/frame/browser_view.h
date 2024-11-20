@@ -795,7 +795,7 @@ class BrowserView : public BrowserWindow,
 
   void CreateTabSearchBubble(
       tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kNone,
+          tab_search::mojom::TabSearchSection::kSearch,
       tab_search::mojom::TabOrganizationFeature organization_feature =
           tab_search::mojom::TabOrganizationFeature::kNone) override;
   // Closes the tab search bubble if open for the given browser instance.
