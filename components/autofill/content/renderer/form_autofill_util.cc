@@ -447,7 +447,7 @@ std::u16string FindChildTextWithIgnoreList(
 
 struct InferredLabel {
   // Returns an `InferredLabel` if `label` contains at least one character that
-  // is neither whitespace nor "*:-–()".
+  // is neither whitespace nor "+*:-–()".
   static std::optional<InferredLabel> BuildIfValid(
       std::u16string label,
       FormFieldData::LabelSource source);
@@ -2199,7 +2199,7 @@ std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
                                                          LabelSource source) {
   // List of characters a label can't be entirely made of (this list can grow).
   const std::u16string_view invalid_chars =
-      u"*:-\u2013()";  // U+2013 is the En Dash "–".
+      u"+*:-\u2013()";  // U+2013 is the En Dash "–".
   auto is_valid_label_character = [&invalid_chars](char16_t c) {
     return !base::Contains(invalid_chars, c) &&
            !base::Contains(std::u16string_view(base::kWhitespaceUTF16), c);
