@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/scanner/scanner_alerts.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
 
 #import "base/notreached.h"
 #import "components/version_info/version_info.h"

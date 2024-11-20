@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCANNER_CAMERA_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SCANNER_CAMERA_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_CAMERA_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_CAMERA_CONTROLLER_H_
 
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
 #include "base/ios/block_types.h"
-#include "ios/chrome/browser/ui/scanner/camera_state.h"
+#include "ios/chrome/browser/scanner/ui_bundled/camera_state.h"
 
 @protocol CameraControllerDelegate
 
@@ -95,4 +95,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCANNER_CAMERA_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_CAMERA_CONTROLLER_H_

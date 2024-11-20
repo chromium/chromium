@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/scanner/scanner_view.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_view.h"
 
 #import <numbers>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/numerics/math_constants.h"
+#import "ios/chrome/browser/scanner/ui_bundled/preview_overlay_view.h"
+#import "ios/chrome/browser/scanner/ui_bundled/video_preview_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/scanner/preview_overlay_view.h"
-#import "ios/chrome/browser/ui/scanner/video_preview_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"

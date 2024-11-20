@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/browser/ui/scanner/camera_controller.h"
-#include "ios/chrome/browser/ui/scanner/scanner_view.h"
+#include "ios/chrome/browser/scanner/ui_bundled/camera_controller.h"
+#include "ios/chrome/browser/scanner/ui_bundled/scanner_view.h"
 
 namespace scannerViewController {
 // The reason why the ScannerViewController was dismissed. Used for collecting
@@ -72,4 +72,4 @@ enum DismissalReason {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_VIEW_CONTROLLER_H_

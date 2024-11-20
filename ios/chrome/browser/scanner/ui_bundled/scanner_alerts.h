@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_ALERTS_H_
-#define IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_ALERTS_H_
-
-#include "ios/chrome/browser/ui/scanner/camera_controller.h"
+#ifndef IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_ALERTS_H_
+#define IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_ALERTS_H_
 
 #import <UIKit/UIKit.h>
+
+#include "ios/chrome/browser/scanner/ui_bundled/camera_controller.h"
 
 namespace scanner {
 
@@ -23,4 +23,4 @@ UIAlertController* DialogForCameraState(CameraState state,
 
 }  // namespace scanner
 
-#endif  // IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_ALERTS_H_
+#endif  // IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_ALERTS_H_

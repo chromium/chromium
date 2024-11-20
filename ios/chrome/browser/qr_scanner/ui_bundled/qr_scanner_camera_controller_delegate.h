@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_CAMERA_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_CAMERA_CONTROLLER_DELEGATE_H_
 
-#import "ios/chrome/browser/ui/scanner/camera_controller.h"
+#import "ios/chrome/browser/scanner/ui_bundled/camera_controller.h"
 
 // Receives the QR scanner results.
 @protocol QRScannerCameraControllerDelegate <CameraControllerDelegate>

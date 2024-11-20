@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCANNER_CAMERA_STATE_H_
-#define IOS_CHROME_BROWSER_UI_SCANNER_CAMERA_STATE_H_
+#ifndef IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_CAMERA_STATE_H_
+#define IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_CAMERA_STATE_H_
 
 namespace scanner {
 
@@ -35,4 +35,4 @@ enum CameraState {
 
 }  // namespace scanner
 
-#endif  // IOS_CHROME_BROWSER_UI_SCANNER_CAMERA_STATE_H_
+#endif  // IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_CAMERA_STATE_H_

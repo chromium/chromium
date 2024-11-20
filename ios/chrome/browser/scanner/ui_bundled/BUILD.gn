@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("scanner") {
+source_set("ui_bundled") {
   sources = [
     "camera_controller.h",
     "camera_controller.mm",
@@ -25,10 +25,10 @@ source_set("scanner") {
     "//base",
     "//components/version_info",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/scanner/ui_bundled/resources",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols:icons",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/scanner/resources",
     "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",

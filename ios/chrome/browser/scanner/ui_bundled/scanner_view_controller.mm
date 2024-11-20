@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/scanner/scanner_view_controller.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_view_controller.h"
 
 #import <AVFoundation/AVFoundation.h>
 
 #import "base/logging.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_alerts.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_presenting.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_transitioning_delegate.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_view.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
-#import "ios/chrome/browser/ui/scanner/scanner_alerts.h"
-#import "ios/chrome/browser/ui/scanner/scanner_presenting.h"
-#import "ios/chrome/browser/ui/scanner/scanner_transitioning_delegate.h"
-#import "ios/chrome/browser/ui/scanner/scanner_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

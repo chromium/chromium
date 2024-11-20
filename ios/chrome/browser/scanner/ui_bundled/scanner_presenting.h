@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_PRESENTING_H_
-#define IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_PRESENTING_H_
+#ifndef IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_PRESENTING_H_
+#define IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_PRESENTING_H_
 
 // ScannerPresenting contains methods that control how a scanner UI is
 // dismissed on screen.
@@ -16,4 +16,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCANNER_SCANNER_PRESENTING_H_
+#endif  // IOS_CHROME_BROWSER_SCANNER_UI_BUNDLED_SCANNER_PRESENTING_H_
