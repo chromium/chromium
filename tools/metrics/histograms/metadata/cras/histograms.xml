@@ -784,7 +784,7 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.PeerSupportedA2dpCodecs" units="units"
-    expires_after="2024-11-25">
+    expires_after="2025-11-15">
   <owner>jrwu@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
