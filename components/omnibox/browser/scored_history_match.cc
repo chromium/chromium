@@ -497,9 +497,11 @@ ScoredHistoryMatch::ComputeUrlMatchingSignals(
   size_t last_part_of_host_pos =
       url.possibly_invalid_spec().rfind('.', path_pos);
 
-  // Get end position for 'www'. Not set if 'www' not exists in host.
+  // Get end position for 'www'. Not set if 'www' does not exist in the host
+  // component.
   std::optional<size_t> www_end_pos;
-  if (base::ToLowerASCII(url.spec().substr(host_pos, 3)).compare("www") == 0) {
+  if (host_pos + 3 <= url.spec().length() &&
+      base::ToLowerASCII(url.spec().substr(host_pos, 3)).compare("www") == 0) {
     www_end_pos = host_pos + 2;
   }
 
