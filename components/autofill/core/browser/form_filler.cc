@@ -583,9 +583,9 @@ void FormFiller::FillOrPreviewForm(
 
   LogBuffer buffer(IsLoggingActive(log_manager_));
   LOG_AF(buffer) << "action_persistence: "
-                 << ActionPersistenceToString(action_persistence);
-  LOG_AF(buffer) << "is credit card section: "
-                 << (filling_product == FillingProduct::kCreditCard) << Br{};
+                 << ActionPersistenceToString(action_persistence) << Br{};
+  LOG_AF(buffer) << "filling product: "
+                 << FillingProductToString(filling_product) << Br{};
   LOG_AF(buffer) << "is refill: " << is_refill << Br{};
   LOG_AF(buffer) << *form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
