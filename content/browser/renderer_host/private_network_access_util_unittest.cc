@@ -89,7 +89,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       },
       {
           {kNonSecure, AddressSpace::kPublic, RequestContext::kSubresource},
-          Policy::kBlock,
+          Policy::kWarn,
       },
       {
           {kNonSecure, AddressSpace::kPrivate, RequestContext::kSubresource},
@@ -97,7 +97,7 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       },
       {
           {kNonSecure, AddressSpace::kLocal, RequestContext::kSubresource},
-          Policy::kBlock,
+          Policy::kWarn,
       },
       {
           {kSecure, AddressSpace::kUnknown, RequestContext::kSubresource},
@@ -279,9 +279,9 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyWorkers) {
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
 
   TestPolicyMap(expected);
 }
@@ -298,9 +298,9 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyWorkersWithPreflights) {
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
 
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kWorker}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic, RequestContext::kWorker}] =
       Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kWorker}] =
@@ -397,11 +397,11 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframes) {
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
       Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
       Policy::kPreflightWarn;
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
@@ -424,11 +424,11 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
 
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
       Policy::kWarn;
   expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
-      Policy::kBlock;
+      Policy::kWarn;
   expected[{kSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
       Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =

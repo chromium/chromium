@@ -146,7 +146,7 @@ BASE_FEATURE(kBatterySaverModeAlignWakeUps,
 //  - kBlockInsecurePrivateNetworkRequestsFromUnknown
 BASE_FEATURE(kBlockInsecurePrivateNetworkRequests,
              "BlockInsecurePrivateNetworkRequests",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When this feature is enabled, requests to localhost initiated from non-secure
 // contexts in the `private` IP address space are blocked.
