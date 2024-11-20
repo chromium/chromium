@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
+#include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 
 #include <string_view>
 
@@ -11,9 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/page_info/core/about_this_site_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -47,12 +45,12 @@ std::unique_ptr<views::WebView> CreateWebView(
 }
 }  // namespace
 
-constexpr char kStaticLoadingScreenURL[] =
-    "https://www.gstatic.com/diner/chrome/atp_loading.html";
-
-AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
-    content::WebContents* parent_web_contents)
-    : parent_web_contents_(parent_web_contents->GetWeakPtr()) {
+WebViewSidePanelView::WebViewSidePanelView(
+    content::WebContents* parent_web_contents,
+    const std::string& loading_screen_url,
+    const std::optional<std::string>& param_name_to_cleanup)
+    : parent_web_contents_(parent_web_contents->GetWeakPtr()),
+      param_name_to_cleanup_(param_name_to_cleanup) {
   auto* browser_context = outer_browser_view()->GetProfile();
 
   // Allow view to be focusable in order to receive focus when side panel is
@@ -69,7 +67,7 @@ AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
   loading_indicator_web_view_ =
       AddChildView(CreateWebView(this, browser_context));
   loading_indicator_web_view_->GetWebContents()->GetController().LoadURL(
-      GURL(kStaticLoadingScreenURL), content::Referrer(),
+      GURL(loading_screen_url), content::Referrer(),
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
 
@@ -86,15 +84,16 @@ AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
-void AboutThisSiteSidePanelView::LoadProgressChanged(double progress) {
+void WebViewSidePanelView::LoadProgressChanged(double progress) {
   // Ignore the initial load progress since the navigation might be intercepted
-  // by AboutThisSiteSidePanelThrottle.
-  if (progress == blink::kInitialLoadProgress)
+  // by SiteSidePanelThrottle.
+  if (progress == blink::kInitialLoadProgress) {
     return;
+  }
   SetContentVisible(progress == blink::kFinalLoadProgress);
 }
 
-void AboutThisSiteSidePanelView::OpenUrl(const content::OpenURLParams& params) {
+void WebViewSidePanelView::OpenUrl(const content::OpenURLParams& params) {
   last_url_ = params.url;
   web_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
@@ -104,7 +103,7 @@ void AboutThisSiteSidePanelView::OpenUrl(const content::OpenURLParams& params) {
 // tab. This delegate does not override AddNewContents(), so the webcontents
 // is not actually created. Instead it forwards the parameters to the real
 // browser.
-void AboutThisSiteSidePanelView::DidOpenRequestedURL(
+void WebViewSidePanelView::DidOpenRequestedURL(
     content::WebContents* new_contents,
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
@@ -117,13 +116,14 @@ void AboutThisSiteSidePanelView::DidOpenRequestedURL(
                                 renderer_initiated);
   // If the navigation is initiated by the renderer process, we must set an
   // initiator origin.
-  if (renderer_initiated)
+  if (renderer_initiated) {
     params.initiator_origin = url::Origin::Create(url);
+  }
 
   // We can't open a new tab while the observer is running because it might
   // destroy this WebContents. Post as task instead.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AboutThisSiteSidePanelView::OpenUrlInBrowser,
+      FROM_HERE, base::BindOnce(&WebViewSidePanelView::OpenUrlInBrowser,
                                 AsWeakPtr(), std::move(params)));
 }
 
@@ -131,7 +131,7 @@ void AboutThisSiteSidePanelView::DidOpenRequestedURL(
 // e.g. from the context menu or by middle-clicking on it. It forwards the
 // params to the main browser and does not create a WebContents in the
 // SidePanel.
-content::WebContents* AboutThisSiteSidePanelView::OpenURLFromTab(
+content::WebContents* WebViewSidePanelView::OpenURLFromTab(
     content::WebContents* source,
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
@@ -147,7 +147,7 @@ content::WebContents* AboutThisSiteSidePanelView::OpenURLFromTab(
   return nullptr;
 }
 
-bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
+bool WebViewSidePanelView::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
   // Redirect keyboard events to the main browser.
@@ -157,7 +157,7 @@ bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
   return false;
 }
 
-BrowserView* AboutThisSiteSidePanelView::outer_browser_view() {
+BrowserView* WebViewSidePanelView::outer_browser_view() {
   if (parent_web_contents_) {
     auto* browser = chrome::FindBrowserWithTab(parent_web_contents_.get());
     return browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
@@ -165,12 +165,12 @@ BrowserView* AboutThisSiteSidePanelView::outer_browser_view() {
   return nullptr;
 }
 
-content::WebContentsDelegate* AboutThisSiteSidePanelView::outer_delegate() {
+content::WebContentsDelegate* WebViewSidePanelView::outer_delegate() {
   auto* browser_view = outer_browser_view();
   return browser_view ? browser_view->browser() : nullptr;
 }
 
-void AboutThisSiteSidePanelView::OpenUrlInBrowser(
+void WebViewSidePanelView::OpenUrlInBrowser(
     const content::OpenURLParams& params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* browser_view = outer_browser_view()) {
@@ -181,27 +181,28 @@ void AboutThisSiteSidePanelView::OpenUrlInBrowser(
   }
 }
 
-bool AboutThisSiteSidePanelView::IsNavigationAllowed(const GURL& new_url,
+bool WebViewSidePanelView::IsNavigationAllowed(const GURL& new_url,
                                                      const GURL& old_url) {
   // Only allow the initial navigation of the SidePanel to stay in the
   // SidePanel. Other navigations will be moved to the main browser.
   return new_url == last_url_;
 }
 
-GURL AboutThisSiteSidePanelView::CleanUpQueryParams(const GURL& url) {
-  // Override the ilrm=minimal parameter for navigations to a real tab.
+GURL WebViewSidePanelView::CleanUpQueryParams(const GURL& url) {
+  // Override eventual parameter for navigations to a real tab.
   if (url::IsSameOriginWith(url, last_url_) &&
-      url.query_piece().find(page_info::AboutThisSiteRenderModeParameterName) !=
+      param_name_to_cleanup_.has_value() &&
+      url.query_piece().find(param_name_to_cleanup_.value()) !=
           std::string_view::npos) {
     return net::AppendOrReplaceQueryParameter(
-        url, page_info::AboutThisSiteRenderModeParameterName, std::string());
+        url, param_name_to_cleanup_.value(), std::string());
   }
   return url;
 }
 
-void AboutThisSiteSidePanelView::SetContentVisible(bool visible) {
+void WebViewSidePanelView::SetContentVisible(bool visible) {
   web_view_->SetVisible(visible);
   loading_indicator_web_view_->SetVisible(!visible);
 }
 
-AboutThisSiteSidePanelView::~AboutThisSiteSidePanelView() = default;
+WebViewSidePanelView::~WebViewSidePanelView() = default;
