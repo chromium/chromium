@@ -92,7 +92,6 @@ std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
       return FieldTypeSet{MERCHANT_PROMO_CODE};
     case FillingProduct::kIban:
       return FieldTypeSet{IBAN_VALUE};
-
     case FillingProduct::kPlusAddresses:
       return FieldTypeSet{EMAIL_ADDRESS};
     case FillingProduct::kAutocomplete:
@@ -471,8 +470,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .had_value_before_filling = ToOptionalBoolean(!field.value().empty()),
         .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
-        .had_value_after_filling = ToOptionalBoolean(true),
-        .filling_method = FillingMethod::kFieldByFieldFilling});
+        .had_value_after_filling = ToOptionalBoolean(true)});
 
     if (ShouldRecordFillingHistory(filling_product)) {
       // TODO(crbug.com/40232021): Only use AutofillField.

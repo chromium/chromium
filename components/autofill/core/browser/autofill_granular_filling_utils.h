@@ -42,15 +42,6 @@ enum class FillingMethod : uint8_t {
 // FieldTypeGroup::kAddress and FieldTypeGroup::kCompany.
 FieldTypeSet GetAddressFieldsForGroupFilling();
 
-// Returns true if `fields` matches one of granular filling groups, i.e.,
-// FieldTypeGroup::kName, FieldTypeGroup::kPhone, FieldTypeGroup::kEmail  or
-// `GetAddressFieldsForGroupFilling()`, see from the method above.
-bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types);
-
-// Returns the autofill filling method corresponding to `targeted_fields`.
-FillingMethod GetFillingMethodFromTargetedFields(
-    const FieldTypeSet& targeted_field_types);
-
 FillingMethod GetFillingMethodFromSuggestionType(SuggestionType type);
 
 FieldTypeSet GetTargetFieldTypesFromFillingMethod(FillingMethod filling_method);

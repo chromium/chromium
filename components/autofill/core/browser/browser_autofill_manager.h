@@ -586,7 +586,7 @@ class BrowserAutofillManager : public AutofillManager {
   // returns whether the study is enabled/disabled.
   bool EvaluateAblationStudy(
       const std::vector<Suggestion>& address_and_credit_card_suggestions,
-      AutofillField* autofill_field,
+      AutofillField& autofill_field,
       SuggestionsContext& context);
 
   // Returns a list with the suggestions available for `field`. Which fields of
@@ -726,8 +726,7 @@ class BrowserAutofillManager : public AutofillManager {
           skip_reasons,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      bool is_refill,
-      const AutofillTriggerDetails& trigger_details);
+      bool is_refill);
 
   // Handles the credit card specific logic after a form is filled, including
   // logging the fill operation and recording card usage.

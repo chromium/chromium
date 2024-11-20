@@ -2579,7 +2579,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     bool is_refill) {
   AppendFillLogEvents(action_persistence, form, form_structure,
                       trigger_autofill_field, safe_field_ids, skip_reasons,
-                      profile_or_credit_card, is_refill, trigger_details);
+                      profile_or_credit_card, is_refill);
 
   client().DidFillOrPreviewForm(action_persistence,
                                 trigger_details.trigger_source, is_refill);
@@ -2624,8 +2624,7 @@ void BrowserAutofillManager::AppendFillLogEvents(
         skip_reasons,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    bool is_refill,
-    const AutofillTriggerDetails& trigger_details) {
+    bool is_refill) {
   std::optional<FillEventId> fill_event_id;
   if (action_persistence == mojom::ActionPersistence::kFill) {
     std::string country_code;
@@ -2663,8 +2662,6 @@ void BrowserAutofillManager::AppendFillLogEvents(
             .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
             .had_value_after_filling =
                 ToOptionalBoolean(safe_field_ids.contains(field_id)),
-            .filling_method = GetFillingMethodFromTargetedFields(
-                trigger_details.field_types_to_fill),
             .filling_prevented_by_iframe_security_policy =
                 safe_field_ids.contains(field_id) ? OptionalBoolean::kFalse
                                                   : OptionalBoolean::kTrue,
@@ -2677,7 +2674,6 @@ void BrowserAutofillManager::AppendFillLogEvents(
             .autofill_skipped_status = skip_reason,
             .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
-            .filling_method = FillingMethod::kNone,
             .was_refill = ToOptionalBoolean(is_refill),
         });
       }
@@ -3139,7 +3135,7 @@ void BrowserAutofillManager::UpdateInitialInteractionTimestamp(
 
 bool BrowserAutofillManager::EvaluateAblationStudy(
     const std::vector<Suggestion>& address_and_credit_card_suggestions,
-    AutofillField* autofill_field,
+    AutofillField& autofill_field,
     SuggestionsContext& context) {
   if (context.filling_product != FillingProduct::kAddress &&
       context.filling_product != FillingProduct::kCreditCard) {
@@ -3200,8 +3196,8 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
         ablation_group, AblationGroup::kDefault);
   }
 
-  if (autofill_field && ablation_group != AblationGroup::kDefault) {
-    autofill_field->AppendLogEventIfNotRepeated(
+  if (ablation_group != AblationGroup::kDefault) {
+    autofill_field.AppendLogEventIfNotRepeated(
         AblationFieldLogEvent{ablation_group, conditional_ablation_group,
                               GetDayInAblationWindow(AutofillClock::Now())});
   }
@@ -3243,6 +3239,10 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     return {};
   }
 
+  if (!form_structure || !autofill_field) {
+    return {};
+  }
+
   std::vector<Suggestion> suggestions;
   if (form_structure && autofill_field) {
     if (FillingProductSet{FillingProduct::kCreditCard,
@@ -3258,7 +3258,8 @@ BrowserAutofillManager::GetAvailableAddressAndCreditCardSuggestions(
     }
   }
 
-  if (EvaluateAblationStudy(suggestions, autofill_field, context)) {
+  if (EvaluateAblationStudy(suggestions, CHECK_DEREF(autofill_field),
+                            context)) {
     return {};
   }
 
