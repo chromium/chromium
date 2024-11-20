@@ -8,13 +8,14 @@ import './chart_summary_table.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CanvasDrawer} from '../../controller/canvas_drawer.js';
+import {DataSeries} from '../../model/data_series.js';
+import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from '../../utils/line_chart_configs.js';
+
 import type {HealthdInternalsChartSummaryTableElement} from './chart_summary_table.js';
-import {DEFAULT_TIME_SCALE, DRAG_RATE, MAX_TIME_SCALE, MIN_TIME_SCALE, MOUSE_WHEEL_SCROLL_RATE, MOUSE_WHEEL_UNITS, TOUCH_ZOOM_UNITS, ZOOM_RATE} from './configs.js';
 import {getTemplate} from './line_chart.html.js';
 import type {HealthdInternalsLineChartMenuElement} from './menu.js';
 import type {HealthdInternalsLineChartScrollbarElement} from './scrollbar.js';
-import {CanvasDrawer} from './utils/canvas_drawer.js';
-import {DataSeries} from './utils/data_series.js';
 
 /**
  * Return the distance of two touch points.

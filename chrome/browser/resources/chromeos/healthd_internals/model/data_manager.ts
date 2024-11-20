@@ -5,13 +5,14 @@
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 
-import {LINE_CHART_COLOR_SET} from './constants.js';
+import {LINE_CHART_COLOR_SET} from '../utils/constants.js';
+import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from '../utils/externs.js';
+import type {HealthdInternalsGenericChartElement} from '../view/pages/generic_chart.js';
+import type {HealthdInternalsTelemetryElement} from '../view/pages/telemetry.js';
+
 import {CpuUsageHelper} from './cpu_usage_helper.js';
 import type {CpuUsage} from './cpu_usage_helper.js';
-import type {CrosSystemResult, HealthdApiBatteryResult, HealthdApiCpuResult, HealthdApiMemoryResult, HealthdApiTelemetryResult, HealthdApiThermalResult, SystemZramInfo} from './externs.js';
-import {DataSeries} from './line_chart/utils/data_series.js';
-import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
-import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
+import {DataSeries} from './data_series.js';
 
 const LINE_CHART_BATTERY_HEADERS: string[] = [
   'Voltage (V)',

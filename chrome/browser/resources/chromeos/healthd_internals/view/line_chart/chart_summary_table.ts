@@ -5,11 +5,11 @@
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {toFixedFloat} from '../utils/number_utils.js';
+import {DataSeries} from '../../model/data_series.js';
+import type {DataPointsStatistics} from '../../model/data_series.js';
+import {toFixedFloat} from '../../utils/number_utils.js';
 
 import {getTemplate} from './chart_summary_table.html.js';
-import {DataSeries} from './utils/data_series.js';
-import type {DataPointsStatistics} from './utils/data_series.js';
 
 
 /**

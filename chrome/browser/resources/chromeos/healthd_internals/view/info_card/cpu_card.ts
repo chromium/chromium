@@ -6,9 +6,9 @@ import './info_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CpuUsage} from '../cpu_usage_helper.js';
-import {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../externs.js';
-import {toFixedFloat} from '../utils/number_utils.js';
+import type {CpuUsage} from '../../model/cpu_usage_helper.js';
+import {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../../utils/externs.js';
+import {toFixedFloat} from '../../utils/number_utils.js';
 
 import {getTemplate} from './cpu_card.html.js';
 import type {HealthdInternalsInfoCardElement} from './info_card.js';

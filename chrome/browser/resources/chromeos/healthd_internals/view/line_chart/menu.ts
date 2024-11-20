@@ -7,9 +7,10 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MENU_TEXT_COLOR_DARK, MENU_TEXT_COLOR_LIGHT} from './configs.js';
+import {DataSeries} from '../../model/data_series.js';
+import {MENU_TEXT_COLOR_DARK, MENU_TEXT_COLOR_LIGHT} from '../../utils/line_chart_configs.js';
+
 import {getTemplate} from './menu.html.js';
-import {DataSeries} from './utils/data_series.js';
 
 /**
  * Creates an element of a specified type with a specified class name.

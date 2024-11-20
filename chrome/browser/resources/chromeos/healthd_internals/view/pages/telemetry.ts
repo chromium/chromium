@@ -11,8 +11,10 @@ import '../info_card/thermal_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {CpuUsage} from '../cpu_usage_helper.js';
-import {HealthdApiTelemetryResult, SystemZramInfo} from '../externs.js';
+import type {CpuUsage} from '../../model/cpu_usage_helper.js';
+import {HealthdApiTelemetryResult, SystemZramInfo} from '../../utils/externs.js';
+import {HealthdInternalsPage} from '../../utils/page_interface.js';
+import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 import type {HealthdInternalsCpuCardElement} from '../info_card/cpu_card.js';
 import type {HealthdInternalsFanCardElement} from '../info_card/fan_card.js';
 import type {HealthdInternalsMemoryCardElement} from '../info_card/memory_card.js';
@@ -20,8 +22,6 @@ import type {HealthdInternalsPowerCardElement} from '../info_card/power_card.js'
 import type {HealthdInternalsThermalCardElement} from '../info_card/thermal_card.js';
 
 import {getTemplate} from './telemetry.html.js';
-import {HealthdInternalsPage} from './utils/page_interface.js';
-import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsTelemetryElement {
   $: {

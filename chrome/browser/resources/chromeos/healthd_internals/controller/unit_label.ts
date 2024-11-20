@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MAX_LABEL_VERTICAL_NUM, MIN_LABEL_VERTICAL_SPACING, TEXT_SIZE} from '../configs.js';
+import {MAX_LABEL_VERTICAL_NUM, MIN_LABEL_VERTICAL_SPACING, TEXT_SIZE} from '../utils/line_chart_configs.js';
 
 /**
  * A scalable label which can calculate the suitable unit and generate text

@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {HealthdApiCpuExecutionTimeUserHz, HealthdApiCpuResult} from './externs.js';
+import type {HealthdApiCpuExecutionTimeUserHz, HealthdApiCpuResult} from '../utils/externs.js';
 
 // The CPU usage info since last snapshot.
 export interface CpuUsage {

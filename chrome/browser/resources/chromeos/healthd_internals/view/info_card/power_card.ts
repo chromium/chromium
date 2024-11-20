@@ -6,8 +6,8 @@ import './info_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HealthdApiTelemetryResult} from '../externs.js';
-import {toFixedFloat} from '../utils/number_utils.js';
+import {HealthdApiTelemetryResult} from '../../utils/externs.js';
+import {toFixedFloat} from '../../utils/number_utils.js';
 
 import type {HealthdInternalsInfoCardElement} from './info_card.js';
 import {getTemplate} from './power_card.html.js';
@@ -52,11 +52,9 @@ export class HealthdInternalsPowerCardElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'healthd-internals-power-card':
-        HealthdInternalsPowerCardElement;
+    'healthd-internals-power-card': HealthdInternalsPowerCardElement;
   }
 }
 
 customElements.define(
-    HealthdInternalsPowerCardElement.is,
-    HealthdInternalsPowerCardElement);
+    HealthdInternalsPowerCardElement.is, HealthdInternalsPowerCardElement);

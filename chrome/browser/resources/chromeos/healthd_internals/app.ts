@@ -11,23 +11,23 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import '//resources/polymer/v3_0/iron-location/iron-location.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './healthd_internals_shared.css.js';
-import './pages/generic_chart.js';
-import './pages/process.js';
-import './pages/telemetry.js';
-import './settings/settings_dialog.js';
+import './view/pages/generic_chart.js';
+import './view/pages/process.js';
+import './view/pages/telemetry.js';
+import './view/settings/settings_dialog.js';
 
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {PagePath} from './constants.js';
-import {DataManager} from './data_manager.js';
-import type {HealthdInternalsFeatureFlagResult} from './externs.js';
-import type {HealthdInternalsGenericChartElement} from './pages/generic_chart.js';
-import type {HealthdInternalsProcessElement} from './pages/process.js';
-import type {HealthdInternalsTelemetryElement} from './pages/telemetry.js';
-import {HealthdInternalsPage} from './pages/utils/page_interface.js';
-import type {HealthdInternalsSettingsDialogElement} from './settings/settings_dialog.js';
+import {DataManager} from './model/data_manager.js';
+import {PagePath} from './utils/constants.js';
+import type {HealthdInternalsFeatureFlagResult} from './utils/externs.js';
+import {HealthdInternalsPage} from './utils/page_interface.js';
+import type {HealthdInternalsGenericChartElement} from './view/pages/generic_chart.js';
+import type {HealthdInternalsProcessElement} from './view/pages/process.js';
+import type {HealthdInternalsTelemetryElement} from './view/pages/telemetry.js';
+import type {HealthdInternalsSettingsDialogElement} from './view/settings/settings_dialog.js';
 
 // Interface of pages in chrome://healthd-internals.
 interface Page {

@@ -8,11 +8,11 @@ import '//resources/ash/common/cr_elements/md_select.css.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {HealthdApiProcessInfo, HealthdApiProcessResult} from '../externs.js';
+import {HealthdApiProcessInfo, HealthdApiProcessResult} from '../../utils/externs.js';
+import {HealthdInternalsPage} from '../../utils/page_interface.js';
+import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 
 import {getTemplate} from './process.html.js';
-import {HealthdInternalsPage} from './utils/page_interface.js';
-import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 /**
  * The data structure for each row in process table.

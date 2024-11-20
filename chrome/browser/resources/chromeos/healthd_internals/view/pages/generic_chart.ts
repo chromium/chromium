@@ -7,12 +7,12 @@ import '../line_chart/line_chart.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {DataSeries} from '../../model/data_series.js';
+import {HealthdInternalsPage} from '../../utils/page_interface.js';
+import {UiUpdateHelper} from '../../utils/ui_update_helper.js';
 import type {HealthdInternalsLineChartElement} from '../line_chart/line_chart.js';
-import type {DataSeries} from '../line_chart/utils/data_series.js';
 
 import {getTemplate} from './generic_chart.html.js';
-import {HealthdInternalsPage} from './utils/page_interface.js';
-import {UiUpdateHelper} from './utils/ui_update_helper.js';
 
 export interface HealthdInternalsGenericChartElement {
   $: {
