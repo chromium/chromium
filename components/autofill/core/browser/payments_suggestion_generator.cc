@@ -65,8 +65,6 @@ namespace {
 constexpr FieldTypeSet kCvcFieldTypes = {
     FieldType::CREDIT_CARD_VERIFICATION_CODE,
     FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
-constexpr FieldTypeGroupSet kCreditCardAndCvcGroups = {
-    FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField};
 
 Suggestion CreateSeparator() {
   Suggestion suggestion;
@@ -126,84 +124,6 @@ bool ShouldSplitCardNameAndLastFourDigits() {
              features::kAutofillEnableVirtualCardMetadata) &&
          base::FeatureList::IsEnabled(features::kAutofillEnableCardProductName);
 #endif
-}
-
-// Adds nested entry to the `suggestion` for filling credit card cardholder name
-// if the `credit_card` has the corresponding info is set.
-bool AddCreditCardNameChildSuggestion(const CreditCard& credit_card,
-                                      const std::string& app_locale,
-                                      Suggestion& suggestion) {
-  if (!credit_card.HasInfo(CREDIT_CARD_NAME_FULL)) {
-    return false;
-  }
-  Suggestion cc_name(credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale),
-                     SuggestionType::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
-  cc_name.payload = Suggestion::Guid(credit_card.guid());
-  cc_name.field_by_field_filling_type_used = CREDIT_CARD_NAME_FULL;
-  suggestion.children.push_back(std::move(cc_name));
-  return true;
-}
-
-// Adds nested entry to the `suggestion` for filling credit card number if the
-// `credit_card` has the corresponding info is set.
-bool AddCreditCardNumberChildSuggestion(const CreditCard& credit_card,
-                                        const std::string& app_locale,
-                                        Suggestion& suggestion) {
-  if (!credit_card.HasInfo(CREDIT_CARD_NUMBER)) {
-    return false;
-  }
-  static constexpr int kFieldByFieldObfuscationLength = 12;
-  Suggestion cc_number(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-                           kFieldByFieldObfuscationLength),
-                       SuggestionType::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
-  cc_number.payload = Suggestion::Guid(credit_card.guid());
-  cc_number.field_by_field_filling_type_used = CREDIT_CARD_NUMBER;
-  cc_number.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_NUMBER_SUGGESTION_LABEL))});
-  suggestion.children.push_back(std::move(cc_number));
-  return true;
-}
-
-// Adds nested entry to the `suggestion` for filling credit card number expiry
-// date. The added entry has 2 nested entries for filling credit card expiry
-// year and month.
-void AddCreditCardExpiryDateChildSuggestion(const CreditCard& credit_card,
-                                            const std::string& app_locale,
-                                            Suggestion& suggestion) {
-  Suggestion cc_expiration(
-      credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale),
-      SuggestionType::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
-  cc_expiration.payload = Suggestion::Guid(credit_card.guid());
-  cc_expiration.field_by_field_filling_type_used =
-      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
-  cc_expiration.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_DATE_SUGGESTION_LABEL))});
-
-  Suggestion cc_expiration_month(
-      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale),
-      SuggestionType::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
-  cc_expiration_month.payload = Suggestion::Guid(credit_card.guid());
-  cc_expiration_month.field_by_field_filling_type_used = CREDIT_CARD_EXP_MONTH;
-  cc_expiration_month.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_MONTH_SUGGESTION_LABEL))});
-
-  Suggestion cc_expiration_year(
-      credit_card.GetInfo(CREDIT_CARD_EXP_2_DIGIT_YEAR, app_locale),
-      SuggestionType::kCreditCardFieldByFieldFilling);
-  // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
-  cc_expiration_year.payload = Suggestion::Guid(credit_card.guid());
-  cc_expiration_year.field_by_field_filling_type_used =
-      CREDIT_CARD_EXP_2_DIGIT_YEAR;
-  cc_expiration_year.labels.push_back({Suggestion::Text(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PAYMENTS_MANUAL_FALLBACK_AUTOFILL_POPUP_CC_EXPIRY_YEAR_SUGGESTION_LABEL))});
-
-  cc_expiration.children.push_back(std::move(cc_expiration_month));
-  cc_expiration.children.push_back(std::move(cc_expiration_year));
-  suggestion.children.push_back(std::move(cc_expiration));
 }
 
 // Returns whether the `suggestion_canon` is a valid match given
@@ -324,25 +244,6 @@ std::u16string GetDisplayNicknameForCreditCard(
   }
   // Fall back to nickname of |card|, which may be empty.
   return card.nickname();
-}
-
-// Creates nested/child suggestions for `suggestion` with the `credit_card`
-// information. The number of nested suggestions added depends on the
-// information present in the `credit_card`.
-void AddPaymentsGranularFillingChildSuggestions(const CreditCard& credit_card,
-                                                Suggestion& suggestion,
-                                                const std::string& app_locale) {
-  bool has_content_above =
-      AddCreditCardNameChildSuggestion(credit_card, app_locale, suggestion);
-  has_content_above |=
-      AddCreditCardNumberChildSuggestion(credit_card, app_locale, suggestion);
-
-  if (credit_card.HasInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)) {
-    if (has_content_above) {
-      suggestion.children.push_back(CreateSeparator());
-    }
-    AddCreditCardExpiryDateChildSuggestion(credit_card, app_locale, suggestion);
-  }
 }
 
 // Return the texts shown as the first line of the suggestion, based on the
@@ -914,18 +815,12 @@ Suggestion CreateCreditCardSuggestion(
     bool virtual_card_option,
     bool card_linked_offer_available,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
-  // Manual fallback entries are shown for all non credit card fields.
-  const bool is_manual_fallback = !kCreditCardAndCvcGroups.contains(
-      GroupTypeOfFieldType(trigger_field_type));
-
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
   suggestion.type = SuggestionType::kCreditCardEntry;
-  bool is_acceptable =
-      IsCardSuggestionAcceptable(credit_card, client, is_manual_fallback);
-  suggestion.acceptability = is_acceptable
+  suggestion.acceptability = IsCardSuggestionAcceptable(credit_card, client)
                                  ? Suggestion::Acceptability::kAcceptable
                                  : Suggestion::Acceptability::kUnacceptable;
   suggestion.payload = Suggestion::Guid(credit_card.guid());
@@ -937,14 +832,11 @@ Suggestion CreateCreditCardSuggestion(
   // Manual fallback suggestions labels are computed as if the triggering field
   // type was the credit card number.
   auto [main_text, minor_text] = GetSuggestionMainTextAndMinorTextForCard(
-      credit_card, client,
-      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
+      credit_card, client, trigger_field_type);
   suggestion.main_text = std::move(main_text);
   suggestion.minor_text = std::move(minor_text);
-  SetSuggestionLabelsForCard(
-      credit_card, client,
-      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type,
-      metadata_logging_context, suggestion);
+  SetSuggestionLabelsForCard(credit_card, client, trigger_field_type,
+                             metadata_logging_context, suggestion);
   SetCardArtURL(suggestion, credit_card,
                 client.GetPersonalDataManager().payments_data_manager(),
                 virtual_card_option);
@@ -976,12 +868,6 @@ Suggestion CreateCreditCardSuggestion(
   if (virtual_card_option) {
     suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
         IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_CARD_INFORMATION_ENTRY);
-  } else if (is_manual_fallback) {
-    AddPaymentsGranularFillingChildSuggestions(
-        credit_card, suggestion,
-        client.GetPersonalDataManager().payments_data_manager().app_locale());
-    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
   } else {
     suggestion.acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
@@ -1051,9 +937,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
               kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)) {
     return {};
   }
-  const bool is_trigger_field_a_credit_card_field =
-      kCreditCardAndCvcGroups.contains(
-          GroupTypeOfFieldType(trigger_field_type));
 
   const bool allow_payment_swapping =
       base::FeatureList::IsEnabled(
@@ -1064,14 +947,10 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
       GetCardLinkedOffers(client);
   summary.with_offer = !card_linked_offers_map.empty();
   bool suppress_disused_cards =
-      SanitizeCreditCardFieldValue(trigger_field.value()).empty() &&
-      trigger_source !=
-          AutofillSuggestionTriggerSource::kManualFallbackPayments;
-  bool should_prefix_match =
-      is_trigger_field_a_credit_card_field && !allow_payment_swapping;
+      SanitizeCreditCardFieldValue(trigger_field.value()).empty();
+  bool should_prefix_match = !allow_payment_swapping;
   bool require_non_empty_value_on_trigger_field =
-      (is_trigger_field_a_credit_card_field && !allow_payment_swapping) ||
-      kCvcFieldTypes.contains(trigger_field_type);
+      !allow_payment_swapping || kCvcFieldTypes.contains(trigger_field_type);
   std::vector<CreditCard> cards_to_suggest =
       GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
                                /*suppress_disused_cards=*/
@@ -1082,8 +961,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
                                /*include_virtual_cards=*/true);
 
   if (kCvcFieldTypes.contains(trigger_field_type) &&
-      trigger_source !=
-          AutofillSuggestionTriggerSource::kManualFallbackPayments &&
       base::FeatureList::IsEnabled(
           features::kAutofillEnableCvcStorageAndFillingEnhancement)) {
     FilterCardsToSuggestForCvcFields(
@@ -1094,28 +971,6 @@ std::vector<Suggestion> GetCreditCardOrCvcFieldSuggestions(
         cards_to_suggest);
   }
 
-  // If autofill for cards is triggered from the context menu on a credit card
-  // field and no suggestions can be shown (i.e. if a user has only cards
-  // without names and then triggers autofill from the context menu on a card
-  // name field), then default to the same behaviour as if the user triggers
-  // autofill for card on a non-payments field. This is done to avoid a
-  // situation when the user would trigger autofill from the context menu, and
-  // then no suggestions appear.
-  // The "if condition" is satisfied only if `trigger_field_type` is a credit
-  // card field. Then, `GetCreditCardOrCvcFieldSuggestions()` is called with
-  // `UNKOWN_TYPE` for the `trigger_field_type`. This guarantees no infinite
-  // recursion occurs.
-  if (cards_to_suggest.empty() && is_trigger_field_a_credit_card_field &&
-      trigger_source ==
-          AutofillSuggestionTriggerSource::kManualFallbackPayments &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillForUnclassifiedFieldsAvailable)) {
-    return GetCreditCardOrCvcFieldSuggestions(
-        client, trigger_field, four_digit_combinations_in_dom,
-        autofilled_last_four_digits_in_form_for_suggestion_filtering,
-        UNKNOWN_TYPE, trigger_source, should_show_scan_credit_card,
-        should_show_cards_from_account, summary);
-  }
   bool new_ranking_experiment_enabled = base::FeatureList::IsEnabled(
       features::kAutofillEnableRankingFormulaCreditCards);
   std::vector<CreditCard> cards_ranked_by_legacy_algorithm;
@@ -1294,8 +1149,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
         main_text_content_description, should_display_terms_available);
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
       suggestion.type = SuggestionType::kVirtualCreditCardEntry;
-      bool acceptable = IsCardSuggestionAcceptable(
-          credit_card, client, /*is_manual_fallback= */ false);
+      bool acceptable = IsCardSuggestionAcceptable(credit_card, client);
       suggestion.acceptability =
           acceptable
               ? Suggestion::Acceptability::kAcceptable
@@ -1318,19 +1172,16 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
   return suggestions;
 }
 
-// static
 Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageCreditCard,
                                          with_gpay_logo);
 }
 
-// static
 Suggestion CreateManageIbansSuggestion() {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageIban,
                                          /*with_gpay_logo=*/false);
 }
 
-// static
 std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
   if (ibans.empty()) {
     return {};
@@ -1435,8 +1286,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
 }
 
 bool IsCardSuggestionAcceptable(const CreditCard& card,
-                                const AutofillClient& client,
-                                bool is_manual_fallback) {
+                                const AutofillClient& client) {
   if (card.record_type() == CreditCard::RecordType::kVirtualCard) {
     auto* optimization_guide = client.GetAutofillOptimizationGuide();
     return !(
@@ -1444,8 +1294,7 @@ bool IsCardSuggestionAcceptable(const CreditCard& card,
         optimization_guide->ShouldBlockFormFieldSuggestion(
             client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(), card));
   }
-
-  return !is_manual_fallback;
+  return true;
 }
 
 std::vector<CreditCard> GetOrderedCardsToSuggestForTest(

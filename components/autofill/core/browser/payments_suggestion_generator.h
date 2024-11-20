@@ -136,8 +136,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
 // user. Returns false when merchant does not accept the given card for example
 // when merchants opt-out of VCNs.
 bool IsCardSuggestionAcceptable(const CreditCard& card,
-                                const AutofillClient& client,
-                                bool is_manual_fallback);
+                                const AutofillClient& client);
 
 // Exposes `GetOrderedCardsToSuggest` in tests.
 std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
