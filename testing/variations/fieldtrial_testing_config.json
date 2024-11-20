@@ -7440,6 +7440,7 @@
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
+                "android",
                 "android_webview"
             ],
             "experiments": [
@@ -7451,26 +7452,6 @@
                     },
                     "enable_features": [
                         "DefaultPassthroughCommandDecoder"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "passthrough_ON_drdc_OFF_20241022",
-                    "params": {
-                        "BlockListByDevice": "",
-                        "BlockListByModel": ""
-                    },
-                    "enable_features": [
-                        "DefaultPassthroughCommandDecoder"
-                    ],
-                    "disable_features": [
-                        "EnableDrDc"
                     ]
                 }
             ]
