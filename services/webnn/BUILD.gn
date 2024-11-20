@@ -247,9 +247,10 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
   proto_source = "webnn_graph_mojolpm_fuzzer.proto"
 
   proto_deps = [ "//services/webnn/public/mojom:mojom_mojolpm" ]
-
+  testcase_proto_kind = "services.fuzzing.webnn_graph.proto.Testcase"
+  seed_corpus_sources =
+      [ "webnn_graph_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
   deps = [
-    ":tflite_graph_builder",
     ":webnn_service",
     "//base",
     "//base/test:test_support",
@@ -257,8 +258,4 @@ mojolpm_fuzzer_test("webnn_graph_mojolpm_fuzzer") {
     "//services/webnn/public/mojom",
     "//third_party/libprotobuf-mutator",
   ]
-
-  if (is_posix) {
-    deps += [ ":coreml_graph_builder" ]
-  }
 }
