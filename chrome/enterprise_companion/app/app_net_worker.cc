@@ -73,6 +73,8 @@ class AppNetWorker : public App {
         mojo::PlatformChannel::RecoverPassedEndpointFromCommandLine(
             *base::CommandLine::ForCurrentProcess());
     if (!endpoint.is_valid()) {
+      LOG(ERROR)
+          << "Failed to start net worker: Received an invalid mojo endpoint.";
       Shutdown(
           EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
       return;
@@ -81,6 +83,8 @@ class AppNetWorker : public App {
     mojo::ScopedMessagePipeHandle pipe =
         mojo::IncomingInvitation::AcceptIsolated(std::move(endpoint));
     if (!pipe->is_valid()) {
+      LOG(ERROR) << "Failed to start net worker: Mojo invitation does not "
+                    "include a valid pipe.";
       Shutdown(
           EnterpriseCompanionStatus(ApplicationError::kMojoConnectionFailed));
       return;
@@ -90,10 +94,13 @@ class AppNetWorker : public App {
         net_thread_.task_runner(), std::move(event_logger_cookie_handler),
         mojo::PendingReceiver<network::mojom::URLLoaderFactory>(
             std::move(pipe)),
-        base::BindPostTaskToCurrentDefault(base::BindOnce(
-            &AppNetWorker::Shutdown, weak_ptr_factory_.GetWeakPtr(),
-            EnterpriseCompanionStatus(
-                ApplicationError::kMojoConnectionFailed))));
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(
+                [] { VLOG(1) << "Net worker's remote process disconnected."; })
+                .Then(base::BindOnce(
+                    &AppNetWorker::Shutdown, weak_ptr_factory_.GetWeakPtr(),
+                    EnterpriseCompanionStatus(
+                        ApplicationError::kMojoConnectionFailed)))));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
