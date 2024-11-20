@@ -59,14 +59,11 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       ui::kColorSysNeutralContainer};
   mixer[kColorNewTabPageDoodleShareButtonIcon] = {ui::kColorSysOnSurface};
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
-    mixer[kColorNewTabPageModuleItemBackground] = {
-        ui::kColorSysBaseContainerElevated};
-    mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
-        ui::kColorSysStateHoverBrightBlendProtection};
-  } else {
-    mixer[kColorNewTabPageModuleItemBackground] = {ui::kColorSysBaseContainer};
-  }
+  mixer[kColorNewTabPageModuleItemBackground] = {
+      ui::kColorSysBaseContainerElevated};
+  mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
+      ui::kColorSysStateHoverBrightBlendProtection};
+
   mixer[kColorNewTabPageModuleElementDivider] = {ui::kColorSysDivider};
   mixer[kColorNewTabPageModuleContextMenuDivider] = {ui::kColorSysDivider};
 

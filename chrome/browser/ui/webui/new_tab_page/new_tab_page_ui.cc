@@ -178,12 +178,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kNtpOneGoogleBar));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
-  bool redesigned_modules_enabled =
-      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned);
-  source->AddBoolean("singleRowShortcutsEnabled", redesigned_modules_enabled);
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
-  source->AddBoolean("reducedLogoSpaceEnabled", redesigned_modules_enabled);
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
@@ -447,8 +443,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesOverflowScrollbarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesOverflowScrollbar));
-
-  source->AddBoolean("modulesRedesignedEnabled", redesigned_modules_enabled);
 
   source->AddString(
       "calendarModuleDismissHours",

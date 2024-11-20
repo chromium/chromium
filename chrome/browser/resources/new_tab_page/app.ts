@@ -195,23 +195,10 @@ export class AppElement extends AppElementBase {
         notify: true,
       },
 
-      realboxIsTall_: {
-        type: Boolean,
-        reflect: true,
-      },
-
       realboxShown_: {type: Boolean},
-
-      /* Searchbox width behavior. */
-      searchboxWidthBehavior_: {
-        type: String,
-        reflect: true,
-      },
-
       logoEnabled_: {type: Boolean},
       oneGoogleBarEnabled_: {type: Boolean},
       shortcutsEnabled_: {type: Boolean},
-      singleRowShortcutsEnabled_: {type: Boolean},
       middleSlotPromoEnabled_: {type: Boolean},
       modulesEnabled_: {type: Boolean},
       middleSlotPromoLoaded_: {type: Boolean},
@@ -274,18 +261,13 @@ export class AppElement extends AppElementBase {
   protected singleColoredLogo_: boolean;
   realboxCanShowSecondarySide: boolean;
   realboxHadSecondarySide: boolean;
-  protected realboxIsTall_ = loadTimeData.getBoolean('realboxIsTall');
   protected realboxShown_: boolean;
-  protected searchboxWidthBehavior_: string =
-      loadTimeData.getString('searchboxWidthBehavior');
   protected showLensUploadDialog_: boolean = false;
   protected logoEnabled_: boolean = loadTimeData.getBoolean('logoEnabled');
   protected oneGoogleBarEnabled_: boolean =
       loadTimeData.getBoolean('oneGoogleBarEnabled');
   protected shortcutsEnabled_: boolean =
       loadTimeData.getBoolean('shortcutsEnabled');
-  protected singleRowShortcutsEnabled_: boolean =
-      loadTimeData.getBoolean('singleRowShortcutsEnabled');
   private modulesFreShown: boolean;
   protected middleSlotPromoEnabled_: boolean =
       loadTimeData.getBoolean('middleSlotPromoEnabled');

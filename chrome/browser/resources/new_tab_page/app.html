@@ -41,7 +41,7 @@
   ${this.lazyRender_ ? html`
     ${this.shortcutsEnabled_ ? html`
       <cr-most-visited id="mostVisited" .theme="${this.theme_?.mostVisited || null}"
-          ?single-row="${this.singleRowShortcutsEnabled_}" reflow-on-overflow>
+          ?single-row="true" reflow-on-overflow>
       </cr-most-visited>
     ` : ''}
     ${this.middleSlotPromoEnabled_ ? html`
