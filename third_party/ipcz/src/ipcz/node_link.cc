@@ -615,7 +615,8 @@ bool NodeLink::OnAcceptParcel(msg::AcceptParcel& accept) {
       return true;
     }
 
-    if (!parcel->AdoptDataFragment(WrapRefCounted(&memory()), fragment)) {
+    if (fragment.is_null() ||
+        !parcel->AdoptDataFragment(WrapRefCounted(&memory()), fragment)) {
       return false;
     }
   } else {

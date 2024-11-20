@@ -118,7 +118,12 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
       return {};
     }
 
-    return AdoptFragmentRef<T>(GetFragment(descriptor));
+    const Fragment fragment = GetFragment(descriptor);
+    if (fragment.is_null()) {
+      return {};
+    }
+
+    return AdoptFragmentRef<T>(fragment);
   }
 
   // Adds a new buffer to the underlying BufferPool to use as additional

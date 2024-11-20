@@ -63,9 +63,12 @@ void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
     memory->WaitForBufferAsync(
         descriptor.buffer_id(),
         [self = WrapRefCounted(this), memory, descriptor] {
-          self->SetLinkState(memory->AdoptFragmentRef<RouterLinkState>(
-              memory->GetFragment(descriptor)));
-          self->FlushRouter();
+          auto state =
+              memory->AdoptFragmentRefIfValid<RouterLinkState>(descriptor);
+          if (state.is_addressable()) {
+            self->SetLinkState(std::move(state));
+            self->FlushRouter();
+          }
         });
     return;
   }
