@@ -34,18 +34,9 @@ BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableImageTranslate);
 
-// Enables the image search side panel experience for third party default search
-// engines
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
-
 // Enables launching the region search experience in a new tab with WebUI.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
-
-// Enables the context menu in the Lens side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(EnableContextMenuInLensSidePanel);
 
 // Enables the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -121,11 +112,6 @@ extern const base::FeatureParam<bool> kEnableFullscreenSearch;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableLatencyLogging();
 
-// Returns whether the image search side panel is supported for third party
-// default search engines
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
-
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetHomepageURLForLens();
@@ -168,10 +154,6 @@ extern bool GetDismissLoadingStateOnPrimaryPageChanged();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensFullscreenSearchEnabled();
 
-// Returns whether the Lens side panel is enabled for image search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensSidePanelEnabled();
-
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -180,10 +162,6 @@ extern bool IsLensInScreenshotSharingEnabled();
 // Returns whether we should use a WebUI static page for region search.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensRegionSearchStaticPageEnabled();
-
-// Returns whether to enable the context menu in the Lens side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetEnableContextMenuInLensSidePanel();
 
 // The URL for the Lens ping.
 COMPONENT_EXPORT(LENS_FEATURES)

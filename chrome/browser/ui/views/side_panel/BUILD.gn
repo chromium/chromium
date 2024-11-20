@@ -4,7 +4,6 @@
 
 assert(is_win || is_mac || is_linux || is_chromeos)
 
-import("//components/lens/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("side_panel_enums") {
@@ -34,8 +33,6 @@ source_set("side_panel") {
     "history_clusters/history_clusters_side_panel_utils.h",
     "history_clusters/history_clusters_tab_helper.cc",
     "history_clusters/history_clusters_tab_helper.h",
-    "lens/lens_core_tab_side_panel_helper.cc",
-    "lens/lens_core_tab_side_panel_helper.h",
     "read_anything/read_anything_service.cc",
     "read_anything/read_anything_service.h",
     "read_anything/read_anything_service_factory.cc",
@@ -90,14 +87,6 @@ source_set("side_panel") {
     "side_panel_web_ui_view.cc",
     "side_panel_web_ui_view.h",
   ]
-  if (enable_lens_desktop_google_branded_features) {
-    sources += [
-      "lens/lens_side_panel_coordinator.cc",
-      "lens/lens_side_panel_coordinator.h",
-      "lens/lens_unified_side_panel_view.cc",
-      "lens/lens_unified_side_panel_view.h",
-    ]
-  }
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
@@ -112,8 +101,6 @@ source_set("side_panel") {
     "//chrome/browser/ui/webui/side_panel/customize_chrome",
     "//chrome/common",
     "//chrome/common/read_anything:mojo_bindings",
-    "//components/lens",
-    "//components/lens:buildflags",
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/search_engines",
@@ -142,7 +129,6 @@ source_set("side_panel") {
     "//chrome/app:generated_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser/favicon",
-    "//chrome/browser/lens/region_search",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles",
     "//chrome/browser/resources:component_extension_resources",
@@ -174,7 +160,6 @@ source_set("side_panel") {
     "//components/keyed_service/core",
     "//components/language/core/browser",
     "//components/language/core/common",
-    "//components/lens:features",
     "//components/omnibox/browser:vector_icons",
     "//components/optimization_guide/core:features",
     "//components/performance_manager",

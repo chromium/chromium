@@ -34,17 +34,9 @@ BASE_FEATURE(kEnableImageTranslate,
              "LensEnableImageTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
-             "EnableImageSearchSidePanelFor3PDse",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensRegionSearchStaticPage,
              "LensRegionSearchStaticPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableContextMenuInLensSidePanel,
-             "EnableContextMenuInLensSidePanel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlay,
              "LensOverlay",
@@ -435,26 +427,14 @@ bool GetDismissLoadingStateOnPrimaryPageChanged() {
   return kDismissLoadingStateOnPrimaryPageChanged.Get();
 }
 
-bool GetEnableImageSearchUnifiedSidePanelFor3PDse() {
-  return base::FeatureList::IsEnabled(kEnableImageSearchSidePanelFor3PDse);
-}
-
 bool IsLensFullscreenSearchEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
          kEnableLensFullscreenSearch.Get();
 }
 
-bool IsLensSidePanelEnabled() {
-  return base::FeatureList::IsEnabled(kLensStandalone);
-}
-
 bool IsLensRegionSearchStaticPageEnabled() {
   return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
-}
-
-bool GetEnableContextMenuInLensSidePanel() {
-  return base::FeatureList::IsEnabled(kEnableContextMenuInLensSidePanel);
 }
 
 bool GetShouldIssuePreconnectForLens() {

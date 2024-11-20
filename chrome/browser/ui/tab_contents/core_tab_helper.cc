@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/views/side_panel/lens/lens_core_tab_side_panel_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -112,8 +111,9 @@ void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
   content_restrictions_ = content_restrictions;
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   browser->command_controller()->ContentRestrictionsChanged();
 #endif
@@ -392,8 +392,7 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
     case net::LOAD_STATE_WAITING_FOR_DELEGATE:
       if (!source->GetLoadState().param.empty()) {
         *status_text = l10n_util::GetStringFUTF16(
-            IDS_LOAD_STATE_WAITING_FOR_DELEGATE,
-            source->GetLoadState().param);
+            IDS_LOAD_STATE_WAITING_FOR_DELEGATE, source->GetLoadState().param);
         return true;
       } else {
         *status_text = l10n_util::GetStringUTF16(
@@ -434,7 +433,7 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
         *status_text = l10n_util::GetStringFUTF16Int(
             IDS_LOAD_STATE_SENDING_REQUEST_WITH_PROGRESS,
             static_cast<int>((100 * source->GetUploadPosition()) /
-                source->GetUploadSize()));
+                             source->GetUploadSize()));
         return true;
       } else {
         *status_text =
@@ -442,9 +441,8 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
         return true;
       }
     case net::LOAD_STATE_WAITING_FOR_RESPONSE:
-      *status_text =
-          l10n_util::GetStringFUTF16(IDS_LOAD_STATE_WAITING_FOR_RESPONSE,
-                                     source->GetLoadStateHost());
+      *status_text = l10n_util::GetStringFUTF16(
+          IDS_LOAD_STATE_WAITING_FOR_RESPONSE, source->GetLoadStateHost());
       return true;
     // Ignore net::LOAD_STATE_READING_RESPONSE, net::LOAD_STATE_IDLE and
     // net::LOAD_STATE_OBSOLETE_WAITING_FOR_APPCACHE
@@ -468,8 +466,9 @@ void CoreTabHelper::DidStartLoading() {
 void CoreTabHelper::NavigationEntriesDeleted() {
 #if !BUILDFLAG(IS_ANDROID)
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (web_contents() == browser->tab_strip_model()->GetActiveWebContents())
+    if (web_contents() == browser->tab_strip_model()->GetActiveWebContents()) {
       browser->command_controller()->TabStateChanged();
+    }
   }
 #endif
 }
@@ -480,8 +479,9 @@ void CoreTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser)
+  if (browser) {
     browser->command_controller()->WebContentsFocusChanged();
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -489,8 +489,9 @@ void CoreTabHelper::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser)
+  if (browser) {
     browser->command_controller()->WebContentsFocusChanged();
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -599,8 +600,9 @@ void CoreTabHelper::MaybeSetSearchArgsForImageTranslate(
 
 void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
                                      GURL url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
+  }
   content::OpenURLParams open_url_params(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false);
@@ -610,9 +612,9 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
     DCHECK(!content_type.empty());
     open_url_params.post_data = network::ResourceRequestBody::CreateFromBytes(
         post_data.data(), post_data.size());
-    open_url_params.extra_headers += base::StringPrintf(
-        "%s: %s\r\n", net::HttpRequestHeaders::kContentType,
-        content_type.c_str());
+    open_url_params.extra_headers +=
+        base::StringPrintf("%s: %s\r\n", net::HttpRequestHeaders::kContentType,
+                           content_type.c_str());
   }
 
   web_contents()->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
