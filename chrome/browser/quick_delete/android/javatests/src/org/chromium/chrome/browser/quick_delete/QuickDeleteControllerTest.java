@@ -132,7 +132,10 @@ public class QuickDeleteControllerTest {
                 () ->
                         mActivity
                                 .getCurrentTabModel()
-                                .closeTabs(TabClosureParams.closeAllTabs().build()));
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
     }
 
     private void openQuickDeleteDialog() {

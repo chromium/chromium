@@ -110,7 +110,10 @@ public class QuickDeleteDialogDelegateTest {
                 () ->
                         mActivity
                                 .getCurrentTabModel()
-                                .closeTabs(TabClosureParams.closeAllTabs().build()));
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
 
         // Clear history.
         runOnUiThreadBlocking(
@@ -267,7 +270,10 @@ public class QuickDeleteDialogDelegateTest {
                 () ->
                         mActivity
                                 .getCurrentTabModel()
-                                .closeTabs(TabClosureParams.closeAllTabs().build()));
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeAllTabs().build(),
+                                        /* allowDialog= */ false));
         assertEquals(0, getTabsInCurrentTabModel().size());
         LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
