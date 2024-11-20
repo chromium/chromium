@@ -1,0 +1,6 @@
+[wrap-file]
+directory = rustversion-1.0.18
+source_url = https://static.crates.io/crates/rustversion/1.0.18/download
+source_filename = rustversion-1.0.18.tar.gz
+source_hash = 0e819f2bc632f285be6d7cd36e25940d45b2391dd6d9b939e79de557f7014248
+patch_directory = rustversion

@@ -796,6 +796,11 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.124 -> 1.0.126"
 
+[[audits.cxx]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.129 -> 1.0.130"
+
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -938,6 +943,11 @@ who = "Liza Burakova <liza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.128 -> 1.0.129"
 
+[[audits.cxxbridge-flags]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.129 -> 1.0.130"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"
@@ -962,6 +972,11 @@ delta = "1.0.123 -> 1.0.124"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.124 -> 1.0.126"
+
+[[audits.cxxbridge-macro]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.129 -> 1.0.130"
 
 [[audits.either]]
 who = "agl@chromium.org"
