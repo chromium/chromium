@@ -10,10 +10,13 @@
 
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/cstring_view.h"
 #include "base/time/time.h"
+#include "media/base/timestamp_constants.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -29,13 +32,13 @@ class EsParserTestBase {
     Packet();
 
     // Offset in the stream.
-    size_t offset;
+    size_t offset = 0;
 
     // Size of the packet.
-    size_t size;
+    size_t size = 0;
 
     // Timestamp of the packet.
-    base::TimeDelta pts;
+    base::TimeDelta pts = kNoTimestamp;
   };
 
   EsParserTestBase();
@@ -47,37 +50,37 @@ class EsParserTestBase {
 
  protected:
   void LoadStream(const char* filename);
-  std::vector<Packet> LoadPacketsFromFiles(const char* file_temp, size_t num);
+  std::vector<Packet> LoadPacketsFromFiles(base::cstring_view prefix,
+                                           size_t num);
 
   // ES parser callbacks.
   void NewAudioConfig(const AudioDecoderConfig& config);
   void NewVideoConfig(const VideoDecoderConfig& config);
   void EmitBuffer(scoped_refptr<StreamParserBuffer> buffer);
 
-  // Process the PES packets using the given ES parser.
-  // When |force_timing| is true, even the invalid negative timestamps will be
-  // given to the ES parser.
-  // Return true if successful, false otherwise.
+  // Processes the PES packets using the given ES parser. When `force_timing` is
+  // true, even invalid (negative) timestamps will be given to the ES parser.
+  // Returns whether processing succeeded.
   bool ProcessPesPackets(EsParser* es_parser,
                          const std::vector<Packet>& pes_packets,
                          bool force_timing);
 
-  // Assume the offsets are known, compute the size of each packet.
-  // The last packet is assumed to cover the end of the stream.
-  // Packets are assumed to be in stream order.
+  // Computes the size of each packet, assuming all offsets are known. Packets
+  // are assumed to be in stream order and the last packet is assumed to cover
+  // the end of the stream.
   void ComputePacketSize(std::vector<Packet>* packets);
 
-  // Generate some fixed size PES packets of |stream_|.
+  // Generates some fixed size PES packets of `stream_`.
   std::vector<Packet> GenerateFixedSizePesPacket(size_t pes_size);
 
   // ES stream.
   std::vector<uint8_t> stream_;
 
   // Number of decoder configs received from the ES parser.
-  size_t config_count_;
+  size_t config_count_ = 0;
 
   // Number of buffers generated while parsing the ES stream.
-  size_t buffer_count_;
+  size_t buffer_count_ = 0;
 
   // Timestamps of buffers generated while parsing the ES stream.
   std::string buffer_timestamps_;

@@ -77,7 +77,7 @@ TEST_F(EsParserAdtsTest, AacLcAdts) {
 
 TEST_F(EsParserAdtsTest, AacSampleRate) {
   std::vector<Packet> pes_packets =
-      LoadPacketsFromFiles("aac-44100-packet-%d", 4);
+      LoadPacketsFromFiles("aac-44100-packet-", 4);
 
   pes_packets.front().pts = base::Seconds(0);
   EXPECT_TRUE(Process(pes_packets, true /* sbr_in_mimetype */));
