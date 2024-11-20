@@ -230,6 +230,21 @@ void BinaryUploadService::Request::set_printer_type(
       ->set_printer_type(printer_type);
 }
 
+void BinaryUploadService::Request::set_clipboard_source_type(
+    enterprise_connectors::ContentMetaData::CopiedTextSource::
+        CopiedTextSourceType source_type) {
+  content_analysis_request_.mutable_request_data()
+      ->mutable_copied_text_source()
+      ->set_context(source_type);
+}
+
+void BinaryUploadService::Request::set_clipboard_source_url(
+    const std::string& url) {
+  content_analysis_request_.mutable_request_data()
+      ->mutable_copied_text_source()
+      ->set_url(url);
+}
+
 void BinaryUploadService::Request::set_password(const std::string& password) {
   content_analysis_request_.mutable_request_data()->set_decryption_key(
       password);

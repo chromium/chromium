@@ -253,6 +253,12 @@ const std::set<std::string>* ImageMimeTypes() {
   return &set;
 }
 
+ContentMetaData::CopiedTextSource MakeClipboardSource(std::string url) {
+  ContentMetaData::CopiedTextSource source;
+  source.set_url(std::move(url));
+  return source;
+}
+
 // A fake delegate with minimal overrides to obtain behavior that's as close to
 // the real one as possible.
 class MinimalFakeContentAnalysisDelegate : public ContentAnalysisDelegate {
@@ -800,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   data.text.emplace_back(text());
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -977,7 +983,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, AllowTextAndImage) {
   data.image = image();
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -1081,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   data.image = image();
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -1292,7 +1298,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest,
   ContentAnalysisDelegate::Data data;
   data.image = image();
   data.text.emplace_back(text());
-  data.clipboard_source = "https://source.com/";
+  data.clipboard_source = MakeClipboardSource("https://source.com/");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 
@@ -2038,7 +2044,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   ContentAnalysisDelegate::Data data;
   data.text.emplace_back(text());
   data.reason = ContentAnalysisRequest::CLIPBOARD_PASTE;
-  data.clipboard_source = "about:blank";
+  data.clipboard_source = MakeClipboardSource("about:blank");
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, BULK_DATA_ENTRY));
 

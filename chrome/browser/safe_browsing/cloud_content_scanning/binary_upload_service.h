@@ -186,6 +186,10 @@ class BinaryUploadService : public KeyedService {
     void set_printer_type(
         enterprise_connectors::ContentMetaData::PrintMetadata::PrinterType
             printer_type);
+    void set_clipboard_source_type(
+        enterprise_connectors::ContentMetaData::CopiedTextSource::
+            CopiedTextSourceType source_type);
+    void set_clipboard_source_url(const std::string& url);
     void set_password(const std::string& password);
     void set_reason(
         enterprise_connectors::ContentAnalysisRequest::Reason reason);

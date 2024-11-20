@@ -30,6 +30,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/data_controls/reporting_service.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/file_util_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -208,7 +209,9 @@ void ContentAnalysisDelegate::BypassWarnings(
 
     ReportAnalysisConnectorWarningBypass(
         profile_, /*url*/ url_, /*tab_url*/ url_,
-        /*source*/ data_.clipboard_source,
+        /*source*/
+        data_controls::ReportingService::GetClipboardSourceString(
+            data_.clipboard_source),
         /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
         "text/plain",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
@@ -222,8 +225,11 @@ void ContentAnalysisDelegate::BypassWarnings(
 
     ReportAnalysisConnectorWarningBypass(
         profile_, /*url*/ url_, /*tab_url*/ url_,
-        /*source*/ data_.clipboard_source, /*destination*/ url_.spec(),
-        "Image data", /*download_digest_sha256*/ "",
+        /*source*/
+        data_controls::ReportingService::GetClipboardSourceString(
+            data_.clipboard_source),
+        /*destination*/ url_.spec(), "Image data",
+        /*download_digest_sha256*/ "",
         /*mime_type*/ "",
         extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
         GetContentTransferMethod(), access_point_, data_.image.size(),
@@ -583,7 +589,9 @@ void ContentAnalysisDelegate::StringRequestCallback(
 
   MaybeReportDeepScanningVerdict(
       profile_, /*url*/ url_, /*tab_url*/ url_,
-      /*source*/ data_.clipboard_source,
+      /*source*/
+      data_controls::ReportingService::GetClipboardSourceString(
+          data_.clipboard_source),
       /*destination*/ url_.spec(), "Text data", /*download_digest_sha256*/ "",
       "text/plain",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
@@ -630,7 +638,9 @@ void ContentAnalysisDelegate::ImageRequestCallback(
 
   MaybeReportDeepScanningVerdict(
       profile_, /*url*/ url_, /*tab_url*/ url_,
-      /*source*/ data_.clipboard_source,
+      /*source*/
+      data_controls::ReportingService::GetClipboardSourceString(
+          data_.clipboard_source),
       /*destination*/ url_.spec(), "Image data", /*download_digest_sha256*/ "",
       /*mime_type*/ "",
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
@@ -841,8 +851,11 @@ void ContentAnalysisDelegate::PrepareTextRequest() {
 
     PrepareRequest(BULK_DATA_ENTRY, request.get());
     request->set_destination(url_.spec());
-    if (!data_.clipboard_source.empty()) {
-      request->set_source(data_.clipboard_source);
+    if (data_.clipboard_source.has_context()) {
+      request->set_clipboard_source_type(data_.clipboard_source.context());
+    }
+    if (data_.clipboard_source.has_url()) {
+      request->set_clipboard_source_url(data_.clipboard_source.url());
     }
     UploadTextForDeepScanning(std::move(request));
   }
