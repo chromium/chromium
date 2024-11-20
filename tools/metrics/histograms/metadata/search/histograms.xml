@@ -239,6 +239,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.ChoiceDebug.UnknownCountryIdStored"
+    enum="UnknownCountryIdStored" expires_after="2025-11-18">
+  <owner>cschlosser@chromium.org</owner>
+  <owner>chromeos-privacyhub@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records if the pref storing the current country ID of the device is invalid.
+    Through some code paths it's possible that a placeholder value could be
+    persisted in the prefs. Earlier there were less checks in place for valid
+    country IDs which makes it possible that old profiles still have the invalid
+    values stored in prefs. As the prefs take precedence over other mechanisms
+    when determining the country for the device an invalid value can lead to the
+    actual country not being assigned correctly. This histogram is emitted when
+    trying to read the pref for the profile and iff the pref exists.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceReprompt{Category}"
     enum="SearchEngineChoiceReprompt" expires_after="2025-04-06">
   <owner>droger@chromium.org</owner>

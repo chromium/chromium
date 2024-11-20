@@ -423,6 +423,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tile was clicked"/>
 </enum>
 
+<!-- LINT.IfChange(UnknownCountryIdStored) -->
+
+<enum name="UnknownCountryIdStored">
+  <int value="0" label="Valid country stored"/>
+  <int value="1" label="Clearing feature disabled"/>
+  <int value="2" label="Cleared pref due to invalid country ID"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/search_engine_choice/search_engine_choice_service.cc:UnknownCountryIdStored) -->
+
 </enums>
 
 </histogram-configuration>

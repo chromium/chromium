@@ -107,4 +107,10 @@ const base::FeatureParam<bool> kReconcileWithAllKnownEngines(
     "reconcile_with_all_known_engines",
     false);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_FEATURE(kClearPrefForUnknownCountry,
+             "ClearCountryPrefForStoredUnknownCountry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace switches

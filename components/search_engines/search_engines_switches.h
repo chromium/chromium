@@ -113,6 +113,14 @@ BASE_DECLARE_FEATURE(kTemplateUrlReconciliation);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 extern const base::FeatureParam<bool> kReconcileWithAllKnownEngines;
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+// When the `country_codes::kCountryIDUnknown` is stored in prefs and this
+// feature is enabled the pref will be cleared allowing a valid country to be
+// set again.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kClearPrefForUnknownCountry);
+#endif
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_
