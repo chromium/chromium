@@ -4212,7 +4212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Latency" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4237,7 +4237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Result" enum="BooleanHit"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4262,7 +4262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.RetryCount" units="count"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4286,7 +4286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.Api.{Method}.Status" enum="ApiErrorCode"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>yongshun@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4309,7 +4309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.DNDStateOnFocusEnd"
-    enum="DNDStateOnFocusEndType" expires_after="2025-05-01">
+    enum="DNDStateOnFocusEndType" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4323,7 +4323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.DuringSession.ToggleEndSessionSource"
-    enum="FocusModeEndSessionSource" expires_after="2025-05-04">
+    enum="FocusModeEndSessionSource" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>nupurjain@google.com</owner>
@@ -4335,7 +4335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.EndingMomentBubbleAction"
-    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2025-05-01">
+    enum="FocusModeEndingMomentBubbleClosedReason" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>nupurjain@google.com</owner>
@@ -4344,7 +4344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.MusicPausedSessionCount" units="count"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>nupurjain@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4357,7 +4357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PercentOfSessionCompleted.{SessionDurationType}"
-    units="%" expires_after="2025-05-01">
+    units="%" expires_after="2025-11-01">
   <owner>nupurjain@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4377,7 +4377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistChosen" enum="FocusModePlaylistChosen"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4387,7 +4387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistsDuringSession" units="count"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>nupurjain@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4400,7 +4400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.PlaylistTypesSelectedDuringSession"
-    enum="PlaylistTypesSelectedDuringSessionType" expires_after="2025-07-01">
+    enum="PlaylistTypesSelectedDuringSessionType" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4412,7 +4412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.SessionDuration" units="minutes"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>nupurjain@google.com</owner>
@@ -4423,7 +4423,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.SoundscapeLatency" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4436,7 +4436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.ExistingMediaPlaying"
-    enum="Boolean" expires_after="2025-07-01">
+    enum="Boolean" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4448,7 +4448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.InitialDuration" units="minutes"
-    expires_after="2024-12-31">
+    expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>nupurjain@google.com</owner>
@@ -4459,7 +4459,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.TaskState"
-    enum="FocusModeStartedWithTaskState" expires_after="2025-05-01">
+    enum="FocusModeStartedWithTaskState" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4471,7 +4471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.StartSession.ToggleSource"
-    enum="FocusModeStartSessionSource" expires_after="2025-05-04">
+    enum="FocusModeStartSessionSource" expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>nupurjain@google.com</owner>
@@ -4483,7 +4483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TasksCompleted" units="count"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>nupurjain@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4496,7 +4496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TasksSelected" units="count"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>nupurjain@google.com</owner>
@@ -4508,7 +4508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.TimeAdded.{TimeAddedType}" units="minutes"
-    expires_after="2025-05-01">
+    expires_after="2025-11-01">
   <owner>nupurjain@google.com</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
@@ -4528,7 +4528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FocusMode.YouTubeMusicLatency" units="ms"
-    expires_after="2025-07-01">
+    expires_after="2025-11-01">
   <owner>hongyulong@chromium.org</owner>
   <owner>richui@chromium.org</owner>
   <owner>skau@chromium.org</owner>
