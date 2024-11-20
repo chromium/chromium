@@ -32462,6 +32462,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.ManageOptionOnSettingsSelected">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    The user tapped on &quot;Manage plus addresses&quot; in Chrome Settings.
+  </description>
+</action>
+
 <action name="PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>
