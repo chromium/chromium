@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -33,6 +34,8 @@ namespace ash {
 
 class GifTenorApiFetcher {
  public:
+  enum class Error { kNetError, kHttpError };
+
   // Used in tests to mock a creation of the endpoint_fetcher
   using EndpointFetcherCreator =
       base::RepeatingCallback<std::unique_ptr<EndpointFetcher>(
@@ -40,14 +43,11 @@ class GifTenorApiFetcher {
           const GURL& url,
           const net::NetworkTrafficAnnotationTag& annotation_tag)>;
   using GetCategoriesCallback =
-      base::OnceCallback<void(tenor::mojom::Status,
-                              const std::vector<std::string>& categories)>;
-  using TenorGifsApiCallback =
-      base::OnceCallback<void(tenor::mojom::Status,
-                              tenor::mojom::PaginatedGifResponsesPtr)>;
+      base::OnceCallback<void(base::expected<std::vector<std::string>, Error>)>;
+  using TenorGifsApiCallback = base::OnceCallback<void(
+      base::expected<tenor::mojom::PaginatedGifResponsesPtr, Error>)>;
   using GetGifsByIdsCallback = base::OnceCallback<void(
-      tenor::mojom::Status,
-      std::vector<tenor::mojom::GifResponsePtr> selected_gifs)>;
+      base::expected<std::vector<tenor::mojom::GifResponsePtr>, Error>)>;
 
   GifTenorApiFetcher();
   explicit GifTenorApiFetcher(EndpointFetcherCreator endpoint_fetcher_creator);

@@ -30,6 +30,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/language/core/browser/pref_names.h"
@@ -266,22 +267,21 @@ void QuickInsertSearchController::StopGifSearch() {
 void QuickInsertSearchController::OnGifSearchResponse(
     QuickInsertSearchController::SearchGifsCallback callback,
     std::u16string gif_search_query,
-    tenor::mojom::Status status,
-    tenor::mojom::PaginatedGifResponsesPtr response) {
+    base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                   GifTenorApiFetcher::Error> response) {
   if (gif_search_query != current_gif_search_query_) {
     // Do not call the callback at all if this is an old request.
     return;
   }
-  if (status != tenor::mojom::Status::kHttpOk) {
+  if (!response.has_value()) {
     // TODO: b/325368650 - Add better handling of errors.
     std::move(callback).Run({});
     return;
   }
 
   std::vector<ash::QuickInsertGifResult> gif_results;
-  CHECK(response);
   std::move(callback).Run(base::ToVector(
-      response->results, [](const tenor::mojom::GifResponsePtr& result) {
+      (*response)->results, [](const tenor::mojom::GifResponsePtr& result) {
         CHECK(result);
         const tenor::mojom::GifUrlsPtr& urls = result->url;
         CHECK(urls);

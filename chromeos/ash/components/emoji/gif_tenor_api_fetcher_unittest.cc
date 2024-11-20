@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,9 +28,10 @@ namespace ash {
 
 namespace {
 
+using ::base::test::ErrorIs;
+using ::base::test::ValueIs;
 using ::testing::ElementsAre;
 using ::testing::FieldsAre;
-using ::testing::IsEmpty;
 using ::testing::Pointee;
 
 constexpr char kFakeCategoriesResponse[] = R"json(
@@ -181,94 +184,83 @@ class GifTenorApiFetcherTest : public testing::Test {
 };
 
 TEST_F(GifTenorApiFetcherTest, FetchCategories) {
-  base::test::TestFuture<tenor::mojom::Status, const std::vector<std::string>&>
+  base::test::TestFuture<
+      base::expected<std::vector<std::string>, GifTenorApiFetcher::Error>>
       future;
   gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
                                          future.GetCallback());
-  EXPECT_THAT(future.Take(),
-              FieldsAre(tenor::mojom::Status::kHttpError, IsEmpty()));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   response_.error_type = std::make_optional(FetchErrorType::kNetError);
   gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
                                          future.GetCallback());
-  EXPECT_THAT(future.Take(),
-              FieldsAre(tenor::mojom::Status::kNetError, IsEmpty()));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   response_.response = kFakeCategoriesResponse;
   response_.http_status_code = net::HTTP_OK;
   gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
                                          future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kHttpOk,
-                                       ElementsAre("#awesome", "#jk")));
+  EXPECT_THAT(future.Take(), ValueIs(ElementsAre("#awesome", "#jk")));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
+  base::test::TestFuture<base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                                        GifTenorApiFetcher::Error>>
       future;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kHttpError,
-                                       Pointee(FieldsAre("", IsEmpty()))));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   response_.error_type = std::make_optional(FetchErrorType::kNetError);
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kNetError,
-                                       Pointee(FieldsAre("", IsEmpty()))));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   response_.response = kFakeGifsResponse;
   response_.http_status_code = net::HTTP_OK;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kHttpOk,
-                                       Pointee(FieldsAre("1", IsFakeGifs()))));
+  EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
-  base::test::TestFuture<tenor::mojom::Status,
-                         tenor::mojom::PaginatedGifResponsesPtr>
+  base::test::TestFuture<base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                                        GifTenorApiFetcher::Error>>
       future;
   gif_tenor_api_fetcher_.FetchGifSearch(url_loader_factory_, "", "",
                                         std::nullopt, future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kHttpError,
-                                       Pointee(FieldsAre("", IsEmpty()))));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   response_.error_type = std::make_optional(FetchErrorType::kNetError);
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kNetError,
-                                       Pointee(FieldsAre("", IsEmpty()))));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   response_.response = kFakeGifsResponse;
   response_.http_status_code = net::HTTP_OK;
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
-  EXPECT_THAT(future.Take(), FieldsAre(tenor::mojom::Status::kHttpOk,
-                                       Pointee(FieldsAre("1", IsFakeGifs()))));
+  EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
 }
 
 TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
-  base::test::TestFuture<tenor::mojom::Status,
-                         std::vector<tenor::mojom::GifResponsePtr>>
+  base::test::TestFuture<base::expected<
+      std::vector<tenor::mojom::GifResponsePtr>, GifTenorApiFetcher::Error>>
       future;
   gif_tenor_api_fetcher_.FetchGifsByIds(
       url_loader_factory_, std::vector<std::string>(), future.GetCallback());
-  EXPECT_THAT(future.Take(),
-              FieldsAre(tenor::mojom::Status::kHttpError, IsEmpty()));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   response_.error_type = std::make_optional(FetchErrorType::kNetError);
   gif_tenor_api_fetcher_.FetchGifsByIds(
       url_loader_factory_, std::vector<std::string>(), future.GetCallback());
-  EXPECT_THAT(future.Take(),
-              FieldsAre(tenor::mojom::Status::kNetError, IsEmpty()));
+  EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   response_.response = kFakeGifsResponse;
   response_.http_status_code = net::HTTP_OK;
   gif_tenor_api_fetcher_.FetchGifsByIds(
       url_loader_factory_, std::vector<std::string>(), future.GetCallback());
-  EXPECT_THAT(future.Take(),
-              FieldsAre(tenor::mojom::Status::kHttpOk, IsFakeGifs()));
+  EXPECT_THAT(future.Take(), ValueIs(IsFakeGifs()));
 }
 
 }  // namespace ash

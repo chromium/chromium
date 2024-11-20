@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
 #include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
@@ -86,10 +87,11 @@ class ASH_EXPORT QuickInsertSearchController {
 
  private:
   void LoadEmojiLanguages(PrefService* pref);
-  void OnGifSearchResponse(SearchGifsCallback callback,
-                           std::u16string gif_search_query,
-                           tenor::mojom::Status status,
-                           tenor::mojom::PaginatedGifResponsesPtr response);
+  void OnGifSearchResponse(
+      SearchGifsCallback callback,
+      std::u16string gif_search_query,
+      base::expected<tenor::mojom::PaginatedGifResponsesPtr,
+                     GifTenorApiFetcher::Error> response);
 
   PrefChangeRegistrar pref_change_registrar_;
 
