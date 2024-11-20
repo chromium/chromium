@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "dbus/message.h"
 
 DbusType::~DbusType() = default;
@@ -14,6 +15,9 @@ bool DbusType::operator==(const DbusType& other) const {
   if (!TypeMatches(other)) {
     return false;
   }
+  // Dynamic types should be casted to static types before comparison.
+  CHECK(!IsUntyped());
+  CHECK(!other.IsUntyped());
   return IsEqual(other);
 }
 
@@ -21,9 +25,43 @@ bool DbusType::operator!=(const DbusType& other) const {
   return !(*this == other);
 }
 
+bool DbusType::IsUntyped() const {
+  return false;
+}
+
 bool DbusType::TypeMatches(const DbusType& other) const {
   return GetSignatureDynamic() == other.GetSignatureDynamic();
 }
+
+namespace detail {
+
+UntypedDbusContainer::UntypedDbusContainer() = default;
+
+UntypedDbusContainer::UntypedDbusContainer(
+    UntypedDbusContainer&& other) noexcept = default;
+UntypedDbusContainer& UntypedDbusContainer::operator=(
+    UntypedDbusContainer&& other) noexcept = default;
+UntypedDbusContainer::~UntypedDbusContainer() = default;
+
+void UntypedDbusContainer::Write(dbus::MessageWriter* writer) const {
+  // Dynamic types are read from variants. Only static types should be written.
+  NOTREACHED();
+}
+
+std::string UntypedDbusContainer::GetSignatureDynamic() const {
+  return signature_;
+}
+
+bool UntypedDbusContainer::IsEqual(const DbusType& other_type) const {
+  // Dynamic types should be casted to static types before comparison.
+  NOTREACHED();
+}
+
+bool UntypedDbusContainer::IsUntyped() const {
+  return true;
+}
+
+}  // namespace detail
 
 DbusVariant::DbusVariant() = default;
 

@@ -42,6 +42,9 @@ class COMPONENT_EXPORT(DBUS) DbusType {
   // signature from.
   virtual std::string GetSignatureDynamic() const = 0;
 
+  // True iff this is an UntypedDbusContainer.
+  virtual bool IsUntyped() const;
+
   // True iff `this` and `other` have exactly the same type.
   bool TypeMatches(const DbusType& other) const;
 
@@ -70,6 +73,38 @@ class DbusTypeImpl : public DbusType {
     return static_cast<const T*>(this)->value_ == other->value_;
   }
 };
+
+namespace detail {
+
+// It's not possible to read templated types (arrays, structs, and dict
+// entries) from variants since it would require knowing the type at compile
+// time.  This class exists as a temporary storage for containers read from
+// variants.  Calling code which instantiates the templates can then convert
+// from this storage to the real type in DbusVariant::GetAs<>().  This is an
+// implementation detail and should not be used by client code.
+class UntypedDbusContainer final : public DbusType {
+ public:
+  UntypedDbusContainer();
+  UntypedDbusContainer(UntypedDbusContainer&& other) noexcept;
+  UntypedDbusContainer& operator=(UntypedDbusContainer&& other) noexcept;
+  ~UntypedDbusContainer() override;
+
+  // DbusType:
+  void Write(dbus::MessageWriter* writer) const override;
+  std::string GetSignatureDynamic() const override;
+  bool IsUntyped() const override;
+
+  std::vector<std::unique_ptr<DbusType>>& value() { return value_; }
+
+ private:
+  // DbusType:
+  bool IsEqual(const DbusType& other_type) const override;
+
+  std::vector<std::unique_ptr<DbusType>> value_;
+  std::string signature_;
+};
+
+}  // namespace detail
 
 template <typename T,
           typename PassT,
