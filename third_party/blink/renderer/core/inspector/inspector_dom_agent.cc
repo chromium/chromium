@@ -267,10 +267,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::ViewTransitionNew;
     case kPseudoIdViewTransitionOld:
       return protocol::DOM::PseudoTypeEnum::ViewTransitionOld;
-    case kPseudoIdColumnScrollMarker:
-      // Not reachable, since it's an internal representation of
-      // ::column::scroll-marker and won't be exposed to devtools
-      NOTREACHED();
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:

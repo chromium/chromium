@@ -2656,7 +2656,6 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
          pseudo_style->IsPageMarginBox() ||
          pseudo_style->StyleType() == kPseudoIdScrollMarker ||
-         pseudo_style->StyleType() == kPseudoIdColumnScrollMarker ||
          pseudo_style->StyleType() == kPseudoIdScrollNextButton ||
          pseudo_style->StyleType() == kPseudoIdScrollPrevButton);
 
