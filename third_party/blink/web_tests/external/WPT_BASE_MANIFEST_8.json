@@ -92206,7 +92206,7 @@
       ]
      ],
      "inline-skipping-fragmentainer-002.html": [
-      "1826e9d1d78ad6341a9a97973ca504c0769f7c39",
+      "1344aba23d038e06ff615e21c00b9d210e0af22e",
       [
        null,
        [
@@ -218923,6 +218923,19 @@
        ]
       ]
      },
+     "scale-animation-with-var-001.html": [
+      "3ff5daa6711c05ee9b5b543f974b3e7869997f33",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scale-optional-second-001.html": [
       "17cc4f50d563c6f480aa319c54bfb4abd8f17975",
       [
@@ -319064,7 +319077,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "2059bd49274dcd9fe4896674e266c0f3b33b29da",
+      "398217c4587e0c5f5364b00b8b39b49885c7f27b",
       []
      ],
      "animation-common-ref.html": [
@@ -364698,7 +364711,7 @@
       []
      ],
      "interpolation-testcommon.js": [
-      "211018ca053adfe4f03ad70bf31c060b8bfdb0b1",
+      "bcd8b2ffca92e3a79204fd9dbe854eba7c3ad1a5",
       []
      ],
      "numeric-testcommon.js": [
@@ -388669,6 +388682,10 @@
         "17344a077ead14dd2c0949b389a0fbd4b7d9d4f0",
         []
        ],
+       "form-target-blank-useractivation-multi-globals-expected.txt": [
+        "eecc3d6ffa549417fde8cb6800398cbb15676af4",
+        []
+       ],
        "form-target-iframe-helper.py": [
         "bbc3b71e9423b6a17b07c065e20b8435e4c492f4",
         []
@@ -389498,11 +389515,19 @@
          "dd2d719134fd7573e85c9a696350cffa1705b661",
          []
         ],
+        "target-blank-useractivation.html": [
+         "b171b32eae9814ab9bc77ee0a583a5d1cb97c7e3",
+         []
+        ],
         "target_blank_implicit_noopener.html": [
          "bf6a1ae5bfe16e4fd50296636894859a0ee25ec1",
          []
         ]
-       }
+       },
+       "target_blank_useractivation_multi_globals-expected.txt": [
+        "5f7c823733dcffb06bdb201ed076c752e1fad98f",
+        []
+       ]
       },
       "linktypes": {
        "alternate-css-ref.html": [
@@ -426900,25 +426925,83 @@
       }
      ]
     ],
-    "idbindex_openCursor.htm": [
-     "7baf2cf9ed730182b11dead6e5e8975f1498b45f",
+    "idbindex_openCursor.any.js": [
+     "3de4856e2bdc4dc89fad78192b4c064d4c30459b",
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex_openCursor2.htm": [
-     "88dcdbac36c30874dceed88ae2984fbd83d88d44",
+      "IndexedDB/idbindex_openCursor.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
-     ]
-    ],
-    "idbindex_openCursor3.htm": [
-     "91a98464e08d2c793912f363095aeb2d329c0129",
+      "IndexedDB/idbindex_openCursor.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
      [
-      null,
-      {}
+      "IndexedDB/idbindex_openCursor.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbindex_openCursor.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBIndex.openCursor()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "idbindex_openKeyCursor.any.js": [
@@ -427662,14 +427745,56 @@
      ]
     ],
     "idbobjectstore_get.any.js": [
-     "638ec6e81409dc24c4dd0b05123328758a3a3943",
+     "7e2c2e9b415b3f93c43497e9113f0343bb4e7b2c",
      [
       "IndexedDB/idbobjectstore_get.any.html",
       {
        "script_metadata": [
         [
+         "global",
+         "window,worker"
+        ],
+        [
          "title",
-         "IDBObjectStore.get() - key is a number"
+         "IDBObjectStore.get()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_get.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.get()"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/idbobjectstore_get.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "title",
+         "IDBObjectStore.get()"
         ],
         [
          "script",
@@ -427683,206 +427808,12 @@
       {
        "script_metadata": [
         [
-         "title",
-         "IDBObjectStore.get() - key is a number"
+         "global",
+         "window,worker"
         ],
         [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_get2.any.js": [
-     "488a9043efde2ffc655e36cc0be37a57b696c6c2",
-     [
-      "IndexedDB/idbobjectstore_get2.any.html",
-      {
-       "script_metadata": [
-        [
          "title",
-         "IDBObjectStore.get() - key is a string"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_get2.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - key is a string"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_get3.any.js": [
-     "3ab6c7c75477d5193996cf40bddcfb26eb45283e",
-     [
-      "IndexedDB/idbobjectstore_get3.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - key is a Date"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_get3.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - key is a Date"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_get4.any.js": [
-     "a69717ce4ef08386c561437c8e544dabd767aed5",
-     [
-      "IndexedDB/idbobjectstore_get4.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - attempt to retrieve a record that doesn't exist"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_get4.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - attempt to retrieve a record that doesn't exist"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_get5.any.js": [
-     "1e3bb0fe647a07126fa74521a14a94c65324c39e",
-     [
-      "IndexedDB/idbobjectstore_get5.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - returns the record with the first key in the range"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_get5.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - returns the record with the first key in the range"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_get6.any.js": [
-     "e20af4afc99c1d91dd98f2fa744318717d65aed1",
-     [
-      "IndexedDB/idbobjectstore_get6.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - throw TransactionInactiveError on aborted transaction"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_get6.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - throw TransactionInactiveError on aborted transaction"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idbobjectstore_get7.any.js": [
-     "863ba0ac69d593ec328d0656721afea6a7567a99",
-     [
-      "IndexedDB/idbobjectstore_get7.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - throw DataError when using invalid key"
-        ],
-        [
-         "script",
-         "resources/support.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_get7.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "IDBObjectStore.get() - throw DataError when using invalid key"
+         "IDBObjectStore.get()"
         ],
         [
          "script",
@@ -610364,6 +610295,24 @@
        ]
       },
       "form-submission-target": {
+       "form-target-blank-useractivation-multi-globals.html": [
+        "af241016386eda343485d91237b6e3c029c7f72d",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "form-target-blank-useractivation.html": [
+        "6d8506ac982413e65ccd6a54d8bb7ade3bd947e5",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "form-target-iframe.html": [
         "f37bc33f6f93ca94940ffeb0066945eb9aa020ee",
         [
@@ -613759,6 +613708,24 @@
          null,
          {
           "timeout": "long"
+         }
+        ]
+       ],
+       "target_blank_useractivation.html": [
+        "d752990eb474430a98dce8075c34f5daae0d0a4f",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "target_blank_useractivation_multi_globals.html": [
+        "40fa040665607f6172637fae688d49335e9bf98a",
+        [
+         null,
+         {
+          "testdriver": true
          }
         ]
        ]
