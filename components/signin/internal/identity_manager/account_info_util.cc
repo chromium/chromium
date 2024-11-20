@@ -81,7 +81,7 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
     return std::nullopt;
 
   // 1. Create "capability name" -> "boolean value" mapping.
-  std::map<std::string, bool> boolean_capabilities;
+  std::map<std::string, bool, std::less<>> boolean_capabilities;
   for (const auto& capability_value : *list) {
     const std::string* name =
         capability_value.GetDict().FindString(kAccountCapabilityNameKey);
@@ -98,11 +98,11 @@ std::optional<AccountCapabilities> AccountCapabilitiesFromValue(
 
   // 2. Fill AccountCapabilities fields based on the mapping.
   AccountCapabilities capabilities;
-  for (const std::string& name :
+  for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
     auto it = boolean_capabilities.find(name);
     if (it != boolean_capabilities.end()) {
-      capabilities.capabilities_map_[name] = it->second;
+      capabilities.capabilities_map_[std::string(name)] = it->second;
     }
   }
 

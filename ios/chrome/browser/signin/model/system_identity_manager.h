@@ -11,6 +11,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
@@ -230,7 +231,7 @@ class SystemIdentityManager {
 
   // Asynchronously returns the capabilities for `identity`.
   virtual void FetchCapabilities(id<SystemIdentity> identity,
-                                 const std::set<std::string>& names,
+                                 const std::vector<std::string>& names,
                                  FetchCapabilitiesCallback callback) = 0;
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.

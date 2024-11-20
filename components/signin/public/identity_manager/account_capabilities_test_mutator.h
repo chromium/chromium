@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
@@ -15,7 +18,8 @@ class AccountCapabilitiesTestMutator {
   explicit AccountCapabilitiesTestMutator(AccountCapabilities* capabilities);
 
   // Exposes the full list of supported capabilities for tests.
-  static const std::vector<std::string>& GetSupportedAccountCapabilityNames();
+  static base::span<const std::string_view>
+  GetSupportedAccountCapabilityNames();
 
   // Exposes setters for the supported capabilities.
   // Please keep this list alphabetically sorted.

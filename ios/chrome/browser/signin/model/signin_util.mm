@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/signin/model/signin_util.h"
 
+#import "base/containers/to_vector.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -141,19 +142,16 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref) {
   return history_sync_enabled.value_or(false);
 }
 
-const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch() {
+base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch() {
   return AccountCapabilities::GetSupportedAccountCapabilityNames();
 }
 
 void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities) {
-  const std::vector<std::string>& supported_capabilities =
-      GetAccountCapabilityNamesForPrefetch();
-  std::set<std::string> supported_capabilities_set(
-      supported_capabilities.begin(), supported_capabilities.end());
-
   for (id<SystemIdentity> identity : identities) {
     GetApplicationContext()->GetSystemIdentityManager()->FetchCapabilities(
-        identity, supported_capabilities_set,
+        identity,
+        base::ToVector(GetAccountCapabilityNamesForPrefetch(),
+                       [](std::string_view sv) { return std::string(sv); }),
         base::BindOnce(^(std::map<std::string, SystemIdentityCapabilityResult>){
             // Ignore the result.
         }));

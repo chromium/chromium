@@ -704,17 +704,18 @@ void AccountTrackerService::LoadFromPrefs() {
           kDeprecatedCanOfferExtendedChromeSyncPromosPrefPath);
     }
 
-    for (const std::string& name :
+    for (std::string_view name :
          AccountCapabilities::GetSupportedAccountCapabilityNames()) {
       switch (FindAccountCapabilityState(*dict, name)) {
         case signin::Tribool::kUnknown:
           account_info.capabilities.capabilities_map_.erase(name);
           break;
         case signin::Tribool::kTrue:
-          account_info.capabilities.capabilities_map_[name] = true;
+          account_info.capabilities.capabilities_map_[std::string(name)] = true;
           break;
         case signin::Tribool::kFalse:
-          account_info.capabilities.capabilities_map_[name] = false;
+          account_info.capabilities.capabilities_map_[std::string(name)] =
+              false;
           break;
       }
     }
@@ -794,7 +795,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   // |kLastDownloadedImageURLWithSizeKey| should only be set after the GAIA
   // picture is successufly saved to disk. Otherwise, there is no guarantee that
   // |kLastDownloadedImageURLWithSizeKey| matches the picture on disk.
-  for (const std::string& name :
+  for (std::string_view name :
        AccountCapabilities::GetSupportedAccountCapabilityNames()) {
     signin::Tribool capability_state =
         account_info.capabilities.GetCapabilityByName(name);

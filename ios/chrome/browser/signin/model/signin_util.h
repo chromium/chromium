@@ -59,7 +59,7 @@ bool GetPreRestoreHistorySyncEnabled(PrefService* profile_pref);
 
 // Returns the list of account capability service names supported in Chrome.
 // This is exposed to allow for prefetching capabilities on app startup.
-const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch();
+base::span<const std::string_view> GetAccountCapabilityNamesForPrefetch();
 
 // Pre-fetches system capabilities for the given identities so that they
 // can be cached for later usage.

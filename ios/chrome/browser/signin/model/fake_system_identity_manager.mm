@@ -361,7 +361,7 @@ NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
 
 void FakeSystemIdentityManager::FetchCapabilities(
     id<SystemIdentity> identity,
-    const std::set<std::string>& names,
+    const std::vector<std::string>& names,
     FetchCapabilitiesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK([storage_ containsIdentityWithGaiaID:identity.gaiaID]);
@@ -482,7 +482,7 @@ void FakeSystemIdentityManager::GetHostedDomainAsync(
 
 void FakeSystemIdentityManager::FetchCapabilitiesAsync(
     id<SystemIdentity> identity,
-    const std::set<std::string>& names,
+    const std::vector<std::string>& names,
     FetchCapabilitiesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (![storage_ containsIdentityWithGaiaID:identity.gaiaID]) {
