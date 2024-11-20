@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/dom/document_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
