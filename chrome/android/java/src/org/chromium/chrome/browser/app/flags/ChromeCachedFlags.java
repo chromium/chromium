@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
@@ -136,6 +137,7 @@ public class ChromeCachedFlags {
                         SuggestionsNavigationDelegate.MOST_VISITED_TILES_RESELECT_LAX_SCHEME_HOST,
                         StartupLatencyInjector.CLANK_STARTUP_LATENCY_PARAM_MS,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
+                        ToolbarPhone.REMOVE_REDUNDANT_ANIM_CALL,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
                         TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING,
