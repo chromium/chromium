@@ -808,8 +808,6 @@ bool SharedImageFactory::IsSharedBetweenThreads(
     gpu::SharedImageUsageSet usage) {
   // Ignore for mipmap usage.
   usage.RemoveAll(SHARED_IMAGE_USAGE_MIPMAP);
-  // Ignore for delegated compositing.
-  usage.RemoveAll(SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING);
 
   // Raw Draw backings will be write accessed on the GPU main thread, and
   // be read accessed on the compositor thread.
