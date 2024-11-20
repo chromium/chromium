@@ -2325,6 +2325,12 @@ inline constexpr char kDemoModeConfig[] = "demo_mode.config";
 // A string pref holding the value of the current country for demo sessions.
 inline constexpr char kDemoModeCountry[] = "demo_mode.country";
 
+// A string pref holding the value of the demo account session identifier for
+// current session. If will be used for demo account clean up at the beginning
+// of next session.
+inline constexpr char kDemoModeSessionIdentifier[] =
+    "demo_mode.session_identifier";
+
 // A string pref holding the value of the retailer name input for demo sessions.
 // This is now mostly called "retailer_name" in code other than in this pref and
 // in Omaha request attributes

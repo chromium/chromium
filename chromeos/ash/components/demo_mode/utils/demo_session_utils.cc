@@ -35,6 +35,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Demo login controller prefs:
   registry->RegisterStringPref(prefs::kDemoAccountGaiaId, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeSessionIdentifier,
+                               std::string());
 }
 
 }  // namespace ash::demo_mode

@@ -348,6 +348,8 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
 
   auto* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
+  local_state->SetString(prefs::kDemoModeSessionIdentifier,
+                         sign_in_scoped_device_id);
 
   LoginDemoAccount(*email, *gaia_id, *auth_code, sign_in_scoped_device_id);
 }
@@ -366,20 +368,21 @@ void DemoLoginController::OnSetupDemoAccountError(
 void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   CHECK(!url_loader_);
 
+  auto* local_state = g_browser_process->local_state();
   const std::string gaia_id_to_clean_up =
-      g_browser_process->local_state()->GetString(prefs::kDemoAccountGaiaId);
-  // For the first session of demo account, `gaia_id_to_clean_up` could be
-  // empty.
-  if (gaia_id_to_clean_up.empty()) {
+      local_state->GetString(prefs::kDemoAccountGaiaId);
+  const std::string login_scope_device_id =
+      local_state->GetString(prefs::kDemoModeSessionIdentifier);
+  // For the first session of demo account, `gaia_id_to_clean_up and session
+  // identifier`could be empty.
+  if (gaia_id_to_clean_up.empty() || login_scope_device_id.empty()) {
     SendSetupDemoAccountRequest();
     return;
   }
 
   auto post_data = base::Value::Dict();
-  // TODO(crbug.com/370808139): Get last login scope device id in locale state
-  // use "0000" for now.
-  post_data.Set(kDeviceIdentifier,
-                GetDeviceIdentifier(/*login_scope_device_id=*/"0000"));
+
+  post_data.Set(kDeviceIdentifier, GetDeviceIdentifier(login_scope_device_id));
   post_data.Set(kObfuscatedGaiaId, gaia_id_to_clean_up);
 
   url_loader_ =

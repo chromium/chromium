@@ -101,10 +101,15 @@ class DemoLoginControllerTest : public testing::Test {
     EXPECT_CALL(login_display_host(), CompleteLogin)
         .Times(1)
         .WillOnce(testing::Invoke([&](const UserContext& user_context) {
-          EXPECT_FALSE(user_context.GetDeviceId().empty());
+          const auto device_id = user_context.GetDeviceId();
+          EXPECT_FALSE(device_id.empty());
+          EXPECT_EQ(g_browser_process->local_state()->GetString(
+                        prefs::kDemoModeSessionIdentifier),
+                    device_id);
           EXPECT_EQ(g_browser_process->local_state()->GetString(
                         prefs::kDemoAccountGaiaId),
                     gaia_id);
+
           loop.Quit();
         }));
     loop.Run();
@@ -130,12 +135,18 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
   const std::string gaia_id = "123";
   test_url_loader_factory_.AddResponse(
       GetSetupUrl().spec(), base::StringPrintf(kValidGaiaCreds, gaia_id));
-
+  EXPECT_TRUE(g_browser_process->local_state()
+                  ->GetString(prefs::kDemoModeSessionIdentifier)
+                  .empty());
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin)
       .Times(1)
       .WillOnce(testing::Invoke([&](const UserContext& user_context) {
-        EXPECT_FALSE(user_context.GetDeviceId().empty());
+        const auto device_id = user_context.GetDeviceId();
+        EXPECT_FALSE(device_id.empty());
+        EXPECT_EQ(g_browser_process->local_state()->GetString(
+                      prefs::kDemoModeSessionIdentifier),
+                  device_id);
         EXPECT_EQ(g_browser_process->local_state()->GetString(
                       prefs::kDemoAccountGaiaId),
                   gaia_id);
@@ -164,7 +175,10 @@ TEST_F(DemoLoginControllerTest, InValidGaia) {
 }
 
 TEST_F(DemoLoginControllerTest, CleanUpSuccess) {
-  g_browser_process->local_state()->SetString(prefs::kDemoAccountGaiaId, "123");
+  auto* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kDemoAccountGaiaId, "123");
+  const std::string last_session_id = "device_id";
+  local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
   base::MockCallback<DemoLoginController::FailedRequestCallback>
       cleanup_failed_callback;
   // `cleanup_failed_callback` is not called means no failure for clean up.
@@ -179,10 +193,16 @@ TEST_F(DemoLoginControllerTest, CleanUpSuccess) {
   test_url_loader_factory_.AddResponse(GetCleanUpUrl().spec(), "{}");
 
   MockSuccessSetupResponseAndVerifyLogin(/*gaia_id=*/"234");
+  const auto new_session_id =
+      local_state->GetString(prefs::kDemoModeSessionIdentifier);
+  EXPECT_NE(new_session_id, last_session_id);
 }
 
 TEST_F(DemoLoginControllerTest, CleanUpFailed) {
-  g_browser_process->local_state()->SetString(prefs::kDemoAccountGaiaId, "123");
+  auto* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kDemoAccountGaiaId, "123");
+  const std::string last_session_id = "device_id";
+  local_state->SetString(prefs::kDemoModeSessionIdentifier, last_session_id);
   test_url_loader_factory_.AddResponse(GetCleanUpUrl().spec(), "{}",
                                        net::HTTP_UNAUTHORIZED);
   base::RunLoop loop;
@@ -201,6 +221,10 @@ TEST_F(DemoLoginControllerTest, CleanUpFailed) {
 
   // Verify login:
   MockSuccessSetupResponseAndVerifyLogin(/*gaia_id=*/"234");
+
+  const auto new_session_id =
+      local_state->GetString(prefs::kDemoModeSessionIdentifier);
+  EXPECT_NE(new_session_id, last_session_id);
 }
 
 // TODO(crbug.com/372771485): Add more request fail test cases.
