@@ -52,9 +52,11 @@ consoles.console_view(
     ("win64-clang", "official|win", "clang (64)"),
 )]
 
+_UPDATER_LINK = linkify("https://chromium.googlesource.com/chromium/src/+/main/docs/updater/design_doc.md", "Chromium updater")
+
 ci.builder(
     name = "linux-updater-builder-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Linux x64 debug builder.",
+    description_html = _UPDATER_LINK + " Linux x64 debug builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -89,7 +91,7 @@ ci.builder(
 
 ci.builder(
     name = "linux-updater-builder-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Linux x64 release builder.",
+    description_html = _UPDATER_LINK + " Linux x64 release builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -124,7 +126,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "linux-updater-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Linux x64 debug builder.",
+    description_html = _UPDATER_LINK + " Linux x64 debug builder.",
     triggered_by = ["linux-updater-builder-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -159,7 +161,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "linux-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Linux x64 release tester.",
+    description_html = _UPDATER_LINK + " Linux x64 release tester.",
     triggered_by = ["linux-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -194,7 +196,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "mac-updater-builder-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS x64 debug builder.",
+    description_html = _UPDATER_LINK + " macOS x64 debug builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -236,7 +238,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-updater-builder-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS x64 release builder.",
+    description_html = _UPDATER_LINK + " macOS x64 release builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -278,7 +280,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-updater-builder-arm64-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS arm64 debug builder.",
+    description_html = _UPDATER_LINK + " macOS arm64 debug builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -320,7 +322,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-updater-builder-arm64-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS arm64 release builder.",
+    description_html = _UPDATER_LINK + " macOS arm64 release builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -362,7 +364,7 @@ ci.builder(
 
 ci.builder(
     name = "mac-updater-builder-asan-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS x64 ASAN debug builder.",
+    description_html = _UPDATER_LINK + " macOS x64 ASAN debug builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -405,7 +407,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "mac11-arm64-updater-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 11 arm64 debug tester.",
+    description_html = _UPDATER_LINK + " macOS 11 arm64 debug tester.",
     triggered_by = ["mac-updater-builder-arm64-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -439,7 +441,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac11-arm64-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 11 arm64 release tester.",
+    description_html = _UPDATER_LINK + " macOS 11 arm64 release tester.",
     triggered_by = ["mac-updater-builder-arm64-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -473,7 +475,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac11-x64-updater-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 11 x64 debug tester.",
+    description_html = _UPDATER_LINK + " macOS 11 x64 debug tester.",
     triggered_by = ["mac-updater-builder-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -507,7 +509,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac11-x64-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 11 x64 release tester.",
+    description_html = _UPDATER_LINK + " macOS 11 x64 release tester.",
     triggered_by = ["mac-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -541,7 +543,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac12-arm64-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 12 arm64 release tester.",
+    description_html = _UPDATER_LINK + " macOS 12 arm64 release tester.",
     triggered_by = ["mac-updater-builder-arm64-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -575,7 +577,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac12-x64-updater-tester-asan-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 12 x64 ASAN debug tester.",
+    description_html = _UPDATER_LINK + " macOS 12 x64 ASAN debug tester.",
     triggered_by = ["mac-updater-builder-asan-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -609,7 +611,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac13-arm64-updater-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 13 arm64 debug tester.",
+    description_html = _UPDATER_LINK + " macOS 13 arm64 debug tester.",
     triggered_by = ["mac-updater-builder-arm64-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -643,7 +645,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac13-x64-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 13 x64 release tester.",
+    description_html = _UPDATER_LINK + " macOS 13 x64 release tester.",
     triggered_by = ["mac-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -677,7 +679,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "mac15-arm64-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " macOS 15 arm64 release tester.",
+    description_html = _UPDATER_LINK + " macOS 15 arm64 release tester.",
     triggered_by = ["mac-updater-builder-arm64-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -711,7 +713,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "win-updater-builder-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows x64 debug builder.",
+    description_html = _UPDATER_LINK + " Windows x64 debug builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -752,7 +754,7 @@ ci.builder(
 
 ci.builder(
     name = "win32-updater-builder-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows x32 debug builder.",
+    description_html = _UPDATER_LINK + " Windows x32 debug builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -796,7 +798,7 @@ ci.builder(
 
 ci.builder(
     name = "win-updater-builder-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows x64 release builder.",
+    description_html = _UPDATER_LINK + " Windows x64 release builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -837,7 +839,7 @@ ci.builder(
 
 ci.builder(
     name = "win32-updater-builder-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows x32 release builder.",
+    description_html = _UPDATER_LINK + " Windows x32 release builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -878,7 +880,7 @@ ci.builder(
 
 ci.thin_tester(
     name = "win10-updater-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 10 x64 debug tester.",
+    description_html = _UPDATER_LINK + " Windows 10 x64 debug tester.",
     triggered_by = ["win-updater-builder-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -913,7 +915,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win10-32-on-64-updater-tester-dbg",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 10 32-on-64 debug tester.",
+    description_html = _UPDATER_LINK + " Windows 10 32-on-64 debug tester.",
     triggered_by = ["win32-updater-builder-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -948,7 +950,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win10-32-on-64-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 10 32-on-64 release tester.",
+    description_html = _UPDATER_LINK + " Windows 10 32-on-64 release tester.",
     triggered_by = ["win32-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -983,7 +985,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win10-updater-tester-dbg-uac",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 10 x64 debug tester with UAC on.",
+    description_html = _UPDATER_LINK + " Windows 10 x64 debug tester with UAC on.",
     triggered_by = ["win-updater-builder-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1018,7 +1020,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win10-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 10 x64 release tester.",
+    description_html = _UPDATER_LINK + " Windows 10 x64 release tester.",
     triggered_by = ["win-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1053,7 +1055,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win10-updater-tester-rel-uac",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 10 x64 release tester with UAC on.",
+    description_html = _UPDATER_LINK + " Windows 10 x64 release tester with UAC on.",
     triggered_by = ["win-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1088,7 +1090,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win11-updater-tester-dbg-uac",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 11 x64 debug tester with UAC on.",
+    description_html = _UPDATER_LINK + " Windows 11 x64 debug tester with UAC on.",
     triggered_by = ["win-updater-builder-dbg"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
@@ -1123,7 +1125,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "win11-updater-tester-rel",
-    description_html = linkify("https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/design_doc.md", "Chromium updater") + " Windows 11 x64 release tester with UAC on.",
+    description_html = _UPDATER_LINK + " Windows 11 x64 release tester with UAC on.",
     triggered_by = ["win-updater-builder-rel"],
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
