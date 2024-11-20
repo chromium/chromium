@@ -262,7 +262,7 @@ class PLATFORM_EXPORT CanvasResource
 
   base::WeakPtr<CanvasResourceProvider> provider_;
   gfx::Size size_;
-  SkColorType sk_color_type_;
+  viz::SharedImageFormat format_;
   SkAlphaType sk_alpha_type_;
   gfx::ColorSpace color_space_;
   cc::PaintFlags::FilterQuality filter_quality_;

@@ -64,7 +64,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
           ThreadScheduler::Current()->CleanupTaskRunner()),
       provider_(std::move(provider)),
       size_(size),
-      sk_color_type_(sk_color_type),
+      format_(viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type)),
       sk_alpha_type_(sk_alpha_type),
       color_space_(sk_color_space ? gfx::ColorSpace(*sk_color_space)
                                   : gfx::ColorSpace::CreateSRGB()),
@@ -238,13 +238,14 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 }
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
-  return SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                           sk_color_type_, sk_alpha_type_,
-                           color_space_.ToSkColorSpace());
+  return SkImageInfo::Make(
+      SkISize::Make(Size().width(), Size().height()),
+      viz::ToClosestSkColorType(/*gpu_compositing=*/true, format_),
+      sk_alpha_type_, color_space_.ToSkColorSpace());
 }
 
 viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
-  return viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type_);
+  return format_;
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
