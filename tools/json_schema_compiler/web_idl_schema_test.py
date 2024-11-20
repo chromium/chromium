@@ -180,8 +180,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         'type': 'promise'
     }, getFunctionAsyncReturn(schema, 'undefinedPromiseReturn'))
 
-
-
   # Tests function parameters are processed as expected.
   def testFunctionParameters(self):
     schema = self.idl_basics
@@ -225,7 +223,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         'optional': True,
         '$ref': 'ExampleType'
     }], getFunctionParameters(schema, 'takesOptionalCustomType'))
-
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
@@ -344,11 +341,33 @@ class WebIdlSchemaTest(unittest.TestCase):
   # Tests that an API interface that uses the nodoc extended attribute has the
   # related nodoc attribute set to true after processing.
   def testNoDocOnNamespace(self):
-    nodoc_schema = web_idl_schema.Load('test/web_idl/nodoc_on_namespace.idl')
-    self.assertEqual(1, len(nodoc_schema))
-    self.assertEqual('nodocAPI', nodoc_schema[0]['namespace'])
-    self.assertTrue(nodoc_schema[0]['nodoc'])
+    idl = web_idl_schema.Load('test/web_idl/nodoc_on_namespace.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+    self.assertEqual('nodocAPI', schema['namespace'])
+    self.assertTrue(schema['nodoc'])
+    # Also ensure the description comes through correctly on the node with
+    # 'nodoc' as an extended attribute.
+    self.assertEqual(
+        'The nodoc API. This exists to demonstrate nodoc on the main interface'
+        ' itself.',
+        schema['description'],
+    )
 
+  # Tests that extended attributes being listed on the the line previous to a
+  # node come through correctly and don't throw off and associated descriptions.
+  # TODO(crbug.com/340297705): Add checks for functions here once support for
+  # processing their descriptions is complete.
+  def testPreviousLineExtendedAttributes(self):
+    idl = web_idl_schema.Load('test/web_idl/preceding_extended_attributes.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+    self.assertEqual('precedingExtendedAttributes', schema['namespace'])
+    self.assertTrue(schema['nodoc'])
+    self.assertEqual(
+        'Comment on a schema that has extended attributes on a previous line.',
+        schema['description'],
+    )
 
 if __name__ == '__main__':
   unittest.main()

@@ -113,6 +113,13 @@ def GetNodeDescription(node: IDLNode) -> str:
     The formatted string expected for the description of the node.
   """
 
+  # Extended attributes for a node can actually be formatted onto a preceding
+  # line, so if this node has an extended attribute we instead look for the
+  # description relative to the extended attribute node.
+  ext_attribute_node = node.GetOneOf('ExtAttributes')
+  if ext_attribute_node is not None:
+    return GetNodeDescription(ext_attribute_node)
+
   # Look through the lines above the current node and extract every consecutive
   # line that is a comment until a blank or non-comment line is found.
   filename, line_number = node.GetFileAndLine()
