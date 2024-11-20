@@ -653,6 +653,9 @@
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_UNSUPPORTED_EXTENSION_OFF_TEXT" desc="The text that informs the user the extension was turned off because it's no longer supported.">
     This extension was turned off because it is no longer supported
   </message>
+  <message name="IDS_EXTENSIONS_CANT_INSTALL_MV2_EXTENSION" desc="The text shown to a user when they try to install an extension that is no longer supported by the browser.">
+    Cannot install extension because it uses an unsupported manifest version.
+  </message>
 <if expr="is_macosx">
   <message name="IDS_EXTENSIONS_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
     Include Ctrl, Alt, or ⌘
