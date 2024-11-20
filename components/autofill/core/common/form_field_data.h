@@ -261,10 +261,6 @@ class FormFieldData {
     return is_focusable() && role() != RoleAttribute::kPresentation;
   }
 
-  bool DidUserType() const;
-  bool HadFocus() const;
-  bool WasPasswordAutofilled() const;
-
   // NOTE: Update `SameFieldAs()` and `FormFieldDataAndroid::SimilarFieldAs()`
   // if needed when adding new a member.
 

@@ -396,18 +396,6 @@ bool FormFieldData::IsSelectElement() const {
   return form_control_type() == FormControlType::kSelectOne;
 }
 
-bool FormFieldData::DidUserType() const {
-  return properties_mask() & kUserTyped;
-}
-
-bool FormFieldData::HadFocus() const {
-  return properties_mask() & kHadFocus;
-}
-
-bool FormFieldData::WasPasswordAutofilled() const {
-  return properties_mask() & kAutofilled;
-}
-
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
   return a.renderer_id() == b.renderer_id() && a.SameFieldAs(b);

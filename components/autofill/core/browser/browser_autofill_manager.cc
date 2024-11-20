@@ -1409,7 +1409,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     context.do_not_generate_autofill_suggestions = true;
     // If the user begins typing, we interpret that as dismissing the warning.
     // No suggestions are allowed, but the warning is no longer shown.
-    if (field.DidUserType()) {
+    if (field.properties_mask() & kUserTyped) {
       context.suppress_reason = SuppressReason::kInsecureForm;
     } else {
       context.should_show_mixed_content_warning = true;
