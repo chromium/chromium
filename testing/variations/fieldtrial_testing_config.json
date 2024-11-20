@@ -20075,29 +20075,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithHats",
                     "params": {
                         "probability": "0.5",
+                        "survey": "safety-hub-android-survey",
                         "trigger_id": "BqU7h7abt0tK1KeaPYj0WkmwAz4h"
                     },
                     "enable_features": [
-                        "SafeHubFollowup",
                         "SafetyHub",
-                        "SafetyHubAndroidSurvey"
-                    ]
-                },
-                {
-                    "name": "HatsControl",
-                    "params": {
-                        "probability": "0.5",
-                        "trigger_id": "kz5UsbD3q0tK1KeaPYj0NTqQb7EL"
-                    },
-                    "enable_features": [
-                        "SafetyHubAndroidSurvey"
-                    ],
-                    "disable_features": [
-                        "SafeHubFollowup",
-                        "SafetyHub"
+                        "SafetyHubAndroidSurvey",
+                        "SafetyHubFollowup"
                     ]
                 }
             ]

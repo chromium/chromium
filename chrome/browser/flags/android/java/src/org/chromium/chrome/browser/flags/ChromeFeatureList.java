@@ -886,7 +886,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sRecordSuppressionMetrics =
             newMutableFlagWithSafeDefault(RECORD_SUPPRESSION_METRICS, true);
     public static final MutableFlagWithSafeDefault sSafetyHub =
-            newMutableFlagWithSafeDefault(SAFETY_HUB, false);
+            newMutableFlagWithSafeDefault(SAFETY_HUB, true);
     public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurvey =
             newMutableFlagWithSafeDefault(SAFETY_HUB_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sSafetyHubAndroidSurveyV2 =

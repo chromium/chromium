@@ -34,6 +34,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -200,6 +202,7 @@ public class PasswordCheckupLauncherTest {
     }
 
     @Test
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testLaunchSafetyCheckOpensSafetyCheckInChromeSettings()
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes())
