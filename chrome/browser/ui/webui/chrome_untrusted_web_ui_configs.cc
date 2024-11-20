@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "components/compose/buildflags.h"
-#include "components/lens/buildflags.h"
 #if BUILDFLAG(ENABLE_COMPOSE)
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #endif  // BUILDFLAG(ENABLE_COMPOSE)

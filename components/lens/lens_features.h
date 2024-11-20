@@ -34,10 +34,6 @@ BASE_DECLARE_FEATURE(kEnableRegionSearchKeyboardShortcut);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableImageTranslate);
 
-// Enables launching the region search experience in a new tab with WebUI.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
-
 // Enables the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlay);
@@ -158,10 +154,6 @@ extern bool IsLensFullscreenSearchEnabled();
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensInScreenshotSharingEnabled();
-
-// Returns whether we should use a WebUI static page for region search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensRegionSearchStaticPageEnabled();
 
 // The URL for the Lens ping.
 COMPONENT_EXPORT(LENS_FEATURES)

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "components/lens/buildflags.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -223,9 +224,6 @@ void LensRegionSearchController::OnCaptureCompleted(
   }
 
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);
-  if (web_contents() && lens::features::IsLensRegionSearchStaticPageEnabled()) {
-    web_contents()->ClosePage();
-  }
 }
 
 void LensRegionSearchController::WebContentsDestroyed() {
@@ -266,9 +264,6 @@ void LensRegionSearchController::CloseWithReason(
   if (screenshot_flow_) {
     screenshot_flow_->CancelCapture();
     screenshot_flow_.reset();
-  }
-  if (web_contents() && lens::features::IsLensRegionSearchStaticPageEnabled()) {
-    web_contents()->ClosePage();
   }
 }
 

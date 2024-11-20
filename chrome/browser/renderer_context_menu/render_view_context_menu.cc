@@ -4455,11 +4455,6 @@ void RenderViewContextMenu::ExecRegionSearch(
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
-    lens::OpenLensStaticPage(browser);
-    return;
-  }
-
   // If Lens fullscreen search is enabled, we want to send every region search
   // as a fullscreen capture.
   // TODO(crbug/353984457): Clean this branching when the new server

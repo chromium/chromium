@@ -16,9 +16,6 @@ class Browser;
 
 namespace lens {
 
-// Opens the Lens region search feature in a new tab with a WebUI page.
-void OpenLensStaticPage(Browser* browser);
-
 // Opens the Lens region search bubble view with given params.
 views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,

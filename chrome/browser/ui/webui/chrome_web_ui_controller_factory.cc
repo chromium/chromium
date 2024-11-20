@@ -41,7 +41,6 @@
 #include "components/favicon_base/select_favicon_frames.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/lens/buildflags.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"

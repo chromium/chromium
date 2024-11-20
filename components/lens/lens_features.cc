@@ -34,10 +34,6 @@ BASE_FEATURE(kEnableImageTranslate,
              "LensEnableImageTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensRegionSearchStaticPage,
-             "LensRegionSearchStaticPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlay,
              "LensOverlay",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -431,10 +427,6 @@ bool IsLensFullscreenSearchEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
          kEnableLensFullscreenSearch.Get();
-}
-
-bool IsLensRegionSearchStaticPageEnabled() {
-  return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
 }
 
 bool GetShouldIssuePreconnectForLens() {

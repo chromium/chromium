@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "components/lens/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "media/media_buildflags.h"
@@ -718,10 +717,6 @@ inline constexpr char kCleanupSubPage[] = "cleanup";
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr char kChromeUICastFeedbackHost[] = "cast-feedback";
-#endif
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-inline constexpr char kChromeUILensURL[] = "chrome://lens/";
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
