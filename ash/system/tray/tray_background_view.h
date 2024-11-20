@@ -145,8 +145,9 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // Called when the anchor (tray or bubble) may have moved or changed.
   virtual void AnchorUpdated() {}
 
-  // Called from GetAccessibleNodeData, must return a valid accessible name.
-  virtual std::u16string GetAccessibleNameForTray() = 0;
+  // TODO(crbug.com/379818907): In process of deprecation; derived classes that
+  // override this use it to set their accessible names.
+  virtual std::u16string GetAccessibleNameForTray();
 
   // Called when a locale change is detected. It should reload any strings the
   // view may be using. Note that the locale is not expected to change after the

@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -33,18 +34,16 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
     CaptureModeController::Get()->EndVideoRecording(
         EndRecordingReason::kStopRecordingButton);
   }));
-  image_view_->SetTooltipText(GetAccessibleNameForTray());
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME));
+  image_view_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME));
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 }
 
 StopRecordingButtonTray::~StopRecordingButtonTray() = default;
-
-std::u16string StopRecordingButtonTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_AREA_STOP_RECORDING_BUTTON_ACCESSIBLE_NAME);
-}
 
 void StopRecordingButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();

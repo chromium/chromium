@@ -63,9 +63,6 @@ class TestTrayBackgroundView : public TrayBackgroundView {
   }
 
   void UpdateTrayItemColor(bool is_active) override {}
-  std::u16string GetAccessibleNameForTray() override {
-    return u"TestTrayBackgroundView";
-  }
 
   void HandleLocaleChange() override {}
 

@@ -139,7 +139,6 @@ class ASH_EXPORT EcheTray
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
@@ -270,6 +269,8 @@ class ASH_EXPORT EcheTray
     return initializer_webview_.get();
   }
   views::ImageButton* GetIcon();
+
+  std::u16string GetAccessibleName();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst);

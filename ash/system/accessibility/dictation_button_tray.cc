@@ -30,6 +30,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 
@@ -89,6 +90,9 @@ DictationButtonTray::DictationButtonTray(
   shell->accessibility_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
   shell->window_tree_host_manager()->input_method()->AddObserver(this);
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME));
 }
 
 DictationButtonTray::~DictationButtonTray() {
@@ -147,10 +151,6 @@ void DictationButtonTray::UpdateTrayItemColor(bool is_active) {
         is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                   : cros_tokens::kCrosSysPrimary);
   }
-}
-
-std::u16string DictationButtonTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_DICTATION_BUTTON_ACCESSIBLE_NAME);
 }
 
 void DictationButtonTray::HandleLocaleChange() {

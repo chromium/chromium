@@ -315,6 +315,9 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
             tray_container()->children().size())
       << "Icons must be updated here in case a media session begins prior to "
          "connecting a secondary display.";
+
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME));
 }
 
 VideoConferenceTray::~VideoConferenceTray() {
@@ -339,12 +342,8 @@ views::Widget* VideoConferenceTray::GetBubbleWidget() const {
   return bubble_ ? bubble_->bubble_widget() : nullptr;
 }
 
-std::u16string VideoConferenceTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME);
-}
-
 std::u16string VideoConferenceTray::GetAccessibleNameForBubble() {
-  return GetAccessibleNameForTray();
+  return l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME);
 }
 
 void VideoConferenceTray::HideBubbleWithView(

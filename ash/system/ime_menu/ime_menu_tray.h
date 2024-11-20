@@ -54,7 +54,6 @@ class ASH_EXPORT ImeMenuTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void OnThemeChanged() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;

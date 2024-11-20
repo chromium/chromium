@@ -4328,6 +4328,7 @@ test("ash_unittests") {
     "system/phonehub/quick_actions_view_unittest.cc",
     "system/phonehub/silence_phone_quick_action_controller_unittest.cc",
     "system/phonehub/task_continuation_view_unittest.cc",
+    "system/pods_overflow_tray_unittest.cc",
     "system/power/adaptive_charging_controller_unittest.cc",
     "system/power/adaptive_charging_notification_controller_unittest.cc",
     "system/power/backlights_forced_off_setter_unittest.cc",

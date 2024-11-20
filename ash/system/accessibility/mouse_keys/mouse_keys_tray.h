@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_TRAY_H_
 #define ASH_SYSTEM_ACCESSIBILITY_MOUSE_KEYS_MOUSE_KEYS_TRAY_H_
 
-#include <string>
-
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/constants/tray_background_view_catalog.h"
@@ -37,7 +35,6 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void Initialize() override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
   void HideBubble(const TrayBubbleView* bubble_view) override {}

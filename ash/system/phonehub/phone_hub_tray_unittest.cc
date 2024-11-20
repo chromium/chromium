@@ -832,7 +832,15 @@ TEST_F(PhoneHubTrayTest, TrayPressedMetrics) {
   histogram_tester.ExpectTotalCount(kTrayBackgroundViewHistogramName, 3);
 }
 
-TEST_F(PhoneHubTrayTest, BubbleViewAccessibleName) {
+TEST_F(PhoneHubTrayTest, AccessibleNames) {
+  {
+    ui::AXNodeData node_data;
+    phone_hub_tray_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME));
+  }
+
   Shell::Get()->focus_cycler()->FocusWidget(phone_hub_tray_->GetWidget());
   phone_hub_tray_->RequestFocus();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -846,10 +854,12 @@ TEST_F(PhoneHubTrayTest, BubbleViewAccessibleName) {
   EXPECT_TRUE(phone_hub_tray_->is_active());
   ASSERT_TRUE(bubble_view());
 
-  ui::AXNodeData node_data;
-  bubble_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            phone_hub_tray()->GetAccessibleNameForBubble());
+  {
+    ui::AXNodeData node_data;
+    bubble_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              phone_hub_tray()->GetAccessibleNameForBubble());
+  }
 }
 
 }  // namespace ash

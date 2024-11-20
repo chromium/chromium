@@ -1108,16 +1108,28 @@ TEST_F(VideoConferenceTrayTest, BubbleWithOnlyLinuxApps) {
             bubble_view->GetID());
 }
 
-TEST_F(VideoConferenceTrayTest, BubbleViewAccessibleName) {
+TEST_F(VideoConferenceTrayTest, AccessibleNames) {
   SetTrayAndButtonsVisible();
+  ASSERT_TRUE(video_conference_tray());
+  {
+    ui::AXNodeData node_data;
+    video_conference_tray()->GetViewAccessibility().GetAccessibleNodeData(
+        &node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_ACCESSIBLE_NAME));
+  }
+
   LeftClickOn(toggle_bubble_button());
   auto* bubble_view = video_conference_tray()->GetBubbleView();
   ASSERT_TRUE(bubble_view);
 
-  ui::AXNodeData node_data;
-  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            video_conference_tray()->GetAccessibleNameForBubble());
+  {
+    ui::AXNodeData node_data;
+    bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              video_conference_tray()->GetAccessibleNameForBubble());
+  }
 }
 
 // Tests the tray when there's a delay in `GetMediaApps()`.

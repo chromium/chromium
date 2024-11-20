@@ -69,7 +69,6 @@ class ASH_EXPORT MediaTray : public MediaNotificationProviderObserver,
   void OnNotificationListViewSizeChanged() override;
 
   // TrayBackgroundView:
-  std::u16string GetAccessibleNameForTray() override;
   void UpdateAfterLoginStatusChange() override;
   void HandleLocaleChange() override;
   views::Widget* GetBubbleWidget() const override;
