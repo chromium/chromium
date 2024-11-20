@@ -148,6 +148,7 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -2269,15 +2270,18 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // In fenced frames, we should always use `noopener`.
   if (GetFrame()->IsInFencedFrameTree()) {
     window_features.noopener = true;
-  } else if (base::FeatureList::IsEnabled(
-                 features::kEnforceNoopenerOnBlobURLNavigation) &&
-             completed_url.ProtocolIs("blob")) {
+  } else if (completed_url.ProtocolIs("blob")) {
     auto blob_url_site =
         BlinkSchemefulSite(SecurityOrigin::Create(completed_url));
     BlinkSchemefulSite top_level_site =
         entered_window->GetStorageKey().GetTopLevelSite();
     if (top_level_site != blob_url_site) {
-      window_features.noopener = true;
+      UseCounter::Count(document(),
+                        WebFeature::kCrossTopLevelSiteBlobURLNavigation);
+      if (base::FeatureList::IsEnabled(
+              features::kEnforceNoopenerOnBlobURLNavigation)) {
+        window_features.noopener = true;
+      }
     }
   }
 

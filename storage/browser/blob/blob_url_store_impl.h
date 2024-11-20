@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,12 +26,16 @@ class BlobUrlRegistry;
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
     : public blink::mojom::BlobURLStore {
  public:
+  // `partitioned_fetch_failure_closure` runs when the storage_key check fails
+  // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory`.
   BlobURLStoreImpl(const blink::StorageKey& storage_key,
                    const url::Origin& renderer_origin,
                    int render_process_host_id,
                    base::WeakPtr<BlobUrlRegistry> registry,
                    BlobURLValidityCheckBehavior validity_check_options =
-                       BlobURLValidityCheckBehavior::DEFAULT);
+                       BlobURLValidityCheckBehavior::DEFAULT,
+                   base::RepeatingClosure partitioned_fetch_failure_closure =
+                       base::DoNothing());
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
   BlobURLStoreImpl& operator=(const BlobURLStoreImpl&) = delete;
@@ -79,6 +84,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   const BlobURLValidityCheckBehavior validity_check_behavior_;
 
   std::set<GURL> urls_;
+
+  base::RepeatingClosure partitioned_fetch_failure_closure_;
 
   base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_{this};
 };

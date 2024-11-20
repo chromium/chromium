@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -36,11 +37,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   // Binds receivers corresponding to connections from renderer frame
   // contexts and stores them in `frame_receivers_`.
+  // `partitioned_fetch_failure_closure` runs when the storage_key check fails
+  // in `BlobURLStoreImpl::ResolveAsURLLoaderFactory`.
   void AddReceiver(
       const blink::StorageKey& storage_key,
       const url::Origin& renderer_origin,
       int render_process_host_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver);
+      mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver,
+      base::RepeatingClosure partitioned_fetch_failure_closure);
 
   // Binds receivers corresponding to connections from renderer worker
   // contexts and stores them in `worker_receivers_`.

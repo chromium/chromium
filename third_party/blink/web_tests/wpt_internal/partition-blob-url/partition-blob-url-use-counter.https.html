@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<!-- Pull in executor_path needed by newPopup / newIframe -->
+<script src="/html/cross-origin-embedder-policy/credentialless/resources/common.js"></script>
+<!-- Pull in importScript / newPopup / newIframe -->
+<script src="/html/anonymous-iframe/resources/common.js"></script>
+<body>
+<script>
+
+const kCrossTopLevelSiteBlobURLNavigation = 5200;
+
+function clear() {
+  internals.clearUseCounter(document, kCrossTopLevelSiteBlobURLNavigation);
+}
+
+const navigation_counter_not_triggered = "kCrossTopLevelSiteBlobURLNavigation UseCounter wasn't triggered.";
+const navigation_counter_triggered = "kCrossTopLevelSiteBlobURLNavigation UseCounter was triggered.";
+
+const add_iframe_js = (iframe_origin, response_queue_uuid) => `
+ const importScript = ${importScript};
+ await importScript("/html/cross-origin-embedder-policy/credentialless" +
+                  "/resources/common.js");
+ await importScript("/html/anonymous-iframe/resources/common.js");
+ await importScript("/common/utils.js");
+
+
+ // dispatcher.js has already been loaded by the popup this is running in.
+ await send("${response_queue_uuid}", newIframe("${iframe_origin}"));
+`;
+
+const same_site_origin = get_host_info().HTTPS_ORIGIN;
+const cross_site_origin = get_host_info().HTTPS_NOTSAMESITE_ORIGIN;
+
+async function create_test_iframes(t, response_queue_uuid) {
+ assert_equals("https://" + window.location.host, same_site_origin,
+ "this test assumes that the page's window.location.host corresponds to " +
+ "get_host_info().HTTPS_ORIGIN");
+
+ // Create a same-origin iframe in a cross-site popup.
+ const not_same_site_popup_uuid = newPopup(t, cross_site_origin);
+ await send(not_same_site_popup_uuid,
+      add_iframe_js(same_site_origin, response_queue_uuid));
+ const cross_site_iframe_uuid = await receive(response_queue_uuid);
+
+ // Create a same-origin iframe in a same-site popup.
+ const same_origin_popup_uuid = newPopup(t, same_site_origin);
+ await send(same_origin_popup_uuid,
+      add_iframe_js(same_site_origin, response_queue_uuid));
+ const same_site_iframe_uuid = await receive(response_queue_uuid);
+
+ return [cross_site_iframe_uuid, same_site_iframe_uuid];
+}
+
+const open_blob_url_window = (blob_url, response_queue_name) => `
+  async function test() {
+    window.open("${blob_url}");
+    if (internals.isUseCounted(document, ${kCrossTopLevelSiteBlobURLNavigation}) === false) {
+      return send("${response_queue_name}", "${navigation_counter_not_triggered}");
+    }
+    return send("${response_queue_name}", "${navigation_counter_triggered}");
+  }
+  await test();
+`;
+
+const frame_html = "<!doctype html><body onload=\"window.close()\">test</body>";
+
+// Tests UseCounter metrics for Blob URL window.open from same and cross partition iframes.
+promise_test(t => {
+ return new Promise(async (resolve, reject) => {
+   try {
+     clear();
+     // Creates same and cross partition iframes.
+     const response_queue_uuid = token();
+
+     const [cross_site_iframe_uuid, same_site_iframe_uuid] =
+       await create_test_iframes(t, response_queue_uuid);
+
+     const blob = new Blob([frame_html], {type : "text/html"});
+     const blob_url = URL.createObjectURL(blob);
+
+     // Attempt to open blob URL in cross partition iframe.
+     await send(cross_site_iframe_uuid, open_blob_url_window(blob_url, response_queue_uuid));
+     const response = await receive(response_queue_uuid);
+
+     if (response === navigation_counter_not_triggered) {
+       reject(navigation_counter_not_triggered);
+     }
+     resolve();
+   } catch (e) {
+     reject(e);
+   }
+ });
+}, "kCrossTopLevelSiteBlobURLNavigation UseCounter should be triggered for cross-top-level-site navigation.");
+
+const open_blob_url_window_via_a_click = (blob_url, response_queue_name) => `
+  const link = document.createElement("a");
+  link.href = "${blob_url}";
+  link.target = "_blank";
+  link.rel = "opener";
+  document.body.appendChild(link);
+  link.click();
+  if (internals.isUseCounted(document, ${kCrossTopLevelSiteBlobURLNavigation}) === false) {
+    return send("${response_queue_name}", "${navigation_counter_not_triggered}");
+  }
+  return send("${response_queue_name}", "${navigation_counter_triggered}");
+`;
+
+// Tests blob URL `<a target="_blank" rel="opener">` click for same and cross partition iframes.
+promise_test(t => {
+ return new Promise(async (resolve, reject) => {
+   try {
+     clear();
+     // Creates same and cross partition iframes.
+     const response_queue_uuid = token();
+
+     const [cross_site_iframe_uuid, same_site_iframe_uuid] = await create_test_iframes(t, token());
+
+     const blob = new Blob([frame_html], {type : "text/html"});
+     const blob_url = URL.createObjectURL(blob);
+
+     // Attempt to click blob URL in cross partition iframe.
+     await send(cross_site_iframe_uuid, open_blob_url_window_via_a_click(blob_url, response_queue_uuid));
+     const response = await receive(response_queue_uuid);
+
+     if (response === navigation_counter_not_triggered) {
+       reject(navigation_counter_not_triggered);
+     }
+
+     resolve();
+   } catch (e) {
+     reject(e);
+   }
+ });
+}, "kCrossTopLevelSiteBlobURLNavigation UseCounter should be triggered for a Blob URL cross-top-level-site link click.");
+
+</script>
+</body>

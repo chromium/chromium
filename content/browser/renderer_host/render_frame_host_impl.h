@@ -4128,6 +4128,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
           receiver);
 
+  void LogWebFeatureForCurrentPage(blink::mojom::WebFeature feature);
+
+  base::RepeatingClosure CreateLogWebFeatureClosure(
+      blink::mojom::WebFeature feature);
+
   // For frames and main thread worklets we use a navigation-associated
   // interface and bind `receiver` to a `BlobURLStore` instance, which
   // implements the Blob URL API in the browser process.

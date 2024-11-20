@@ -12130,15 +12130,27 @@ void RenderFrameHostImpl::CreateBroadcastChannelProvider(
       std::move(receiver));
 }
 
+void RenderFrameHostImpl::LogWebFeatureForCurrentPage(
+    blink::mojom::WebFeature feature) {
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(this, feature);
+}
+
+base::RepeatingClosure RenderFrameHostImpl::CreateLogWebFeatureClosure(
+    blink::mojom::WebFeature feature) {
+  return base::BindRepeating(&RenderFrameHostImpl::LogWebFeatureForCurrentPage,
+                             weak_ptr_factory_.GetWeakPtr(), feature);
+}
+
 void RenderFrameHostImpl::BindBlobUrlStoreAssociatedReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
-
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
       GetStorageKey(), GetLastCommittedOrigin(), GetProcess()->GetID(),
-      std::move(receiver));
+      std::move(receiver),
+      CreateLogWebFeatureClosure(
+          blink::mojom::WebFeature::kCrossPartitionBlobURLFetch));
 }
 
 void RenderFrameHostImpl::BindBlobUrlStoreReceiver(
