@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -309,8 +308,6 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool step_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 #endif  // DCHECK_IS_ON()
-
-  std::optional<base::TimeDelta> time_spent_stepping_ = std::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

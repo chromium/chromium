@@ -32,8 +32,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
-#include "base/trace_event/base_tracing.h"
 #include "sql/database.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
@@ -96,24 +94,10 @@ SqliteResultCode Statement::StepInternal() {
   if (!CheckValid())
     return SqliteResultCode::kError;
 
-  base::ElapsedTimer timer;
-  if (!time_spent_stepping_) {
-    time_spent_stepping_ = base::TimeDelta();
-    TRACE_EVENT_BEGIN("sql", "Database::Statement",
-                      ref_->database()->GetTracingNamedTrack(),
-                      timer.start_time(), "statement",
-                      std::string(sqlite3_sql(ref_->stmt())));
-  }
-
   std::optional<base::ScopedBlockingCall> scoped_blocking_call;
   ref_->InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
 
   auto sqlite_result_code = ToSqliteResultCode(sqlite3_step(ref_->stmt()));
-
-  auto elapsed = timer.Elapsed();
-  ref_->database()->RecordTimingHistogram("Sql.Statement.StepTime.", elapsed);
-  *time_spent_stepping_ += elapsed;
-
   return CheckSqliteResultCode(sqlite_result_code);
 }
 
@@ -126,18 +110,13 @@ void Statement::ReportQueryExecutionMetrics() const {
   const int kResetVMStepsToZero = 1;
   const int vm_steps = sqlite3_stmt_status(
       ref_->stmt(), SQLITE_STMTSTATUS_VM_STEP, kResetVMStepsToZero);
-  const Database* database = ref_->database();
-  if (vm_steps > 0 && !database->histogram_tag().empty()) {
-    const std::string histogram_name =
-        "Sql.Statement." + database->histogram_tag() + ".VMSteps";
-    base::UmaHistogramCounts10000(histogram_name, vm_steps);
-  }
-
-  if (time_spent_stepping_) {
-    TRACE_EVENT_END("sql", database->GetTracingNamedTrack(), "statement",
-                    std::string(sqlite3_sql(ref_->stmt())));
-    database->RecordTimingHistogram("Sql.Statement.ExecutionTime.",
-                                    *time_spent_stepping_);
+  if (vm_steps > 0) {
+    const Database* database = ref_->database();
+    if (!database->histogram_tag().empty()) {
+      const std::string histogram_name =
+          "Sql.Statement." + database->histogram_tag() + ".VMSteps";
+      base::UmaHistogramCounts10000(histogram_name, vm_steps);
+    }
   }
 }
 
@@ -191,8 +170,6 @@ void Statement::Reset(bool clear_bound_vars) {
   run_called_ = false;
   step_called_ = false;
 #endif  // DCHECK_IS_ON()
-
-  time_spent_stepping_ = std::nullopt;
 }
 
 bool Statement::Succeeded() const {
