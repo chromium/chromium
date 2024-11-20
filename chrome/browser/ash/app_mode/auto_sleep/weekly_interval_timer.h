@@ -50,26 +50,23 @@ class WeeklyIntervalTimer : public system::TimezoneSettings::Observer {
 
   ~WeeklyIntervalTimer() override;
 
-  // Starts the timer so `on_interval_start_callback_` is invoked at the start
-  // of the next `time_interval_`.
-  // Additionally invokes `on_interval_start_callback_` if currently inside the
-  // interval.
-  void ScheduleTimer();
-
-  // `system::TimezoneSettings::Observer`
-  void TimezoneChanged(const icu::TimeZone& timezone) override;
-
   const policy::WeeklyTimeInterval& time_interval() const {
     return time_interval_;
   }
 
  private:
-  // TODO(crbug.com/328421429): Inline `ScheduleTimer()` method.
   WeeklyIntervalTimer(
       const policy::WeeklyTimeInterval& time_interval,
       base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
       const base::Clock* clock,
       const base::TickClock* tick_clock);
+
+  // `system::TimezoneSettings::Observer`
+  void TimezoneChanged(const icu::TimeZone& timezone) override;
+
+  // Invokes callback if currently inside the interval.
+  // Starts a timer to the next start of the interval to repeat this check.
+  void CheckIntervalAndStartTimer();
 
   void InvokeOnStartCallback();
   void ScheduleTimerAtNextIntervalStart();
@@ -83,8 +80,6 @@ class WeeklyIntervalTimer : public system::TimezoneSettings::Observer {
 
   const base::RepeatingCallback<void(base::TimeDelta)>
       on_interval_start_callback_;
-
-  bool timer_scheduled_ = false;
 
   // Last known timezone used to prevent reacting to multiple `TimezoneChanged`
   // observer calls of the same timezone.

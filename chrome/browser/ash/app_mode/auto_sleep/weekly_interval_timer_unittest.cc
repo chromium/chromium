@@ -26,6 +26,35 @@ namespace ash {
 
 using DayOfWeek = DeviceWeeklyScheduledSuspendTestPolicyBuilder::DayOfWeek;
 
+namespace {
+
+policy::WeeklyTimeInterval CreateWeeklyTimeInterval(
+    DayOfWeek start_day_of_week,
+    const base::TimeDelta& start_time_of_day,
+    DayOfWeek end_day_of_week,
+    const base::TimeDelta& end_time_of_day) {
+  policy::WeeklyTime start{start_day_of_week,
+                           static_cast<int>(start_time_of_day.InMilliseconds()),
+                           std::nullopt};
+  policy::WeeklyTime end{end_day_of_week,
+                         static_cast<int>(end_time_of_day.InMilliseconds()),
+                         std::nullopt};
+  policy::WeeklyTimeInterval interval{start, end};
+
+  return interval;
+}
+
+WeeklyTimeInterval AnyInterval() {
+  return CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
+                                  DayOfWeek::SATURDAY, base::Hours(6));
+}
+
+base::TimeDelta GetDuration(const policy::WeeklyTimeInterval& interval) {
+  return interval.start().GetDurationTo(interval.end());
+}
+
+}  // namespace
+
 class WeeklyIntervalTimerTest : public testing::Test {
  public:
   WeeklyIntervalTimerTest() = default;
@@ -58,29 +87,15 @@ class WeeklyIntervalTimerTest : public testing::Test {
       const policy::WeeklyTimeInterval& interval,
       base::RepeatingCallback<void(base::TimeDelta)>
           on_interval_start_callback) {
-    return WeeklyIntervalTimer::Factory(task_environment().GetMockClock(),
-                                        task_environment().GetMockTickClock())
-        .Create(interval, on_interval_start_callback);
-  }
+    auto result =
+        WeeklyIntervalTimer::Factory(task_environment().GetMockClock(),
+                                     task_environment().GetMockTickClock())
+            .Create(interval, on_interval_start_callback);
 
-  policy::WeeklyTimeInterval CreateWeeklyTimeInterval(
-      DayOfWeek start_day_of_week,
-      const base::TimeDelta& start_time_of_day,
-      DayOfWeek end_day_of_week,
-      const base::TimeDelta& end_time_of_day) {
-    policy::WeeklyTime start{
-        start_day_of_week, static_cast<int>(start_time_of_day.InMilliseconds()),
-        std::nullopt};
-    policy::WeeklyTime end{end_day_of_week,
-                           static_cast<int>(end_time_of_day.InMilliseconds()),
-                           std::nullopt};
-    policy::WeeklyTimeInterval interval{start, end};
-
-    return interval;
-  }
-
-  base::TimeDelta GetDuration(const policy::WeeklyTimeInterval& interval) {
-    return interval.start().GetDurationTo(interval.end());
+    // The timer could immediately schedule an async call to the callback,
+    // so give this a chance to happen.
+    task_environment().RunUntilIdle();
+    return result;
   }
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
@@ -93,54 +108,42 @@ class WeeklyIntervalTimerTest : public testing::Test {
 
 TEST_F(WeeklyIntervalTimerTest, TimerWorksWhenTimeFallsInCurrentInterval) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
+  const auto interval = AnyInterval();
 
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
-                                           DayOfWeek::SATURDAY, base::Hours(6));
+  // Confirm that interval start callback is executed when the timer is created
+  // at the start of the interval.
+  FastForwardTimeTo(interval.start());
   auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
-
-  // Confirm that interval start callback is executed when the current time is
-  // at the start of the interval.
-  EXPECT_FALSE(interval_start_future.IsReady());
-  FastForwardTimeTo(interval.start());
-  timer->ScheduleTimer();
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
 }
 
 TEST_F(WeeklyIntervalTimerTest, TimerWorksWhenTimeFallsInsideInterval) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
+  const auto interval = AnyInterval();
 
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
-                                           DayOfWeek::SATURDAY, base::Hours(6));
+  // Confirm that interval start callback is executed when the timer is created
+  // during the interval.
+  const auto delta = GetDuration(interval) / 2;
+
+  FastForwardTimeTo(interval.start(), /*delta=*/delta);
   auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
-  // Confirm that interval start callback is executed when the current time is
-  // inside the interval.
-  auto delta = GetDuration(interval) / 2;
-  EXPECT_FALSE(interval_start_future.IsReady());
 
-  FastForwardTimeTo(interval.start());
-  task_environment().FastForwardBy(delta);
-  timer->ScheduleTimer();
   const auto remaining_time_in_interval = GetDuration(interval) - delta;
   EXPECT_EQ(interval_start_future.Take(), remaining_time_in_interval);
 }
 
 TEST_F(WeeklyIntervalTimerTest, TimerRunsInTheFuture) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
-
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
-                                           DayOfWeek::SATURDAY, base::Hours(6));
-  auto timer = CreateWeeklyIntervalTimer(
-      interval, interval_start_future.GetRepeatingCallback());
+  const auto interval = AnyInterval();
 
   // Confirm that when you're outside an interval and then start the
   // timer, it schedules the timer for the future.
-  EXPECT_FALSE(interval_start_future.IsReady());
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
-  timer->ScheduleTimer();
-  // Run until idle to make sure that any native timer tasks are scheduled.
-  task_environment().RunUntilIdle();
+
+  auto timer = CreateWeeklyIntervalTimer(
+      interval, interval_start_future.GetRepeatingCallback());
 
   EXPECT_FALSE(interval_start_future.IsReady());
 
@@ -148,36 +151,37 @@ TEST_F(WeeklyIntervalTimerTest, TimerRunsInTheFuture) {
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
 }
 
-TEST_F(WeeklyIntervalTimerTest,
-       ShouldNotRunCallbackWhenCreatedAtIntervalEnd) {
+TEST_F(WeeklyIntervalTimerTest, ShouldNotRunCallbackWhenCreatedAtIntervalEnd) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(21),
-                                           DayOfWeek::SATURDAY, base::Hours(6));
-  auto timer = CreateWeeklyIntervalTimer(
-      interval, interval_start_future.GetRepeatingCallback());
+  const auto interval = AnyInterval();
 
   // Start the test exactly at the end of the interval.
   FastForwardTimeTo(interval.end());
 
-  timer->ScheduleTimer();
-  task_environment().RunUntilIdle();
+  auto timer = CreateWeeklyIntervalTimer(
+      interval, interval_start_future.GetRepeatingCallback());
 
+  // Timer should not trigger immediately.
   EXPECT_FALSE(interval_start_future.IsReady());
+
+  // Timer should not trigger as long as we don't hit the interval start.
+  FastForwardTimeTo(interval.start(), -base::Seconds(1));
+  EXPECT_FALSE(interval_start_future.IsReady());
+
+  // Timer should trigger when we hit the interval start.
+  FastForwardTimeTo(interval.start());
+  EXPECT_TRUE(interval_start_future.IsReady());
 }
 
 TEST_F(WeeklyIntervalTimerTest, TimerRunsEveryWeek) {
   base::test::TestFuture<base::TimeDelta> interval_start_future;
-  auto interval =
-      CreateWeeklyTimeInterval(DayOfWeek::WEDNESDAY, base::Hours(7),
-                               DayOfWeek::WEDNESDAY, base::Hours(21));
-  auto timer = CreateWeeklyIntervalTimer(
-      interval, interval_start_future.GetRepeatingCallback());
+  const auto interval = AnyInterval();
 
-  // Move time to before interval start so that test expectations are met and we
-  // do not get multiple values in a test future that expects only one.
+  // The test starts before the interval.
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
 
-  timer->ScheduleTimer();
+  auto timer = CreateWeeklyIntervalTimer(
+      interval, interval_start_future.GetRepeatingCallback());
 
   for (size_t i = 0; i < 3; i++) {
     FastForwardTimeTo(interval.start());
@@ -187,23 +191,22 @@ TEST_F(WeeklyIntervalTimerTest, TimerRunsEveryWeek) {
 
 TEST_F(WeeklyIntervalTimerTest, TwoTimersWorkConcurrently) {
   base::test::TestFuture<base::TimeDelta> interval_1_start_future;
-  auto interval_1 =
+  base::test::TestFuture<base::TimeDelta> interval_2_start_future;
+
+  const auto interval_1 =
       CreateWeeklyTimeInterval(DayOfWeek::WEDNESDAY, base::Hours(7),
                                DayOfWeek::WEDNESDAY, base::Hours(21));
-  auto timer_1 = CreateWeeklyIntervalTimer(
-      interval_1, interval_1_start_future.GetRepeatingCallback());
-
-  base::test::TestFuture<base::TimeDelta> interval_2_start_future;
-  auto interval_2 = CreateWeeklyTimeInterval(
-      DayOfWeek::FRIDAY, base::Hours(7), DayOfWeek::FRIDAY, base::Hours(21));
-  auto timer_2 = CreateWeeklyIntervalTimer(
-      interval_2, interval_2_start_future.GetRepeatingCallback());
+  const auto interval_2 =
+      CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(7),  //
+                               DayOfWeek::FRIDAY, base::Hours(21));
 
   // The test starts before the first interval.
   FastForwardTimeTo(interval_1.start(), -base::Minutes(5));
 
-  timer_1->ScheduleTimer();
-  timer_2->ScheduleTimer();
+  auto timer_1 = CreateWeeklyIntervalTimer(
+      interval_1, interval_1_start_future.GetRepeatingCallback());
+  auto timer_2 = CreateWeeklyIntervalTimer(
+      interval_2, interval_2_start_future.GetRepeatingCallback());
 
   // Moving into the first interval should trigger the first callback.
   FastForwardTimeTo(interval_1.start());
@@ -217,18 +220,17 @@ TEST_F(WeeklyIntervalTimerTest, TwoTimersWorkConcurrently) {
 }
 
 TEST_F(WeeklyIntervalTimerTest, TimezoneChangesReprogramTimer) {
+  base::test::TestFuture<base::TimeDelta> interval_start_future;
+  const auto interval = AnyInterval();
+
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"PST");
 
-  base::test::TestFuture<base::TimeDelta> interval_start_future;
+  FastForwardTimeTo(interval.start(), -base::Hours(8));
 
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::FRIDAY, base::Hours(12),
-                                           DayOfWeek::SATURDAY, base::Hours(8));
   auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
 
-  FastForwardTimeTo(interval.start(), -base::Hours(8));
-  timer->ScheduleTimer();
   // Change the time zone to CET which is 8 hours ahead of PST and confirm that
   // interval should start immediately as the timer should have been
   // reprogrammed.
@@ -237,18 +239,15 @@ TEST_F(WeeklyIntervalTimerTest, TimezoneChangesReprogramTimer) {
 }
 
 TEST_F(WeeklyIntervalTimerTest, TimezoneChangesRestartTimer) {
+  base::test::TestFuture<base::TimeDelta> interval_start_future;
+  const auto interval = AnyInterval();
+
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
 
-  base::test::TestFuture<base::TimeDelta> interval_start_future;
-
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::MONDAY, base::Hours(21),
-                                           DayOfWeek::TUESDAY, base::Hours(8));
+  FastForwardTimeTo(interval.start());
   auto timer = CreateWeeklyIntervalTimer(
       interval, interval_start_future.GetRepeatingCallback());
-
-  FastForwardTimeTo(interval.start());
-  timer->ScheduleTimer();
 
   EXPECT_EQ(interval_start_future.Take(), GetDuration(interval));
   // Change the time zone to GMT+1 and confirm that
@@ -259,11 +258,11 @@ TEST_F(WeeklyIntervalTimerTest, TimezoneChangesRestartTimer) {
 }
 
 TEST_F(WeeklyIntervalTimerTest,
-       TimezoneChangeToSameTimezoneDoesNotRestartTimer) {
+       TimezoneChangeToSameTimezoneDoesNotRetriggerCallback) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::MONDAY, base::Hours(21),
-                                           DayOfWeek::TUESDAY, base::Hours(8));
+  const auto interval = AnyInterval();
+
   int interval_start_callback_count = 0;
   base::RepeatingCallback<void(base::TimeDelta)> interval_start_callback =
       base::BindRepeating(
@@ -272,11 +271,9 @@ TEST_F(WeeklyIntervalTimerTest,
           },
           std::ref(interval_start_callback_count));
 
-  auto timer = CreateWeeklyIntervalTimer(interval, interval_start_callback);
-
   FastForwardTimeTo(interval.start());
-  EXPECT_EQ(interval_start_callback_count, 0);
-  timer->ScheduleTimer();
+
+  auto timer = CreateWeeklyIntervalTimer(interval, interval_start_callback);
   EXPECT_EQ(interval_start_callback_count, 1);
   scoped_timezone_settings->SetTimezoneFromID(u"GMT");
   task_environment().RunUntilIdle();
@@ -286,24 +283,6 @@ TEST_F(WeeklyIntervalTimerTest,
   EXPECT_EQ(interval_start_callback_count, 1);
   FastForwardTimeTo(interval.end());
   EXPECT_EQ(interval_start_callback_count, 1);
-}
-
-TEST_F(WeeklyIntervalTimerTest, ChangingTimeZoneWithoutStartingTimerIsNoOp) {
-  auto scoped_timezone_settings =
-      std::make_unique<system::ScopedTimezoneSettings>(u"PST");
-
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::MONDAY, base::Hours(12),
-                                           DayOfWeek::TUESDAY, base::Hours(8));
-
-  base::test::TestFuture<base::TimeDelta> interval_start_future;
-  auto timer = CreateWeeklyIntervalTimer(
-      interval, interval_start_future.GetRepeatingCallback());
-
-  FastForwardTimeTo(interval.start(), -base::Hours(8));
-  scoped_timezone_settings->SetTimezoneFromID(u"CET");
-  FastForwardTimeTo(interval.start());
-
-  EXPECT_FALSE(interval_start_future.IsReady());
 }
 
 }  // namespace ash

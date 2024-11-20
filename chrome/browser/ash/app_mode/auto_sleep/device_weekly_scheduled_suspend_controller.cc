@@ -193,10 +193,6 @@ void DeviceWeeklyScheduledSuspendController::
       base::BindRepeating(
           &DeviceWeeklyScheduledSuspendController::OnWeeklyIntervalStart,
           weak_factory_.GetWeakPtr()));
-
-  for (const auto& timer : device_suspension_timers_) {
-    timer->ScheduleTimer();
-  }
 }
 
 void DeviceWeeklyScheduledSuspendController::OnWeeklyIntervalStart(

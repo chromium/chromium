@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -79,13 +80,18 @@ WeeklyIntervalTimer::WeeklyIntervalTimer(
       CHECK_DEREF(system::TimezoneSettings::GetInstance());
   timezone_observer_.Observe(&timezone_settings);
   last_known_time_zone_id_ = timezone_settings.GetCurrentTimezoneID();
+
+  // Start the timer but do it asynchronous to prevent invoking the callback
+  // from inside the constructor/while the parent is still setting up.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WeeklyIntervalTimer::CheckIntervalAndStartTimer,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 WeeklyIntervalTimer::~WeeklyIntervalTimer() = default;
 
-void WeeklyIntervalTimer::ScheduleTimer() {
-  timer_scheduled_ = true;
-
+void WeeklyIntervalTimer::CheckIntervalAndStartTimer() {
   if (TimeFallsInInterval(clock_->Now(), time_interval_)) {
     InvokeOnStartCallback();
   }
@@ -95,15 +101,13 @@ void WeeklyIntervalTimer::ScheduleTimer() {
 void WeeklyIntervalTimer::TimezoneChanged(const icu::TimeZone& timezone) {
   std::u16string updated_timezone_id =
       system::TimezoneSettings::GetTimezoneID(timezone);
-  if (!timer_scheduled_ || updated_timezone_id == last_known_time_zone_id_) {
+  if (updated_timezone_id == last_known_time_zone_id_) {
     return;
   }
 
   last_known_time_zone_id_ = updated_timezone_id;
 
-  timer_until_start_of_interval_->Stop();
-
-  ScheduleTimer();
+  CheckIntervalAndStartTimer();
 }
 
 void WeeklyIntervalTimer::InvokeOnStartCallback() {
@@ -120,7 +124,7 @@ void WeeklyIntervalTimer::ScheduleTimerAtNextIntervalStart() {
   }
   timer_until_start_of_interval_->Start(
       FROM_HERE, clock_->Now() + timer_duration,
-      base::BindOnce(&WeeklyIntervalTimer::ScheduleTimer,
+      base::BindOnce(&WeeklyIntervalTimer::CheckIntervalAndStartTimer,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
