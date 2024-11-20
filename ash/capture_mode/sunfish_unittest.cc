@@ -75,11 +75,9 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyOf;
-using ::testing::Contains;
 using ::testing::DoDefault;
 using ::testing::Each;
 using ::testing::ElementsAre;
-using ::testing::Field;
 using ::testing::Gt;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
@@ -112,10 +110,9 @@ FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
 }
 
 // Returns a matcher for an action button that returns true if the action button
-// has the specified `type`.
-Matcher<ActionButtonView*> ActionButtonTypeIs(ActionButtonType type) {
-  return Property(&ActionButtonView::rank,
-                  Field(&ActionButtonRank::type, type));
+// has the specified `id`.
+Matcher<ActionButtonView*> ActionButtonIdIs(int id) {
+  return Property(&ActionButtonView::GetID, id);
 }
 
 // Returns a matcher for an action button that returns true if the action button
@@ -1629,29 +1626,20 @@ class ScannerTest : public AshTestBase {
     // `SelectCaptureModeRegion()` is verified without interference from any
     // previously selected region. This guarantees consistent and predictable
     // behavior during tests.
-    CaptureModeTestApi test_api;
-    test_api.SetUserSelectedRegion(gfx::Rect());
+    CaptureModeTestApi().SetUserSelectedRegion(gfx::Rect());
 
-    // Select a region to trigger text detection. The capture label should be
-    // hidden so that it does not interfere with text detection.
+    // Select a region to trigger text detection.
     SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
                             /*release_mouse=*/true, /*verify_region=*/true);
-    CaptureModeSessionTestApi session_test_api(
-        controller->capture_mode_session());
-    EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
-
-    // The capture label should be reshown once capture completes.
     WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
-    EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
-
     detect_text_future.Take().Run("detected text");
 
-    std::vector<ActionButtonView*> action_buttons =
-        session_test_api.GetActionButtons();
-    EXPECT_THAT(action_buttons,
-                ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
-    return session_test_api.GetButtonWithViewID(
+    CaptureModeSessionTestApi session_test_api(
+        controller->capture_mode_session());
+    ActionButtonView* action_button = session_test_api.GetButtonWithViewID(
         ActionButtonViewID::kSmartActionsButton);
+    EXPECT_TRUE(action_button);
+    return action_button;
   }
 
   // testing::Test:
@@ -2200,19 +2188,16 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   // Copy text button should have been created.
-  // TODO(crbug.com/376174530): Add a test API to get buttons of a particular
-  // type / rank and use it here.
-  std::vector<ActionButtonView*> action_buttons =
-      session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(_, ActionButtonTypeIs(ActionButtonType::kCopyText)));
+  const ActionButtonView* copy_text_button =
+      session_test_api.GetButtonWithViewID(ActionButtonViewID::kCopyTextButton);
+  ASSERT_TRUE(copy_text_button);
   // Clipboard should currently be empty.
   std::u16string clipboard_data;
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"");
   // Clicking on the button should copy text to clipboard and show a toast.
-  LeftClickOn(action_buttons[1]);
+  LeftClickOn(copy_text_button);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"detected text");
@@ -2236,8 +2221,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfNoDetectedText) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
+  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kCopyTextButton));
 }
 
 // Tests that the copy text button is not shown if the selected region changes
@@ -2260,8 +2245,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
+  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kCopyTextButton));
 }
 
 // Tests that the copy text button is not shown if the selected region is
@@ -2291,8 +2276,8 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChangesByFineTuneNoop) {
 
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
+  EXPECT_FALSE(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kCopyTextButton));
 }
 
 // Records the time taken for the on device OCR.
@@ -2338,11 +2323,13 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
   // Smart actions button should have been created.
   std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kScanner),
-                                ActionButtonIsCollapsed()),
-                          AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
-                                Not(ActionButtonIsCollapsed()))));
+  ASSERT_THAT(
+      action_buttons,
+      ElementsAre(
+          AllOf(ActionButtonIdIs(ActionButtonViewID::kSmartActionsButton),
+                ActionButtonIsCollapsed()),
+          AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
+                Not(ActionButtonIsCollapsed()))));
 
   // Click the smart actions button.
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
@@ -2357,9 +2344,10 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
 
   // Smart actions button should have been removed, and the copy text button
   // should be collapsed.
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
-                                ActionButtonIsCollapsed())));
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
+                        ActionButtonIsCollapsed())));
 
   // Simulate a single fetched Scanner action.
   auto output = std::make_unique<manta::proto::ScannerOutput>();
@@ -2368,11 +2356,12 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedText) {
   fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
 
   // Check for a Scanner action button and a collapsed copy text button.
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kScanner),
-                                Not(ActionButtonIsCollapsed())),
-                          AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
-                                ActionButtonIsCollapsed())));
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(AllOf(ActionButtonIdIs(ActionButtonViewID::kScannerButton),
+                        Not(ActionButtonIsCollapsed())),
+                  AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
+                        ActionButtonIsCollapsed())));
 }
 
 TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
@@ -2392,11 +2381,8 @@ TEST_F(ScannerTest, SmartActionsButtonShownForDetectedTextRecordsHistogram) {
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   // Smart actions button should have been created.
-  std::vector<ActionButtonView*> action_buttons =
-      session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner),
-                          ActionButtonTypeIs(ActionButtonType::kCopyText)));
+  EXPECT_TRUE(session_test_api.GetButtonWithViewID(
+      ActionButtonViewID::kSmartActionsButton));
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
       ScannerFeatureUserState::kScreenCaptureModeScannerButtonShown, 1);
@@ -2421,13 +2407,10 @@ TEST_F(
   const CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
   // Smart actions button should have been created.
-  std::vector<ActionButtonView*> action_buttons =
-      session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kScanner),
-                                ActionButtonIsCollapsed()),
-                          AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
-                                Not(ActionButtonIsCollapsed()))));
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetButtonWithViewID(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
 
   histogram_tester.ExpectBucketCount(
       "Ash.ScannerFeature.UserState",
@@ -2443,7 +2426,7 @@ TEST_F(
   EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
               FetchActionsForImage)
       .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
-  LeftClickOn(action_buttons[0]);
+  LeftClickOn(smart_actions_button);
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
 
   // Simulate a single fetched Scanner action.
@@ -2484,16 +2467,16 @@ TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
 
   detect_text_future.Take().Run("detected text");
   // Smart actions button should have been created.
-  std::vector<ActionButtonView*> action_buttons =
-      session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetButtonWithViewID(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
 
   // Click the smart actions button. The capture label should be hidden so that
   // it does not interfere with detecting Scanner actions.
   base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
       fetch_actions_future;
-  LeftClickOn(action_buttons[0]);
+  LeftClickOn(smart_actions_button);
   EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
 
   // The capture label should be reshown once capture completes.
@@ -2536,13 +2519,13 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
 
   detect_text_future.Take().Run("detected text");
   // Smart actions button should have been created.
-  std::vector<ActionButtonView*> action_buttons =
-      session_test_api.GetActionButtons();
-  ASSERT_THAT(action_buttons,
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+  const ActionButtonView* smart_actions_button =
+      session_test_api.GetButtonWithViewID(
+          ActionButtonViewID::kSmartActionsButton);
+  ASSERT_TRUE(smart_actions_button);
 
   // Click the smart actions button.
-  LeftClickOn(action_buttons[0]);
+  LeftClickOn(smart_actions_button);
   views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
   ASSERT_TRUE(disclaimer);
 
@@ -2562,9 +2545,10 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
 
   // Smart actions button should have been removed, and the copy text button
   // should be collapsed.
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
-                                ActionButtonIsCollapsed())));
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
+                        ActionButtonIsCollapsed())));
 
   // Simulate a single fetched Scanner action.
   auto output = std::make_unique<manta::proto::ScannerOutput>();
@@ -2573,11 +2557,12 @@ TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
   fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
 
   // Check for a Scanner action button and a collapsed copy text button.
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kScanner),
-                                Not(ActionButtonIsCollapsed())),
-                          AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
-                                ActionButtonIsCollapsed())));
+  EXPECT_THAT(
+      session_test_api.GetActionButtons(),
+      ElementsAre(AllOf(ActionButtonIdIs(ActionButtonViewID::kScannerButton),
+                        Not(ActionButtonIsCollapsed())),
+                  AllOf(ActionButtonIdIs(ActionButtonViewID::kCopyTextButton),
+                        ActionButtonIsCollapsed())));
 }
 
 TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
@@ -2585,7 +2570,7 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       kSunfishConsentDisclaimerAccepted, false);
 
-  auto* smart_actions_button = GetSmartActionsButton();
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
   ASSERT_TRUE(smart_actions_button);
 
   // Click the smart actions button.
@@ -2610,7 +2595,7 @@ TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
   EXPECT_TRUE(controller->IsActive());
   // Did not get filled with new actions buttons, stays the same as before.
   EXPECT_THAT(session_test_api.GetActionButtons(),
-              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+              ElementsAre(smart_actions_button, _));
 
   // Click the smart actions button again, should show the disclaimer again.
   LeftClickOn(smart_actions_button);
