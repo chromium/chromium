@@ -1603,7 +1603,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 
 + (id<GREYMatcher>)tabGroupCreationView {
   return grey_allOf(grey_accessibilityID(kCreateTabGroupViewIdentifier),
-                    grey_sufficientlyVisible(), nil);
+                    grey_notNil(), nil);
 }
 
 + (id<GREYMatcher>)createTabGroupTextField {
