@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_PROVIDER_PROTECTED_H_
-#define IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_PROVIDER_PROTECTED_H_
+#ifndef IOS_CHROME_BROWSER_SCREEN_UI_BUNDLED_SCREEN_PROVIDER_PROTECTED_H_
+#define IOS_CHROME_BROWSER_SCREEN_UI_BUNDLED_SCREEN_PROVIDER_PROTECTED_H_
 
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
 // Method available only for subclasses of ScreenProvider.
 @interface ScreenProvider ()
@@ -15,4 +15,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_PROVIDER_PROTECTED_H_
+#endif  // IOS_CHROME_BROWSER_SCREEN_UI_BUNDLED_SCREEN_PROVIDER_PROTECTED_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_PROVIDER_H_
-#define IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_SCREEN_UI_BUNDLED_SCREEN_PROVIDER_H_
+#define IOS_CHROME_BROWSER_SCREEN_UI_BUNDLED_SCREEN_PROVIDER_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/screen/screen_type.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 
 // The class that provides a list of screens.
 @interface ScreenProvider : NSObject
@@ -20,4 +20,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCREEN_SCREEN_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_SCREEN_UI_BUNDLED_SCREEN_PROVIDER_H_

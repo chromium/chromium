@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

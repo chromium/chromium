@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 
 class ProfileIOS;
 

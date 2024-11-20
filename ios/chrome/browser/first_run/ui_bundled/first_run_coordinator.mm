@@ -18,11 +18,11 @@
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 

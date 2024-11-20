@@ -12,6 +12,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/signin/signin_screen_coordinator.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
+#import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -22,8 +24,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/logging/upgrade_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/uno_signin_screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_provider.h"
-#import "ios/chrome/browser/ui/screen/screen_type.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;

@@ -90,9 +90,9 @@ source_set("signin_screen_provider") {
     "//base",
     "//components/sync/base:features",
     "//ios/chrome/browser/first_run/ui_bundled:field_trial",
-    "//ios/chrome/browser/ui/screen:screen_provider",
-    "//ios/chrome/browser/ui/screen:screen_provider_protected",
-    "//ios/chrome/browser/ui/screen:screen_type",
+    "//ios/chrome/browser/screen/ui_bundled:screen_provider",
+    "//ios/chrome/browser/screen/ui_bundled:screen_provider_protected",
+    "//ios/chrome/browser/screen/ui_bundled:screen_type",
   ]
 }
 
