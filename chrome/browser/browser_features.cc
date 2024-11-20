@@ -277,16 +277,6 @@ BASE_FEATURE(kTabCaptureBlueBorderCrOS,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-// Reports WebUI Javascript errors to the crash server on all desktop platforms.
-// Previously, this was only supported on ChromeOS and Linux.
-// Intentionally enabled by default and will be used as a kill switch in case
-// of regressions.
-BASE_FEATURE(kWebUIJSErrorReportingExtended,
-            "WebUIJSErrorReportingExtended",
-            base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.
 BASE_FEATURE(kWebUsbDeviceDetection,

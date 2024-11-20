@@ -118,10 +118,6 @@ BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kWebUIJSErrorReportingExtended);
-#endif
-
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)
