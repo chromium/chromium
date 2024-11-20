@@ -27,11 +27,13 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceWebRtc::Create(
         VideoCaptureError::kVideoCaptureSystemDeviceIdNotFound);
   }
   return VideoCaptureErrorOrDevice(
-      std::make_unique<VideoCaptureDeviceWebRtc>(capture_module));
+      std::make_unique<VideoCaptureDeviceWebRtc>(options, capture_module));
 }
 
 VideoCaptureDeviceWebRtc::VideoCaptureDeviceWebRtc(
+    webrtc::VideoCaptureOptions* options,
     rtc::scoped_refptr<webrtc::VideoCaptureModule> capture_module) {
+  options_ = options;
   capture_module_ = capture_module;
   capture_module_->RegisterCaptureDataCallback(this);
 }
@@ -46,28 +48,43 @@ void VideoCaptureDeviceWebRtc::AllocateAndStart(
     std::unique_ptr<Client> client) {
   client_ = std::move(client);
 
-  webrtc::VideoCaptureCapability capability;
-  capability.width = params.requested_format.frame_size.width();
-  capability.height = params.requested_format.frame_size.height();
-  capability.maxFPS = params.requested_format.frame_rate;
-  capability.videoType =
+  webrtc::VideoCaptureCapability requested_capability;
+  requested_capability.width = params.requested_format.frame_size.width();
+  requested_capability.height = params.requested_format.frame_size.height();
+  requested_capability.maxFPS = params.requested_format.frame_rate;
+  requested_capability.videoType =
       VideoCaptureDeviceFactoryWebRtc::WebRtcVideoTypeFromChromiumPixelFormat(
           params.requested_format.pixel_format);
-  capability.interlaced = false;
+  requested_capability.interlaced = false;
 
-  int32_t error = capture_module_->StartCapture(capability);
+  // Get the best matching capability
+  int cap_index;
+  webrtc::VideoCaptureCapability best_capability;
+  std::unique_ptr<webrtc::VideoCaptureModule::DeviceInfo> info(
+      webrtc::VideoCaptureFactory::CreateDeviceInfo(options_.get()));
+
+  if ((cap_index = info->GetBestMatchedCapability(
+           capture_module_->CurrentDeviceName(), requested_capability,
+           best_capability)) < 0) {
+    client_->OnError(VideoCaptureError::kWebRtcStartCaptureFailed, FROM_HERE,
+                     "Failed to find best matched capability");
+    return;
+  }
+
+  int32_t error = capture_module_->StartCapture(best_capability);
   if (error < 0) {
     client_->OnError(VideoCaptureError::kWebRtcStartCaptureFailed, FROM_HERE,
                      "Failed to start Capturing");
     return;
   }
 
-  capture_module_->CaptureSettings(capability);
+  capture_module_->CaptureSettings(best_capability);
   capture_format_.pixel_format =
       VideoCaptureDeviceFactoryWebRtc::WebRtcVideoTypeToChromiumPixelFormat(
-          capability.videoType);
-  capture_format_.frame_rate = capability.maxFPS;
-  capture_format_.frame_size.SetSize(capability.width, capability.height);
+          best_capability.videoType);
+  capture_format_.frame_rate = best_capability.maxFPS;
+  capture_format_.frame_size.SetSize(best_capability.width,
+                                     best_capability.height);
   base_time_.reset();
   client_->OnStarted();
 }
