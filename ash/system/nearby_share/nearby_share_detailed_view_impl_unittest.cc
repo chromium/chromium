@@ -39,11 +39,6 @@ class NearbyShareDetailedViewImplTest : public AshTestBase {
     return detailed_view_->settings_button_;
   }
 
-  Switch* GetToggleSwitch() const {
-    CHECK(detailed_view_);
-    return detailed_view_->toggle_switch_;
-  }
-
   size_t GetCloseBubbleCallCount() const {
     return detailed_view_delegate_.close_bubble_call_count();
   }
@@ -63,15 +58,6 @@ TEST_F(NearbyShareDetailedViewImplTest,
   LeftClickOn(settings_button);
   EXPECT_EQ(1, GetSystemTrayClient()->show_nearby_share_settings_count());
   EXPECT_EQ(1u, GetCloseBubbleCallCount());
-}
-
-TEST_F(NearbyShareDetailedViewImplTest, ToggleHighVisibilityOn) {
-  Switch* toggle_switch = GetToggleSwitch();
-  EXPECT_FALSE(toggle_switch->GetIsOn());
-  LeftClickOn(toggle_switch);
-  EXPECT_TRUE(toggle_switch->GetIsOn());
-  // TODO(brandosocarras, b/360150790): verify toggling the switch turns high
-  // visibility on.
 }
 
 }  // namespace ash

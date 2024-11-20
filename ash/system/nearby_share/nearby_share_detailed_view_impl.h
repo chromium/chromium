@@ -49,19 +49,15 @@ class ASH_EXPORT NearbyShareDetailedViewImpl : public NearbyShareDetailedView,
   void CreateVisibilitySelectionContainer();
   void CreateYourDevicesRow();
   void CreateContactsRow();
-  void CreateEveryoneRow();
   void CreateVisibilityRow(HoverHighlightView* visibility_row,
                            const gfx::VectorIcon& vector_icon,
                            const std::u16string& label,
                            const std::u16string& sublabel);
-  void CreateOnlyForTenMinutesRow();
 
   void OnSettingsButtonClicked();
   void OnQuickShareToggleClicked();
   void OnYourDevicesSelected();
   void OnContactsSelected();
-  void OnEveryoneSelected();
-  void OnTenMinutesToggleClicked();
 
   raw_ptr<views::Button> settings_button_ = nullptr;
   raw_ptr<RoundedContainer> is_enabled_container_ = nullptr;

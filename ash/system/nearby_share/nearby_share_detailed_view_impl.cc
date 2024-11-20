@@ -116,8 +116,6 @@ void NearbyShareDetailedViewImpl::CreateVisibilitySelectionContainer() {
 
   CreateYourDevicesRow();
   CreateContactsRow();
-  CreateEveryoneRow();
-  CreateOnlyForTenMinutesRow();
 }
 
 void NearbyShareDetailedViewImpl::CreateYourDevicesRow() {
@@ -149,19 +147,6 @@ void NearbyShareDetailedViewImpl::CreateContactsRow() {
                       /*sublabel=*/u"Only your contacts with a Google Account");
 }
 
-void NearbyShareDetailedViewImpl::CreateEveryoneRow() {
-  DCHECK(!everyone_row_);
-  DCHECK(visibility_selection_container_);
-
-  everyone_row_ = visibility_selection_container_->AddChildView(
-      std::make_unique<HoverHighlightView>(/*listener=*/this));
-
-  // TODO(brandosocarras, b/360150790): replace label, sublabel with IDS
-  // strings.
-  CreateVisibilityRow(everyone_row_, kQuickSettingsQuickShareEveryoneIcon,
-                      /*label=*/u"Everyone", /*sublabel=*/u"Anyone nearby");
-}
-
 void NearbyShareDetailedViewImpl::CreateVisibilityRow(
     HoverHighlightView* visibility_row,
     const gfx::VectorIcon& vector_icon,
@@ -173,31 +158,6 @@ void NearbyShareDetailedViewImpl::CreateVisibilityRow(
           vector_icon, /*color_id=*/cros_tokens::kCrosSysOnSurface),
       label);
   visibility_row->SetSubText(sublabel);
-}
-
-void NearbyShareDetailedViewImpl::CreateOnlyForTenMinutesRow() {
-  DCHECK(!only_for_ten_minutes_row_);
-  DCHECK(visibility_selection_container_);
-
-  only_for_ten_minutes_row_ = visibility_selection_container_->AddChildView(
-      std::make_unique<HoverHighlightView>(/*listener=*/this));
-  only_for_ten_minutes_row_->SetFocusBehavior(FocusBehavior::NEVER);
-  only_for_ten_minutes_row_->AddLabelRow(u"Only for 10 minutes",
-                                         /*start_inset=*/20);
-  only_for_ten_minutes_row_->text_label()->SetEnabledColorId(
-      cros_tokens::kCrosSysOnSurface);
-  TypographyProvider::Get()->StyleLabel(
-      ash::TypographyToken::kCrosBody2,
-      *only_for_ten_minutes_row_->text_label());
-
-  auto toggle_switch = std::make_unique<Switch>(base::BindRepeating(
-      &NearbyShareDetailedViewImpl::OnTenMinutesToggleClicked,
-      weak_factory_.GetWeakPtr()));
-  only_for_ten_minutes_row_->AddRightView(toggle_switch.release());
-
-  // ChromeVox users will just use the toggle switch to toggle.
-  only_for_ten_minutes_row_->text_label()->GetViewAccessibility().SetIsIgnored(
-      true);
 }
 
 void NearbyShareDetailedViewImpl::OnSettingsButtonClicked() {
@@ -215,10 +175,6 @@ void NearbyShareDetailedViewImpl::OnQuickShareToggleClicked() {}
 void NearbyShareDetailedViewImpl::OnYourDevicesSelected() {}
 
 void NearbyShareDetailedViewImpl::OnContactsSelected() {}
-
-void NearbyShareDetailedViewImpl::OnEveryoneSelected() {}
-
-void NearbyShareDetailedViewImpl::OnTenMinutesToggleClicked() {}
 
 BEGIN_METADATA(NearbyShareDetailedViewImpl)
 END_METADATA
