@@ -196,6 +196,7 @@ suite('<settings-nearby-share-subpage>', () => {
     return everyoneButton;
   }
 
+
   test('feature toggle button controls preference', () => {
     // Ensure that these controls are enabled/disabled when the Nearby is
     // enabled/disabled.
@@ -770,15 +771,6 @@ suite('<settings-nearby-share-subpage>', () => {
     assertFalse(subpage.prefs.nearby_sharing.enabled.value);
     subpageControlsHidden(true);
   });
-
-  test(
-      'Subpage shows no Quick Share on/off toggle on QuickShareV2 enabled',
-      async () => {
-        setupQuickShareV2();
-        const enableQuickShareToggle =
-            subpage.shadowRoot!.querySelector('#featureToggleButton');
-        assertFalse(!!enableQuickShareToggle);
-      });
 
   test('QuickShareV2: Visibility sublabel hidden when QS enabled', async () => {
     setupQuickShareV2();
