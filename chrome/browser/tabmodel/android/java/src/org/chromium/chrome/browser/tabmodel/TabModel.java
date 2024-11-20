@@ -31,17 +31,6 @@ public interface TabModel extends TabList {
     TabRemover getTabRemover();
 
     /**
-     * Closes tabs based on the provided parameters. Refer to {@link TabClosureParams} for different
-     * ways to close tabs.
-     *
-     * @param tabClosureParams The parameters to follow when closing tabs.
-     * @return Whether the tab closure succeeded (only possibly false for single tab closure).
-     * @deprecated Use {@link TabRemover#closeTabs(TabClosureParams, boolean)} instead.
-     */
-    @Deprecated
-    boolean closeTabs(TabClosureParams tabClosureParams);
-
-    /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.
      *
      * @param id The ID of tab which would be closed.

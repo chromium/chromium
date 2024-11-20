@@ -135,7 +135,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Mock Profile mProfile;
     @Mock Token.Natives mTokenJniMock;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
-    @Mock TabModel mTabModel;
+    @Mock TabModelInternal mTabModel;
     @Mock TabList mComprehensiveModel;
     @Mock TabGroupModelFilterObserver mTabGroupModelFilterObserver;
     @Mock Context mContext;

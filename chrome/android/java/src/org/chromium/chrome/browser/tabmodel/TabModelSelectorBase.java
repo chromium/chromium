@@ -97,7 +97,7 @@ public abstract class TabModelSelectorBase
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
         mTabGroupModelFilterProvider.init(
-                TabGroupModelFilterImpl::new, tabUngrouperFactory, this, getModels());
+                TabGroupModelFilterImpl::new, tabUngrouperFactory, this, mTabModelInternals);
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {

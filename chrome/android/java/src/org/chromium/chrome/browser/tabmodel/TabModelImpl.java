@@ -889,7 +889,14 @@ public class TabModelImpl extends TabModelJniBridge {
 
     @Override
     protected boolean closeTabAt(int index) {
-        return closeTabs(TabClosureParams.closeTab(getTabAt(index)).allowUndo(false).build());
+        @Nullable Tab tab = getTabAt(index);
+        if (tab == null) return false;
+
+        // TODO(crbug.com/345854441): Make this use TabRemover. Doing so without changing the native
+        // test harness for android browsertests breaks some sync tests that create, but do not
+        // delete shared tab groups, by creating an infinite loop.
+        closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+        return true;
     }
 
     @Override

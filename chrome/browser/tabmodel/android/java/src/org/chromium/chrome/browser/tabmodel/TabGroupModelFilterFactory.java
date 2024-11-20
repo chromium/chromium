@@ -12,11 +12,11 @@ import androidx.annotation.NonNull;
  */
 interface TabGroupModelFilterFactory {
     /**
-     * @param model The {@link TabModel} to serve as base for the new filter.
+     * @param model The {@link TabModelInternal} to serve as base for the new filter.
      * @param tabUngrouper The {@link TabUngrouper} to use for the filter.
      * @return A new {@link TabGroupModelFilterBase} for {@code model}.
      */
     /*package*/ @NonNull
     TabGroupModelFilterInternal createTabGroupModelFilter(
-            @NonNull TabModel model, @NonNull TabUngrouper tabUngrouper);
+            @NonNull TabModelInternal model, @NonNull TabUngrouper tabUngrouper);
 }

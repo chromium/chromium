@@ -82,7 +82,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             new ObserverList<>();
     private final Map<Integer, Integer> mRootIdToGroupIndexMap = new HashMap<>();
     private final Map<Integer, TabGroup> mRootIdToGroupMap = new HashMap<>();
-    private final TabModel mTabModel;
+    private final TabModelInternal mTabModel;
     private final TabUngrouper mTabUngrouper;
 
     /**
@@ -101,8 +101,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     /**
      * @param tabModel The tab model to filter.
+     * @param tabUngrouper To manage ungrouping tabs.
      */
-    TabGroupModelFilterImpl(@NonNull TabModel tabModel, @NonNull TabUngrouper tabUngrouper) {
+    TabGroupModelFilterImpl(
+            @NonNull TabModelInternal tabModel, @NonNull TabUngrouper tabUngrouper) {
         mTabModel = tabModel;
         mTabUngrouper = tabUngrouper;
         mTabModel.addObserver(this);
@@ -1549,7 +1551,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {
-        TabModel tabModel = getTabModel();
+        TabModelInternal tabModel = mTabModel;
         if (tabClosureParams.hideTabGroups && canHideTabGroups()) {
             if (tabClosureParams.isAllTabs) {
                 for (Token token : getAllTabGroupIds()) {

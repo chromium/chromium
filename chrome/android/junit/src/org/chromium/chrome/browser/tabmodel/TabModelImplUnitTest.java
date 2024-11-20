@@ -339,10 +339,13 @@ public class TabModelImplUnitTest {
 
         selectTab(activeIncognito, incognitoTab0);
 
-        activeIncognito.closeTabs(
-                TabClosureParams.closeTabs(List.of(incognitoTab0, incognitoTab1))
-                        .allowUndo(false)
-                        .build());
+        activeIncognito
+                .getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(incognitoTab0, incognitoTab1))
+                                .allowUndo(false)
+                                .build(),
+                        /* allowDialog= */ false);
         verify(mTabModelSelector, never()).selectModel(anyBoolean());
         assertEquals(incognitoTab2, activeIncognito.getTabAt(activeIncognito.index()));
     }
