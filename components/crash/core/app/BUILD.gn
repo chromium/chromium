@@ -217,6 +217,7 @@ if (is_win) {
   # time.
   source_set("crash_export_stubs") {
     testonly = true
+    defines = [ "CRASH_IMPLEMENTATION" ]
 
     sources = [
       "crash_export_stubs.cc",

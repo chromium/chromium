@@ -6,6 +6,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/crash/core/app/client_upload_info.h"
@@ -42,12 +44,11 @@ IN_PROC_BROWSER_TEST_F(CrashClientUploadInfoTest, GetClientProductInfo) {
 #elif BUILDFLAG(IS_MAC)
   constexpr char kProductName[] = "Chrome_Mac";
 #elif BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/40149439): Product info is empty in browser tests on Win.
-  // This is because browser tests link with `crash_export_stubs` which provides
-  // empty product info, whereas production code uses `crash_export_thunks` in
-  // `chrome_elf.dll` for actual product info. We currently lack infrastructure
-  // to test `chrome_elf.dll` functionality within browser tests.
-  constexpr char kProductName[] = "";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  constexpr char kProductName[] = "Chrome";
+#else
+  constexpr char kProductName[] = "Chromium";
+#endif
 #endif
 
   crash_reporter::ProductInfo product_info;
