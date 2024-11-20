@@ -124,7 +124,14 @@ bool ShouldKeepTaskForTabs(Task::Type type) {
 }
 
 bool ShouldKeepTaskForExtensions(Task::Type type) {
-  return type == Task::Type::EXTENSION;
+  switch (type) {
+    case Task::EXTENSION:
+    case Task::GUEST:
+    case Task::PLUGIN:
+      return true;
+    default:
+      return false;
+  }
 }
 
 bool ShouldKeepTaskForSystem(Task::Type type) {
