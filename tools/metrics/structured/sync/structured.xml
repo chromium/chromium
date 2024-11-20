@@ -3159,6 +3159,11 @@
         each instance would have a unique ID.
       </summary>
     </metric>
+    <metric name="IsSignedIn" type="int">
+      <summary>
+      Whether the user is signed in or not.
+      </summary>
+    </metric>
   </event>
 
   <event name="SessionEnd">
