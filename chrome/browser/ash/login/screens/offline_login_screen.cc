@@ -208,7 +208,16 @@ void OfflineLoginScreen::HandleEmailSubmitted(const std::string& email) {
 
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  if (user && user->force_online_signin()) {
+
+  // Shows the password page when no user is found. Error message is shown
+  // after entering the password.
+  if (!user) {
+    RecordEvent(OfflineLoginEvent::kOfflineLoginEnabled);
+    view_->ShowPasswordPage(/*authenticate_by_pin_=*/false);
+    return;
+  }
+
+  if (user->force_online_signin()) {
     RecordEvent(OfflineLoginEvent::kOfflineLoginBlockedByInvalidToken);
     view_->ShowOnlineRequiredDialog();
     return;
