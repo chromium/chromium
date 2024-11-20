@@ -538,14 +538,14 @@ are declared in tools/grit/grit_rule.gni.
           </message>
         </if>
         <message name="IDS_FOCUS_HELP_BUBBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader users when a general help bubble is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus this bubble.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TOGGLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble pointing to a specific element is shown.">
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus this bubble, then again to focus the element it is pointing to.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus this bubble, then again to focus the element it is pointing to.
         </message>
         <message name="IDS_FOCUS_HELP_BUBBLE_TUTORIAL_DESCRIPTION" is_accessibility_with_no_ui="true" desc="Message announced to screen reader when a help bubble that can start a tutorial is shown.">
           A series of tutorial bubbles with instructions will be displayed.
-          Press |<ph name="ACCELERATOR">$1<ex>F6</ex></ph>| to focus a bubble, then again to focus the element it is pointing to.
+          Press <ph name="ACCELERATOR">$1<ex>F6</ex></ph> to focus a bubble, then again to focus the element it is pointing to.
         </message>
       </if>
 

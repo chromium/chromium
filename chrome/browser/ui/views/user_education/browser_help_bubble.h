@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/webui/floating_webui_help_bubble_factory.h"
@@ -83,6 +84,15 @@ class BrowserHelpBubble {
   // Shared logic between browser promo controller implementations.
   static std::u16string GetFocusTutorialBubbleScreenReaderHint(
       const ui::AcceleratorProvider* accelerator_provider);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(BrowserHelpBubbleBrowsertest,
+                           GetFocusBubbleAcceleratorText);
+
+  // Fetches the platform-appropriate text of the accelerator used to switch
+  // bubbles/panes.
+  static std::u16string GetFocusBubbleAcceleratorText(
+      const ui::AcceleratorProvider* provider);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_
