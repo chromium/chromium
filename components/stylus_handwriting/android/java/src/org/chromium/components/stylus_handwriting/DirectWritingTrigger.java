@@ -204,14 +204,14 @@ class DirectWritingTrigger implements StylusWritingHandler, StylusApiOption {
     }
 
     @Override
-    public void onWindowFocusChanged(Context context, boolean hasWindowFocus) {
+    public void updateHandlerState(Context context, boolean hasWindowFocus) {
         if (hasWindowFocus) {
             updateDWSettings(context);
         } else {
             hideDWToolbar();
         }
         if (!mDwServiceEnabled) return;
-        mBinder.onWindowFocusChanged(context, hasWindowFocus);
+        mBinder.handleWindowFocusChanged(context, hasWindowFocus);
     }
 
     /**

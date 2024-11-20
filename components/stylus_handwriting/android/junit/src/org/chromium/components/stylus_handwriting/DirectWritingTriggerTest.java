@@ -272,39 +272,39 @@ public class DirectWritingTriggerTest {
 
     @Test
     @Feature({"Stylus Handwriting"})
-    public void testOnWindowFocusChanged_gainFocus() {
+    public void testUpdateHandlerStateGainFocus() {
         // Test behaviour when window gains focus with DW setting disabled.
         ShadowDirectWritingSettingsHelper.setEnabled(false);
-        mDwTrigger.onWindowFocusChanged(mContext, true);
+        mDwTrigger.updateHandlerState(mContext, true);
         verify(mDwTrigger).updateDWSettings(mContext);
         verify(mDwServiceBinder, never()).hideDWToolbar();
-        verify(mDwServiceBinder, never()).onWindowFocusChanged(any(), anyBoolean());
+        verify(mDwServiceBinder, never()).handleWindowFocusChanged(any(), anyBoolean());
 
         ShadowDirectWritingSettingsHelper.setEnabled(true);
-        mDwTrigger.onWindowFocusChanged(mContext, true);
+        mDwTrigger.updateHandlerState(mContext, true);
         verify(mDwServiceBinder, never()).hideDWToolbar();
-        verify(mDwServiceBinder).onWindowFocusChanged(mContext, true);
+        verify(mDwServiceBinder).handleWindowFocusChanged(mContext, true);
     }
 
     @Test
     @Feature({"Stylus Handwriting"})
-    public void testOnWindowFocusChanged_lostFocus() {
+    public void testUpdateHandlerStateLostFocus() {
         // Test behaviour when window loses focus with DW setting disabled.
         ShadowDirectWritingSettingsHelper.setEnabled(false);
-        mDwTrigger.onWindowFocusChanged(mContext, false);
+        mDwTrigger.updateHandlerState(mContext, false);
         verify(mDwTrigger, never()).updateDWSettings(any());
         verify(mDwServiceBinder, never()).hideDWToolbar();
-        verify(mDwServiceBinder, never()).onWindowFocusChanged(any(), anyBoolean());
+        verify(mDwServiceBinder, never()).handleWindowFocusChanged(any(), anyBoolean());
 
         // Test behaviour when window loses focus with DW setting already enabled.
         ShadowDirectWritingSettingsHelper.setEnabled(true);
         mDwTrigger.updateDWSettings(mContext);
 
-        mDwTrigger.onWindowFocusChanged(mContext, false);
+        mDwTrigger.updateHandlerState(mContext, false);
         // Verify that updateDWSettings is not called again.
         verify(mDwTrigger, times(1)).updateDWSettings(mContext);
         verify(mDwServiceBinder).hideDWToolbar();
-        verify(mDwServiceBinder).onWindowFocusChanged(mContext, false);
+        verify(mDwServiceBinder).handleWindowFocusChanged(mContext, false);
     }
 
     @Test

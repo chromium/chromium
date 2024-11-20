@@ -199,7 +199,7 @@ class DirectWritingServiceBinder {
         mPackageName = "";
     }
 
-    void onWindowFocusChanged(Context context, boolean hasWindowFocus) {
+    void handleWindowFocusChanged(Context context, boolean hasWindowFocus) {
         if (hasWindowFocus) {
             // Need to register DW service callback object again when window gets focus, so that
             // commit happens in the intended Chrome instance and web input. This is required even
