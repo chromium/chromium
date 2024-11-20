@@ -1330,9 +1330,8 @@ void AutofillExternalDelegate::FillPredictionImprovements(
     Suggestion::PredictionImprovementsPayload payload =
         suggestion.GetPayload<Suggestion::PredictionImprovementsPayload>();
     manager_->FillOrPreviewFormWithPredictionImprovements(
-        mojom::ActionPersistence::kFill, payload.field_types_to_fill,
-        payload.ignorable_skip_reasons, query_form_, query_field_,
-        payload.values_to_fill);
+        mojom::ActionPersistence::kFill, payload.ignorable_skip_reasons,
+        query_form_, query_field_, payload.values_to_fill);
   }
 }
 

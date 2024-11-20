@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
@@ -298,32 +299,6 @@ class FormFillerTest : public testing::Test {
   // TODO(crbug.com/41490871): Replace with FormFiller.
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
 };
-
-// Tests that only fields from `field_types_to_fill` are filled.
-TEST_F(FormFillerTest, FillingDetails_FieldTypesToFill_FillOnlySpecificFields) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillGranularFillingAvailable);
-  FormData form = test::GetFormData(
-      {.fields = {
-           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
-           {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
-  FormsSeen({form});
-  AutofillProfile profile = test::GetFullProfile();
-
-  // Only `NAME_FIRST` fields should be filled.
-  FieldTypeSet target_fields = FieldTypeSet({NAME_FIRST});
-  std::vector<FormFieldData> filled_fields =
-      FillAutofillFormData(form, form.fields()[0], &profile,
-                           {.trigger_source = AutofillTriggerSource::kPopup,
-                            .field_types_to_fill = target_fields})
-          .fields();
-
-  ASSERT_EQ(filled_fields.size(), 2u);
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_FALSE(filled_fields[1].is_autofilled());
-  EXPECT_TRUE(filled_fields[1].value().empty());
-}
 
 // Test that the correct section is filled.
 TEST_F(FormFillerTest, FillTriggeredSection) {
@@ -1731,20 +1706,20 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
   test::FormDescription form_description = {
       .fields = {{.role = NAME_FIRST, .heuristic_type = NAME_FIRST},
                  {.role = NAME_LAST, .heuristic_type = NAME_LAST},
-                 {.role = EMAIL_ADDRESS, .heuristic_type = EMAIL_ADDRESS},
+                 {.role = IBAN_VALUE, .heuristic_type = IBAN_VALUE},
                  {.role = UNKNOWN_TYPE, .heuristic_type = UNKNOWN_TYPE}}};
   FormData form = test::GetFormData(form_description);
+  browser_autofill_manager_->AddSeenForm(
+      form, test::GetHeuristicTypes(form_description), /*server_types=*/{});
   FormsSeen({form});
   base::flat_map<FieldGlobalId, std::u16string> values_to_fill = {
       // Not filled because the value to fill is empty.
       {form.fields()[0].global_id(), u""},
       // Filled.
       {form.fields()[1].global_id(), u"Doe"},
-      // Not filled because `field_types_to_fill` doesn't contain
-      // `EMAIL_ADDRESS`.
-      {form.fields()[2].global_id(), u"johndoe@example.com"},
-      // Filled (because `field_types_to_fill` include `UNKNOWN_TYPE` and
-      // `ignorable_skip_reasons` include `kNoFillableGroup`).
+      // Not filled because IBANs aren't among the supported types.
+      {form.fields()[2].global_id(), u"DE01234567890123456789"},
+      // Filled because unclassified fields are supported
       {form.fields()[3].global_id(), u"100 John Doe Rd"}};
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(autofill_driver_, ApplyFormAction)
@@ -1752,10 +1727,9 @@ TEST_F(FormFillerTest, FillOrPreviewFormWithPredictionImprovements) {
                       Return(std::vector<FieldGlobalId>())));
   browser_autofill_manager_->FillOrPreviewFormWithPredictionImprovements(
       mojom::ActionPersistence::kFill,
-      /*field_types_to_fill=*/{UNKNOWN_TYPE, NAME_FIRST, NAME_LAST},
       /*ignorable_skip_reasons=*/{FieldFillingSkipReason::kNoFillableGroup},
       form, form.fields().front(), values_to_fill);
-  ASSERT_EQ(filled_fields.size(), 2UL);
+  ASSERT_EQ(filled_fields.size(), 2u);
   EXPECT_EQ(filled_fields[0].value(), u"Doe");
   EXPECT_EQ(filled_fields[1].value(), u"100 John Doe Rd");
 }

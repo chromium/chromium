@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/field_filling_payments_util.h"
 #include "components/autofill/core/browser/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -46,6 +47,63 @@ namespace {
 // Time to wait after a dynamic form change before triggering a refill.
 // This is used for sites that change multiple things consecutively.
 constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
+
+// Given `filling_product`, returns the types supported for filling by this
+// FillingProduct, or std::nullopt if `filling_product` is independent of field
+// classifications.
+std::optional<FieldTypeSet> GetFieldTypesToFillFromFillingProduct(
+    FillingProduct filling_product) {
+  FieldTypeSet field_types;
+  switch (filling_product) {
+    case FillingProduct::kAddress:
+      for (FieldType field_type : kAllFieldTypes) {
+        if (IsAddressType(field_type)) {
+          field_types.insert(field_type);
+        }
+      }
+      return field_types;
+    case FillingProduct::kCreditCard:
+      for (FieldType field_type : kAllFieldTypes) {
+        if (FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
+                               FieldTypeGroup::kStandaloneCvcField})
+                .contains(GroupTypeOfFieldType(field_type))) {
+          field_types.insert(field_type);
+        }
+      }
+      return field_types;
+    case FillingProduct::kPredictionImprovements:
+      for (FieldType field_type : kAllFieldTypes) {
+        if (IsAddressType(field_type)) {
+          field_types.insert(field_type);
+        }
+      }
+      field_types.insert_all({UNKNOWN_TYPE, IMPROVED_PREDICTION});
+      return field_types;
+    case FillingProduct::kPassword:
+      for (FieldType field_type : kAllFieldTypes) {
+        if (FieldTypeGroupSet({FieldTypeGroup::kUsernameField,
+                               FieldTypeGroup::kPasswordField})
+                .contains(GroupTypeOfFieldType(field_type))) {
+          field_types.insert(field_type);
+        }
+      }
+      return field_types;
+    case FillingProduct::kMerchantPromoCode:
+      return FieldTypeSet{MERCHANT_PROMO_CODE};
+    case FillingProduct::kIban:
+      return FieldTypeSet{IBAN_VALUE};
+
+    case FillingProduct::kPlusAddresses:
+      return FieldTypeSet{EMAIL_ADDRESS};
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+      return std::nullopt;
+    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kNone:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
 
 // Returns how many fields with type |field_type| may be filled in a form at
 // maximum.
@@ -157,7 +215,6 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
     const AutofillField& trigger_field,
     base::flat_map<FieldType, size_t>& type_count,
     const std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
-    FieldTypeSet field_types_to_fill,
     FillingProduct filling_product,
     bool is_refill) {
   DenseSet<FieldFillingSkipReason> skip_reasons;
@@ -226,28 +283,17 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
          FieldFillingSkipReason::kRefillNotInInitialFill);
 
   FieldType field_type = autofill_field.Type().GetStorableType();
-  // Only fill fields whose types are included in `field_types_to_fill`.
-  add_if(!field_types_to_fill.contains(field_type),
-         FieldFillingSkipReason::kFieldDoesNotMatchTargetFieldsSet);
-
   // A field with a specific type is only allowed to be filled a limited
   // number of times given by |TypeValueFormFillingLimit(field_type)|.
   add_if(++type_count[field_type] > TypeValueFormFillingLimit(field_type),
          FieldFillingSkipReason::kFillingLimitReachedType);
 
-  // Usually, this should not happen because Autofill sectioning logic
-  // separates address fields from credit card fields. However, autofill
-  // respects the HTML `autocomplete` attribute when it is used to specify a
-  // section, and so in some rare cases it might happen that a credit card
-  // field is included in an address section or vice versa.
-  // Note that autofilling using manual fallback does not use this logic flow,
-  // otherwise this wouldn't be true.
-  add_if((filling_product == FillingProduct::kAddress &&
-          !IsAddressType(autofill_field.Type().GetStorableType())) ||
-             (filling_product == FillingProduct::kCreditCard &&
-              !FieldTypeGroupSet({FieldTypeGroup::kCreditCard,
-                                  FieldTypeGroup::kStandaloneCvcField})
-                   .contains(autofill_field.Type().group())),
+  std::optional<FieldTypeSet> supported_types =
+      GetFieldTypesToFillFromFillingProduct(filling_product);
+  // This ensures that a filling product only operates on fields of supported
+  // types.
+  add_if(supported_types && !supported_types->contains(
+                                autofill_field.Type().GetStorableType()),
          FieldFillingSkipReason::kFieldTypeUnrelated);
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
@@ -296,7 +342,6 @@ FormFiller::GetFieldFillingSkipReasons(
     base::span<const FormFieldData> fields,
     const FormStructure& form_structure,
     const AutofillField& trigger_field,
-    const FieldTypeSet& field_types_to_fill,
     std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
     FillingProduct filling_product,
     bool is_refill) const {
@@ -317,8 +362,7 @@ FormFiller::GetFieldFillingSkipReasons(
     DenseSet<FieldFillingSkipReason> field_skip_reasons =
         GetFillingSkipReasonsForField(
             fields[i], *form_structure.field(i), trigger_field, type_count,
-            type_groups_originally_filled, field_types_to_fill, filling_product,
-            is_refill);
+            type_groups_originally_filled, filling_product, is_refill);
 
     // Usually, `skip_reasons[field_id].empty()` before executing the line
     // below. It may not be the case though because FieldGlobalIds may not be
@@ -445,7 +489,6 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
 
 void FormFiller::FillOrPreviewFormWithPredictionImprovements(
     mojom::ActionPersistence action_persistence,
-    const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
     const FormFieldData& trigger_field,
@@ -471,7 +514,6 @@ void FormFiller::FillOrPreviewFormWithPredictionImprovements(
       base::MakeFlatMap<FieldGlobalId, DenseSet<FieldFillingSkipReason>>(
           GetFieldFillingSkipReasons(
               result_fields, form_structure, autofill_trigger_field,
-              field_types_to_fill,
               /*type_groups_originally_filled=*/std::nullopt,
               FillingProduct::kPredictionImprovements,
               /*is_refill=*/false),
@@ -599,7 +641,6 @@ void FormFiller::FillOrPreviewForm(
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
       GetFieldFillingSkipReasons(
           result_fields, *form_structure, *autofill_trigger_field,
-          trigger_details.field_types_to_fill,
           filling_context ? filling_context->type_groups_originally_filled
                           : std::optional<DenseSet<FieldTypeGroup>>(),
           filling_product, is_refill);

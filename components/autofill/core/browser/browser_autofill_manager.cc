@@ -1874,7 +1874,6 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
 
 void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
     mojom::ActionPersistence action_persistence,
-    const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
     const FormData& form,
     const FormFieldData& trigger_field,
@@ -1886,8 +1885,8 @@ void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
     return;
   }
   form_filler_->FillOrPreviewFormWithPredictionImprovements(
-      action_persistence, field_types_to_fill, ignorable_skip_reasons, form,
-      trigger_field, *form_structure, *autofill_trigger_field, values_to_fill);
+      action_persistence, ignorable_skip_reasons, form, trigger_field,
+      *form_structure, *autofill_trigger_field, values_to_fill);
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
     delegate->OnDidFillSuggestion(form.global_id());
   }
@@ -2947,7 +2946,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
           ? SuggestionType::kAddressFieldByFieldFilling
           : SuggestionType::kAddressEntry;
 
-  FieldTypeSet field_types = [&] {
+  FieldTypeSet field_types = [&]() -> FieldTypeSet {
+    if (current_suggestion_type ==
+        SuggestionType::kAddressFieldByFieldFilling) {
+      return {trigger_autofill_field.Type().GetStorableType()};
+    }
     // If the FormData and FormStructure do not have the same size, we assume
     // as a fallback that all fields are fillable.
     base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
@@ -2955,9 +2958,6 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     if (form.fields().size() == form_structure.field_count()) {
       skip_reasons = form_filler_->GetFieldFillingSkipReasons(
           form.fields(), form_structure, trigger_autofill_field,
-          current_suggestion_type == SuggestionType::kAddressEntry
-              ? kAllFieldTypes
-              : FieldTypeSet{trigger_autofill_field.Type().GetStorableType()},
           /*type_groups_originally_filled=*/std::nullopt,
           FillingProduct::kAddress, /*is_refill=*/false);
     }

@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -534,7 +535,7 @@ bool WillFillCreditCardNumberOrCvc(
         // to the iframe security policy.
         return FormFiller::GetFillingSkipReasonsForField(
                    *field, autofill_field, trigger_autofill_field, type_count,
-                   std::nullopt)
+                   std::nullopt, FillingProduct::kCreditCard)
             .empty();
       };
 

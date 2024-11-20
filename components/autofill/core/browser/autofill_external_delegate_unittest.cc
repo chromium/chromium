@@ -1620,7 +1620,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   Suggestion fill_suggestion =
       Suggestion(u"Autocomplete", SuggestionType::kFillPredictionImprovements);
   fill_suggestion.payload = Suggestion::PredictionImprovementsPayload(
-      {{field_to_fill->global_id(), value_to_fill}}, {NAME_FIRST}, {});
+      {{field_to_fill->global_id(), value_to_fill}}, {});
 
   std::vector<FormFieldData> filled_fields;
   EXPECT_CALL(driver(), ApplyFormAction)

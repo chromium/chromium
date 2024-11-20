@@ -172,10 +172,8 @@ Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload() =
 
 Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(
     const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill,
-    const FieldTypeSet& field_types_to_fill,
     const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons)
     : values_to_fill(std::move(values_to_fill)),
-      field_types_to_fill(std::move(field_types_to_fill)),
       ignorable_skip_reasons(std::move(ignorable_skip_reasons)) {}
 
 Suggestion::PredictionImprovementsPayload::PredictionImprovementsPayload(

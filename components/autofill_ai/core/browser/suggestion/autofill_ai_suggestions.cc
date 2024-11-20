@@ -83,18 +83,6 @@ base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill(
   return values_to_fill;
 }
 
-// Define `field_types_to_fill` as Autofill address types + IMPROVED_PREDICTION.
-autofill::FieldTypeSet GetFieldTypesToFill() {
-  autofill::FieldTypeSet field_types_to_fill = {autofill::UNKNOWN_TYPE,
-                                                autofill::IMPROVED_PREDICTION};
-  for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
-    if (IsAddressType(field_type)) {
-      field_types_to_fill.insert(field_type);
-    }
-  }
-  return field_types_to_fill;
-}
-
 // Creates a full form filling suggestion that will be displayed first in the
 // sub popup.
 autofill::Suggestion CreateFillAllSuggestion(
@@ -289,7 +277,7 @@ std::vector<autofill::Suggestion> CreateFillingSuggestions(
   autofill::Suggestion suggestion(
       prediction.value, autofill::SuggestionType::kFillPredictionImprovements);
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
-      GetValuesToFill(cache), GetFieldTypesToFill(), kIgnorableSkipReasons);
+      GetValuesToFill(cache), kIgnorableSkipReasons);
   suggestion.payload = payload;
   suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
 

@@ -82,8 +82,7 @@ class FormFiller {
       const AutofillField& trigger_field,
       base::flat_map<FieldType, size_t>& type_count,
       std::optional<DenseSet<FieldTypeGroup>> type_group_originally_filled,
-      FieldTypeSet field_types_to_fill = kAllFieldTypes,
-      FillingProduct filling_product = FillingProduct::kNone,
+      FillingProduct filling_product,
       bool is_refill = false);
 
   // Resets states that FormFiller holds and maintains.
@@ -104,7 +103,6 @@ class FormFiller {
       base::span<const FormFieldData> fields,
       const FormStructure& form_structure,
       const AutofillField& trigger_field,
-      const FieldTypeSet& field_types_to_fill,
       std::optional<DenseSet<FieldTypeGroup>> type_groups_originally_filled,
       FillingProduct filling_product,
       bool is_refill) const;
@@ -137,7 +135,6 @@ class FormFiller {
   // TODO(crbug.com/40227071): Clean up the generic API and remove this.
   void FillOrPreviewFormWithPredictionImprovements(
       mojom::ActionPersistence action_persistence,
-      const FieldTypeSet& field_types_to_fill,
       const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
       const FormData& form,
       const FormFieldData& trigger_field,

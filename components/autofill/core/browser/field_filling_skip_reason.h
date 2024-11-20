@@ -27,7 +27,7 @@ enum class FieldFillingSkipReason : uint8_t {
   // kExpiredCards = 11, // DEPRECATED
   kFillingLimitReachedType = 12,
   kUnrecognizedAutocompleteAttribute = 13,
-  kFieldDoesNotMatchTargetFieldsSet = 14,
+  // kFieldDoesNotMatchTargetFieldsSet = 14, // DEPRECATED
   kFieldTypeUnrelated = 15,
   kNoValueToFill = 16,
   kAutofilledValueDidNotChange = 17,
