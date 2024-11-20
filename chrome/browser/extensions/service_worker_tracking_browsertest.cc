@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -601,9 +602,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
             ServiceWorkerTaskQueue::BrowserState::kReady);
 
   // Deactivate extension.
-  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
-  ASSERT_TRUE(task_queue);
-  task_queue->DeactivateExtension(extension());
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  extension_service->DisableExtension(extension()->id(),
+                                      disable_reason::DISABLE_USER_ACTION);
 
   // Confirm the worker state does not exist.
   worker_state = GetWorkerState();

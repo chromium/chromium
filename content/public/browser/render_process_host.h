@@ -456,7 +456,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual const base::TimeTicks& GetLastInitTime() = 0;
 
   // Returns the priority of this process.
-  virtual base::Process::Priority GetPriority() = 0;
+  virtual base::Process::Priority GetPriority() const = 0;
 
   // Returns a list of durations for active KeepAlive requests.
   // For debugging only. TODO(wjmaclean): Remove once the causes behind

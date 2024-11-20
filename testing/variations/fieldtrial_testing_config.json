@@ -14247,6 +14247,36 @@
             ]
         }
     ],
+    "MultipleSpareRPHs": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled2",
+                    "params": {
+                        "count": "2"
+                    },
+                    "enable_features": [
+                        "MultipleSpareRPHs"
+                    ]
+                },
+                {
+                    "name": "Enabled5",
+                    "params": {
+                        "count": "5"
+                    },
+                    "enable_features": [
+                        "MultipleSpareRPHs"
+                    ]
+                }
+            ]
+        }
+    ],
     "MutationEvents": [
         {
             "platforms": [

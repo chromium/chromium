@@ -414,7 +414,7 @@ const base::TimeTicks& MockRenderProcessHost::GetLastInitTime() {
   return dummy_time;
 }
 
-base::Process::Priority MockRenderProcessHost::GetPriority() {
+base::Process::Priority MockRenderProcessHost::GetPriority() const {
   return priority_;
 }
 

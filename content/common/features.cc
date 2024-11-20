@@ -386,6 +386,18 @@ BASE_FEATURE(kMojoDedicatedThread,
              "MojoDedicatedThread",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, additional spare RPHs will be warmed up when the browser is
+// not busy.
+BASE_FEATURE(kMultipleSpareRPHs,
+             "MultipleSpareRPHs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMultipleSpareRPHsCount,
+                   &kMultipleSpareRPHs,
+                   "count",
+                   1u);
+
 // Enables skipping of calls to hideSoftInputFromWindow when there is not a
 // keyboard currently visible.
 #if BUILDFLAG(IS_ANDROID)

@@ -1254,6 +1254,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.SpareCount" units="spares"
+    expires_after="2025-03-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>Count of spare renderers. Recorded every 2 minutes.</summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessDelayTime" units="ms"
     expires_after="2025-05-11">
   <owner>kerenzhu@chromium.org</owner>

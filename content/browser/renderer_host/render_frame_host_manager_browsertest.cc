@@ -6093,12 +6093,15 @@ IN_PROC_BROWSER_TEST_P(
   RenderProcessHost* start_rph =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
-  // At this time, there should be a spare RenderProcesHost. Capture it for
-  // testing expectations later.
+  // At this time, there should be at least one RenderProcessHost. Capture them
+  // for testing expectations later.
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
-  RenderProcessHost* spare_rph = spare_manager.GetSpares()[0];
-  EXPECT_EQ(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_THAT(
+      spare_manager.GetSpares(),
+      testing::Each(testing::Property(&RenderProcessHost::GetPriority,
+                                      base::Process::Priority::kBestEffort)));
+  std::vector<int> spare_rph_ids = spare_manager.GetSpareIds();
+  ASSERT_FALSE(spare_rph_ids.empty());
 
   // Start a navigation to b.com to ensure a cross-process navigation is
   // in progress and ensure the process for the speculative host is
@@ -6115,24 +6118,25 @@ IN_PROC_BROWSER_TEST_P(
                                            ->GetProcess();
   EXPECT_NE(start_rph, speculative_rph);
 
-  // In this test case, the spare RenderProcessHost will be used, so verify it
+  // In this test case, a spare RenderProcessHost will be used, so verify it
   // and ensure it is ready.
-  EXPECT_EQ(spare_rph, speculative_rph);
+  EXPECT_THAT(spare_rph_ids, testing::Contains(speculative_rph->GetID()));
 
   // If LoadUrl finished before the task to call
   // RenderProcessHostImpl::OnChannelConnected is run, wait for the task to be
   // run.
-  if (!spare_rph->IsReady()) {
+  if (!speculative_rph->IsReady()) {
     RenderProcessHostWatcher ready_waiter(
-        spare_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
+        speculative_rph, RenderProcessHostWatcher::WATCH_FOR_PROCESS_READY);
     ready_waiter.Wait();
   }
-  EXPECT_TRUE(spare_rph->IsReady());
+  EXPECT_TRUE(speculative_rph->IsReady());
 
   // The creation of the speculative RenderFrameHost should change the
   // RenderProcessHost's copy of the priority of the spare process from
   // background to foreground.
-  EXPECT_NE(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_NE(speculative_rph->GetPriority(),
+            base::Process::Priority::kBestEffort);
 
   // The OS process itself is updated on the process launcher thread, so it
   // cannot be observed immediately here. Perform a thread hop to and back to
@@ -6149,7 +6153,7 @@ IN_PROC_BROWSER_TEST_P(
   // navigation is never backgrounded. The WaitForNavigationFinished will wait
   // inside a RunLoop() and hence perform this check regularly throughout the
   // navigation.
-  const base::Process& process = spare_rph->GetProcess();
+  const base::Process& process = speculative_rph->GetProcess();
   EXPECT_TRUE(process.IsValid());
   AssertForegroundHelper assert_foreground_helper;
   assert_foreground_helper.AssertForegroundAndRepost(process);

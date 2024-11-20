@@ -426,6 +426,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kDestroyedProcessLimit"/>
   <int value="5" label="kProcessExited"/>
   <int value="6" label="kProcessHostDestroyed"/>
+  <int value="7" label="kMemoryPressure"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:SpareRendererDispatchResult) -->

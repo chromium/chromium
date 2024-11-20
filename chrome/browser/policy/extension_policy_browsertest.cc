@@ -363,28 +363,6 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
-// Allows tests to wait for renderer process creation.
-class WindowedProcessCreationObserver
-    : public content::RenderProcessHostCreationObserver {
- public:
-  void Wait() {
-    if (!seen_) {
-      run_loop_.Run();
-    }
-    EXPECT_TRUE(seen_);
-  }
-
-  // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override {
-    seen_ = true;
-    run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-  bool seen_ = false;
-};
-
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1016,7 +994,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   extensions::InstallStageTracker* install_stage_tracker =
       extensions::InstallStageTracker::Get(browser()->profile());
   install_stage_tracker->AddObserver(&collector_observer);
-
   UpdateProviderPolicy(policies);
   registry_observer.WaitForExtensionWillBeInstalled();
   install_stage_tracker->RemoveObserver(&collector_observer);
@@ -1049,7 +1026,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   const std::string old_version_number =
       registry->enabled_extensions().GetByID(kGoodCrxId)->version().GetString();
 
-  WindowedProcessCreationObserver new_process_observer;
+  extensions::ExtensionHostTestHelper extension_ready_observer(
+      browser()->profile(), kGoodCrxId);
 
   // Updating the force-installed extension.
   extensions::ExtensionUpdater* updater = service->updater();
@@ -1069,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   EXPECT_EQ(1, new_version.CompareTo(old_version));
 
   // Wait for the new extension process to launch.
-  new_process_observer.Wait();
+  extension_ready_observer.WaitForRenderProcessReady();
 
   // Wait until any background pages belonging to force-installed extensions
   // have been loaded.

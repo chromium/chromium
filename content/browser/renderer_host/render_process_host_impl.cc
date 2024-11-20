@@ -2552,7 +2552,7 @@ const base::TimeTicks& RenderProcessHostImpl::GetLastInitTime() {
   return last_init_time_;
 }
 
-base::Process::Priority RenderProcessHostImpl::GetPriority() {
+base::Process::Priority RenderProcessHostImpl::GetPriority() const {
   return priority_.GetProcessPriority();
 }
 

@@ -17,7 +17,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_registry.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #endif
@@ -149,24 +150,28 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
                        ExtensionsMetricsRecordOnSignin_Sync) {
   base::HistogramTester histogram_tester;
 
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(browser()->profile());
   // Create 3 fake extensions and enable them.
   // Setting the ManifestLocation to kInternal means that the extension is user
   // installed. kComponent is an internal Chrome Exntension used for features,
   // kExternalPolicy means that the extension was installed through a policy.
-  registry->AddEnabled(
+  extensions::ExtensionService* extension_service =
+      extensions::ExtensionSystem::Get(browser()->profile())
+          ->extension_service();
+  auto extension1 =
       extensions::ExtensionBuilder("Extension1")
           .SetLocation(extensions::mojom::ManifestLocation::kInternal)
-          .Build());
-  registry->AddEnabled(
+          .Build();
+  extension_service->AddExtension(extension1.get());
+  auto extension2 =
       extensions::ExtensionBuilder("Extension2")
           .SetLocation(extensions::mojom::ManifestLocation::kComponent)
-          .Build());
-  registry->AddEnabled(
+          .Build();
+  extension_service->AddExtension(extension2.get());
+  auto extension3 =
       extensions::ExtensionBuilder("Extension3")
           .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
-          .Build());
+          .Build();
+  extension_service->AddExtension(extension3.get());
 
   // Only one of the 3 extensions is considered user_installed.
   size_t expected_extensions_count = 1;
@@ -188,10 +193,11 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientBrowserTest,
       testing::ContainerEq(expected_sync_counts));
 
   // Add 1 more extension before syncing.
-  registry->AddEnabled(
+  auto extension4 =
       extensions::ExtensionBuilder("Extension4")
           .SetLocation(extensions::mojom::ManifestLocation::kInternal)
-          .Build());
+          .Build();
+  extension_service->AddExtension(extension4.get());
   size_t sync_expected_extensions_count = expected_extensions_count + 1;
 
   // New histogram tester for easier new values check.

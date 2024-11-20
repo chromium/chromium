@@ -342,8 +342,13 @@ class SessionRestoreTest : public InProcessBrowserTest {
         content::RenderProcessHost::AllHostsIterator();
     int count = 0;
     while (!hosts.IsAtEnd()) {
-      if (hosts.GetCurrentValue()->IsInitializedAndNotDead())
+      content::RenderProcessHost* current_host = hosts.GetCurrentValue();
+
+      // Count live renderers but exclude spares.
+      if (current_host->IsInitializedAndNotDead() && !current_host->IsSpare()) {
         count++;
+      }
+
       hosts.Advance();
     }
     return count;
