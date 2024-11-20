@@ -951,6 +951,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     DocumentFragment* template_content = template_element->content();
     if (pending_dom_parts_ && template_content &&
         !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       pending_dom_parts_->PushPartRoot(&template_content->getPartRoot());
     }
   }
@@ -1408,10 +1409,9 @@ void HTMLConstructionSite::FinishedTemplateElement(
   if (!pending_dom_parts_) {
     return;
   }
-  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
-      !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    PartRoot* last_root = pending_dom_parts_->PopPartRoot();
-    CHECK_EQ(&content_fragment->getPartRoot(), last_root);
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+  if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+    pending_dom_parts_->PopPartRoot();
   }
 }
 
@@ -1493,6 +1493,7 @@ PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
 void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  DCHECK(root);
   return part_root_stack_.push_back(root);
 }
 
