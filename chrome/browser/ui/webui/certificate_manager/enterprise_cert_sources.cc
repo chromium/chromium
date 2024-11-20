@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
@@ -145,7 +146,7 @@ void EnterpriseTrustedCertSource::ViewCertificate(
         ShowCertificateDialog(std::move(web_contents),
                               net::x509_util::CreateCryptoBuffer(
                                   cert_with_constraints->certificate),
-                              std::move(metadata));
+                              std::move(metadata), base::NullCallback());
       } else {
         ShowCertificateDialog(std::move(web_contents),
                               net::x509_util::CreateCryptoBuffer(

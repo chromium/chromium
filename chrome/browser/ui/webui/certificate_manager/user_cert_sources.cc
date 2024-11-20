@@ -59,11 +59,27 @@ void PopulateUserCertsAsync(
   std::move(callback).Run(std::move(cert_infos));
 }
 
+void UpdateCertificateAsync(
+    base::WeakPtr<Profile> profile,
+    net::ServerCertificateDatabase::CertInformation cert_info,
+    base::OnceCallback<void(bool)> update_callback) {
+  if (!profile) {
+    std::move(update_callback).Run(false);
+    return;
+  }
+  net::ServerCertificateDatabaseService* server_cert_service =
+      net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
+          profile.get());
+  server_cert_service->AddOrUpdateUserCertificate(std::move(cert_info),
+                                                  std::move(update_callback));
+}
+
 void ViewCertificateAsync(
     std::string sha256_hex_hash,
     chrome_browser_server_certificate_database::CertificateTrust::
         CertificateTrustType trust,
     base::WeakPtr<content::WebContents> web_contents,
+    base::WeakPtr<Profile> profile,
     std::vector<net::ServerCertificateDatabase::CertInformation>
         server_cert_infos) {
   // Containing web contents went away (e.g. user navigated away). Don't
@@ -90,7 +106,8 @@ void ViewCertificateAsync(
         ShowCertificateDialog(
             std::move(web_contents),
             net::x509_util::CreateCryptoBuffer(cert_info.der_cert),
-            cert_info.cert_metadata);
+            cert_info.cert_metadata,
+            base::BindRepeating(&UpdateCertificateAsync, profile));
       } else {
         ShowCertificateDialog(
             std::move(web_contents),
@@ -199,8 +216,9 @@ void UserCertSource::ViewCertificate(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile_);
-  server_cert_service->GetAllCertificates(base::BindOnce(
-      &ViewCertificateAsync, sha256_hex_hash, trust_, web_contents));
+  server_cert_service->GetAllCertificates(
+      base::BindOnce(&ViewCertificateAsync, sha256_hex_hash, trust_,
+                     web_contents, profile_->GetWeakPtr()));
 }
 
 void UserCertSource::ExportCertificates(

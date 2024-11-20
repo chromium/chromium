@@ -28,7 +28,10 @@ void ShowCertificateDialog(
     base::WeakPtr<content::WebContents> web_contents,
     bssl::UniquePtr<CRYPTO_BUFFER> cert,
     chrome_browser_server_certificate_database::CertificateMetadata
-        cert_metadata) {
+        cert_metadata,
+    base::RepeatingCallback<
+        void(net::ServerCertificateDatabase::CertInformation,
+             base::OnceCallback<void(bool)>)>) {
   if (!web_contents) {
     return;
   }

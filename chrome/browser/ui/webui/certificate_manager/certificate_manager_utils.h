@@ -7,7 +7,9 @@
 
 #include <openssl/base.h>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/net/server_certificate_database.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -45,7 +47,10 @@ void ShowCertificateDialog(
     base::WeakPtr<content::WebContents> web_contents,
     bssl::UniquePtr<CRYPTO_BUFFER> cert,
     chrome_browser_server_certificate_database::CertificateMetadata
-        cert_metadata);
+        cert_metadata,
+    base::RepeatingCallback<
+        void(net::ServerCertificateDatabase::CertInformation,
+             base::OnceCallback<void(bool)>)> modifications_callback);
 
 bool IsCACertificateManagementAllowed(const PrefService& prefs);
 
