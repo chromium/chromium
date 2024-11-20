@@ -188,7 +188,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
         std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
                     "doodle_test/ddljson_android0.json"));
   }
-  config.features_disabled.push_back(kEnableFeedAblation);
   config.features_disabled.push_back(
       segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 
@@ -1524,8 +1523,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
 // Tests that feed ablation successfully hides the feed from the NTP and the
 // toggle from the Chrome settings.
-// TODO(crbug.com/40856730): Test fails on small form factors.
-- (void)DISABLED_testFeedAblationHidesFeed {
+- (void)testFeedAblationHidesFeed {
   // Relaunch the app with trending queries disabled, to ensure that the
   // discover feed is always present.
   // TODO(crbug.com/40856730): Trending queries is configured as a
@@ -1537,7 +1535,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Ensures that feed header is visible before enabling ablation.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Opens settings menu and ensures that Discover setting is present.
@@ -1555,7 +1555,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Ensures that feed header is not visible with ablation enabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+  [[[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+      onElementWithMatcher:chrome_test_util::NTPCollectionView()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   // Opens settings menu and ensures that Discover setting is not present.
