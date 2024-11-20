@@ -4,7 +4,6 @@
 
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 
-#include <cstdint>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -86,8 +85,8 @@ void OpenerHeuristicTabHelper::InitPopup(
 }
 
 void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
-  popup_observer_->SetPastInteractionTimeAndType(
-      state.user_interaction_times(), state.web_authn_assertion_times());
+  popup_observer_->SetPastInteractionTime(state.user_interaction_times(),
+                                          state.web_authn_assertion_times());
 }
 
 void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -176,35 +175,21 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
 
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
-void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTimeAndType(
-    TimestampRange user_activation_times,
+void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTime(
+    TimestampRange interaction_times,
     TimestampRange web_authn_assertion_times) {
   CHECK(absl::holds_alternative<FieldNotSet>(time_since_interaction_))
       << "SetPastInteractionTime() called more than once";
 
-  // TODO simplify this
-  // base::Time most_recent_user_activation =
-  //     user_activation_times ? user_activation_times.value().second :
-  //     base::Time::Min();
-  // base::Time most_recent_authentication =
-  //     web_authn_assertion_times ? web_authn_assertion_times.value().second
-  //                               : base::Time::Min();
-
   base::Time most_recent_user_activation =
-      user_activation_times ? user_activation_times.value().second
-                            : base::Time::Min();
+      interaction_times ? interaction_times.value().second : base::Time::Min();
   base::Time most_recent_authentication =
       web_authn_assertion_times ? web_authn_assertion_times.value().second
                                 : base::Time::Min();
-
-  base::Time most_recent_interaction;
-  if (most_recent_user_activation >= most_recent_authentication) {
-    most_recent_interaction = most_recent_user_activation;
-    past_interaction_type = InteractionType::UserActivation;
-  } else {
-    most_recent_interaction = most_recent_authentication;
-    past_interaction_type = InteractionType::UserActivation;
-  }
+  base::Time most_recent_interaction =
+      most_recent_user_activation > most_recent_authentication
+          ? most_recent_user_activation
+          : most_recent_authentication;
 
   if (most_recent_interaction != base::Time::Min()) {
     // Technically we should use the time when the pop-up first opened. But
@@ -213,7 +198,6 @@ void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTimeAndType(
     time_since_interaction_ = GetClock()->Now() - most_recent_interaction;
   } else {
     time_since_interaction_ = NoInteraction();
-    past_interaction_type = InteractionType::NoInteraction;
   }
 
   // TODO(rtarpine): consider ignoring interactions that are too old. (This
@@ -244,7 +228,6 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
       .SetHoursSinceLastInteraction(bucketized_time)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupId(popup_id_)
-      .SetInteractionType(static_cast<int32_t>(past_interaction_type))
       .Record(ukm::UkmRecorder::Get());
 
   EmitTopLevelAndCreateGrant(
@@ -332,7 +315,6 @@ void OpenerHeuristicTabHelper::PopupObserver::RecordInteractionAndCreateGrant(
       .SetUrlIndex(url_index_)
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupId(popup_id_)
-      .SetInteractionType(static_cast<int32_t>(interaction_type))
       .Record(ukm::UkmRecorder::Get());
 
   interaction_reported_ = true;
