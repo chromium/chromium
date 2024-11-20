@@ -490,6 +490,7 @@ def builder(
         targets = None,
         targets_settings = None,
         contact_team_email = args.DEFAULT,
+        experiments = None,
         **kwargs):
     """Define a builder.
 
@@ -731,6 +732,7 @@ def builder(
             builder.
         contact_team_email: The e-mail of the team responsible for the health of
             the builder.
+        experiments: Buildbucket experiments for the builder.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -772,6 +774,11 @@ def builder(
     # dimension, but it shouldn't matter because the call to luci.builder will
     # fail without bucket being set
     bucket = defaults.get_value("bucket", bucket)
+
+    experiments = experiments or {}
+
+    # TODO(crbug.com/355218109): Remove when the experiment is the default.
+    experiments.setdefault("chromium.use_per_builder_build_dir_name", 100)
 
     os = defaults.get_value("os", os)
     if os:
@@ -1048,6 +1055,7 @@ def builder(
         shadow_dimensions = shadow_dimensions,
         shadow_service_account = defaults.get_value("shadow_service_account", shadow_service_account),
         shadow_properties = shadow_properties,
+        experiments = experiments,
         **kwargs
     )
 
