@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -135,8 +136,15 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
       app_id, web_app::ExternalInstallSource::kSystemInstalled));
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   EXPECT_EQ(
-      registrar.FindAppWithUrlInScope(content::GetWebUIURL("test-system-app/")),
+      registrar.FindBestAppWithUrlInScope(
+          content::GetWebUIURL("test-system-app/"),
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          }),
       app_id);
 
   GetAppServiceProxy(browser()->profile())
@@ -1231,9 +1239,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   EXPECT_EQ(SkColorSetRGB(0xFF, 0, 0), registrar.GetAppThemeColor(app_id));
   EXPECT_TRUE(registrar.HasExternalAppWithInstallSource(
       app_id, web_app::ExternalInstallSource::kSystemInstalled));
-  EXPECT_EQ(registrar.FindAppWithUrlInScope(
-                GURL("chrome-untrusted://test-system-app/")),
-            app_id);
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  EXPECT_EQ(
+      registrar.FindBestAppWithUrlInScope(
+          GURL("chrome-untrusted://test-system-app/"),
+          {
+              web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+          }),
+      app_id);
 }
 
 class SystemWebAppManagerOriginTrialsBrowserTest
