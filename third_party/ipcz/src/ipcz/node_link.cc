@@ -968,6 +968,10 @@ bool NodeLink::AcceptCompleteParcel(SublinkId for_sublink,
     SubparcelTracker& tracker = it->second;
     if (inserted) {
       tracker.subparcels.resize(num_subparcels);
+    } else if (tracker.subparcels.size() != num_subparcels) {
+      // Inconsistent subparcel count expectations across subparcels. This is
+      // a validation failure.
+      return false;
     }
 
     // Note that `index` has already been validated against the expected number
