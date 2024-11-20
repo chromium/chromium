@@ -204,6 +204,10 @@ CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();
 // explicitly via img.decode(), it will be decoded only once.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);
 
+// When enabled, fix bug where an image decode cache entry last use timestamp is
+// initialized to 0 instead of now.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

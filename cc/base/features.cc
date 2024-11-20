@@ -219,4 +219,8 @@ BASE_FEATURE(kPreventDuplicateImageDecodes,
              "PreventDuplicateImageDecodes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInitImageDecodeLastUseTime,
+             "InitImageDecodeLastUseTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

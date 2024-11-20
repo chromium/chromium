@@ -1110,6 +1110,9 @@ GpuImageDecodeCache::ImageData::ImageData(
     DCHECK_EQ(info.yuva->yuvaInfo().planeConfig(),
               SkYUVAInfo::PlaneConfig::kY_U_V);
   }
+  if (base::FeatureList::IsEnabled(features::kInitImageDecodeLastUseTime)) {
+    last_use = base::TimeTicks::Now();
+  }
 }
 
 GpuImageDecodeCache::ImageData::~ImageData() {
