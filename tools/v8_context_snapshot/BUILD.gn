@@ -20,7 +20,7 @@ if (is_android) {
 
 group("v8_context_snapshot") {
   if (use_v8_context_snapshot) {
-    public_deps = [ ":generate_v8_context_snapshot($v8_snapshot_toolchain)" ]
+    public_deps = [ ":generate_v8_context_snapshot" ]
     if (!is_android) {
       data = [ "$root_out_dir/$v8_context_snapshot_filename" ]
     }
@@ -37,52 +37,59 @@ buildflag_header("buildflags") {
 }
 
 if (use_v8_context_snapshot) {
-  if (v8_snapshot_toolchain == current_toolchain) {
-    action("generate_v8_context_snapshot") {
-      script = "//build/gn_run_binary.py"
+  action("generate_v8_context_snapshot") {
+    script = "//build/gn_run_binary.py"
 
-      output_file = "$root_build_dir/$v8_context_snapshot_filename"
-      output_path = rebase_path(output_file, root_build_dir)
+    snapshot_blob_file = "$root_out_dir/snapshot_blob.bin"
+    snapshot_blob_path = rebase_path(snapshot_blob_file, root_build_dir)
 
-      args = [
-        "./" + rebase_path(get_label_info(":v8_context_snapshot_generator",
-                                          "root_out_dir") +
-                               "/v8_context_snapshot_generator",
-                           root_build_dir),
-        "--output_file=$output_path",
+    # All invocations of `v8_context_snapshot_generator`, whatever the
+    # toolchain, write their result into the root build dir.
+    output_file = "$root_build_dir/$v8_context_snapshot_filename"
+    output_path = rebase_path(output_file, root_build_dir)
+
+    args = [
+      "./" + rebase_path(
+              get_label_info(
+                      ":v8_context_snapshot_generator($v8_snapshot_toolchain)",
+                      "root_out_dir") + "/v8_context_snapshot_generator",
+              root_build_dir),
+      "--snapshot_blob=$snapshot_blob_path",
+      "--output_file=$output_path",
+    ]
+
+    sources = [ "$root_out_dir/snapshot_blob.bin" ]
+    deps = [
+      ":v8_context_snapshot_generator($v8_snapshot_toolchain)",
+      "//v8:run_mksnapshot_default",
+    ]
+
+    # TODO(sky): figure out why this doesn't work on android cross compile.
+    # In the case of compiling for the snapshot `shlib_extension` is ".so"
+    # (which is expected), but on disk ".cr.so" is generate, which ends up
+    # causing gn to fail.
+    if (is_component_build && target_os != "android") {
+      # In the component build mode, the snapshot should be updated when any
+      # of the generator executable or the shared libraries get updated. Note
+      # that it's possible that some of the shared libraries are updated
+      # without having the executable updated.
+      inputs = [
+        "$root_out_dir/${shlib_prefix}blink_core${shlib_extension}",
+        "$root_out_dir/${shlib_prefix}blink_modules${shlib_extension}",
+        "$root_out_dir/${shlib_prefix}blink_platform${shlib_extension}",
+        "$root_out_dir/${shlib_prefix}v8${shlib_extension}",
       ]
 
-      sources = [ "$root_out_dir/snapshot_blob.bin" ]
-      deps = [
-        ":v8_context_snapshot_generator",
-        "//v8:run_mksnapshot_default",
+      deps += [
+        "//third_party/blink/renderer/bindings:v8_context_snapshot_influential_libs",
+        "//v8",
       ]
-
-      # TODO(sky): figure out why this doesn't work on android cross compile.
-      # In the case of compiling for the snapshot `shlib_extension` is ".so"
-      # (which is expected), but on disk ".cr.so" is generate, which ends up
-      # causing gn to fail.
-      if (is_component_build && target_os != "android") {
-        # In the component build mode, the snapshot should be updated when any
-        # of the generator executable or the shared libraries get updated. Note
-        # that it's possible that some of the shared libraries are updated
-        # without having the executable updated.
-        inputs = [
-          "$root_out_dir/${shlib_prefix}blink_core${shlib_extension}",
-          "$root_out_dir/${shlib_prefix}blink_modules${shlib_extension}",
-          "$root_out_dir/${shlib_prefix}blink_platform${shlib_extension}",
-          "$root_out_dir/${shlib_prefix}v8${shlib_extension}",
-        ]
-
-        deps += [
-          "//third_party/blink/renderer/bindings:v8_context_snapshot_influential_libs",
-          "//v8",
-        ]
-      }
-
-      outputs = [ output_file ]
     }
 
+    outputs = [ output_file ]
+  }
+
+  if (v8_snapshot_toolchain == current_toolchain) {
     executable("v8_context_snapshot_generator") {
       sources = [ "v8_context_snapshot_generator.cc" ]
 
