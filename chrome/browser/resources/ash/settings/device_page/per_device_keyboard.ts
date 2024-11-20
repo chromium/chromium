@@ -149,6 +149,12 @@ export class SettingsPerDeviceKeyboardElement extends
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
   }
 
+  private onShowA11yKeyboardSettingsClick(): void {
+    Router.getInstance().navigateTo(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT,
+        /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
+  }
+
   protected hasKeyboards(): boolean {
     return this.keyboards.length > 0;
   }

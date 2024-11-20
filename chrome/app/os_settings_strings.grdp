@@ -6582,6 +6582,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
     Input settings
   </message>
+  <message name="IDS_OS_SETTINGS_KEYBOARD_SHOW_A11Y_KEYBOARD_SETTINGS" desc="The link to navigate to accessibility keyboard settings.">
+    Accessibility keyboard settings
+  </message>
   <message name="IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER" desc="In Device Settings, the label and dropdown list item for the Search key on keyboard layouts of newer Chromebooks.">
     Launcher
   </message>

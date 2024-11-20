@@ -258,6 +258,12 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
   }
 
+  private onShowA11yKeyboardSettingsClick_(): void {
+    Router.getInstance().navigateTo(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT,
+        /*dynamicParams=*/ undefined, /*removeSearch=*/ true);
+  }
+
   private getExternalMetaKeyLabel_(hasLauncherKey: boolean): string {
     return loadTimeData.getString(
         hasLauncherKey ? 'keyboardKeyExternalMeta' : 'keyboardKeyMeta');

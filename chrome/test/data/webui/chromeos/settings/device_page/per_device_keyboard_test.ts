@@ -195,4 +195,11 @@ suite('<settings-per-device-keyboard>', () => {
             .querySelector<HTMLElement>(
                 '#noKeyboardsConnectedMessage')!.innerText.trim());
   });
+
+  test('Navigate to a11y keyboard settings subpage', async () => {
+    perDeviceKeyboardPage.shadowRoot!
+        .querySelector<CrLinkRowElement>('#a11yKeyboardRow')!.click();
+    assertEquals(
+        routes.A11Y_KEYBOARD_AND_TEXT_INPUT, Router.getInstance().currentRoute);
+  });
 });
