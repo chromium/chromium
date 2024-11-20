@@ -421,23 +421,24 @@ class WTF_EXPORT StringImpl {
                                    wtf_size_t length_to_remove = 1);
 
   // Find characters.
-  wtf_size_t Find(LChar character, wtf_size_t start = 0);
-  wtf_size_t Find(char character, wtf_size_t start = 0);
-  wtf_size_t Find(UChar character, wtf_size_t start = 0);
-  wtf_size_t Find(CharacterMatchFunctionPtr, wtf_size_t index = 0);
+  wtf_size_t Find(LChar character, wtf_size_t start = 0) const;
+  wtf_size_t Find(char character, wtf_size_t start = 0) const;
+  wtf_size_t Find(UChar character, wtf_size_t start = 0) const;
+  wtf_size_t Find(CharacterMatchFunctionPtr, wtf_size_t index = 0) const;
   wtf_size_t Find(base::RepeatingCallback<bool(UChar)> match_callback,
                   wtf_size_t index = 0) const;
 
   // Find substrings.
-  wtf_size_t Find(const StringView&, wtf_size_t index = 0);
+  wtf_size_t Find(const StringView&, wtf_size_t index = 0) const;
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
   // platform features.
-  wtf_size_t FindIgnoringCase(const StringView&, wtf_size_t index = 0);
-  wtf_size_t FindIgnoringASCIICase(const StringView&, wtf_size_t index = 0);
+  wtf_size_t FindIgnoringCase(const StringView&, wtf_size_t index = 0) const;
+  wtf_size_t FindIgnoringASCIICase(const StringView&,
+                                   wtf_size_t index = 0) const;
 
-  wtf_size_t ReverseFind(UChar, wtf_size_t index = UINT_MAX);
-  wtf_size_t ReverseFind(const StringView&, wtf_size_t index = UINT_MAX);
+  wtf_size_t ReverseFind(UChar, wtf_size_t index = UINT_MAX) const;
+  wtf_size_t ReverseFind(const StringView&, wtf_size_t index = UINT_MAX) const;
 
   bool StartsWith(UChar) const;
   bool StartsWith(const StringView&) const;
@@ -833,17 +834,18 @@ inline wtf_size_t ReverseFind(const LChar* characters,
                      index);
 }
 
-inline wtf_size_t StringImpl::Find(LChar character, wtf_size_t start) {
+inline wtf_size_t StringImpl::Find(LChar character, wtf_size_t start) const {
   if (Is8Bit())
     return WTF::Find(Characters8(), length_, character, start);
   return WTF::Find(Characters16(), length_, character, start);
 }
 
-ALWAYS_INLINE wtf_size_t StringImpl::Find(char character, wtf_size_t start) {
+ALWAYS_INLINE wtf_size_t StringImpl::Find(char character,
+                                          wtf_size_t start) const {
   return Find(static_cast<LChar>(character), start);
 }
 
-inline wtf_size_t StringImpl::Find(UChar character, wtf_size_t start) {
+inline wtf_size_t StringImpl::Find(UChar character, wtf_size_t start) const {
   if (Is8Bit())
     return WTF::Find(Characters8(), length_, character, start);
   return WTF::Find(Characters16(), length_, character, start);

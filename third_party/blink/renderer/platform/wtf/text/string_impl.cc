@@ -874,7 +874,7 @@ bool DeprecatedEqualIgnoringCase(const UChar* a,
 }
 
 wtf_size_t StringImpl::Find(CharacterMatchFunctionPtr match_function,
-                            wtf_size_t start) {
+                            wtf_size_t start) const {
   if (Is8Bit())
     return WTF::Find(Characters8(), length_, match_function, start);
   return WTF::Find(Characters16(), length_, match_function, start);
@@ -935,7 +935,8 @@ ALWAYS_INLINE static wtf_size_t FindInternal(
   return index + i;
 }
 
-wtf_size_t StringImpl::Find(const StringView& match_string, wtf_size_t index) {
+wtf_size_t StringImpl::Find(const StringView& match_string,
+                            wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
   }
@@ -993,7 +994,7 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
 }
 
 wtf_size_t StringImpl::FindIgnoringCase(const StringView& match_string,
-                                        wtf_size_t index) {
+                                        wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
   }
@@ -1050,7 +1051,7 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringASCIICaseInternal(
 }
 
 wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
-                                             wtf_size_t index) {
+                                             wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
   }
@@ -1084,7 +1085,7 @@ wtf_size_t StringImpl::FindIgnoringASCIICase(const StringView& match_string,
                                        search_length, match_length);
 }
 
-wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) {
+wtf_size_t StringImpl::ReverseFind(UChar c, wtf_size_t index) const {
   if (Is8Bit())
     return WTF::ReverseFind(Characters8(), length_, c, index);
   return WTF::ReverseFind(Characters16(), length_, c, index);
@@ -1124,7 +1125,7 @@ ALWAYS_INLINE static wtf_size_t ReverseFindInternal(
 }
 
 wtf_size_t StringImpl::ReverseFind(const StringView& match_string,
-                                   wtf_size_t index) {
+                                   wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
   }
