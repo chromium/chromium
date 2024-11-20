@@ -1,7 +1,9 @@
 ***OS Crypt (Sync)***
 
 This directory contains an `OSCrypt` implementation that supports cryptographic
-primitives that allow binding data to the OS user.
+primitives that allow binding data to the OS user. This is the legacy 'sync'
+interface which should not be used in new code. Prefer using the 'async'
+interface for any new code.
 
 [os_crypt.h](os_crypt.h) contains the main interface.
 
