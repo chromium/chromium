@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_DETAILS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_DETAILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_SOURCE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_SOURCE_H_
 
 #include "components/autofill/core/browser/autofill_type.h"
 
@@ -51,16 +51,6 @@ enum class AutofillTriggerSource {
   kPredictionImprovements = 10
 };
 
-// Holds the details about a filling operation. The `trigger_source` field
-// defines what triggered the autofill experience, i.e kFastCheckout or kPopup.
-// The `field_types_to_fill` specifies which fields Autofill is going to take
-// into account when filling the form.
-struct AutofillTriggerDetails {
-  AutofillTriggerSource trigger_source = AutofillTriggerSource::kNone;
-  // Default to considering every field type when filling the form.
-  FieldTypeSet field_types_to_fill = kAllFieldTypes;
-};
-
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_DETAILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TRIGGER_SOURCE_H_

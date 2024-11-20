@@ -35,7 +35,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/field_filling_address_util.h"
@@ -634,42 +634,31 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       FillAutofillFormData(
           suggestion.type, suggestion.payload, /*metadata=*/std::nullopt,
           /*is_preview=*/true,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillFullAddress:
       FillAutofillFormData(
           suggestion.type, suggestion.payload,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill = GetAddressFieldsForGroupFilling()});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillFullName:
       FillAutofillFormData(
           suggestion.type, suggestion.payload,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillFullPhoneNumber:
       FillAutofillFormData(
           suggestion.type, suggestion.payload,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill =
-               GetFieldTypesOfGroup(FieldTypeGroup::kPhone)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillFullEmail:
       FillAutofillFormData(
           suggestion.type, suggestion.payload,
           /*metadata=*/std::nullopt, /*is_preview=*/true,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill =
-               GetFieldTypesOfGroup(FieldTypeGroup::kEmail)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kAutocompleteEntry:
       manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
@@ -720,8 +709,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       FillAutofillFormData(
           suggestion.type, suggestion.payload, /*metadata=*/std::nullopt,
           /*is_preview=*/true,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillPredictionImprovements:
       // TODO(crbug.com/361414075): Implement previewing prediction
@@ -1132,9 +1120,9 @@ void AutofillExternalDelegate::OnAddressDataChanged() {
 void AutofillExternalDelegate::OnCreditCardScanned(
     const AutofillTriggerSource trigger_source,
     const CreditCard& card) {
-  manager_->FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
-      card, {.trigger_source = trigger_source});
+  manager_->FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill,
+                                        query_form_, query_field_.global_id(),
+                                        card, trigger_source);
 }
 
 void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
@@ -1277,7 +1265,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
     const Suggestion::Payload& payload,
     std::optional<SuggestionMetadata> metadata,
     bool is_preview,
-    const AutofillTriggerDetails& trigger_details) {
+    AutofillTriggerSource trigger_source) {
   CHECK(is_preview || metadata);
   mojom::ActionPersistence action_persistence =
       is_preview ? mojom::ActionPersistence::kPreview
@@ -1294,7 +1282,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
     if (profile) {
       manager_->FillOrPreviewProfileForm(action_persistence, query_form_,
                                          query_field_.global_id(), *profile,
-                                         trigger_details);
+                                         trigger_source);
     }
     return;
   }
@@ -1304,13 +1292,13 @@ void AutofillExternalDelegate::FillAutofillFormData(
               absl::get<Suggestion::Guid>(payload).value())) {
     is_preview ? manager_->FillOrPreviewCreditCardForm(
                      mojom::ActionPersistence::kPreview, query_form_,
-                     query_field_.global_id(), *credit_card, trigger_details)
+                     query_field_.global_id(), *credit_card, trigger_source)
                : manager_->AuthenticateThenFillCreditCardForm(
                      query_form_, query_field_.global_id(),
                      type == SuggestionType::kVirtualCreditCardEntry
                          ? CreditCard::CreateVirtualCard(*credit_card)
                          : *credit_card,
-                     trigger_details);
+                     trigger_source);
   }
 }
 
@@ -1447,8 +1435,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillFullAddress:
     case SuggestionType::kFillFullName:
@@ -1457,10 +1444,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill = GetTargetFieldTypesFromFillingMethod(
-               GetFillingMethodFromSuggestionType(suggestion.type))});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kAddressFieldByFieldFilling:
       FillFieldByFieldFillingSuggestion(suggestion, metadata);
@@ -1476,8 +1460,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     }
     default:
@@ -1515,8 +1498,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       FillAutofillFormData(
           suggestion.type, suggestion.payload, metadata,
           /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kVirtualCreditCardEntry:
       if (IsPaymentsManualFallbackOnNonPaymentsField()) {
@@ -1540,8 +1522,7 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
         // that identifies the actually chosen credit card.
         FillAutofillFormData(
             suggestion.type, suggestion.payload, metadata, /*is_preview=*/false,
-            {.trigger_source =
-                 TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+            TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       }
       break;
     case SuggestionType::kCreditCardFieldByFieldFilling:

@@ -8,12 +8,11 @@
 
 namespace autofill {
 
-void TestFormFiller::ScheduleRefill(
-    const FormData& form,
-    const FormStructure& form_structure,
-    const AutofillTriggerDetails& trigger_details,
-    RefillTriggerReason refill_trigger_reason) {
-  TriggerRefill(form, trigger_details, refill_trigger_reason);
+void TestFormFiller::ScheduleRefill(const FormData& form,
+                                    const FormStructure& form_structure,
+                                    AutofillTriggerSource trigger_source,
+                                    RefillTriggerReason refill_trigger_reason) {
+  TriggerRefill(form, trigger_source, refill_trigger_reason);
 }
 
 }  // namespace autofill

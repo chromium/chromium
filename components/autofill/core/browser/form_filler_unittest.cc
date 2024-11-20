@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -184,8 +185,7 @@ class FormFillerTest : public testing::Test {
       const FormFieldData& trigger_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      AutofillTriggerDetails trigger_details = {
-          .trigger_source = AutofillTriggerSource::kPopup}) {
+      AutofillTriggerSource trigger_source = AutofillTriggerSource::kPopup) {
     std::vector<FormFieldData> filled_fields;
     std::vector<FieldGlobalId> global_ids;
     for (const FormFieldData& field : form.fields()) {
@@ -201,12 +201,12 @@ class FormFillerTest : public testing::Test {
             absl::get_if<const AutofillProfile*>(&profile_or_credit_card)) {
       browser_autofill_manager_->FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, form, trigger_field.global_id(),
-          **profile, trigger_details);
+          **profile, trigger_source);
     } else {
       browser_autofill_manager_->FillOrPreviewCreditCardForm(
           mojom::ActionPersistence::kFill, form, trigger_field.global_id(),
           *absl::get<const CreditCard*>(profile_or_credit_card),
-          trigger_details);
+          trigger_source);
     }
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(form).fields()) {
@@ -229,7 +229,7 @@ class FormFillerTest : public testing::Test {
                          Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
         mojom::ActionPersistence::kPreview, input_form, input_field_id,
-        virtual_card, {.trigger_source = AutofillTriggerSource::kPopup});
+        virtual_card, AutofillTriggerSource::kPopup);
     return filled_fields;
   }
 
@@ -250,7 +250,7 @@ class FormFillerTest : public testing::Test {
     EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(AtLeast(1));
     browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
         form, form.fields().front().global_id(), card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
   }
 
   void OnDidGetRealPan(
@@ -347,7 +347,7 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
   EXPECT_CALL(autofill_driver_, ApplyFormAction).Times(0);
   browser_autofill_manager_->FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      test::GetFullProfile(), /*trigger_details=*/{});
+      test::GetFullProfile(), AutofillTriggerSource::kPopup);
 }
 
 TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
@@ -450,7 +450,7 @@ TEST_F(FormFillerTest, UndoSavesFormFillingData) {
 
   browser_autofill_manager_->FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields().front().global_id(),
-      test::GetFullProfile(), /*trigger_details=*/{});
+      test::GetFullProfile(), AutofillTriggerSource::kPopup);
   // Undo early returns if it has no filling history for the trigger field,
   // which is initially empty, therefore calling the driver is proof that data
   // was successfully stored.

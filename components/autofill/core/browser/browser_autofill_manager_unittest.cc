@@ -943,8 +943,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormData& form,
       const FormFieldData& field,
       std::string guid,
-      AutofillTriggerDetails trigger_details = {
-          .trigger_source = AutofillTriggerSource::kPopup}) {
+      AutofillTriggerSource trigger_source = AutofillTriggerSource::kPopup) {
     browser_autofill_manager_->OnAskForValuesToFill(
         form, field.global_id(), GetFakeCaretBounds(field),
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
@@ -952,12 +951,12 @@ class BrowserAutofillManagerTest : public testing::Test {
             personal_data().address_data_manager().GetProfileByGUID(guid)) {
       browser_autofill_manager_->FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, form, field.global_id(), *profile,
-          trigger_details);
+          trigger_source);
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(
                        guid)) {
       browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
-          form, field.global_id(), *card, trigger_details);
+          form, field.global_id(), *card, trigger_source);
     }
   }
 
@@ -969,8 +968,7 @@ class BrowserAutofillManagerTest : public testing::Test {
       const FormData& input_form,
       const FormFieldData& input_field,
       std::string guid,
-      AutofillTriggerDetails trigger_details = {
-          .trigger_source = AutofillTriggerSource::kPopup}) {
+      AutofillTriggerSource trigger_source = AutofillTriggerSource::kPopup) {
     std::vector<FormFieldData> filled_fields;
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
         .WillOnce([&filled_fields](
@@ -983,7 +981,7 @@ class BrowserAutofillManagerTest : public testing::Test {
           return base::MakeFlatSet<FieldGlobalId>(data, {},
                                                   &FormFieldData::global_id);
         });
-    FillAutofillFormData(input_form, input_field, guid, trigger_details);
+    FillAutofillFormData(input_form, input_field, guid, trigger_source);
     FormData result_form = input_form;
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(result_form).fields()) {
@@ -1063,7 +1061,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     EXPECT_CALL(*autofill_driver_, ApplyFormAction).Times(AtLeast(1));
     browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
         *form, form->fields()[0].global_id(), card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
   }
 
   void OnDidGetRealPan(
@@ -3596,99 +3594,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
                 ArrayEquals(expected_events));
   }
-}
-
-TEST_F(BrowserAutofillManagerWithLogEventsTest,
-       FillingMethod_TargetedAllFields_FullForm) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillGranularFillingAvailable);
-
-  FormData form =
-      test::GetFormData({.fields = {{.role = NAME_FIRST,
-                                     .autocomplete_attribute = "given-name"}}});
-  FormsSeen({form});
-  FillAutofillFormDataAndGetResults(
-      form, form.fields()[0], MakeGuid(1),
-      {.trigger_source = AutofillTriggerSource::kPopup,
-       .field_types_to_fill = kAllFieldTypes});
-  const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
-      browser_autofill_manager_->GetAutofillField(form, form.fields()[0])
-          ->field_log_events();
-
-  ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
-  EXPECT_THAT(
-      *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),
-      EqualsFillFieldLogEvent(FillFieldLogEvent{
-          .fill_event_id = FillEventId(-1),
-          .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
-          .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_prevented_by_iframe_security_policy =
-              OptionalBoolean::kFalse,
-      }));
-}
-
-TEST_F(BrowserAutofillManagerWithLogEventsTest,
-       FillingMethod_TargetedGranularFillingGroup_GroupFilling) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillGranularFillingAvailable);
-
-  FormData form =
-      test::GetFormData({.fields = {{.role = NAME_FIRST,
-                                     .autocomplete_attribute = "given-name"}}});
-  FormsSeen({form});
-  FillAutofillFormDataAndGetResults(
-      form, form.fields()[0], MakeGuid(1),
-      {.trigger_source = AutofillTriggerSource::kPopup,
-       .field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName)});
-  const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
-      browser_autofill_manager_->GetAutofillField(form, form.fields()[0])
-          ->field_log_events();
-
-  ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
-  EXPECT_THAT(
-      *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),
-      EqualsFillFieldLogEvent(FillFieldLogEvent{
-          .fill_event_id = FillEventId(-1),
-          .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
-          .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_prevented_by_iframe_security_policy =
-              OptionalBoolean::kFalse,
-      }));
-}
-
-TEST_F(BrowserAutofillManagerWithLogEventsTest,
-       FillingMethod_TargetedSingleField_FieldByFieldFilling) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillGranularFillingAvailable);
-
-  FormData form =
-      test::GetFormData({.fields = {{.role = NAME_FIRST,
-                                     .autocomplete_attribute = "given-name"}}});
-  FormsSeen({form});
-  FillAutofillFormDataAndGetResults(
-      form, form.fields()[0], MakeGuid(1),
-      {.trigger_source = AutofillTriggerSource::kPopup,
-       .field_types_to_fill = {NAME_FIRST}});
-  const std::vector<AutofillField::FieldLogEventType>& fill_field_log_events =
-      browser_autofill_manager_->GetAutofillField(form, form.fields()[0])
-          ->field_log_events();
-
-  ASSERT_EQ(CountEventOfType<FillFieldLogEvent>(fill_field_log_events), 1u);
-  EXPECT_THAT(
-      *FindFirstEventOfType<FillFieldLogEvent>(fill_field_log_events),
-      EqualsFillFieldLogEvent(FillFieldLogEvent{
-          .fill_event_id = FillEventId(-1),
-          .had_value_before_filling = OptionalBoolean::kFalse,
-          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
-          .had_value_after_filling = OptionalBoolean::kTrue,
-          .filling_prevented_by_iframe_security_policy =
-              OptionalBoolean::kFalse,
-      }));
 }
 
 // Test that we record FillFieldLogEvents after filling a form twice, the first

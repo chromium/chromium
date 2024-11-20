@@ -140,14 +140,14 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData& form,
                const FieldGlobalId& field_id,
                const CreditCard& credit_card,
-               const AutofillTriggerDetails& trigger_details),
+               AutofillTriggerSource trigger_source),
               (override));
   MOCK_METHOD(void,
               AuthenticateThenFillCreditCardForm,
               (const FormData& form,
                const FieldGlobalId& field,
                const CreditCard& credit_card,
-               const AutofillTriggerDetails& trigger_details));
+               AutofillTriggerSource trigger_source));
   MOCK_METHOD(void,
               DidShowSuggestions,
               (DenseSet<SuggestionType> shown_suggestion_types,

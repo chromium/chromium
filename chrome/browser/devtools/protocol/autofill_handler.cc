@@ -163,9 +163,9 @@ protocol::Response AutofillHandler::Trigger(
 
   static_cast<autofill::BrowserAutofillManager&>(
       autofill_driver->GetAutofillManager())
-      .FillOrPreviewCreditCardForm(
-          autofill::mojom::ActionPersistence::kFill, *form, global_field_id,
-          tmp_autofill_card, {.trigger_source = AutofillTriggerSource::kPopup});
+      .FillOrPreviewCreditCardForm(autofill::mojom::ActionPersistence::kFill,
+                                   *form, global_field_id, tmp_autofill_card,
+                                   AutofillTriggerSource::kPopup);
 
   return Response::Success();
 }

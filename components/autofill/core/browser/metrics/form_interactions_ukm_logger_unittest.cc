@@ -1738,7 +1738,7 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
           form, first_field.global_id(),
           *personal_data().payments_data_manager().GetCreditCardByGUID(
               "10000000-0000-0000-0000-000000000001"),
-          {.trigger_source = AutofillTriggerSource::kPopup});
+          AutofillTriggerSource::kPopup);
     } else {
       // Autofill should not be simulated on a field that is not autofillable.
       ASSERT_TRUE(false);

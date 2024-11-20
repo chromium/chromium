@@ -120,7 +120,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -144,7 +144,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -176,7 +176,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().front().global_id(),
                            AutofillTriggerSource::kPopup,
@@ -204,7 +204,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().front().global_id(),
                            AutofillTriggerSource::kPopup,
@@ -239,7 +239,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().front().global_id(),
                            AutofillTriggerSource::kPopup,

@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -65,7 +65,7 @@ class ProfileTokenQualityTest : public testing::Test {
     bam_.FillOrPreviewProfileForm(
         mojom::ActionPersistence::kFill, form,
         form.fields()[triggering_field_index].global_id(), profile,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
   }
 
  protected:

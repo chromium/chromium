@@ -223,7 +223,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   // Verify that:
   // 1. if the card suggestion selected had metadata,
@@ -272,7 +272,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -328,7 +328,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
                            AutofillTriggerSource::kPopup,
@@ -418,7 +418,7 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form(), form().fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(kCardGuid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   test_api(autofill_manager())
       .OnCreditCardFetched(form(), form().fields().back().global_id(),
                            AutofillTriggerSource::kPopup,
@@ -550,7 +550,7 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
       form(), form().fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(
           kTestMaskedCardId),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   std::string latency_histogram_prefix =
       "Autofill.CreditCard.SelectionLatencySinceShown.";
@@ -645,7 +645,7 @@ class CardBenefitFormEventMetricsTest
     ShowCardSuggestions();
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form(), form().fields()[credit_card_number_field_index()].global_id(),
-        *card, {.trigger_source = AutofillTriggerSource::kPopup});
+        *card, AutofillTriggerSource::kPopup);
   }
 
   // Simulating selecting and filling the given `card` from a list of

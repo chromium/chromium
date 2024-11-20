@@ -292,7 +292,7 @@ void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
   HideTouchToFill();
   manager_->FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
-      card, {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
+      card, AutofillTriggerSource::kTouchToFillCreditCard);
 }
 
 void TouchToFillDelegateAndroidImpl::ShowPaymentMethodSettings() {
@@ -317,11 +317,11 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
     manager_->AuthenticateThenFillCreditCardForm(
         query_form_, query_field_.global_id(),
         CreditCard::CreateVirtualCard(*card),
-        {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
+        AutofillTriggerSource::kTouchToFillCreditCard);
   } else {
     manager_->AuthenticateThenFillCreditCardForm(
         query_form_, query_field_.global_id(), *card,
-        {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
+        AutofillTriggerSource::kTouchToFillCreditCard);
   }
 }
 

@@ -815,7 +815,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_EQ(1, user_action_tester.GetActionCount(
                      "Autofill_FilledCreditCardSuggestion"));
   }
@@ -1443,12 +1443,12 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardSelectedFormEvents) {
         form, form.fields()[2].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields()[2].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1462,7 +1462,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardSelectedFormEvents) {
         form, form.fields()[2].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1481,12 +1481,12 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardSelectedFormEvents) {
         form, form.fields()[2].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields()[2].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1505,7 +1505,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardSelectedFormEvents) {
     CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields()[2].global_id(), virtual_card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields()[2],
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424",
@@ -1527,14 +1527,14 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardSelectedFormEvents) {
     CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields()[2].global_id(), virtual_card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields()[2],
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424",
                                    /*is_virtual_card=*/true);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields()[2].global_id(), virtual_card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields()[2],
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424",
@@ -1580,7 +1580,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields()[0].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1598,7 +1598,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields()[0].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1648,7 +1648,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields()[0].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1666,7 +1666,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields()[0].global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(
@@ -1717,7 +1717,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardFilledFormEvents) {
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 1),
@@ -1735,7 +1735,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardFilledFormEvents) {
     CreditCard virtual_card = GetVirtualCreditCard(kTestMaskedCardId);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields().front().global_id(), virtual_card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields().front(),
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424",
@@ -1758,7 +1758,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardFilledFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields().front(),
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424");
@@ -1787,12 +1787,12 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, CreditCardFilledFormEvents) {
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(Bucket(FORM_EVENT_LOCAL_SUGGESTION_FILLED, 2),
@@ -1827,7 +1827,7 @@ TEST_P(
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form, form.fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(local_guid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -1865,7 +1865,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form, form.fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(local_guid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   autofill_manager().OnAskForValuesToFillTest(form,
                                               form.fields().back().global_id());
   DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1);
@@ -1916,7 +1916,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
   autofill_manager().AuthenticateThenFillCreditCardForm(
       form, form.fields().front().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(local_guid),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
   autofill_manager().OnAskForValuesToFillTest(form,
                                               form.fields().back().global_id());
   DidShowAutofillSuggestions(form, /*field_index=*/form.fields().size() - 1);
@@ -1966,7 +1966,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -1989,7 +1989,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kPermanentFailure, std::string());
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -2012,7 +2012,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kClientSideTimeout, std::string());
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -2048,7 +2048,7 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPanWithNonHttpOkResponse();
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
@@ -2363,7 +2363,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
       form, form.fields().back().global_id(),
       *personal_data().payments_data_manager().GetCreditCardByGUID(
           kTestLocalCardId),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      AutofillTriggerSource::kPopup);
 
   SubmitForm(form);
   EXPECT_THAT(
@@ -2514,7 +2514,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     SubmitForm(form);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -2548,7 +2548,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields().back().global_id());
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields().front().global_id(), virtual_card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields().front(),
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424",
@@ -2585,7 +2585,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields().back(),
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424");
@@ -2747,7 +2747,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     SubmitForm(form);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
@@ -2768,7 +2768,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
                                                 form.fields()[0].global_id());
     autofill_manager().AuthenticateThenFillCreditCardForm(
         form, form.fields().front().global_id(), virtual_card,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields().front(),
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424",
@@ -2792,7 +2792,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging,
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnCreditCardFetchingSuccessful(form, form.fields().back(),
                                    AutofillTriggerSource::kPopup,
                                    u"6011000990139424");
@@ -2897,7 +2897,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().front().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
         BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
@@ -2947,7 +2947,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kMaskedServerCardIds[0]),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
     SubmitForm(form);
     EXPECT_THAT(
@@ -2996,7 +2996,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestMaskedCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
     SubmitForm(form);
     EXPECT_THAT(
@@ -3050,7 +3050,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kMaskedServerCardIds[1]),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
     SubmitForm(form);
     // Histograms without ".WithOffer" should be recorded.
@@ -3116,7 +3116,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kMaskedServerCardIds[2]),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
 
     // Simulate user showing suggestions but then submitting form with
@@ -3172,7 +3172,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kMaskedServerCardIds[2]),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kPermanentFailure, std::string());
 
     // Submitting the form without the filled suggestion.
@@ -3223,7 +3223,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kMaskedServerCardIds[2]),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     OnDidGetRealPan(PaymentsRpcResult::kSuccess, "6011000990139424");
 
     // Show suggestions again, and select a local card instead.
@@ -3235,7 +3235,7 @@ TEST_P(AutofillMetricsTestWithParsedFormLogging, LogServerOfferFormEvents) {
         form, form.fields().back().global_id(),
         *personal_data().payments_data_manager().GetCreditCardByGUID(
             kTestLocalCardId),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
     SubmitForm(form);
     EXPECT_THAT(
         histogram_tester.GetAllSamples(
@@ -5293,7 +5293,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   void FillForm(const FormFieldData& triggering_field) {
     autofill_manager().FillOrPreviewCreditCardForm(
         mojom::ActionPersistence::kFill, form_, triggering_field.global_id(),
-        credit_card(), {.trigger_source = AutofillTriggerSource::kPopup});
+        credit_card(), AutofillTriggerSource::kPopup);
   }
 
   // Sets the field values of |form_| according to the parameters.

@@ -211,7 +211,7 @@ class AutofillMetricsBaseTest {
         mojom::ActionPersistence::kFill, form,
         form.fields().front().global_id(),
         *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        AutofillTriggerSource::kPopup);
   }
 
   void UndoAutofill(const FormData& form) {

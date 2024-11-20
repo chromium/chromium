@@ -151,7 +151,7 @@ class FormFiller {
           profile_or_credit_card,
       FormStructure* form_structure,
       AutofillField* autofill_field,
-      const AutofillTriggerDetails& trigger_details,
+      AutofillTriggerSource trigger_source,
       bool is_refill = false);
 
   // Whether there should be an attempts to refill the form. Returns true if all
@@ -168,13 +168,13 @@ class FormFiller {
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
                               const FormStructure& form_structure,
-                              const AutofillTriggerDetails& trigger_details,
+                              AutofillTriggerSource trigger_source,
                               RefillTriggerReason refill_trigger_reason);
 
   // Attempts to refill the form that was changed dynamically. Should only be
   // called if ShouldTriggerRefill returns true.
   void TriggerRefill(const FormData& form,
-                     const AutofillTriggerDetails& trigger_details,
+                     AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);
 
   // This function is called by JavaScriptChangedAutofilledValue and may trigger
@@ -186,7 +186,7 @@ class FormFiller {
       const FormFieldData& field,
       const FormStructure& form_structure,
       const std::u16string& old_value,
-      const AutofillTriggerDetails& trigger_details);
+      AutofillTriggerSource trigger_source);
 
  private:
   friend class FormFillerTestApi;

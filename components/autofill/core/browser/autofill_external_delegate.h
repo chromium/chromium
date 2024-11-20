@@ -18,7 +18,7 @@
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/form_filler.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -209,7 +209,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
                             const Suggestion::Payload& payload,
                             std::optional<SuggestionMetadata> metadata,
                             bool is_preview,
-                            const AutofillTriggerDetails& trigger_details);
+                            AutofillTriggerSource trigger_source);
 
   // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
   // previewed and previews the corresponding field-by-field filling suggestion.

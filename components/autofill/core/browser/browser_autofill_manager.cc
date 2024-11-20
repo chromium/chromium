@@ -70,7 +70,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_granular_filling_utils.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
@@ -1828,7 +1828,7 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
     const FormData& form,
     const FieldGlobalId& field_id,
     const CreditCard& credit_card,
-    const AutofillTriggerDetails& trigger_details) {
+    AutofillTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
@@ -1843,7 +1843,7 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
                              credit_card)) {
     form_filler_->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                     &credit_card, form_structure,
-                                    autofill_field, trigger_details);
+                                    autofill_field, trigger_source);
     return;
   }
   metrics_->credit_card_form_event_logger.LogDeprecatedCreditCardSelectedMetric(
@@ -1852,7 +1852,7 @@ void BrowserAutofillManager::AuthenticateThenFillCreditCardForm(
   GetCreditCardAccessManager().FetchCreditCard(
       &credit_card, base::BindOnce(&BrowserAutofillManager::OnCreditCardFetched,
                                    weak_ptr_factory_.GetWeakPtr(), form,
-                                   field_id, trigger_details.trigger_source));
+                                   field_id, trigger_source));
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -1860,7 +1860,7 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
     const FormData& form,
     const FieldGlobalId& field_id,
     const AutofillProfile& profile,
-    const AutofillTriggerDetails& trigger_details) {
+    AutofillTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
@@ -1869,7 +1869,7 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, &profile,
                                   form_structure, autofill_field,
-                                  trigger_details);
+                                  trigger_source);
 }
 
 void BrowserAutofillManager::FillOrPreviewFormWithPredictionImprovements(
@@ -1969,7 +1969,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     const FormData& form,
     const FieldGlobalId& field_id,
     const CreditCard& credit_card,
-    const AutofillTriggerDetails& trigger_details) {
+    AutofillTriggerSource trigger_source) {
   const FormFieldData* const field = form.FindFieldByGlobalId(field_id);
   if (!IsValidFormData(form) || !field || !IsValidFormFieldData(*field)) {
     return;
@@ -1982,7 +1982,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   }
   form_filler_->FillOrPreviewForm(action_persistence, form, &credit_card,
                                   form_structure, autofill_field,
-                                  trigger_details,
+                                  trigger_source,
                                   /*is_refill=*/false);
 }
 
@@ -2208,9 +2208,9 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
 
   if (form_filler_->ShouldTriggerRefill(
           *form_structure, RefillTriggerReason::kSelectOptionsChanged)) {
-    form_filler_->TriggerRefill(
-        form, {.trigger_source = AutofillTriggerSource::kSelectOptionsChanged},
-        RefillTriggerReason::kSelectOptionsChanged);
+    form_filler_->TriggerRefill(form,
+                                AutofillTriggerSource::kSelectOptionsChanged,
+                                RefillTriggerReason::kSelectOptionsChanged);
   }
 }
 
@@ -2269,8 +2269,7 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   }
   form_filler_->MaybeTriggerRefillForExpirationDate(
       form, field, *form_structure, old_value,
-      {.trigger_source =
-           AutofillTriggerSource::kJavaScriptChangedAutofilledValue});
+      AutofillTriggerSource::kJavaScriptChangedAutofilledValue);
 }
 
 void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
@@ -2329,9 +2328,8 @@ void BrowserAutofillManager::OnCreditCardFetched(
     return;
   }
 
-  FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, field_id, *credit_card,
-      {.trigger_source = fetched_credit_card_trigger_source});
+  FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, form, field_id,
+                              *credit_card, fetched_credit_card_trigger_source);
 }
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
@@ -2575,14 +2573,13 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         skip_reasons,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    const AutofillTriggerDetails& trigger_details,
+    AutofillTriggerSource trigger_source,
     bool is_refill) {
   AppendFillLogEvents(action_persistence, form, form_structure,
                       trigger_autofill_field, safe_field_ids, skip_reasons,
                       profile_or_credit_card, is_refill);
 
-  client().DidFillOrPreviewForm(action_persistence,
-                                trigger_details.trigger_source, is_refill);
+  client().DidFillOrPreviewForm(action_persistence, trigger_source, is_refill);
   NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
                   form_structure.global_id(), action_persistence,
                   safe_filled_fields, profile_or_credit_card);
@@ -2597,7 +2594,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
     LogAndRecordCreditCardFill(
         form_structure, trigger_autofill_field, safe_filled_fields,
         safe_filled_autofill_fields, filled_field_ids, safe_field_ids,
-        absl::get<const CreditCard*>(profile_or_credit_card), trigger_details,
+        absl::get<const CreditCard*>(profile_or_credit_card), trigger_source,
         is_refill);
     return;
   }
@@ -2607,7 +2604,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
 
   LogAndRecordProfileFill(form_structure, trigger_autofill_field,
                           safe_filled_fields, safe_filled_autofill_fields,
-                          filled_profile, trigger_details, is_refill);
+                          filled_profile, trigger_source, is_refill);
 
   MaybeShowPlusAddressEmailOverrideNotification(safe_filled_autofill_fields,
                                                 safe_filled_fields,
@@ -2689,7 +2686,7 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
     const base::flat_set<FieldGlobalId>& filled_field_ids,
     const base::flat_set<FieldGlobalId>& safe_field_ids,
     const CreditCard* card,
-    const AutofillTriggerDetails& trigger_details,
+    AutofillTriggerSource trigger_source,
     bool is_refill) {
   if (is_refill) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
@@ -2704,7 +2701,7 @@ void BrowserAutofillManager::LogAndRecordCreditCardFill(
     metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
         metrics_->last_selected_card, form_structure, trigger_autofill_field,
         filled_field_ids, safe_field_ids, metrics_->signin_state_for_metrics,
-        trigger_details.trigger_source);
+        trigger_source);
 
     client().GetPersonalDataManager().payments_data_manager().RecordUseOfCard(
         card);
@@ -2717,7 +2714,7 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
     base::span<const FormFieldData*> safe_filled_fields,
     base::span<const AutofillField*> safe_filled_autofill_fields,
     const AutofillProfile* filled_profile,
-    const AutofillTriggerDetails& trigger_details,
+    AutofillTriggerSource trigger_source,
     bool is_refill) {
   if (!trigger_autofill_field.ShouldSuppressSuggestionsAndFillingByDefault()) {
     if (is_refill) {
@@ -2725,7 +2722,7 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
     } else {
       metrics_->address_form_event_logger.OnDidFillFormFillingSuggestion(
           *filled_profile, form_structure, trigger_autofill_field,
-          trigger_details.trigger_source);
+          trigger_source);
     }
   }
   if (!is_refill) {
@@ -3118,10 +3115,9 @@ void BrowserAutofillManager::OnFormProcessed(
   // yet, start the process of triggering a refill.
   if (form_filler_->ShouldTriggerRefill(form_structure,
                                         RefillTriggerReason::kFormChanged)) {
-    form_filler_->ScheduleRefill(
-        form, form_structure,
-        {.trigger_source = AutofillTriggerSource::kFormsSeen},
-        RefillTriggerReason::kFormChanged);
+    form_filler_->ScheduleRefill(form, form_structure,
+                                 AutofillTriggerSource::kFormsSeen,
+                                 RefillTriggerReason::kFormChanged);
   }
 }
 

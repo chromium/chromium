@@ -573,7 +573,7 @@ void FormFiller::FillOrPreviewForm(
         profile_or_credit_card,
     FormStructure* form_structure,
     AutofillField* autofill_trigger_field,
-    const AutofillTriggerDetails& trigger_details,
+    AutofillTriggerSource trigger_source,
     bool is_refill) {
   FillingProduct filling_product =
       absl::holds_alternative<const CreditCard*>(profile_or_credit_card)
@@ -800,7 +800,7 @@ void FormFiller::FillOrPreviewForm(
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
       safe_filled_field_ids, skip_reasons, profile_or_credit_card,
-      trigger_details, is_refill);
+      trigger_source, is_refill);
 }
 
 bool FormFiller::ShouldTriggerRefill(
@@ -834,7 +834,7 @@ bool FormFiller::ShouldTriggerRefill(
 
 void FormFiller::ScheduleRefill(const FormData& form,
                                 const FormStructure& form_structure,
-                                const AutofillTriggerDetails& trigger_details,
+                                AutofillTriggerSource trigger_source,
                                 RefillTriggerReason refill_trigger_reason) {
   FillingContext* filling_context =
       GetFillingContext(form_structure.global_id());
@@ -848,12 +848,12 @@ void FormFiller::ScheduleRefill(const FormData& form,
   filling_context->on_refill_timer.Start(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&FormFiller::TriggerRefill,
-                          weak_ptr_factory_.GetWeakPtr(), form, trigger_details,
+                          weak_ptr_factory_.GetWeakPtr(), form, trigger_source,
                           refill_trigger_reason));
 }
 
 void FormFiller::TriggerRefill(const FormData& form,
-                               const AutofillTriggerDetails& trigger_details,
+                               AutofillTriggerSource trigger_source,
                                RefillTriggerReason refill_trigger_reason) {
   FormStructure* form_structure =
       manager_->FindCachedFormById(form.global_id());
@@ -907,7 +907,7 @@ void FormFiller::TriggerRefill(const FormData& form,
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                           &profile_or_credit_card, form_structure,
-                          autofill_field, trigger_details,
+                          autofill_field, trigger_source,
                           /*is_refill=*/true);
       },
       filling_context->profile_or_credit_card);
@@ -918,7 +918,7 @@ void FormFiller::MaybeTriggerRefillForExpirationDate(
     const FormFieldData& field,
     const FormStructure& form_structure,
     const std::u16string& old_value,
-    const AutofillTriggerDetails& trigger_details) {
+    AutofillTriggerSource trigger_source) {
   // We currently support a single case of refilling credit card expiration
   // dates: If we filled the expiration date in a format "05/2023" and the
   // website turned it into "05 / 20" (i.e. it broke the year by cutting the
@@ -966,7 +966,7 @@ void FormFiller::MaybeTriggerRefillForExpirationDate(
         GetFillingContext(form_structure.global_id());
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
     filling_context->forced_fill_values[field.global_id()] = refill_value;
-    ScheduleRefill(form, form_structure, trigger_details,
+    ScheduleRefill(form, form_structure, trigger_source,
                    RefillTriggerReason::kExpirationDateFormatted);
   }
 }

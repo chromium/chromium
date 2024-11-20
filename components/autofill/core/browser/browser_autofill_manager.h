@@ -30,7 +30,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/autofill_trigger_details.h"
+#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
@@ -228,7 +228,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const CreditCard& credit_card,
-      const AutofillTriggerDetails& trigger_details);
+      AutofillTriggerSource trigger_source);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.
@@ -270,7 +270,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details);
+      AutofillTriggerSource trigger_source);
 
   // Asks for authentication via CVC before filling with server card data.
   // TODO(crbug.com/40227071): Clean up the API.
@@ -278,7 +278,7 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const CreditCard& credit_card,
-      const AutofillTriggerDetails& trigger_details);
+      AutofillTriggerSource trigger_source);
 
   /////////////////
   // DO NOT USE! //
@@ -339,7 +339,7 @@ class BrowserAutofillManager : public AutofillManager {
           skip_reasons,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      const AutofillTriggerDetails& trigger_details,
+      AutofillTriggerSource trigger_source,
       bool is_refill);
 
   // AutofillManager:
@@ -738,7 +738,7 @@ class BrowserAutofillManager : public AutofillManager {
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const base::flat_set<FieldGlobalId>& safe_field_ids,
       const CreditCard* card,
-      const AutofillTriggerDetails& trigger_details,
+      AutofillTriggerSource trigger_source,
       bool is_refill);
 
   // Handles the address specific logic after a form is filled, including
@@ -749,7 +749,7 @@ class BrowserAutofillManager : public AutofillManager {
       base::span<const FormFieldData*> safe_filled_fields,
       base::span<const AutofillField*> safe_filled_autofill_fields,
       const AutofillProfile* filled_profile,
-      const AutofillTriggerDetails& trigger_details,
+      AutofillTriggerSource trigger_source,
       bool is_refill);
 
   // Checks if the user filled a form using a plus address email override and,

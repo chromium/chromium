@@ -107,7 +107,7 @@ static_library("browser") {
     "autofill_optimization_guide.h",
     "autofill_plus_address_delegate.h",
     "autofill_shared_storage_handler.h",
-    "autofill_trigger_details.h",
+    "autofill_trigger_source.h",
     "autofill_type.cc",
     "autofill_type.h",
     "browser_autofill_manager.cc",
