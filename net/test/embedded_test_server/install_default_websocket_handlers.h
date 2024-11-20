@@ -14,7 +14,7 @@ namespace net::test_server {
 
 // Installs default WebSocket handlers, such as the echo handler, on the given
 // EmbeddedTestServer instance.
-void InstallDefaultWebSocketHandlers(EmbeddedTestServer& server);
+void InstallDefaultWebSocketHandlers(EmbeddedTestServer* server);
 
 // Converts a given HTTP or HTTPS URL to a corresponding WebSocket (ws) or
 // Secure WebSocket (wss) URL, depending on the server's SSL configuration.

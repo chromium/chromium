@@ -697,6 +697,7 @@ base::FilePath EmbeddedTestServer::GetRootCertPemPath() {
 void EmbeddedTestServer::ShutdownOnIOThread() {
   DCHECK(io_thread_->task_runner()->BelongsToCurrentThread());
   weak_factory_.InvalidateWeakPtrs();
+  shutdown_closures_.Notify();
   listen_socket_.reset();
   connections_.clear();
 }
@@ -1028,6 +1029,11 @@ void EmbeddedTestServer::FlushAllSocketsAndConnections() {
 void EmbeddedTestServer::SetAlpsAcceptCH(std::string hostname,
                                          std::string accept_ch) {
   alps_accept_ch_.insert_or_assign(std::move(hostname), std::move(accept_ch));
+}
+
+base::CallbackListSubscription EmbeddedTestServer::RegisterShutdownClosure(
+    base::OnceClosure closure) {
+  return shutdown_closures_.Add(std::move(closure));
 }
 
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {

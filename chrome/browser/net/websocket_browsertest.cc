@@ -92,8 +92,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
     wss_server_.ServeFilesFromDirectory(websocket_data);
 
     // Install default WebSocket handlers for both HTTP and HTTPS servers.
-    net::test_server::InstallDefaultWebSocketHandlers(ws_server_);
-    net::test_server::InstallDefaultWebSocketHandlers(wss_server_);
+    net::test_server::InstallDefaultWebSocketHandlers(&ws_server_);
+    net::test_server::InstallDefaultWebSocketHandlers(&wss_server_);
   }
 
   WebSocketBrowserTest(const WebSocketBrowserTest&) = delete;
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_F(WebSocketBrowserTest, WebSocketAppliesHSTS) {
   wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
   wss_server.ServeFilesFromSourceDirectory(
       net::GetWebSocketTestDataDirectory());
-  net::test_server::InstallDefaultWebSocketHandlers(wss_server);
+  net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
 
   ASSERT_TRUE(https_server.Start());
   ASSERT_TRUE(http_server.Start());

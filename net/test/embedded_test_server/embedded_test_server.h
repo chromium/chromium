@@ -14,8 +14,10 @@
 #include <string_view>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -594,6 +596,16 @@ class EmbeddedTestServer {
   // string.
   void SetAlpsAcceptCH(std::string hostname, std::string accept_ch);
 
+  // Registers a shutdown closure for WebSocket connections to safely
+  // disconnect. This method should only be called from handler callbacks and
+  // must be invoked on the server's callback thread.
+  //
+  // The closure registered here will be executed on the callback thread before
+  // the server completes its shutdown. This ensures that any resources specific
+  // to the callback thread are cleaned up safely.
+  base::CallbackListSubscription RegisterShutdownClosure(
+      base::OnceClosure closure);
+
  private:
   // Returns the file name of the certificate the server is using. The test
   // certificates can be found in net/data/ssl/certificates/.
@@ -706,6 +718,9 @@ class EmbeddedTestServer {
   // HTTP server that handles AIA URLs that are embedded in this test server's
   // certificate when the server certificate is one of the CERT_AUTO variants.
   std::unique_ptr<EmbeddedTestServer> aia_http_server_;
+
+  // Closure list to manage shutdown closures for WebSocket connections.
+  base::OnceClosureList shutdown_closures_;
 
   base::WeakPtrFactory<EmbeddedTestServer> weak_factory_{this};
 };

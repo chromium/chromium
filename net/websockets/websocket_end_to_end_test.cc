@@ -445,6 +445,18 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     event_interface_->WaitForDropChannel();
   }
 
+  void RunEmbeddedBasicSmokeTest(net::EmbeddedTestServer::Type server_type) {
+    test_server::EmbeddedTestServer embedded_test_server(server_type);
+
+    test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
+
+    ASSERT_TRUE(embedded_test_server.Start());
+
+    GURL echo_url = test_server::ToWebSocketUrl(
+        embedded_test_server.GetURL("/echo-with-no-extension"));
+    EXPECT_TRUE(ConnectAndWait(echo_url));
+  }
+
   raw_ptr<ConnectTestingEventInterface, DanglingUntriaged>
       event_interface_;  // owned by channel_
   std::unique_ptr<TestProxyDelegateWithProxyInfo> proxy_delegate_;
@@ -464,23 +476,18 @@ TEST_F(WebSocketEndToEndTest, BasicSmokeTest) {
 }
 
 TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTest) {
-  test_server::EmbeddedTestServer embedded_test_server(
-      net::EmbeddedTestServer::TYPE_HTTP);
+  RunEmbeddedBasicSmokeTest(net::EmbeddedTestServer::TYPE_HTTP);
+}
 
-  test_server::InstallDefaultWebSocketHandlers(embedded_test_server);
-
-  ASSERT_TRUE(embedded_test_server.Start());
-
-  GURL echo_url = ReplaceUrlScheme(
-      embedded_test_server.GetURL("/echo-with-no-extension"), "ws");
-  EXPECT_TRUE(ConnectAndWait(echo_url));
+TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTestSSL) {
+  RunEmbeddedBasicSmokeTest(net::EmbeddedTestServer::TYPE_HTTPS);
 }
 
 TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
   test_server::EmbeddedTestServer embedded_test_server(
       test_server::EmbeddedTestServer::TYPE_HTTP);
 
-  test_server::InstallDefaultWebSocketHandlers(embedded_test_server);
+  test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
 
   ASSERT_TRUE(embedded_test_server.Start());
 

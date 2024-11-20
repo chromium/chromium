@@ -17,7 +17,7 @@
 
 namespace net::test_server {
 
-void InstallDefaultWebSocketHandlers(EmbeddedTestServer& server) {
+void InstallDefaultWebSocketHandlers(EmbeddedTestServer* server) {
   RegisterWebSocketHandler<WebSocketCheckOriginHandler>(server,
                                                         "/check-origin");
   RegisterWebSocketHandler<WebSocketCloseHandler>(server, "/close");

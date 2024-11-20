@@ -10,6 +10,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/byte_conversions.h"
@@ -27,8 +28,22 @@
 namespace net::test_server {
 
 WebSocketConnection::WebSocketConnection(std::unique_ptr<StreamSocket> socket,
-                                         std::string_view sec_websocket_key)
-    : stream_socket_(std::move(socket)) {
+                                         std::string_view sec_websocket_key,
+                                         EmbeddedTestServer* server)
+    : stream_socket_(std::move(socket)),
+      // Register a shutdown closure to safely disconnect this connection when
+      // the
+      // server shuts down. base::Unretained is safe here because:
+      // 1. The shutdown closure is registered during the construction of the
+      //    WebSocketConnection object, ensuring `this` is fully initialized.
+      // 2. The lifetime of the closure is tied to the `WebSocketConnection`
+      //    object via `shutdown_subscription_`, which ensures that the closure
+      //    is automatically unregistered when the object is destroyed.
+      // 3. DisconnectImmediately() ensures safe cleanup by resetting the socket
+      //    and marking the connection state as closed.
+      shutdown_subscription_(server->RegisterShutdownClosure(
+          base::BindOnce(&WebSocketConnection::DisconnectImmediately,
+                         base::Unretained(this)))) {
   CHECK(stream_socket_);
 
   response_headers_.emplace_back("Upgrade", "websocket");
