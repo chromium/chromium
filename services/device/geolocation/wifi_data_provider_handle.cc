@@ -10,6 +10,15 @@
 
 namespace device {
 
+namespace {
+
+base::WeakPtr<WifiDataProvider>& GetProviderStorage() {
+  static base::NoDestructor<base::WeakPtr<WifiDataProvider>> provider;
+  return *provider.get();
+}
+
+}  // namespace
+
 // static
 WifiDataProviderHandle::ImplFactoryFunction
     WifiDataProviderHandle::factory_function_ = DefaultFactoryFunction;
@@ -22,13 +31,11 @@ void WifiDataProviderHandle::SetFactoryForTesting(
 
 // static
 scoped_refptr<WifiDataProvider> WifiDataProviderHandle::GetOrCreateProvider() {
-  static base::NoDestructor<base::WeakPtr<WifiDataProvider>> provider_;
-
-  scoped_refptr<WifiDataProvider> result = provider_.get()->get();
+  scoped_refptr<WifiDataProvider> result = GetProviderStorage().get();
   if (!result) {
     DCHECK(factory_function_);
     result = (*factory_function_)();
-    *provider_.get() = result->GetWeakPtr();
+    GetProviderStorage() = result->GetWeakPtr();
   }
 
   return result;
@@ -37,6 +44,7 @@ scoped_refptr<WifiDataProvider> WifiDataProviderHandle::GetOrCreateProvider() {
 // static
 void WifiDataProviderHandle::ResetFactoryForTesting() {
   factory_function_ = DefaultFactoryFunction;
+  GetProviderStorage().reset();
 }
 
 std::unique_ptr<WifiDataProviderHandle> WifiDataProviderHandle::CreateHandle(
