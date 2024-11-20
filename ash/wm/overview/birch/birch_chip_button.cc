@@ -357,8 +357,15 @@ void BirchChipButton::UpdateTitle() {
 void BirchChipButton::Init(BirchItem* item) {
   item_ = item;
   UpdateTitle();
-  SetCallback(
-      base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
+  if (item_->GetType() == BirchItemType::kCoral) {
+    SetCallback(base::BindRepeating(
+        &BirchCoralItem::LaunchGroup,
+        base::Unretained(static_cast<BirchCoralItem*>(item_)),
+        base::Unretained(this)));
+  } else {
+    SetCallback(base::BindRepeating(&BirchItem::PerformAction,
+                                    base::Unretained(item_)));
+  }
 
   const BirchAddonType addon_type = item_->GetAddonType();
   // Add add-ons according to the add-on type.

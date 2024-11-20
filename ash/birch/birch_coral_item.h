@@ -17,6 +17,8 @@
 
 namespace ash {
 
+class BirchChipButtonBase;
+
 class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
   BirchCoralItem(const std::u16string& coral_title,
@@ -28,6 +30,9 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
   BirchCoralItem& operator=(const BirchCoralItem&);
   bool operator==(const BirchCoralItem& rhs) const;
   ~BirchCoralItem() override;
+
+  // The callback function for the press on the given `birch_chip_button`.
+  void LaunchGroup(BirchChipButtonBase* birch_chip_button);
 
   const base::Token& group_id() const { return group_id_; }
 
