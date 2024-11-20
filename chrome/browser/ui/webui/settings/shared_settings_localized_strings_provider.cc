@@ -129,16 +129,8 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   AddLiveCaptionSectionStrings(html_source);
 }
 
-// Live Caption subtitle depends on whether multi-language is supported, and on
-// Ash also depends on whether system-wide live caption is enabled.
+// Live Caption subtitle depends on whether multi-language is supported.
 int GetLiveCaptionSubtitle(const bool multi_language) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!ash::features::IsSystemLiveCaptionEnabled()) {
-    return multi_language
-               ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY
-               : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_BROWSER_ONLY_ENGLISH_ONLY;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return multi_language
              ? IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE
              : IDS_SETTINGS_CAPTIONS_ENABLE_LIVE_CAPTION_SUBTITLE_ENGLISH_ONLY;

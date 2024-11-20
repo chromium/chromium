@@ -2804,16 +2804,6 @@ BASE_FEATURE(kSystemJapanesePhysicalTyping,
              "SystemJapanesePhysicalTyping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables live captions for sounds produced outside of the browser (e.g. by
-// Android or linux apps).
-BASE_FEATURE(kSystemLiveCaption,
-             "SystemLiveCaption",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// Restricts the system live caption feature to the intended target population.
-BASE_FEATURE(kFeatureManagementSystemLiveCaption,
-             "FeatureManagementSystemLiveCaption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Replaces uses of `SystemNudge` with the new `AnchoredNudge` component.
 BASE_FEATURE(kSystemNudgeMigration,
              "SystemNudgeMigration",
@@ -4564,13 +4554,6 @@ bool IsSmartReaderEnabled() {
 
 bool IsSuspendStateMachineEnabled() {
   return base::FeatureList::IsEnabled(kSuspendStateMachine);
-}
-
-bool IsSystemLiveCaptionEnabled() {
-  // TODO(b/295244553): Once `kSystemLiveCaption` is enabled by default, switch
-  // to `&&`.
-  return base::FeatureList::IsEnabled(kSystemLiveCaption) ||
-         base::FeatureList::IsEnabled(kFeatureManagementSystemLiveCaption);
 }
 
 bool IsSystemNudgeMigrationEnabled() {

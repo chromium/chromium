@@ -285,8 +285,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
   if (crostini_manager)
     crostini_manager->MaybeUpdateCrostini();
 
-  if (::captions::IsLiveCaptionFeatureSupported() &&
-      features::IsSystemLiveCaptionEnabled()) {
+  if (::captions::IsLiveCaptionFeatureSupported()) {
     SystemLiveCaptionServiceFactory::GetInstance()->GetForProfile(profile);
   }
 

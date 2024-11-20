@@ -111,7 +111,6 @@ class SystemLiveCaptionServiceTestBase
   SystemLiveCaptionServiceTestBase() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOnDeviceSpeechRecognition,
-                              features::kSystemLiveCaption,
                               media::kLiveCaptionMultiLanguage},
         /*disabled_features=*/{});
   }

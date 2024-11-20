@@ -902,8 +902,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSuspendStateMachine);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSystemJapanesePhysicalTyping);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kSystemLiveCaption);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSystemShortcutBehavior);
 enum class SystemShortcutBehaviorParam {
   kNormalShortcutBehavior,
@@ -915,8 +913,6 @@ enum class SystemShortcutBehaviorParam {
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<SystemShortcutBehaviorParam>
     kSystemShortcutBehaviorParam;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kFeatureManagementSystemLiveCaption);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSystemNudgeMigration);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kSystemTrayShadow);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1383,7 +1379,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsStartAssistantAudioDecoderOnDemandEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStoreOwnerKeyInPrivateSlotEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSuspendStateMachineEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemLiveCaptionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemNudgeMigrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemTrayShadowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
