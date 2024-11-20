@@ -1839,7 +1839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.RegExpBacktracks" units="backtracks"
-    expires_after="2025-01-01">
+    expires_after="2026-01-01">
   <owner>jgruber@chromium.org</owner>
   <owner>pthier@chromium.org</owner>
   <summary>
