@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
-#import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_view_controller.h"
 
 @protocol PrimaryToolbarViewControllerDelegate;

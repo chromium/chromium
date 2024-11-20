@@ -190,6 +190,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/side_swipe/ui_bundled",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
@@ -237,7 +238,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/password/password_settings",
-    "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:utils",
     "//ios/chrome/browser/ui/toolbar",
@@ -290,8 +290,8 @@ source_set("ui_bundled") {
     "//url",
 
     # Fake dependencies to break cycles
+    "//ios/chrome/browser/sharing/ui_bundled:sharing_internal",
     "//ios/chrome/browser/ui/settings",
-    "//ios/chrome/browser/ui/sharing:sharing_internal",
   ]
   frameworks = [
     "MessageUI.framework",
@@ -366,6 +366,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
+    "//ios/chrome/browser/sharing/ui_bundled",
     "//ios/chrome/browser/side_swipe/ui_bundled",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
@@ -381,7 +382,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/fullscreen:internal",
     "//ios/chrome/browser/ui/fullscreen/test",
     "//ios/chrome/browser/ui/popup_menu",
-    "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator",
     "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar/test",

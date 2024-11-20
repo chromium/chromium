@@ -13,7 +13,7 @@ include_rules = [
   "+ios/chrome/browser/ui/toolbar/buttons",
   "+ios/chrome/browser/ui/lens",
   "+ios/chrome/browser/ui/toolbar/public",
-  "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/push_notification/ui_bundled",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
   "+ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h",

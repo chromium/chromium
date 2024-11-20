@@ -1,7 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/favicon/ui_bundled",
   "+ios/chrome/browser/menu/ui_bundled",
-  "+ios/chrome/browser/ui/sharing",
+  "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/ui/toolbar/buttons",
   "+ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h",
   "+third_party/omnibox_proto",

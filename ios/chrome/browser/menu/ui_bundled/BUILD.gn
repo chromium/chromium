@@ -47,7 +47,7 @@ source_set("tab_context_menu_delegate") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/sharing/ui_bundled",
   ]
 }
 

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/ui/sharing/sharing_scenario.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_scenario.h"
 
 class GURL;
 class TabGroup;
