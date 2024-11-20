@@ -180,10 +180,10 @@ TEST_F(PopOutHandlerTest, PopOutAndEndPopOut) {
   MockToolbarController toolbar_controller(
       std::vector<ToolbarController::ResponsiveElementInfo>{
           ToolbarController::ResponsiveElementInfo(
-              ToolbarController::ElementIdInfo{kDummyButton, 0,
-                                               &vector_icons::kErrorIcon,
-                                               kDummyActivateView},
-              false, kDummyObservedView)},
+              ToolbarController::ElementIdInfo(
+                  kDummyButton, 0, &vector_icons::kErrorIcon,
+                  kDummyActivateView, kDummyObservedView),
+              false)},
       std::vector<ui::ElementIdentifier>({kDummyButton}), 1, container_view(),
       overflow_button(), test_delegate.get());
 
@@ -278,20 +278,20 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
     toolbar_controller_ = std::make_unique<TestToolbarController>(
         std::vector<ToolbarController::ResponsiveElementInfo>{
             {ToolbarController::ResponsiveElementInfo(
-                 ToolbarController::ElementIdInfo{kDummyButton1, 0,
-                                                  &vector_icons::kErrorIcon,
-                                                  kDummyActivateView},
-                 false, kDummyObservedView),
+                 ToolbarController::ElementIdInfo(
+                     kDummyButton1, 0, &vector_icons::kErrorIcon,
+                     kDummyActivateView, kDummyObservedView),
+                 false),
              ToolbarController::ResponsiveElementInfo(
-                 ToolbarController::ElementIdInfo{kDummyButton2, 0,
-                                                  &vector_icons::kErrorIcon,
-                                                  kDummyActivateView},
-                 true, kDummyObservedView),
+                 ToolbarController::ElementIdInfo(
+                     kDummyButton2, 0, &vector_icons::kErrorIcon,
+                     kDummyActivateView, kDummyObservedView),
+                 true),
              ToolbarController::ResponsiveElementInfo(
-                 ToolbarController::ElementIdInfo{kDummyButton3, 0,
-                                                  &vector_icons::kErrorIcon,
-                                                  kDummyActivateView},
-                 true, kDummyObservedView)}},
+                 ToolbarController::ElementIdInfo(
+                     kDummyButton3, 0, &vector_icons::kErrorIcon,
+                     kDummyActivateView, kDummyObservedView),
+                 true)}},
         std::vector<ui::ElementIdentifier>(
             {kDummyButton3, kDummyButton2, kDummyButton1}),
         kElementFlexOrderStart, toolbar_container_view_, overflow_button_,

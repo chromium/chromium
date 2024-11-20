@@ -142,7 +142,6 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest {
   }
 
   auto CheckIsManagedByController(ui::ElementIdentifier id) {
-    ToolbarController::ElementIdInfo d;
     return Check(
         [this, id]() {
           for (const auto& el : responsive_elements_) {
