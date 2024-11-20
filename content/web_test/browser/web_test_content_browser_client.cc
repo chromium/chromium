@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
@@ -173,11 +174,10 @@ void CreateChildProcessCrashWatcher() {
         const ChildProcessData& data,
         const ChildProcessTerminationInfo& info) override {
       // Child processes should not crash in web tests.
-      LOG(ERROR) << "Child process crashed with\n"
-                    "   process_type: "
-                 << data.process_type << "\n"
-                 << "   name: " << data.name;
-      CHECK(false);
+      NOTREACHED() << "Child process crashed with\n"
+                      "   process_type: "
+                   << data.process_type << "\n"
+                   << "   name: " << data.name;
     }
   };
 

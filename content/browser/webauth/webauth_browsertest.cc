@@ -19,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -501,12 +502,11 @@ class WebAuthBrowserTestContentBrowserClient
 
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      CHECK(false);
+      NOTREACHED();
     }
 
     std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-      CHECK(false);
-      return nullptr;
+      NOTREACHED();
     }
 
     void CreateLoaderAndStart(
@@ -534,12 +534,11 @@ class WebAuthBrowserTestContentBrowserClient
    public:
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      CHECK(false);
+      NOTREACHED();
     }
 
     std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-      CHECK(false);
-      return nullptr;
+      NOTREACHED();
     }
 
     void CreateLoaderAndStart(

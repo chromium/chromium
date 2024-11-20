@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -232,10 +233,9 @@ bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
       SetupNetworkSandboxParameters(compiler, command_line);
       break;
     case sandbox::mojom::Sandbox::kNoSandbox:
-      CHECK(false) << "Unhandled parameters for sandbox_type "
+      NOTREACHED() << "Unhandled parameters for sandbox_type "
                    << static_cast<int>(sandbox_type);
-      break;
-    // Setup parameters for sandbox types handled by embedders below.
+      // Setup parameters for sandbox types handled by embedders below.
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif

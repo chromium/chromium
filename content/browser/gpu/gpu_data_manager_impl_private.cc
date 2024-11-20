@@ -9,6 +9,7 @@
 
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -531,7 +532,7 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
 
 #if (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
-    CHECK(false) << "GPU acceleration is required on certain platforms!";
+    NOTREACHED() << "GPU acceleration is required on certain platforms!";
 #endif
   } else if (features::IsSkiaGraphiteEnabled(command_line)) {
     // If Graphite is enabled, fall back to Ganesh/GL on platforms that do not

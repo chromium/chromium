@@ -11,6 +11,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
+#include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -1450,7 +1451,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
       policy->LogKilledProcessOriginLock(process->GetID());
-      CHECK(false) << "Trying to lock a process to " << lock_to_set.ToString()
+      NOTREACHED() << "Trying to lock a process to " << lock_to_set.ToString()
                    << " but the process is already locked to "
                    << process_lock.ToString();
     } else {
@@ -1464,7 +1465,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
       policy->LogKilledProcessOriginLock(process->GetID());
-      CHECK(false) << "Trying to commit non-isolated site " << site_info_
+      NOTREACHED() << "Trying to commit non-isolated site " << site_info_
                    << " in process locked to " << process_lock.ToString();
     } else if (process_lock.is_invalid()) {
       // Update the process lock state to signal that the process has been

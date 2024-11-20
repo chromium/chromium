@@ -6,6 +6,7 @@
 
 #include <dwrite.h>
 #include <stdint.h>
+
 #include <map>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
@@ -67,8 +69,9 @@ SC_HANDLE WINAPI OpenServiceWPatch(SC_HANDLE sc_manager,
 
 BOOL WINAPI CloseServiceHandlePatch(SC_HANDLE service_handle) {
   if (service_handle != reinterpret_cast<SC_HANDLE>(kFakeServiceHandle) &&
-      service_handle != reinterpret_cast<SC_HANDLE>(kFakeSCMHandle))
-    CHECK(false);
+      service_handle != reinterpret_cast<SC_HANDLE>(kFakeSCMHandle)) {
+    NOTREACHED();
+  }
   ::SetLastError(0);
   return TRUE;
 }
@@ -76,8 +79,9 @@ BOOL WINAPI CloseServiceHandlePatch(SC_HANDLE service_handle) {
 BOOL WINAPI StartServiceWPatch(SC_HANDLE service,
                                DWORD args,
                                const wchar_t** arg_vectors) {
-  if (service != reinterpret_cast<SC_HANDLE>(kFakeServiceHandle))
-    CHECK(false);
+  if (service != reinterpret_cast<SC_HANDLE>(kFakeServiceHandle)) {
+    NOTREACHED();
+  }
   ::SetLastError(ERROR_ACCESS_DENIED);
   return FALSE;
 }

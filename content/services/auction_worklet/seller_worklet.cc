@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -386,8 +387,7 @@ bool SetDataVersion(
     case SellerWorklet::SignalsOriginRelation::
         kUnknownPermissionCrossOriginSignals:
       // This should be turned into permitted or forbidden by now.
-      CHECK(false);
-      return false;
+      NOTREACHED();
 
     case SellerWorklet::SignalsOriginRelation::kPermittedCrossOriginSignals:
       return browser_signals_dict.Set("crossOriginDataVersion",
@@ -395,8 +395,7 @@ bool SetDataVersion(
 
     case SellerWorklet::SignalsOriginRelation::kForbiddenCrossOriginSignals:
       // We shouldn't have a fetch to get a version from if it's forbidden.
-      CHECK(false);
-      return false;
+      NOTREACHED();
   }
 }
 

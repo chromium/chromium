@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -507,8 +508,7 @@ class NetworkResponder {
     // that request .well-known URLs.
     if (params->url_request.url.path_piece() ==
         "/.well-known/interest-group/permissions/") {
-      CHECK(false);
-      return false;
+      NOTREACHED();
     }
 
     // Check if this is a non-update error.

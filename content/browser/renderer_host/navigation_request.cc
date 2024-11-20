@@ -4181,7 +4181,7 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         } else if (GetOriginToCommit()) {
           precursor = GetOriginToCommit()->GetTupleOrPrecursorTupleIfOpaque();
         } else {
-          CHECK(false) << "No origin-to-commit for sandboxed url = "
+          NOTREACHED() << "No origin-to-commit for sandboxed url = "
                        << GetURL();
         }
 
@@ -4605,11 +4605,9 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // should never be NONE here.
     DCHECK_NE(AssociatedRenderFrameHostType::NONE, associated_rfh_type_);
 
-    if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            GetRenderFrameHost(), GetUrlInfo(),
-            /* is_renderer_initiated_check */ false)) {
-      CHECK(false);
-    }
+    CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
+        GetRenderFrameHost(), GetUrlInfo(),
+        /* is_renderer_initiated_check */ false));
   } else {
     render_frame_host_ = std::nullopt;
   }
@@ -5096,11 +5094,9 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
   // enabled for this failed navigation. It is possible for subframe error page
   // to be committed in a WebUI process as shown in https://crbug.com/944086.
   if (frame_tree_node_->IsErrorPageIsolationEnabled()) {
-    if (!Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
-            GetRenderFrameHost(), GetUrlInfo(),
-            /* is_renderer_initiated_check */ false)) {
-      CHECK(false);
-    }
+    CHECK(Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
+        GetRenderFrameHost(), GetUrlInfo(),
+        /* is_renderer_initiated_check */ false));
   }
 
   has_stale_copy_in_cache_ = exists_in_cache;

@@ -50,6 +50,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
@@ -2830,7 +2831,7 @@ void RenderProcessHostImpl::ShutdownForBadMessage(
   if (run_renderer_in_process()) {
     // In single process mode it is better if we don't suicide but just
     // crash.
-    CHECK(false);
+    NOTREACHED();
   }
 
   // We kill the renderer but don't include a NOTREACHED, because we want the
@@ -4362,7 +4363,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
                                  process_lock.ToString());
       SCOPED_CRASH_KEY_STRING256("Bug40889283", "site_info",
                                  site_info.GetDebugString());
-      CHECK(false) << "IsSuitableHost found a process that is marked as unused "
+      NOTREACHED() << "IsSuitableHost found a process that is marked as unused "
                       "but has a valid process lock: "
                    << process_lock;
     }
@@ -4779,7 +4780,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
                                    site_info.GetDebugString());
     ChildProcessSecurityPolicyImpl::GetInstance()->LogKilledProcessOriginLock(
         render_process_host->GetID());
-    CHECK(false) << "Unsuitable process reused for site " << site_info;
+    NOTREACHED() << "Unsuitable process reused for site " << site_info;
   }
 
   // Otherwise, create a new RenderProcessHost.

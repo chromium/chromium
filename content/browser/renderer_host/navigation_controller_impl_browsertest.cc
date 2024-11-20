@@ -18,6 +18,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14812,8 +14813,7 @@ class NavigationControllerAlertDialogBrowserTest
   // WebContentsDelegate:
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override {
-    CHECK(false);
-    return nullptr;
+    NOTREACHED();
   }
 
   bool callback_called() const { return callback_called_; }

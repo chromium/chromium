@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_data_pipe_tee.h"
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "services/network/public/cpp/features.h"
 
@@ -183,7 +184,7 @@ void PrefetchDataPipeTee::OnReadable(MojoResult result,
         NOTREACHED();
     }
   } else if (rv != MOJO_RESULT_SHOULD_WAIT) {
-    CHECK(false) << "Unhandled MojoResult: " << rv;
+    NOTREACHED() << "Unhandled MojoResult: " << rv;
   }
 }
 

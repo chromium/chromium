@@ -5,13 +5,16 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 
 #include <string.h>
+
 #include <algorithm>
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/immediate_crash.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -559,8 +562,7 @@ Response BrowserHandler::GetBrowserCommandLine(
 }
 
 Response BrowserHandler::Crash() {
-  CHECK(false);
-  return Response::Success();
+  base::ImmediateCrash();
 }
 
 Response BrowserHandler::CrashGpuProcess() {

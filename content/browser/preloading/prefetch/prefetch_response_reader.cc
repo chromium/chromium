@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_response_reader.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -345,17 +346,13 @@ void PrefetchResponseReader::OnComplete(
       load_state_ = LoadState::kFailed;
       break;
     case LoadState::kRedirectHandled:
-      CHECK(false);
-      break;
+      NOTREACHED();
     case LoadState::kCompleted:
-      CHECK(false);
-      break;
+      NOTREACHED();
     case LoadState::kFailed:
-      CHECK(false);
-      break;
+      NOTREACHED();
     case LoadState::kFailedRedirect:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   CHECK(!response_complete_time_);

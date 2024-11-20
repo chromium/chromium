@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -60,11 +61,7 @@ class ServiceWorkerNewScriptLoader::WrappedIOBuffer
   ~WrappedIOBuffer() override = default;
 
   // This is to make sure that the vtable is not merged with other classes.
-  virtual void dummy() {
-    // TODO(crbug.com/40220780): Change back to NOTREACHED() once the
-    // cause of the bug is identified.
-    CHECK(false);  // NOTREACHED
-  }
+  virtual void dummy() { NOTREACHED(); }
 };
 
 std::unique_ptr<ServiceWorkerNewScriptLoader>

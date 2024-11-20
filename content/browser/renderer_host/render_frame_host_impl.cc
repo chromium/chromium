@@ -34,6 +34,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/kill.h"
 #include "base/rand_util.h"
@@ -7101,7 +7102,7 @@ void RenderFrameHostImpl::AllowBindings(BindingsPolicySet bindings) {
                         process_lock.lock_url().scheme())) {
       SCOPED_CRASH_KEY_STRING256("AllowBindings", "process_lock",
                                  process_lock.ToString());
-      CHECK(false) << "Calling AllowBindings for a process not locked to WebUI:"
+      NOTREACHED() << "Calling AllowBindings for a process not locked to WebUI:"
                    << process_lock;
     }
   }
