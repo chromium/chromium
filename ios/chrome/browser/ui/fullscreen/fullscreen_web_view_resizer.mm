@@ -84,7 +84,7 @@
 // the application is in fullscreen, 1 that it is out of fullscreen.
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   if (!self.webState || !self.webState->GetView().superview ||
-      self.model->IsForceFullscreenMode()) {
+      !self.model->IsInsetsUpdateEnabled()) {
     return;
   }
 

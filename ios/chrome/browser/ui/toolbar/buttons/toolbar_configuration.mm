@@ -77,4 +77,8 @@
   }
 }
 
+- (NSString*)accessibilityLabelForCollapsedPrimaryToolbarButton {
+  return l10n_util::GetNSString(IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON);
+}
+
 @end

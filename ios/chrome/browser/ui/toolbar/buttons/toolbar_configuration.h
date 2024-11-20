@@ -58,6 +58,10 @@
 // button, based on whether the current tab is grouped or not.
 - (NSString*)accessibilityLabelForOpenNewTabButtonInGroup:(BOOL)inGroup;
 
+// Returns accessibility label of the collapsed toolbar button in primary
+// toolbar.
+- (NSString*)accessibilityLabelForCollapsedPrimaryToolbarButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_BUTTONS_TOOLBAR_CONFIGURATION_H_

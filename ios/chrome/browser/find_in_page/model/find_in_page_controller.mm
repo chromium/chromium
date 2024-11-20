@@ -89,6 +89,11 @@ NSString* gSearchTerm;
 
 - (void)disableFindInPage {
   _findInPageManager->StopFinding();
+
+  // When pulling to refresh the webpage during FIP,
+  // `userDismissedFindNavigatorForManager` will not be called. We need to
+  // handle the fullscreen exit here in this case.
+  [self exitForceFullscreenMode];
 }
 
 - (BOOL)canFindInPage {
@@ -116,7 +121,7 @@ NSString* gSearchTerm;
   }
 }
 
-- (void)exitFullscreenMode {
+- (void)exitForceFullscreenMode {
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(_webState->GetBrowserState());
   BOOL incognito = profile->IsOffTheRecord();
@@ -128,7 +133,7 @@ NSString* gSearchTerm;
       incognito);
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(browser);
-  fullscreenController->ExitFullscreen();
+  fullscreenController->ExitForceFullscreenMode();
 }
 
 #pragma mark - CRWFindInPageManagerDelegate
@@ -160,7 +165,7 @@ NSString* gSearchTerm;
     (web::AbstractFindInPageManager*)manager {
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
-  [self exitFullscreenMode];
+  [self exitForceFullscreenMode];
 }
 
 - (void)detachFromWebState {

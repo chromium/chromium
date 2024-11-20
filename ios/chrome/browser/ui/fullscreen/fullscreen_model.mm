@@ -293,11 +293,24 @@ UIEdgeInsets FullscreenModel::GetWebViewSafeAreaInsets() const {
 }
 
 void FullscreenModel::SetForceFullscreenMode(bool force_fullscreen_mode) {
-  is_force_fullscreen_mode_ = force_fullscreen_mode;
+  if (force_fullscreen_mode) {
+    force_fullscreen_mode_counter_++;
+  } else {
+    force_fullscreen_mode_counter_--;
+  }
+  DCHECK_GE(force_fullscreen_mode_counter_, 0U);
 }
 
 bool FullscreenModel::IsForceFullscreenMode() const {
-  return is_force_fullscreen_mode_;
+  return force_fullscreen_mode_counter_ > 0;
+}
+
+void FullscreenModel::SetInsetsUpdateEnabled(bool enabled) {
+  insets_update_enabled_ = enabled;
+}
+
+bool FullscreenModel::IsInsetsUpdateEnabled() const {
+  return insets_update_enabled_;
 }
 
 FullscreenModel::ScrollAction FullscreenModel::ActionForScrollFromOffset(

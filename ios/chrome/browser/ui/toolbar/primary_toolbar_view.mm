@@ -382,6 +382,9 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   self.collapsedToolbarButton = [[UIButton alloc] init];
   self.collapsedToolbarButton.translatesAutoresizingMaskIntoConstraints = NO;
   self.collapsedToolbarButton.hidden = YES;
+  self.collapsedToolbarButton.accessibilityLabel =
+      [self.buttonFactory.toolbarConfiguration
+              accessibilityLabelForCollapsedPrimaryToolbarButton];
   [self addSubview:self.collapsedToolbarButton];
 }
 

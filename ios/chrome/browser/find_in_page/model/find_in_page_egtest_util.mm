@@ -6,14 +6,18 @@
 
 #import <sstream>
 
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+
+using chrome_test_util::WebStateScrollViewMatcher;
 
 namespace {
 
@@ -38,6 +42,7 @@ std::string FindInPageTestContent() {
       << "</p>";
   oss << "  <p dir=\"RTL\">" << kFindInPageTestRTLText << "</p>";
   oss << "  <div>";
+  oss << "<div style=\"height: 2000px; background-color: lightgray;\"/>";
   oss << "</div>";
   return oss.str();
 }
@@ -823,6 +828,40 @@ id<GREYMatcher> PasteButton() {
         assertWithMatcher:grey_notVisible()];
     [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
+// Tests that FIP works properly with bottom omnibox.
+- (void)helperTestFindInPageWithBottomOmnibox {
+  if (@available(iOS 16.1.1, *)) {
+    // Set bottom Omnibox.
+    [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+
+    // Load test page.
+    [self setUpTestServersForWebPageTest];
+    GURL destinationURL = self.testServer->GetURL(kFindInPageTestURL);
+    [ChromeEarlGrey loadURL:destinationURL];
+
+    [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+    // Open FIP with Overflow menu and check it is visible and the share button
+    // is not visible.
+    [self.delegate openFindInPageWithOverflowMenu];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        [self.delegate findInPageInputField]];
+
+    // Hide keyboard.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+
+    // Scroll up and down the page.
+    [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+    [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
+        performAction:grey_scrollInDirection(kGREYDirectionUp, 150)];
+
+    // Ensure that the bottom Omnibox is not visible.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxAtBottom()]
+        assertWithMatcher:grey_notVisible()];
   }
 }
 

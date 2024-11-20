@@ -140,7 +140,8 @@
 /// Collapses secondary toolbar when it's moved above the keyboard.
 - (void)collapseForKeyboard {
   if (_fullscreenController) {
-    _fullscreenController->EnterForceFullscreenMode();
+    _fullscreenController->EnterForceFullscreenMode(
+        /* insets_update_enabled */ false);
   }
   self.view.locationBarTopConstraint.constant = 0;
   self.view.bottomSeparator.alpha = 1.0;

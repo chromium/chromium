@@ -6725,6 +6725,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENMANAGEINNEWTAB" desc="The iOS menu item for managing a selected item. [iOS only]">
         Manage
       </message>
+      <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
+        Collapsed primary toolbar button
+      </message>
     </messages>
   </release>
 </grit>

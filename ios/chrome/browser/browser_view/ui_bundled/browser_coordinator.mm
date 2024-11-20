@@ -2495,9 +2495,11 @@ enum class ToolbarKind {
   auto* helper = FindTabHelper::FromWebState(activeWebState);
 
   if (!helper->IsFindUIActive()) {
-    // Hide the Omnibox if possible, so as not to confuse the user as to what
-    // text field is currently focused.
-    _fullscreenController->EnterFullscreen();
+    // Hide the Omnibox to avoid user's confusion about which text field is
+    // currently focused. The mode is force to avoid the bottom Omnibox
+    // appearing above the find in page collapsed toolbar when scrolling.
+    _fullscreenController->EnterForceFullscreenMode(
+        /* insets_update_enabled */ true);
     helper->SetFindUIActive(true);
   }
 

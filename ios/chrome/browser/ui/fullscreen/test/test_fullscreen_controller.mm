@@ -92,9 +92,11 @@ bool TestFullscreenController::IsForceFullscreenMode() const {
   return model_ ? model_->IsForceFullscreenMode() : false;
 }
 
-void TestFullscreenController::EnterForceFullscreenMode() {
+void TestFullscreenController::EnterForceFullscreenMode(
+    bool insets_update_enabled) {
   if (model_ && !model_->IsForceFullscreenMode()) {
     model_->SetForceFullscreenMode(true);
+    model_->SetInsetsUpdateEnabled(insets_update_enabled);
     model_->IncrementDisabledCounter();
     model_->ForceEnterFullscreen();
   }

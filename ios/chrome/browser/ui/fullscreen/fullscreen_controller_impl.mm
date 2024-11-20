@@ -165,11 +165,10 @@ bool FullscreenControllerImpl::IsForceFullscreenMode() const {
   return model_.IsForceFullscreenMode();
 }
 
-void FullscreenControllerImpl::EnterForceFullscreenMode() {
-  if (IsForceFullscreenMode()) {
-    return;
-  }
+void FullscreenControllerImpl::EnterForceFullscreenMode(
+    bool insets_update_enabled) {
   model_.SetForceFullscreenMode(true);
+  model_.SetInsetsUpdateEnabled(insets_update_enabled);
   // Disable fullscreen because:
   // - It interfers with the animation when moving the secondary toolbar above
   // the keyboard.
@@ -184,6 +183,7 @@ void FullscreenControllerImpl::ExitForceFullscreenMode() {
   }
   DecrementDisabledCounter();
   model_.SetForceFullscreenMode(false);
+  model_.SetInsetsUpdateEnabled(true);
   mediator_.ExitFullscreenWithoutAnimation();
 }
 

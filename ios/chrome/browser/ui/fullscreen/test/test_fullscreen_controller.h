@@ -40,7 +40,7 @@ class TestFullscreenController : public FullscreenController {
   void ExitFullscreen() override;
   void ExitFullscreenWithoutAnimation() override;
   bool IsForceFullscreenMode() const override;
-  void EnterForceFullscreenMode() override;
+  void EnterForceFullscreenMode(bool insets_update_enabled) override;
   void ExitForceFullscreenMode() override;
   void ResizeHorizontalViewport() override;
 
