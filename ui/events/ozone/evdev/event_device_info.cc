@@ -1017,10 +1017,14 @@ bool EventDeviceInfo::IsInternalUSB(input_id id) {
     usb_internal_ids.insert(
         usb_internal_ids.end(),
         {
-            // ILI Technology Corp., Touchscreen PID (HP Engage One Pro AIO)
-            {0x222a, 0x016f},
+            // HP, Touchscreen PID (HP Engage One Essential AIO)
+            {0x03f0, 0x0a85},
             // D-Wav Scientific Co., Ltd, eGalaxTouch PID (Advantech UTC-520F)
             {0x0eef, 0xc000},
+            // ILI Technology Corp., Touchscreen PID (HP Engage One Pro AIO)
+            {0x222a, 0x016f},
+            // ILI Technology Corp., Touchscreen PID (HP Engage One Pro G2)
+            {0x222a, 0x5532},
         });
   }
 #endif
