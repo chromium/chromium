@@ -172,6 +172,10 @@ class Traversal {
                                const Node* stay_within,
                                MatchFunc);
 
+  // Like previous, but skips children.
+  static ElementType* PreviousSkippingChildren(const Node&,
+                                               const Node* stay_within);
+
   // Like next, but skips children.
   static ElementType* NextSkippingChildren(const Node&);
   static ElementType* NextSkippingChildren(const Node&,
@@ -481,6 +485,22 @@ inline ElementType* Traversal<ElementType>::Previous(
   while (element && !is_match(*element))
     element = Traversal<ElementType>::Previous(*element, stay_within);
   return element;
+}
+
+template <class ElementType>
+inline ElementType* Traversal<ElementType>::PreviousSkippingChildren(
+    const Node& current,
+    const Node* stay_within) {
+  for (Node* node =
+           NodeTraversal::PreviousSkippingChildren(current, stay_within);
+       node;
+       node = NodeTraversal::PreviousSkippingChildren(*node, stay_within)) {
+    if (auto* element = DynamicTo<ElementType>(*node)) {
+      return element;
+    }
+  }
+
+  return nullptr;
 }
 
 template <class ElementType>

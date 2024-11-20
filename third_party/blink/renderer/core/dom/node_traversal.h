@@ -64,6 +64,9 @@ class CORE_EXPORT NodeTraversal {
   static Node* NextSkippingChildren(const Node&);
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);
 
+  // Like previous, but skips children and starts with the next sibling.
+  static Node* PreviousSkippingChildren(const Node&, const Node* stay_within);
+
   static Node* FirstWithin(const Node& current) { return current.firstChild(); }
 
   static Node* LastWithin(const ContainerNode&);
@@ -123,6 +126,7 @@ class CORE_EXPORT NodeTraversal {
   static Node* PreviousSibling(const Node& node) {
     return node.previousSibling();
   }
+  static Node* PreviousAncestorSibling(const Node&, const Node* stay_within);
   static ContainerNode* Parent(const Node& node) { return node.parentNode(); }
   static Node* CommonAncestor(const Node& node_a, const Node& node_b);
   static unsigned Index(const Node& node) { return node.NodeIndex(); }
@@ -228,6 +232,19 @@ inline Node* NodeTraversal::NextSkippingChildren(const Node& current,
     return current.nextSibling();
   }
   return NextAncestorSibling(current, stay_within);
+}
+
+inline Node* NodeTraversal::PreviousSkippingChildren(const Node& current,
+                                                     const Node* stay_within) {
+  if (current == stay_within) {
+    return nullptr;
+  }
+
+  if (current.HasPreviousSibling()) {
+    return current.previousSibling();
+  }
+
+  return PreviousAncestorSibling(current, stay_within);
 }
 
 // Note that `HighestAncestorOrSelf` is used most commonly in `RemovedFrom` and

@@ -5897,6 +5897,8 @@ crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/seman
 crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-text-only.tentative.html [ Failure ]
 crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/tab-closes-listbox.tentative.html [ Failure ]
 crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/tab-closes-listbox.tentative.html [ Failure ]
+crbug.com/335458492 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
+crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-focus-change-for-hidden-options.tentative.html [ Failure ]
 
 crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 
