@@ -1459,6 +1459,7 @@ ci.builder(
     name = "android-cronet-arm64-gn2bp-dbg",
     description_html = "Builds the gn2bp verification workflow.",
     schedule = "0 */6 * * *",  # Run every 6 hours.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
