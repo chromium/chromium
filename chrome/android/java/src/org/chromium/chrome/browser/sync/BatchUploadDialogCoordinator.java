@@ -45,8 +45,8 @@ public final class BatchUploadDialogCoordinator {
     private final PropertyModel mModel;
     private final Context mContext;
     private final MaterialSwitchWithTitleAndSummary mBookmarkSwitch;
-    private final MaterialSwitchWithTitleAndSummary mPasswordsSwitch;
     private final MaterialSwitchWithTitleAndSummary mReadingListSwitch;
+    private final MaterialSwitchWithTitleAndSummary mPasswordsSwitch;
 
     @MainThread
     public static void show(
@@ -105,21 +105,6 @@ public final class BatchUploadDialogCoordinator {
                         R.plurals.account_settings_bulk_upload_dialog_bookmarks,
                         localDataDescriptionsMap);
 
-        mPasswordsSwitch =
-                updateDataTypeSwitch(
-                        context,
-                        view,
-                        DataType.PASSWORDS,
-                        R.id.account_settings_bulk_upload_dialog_passwords,
-                        R.plurals.account_settings_bulk_upload_dialog_passwords,
-                        localDataDescriptionsMap);
-        // If the Passwords switch is shown, and the Bookmarks switch is shown above, then the
-        // Passwords top separator should be shown.
-        if (mPasswordsSwitch != null && mBookmarkSwitch != null) {
-            view.findViewById(R.id.account_settings_bulk_upload_dialog_passwords_top_separator)
-                    .setVisibility(View.VISIBLE);
-        }
-
         mReadingListSwitch =
                 updateDataTypeSwitch(
                         context,
@@ -128,10 +113,25 @@ public final class BatchUploadDialogCoordinator {
                         R.id.account_settings_bulk_upload_dialog_reading_list,
                         R.plurals.account_settings_bulk_upload_dialog_reading_list,
                         localDataDescriptionsMap);
-        // If the Reading List switch is shown, and there's at least one switch shown above, then
-        // the Reading List top separator should be shown.
-        if (mReadingListSwitch != null && (mPasswordsSwitch != null || mBookmarkSwitch != null)) {
+        // If the Reading List switch is shown, and the Bookmarks switch is shown above, then the
+        // Reading List top separator should be shown.
+        if (mReadingListSwitch != null && mBookmarkSwitch != null) {
             view.findViewById(R.id.account_settings_bulk_upload_dialog_reading_list_top_separator)
+                    .setVisibility(View.VISIBLE);
+        }
+
+        mPasswordsSwitch =
+                updateDataTypeSwitch(
+                        context,
+                        view,
+                        DataType.PASSWORDS,
+                        R.id.account_settings_bulk_upload_dialog_passwords,
+                        R.plurals.account_settings_bulk_upload_dialog_passwords,
+                        localDataDescriptionsMap);
+        // If the Passwords switch is shown, and there's at least one switch shown above, then the
+        // Passwords top separator should be shown.
+        if (mPasswordsSwitch != null && (mReadingListSwitch != null || mBookmarkSwitch != null)) {
+            view.findViewById(R.id.account_settings_bulk_upload_dialog_passwords_top_separator)
                     .setVisibility(View.VISIBLE);
         }
     }
