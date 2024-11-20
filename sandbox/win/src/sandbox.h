@@ -176,7 +176,7 @@ class [[clang::lto_visibility_public]] BrokerServices {
       MitigationFlags additional_flags) = 0;
 
  protected:
-  ~BrokerServices() {}
+  virtual ~BrokerServices() = default;
 };
 
 // TargetServices models the current process from the perspective

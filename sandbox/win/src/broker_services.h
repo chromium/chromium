@@ -43,7 +43,7 @@ class BrokerServicesBase final : public BrokerServices,
   BrokerServicesBase(const BrokerServicesBase&) = delete;
   BrokerServicesBase& operator=(const BrokerServicesBase&) = delete;
 
-  ~BrokerServicesBase();
+  ~BrokerServicesBase() override;
 
   // BrokerServices interface.
   ResultCode Init(std::unique_ptr<BrokerServicesDelegate> delegate) override;
