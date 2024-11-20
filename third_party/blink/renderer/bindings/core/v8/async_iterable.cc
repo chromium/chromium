@@ -124,9 +124,8 @@ AsyncIterationSourceBase::AsyncIterationSourceBase(ScriptState* script_state,
       on_rejected_function_(
           MakeGarbageCollected<RunRejectStepsCallable>(this)) {}
 
-v8::Local<v8::Promise> AsyncIterationSourceBase::Next(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLAny> AsyncIterationSourceBase::Next(
+    ScriptState* script_state) {
   ScriptPromise<IDLAny> next_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
@@ -144,20 +143,18 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Next(
   }
   ongoing_promise_ = next_promise;
   // step 12. Return object's ongoing promise.
-  return next_promise.V8Promise();
+  return next_promise;
 }
 
-v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
+ScriptPromise<IDLAny> AsyncIterationSourceBase::Return(
     ScriptState* script_state,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
+    ScriptValue value) {
   ScriptPromise<IDLAny> next_promise;
-  ScriptPromise<IDLAny> return_steps_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
     // step 10.2. Let onSettled be CreateBuiltinFunction(returnSteps, << >>).
-    auto* on_settled = MakeGarbageCollected<RunReturnStepsCallable>(
-        this, ScriptValue(script_state->GetIsolate(), value));
+    auto* on_settled =
+        MakeGarbageCollected<RunReturnStepsCallable>(this, value);
     // step 10.3. Perform PerformPromiseThen(ongoingPromise, onSettled,
     //     onSettled, afterOngoingPromiseCapability).
     // step 11.4. Set object's ongoing promise to
@@ -168,19 +165,17 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     // step 11. Otherwise:
     // step 11.1. Set object's ongoing promise to the result of
     //     running returnSteps.
-    next_promise = RunReturnSteps(
-        script_state, ScriptValue(script_state->GetIsolate(), value));
+    next_promise = RunReturnSteps(script_state, value);
   }
   ongoing_promise_ = next_promise;
 
   // step 13. Let onFulfilled be CreateBuiltinFunction(fulfillSteps, << >>).
-  auto* on_fulfilled = MakeGarbageCollected<RunReturnFulfillStepsCallable>(
-      this, ScriptValue(script_state->GetIsolate(), value));
+  auto* on_fulfilled =
+      MakeGarbageCollected<RunReturnFulfillStepsCallable>(this, value);
   // step 14. Perform PerformPromiseThen(object's ongoing promise, onFulfilled,
   //     undefined, returnPromiseCapability).
-  return_steps_promise = next_promise.Then(script_state, on_fulfilled);
   // step 15. Return returnPromiseCapability.[[Promise]].
-  return return_steps_promise.V8Promise();
+  return next_promise.Then(script_state, on_fulfilled);
 }
 
 void AsyncIterationSourceBase::Trace(Visitor* visitor) const {

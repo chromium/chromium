@@ -21,6 +21,8 @@ blink_core_sources_bindings =
                     "core/v8/active_script_wrappable_creation_key.h",
                     "core/v8/async_iterable.cc",
                     "core/v8/async_iterable.h",
+                    "core/v8/async_iterator_base.cc",
+                    "core/v8/async_iterator_base.h",
                     "core/v8/binding_security.cc",
                     "core/v8/binding_security.h",
                     "core/v8/boxed_v8_module.h",

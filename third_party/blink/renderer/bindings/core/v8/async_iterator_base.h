@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ASYNC_ITERATOR_BASE_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ASYNC_ITERATOR_BASE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERATOR_BASE_H_
+#define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERATOR_BASE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
-
-class ExceptionState;
 
 namespace bindings {
 
@@ -19,9 +18,9 @@ namespace bindings {
 // overload resolutions, SFINAE technique, etc.) so that it's possible to
 // distinguish async iterators from anything else. Also it provides common
 // implementation of async iterators.
-class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
+class CORE_EXPORT AsyncIteratorBase : public ScriptWrappable {
  public:
-  class PLATFORM_EXPORT IterationSourceBase
+  class CORE_EXPORT IterationSourceBase
       : public GarbageCollected<IterationSourceBase> {
    public:
     // https://webidl.spec.whatwg.org/#default-asynchronous-iterator-object-kind
@@ -36,12 +35,9 @@ class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
     IterationSourceBase(const IterationSourceBase&) = delete;
     IterationSourceBase& operator=(const IterationSourceBase&) = delete;
 
-    virtual v8::Local<v8::Promise> Next(ScriptState* script_state,
-                                        ExceptionState& exception_state) = 0;
+    virtual ScriptPromise<IDLAny> Next(ScriptState*) = 0;
 
-    virtual v8::Local<v8::Promise> Return(ScriptState* script_state,
-                                          v8::Local<v8::Value> value,
-                                          ExceptionState& exception_state) = 0;
+    virtual ScriptPromise<IDLAny> Return(ScriptState*, ScriptValue) = 0;
 
     Kind GetKind() const { return kind_; }
 
@@ -53,14 +49,9 @@ class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
 
   ~AsyncIteratorBase() override = default;
 
-  v8::Local<v8::Promise> next(ScriptState* script_state,
-                              ExceptionState& exception_state);
-
-  v8::Local<v8::Promise> returnForBinding(ScriptState* script_state,
-                                          ExceptionState& exception_state);
-  v8::Local<v8::Promise> returnForBinding(ScriptState* script_state,
-                                          v8::Local<v8::Value> value,
-                                          ExceptionState& exception_state);
+  ScriptPromise<IDLAny> next(ScriptState*);
+  ScriptPromise<IDLAny> returnForBinding(ScriptState*);
+  ScriptPromise<IDLAny> returnForBinding(ScriptState*, ScriptValue);
 
   void Trace(Visitor* visitor) const override;
 
@@ -80,4 +71,4 @@ class AsyncIterator;
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_ASYNC_ITERATOR_BASE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ASYNC_ITERATOR_BASE_H_

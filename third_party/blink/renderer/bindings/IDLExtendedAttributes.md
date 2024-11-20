@@ -1317,12 +1317,6 @@ Summary: The byte length of buffer source types is currently restricted to be un
 
 Consult with the bindings team before you use this extended attribute.
 
-### [IDLTypeImplementedAsV8Promise]
-
-Summary: Indicates that an IDL `Promise` type should be implemented as `v8::Local<v8::Promise>` rather than the default `ScriptPromise<>` type.
-
-This is currently only used for the return types of `AsyncIteratorBase` methods. Consult with the bindings team before you use this extended attribute.
-
 ### [NodeWrapInOwnContext]
 
 Summary: Forces a Node to be wrapped in its own context, rather than the receiver's context.

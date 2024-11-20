@@ -144,13 +144,6 @@ template <>
 inline constexpr bool IsReturnTypeCompatible<IDLObject, v8::Local<v8::Value>> =
     true;
 
-// TODO(caseq): take care of this case, all promises should be returned as
-// ScriptPromise<PromiseType> and IDLTypeImplementedAsV8Promise extended
-// attribute should be removed.
-template <typename PromiseType>
-inline constexpr bool IsReturnTypeCompatible<blink::IDLPromise<PromiseType>,
-                                             v8::Local<v8::Promise>> = true;
-
 // Any IDL strings are compatible to any blink strings.
 template <typename IDLStringType>
   requires std::derived_from<IDLStringType, IDLStringTypeBase>
