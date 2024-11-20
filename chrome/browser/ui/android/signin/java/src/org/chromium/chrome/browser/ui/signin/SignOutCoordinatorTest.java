@@ -37,7 +37,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
@@ -97,23 +96,7 @@ public class SignOutCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testLegacyDialog_replaceSyncPromosFeatureDisabled() {
-        setUpMocks();
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
-        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
-        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
-        when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
-
-        startSignOutFlow(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS, mOnSignOut, false);
-
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testLegacyDialogWithRevokeSyncConsentReason_replaceSyncPromosFeatureEnabled() {
+    public void testLegacyDialogWithRevokeSyncConsentReason() {
         setUpMocks();
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
