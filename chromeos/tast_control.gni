@@ -96,6 +96,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/376898784
   "a11y.LiveCaption.fieldtrial_testing_config_on",
 
+  # b/379893188
+  "login.ExistingUser",
+  "login.ChangePassword.user_with_recovery",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
