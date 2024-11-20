@@ -3027,6 +3027,36 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.WebSpeech.OnDeviceAvailable" enum="Boolean"
+    expires_after="2025-02-28">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether on-device speech recognition available for use with the Web Speech
+    API. Logged when the speech recognition session is created.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.UseAudioForwarder" enum="Boolean"
+    expires_after="2025-02-28">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether the audio forwarder is used for the Web Speech API. Logged when the
+    speech recognition session is created.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.WebSpeech.UseOnDevice" enum="Boolean"
+    expires_after="2025-02-28">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Whether on-device speech recognition is used for the Web Speech API. Logged
+    when the speech recognition session is created.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.WinAPIs" enum="AccessibilityWinAPIEnum"
     expires_after="2025-05-04">
   <owner>aleventhal@chromium.org</owner>

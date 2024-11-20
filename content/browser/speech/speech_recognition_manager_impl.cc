@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -64,6 +65,13 @@ SpeechRecognitionManager* SpeechRecognitionManager::manager_for_tests_;
 namespace {
 
 SpeechRecognitionManagerImpl* g_speech_recognition_manager_impl;
+
+constexpr char kWebSpeechAudioOnDeviceAvailableHistogram[] =
+    "Accessibility.WebSpeech.OnDeviceAvailable";
+constexpr char kWebSpeechAudioUseOnDeviceHistogram[] =
+    "Accessibility.WebSpeech.UseOnDevice";
+constexpr char kWebSpeechAudioUseAudioForwarderHistogram[] =
+    "Accessibility.WebSpeech.UseAudioForwarder";
 
 }  // namespace
 
@@ -206,9 +214,16 @@ int SpeechRecognitionManagerImpl::CreateSession(
   const int session_id = GetNextSessionID();
   DCHECK(!SessionExists(session_id));
 
+  base::UmaHistogramBoolean(kWebSpeechAudioOnDeviceAvailableHistogram,
+                            IsOnDeviceSpeechRecognitionAvailable(config));
+  base::UmaHistogramBoolean(kWebSpeechAudioUseOnDeviceHistogram,
+                            UseOnDeviceSpeechRecognition(config));
+  base::UmaHistogramBoolean(kWebSpeechAudioUseAudioForwarderHistogram,
+                            audio_forwarder_config.has_value());
+
   // If on-device speech recognition must be used but is not available, throw a
   // language-not-supported error and don't create the session.
-  if (config.on_device && !config.allow_cloud_fallback &&
+  if (UseOnDeviceSpeechRecognition(config) &&
       !IsOnDeviceSpeechRecognitionAvailable(config)) {
     mojo::Remote<media::mojom::SpeechRecognitionSessionClient> client(
         std::move(client_remote));
@@ -228,7 +243,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_FUCHSIA)
-  if (IsOnDeviceSpeechRecognitionAvailable(config) &&
+  if (UseOnDeviceSpeechRecognition(config) &&
       audio_forwarder_config.has_value()) {
     CHECK_GT(audio_forwarder_config.value().channel_count, 0);
     CHECK_GT(audio_forwarder_config.value().sample_rate, 0);
