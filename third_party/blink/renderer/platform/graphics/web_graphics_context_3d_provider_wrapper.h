@@ -28,10 +28,11 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
     virtual void OnContextDestroyed() = 0;
   };
 
+  // NOTE: `provider` must be non-null.
   WebGraphicsContext3DProviderWrapper(
       std::unique_ptr<WebGraphicsContext3DProvider> provider)
       : context_provider_(std::move(provider)) {
-    DCHECK(context_provider_);
+    CHECK(context_provider_);
     utils_ = base::WrapUnique(new GraphicsContext3DUtils(GetWeakPtr()));
   }
   ~WebGraphicsContext3DProviderWrapper();
@@ -40,6 +41,7 @@ class PLATFORM_EXPORT WebGraphicsContext3DProviderWrapper {
     return weak_ptr_factory_.GetWeakPtr();
   }
   WebGraphicsContext3DProvider* ContextProvider() {
+    CHECK(context_provider_);
     return context_provider_.get();
   }
 
