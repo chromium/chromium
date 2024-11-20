@@ -61,8 +61,7 @@ public class CustomTabTabPersistenceIntegrationTest {
 
         mCustomTabActivityTestRule
                 .getActivity()
-                .getComponent()
-                .resolveNavigationController()
+                .getCustomTabActivityNavigationController()
                 .finish(FinishReason.OTHER);
 
         waitForFileExistState(false, expectedTabFileName, stateDir);

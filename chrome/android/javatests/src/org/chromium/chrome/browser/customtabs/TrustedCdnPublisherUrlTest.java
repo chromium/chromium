@@ -298,8 +298,7 @@ public class TrustedCdnPublisherUrlTest {
                 () -> {
                     Assert.assertEquals(publisherUrl, TrustedCdn.getPublisherUrl(tab));
                     customTabActivity
-                            .getComponent()
-                            .resolveNavigationController()
+                            .getCustomTabActivityNavigationController()
                             .openCurrentUrlInBrowser();
                     Assert.assertNull(customTabActivity.getActivityTab());
                 });

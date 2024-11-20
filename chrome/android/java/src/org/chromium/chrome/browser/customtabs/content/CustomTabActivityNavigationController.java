@@ -34,14 +34,13 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preloading.PreloadingDataBridge;
 import org.chromium.chrome.browser.tab.Tab;
@@ -59,10 +58,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Predicate;
 
-import javax.inject.Inject;
-
 /** Responsible for navigating to new pages and going back to previous pages. */
-@ActivityScope
 public class CustomTabActivityNavigationController
         implements StartStopWithNativeObserver, BackPressHandler {
     private static final String TAG = "CTANavigationCtrl";
@@ -143,17 +139,22 @@ public class CustomTabActivityNavigationController
                 }
             };
 
-    @Inject
     public CustomTabActivityNavigationController(
-            CloseButtonNavigator closeButtonNavigator, BaseCustomTabActivity activity) {
-        mTabController = activity.getCustomTabActivityTabController();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mCustomTabObserver = activity.getCustomTabObserver();
+            CustomTabActivityTabController tabController,
+            CustomTabActivityTabProvider tabProvider,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabObserver customTabObserver,
+            CloseButtonNavigator closeButtonNavigator,
+            Activity activity,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mTabController = tabController;
+        mTabProvider = tabProvider;
+        mIntentDataProvider = intentDataProvider;
+        mCustomTabObserver = customTabObserver;
         mCloseButtonNavigator = closeButtonNavigator;
         mActivity = activity;
 
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
         ChromeBrowserInitializer.getInstance()
                 .runNowOrAfterFullBrowserStarted(

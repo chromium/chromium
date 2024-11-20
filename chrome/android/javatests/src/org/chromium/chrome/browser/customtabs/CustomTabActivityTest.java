@@ -1673,9 +1673,7 @@ public class CustomTabActivityTest {
                 () -> {
                     Assert.assertFalse(WarmupManager.getInstance().hasSpareWebContents());
                     final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
-                    activity.getComponent()
-                            .resolveNavigationController()
-                            .finish(FinishReason.OTHER);
+                    activity.getCustomTabActivityNavigationController().finish(FinishReason.OTHER);
                 });
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
             CriteriaHelper.pollUiThread(
@@ -1922,8 +1920,7 @@ public class CustomTabActivityTest {
         Assert.assertEquals(activity.getCurrentTabModel().getCount(), 1);
 
         // The link we click will take us to another page. Set the initial page as the landing page.
-        activity.getComponent()
-                .resolveNavigationController()
+        activity.getCustomTabActivityNavigationController()
                 .setLandingPageOnCloseCriterion(url -> url.contains(TARGET_BLANK_TEST_PAGE));
 
         DOMUtils.clickNode(activity.getActivityTab().getWebContents(), "target_blank_link");
@@ -2533,8 +2530,7 @@ public class CustomTabActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
-                    activity.getComponent()
-                            .resolveNavigationController()
+                    activity.getCustomTabActivityNavigationController()
                             .navigate(new LoadUrlParams("about:blank"), intent);
                 });
 

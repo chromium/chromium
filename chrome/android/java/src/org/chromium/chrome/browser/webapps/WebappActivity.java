@@ -72,7 +72,7 @@ public class WebappActivity extends BaseCustomTabActivity {
             return true;
         }
         if (id == R.id.open_in_browser_id) {
-            mNavigationController.openCurrentUrlInBrowser();
+            getCustomTabActivityNavigationController().openCurrentUrlInBrowser();
             if (fromMenu) {
                 RecordUserAction.record("WebappMenuOpenInChrome");
             } else {

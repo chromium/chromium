@@ -40,14 +40,12 @@ public class CustomTabIntentHandler {
 
     @Inject
     public CustomTabIntentHandler(
-            CustomTabIntentHandlingStrategy handlingStrategy,
-            CustomTabMinimizationManagerHolder minimizationManagerHolder,
-            BaseCustomTabActivity activity) {
+            CustomTabIntentHandlingStrategy handlingStrategy, BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = activity.getIntentDataProvider();
         mHandlingStrategy = handlingStrategy;
         mContext = activity;
-        mMinimizationManagerHolder = minimizationManagerHolder;
+        mMinimizationManagerHolder = activity.getCustomTabMinimizationManagerHolder();
 
         observeInitialTabCreationIfNecessary();
         handleInitialIntent();

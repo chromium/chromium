@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.CustomButtonParamsImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -89,10 +90,11 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(mActivity.getCustomTabToolbarColorController()).thenReturn(mToolbarColorController);
         when(mActivity.getCustomTabCompositorContentInitializer())
                 .thenReturn(mCompositorContentInitializer);
+        CustomTabActivityNavigationController controller =
+                env.createNavigationController(mTabController);
+        when(mActivity.getCustomTabActivityNavigationController()).thenReturn(controller);
 
-        mCoordinator =
-                new CustomTabToolbarCoordinator(
-                        mActivity, env.createNavigationController(mTabController));
+        mCoordinator = new CustomTabToolbarCoordinator(mActivity);
 
         ShareDelegateSupplier.setInstanceForTesting(mShareDelegateSupplier);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);

@@ -123,9 +123,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabDelegateFactory mDelegateFactory;
     protected CustomTabToolbarCoordinator mToolbarCoordinator;
-    protected CustomTabActivityNavigationController mNavigationController;
+    private CustomTabActivityNavigationController mNavigationController;
     private CustomTabActivityTabController mTabController;
-    protected CustomTabActivityTabProvider mTabProvider;
+    private CustomTabActivityTabProvider mTabProvider;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     private CustomTabActivityTabFactory mTabFactory;
     protected CustomTabIntentHandler mCustomTabIntentHandler;
@@ -134,8 +134,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     private @Nullable AuthTabVerifier mAuthTabVerifier;
     private Verifier mVerifier;
-    protected FullscreenManager mFullscreenManager;
-    protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
+    private FullscreenManager mFullscreenManager;
+    private CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     private CustomTabFeatureOverridesManager mCustomTabFeatureOverridesManager;
     private boolean mWarmupOnDestroy;
     private TabObserverRegistrar mTabObserverRegistrar;
@@ -304,7 +304,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         () -> mIntentDataProvider,
                         mBackPressManager,
                         () -> getCustomTabActivityTabController(),
-                        () -> mMinimizationManagerHolder.getMinimizationManager(),
+                        () -> getCustomTabMinimizationManagerHolder().getMinimizationManager(),
                         () -> getCustomTabFeatureOverridesManager(),
                         getBaseChromeLayout(),
                         getEdgeToEdgeStateProvider());
@@ -430,22 +430,49 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getCipherFactory(),
                         getLifecycleDispatcher());
 
+        mMinimizationManagerHolder =
+                new CustomTabMinimizationManagerHolder(
+                        this,
+                        this::getCustomTabActivityNavigationController,
+                        getActivityTabProvider(),
+                        getIntentDataProvider(),
+                        this::getSavedInstanceState,
+                        getLifecycleDispatcher(),
+                        getCustomTabFeatureOverridesManager());
+
+        CloseButtonNavigator closeButtonNavigator =
+                new CloseButtonNavigator(
+                        getCustomTabActivityTabController(), getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(), getCustomTabMinimizationManagerHolder());
+
+        mNavigationController =
+                new CustomTabActivityNavigationController(
+                        getCustomTabActivityTabController(),
+                        getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(),
+                        getCustomTabObserver(),
+                        closeButtonNavigator,
+                        this,
+                        getLifecycleDispatcher());
+
         mToolbarCoordinator = component.resolveToolbarCoordinator();
-        mNavigationController = component.resolveNavigationController();
 
         mCustomTabIntentHandler = component.resolveIntentHandler();
 
-        mNavigationController.setFinishHandler(
-                (reason, warmupOnFinish) -> {
-                    if (reason == USER_NAVIGATION) {
-                        getCustomTabActivityClientConnectionKeeper().recordClientConnectionStatus();
-                    }
-                    handleFinishAndClose(warmupOnFinish);
-                });
+        getCustomTabActivityNavigationController()
+                .setFinishHandler(
+                        (reason, warmupOnFinish) -> {
+                            if (reason == USER_NAVIGATION) {
+                                getCustomTabActivityClientConnectionKeeper()
+                                        .recordClientConnectionStatus();
+                            }
+                            handleFinishAndClose(warmupOnFinish);
+                        });
 
         mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
         mBackPressManager.addHandler(
-                mNavigationController, BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+                getCustomTabActivityNavigationController(),
+                BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
 
         component.resolveSessionHandler();
 
@@ -498,7 +525,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                     getClientPackageNameProvider());
         }
 
-        mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();
         getCustomTabActivityTabFactory().setActivityType(getActivityType());
         getCustomTabDelegateFactory()
                 .setEphemeralTabCoordinatorSupplier(
@@ -634,8 +660,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         mFullscreenManager = getFullscreenManager();
 
-        mMinimizationManagerHolder.maybeCreateMinimizationManager(mTabModelProfileSupplier);
-        var minimizationManager = mMinimizationManagerHolder.getMinimizationManager();
+        getCustomTabMinimizationManagerHolder()
+                .maybeCreateMinimizationManager(mTabModelProfileSupplier);
+        var minimizationManager = getCustomTabMinimizationManagerHolder().getMinimizationManager();
         if (minimizationManager != null) {
             getFullscreenManager().addObserver(mFullscreenObserver);
             minimizationManager.addObserver(mMinimizationObserver);
@@ -823,7 +850,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 return true;
             }
         }
-        return mNavigationController.navigateOnBack();
+        return getCustomTabActivityNavigationController().navigateOnBack();
     }
 
     @Override
@@ -1243,5 +1270,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             mTrustedWebActivityModel = new TrustedWebActivityModel();
         }
         return mTrustedWebActivityModel;
+    }
+
+    public CustomTabActivityNavigationController getCustomTabActivityNavigationController() {
+        return mNavigationController;
+    }
+
+    public CustomTabMinimizationManagerHolder getCustomTabMinimizationManagerHolder() {
+        return mMinimizationManagerHolder;
     }
 }

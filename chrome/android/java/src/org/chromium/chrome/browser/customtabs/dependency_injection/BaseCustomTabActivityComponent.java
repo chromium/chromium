@@ -9,9 +9,7 @@ import dagger.Subcomponent;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
@@ -27,8 +25,6 @@ import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 @Subcomponent(modules = {ChromeActivityCommonsModule.class, BaseCustomTabActivityModule.class})
 @ActivityScope
 public interface BaseCustomTabActivityComponent extends ChromeActivityComponent {
-    CustomTabActivityNavigationController resolveNavigationController();
-
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
 
     CustomTabIntentHandler resolveIntentHandler();
@@ -36,8 +32,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabSessionHandler resolveSessionHandler();
 
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
-
-    CustomTabMinimizationManagerHolder resolveCustomTabMinimizationManagerHolder();
 
     // Webapp & WebAPK only
     WebappActivityCoordinator resolveWebappActivityCoordinator();

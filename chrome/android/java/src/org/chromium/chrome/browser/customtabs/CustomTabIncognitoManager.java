@@ -42,12 +42,10 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     @Inject
-    public CustomTabIncognitoManager(
-            BaseCustomTabActivity activity,
-            CustomTabActivityNavigationController navigationController) {
+    public CustomTabIncognitoManager(BaseCustomTabActivity activity) {
         mActivity = activity;
         mIntentDataProvider = activity.getIntentDataProvider();
-        mNavigationController = navigationController;
+        mNavigationController = activity.getCustomTabActivityNavigationController();
         mProfileProviderSupplier = activity.getProfileProviderSupplier();
 
         activity.getLifecycleDispatcher().register(this);

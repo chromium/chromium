@@ -127,7 +127,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         mOpenTimeRecorder =
                 new CustomTabsOpenTimeRecorder(
                         getLifecycleDispatcher(),
-                        mNavigationController,
+                        getCustomTabActivityNavigationController(),
                         this::isFinishing,
                         mIntentDataProvider);
         return component;
@@ -154,9 +154,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
-        mTabProvider.addObserver(mTabChangeObserver);
+        getCustomTabActivityTabProvider().addObserver(mTabChangeObserver);
         // We might have missed an onInitialTabCreated event.
-        onTabInitOrSwapped(mTabProvider.getTab());
+        onTabInitOrSwapped(getCustomTabActivityTabProvider().getTab());
 
         mSession = mIntentDataProvider.getSession();
 
@@ -179,9 +179,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         // Properly attach tab's InfoBarContainer to the view hierarchy if the tab is already
         // attached to a ChromeActivity, as the main tab might have been initialized prior to
         // inflation.
-        if (mTabProvider.getTab() != null) {
+        if (getCustomTabActivityTabProvider().getTab() != null) {
             ViewGroup bottomContainer = findViewById(R.id.bottom_container);
-            InfoBarContainer.get(mTabProvider.getTab()).setParentView(bottomContainer);
+            InfoBarContainer.get(getCustomTabActivityTabProvider().getTab())
+                    .setParentView(bottomContainer);
         }
 
         // Setting task title and icon to be null will preserve the client app's title and icon.
@@ -250,7 +251,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     private void resetPostMessageHandlersForCurrentSession() {
-        Tab tab = mTabProvider.getTab();
+        Tab tab = getCustomTabActivityTabProvider().getTab();
         WebContents webContents = tab == null ? null : tab.getWebContents();
         mConnection.resetPostMessageHandlerForSession(
                 mIntentDataProvider.getSession(), webContents);
@@ -291,13 +292,13 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             return true;
         } else if (id == R.id.open_in_browser_id) {
             // Need to get tab before calling openCurrentUrlInBrowser or else it will be null.
-            Tab tab = mTabProvider.getTab();
+            Tab tab = getCustomTabActivityTabProvider().getTab();
             if (tab != null) {
                 RecordUserAction.record("CustomTabsMenuOpenInChrome");
                 // Need to notify *before* opening in browser, to ensure engagement signal will be
                 // fired correctly.
                 mConnection.notifyOpenInBrowser(mSession, tab);
-                mNavigationController.openCurrentUrlInBrowser();
+                getCustomTabActivityNavigationController().openCurrentUrlInBrowser();
             }
             return true;
         } else if (id == R.id.info_menu_id) {
@@ -455,7 +456,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             mNumOmniboxNavigationEventsPerSession++;
             // Yield to give the called activity time to close.
             // Loading URL directly will result in Activity closing after URL loading completes.
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> mTabProvider.getTab().loadUrl(params));
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> getCustomTabActivityTabProvider().getTab().loadUrl(params));
         }
 
         if (HistoryManager.isAppSpecificHistoryEnabled()
@@ -464,7 +467,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     new LoadUrlParams(
                             data.getData().toString(),
                             IntentHandler.getTransitionTypeFromIntent(data, PageTransition.LINK));
-            mTabProvider.getTab().loadUrl(params);
+            getCustomTabActivityTabProvider().getTab().loadUrl(params);
         }
     }
 }

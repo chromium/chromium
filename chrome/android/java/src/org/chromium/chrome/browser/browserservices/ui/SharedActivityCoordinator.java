@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVeri
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
 import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -40,7 +39,6 @@ public class SharedActivityCoordinator implements InflationObserver {
 
     @Inject
     public SharedActivityCoordinator(
-            CustomTabActivityNavigationController navigationController,
             TrustedWebActivityBrowserControlsVisibilityManager browserControlsVisibilityManager,
             BaseCustomTabActivity activity) {
         mCurrentPageVerifier = activity.getCurrentPageVerifier();
@@ -51,8 +49,8 @@ public class SharedActivityCoordinator implements InflationObserver {
         mImmersiveDisplayMode = computeImmersiveMode(activity.getIntentDataProvider());
         mCustomTabOrientationController = activity.getCustomTabOrientationController();
 
-        navigationController.setLandingPageOnCloseCriterion(
-                activity.getVerifier()::wasPreviouslyVerified);
+        activity.getCustomTabActivityNavigationController()
+                .setLandingPageOnCloseCriterion(activity.getVerifier()::wasPreviouslyVerified);
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
         activity.getLifecycleDispatcher().register(this);

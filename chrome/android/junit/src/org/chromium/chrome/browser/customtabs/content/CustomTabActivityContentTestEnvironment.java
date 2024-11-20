@@ -163,6 +163,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activity.getCustomTabDelegateFactory()).thenReturn(customTabDelegateFactory);
         when(activity.getCustomTabTabPersistencePolicy()).thenReturn(tabPersistencePolicy);
         when(activity.getCustomTabActivityTabFactory()).thenReturn(tabFactory);
+        when(activity.getCustomTabMinimizationManagerHolder())
+                .thenReturn(mMinimizationManagerHolder);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
@@ -198,18 +200,23 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
 
     public CustomTabActivityNavigationController createNavigationController(
             CustomTabActivityTabController tabController) {
-        when(activity.getCustomTabActivityTabController()).thenReturn(tabController);
         CustomTabActivityNavigationController controller =
-                new CustomTabActivityNavigationController(closeButtonNavigator, activity);
+                new CustomTabActivityNavigationController(
+                        tabController,
+                        tabProvider,
+                        intentDataProvider,
+                        customTabObserver,
+                        closeButtonNavigator,
+                        activity,
+                        lifecycleDispatcher);
         return controller;
     }
 
     public CustomTabIntentHandler createIntentHandler(
             CustomTabActivityNavigationController navigationController) {
+        when(activity.getCustomTabActivityNavigationController()).thenReturn(navigationController);
         return new CustomTabIntentHandler(
-                new DefaultCustomTabIntentHandlingStrategy(navigationController, activity),
-                mMinimizationManagerHolder,
-                activity);
+                new DefaultCustomTabIntentHandlingStrategy(activity), activity);
     }
 
     public void warmUp() {

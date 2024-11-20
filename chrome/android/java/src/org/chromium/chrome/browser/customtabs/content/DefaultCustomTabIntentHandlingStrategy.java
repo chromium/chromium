@@ -28,11 +28,9 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
     private final CustomTabObserver mCustomTabObserver;
 
     @Inject
-    public DefaultCustomTabIntentHandlingStrategy(
-            CustomTabActivityNavigationController navigationController,
-            BaseCustomTabActivity activity) {
+    public DefaultCustomTabIntentHandlingStrategy(BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mNavigationController = navigationController;
+        mNavigationController = activity.getCustomTabActivityNavigationController();
         mCustomTabObserver = activity.getCustomTabObserver();
     }
 

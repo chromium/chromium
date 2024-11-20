@@ -329,7 +329,7 @@ public class WebappNavigationTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    activity.getComponent().resolveNavigationController().openCurrentUrlInBrowser();
+                    activity.getCustomTabActivityNavigationController().openCurrentUrlInBrowser();
                 });
 
         ChromeTabbedActivity tabbedChrome =

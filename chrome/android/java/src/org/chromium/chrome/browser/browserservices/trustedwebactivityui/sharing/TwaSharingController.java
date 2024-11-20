@@ -42,11 +42,9 @@ public class TwaSharingController {
     private final Verifier mVerifierDelegate;
 
     @Inject
-    public TwaSharingController(
-            CustomTabActivityNavigationController navigationController,
-            BaseCustomTabActivity activity) {
+    public TwaSharingController(BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mNavigationController = navigationController;
+        mNavigationController = activity.getCustomTabActivityNavigationController();
         mVerifierDelegate = activity.getVerifier();
     }
 
