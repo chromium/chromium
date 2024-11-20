@@ -97,7 +97,10 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         Insets navBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
         mView.setNavigationBarInsets(navBarInsets);
 
-        Insets overallInsets = Insets.add(statusBarInsets, navBarInsets);
+        // Currently the EdgeToEdgeLayout cannot color the caption bar, but it should add padding if
+        // necessary to account for the captionBar insets (e.g. on some OEMs).
+        // See https://crbug.com/377620837
+        Insets overallInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
         mView.setPadding(
                 overallInsets.left, overallInsets.top, overallInsets.right, overallInsets.bottom);
 
@@ -105,6 +108,7 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         return new WindowInsetsCompat.Builder(windowInsets)
                 .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
                 .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
+                .setInsets(WindowInsetsCompat.Type.captionBar(), Insets.NONE)
                 .build();
     }
 
