@@ -142,6 +142,13 @@ class CORE_EXPORT ScriptResource final : public TextResource {
            !streamer_->IsFinished();
   }
   bool HasFinishedStreamer() { return streamer_ && streamer_->IsFinished(); }
+  bool HasBackgroundStreamerWithDecodedData() {
+    return background_streamer_ && background_streamer_->HasDecodedData();
+  }
+  bool HasBackgroundStreamerWithConsumeCodeCacheTask() {
+    return background_streamer_ &&
+           background_streamer_->HasConsumeCodeCacheTask();
+  }
 
   // Gets the cache consumer from the ScriptResource, clearing it from the
   // resource so that it cannot be used twice.

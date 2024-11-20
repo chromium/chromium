@@ -77,12 +77,6 @@ TEST(CachedMetadataTest, CreateFromBufferWithDataTypeIdAndTag) {
                                                  sizeof(kTestData), kTestTag));
 }
 
-TEST(CachedMetadataTest, CreateFromSerializedDataBuffer) {
-  Vector<uint8_t> data = CreateTestSerializedData();
-  CheckTestCachedMetadata(
-      CachedMetadata::CreateFromSerializedData(data.data(), data.size()));
-}
-
 TEST(CachedMetadataTest, CreateFromSerializedDataVector) {
   Vector<uint8_t> data = CreateTestSerializedData();
   CheckTestCachedMetadata(CachedMetadata::CreateFromSerializedData(data));
@@ -98,8 +92,6 @@ TEST(CachedMetadataTest, CreateFromSerializedDataBigBuffer) {
 
 TEST(CachedMetadataTest, CreateFromSerializedDataTooSmall) {
   Vector<uint8_t> data = Vector<uint8_t>(sizeof(CachedMetadataHeader));
-  EXPECT_FALSE(
-      CachedMetadata::CreateFromSerializedData(data.data(), data.size()));
   EXPECT_FALSE(CachedMetadata::CreateFromSerializedData(data));
 
   mojo_base::BigBuffer big_buffer(data);
@@ -112,8 +104,6 @@ TEST(CachedMetadataTest, CreateFromSerializedDataWithInvalidMarker) {
   // Creates a test serialized data with an invalid marker.
   Vector<uint8_t> data = CreateTestSerializedDataWithMarker(
       CachedMetadataHandler::kSingleEntryWithTag + 1);
-  EXPECT_FALSE(
-      CachedMetadata::CreateFromSerializedData(data.data(), data.size()));
   EXPECT_FALSE(CachedMetadata::CreateFromSerializedData(data));
 
   mojo_base::BigBuffer big_buffer(data);

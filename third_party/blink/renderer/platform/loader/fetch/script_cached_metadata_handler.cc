@@ -175,7 +175,7 @@ void ScriptCachedMetadataHandlerWithHashing::SetSerializedCachedMetadata(
   memcpy(hash_, header->hash, kSha256Bytes);
   hash_state_ = kDeserialized;
   cached_metadata_ = CachedMetadata::CreateFromSerializedData(
-      payload_bytes.data(), payload_bytes.size());
+      data, sizeof(CachedMetadataHeaderWithHash));
 }
 
 scoped_refptr<CachedMetadata>
