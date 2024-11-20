@@ -103,11 +103,11 @@
 // sign-in prompt UI.
 @property(nonatomic, assign) BOOL signinInProgress;
 
-// Root view's safe area insets.
-@property(nonatomic, assign, readonly) UIEdgeInsets safeAreaInsets;
+// Accessibility identifier of the window.
+@property(nonatomic, assign, readonly) NSString* windowAccessibilityIdentifier;
 
-// Root view's accessibility identifier.
-@property(nonatomic, assign, readonly) NSString* accessibilityIdentifier;
+// Root view controller's view.
+@property(nonatomic, assign, readonly) UIView* rootView;
 
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.

@@ -535,7 +535,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  sceneState.window.overrideUserInterfaceStyle =
+  sceneState.rootView.overrideUserInterfaceStyle =
       UIUserInterfaceStyleUnspecified;
 
   // If another BVC is already being presented, swap this one into the
@@ -730,8 +730,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [self displayBringAndroidTabsPrompt];
   }
 
-  UIWindow* sceneWindow = self.regularBrowser->GetSceneState().window;
-  sceneWindow.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  SceneState* sceneState = self.regularBrowser->GetSceneState();
+  sceneState.rootView.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 }
 
 // Creates a transition handler with `animationEnabled` parameter.

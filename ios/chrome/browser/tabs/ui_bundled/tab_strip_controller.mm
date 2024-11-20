@@ -455,7 +455,7 @@ const CGFloat kSymbolSize = 18;
 
     // `self.view` setup.
     _useTabStacking = [self shouldUseTabStacking];
-    CGRect tabStripFrame = browser->GetSceneState().window.bounds;
+    CGRect tabStripFrame = browser->GetSceneState().rootView.bounds;
     tabStripFrame.size.height = kTabStripHeight;
     _view = [[TabStripContainerView alloc] initWithFrame:tabStripFrame];
     _view.autoresizingMask = (UIViewAutoresizingFlexibleWidth |
