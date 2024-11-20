@@ -25,6 +25,14 @@ bool DbusType::operator!=(const DbusType& other) const {
   return !(*this == other);
 }
 
+bool DbusType::Move(DbusType&& object) {
+  if (!TypeMatches(object)) {
+    return false;
+  }
+  MoveImpl(std::move(object));
+  return true;
+}
+
 bool DbusType::IsUntyped() const {
   return false;
 }
@@ -55,6 +63,19 @@ std::string UntypedDbusContainer::GetSignatureDynamic() const {
 bool UntypedDbusContainer::IsEqual(const DbusType& other_type) const {
   // Dynamic types should be casted to static types before comparison.
   NOTREACHED();
+}
+
+void UntypedDbusContainer::MoveImpl(DbusType&& object) {
+  if (!object.IsUntyped()) {
+    // Can't currently move from a typed container back to an untyped one.
+    // It's possible to implement, but there's no point.
+    NOTIMPLEMENTED();
+    return;
+  }
+  CHECK(object.IsUntyped());
+  auto* other = static_cast<UntypedDbusContainer*>(&object);
+  value_ = std::move(other->value_);
+  signature_ = std::move(other->signature_);
 }
 
 bool UntypedDbusContainer::IsUntyped() const {

@@ -42,6 +42,11 @@ class COMPONENT_EXPORT(DBUS) DbusType {
   // signature from.
   virtual std::string GetSignatureDynamic() const = 0;
 
+  // Move from `other` to `this`. UntypedDbusContainer will be converted to
+  // typed containers. If types are incompatible, this is a no-op and returns
+  // false. Otherwise returns true.
+  bool Move(DbusType&& object);
+
   // True iff this is an UntypedDbusContainer.
   virtual bool IsUntyped() const;
 
@@ -51,6 +56,9 @@ class COMPONENT_EXPORT(DBUS) DbusType {
  protected:
   // This is only safe to call after verifying GetSignatureDynamic() matches.
   virtual bool IsEqual(const DbusType& other_type) const = 0;
+
+  // This is only safe to call after verifying GetSignatureDynamic() matches.
+  virtual void MoveImpl(DbusType&& object) = 0;
 };
 
 template <typename T>
@@ -71,6 +79,11 @@ class DbusTypeImpl : public DbusType {
   bool IsEqual(const DbusType& other_type) const override {
     const T* other = static_cast<const T*>(&other_type);
     return static_cast<const T*>(this)->value_ == other->value_;
+  }
+
+  void MoveImpl(DbusType&& object) override {
+    T* other = static_cast<T*>(&object);
+    static_cast<T*>(this)->value_ = std::move(other->value_);
   }
 };
 
@@ -99,6 +112,7 @@ class UntypedDbusContainer final : public DbusType {
  private:
   // DbusType:
   bool IsEqual(const DbusType& other_type) const override;
+  void MoveImpl(DbusType&& object) override;
 
   std::vector<std::unique_ptr<DbusType>> value_;
   std::string signature_;
@@ -190,6 +204,11 @@ class COMPONENT_EXPORT(DBUS) DbusVariant final
     if (!value_ || value_->GetSignatureDynamic() != T::GetSignature()) {
       return nullptr;
     }
+    if (value_->IsUntyped()) {
+      auto value = std::make_unique<T>();
+      value->Move(std::move(*value_));
+      value_ = std::move(value);
+    }
     return static_cast<T*>(value_.get());
   }
 
@@ -237,6 +256,20 @@ class COMPONENT_EXPORT(DBUS) DbusArray final
       t.Write(&array_writer);
     }
     writer->CloseContainer(&array_writer);
+  }
+
+  void MoveImpl(DbusType&& object) override {
+    // The type signature has already been verified.
+    if (!object.IsUntyped()) {
+      value_ = std::move(static_cast<DbusArray<T>*>(&object)->value_);
+      return;
+    }
+    auto& arr = static_cast<detail::UntypedDbusContainer*>(&object)->value();
+    value_.clear();
+    value_.resize(arr.size());
+    for (size_t i = 0; i < arr.size(); ++i) {
+      value_[i].Move(std::move(*arr[i]));
+    }
   }
 
   static std::string GetSignature() {
@@ -297,6 +330,24 @@ class COMPONENT_EXPORT(DBUS) DbusStruct final
     writer->CloseContainer(&struct_writer);
   }
 
+  void MoveImpl(DbusType&& object) override {
+    // The type signature has already been verified.
+    if (!object.IsUntyped()) {
+      value_ = std::move(static_cast<DbusStruct<Ts...>*>(&object)->value_);
+      return;
+    }
+    auto& dyn_struct =
+        static_cast<detail::UntypedDbusContainer*>(&object)->value();
+    CHECK_EQ(dyn_struct.size(), sizeof...(Ts));
+
+    size_t index = 0;
+    std::apply(
+        [&](auto&... args) {
+          ((args.Move(std::move(*dyn_struct[index++]))), ...);
+        },
+        value_);
+  }
+
   static std::string GetSignature() {
     return "(" + (Ts::GetSignature() + ... + std::string()) + ")";
   }
@@ -330,6 +381,19 @@ class COMPONENT_EXPORT(DBUS) DbusDictEntry final
     value_.first.Write(&dict_entry_writer);
     value_.second.Write(&dict_entry_writer);
     writer->CloseContainer(&dict_entry_writer);
+  }
+
+  void MoveImpl(DbusType&& object) override {
+    // The type signature has already been verified.
+    if (!object.IsUntyped()) {
+      value_ = std::move(static_cast<DbusDictEntry<K, V>*>(&object)->value_);
+      return;
+    }
+    auto& dyn_entry =
+        static_cast<detail::UntypedDbusContainer*>(&object)->value();
+    CHECK_EQ(dyn_entry.size(), 2U);
+    value_.first.Move(std::move(*dyn_entry[0]));
+    value_.second.Move(std::move(*dyn_entry[1]));
   }
 
   static std::string GetSignature() {
