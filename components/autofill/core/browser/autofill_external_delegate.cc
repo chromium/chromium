@@ -486,19 +486,6 @@ AutofillExternalDelegate::CreateSingleFieldFillCallback(
       field_type_used);
 }
 
-SuggestionType
-AutofillExternalDelegate::GetLastAcceptedSuggestionToFillForSection(
-    const Section& section) const {
-  if (auto it = last_accepted_address_suggestion_for_address_form_section_.find(
-          section);
-      it != last_accepted_address_suggestion_for_address_form_section_.end()) {
-    return it->second;
-  }
-  // In case no suggestions were accepted for this section, default to full form
-  // filling suggestions.
-  return SuggestionType::kAddressEntry;
-}
-
 bool AutofillExternalDelegate::HasActiveScreenReader() const {
 #if BUILDFLAG(IS_IOS)
   // ui::AXPlatform is not supported on iOS. The rendering engine handles
@@ -1215,15 +1202,6 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
-  const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
-  if (autofill_trigger_field && metadata.sub_popup_level > 0) {
-    // We only update this when the user accepts a subpopup suggestion since the
-    // filling granularity doesn't change by accepting a top-level popup
-    // suggestion but stays the same.
-    last_accepted_address_suggestion_for_address_form_section_
-        [autofill_trigger_field->section()] =
-            SuggestionType::kAddressFieldByFieldFilling;
-  }
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
       profile, manager_->client().GetAppLocale(),
       AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
@@ -1301,25 +1279,6 @@ void AutofillExternalDelegate::FillAutofillFormData(
     bool is_preview,
     const AutofillTriggerDetails& trigger_details) {
   CHECK(is_preview || metadata);
-  // Only address suggestions store the last field types to fill. This is
-  // because this is the only use case where filling granularies need to be
-  // persisted.
-  static constexpr auto kAutofillAddressSuggestions =
-      base::MakeFixedFlatSet<SuggestionType>(
-          {SuggestionType::kAddressEntry, SuggestionType::kFillFullAddress,
-           SuggestionType::kFillFullPhoneNumber, SuggestionType::kFillFullEmail,
-           SuggestionType::kFillFullName,
-           SuggestionType::kFillEverythingFromAddressProfile});
-  const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
-  if (autofill_trigger_field && kAutofillAddressSuggestions.contains(type) &&
-      !is_preview && metadata->sub_popup_level > 0) {
-    // We only update this when the user accepts a subpopup suggestion since the
-    // filling granularity doesn't change by accepting a top-level popup
-    // suggestion but stays the same.
-    last_accepted_address_suggestion_for_address_form_section_
-        [autofill_trigger_field->section()] = type;
-  }
-
   mojom::ActionPersistence action_persistence =
       is_preview ? mojom::ActionPersistence::kPreview
                  : mojom::ActionPersistence::kFill;

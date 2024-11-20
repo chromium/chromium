@@ -104,16 +104,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       std::optional<autofill_metrics::SuggestionRankingContext>
           suggestion_ranking_context);
 
-  // Returns the type of the last accepted address filling suggestion.
-  // This is used by group filling to keep users in the same granularity level
-  // by filtering out fields that do not match the last targeted fields group
-  // granularity. For example, if users choose to fill every address field, we
-  // will store these fields so that in a next iteration, when the user clicks,
-  // say a name field only fields that are of group name are filled, therefore
-  // staying at a group filling level.
-  SuggestionType GetLastAcceptedSuggestionToFillForSection(
-      const Section& section) const;
-
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;
 
