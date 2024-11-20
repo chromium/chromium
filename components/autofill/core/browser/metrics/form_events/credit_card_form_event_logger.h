@@ -118,6 +118,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   void OnDidUndoAutofill();
 
+  virtual void OnMetadataLoggingContextReceived(
+      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
+
   void Log(FormEvent event, const FormStructure& form) override;
 
   // Logging what type of authentication flow was prompted.

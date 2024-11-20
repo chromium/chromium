@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
@@ -1112,9 +1113,13 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
 
 std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     base::span<const CreditCard> credit_cards,
-    const AutofillClient& client) {
+    const AutofillClient& client,
+    autofill_metrics::CreditCardFormEventLogger&
+        credit_card_form_event_logger) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(credit_cards.size());
+  autofill_metrics::CardMetadataLoggingContext metadata_logging_context =
+      autofill_metrics::GetMetadataLoggingContext(credit_cards);
   for (const CreditCard& credit_card : credit_cards) {
     Suggestion suggestion;
     bool should_display_terms_available = false;
@@ -1137,11 +1142,21 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits();
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client);
-    if (benefit_label && client.GetPersonalDataManager()
-                             .payments_data_manager()
-                             .IsCardEligibleForBenefits(credit_card)) {
-      suggestion.labels.push_back({*benefit_label});
-      should_display_terms_available = true;
+    if (benefit_label) {
+      // Keep track of which cards had eligible benefits even if the
+      // benefit is not displayed in the suggestion due to
+      // IsCardEligibleForBenefits() == false. This helps denote a control
+      // group of users with benefit-eligible cards to help determine how
+      // benefit availability affects autofill usage.
+      metadata_logging_context
+          .instrument_ids_to_issuer_ids_with_benefits_available.insert(
+              {credit_card.instrument_id(), credit_card.issuer_id()});
+      if (client.GetPersonalDataManager()
+              .payments_data_manager()
+              .IsCardEligibleForBenefits(credit_card)) {
+        suggestion.labels.push_back({*benefit_label});
+        should_display_terms_available = true;
+      }
     }
     suggestion.payload = Suggestion::PaymentsPayload(
         main_text_content_description, should_display_terms_available);
@@ -1167,6 +1182,8 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     }
     suggestions.push_back(suggestion);
   }
+  credit_card_form_event_logger.OnMetadataLoggingContextReceived(
+      std::move(metadata_logging_context));
   return suggestions;
 }
 
