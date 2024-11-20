@@ -53,12 +53,22 @@
 
 namespace blink {
 
+namespace {
+
+gfx::ColorSpace SkColorSpaceToGfxColorSpace(
+    sk_sp<SkColorSpace> sk_color_space) {
+  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
+                        : gfx::ColorSpace::CreateSRGB();
+}
+
+}  // namespace
+
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
                                gfx::Size size,
                                viz::SharedImageFormat format,
                                SkAlphaType sk_alpha_type,
-                               sk_sp<SkColorSpace> sk_color_space)
+                               gfx::ColorSpace color_space)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
           ThreadScheduler::Current()->CleanupTaskRunner()),
@@ -66,8 +76,7 @@ CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
       size_(size),
       format_(format),
       sk_alpha_type_(sk_alpha_type),
-      color_space_(sk_color_space ? gfx::ColorSpace(*sk_color_space)
-                                  : gfx::ColorSpace::CreateSRGB()),
+      color_space_(color_space),
       filter_quality_(filter_quality) {}
 
 CanvasResource::~CanvasResource() {}
@@ -270,7 +279,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
           size,
           viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
           sk_alpha_type,
-          std::move(sk_color_space)) {
+          SkColorSpaceToGfxColorSpace(std::move(sk_color_space))) {
   if (!shared_image_interface_provider) {
     return;
   }
@@ -407,7 +416,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
           size,
           viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
           sk_alpha_type,
-          std::move(sk_color_space)),
+          SkColorSpaceToGfxColorSpace(std::move(sk_color_space))),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
       is_overlay_candidate_(
@@ -942,7 +951,7 @@ ExternalCanvasResource::ExternalCanvasResource(
                      transferable_resource.size,
                      transferable_resource.format,
                      kPremul_SkAlphaType,
-                     transferable_resource.color_space.ToSkColorSpace()),
+                     transferable_resource.color_space),
       client_si_(std::move(client_si)),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       transferable_resource_(transferable_resource),
@@ -1106,7 +1115,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
           size,
           viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
           sk_alpha_type,
-          std::move(sk_color_space)),
+          SkColorSpaceToGfxColorSpace(std::move(sk_color_space))),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
                                  ->GetCapabilities()

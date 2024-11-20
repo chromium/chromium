@@ -201,7 +201,7 @@ class PLATFORM_EXPORT CanvasResource
                  gfx::Size size,
                  viz::SharedImageFormat format,
                  SkAlphaType sk_alpha_type,
-                 sk_sp<SkColorSpace> sk_color_space);
+                 gfx::ColorSpace color_space);
 
   // Returns true if the resource is backed by memory such that it can be used
   // for direct scanout by the display.
