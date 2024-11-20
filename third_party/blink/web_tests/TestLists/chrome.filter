@@ -23,3 +23,22 @@ virtual/split-http-cache/external/wpt/signed-exchange/reporting/*
 
 # Translator API is implemented in the `//chrome` layer.
 external/wpt/ai/translator/*
+
+# Tests fail on headless shell so run them on Chrome
+external/wpt/client-hints/accept-ch/answers.sub.https.html
+external/wpt/client-hints/accept-ch/feature-policy-navigation/feature-policy.https.html
+external/wpt/client-hints/accept-ch/feature-policy-navigation/no-feature-policy.https.html
+external/wpt/client-hints/accept-ch/feature-policy.sub.https.html
+external/wpt/client-hints/accept-ch/no-feature-policy.sub.https.html
+external/wpt/client-hints/sandbox/iframe-csp-same-origin.https.html
+external/wpt/client-hints/sandbox/iframe-same-origin.https.html
+external/wpt/cookies/attributes/max-age.html
+external/wpt/css/css-overflow/scrollbar-gutter-rtl-001.html
+external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-001.html
+external/wpt/css/css-scrollbars/scrollbar-color-002.html
+external/wpt/css/css-scrollbars/scrollbar-color-003.html
+external/wpt/css/css-scrollbars/scrollbar-width-016.html
+external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
+external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
+external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/report-only-same-origin-report-to.https.html
+external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html

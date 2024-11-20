@@ -30,13 +30,8 @@ external/wpt/*
 -external/wpt/background-fetch/update-ui.https.window.html
 -external/wpt/battery-status/page-visibility.https.html
 -external/wpt/bluetooth/*
--external/wpt/client-hints/accept-ch/answers.sub.https.html
--external/wpt/client-hints/accept-ch/feature-policy*
--external/wpt/client-hints/accept-ch/no-feature-policy.sub.https.html
 -external/wpt/client-hints/critical-ch/redirect.critical.cross-origin.multiple.https.window.html
 -external/wpt/client-hints/critical-ch/redirect.cross-origin.https.window.html
--external/wpt/client-hints/sandbox/iframe-csp-same-origin.https.html
--external/wpt/client-hints/sandbox/iframe-same-origin.https.html
 -external/wpt/client-hints/viewport-size/viewport-size-*
 -external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html
 -external/wpt/compat/webkit-box-clamp-bottom-border.html
@@ -50,7 +45,6 @@ external/wpt/*
 -external/wpt/cookie-store/*
 -external/wpt/cookies/attributes/attributes-ctl.sub.html
 -external/wpt/cookies/attributes/domain.sub.html
--external/wpt/cookies/attributes/max-age.html
 -external/wpt/css/compositing/mix-blend-mode/*
 -external/wpt/css/compositing/root-element-opacity-change.html
 -external/wpt/css/compositing/svg/mix-blend-mode-svg-rectangle.html
@@ -564,7 +558,6 @@ external/wpt/*
 -external/wpt/fedcm/fedcm-manifest-not-in-list.https.html
 -external/wpt/fedcm/fedcm-not-observed-by-service-worker.https.html
 -external/wpt/fedcm/fedcm-returning-account-auto-reauthn.https.html
--external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 -external/wpt/fedcm/lfedcm-identity.discovery.tentative.sub.https.html
 # https://github.com/web-platform-tests/wpt/issues/48078
 -external/wpt/fetch/api/cors/cors-cookies*
@@ -596,7 +589,6 @@ external/wpt/*
 -external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html
 -external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html?single*
 -external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization*
--external/wpt/html/browsers/the-window-object/window-open-windowfeatures-values.html
 -external/wpt/html/canvas/element/compositing/2d.composite.grid.*
 -external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.fillText.html
 -external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.strokeText.html
@@ -684,7 +676,6 @@ external/wpt/*
 -external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-002.html
 -external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-004.html
 -external/wpt/html/editing/editing-0/spelling-and-grammar-checking/spelling-markers-005.html
--external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html
 -external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/rowspan.html
 -external/wpt/html/interaction/focus/the-autofocus-attribute/first-reconnected.html
 -external/wpt/html/interaction/focus/the-autofocus-attribute/not-on-first-task.html
