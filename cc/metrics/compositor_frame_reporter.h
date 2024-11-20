@@ -195,6 +195,7 @@ class CC_EXPORT CompositorFrameReporter {
   };
 
   using SmoothThread = FrameInfo::SmoothThread;
+  using SmoothEffectDrivingThread = FrameInfo::SmoothEffectDrivingThread;
 
   // Holds a processed list of Blink breakdowns with an `Iterator` class to
   // easily iterator over them.

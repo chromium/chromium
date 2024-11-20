@@ -706,13 +706,32 @@ void CompositorFrameReportingController::RemoveActiveTracker(
 
 void CompositorFrameReportingController::SetScrollingThread(
     FrameInfo::SmoothEffectDrivingThread thread) {
+  auto current_scrolling_thread = scrolling_thread_;
+  base::TimeTicks set_time = Now();
+
+  // Assign the thread.
   scrolling_thread_ = thread;
+
+  // keep the history for the last 3 seconds.
+  if (!scroll_thread_history_.empty()) {
+    auto expired_scrolling_thread =
+        scroll_thread_history_.lower_bound(set_time - base::Seconds(3));
+    scroll_thread_history_.erase(scroll_thread_history_.begin(),
+                                 expired_scrolling_thread);
+  }
+
+  // Only traces the history if there is a change in scrolling_thread
+  if (current_scrolling_thread != scrolling_thread_) {
+    scroll_thread_history_.insert(
+        std::make_pair(set_time, current_scrolling_thread));
+  }
 }
 
 void CompositorFrameReportingController::SetThreadAffectsSmoothness(
     FrameInfo::SmoothEffectDrivingThread thread_type,
     bool affects_smoothness) {
   auto current_smooth_thread = GetSmoothThread();
+  base::TimeTicks set_time = Now();
 
   if (thread_type == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     is_compositor_thread_driving_smoothness_ = affects_smoothness;
@@ -724,14 +743,15 @@ void CompositorFrameReportingController::SetThreadAffectsSmoothness(
   // keep the history for the last 3 seconds.
   if (!smooth_thread_history_.empty()) {
     auto expired_smooth_thread =
-        smooth_thread_history_.lower_bound(Now() - base::Seconds(3));
+        smooth_thread_history_.lower_bound(set_time - base::Seconds(3));
     smooth_thread_history_.erase(smooth_thread_history_.begin(),
                                  expired_smooth_thread);
   }
 
   // Only trackes the history if there is a change in smooth_thread_
   if (current_smooth_thread != GetSmoothThread()) {
-    smooth_thread_history_.insert(std::make_pair(Now(), current_smooth_thread));
+    smooth_thread_history_.insert(
+        std::make_pair(set_time, current_smooth_thread));
   }
 }
 
@@ -829,10 +849,21 @@ CompositorFrameReportingController::GetSmoothThread() const {
 CompositorFrameReporter::SmoothThread
 CompositorFrameReportingController::GetSmoothThreadAtTime(
     base::TimeTicks timestamp) const {
-  if (smooth_thread_history_.lower_bound(timestamp) ==
-      smooth_thread_history_.end())
+  auto last_smooth_thread = smooth_thread_history_.lower_bound(timestamp);
+  if (last_smooth_thread == smooth_thread_history_.end()) {
     return GetSmoothThread();
-  return smooth_thread_history_.lower_bound(timestamp)->second;
+  }
+  return last_smooth_thread->second;
+}
+
+CompositorFrameReporter::SmoothEffectDrivingThread
+CompositorFrameReportingController::GetScrollThreadAtTime(
+    base::TimeTicks timestamp) const {
+  auto last_scroll_thread = scroll_thread_history_.lower_bound(timestamp);
+  if (last_scroll_thread == scroll_thread_history_.end()) {
+    return scrolling_thread_;
+  }
+  return last_scroll_thread->second;
 }
 
 CompositorFrameReporter*
@@ -891,15 +922,14 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
         viz::BeginFrameArgs::NORMAL);
     devtools_instrumentation::DidBeginFrame(
         layer_tree_host_id_, args.frame_time, args.frame_id.sequence_number);
-    // ThreadType::kUnknown is used here for scrolling thread, because the
-    // frames reported here could have a scroll interaction active at their
-    // start time, but they were skipped and history of scrolling thread might
-    // change in the diff of start time and report time.
+
+    // Set the scrolling thread based on the global frame sequence trackers
+    // rather than the `scrolling_thread_` member, because the scrolling thread
+    // might have changed for a skipped or backfilled frame.
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, should_report_histograms_,
-        GetSmoothThreadAtTime(timestamp),
-        FrameInfo::SmoothEffectDrivingThread::kUnknown, layer_tree_host_id_,
-        global_trackers_);
+        GetSmoothThreadAtTime(timestamp), GetScrollThreadAtTime(timestamp),
+        layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                          timestamp);
