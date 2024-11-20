@@ -138,6 +138,7 @@ class BaseTest(unittest.TestCase):
                               *,
                               srcjar=False,
                               generate_placeholders=False,
+                              enable_jni_multiplexing=False,
                               per_file_natives=False,
                               **kwargs):
     is_javap = input_files[0].endswith('.class')
@@ -182,6 +183,8 @@ class BaseTest(unittest.TestCase):
       if generate_placeholders:
         placeholder_srcjar_path = os.path.join(tdir, 'placeholders.srcjar')
         cmd += ['--placeholder-srcjar-path', placeholder_srcjar_path]
+      if enable_jni_multiplexing:
+        cmd += ['--enable-jni-multiplexing']
       if per_file_natives:
         cmd += ['--per-file-natives']
 
@@ -460,7 +463,7 @@ class Tests(BaseTest):
 
   def testForTestingKeptMultiplexing(self):
     input_java_file = 'SampleProxyEdgeCases.java'
-    self._TestEndToEndGeneration([input_java_file], srcjar=True)
+    self._TestEndToEndGeneration([input_java_file], enable_jni_multiplexing=True, srcjar=True)
     self._TestEndToEndRegistration([input_java_file],
                                    enable_jni_multiplexing=True,
                                    include_test_only=True)
