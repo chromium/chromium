@@ -153,18 +153,17 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     const base::Value::Dict& host_zoom_dictionary,
     bool sanitize_partition_host_zoom_levels) {
   std::vector<std::string> keys_to_remove;
-  base::Value::Dict host_zoom_dictionary_copy = host_zoom_dictionary.Clone();
-  for (auto [host, value] : host_zoom_dictionary_copy) {
+  for (auto [host, value] : host_zoom_dictionary) {
     std::optional<double> maybe_zoom;
     base::Time last_modified;
 
-    if (value.is_dict()) {
-      base::Value::Dict& dict = value.GetDict();
-      if (dict.empty())
+    if (const base::Value::Dict* dict = value.GetIfDict()) {
+      if (dict->empty()) {
         continue;
+      }
 
-      maybe_zoom = dict.FindDouble(kZoomLevelKey);
-      last_modified = GetTimeStamp(dict);
+      maybe_zoom = dict->FindDouble(kZoomLevelKey);
+      last_modified = GetTimeStamp(*dict);
     } else {
       // Old zoom level that is stored directly as a double.
       maybe_zoom = value.GetIfDouble();
