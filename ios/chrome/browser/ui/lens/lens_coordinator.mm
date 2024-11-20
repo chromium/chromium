@@ -377,6 +377,10 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       kCloseLensViewTimeout);
 }
 
+- (void)lensControllerDidGenerateImage:(UIImage*)image {
+  // NO-OP.
+}
+
 - (void)lensControllerDidSelectURL:(NSURL*)url {
   // This method is called when the user selects a URL within the Lens UI
   // and should be treated as a link press.
