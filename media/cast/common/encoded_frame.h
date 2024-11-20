@@ -24,8 +24,9 @@ struct EncodedFrame {
   // Does not modify |dest->data|.
   void CopyMetadataTo(EncodedFrame* dest) const;
 
-  // If true, the frame is a key frame. Otherwise the frame is dependent.
-  bool is_key_frame;
+  // This frame's dependency relationship with respect to other frames.
+  openscreen::cast::EncodedFrame::Dependency dependency =
+      openscreen::cast::EncodedFrame::Dependency::kUnknown;
 
   // The label associated with this frame.  Implies an ordering relative to
   // other frames in the same stream.
