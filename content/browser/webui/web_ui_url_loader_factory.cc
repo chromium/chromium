@@ -53,17 +53,6 @@ namespace {
 
 class WebUIURLLoaderFactory;
 
-void CallOnError(
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
-    int error_code) {
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(client_remote));
-
-  network::URLLoaderCompletionStatus status;
-  status.error_code = error_code;
-  client->OnComplete(status);
-}
-
 void ReadData(
     network::mojom::URLResponseHeadPtr headers,
     const ui::TemplateReplacements* replacements,
@@ -75,7 +64,7 @@ void ReadData(
     scoped_refptr<base::RefCountedMemory> bytes) {
   TRACE_EVENT0("ui", "WebUIURLLoader::ReadData");
   if (!bytes) {
-    CallOnError(std::move(client_remote), net::ERR_FAILED);
+    webui::CallOnError(std::move(client_remote), net::ERR_FAILED);
     return;
   }
 
@@ -93,69 +82,12 @@ void ReadData(
     bytes = base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   }
 
-  // The use of MojoCreateDataPipeOptions below means we'll be using uint32_t
-  // for sizes / offsets.
-  if (!base::IsValueInRangeForNumericType<uint32_t>(bytes->size())) {
-    CallOnError(std::move(client_remote), net::ERR_INSUFFICIENT_RESOURCES);
+  // Send the bytes to the client. Failed requests do not count towards load
+  // time metrics.
+  if (!webui::SendData(std::move(headers), std::move(client_remote),
+                       std::move(requested_range), bytes)) {
     return;
   }
-
-  uint32_t output_offset = 0;
-  size_t output_size = bytes->size();
-  if (requested_range) {
-    if (!requested_range->ComputeBounds(output_size)) {
-      CallOnError(std::move(client_remote),
-                  net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
-      return;
-    }
-    DCHECK(base::IsValueInRangeForNumericType<uint32_t>(
-        requested_range->first_byte_position()))
-        << "Expecting ComputeBounds() to enforce it";
-    output_offset = requested_range->first_byte_position();
-    output_size = requested_range->last_byte_position() -
-                  requested_range->first_byte_position() + 1;
-  }
-
-  MojoCreateDataPipeOptions options;
-  options.struct_size = sizeof(MojoCreateDataPipeOptions);
-  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
-  options.element_num_bytes = 1;
-  options.capacity_num_bytes = output_size;
-  mojo::ScopedDataPipeProducerHandle pipe_producer_handle;
-  mojo::ScopedDataPipeConsumerHandle pipe_consumer_handle;
-  MojoResult create_result = mojo::CreateDataPipe(
-      &options, pipe_producer_handle, pipe_consumer_handle);
-  CHECK_EQ(create_result, MOJO_RESULT_OK);
-
-  base::span<uint8_t> buffer;
-  MojoResult result = pipe_producer_handle->BeginWriteData(
-      output_size, MOJO_WRITE_DATA_FLAG_NONE, buffer);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_GE(buffer.size(), output_size);
-  CHECK_LE(output_offset + output_size, bytes->size());
-
-  buffer.copy_prefix_from(
-      base::span(*bytes).subspan(output_offset, output_size));
-  result = pipe_producer_handle->EndWriteData(output_size);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-
-  // For media content, |content_length| must be known upfront for data that is
-  // assumed to be fully buffered (as opposed to streamed from the network),
-  // otherwise the media player will get confused and refuse to play.
-  // Content delivered via chrome:// URLs is assumed fully buffered.
-  headers->content_length = output_size;
-
-  mojo::Remote<network::mojom::URLLoaderClient> client(
-      std::move(client_remote));
-
-  client->OnReceiveResponse(std::move(headers), std::move(pipe_consumer_handle),
-                            std::nullopt);
-
-  network::URLLoaderCompletionStatus status(net::OK);
-  status.encoded_data_length = output_size;
-  status.encoded_body_length = output_size;
-  status.decoded_body_length = output_size;
-  client->OnComplete(status);
 
   UMA_HISTOGRAM_TIMES("WebUI.WebUIURLLoaderFactory.URLRequestLoadTime",
                       url_request_elapsed_timer.Elapsed());
@@ -193,7 +125,7 @@ void StartURLLoader(
 
   // NOTE: this duplicates code in URLDataManagerBackend::StartRequest.
   if (!URLDataManagerBackend::CheckURLIsValid(request.url)) {
-    CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
+    webui::CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
     return;
   }
 
@@ -201,24 +133,24 @@ void StartURLLoader(
       URLDataManagerBackend::GetForBrowserContext(browser_context)
           ->GetDataSourceFromURL(request.url);
   if (!source) {
-    CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
+    webui::CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
     return;
   }
 
   if (!source->source()->ShouldServiceRequest(request.url, browser_context,
                                               -1)) {
-    CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
+    webui::CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
     return;
   }
 
   // Load everything by default, but respect the Range header if present.
-  base::expected<net::HttpByteRange, GetRequestedRangeError> range_or_error =
-      GetRequestedRange(request.headers);
+  base::expected<net::HttpByteRange, webui::GetRequestedRangeError>
+      range_or_error = webui::GetRequestedRange(request.headers);
   // Errors (aside from 'no Range header') should be surfaced to the client.
   if (!range_or_error.has_value() &&
-      range_or_error.error() != GetRequestedRangeError::kNoRanges) {
-    CallOnError(std::move(client_remote),
-                net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+      range_or_error.error() != webui::GetRequestedRangeError::kNoRanges) {
+    webui::CallOnError(std::move(client_remote),
+                       net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
     return;
   }
   std::optional<net::HttpByteRange> maybe_range =
@@ -333,14 +265,14 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (browser_context_.WasInvalidated()) {
       DVLOG(1) << "Context has been destroyed";
-      CallOnError(std::move(client), net::ERR_FAILED);
+      webui::CallOnError(std::move(client), net::ERR_FAILED);
       DisconnectReceiversAndDestroy();
       return;
     }
 
     if (frame_tree_node_id_ &&
         !FrameTreeNode::GloballyFindByID(frame_tree_node_id_)) {
-      CallOnError(std::move(client), net::ERR_FAILED);
+      webui::CallOnError(std::move(client), net::ERR_FAILED);
       return;
     }
 
