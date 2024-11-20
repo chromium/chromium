@@ -143,10 +143,7 @@
 
 - (void)start {
   [super start];
-  ProfileIOS* profile = self.browser->GetProfile();
-  if (profile->IsOffTheRecord()) {
-    profile = profile->GetOriginalProfile();
-  };
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(profile);
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
