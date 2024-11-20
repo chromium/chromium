@@ -442,7 +442,11 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
-    return profile_metrics::BrowserProfileType::kRegular;
+    return profile_type_;
+  }
+
+  void SetProfileType(profile_metrics::BrowserProfileType profile_type) {
+    profile_type_ = profile_type;
   }
 
   void RunTestCase(const TestState& test_state,
@@ -529,6 +533,9 @@ class PrivacySandboxServiceTest : public testing::Test {
   raw_ptr<TestingProfile> default_profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+
+  profile_metrics::BrowserProfileType profile_type_ =
+      profile_metrics::BrowserProfileType::kRegular;
 
   base::test::ScopedFeatureList outer_feature_list_;
   base::test::ScopedFeatureList inner_feature_list_;
@@ -1235,6 +1242,27 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
     EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
   }
 }
+
+using PrivacySandboxDarkLaunchMetrics = PrivacySandboxServiceTest;
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       IdentityManagerHistogramSkippedForNonRegularProfile) {
+  base::HistogramTester histogram_tester;
+  SetProfileType(profile_metrics::BrowserProfileType::kGuest);
+  CreateService();
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", 0);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       IdentityManagerHistogramEmittedForRegularProfile) {
+  base::HistogramTester histogram_tester;
+  SetProfileType(profile_metrics::BrowserProfileType::kRegular);
+  CreateService();
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", 1);
+}
+
 using PrivacySandboxServiceDeathTest = PrivacySandboxServiceTest;
 
 TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {

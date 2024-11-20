@@ -395,6 +395,10 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // Called when the Ad measurement preference is changed.
   void OnAdMeasurementPrefChanged();
 
+  // Called on Startup to initialize the IdentityManager observation +
+  // histograms.
+  void MaybeInitIdentityManager();
+
   // Returns a PrivacySandboxCountries reference.
   PrivacySandboxCountries* GetPrivacySandboxCountries();
 

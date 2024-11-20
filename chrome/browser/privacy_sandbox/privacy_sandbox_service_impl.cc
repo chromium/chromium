@@ -376,7 +376,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
       browsing_topics_service_(browsing_topics_service),
       first_party_sets_policy_service_(first_party_sets_service),
       privacy_sandbox_countries_(privacy_sandbox_countries) {
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
   // Create notice storage
   notice_storage_ =
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
@@ -453,6 +452,20 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   // Record preference state for UMA at each startup.
   LogPrivacySandboxState();
 
+  // Init the Identity Manager Observation and metrics.
+  MaybeInitIdentityManager();
+}
+
+PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
+
+void PrivacySandboxServiceImpl::MaybeInitIdentityManager() {
+  // Non Regular Profiles are excluded from anything Dark Launch related.
+  if (!IsRegularProfile(profile_type_)) {
+    return;
+  }
+
+  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
+
   if (!identity_manager_) {
     base::UmaHistogramBoolean(
         "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", false);
@@ -470,8 +483,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   // Account capabilities are updated asynchronously, so metrics relating to
   // those will be recorded once in `OnExtendedAccountInfoUpdated`.
 }
-
-PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 void PrivacySandboxServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
