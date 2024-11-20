@@ -28,7 +28,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {cast} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -261,8 +260,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
 
   private onKeyboardClick_(): void {
     Router.getInstance().navigateTo(
-        isInputDeviceSettingsSplitEnabled() ? routes.PER_DEVICE_KEYBOARD :
-                                              routes.KEYBOARD,
+        routes.KEYBOARD,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
