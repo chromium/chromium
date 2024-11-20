@@ -12863,21 +12863,6 @@
             ]
         }
     ],
-    "KeyboardAccessoryUpgrade": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSKeyboardAccessoryUpgrade"
-                    ]
-                }
-            ]
-        }
-    ],
     "KeyboardAndPointerLockPrompt": [
         {
             "platforms": [
