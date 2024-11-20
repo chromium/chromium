@@ -104,8 +104,8 @@ source_set("util") {
   deps = [
     ":coordinators",
     "//base",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation:positioner",
     "//ios/chrome/browser/overlays/model",
-    "//ios/chrome/browser/ui/infobars/presentation:positioner",
   ]
 }
 
@@ -131,6 +131,7 @@ source_set("unit_tests") {
     ":util",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/test_modality",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
@@ -141,7 +142,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test:test_support",
     "//ios/web/common",

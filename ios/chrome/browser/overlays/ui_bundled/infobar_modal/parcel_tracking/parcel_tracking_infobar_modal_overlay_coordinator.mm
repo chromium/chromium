@@ -5,14 +5,14 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/infobars/ui_bundled/modals/parcel_tracking/infobar_parcel_tracking_table_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/infobars/modals/parcel_tracking/infobar_parcel_tracking_table_view_controller.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/parcel_tracking/parcel_tracking_infobar_modal_overlay_mediator.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 @interface ParcelTrackingInfobarModalOverlayCoordinator ()

@@ -18,7 +18,7 @@ source_set("test") {
     "//components/infobars/core",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
-    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//testing/gmock",
   ]
 }

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_BANNER_INFOBAR_BANNER_OVERLAY_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_UI_BUNDLED_INFOBAR_BANNER_INFOBAR_BANNER_OVERLAY_MEDIATOR_H_
 
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
 
 namespace feature_engagement {

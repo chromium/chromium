@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
-#import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_transition_driver.h"
+#import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
+#import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_transition_driver.h"
+#import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_util.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"

@@ -13,6 +13,7 @@ source_set("passwords") {
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
@@ -21,7 +22,6 @@ source_set("passwords") {
     "//ios/chrome/browser/passwords/model:infobar_delegates",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners",
     "//ui/base",
   ]
 }
@@ -41,6 +41,8 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/ui_bundled/banners/test",
+    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
@@ -51,8 +53,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners/test",
-    "//ios/chrome/browser/ui/infobars/test",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",

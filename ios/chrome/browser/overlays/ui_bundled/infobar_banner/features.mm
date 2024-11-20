@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/features.h"
 
-#import "ios/chrome/browser/ui/infobars/infobar_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/infobar_constants.h"
 
 BASE_FEATURE(kPasswordInfobarDisplayLength,
              "PasswordInfobarDisplayLength",

@@ -27,6 +27,7 @@ source_set("mediators") {
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model/overlays:util",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
@@ -34,7 +35,6 @@ source_set("mediators") {
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/ui/infobars/banners",
     "//ui/base",
   ]
 }
@@ -52,6 +52,8 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/infobars/ui_bundled/banners/test",
+    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/default",
@@ -61,8 +63,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/ui_bundled/test",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/translate/model:test_support",
-    "//ios/chrome/browser/ui/infobars/banners/test",
-    "//ios/chrome/browser/ui/infobars/test",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",
