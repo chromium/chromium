@@ -893,4 +893,41 @@ TEST_F(MenuItemViewA11yTest, AccessibleSelectedTest) {
   EXPECT_TRUE(data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
+TEST_F(MenuItemViewA11yTest, AccessibleExpandedCollapsedState) {
+  MenuItemView* non_submenu =
+      menu_item_view()->AppendMenuItem(1, u"Item, not a submenu");
+  MenuItemView* submenu = menu_item_view()->AppendSubMenu(1, u"Submenu");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  // The non-submenu item should not have an expanded/collapsed state.
+  ui::AXNodeData data;
+  non_submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kNone);
+
+  // The submenu item should have a collapsed state.
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+
+  // The submenu item should have an expanded state after expanding.
+  ui::AXActionData expand_action_data;
+  expand_action_data.action = ax::mojom::Action::kExpand;
+  submenu->HandleAccessibleAction(expand_action_data);
+
+  data = ui::AXNodeData();
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_EQ(data.GetHasPopup(), ax::mojom::HasPopup::kMenu);
+}
 }  // namespace views

@@ -501,6 +501,8 @@ void SubmenuView::ShowAt(const MenuHost::InitParams& init_params) {
   // Fire kMenuPopupStart for each menu/submenu that is shown.
   NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
 
+  GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
+
   // Announce if the menu/submenu is empty.
   if (GetRowCount() == 0) {
     GetViewAccessibility().AnnouncePolitely(
@@ -521,6 +523,7 @@ void SubmenuView::Close() {
   if (host_) {
     host_->DestroyMenuHost();
     host_ = nullptr;
+    GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
   }
 }
 
@@ -542,6 +545,7 @@ void SubmenuView::Hide() {
       NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
 
     host_->HideMenuHost();
+    GetMenuItem()->UpdateAccessibleExpandedCollapsedState();
   }
 
   if (scroll_animator_->is_scrolling())
