@@ -322,19 +322,6 @@ class AutotestPrivateIsArcProvisionedFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class AutotestPrivateGetLacrosInfoFunction : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getLacrosInfo",
-                             AUTOTESTPRIVATE_GETLACROSINFO)
-
- private:
-  ~AutotestPrivateGetLacrosInfoFunction() override;
-  ResponseAction Run() override;
-  static api::autotest_private::LacrosState ToLacrosState(
-      crosapi::BrowserManager::State state);
-  static api::autotest_private::LacrosMode ToLacrosMode(bool is_enabled);
-};
-
 class AutotestPrivateGetArcAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.getArcApp",

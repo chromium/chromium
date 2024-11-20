@@ -2053,51 +2053,6 @@ AutotestPrivateIsArcProvisionedFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// AutotestPrivateGetLacrosInfoFunction
-///////////////////////////////////////////////////////////////////////////////
-
-AutotestPrivateGetLacrosInfoFunction::~AutotestPrivateGetLacrosInfoFunction() =
-    default;
-
-// static
-api::autotest_private::LacrosState
-AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
-    crosapi::BrowserManager::State state) {
-  switch (state) {
-    case crosapi::BrowserManager::State::NOT_INITIALIZED:
-      return api::autotest_private::LacrosState::kNotInitialized;
-    case crosapi::BrowserManager::State::UNAVAILABLE:
-      return api::autotest_private::LacrosState::kUnavailable;
-  }
-}
-
-// static
-api::autotest_private::LacrosMode
-AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(bool is_enabled) {
-  return is_enabled ? api::autotest_private::LacrosMode::kOnly
-                    : api::autotest_private::LacrosMode::kDisabled;
-}
-
-ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
-  DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
-  auto* browser_manager = crosapi::BrowserManager::Get();
-  return RespondNow(WithArguments(
-      base::Value::Dict()
-          .Set("state", api::autotest_private::ToString(
-                            ToLacrosState(browser_manager->state_)))
-          .Set("isKeepAlive", browser_manager->IsKeepAliveEnabled())
-          // TODO(neis): Rename lacrosPath to avoid confusion, or make it be the
-          // binary path. Either requires changes in tast-tests.
-          .Set("lacrosPath",
-               browser_manager->lacros_path().empty()
-                   ? ""
-                   : browser_manager->lacros_path().DirName().MaybeAsASCII())
-          .Set("mode", api::autotest_private::ToString(ToLacrosMode(
-                           crosapi::browser_util::IsLacrosEnabled())))
-          .Set("isEnabled", crosapi::browser_util::IsLacrosEnabled())));
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateGetArcAppFunction
 ///////////////////////////////////////////////////////////////////////////////
 

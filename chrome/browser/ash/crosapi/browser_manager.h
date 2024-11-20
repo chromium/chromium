@@ -66,10 +66,6 @@ namespace drive {
 class DriveIntegrationService;
 }
 
-namespace extensions {
-class AutotestPrivateGetLacrosInfoFunction;
-}
-
 namespace policy {
 class CloudPolicyCore;
 }
@@ -325,8 +321,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // installation when lacros-chrome starts at arbitrary points of time, so it
   // needs to be kept alive.
   friend class ash::ApkWebAppService;
-  // Only for exposing state_ to Tast tests.
-  friend class extensions::AutotestPrivateGetLacrosInfoFunction;
   // In LacrosOnly mode, certificate provider and smart card connector
   // extensions will be running in Lacros, but policy implementation stays in
   // Ash. Thus, session controller needs to keep Lacros alive to keep track of

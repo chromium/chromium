@@ -2489,7 +2489,7 @@ Called by update_extension_histograms.py.-->
   <int value="1638" label="TERMINALPRIVATE_SETPREFS"/>
   <int value="1639" label="DELETED_AUTOTESTPRIVATE_GETCRYPTOHOMERECOVERYDATA"/>
   <int value="1640" label="TERMINALPRIVATE_OPENSETTINGSSUBPAGE"/>
-  <int value="1641" label="AUTOTESTPRIVATE_GETLACROSINFO"/>
+  <int value="1641" label="DELETED_AUTOTESTPRIVATE_GETLACROSINFO"/>
   <int value="1642" label="LOGIN_LAUNCHSAMLUSERSESSION"/>
   <int value="1643" label="LOGIN_LOCKCURRENTSESSION"/>
   <int value="1644" label="LOGIN_UNLOCKCURRENTSESSION"/>
