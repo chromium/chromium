@@ -2145,11 +2145,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserAgentReduction,
     prefs::kUserAgentReduction,
     base::Value::Type::INTEGER},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  { key::kDeviceLoginScreenWebUILazyLoading,
-    ash::prefs::kLoginScreenWebUILazyLoading,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_MAC)
   { key::kWarnBeforeQuittingEnabled,
     prefs::kConfirmToQuitEnabled,

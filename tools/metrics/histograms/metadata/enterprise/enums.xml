@@ -1805,7 +1805,6 @@ chromium-metrics-reviews@google.com.
   <int value="931" label="OnPrintEnterpriseConnector"/>
   <int value="932" label="UserAgentReduction"/>
   <int value="933" label="OriginAgentClusterDefaultEnabled"/>
-  <int value="934" label="DeviceLoginScreenWebUILazyLoading"/>
   <int value="935" label="ProjectorEnabled"/>
   <int value="936" label="PhoneHubCameraRollAllowed"/>
   <int value="937" label="EcheAllowed"/>

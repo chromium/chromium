@@ -679,12 +679,6 @@ BASE_FEATURE(kEnableKeyboardRewriterFix,
              "EnableKeyboardRewriterFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Login WebUI was always loaded for legacy reasons even when it was not needed.
-// When enabled, it will make login WebUI loaded only before showing it.
-BASE_FEATURE(kEnableLazyLoginWebUILoading,
-             "EnableLazyLoginWebUILoading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",

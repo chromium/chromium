@@ -149,7 +149,7 @@ bool IsLazyWebUILoadingEnabled() {
         ash::prefs::kLoginScreenWebUILazyLoading);
   }
 
-  return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
+  return true;
 }
 
 void UpdatePinAuthAvailability(const AccountId& account_id) {
