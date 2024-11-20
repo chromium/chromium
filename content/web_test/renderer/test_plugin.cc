@@ -378,8 +378,7 @@ bool TestPlugin::PrepareTransferableResource(
     return false;
   gfx::Size size(rect_.size());
 
-  DCHECK(shared_image_);
-  if (shared_bitmap_) {
+  if (shared_image_ && shared_bitmap_) {
     *resource = viz::TransferableResource::MakeSoftwareSharedImage(
         shared_image_, sync_token_, shared_image_->size(),
         viz::SinglePlaneFormat::kBGRA_8888,
@@ -387,7 +386,7 @@ bool TestPlugin::PrepareTransferableResource(
     *release_callback =
         base::BindOnce(&ReleaseSharedImage, std::move(shared_image_));
     sync_token_ = gpu::SyncToken();
-  } else {
+  } else if (shared_image_) {
     *resource = viz::TransferableResource::MakeGpu(
         shared_image_, GL_TEXTURE_2D, sync_token_, size,
         viz::SinglePlaneFormat::kRGBA_8888, false /* is_overlay_candidate */);
