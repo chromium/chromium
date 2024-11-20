@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "url/gurl.h"
 
 namespace tabs {
 
@@ -141,13 +142,17 @@ TabDeclutterController::GetDuplicateTabs() {
        tab_index++) {
     tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
 
+    if (IsTabExcluded(tab)) {
+      continue;
+    }
+
     if (tab->IsPinned() || tab->GetGroup().has_value()) {
       continue;
     }
 
     GURL url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
 
-    if (url.is_empty()) {
+    if (!url.is_valid()) {
       continue;
     }
 
@@ -178,8 +183,7 @@ std::vector<tabs::TabInterface*> TabDeclutterController::GetStaleTabs() {
        tab_index++) {
     tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
 
-    if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab) !=
-        excluded_tabs_.end()) {
+    if (IsTabExcluded(tab)) {
       continue;
     }
 
@@ -234,6 +238,7 @@ void TabDeclutterController::DeclutterTabs(
   }
 
   excluded_tabs_.clear();
+  excluded_urls_.clear();
 }
 
 void TabDeclutterController::DidBecomeActive(BrowserWindowInterface* browser) {
@@ -250,10 +255,15 @@ void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabInterface* tab) {
     return;
   }
 
-  if (std::find(excluded_tabs_.begin(), excluded_tabs_.end(), tab) ==
-      excluded_tabs_.end()) {
-    excluded_tabs_.push_back(tab);
+  excluded_tabs_.insert(tab);
+}
+
+void TabDeclutterController::ExcludeFromDuplicateTabs(GURL url) {
+  if (!url.is_valid()) {
+    return;
   }
+
+  excluded_urls_.insert(url.GetWithoutRef());
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
@@ -267,6 +277,19 @@ bool TabDeclutterController::DeclutterNudgeCriteriaMet(
   return HasNewUnusedTabsForNudge(stale_tabs, duplicate_tabs) &&
          (DeclutterStaleTabsNudgeCriteriaMet(stale_tabs) ||
           DeclutterDuplicateTabsNudgeCriteriaMet(duplicate_tabs));
+}
+
+bool TabDeclutterController::IsTabExcluded(tabs::TabInterface* tab) const {
+  if (excluded_tabs_.find(tab) != excluded_tabs_.end()) {
+    return true;
+  }
+
+  GURL url = tab->GetContents()->GetLastCommittedURL().GetWithoutRef();
+  if (excluded_urls_.find(url) != excluded_urls_.end()) {
+    return true;
+  }
+
+  return false;
 }
 
 bool TabDeclutterController::HasNewUnusedTabsForNudge(

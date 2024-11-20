@@ -529,3 +529,31 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
 
   tab_declutter_controller()->RemoveObserver(&fake_observer);
 }
+
+IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
+                       TestExcludeTabsFromDedupe) {
+  FakeTabDeclutterObserver fake_observer;
+  tab_declutter_controller()->AddObserver(&fake_observer);
+
+  // Add 2 duplicate tab clusters.
+  GURL duplicate_url_1(embedded_test_server()->GetURL("/links.html"));
+  GURL duplicate_url_2(embedded_test_server()->GetURL("/title1.html"));
+
+  AddDuplicateTabs(3, duplicate_url_1, 1);
+  AddDuplicateTabs(2, duplicate_url_2, 1);
+
+  tab_declutter_controller()->ExcludeFromDuplicateTabs(duplicate_url_1);
+
+  tab_declutter_controller()->set_next_nudge_valid_time_ticks_for_testing(
+      base::TimeTicks::Min());
+  tab_declutter_controller()->GetDeclutterTimerForTesting()->user_task().Run();
+
+  EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
+
+  std::map<GURL, std::vector<tabs::TabInterface*>> processed_duplicates =
+      fake_observer.processed_duplicate_tabs();
+
+  EXPECT_EQ(processed_duplicates.count(duplicate_url_1), 0ul);
+  EXPECT_EQ(processed_duplicates.count(duplicate_url_2), 1ul);
+  EXPECT_EQ(processed_duplicates[duplicate_url_2].size(), 2ul);
+}

@@ -90,6 +90,8 @@ class TabDeclutterController {
 
   void ExcludeFromStaleTabs(tabs::TabInterface* tabs);
 
+  void ExcludeFromDuplicateTabs(GURL url);
+
   void DidBecomeActive(BrowserWindowInterface* browser_window_interface);
 
   void DidBecomeInactive(BrowserWindowInterface* browser_window_interface);
@@ -132,6 +134,8 @@ class TabDeclutterController {
 
   void StartNudgeTimer();
 
+  bool IsTabExcluded(tabs::TabInterface* tab) const;
+
   // Duration of inactivity after which a tab is considered stale.
   base::TimeDelta stale_tab_threshold_duration_;
   // Interval between a recomputation of stale tabs.
@@ -152,7 +156,8 @@ class TabDeclutterController {
 
   base::ObserverList<TabDeclutterObserver> observers_;
   raw_ptr<TabStripModel> tab_strip_model_;
-  std::vector<tabs::TabInterface*> excluded_tabs_;
+  std::set<tabs::TabInterface*> excluded_tabs_;
+  std::set<GURL> excluded_urls_;
 
   bool is_active_;
   // Holds subscriptions for BrowserWindowInterface callbacks.
