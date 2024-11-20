@@ -2695,8 +2695,8 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac13 ] external/wpt/webrtc/protocol/rtp-headerextensions.html [ Timeout ]
-[ Mac15 ] external/wpt/webrtc/protocol/rtp-headerextensions.html [ Timeout ]
+crbug.com/379805760 [ Mac13 ] external/wpt/webrtc/protocol/rtp-headerextensions.html [ Timeout ]
+crbug.com/379805760 [ Mac15 ] external/wpt/webrtc/protocol/rtp-headerextensions.html [ Timeout ]
 crbug.com/379776582 [ Mac14 ] external/wpt/webrtc-encoded-transform/script-change-transform.https.html [ Timeout ]
 crbug.com/379776582 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-serviceworker-failure.https.html [ Timeout ]
 crbug.com/379779783 [ Mac15 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
