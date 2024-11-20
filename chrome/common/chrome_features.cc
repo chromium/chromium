@@ -729,6 +729,10 @@ BASE_FEATURE(kIncompatibleApplicationsWarning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kInternalOnlyUisPref,
+             "InternalOnlyUisPref",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables automatic updates of Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppAutomaticUpdates,

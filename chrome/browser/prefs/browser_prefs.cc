@@ -1690,6 +1690,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   registry->RegisterBooleanPref(prefs::kFeatureNotificationsEnabled, true);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  registry->RegisterBooleanPref(prefs::kInternalOnlyUisEnabled, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);

@@ -428,6 +428,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4080],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/internal_debug_pages_disabled/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4090],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/invalidations/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [4100],

@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_GALLERY_WEBUI_GALLERY_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_GALLERY_WEBUI_GALLERY_UI_H_
 
+#include "chrome/browser/ui/webui/internal_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -22,11 +22,10 @@ class ColorChangeHandler;
 class WebuiGalleryUI;
 
 class WebuiGalleryUIConfig
-    : public content::DefaultWebUIConfig<WebuiGalleryUI> {
+    : public webui::DefaultInternalWebUIConfig<WebuiGalleryUI> {
  public:
   WebuiGalleryUIConfig()
-      : DefaultWebUIConfig(content::kChromeUIScheme,
-                           chrome::kChromeUIWebuiGalleryHost) {}
+      : DefaultInternalWebUIConfig(chrome::kChromeUIWebuiGalleryHost) {}
 };
 
 // The Web UI controller for the chrome://webui-gallery page.

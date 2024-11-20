@@ -18699,6 +18699,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_SELECT_AUDIO_OUTPUT_DIALOG_CHOOSE_DEVICE" desc="Text displayed above the list of audio output devices in the selection dialog.">
       Choose an audio output device
     </message>
+
+    <!-- Internal debug pages disabled interstitial. -->
+    <message name="IDS_INTERNAL_DEBUG_PAGES_DISABLED_HEADING" desc="This is the heading for the page that appears when a user attempts to load an internal developer debugging page when such pages are disabled by a pref.">
+      Internal debugging pages are currently disabled.
+    </message>
   </messages>
 </release>
 </grit>

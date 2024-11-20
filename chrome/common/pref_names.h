@@ -3258,6 +3258,8 @@ inline constexpr char kFeatureNotificationsEnabled[] =
     "feature_notifications_enabled";
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+inline constexpr char kInternalOnlyUisEnabled[] = "internal_only_uis_enabled";
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 
