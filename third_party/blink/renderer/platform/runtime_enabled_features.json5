@@ -2372,8 +2372,9 @@
     },
     {
       // TODO(crbug.com/1416284): Enables popover=hint functionality.
+      // This shipped in M133, and this flag can be removed in M135.
       name: "HTMLPopoverHint",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HTMLSelectElementShowPicker",
