@@ -565,21 +565,6 @@ void GpuServiceImpl::InitializeWithHost(
   gpu::Scheduler* scheduler = nullptr;
 #endif
 
-  DCHECK(main_runner_->BelongsToCurrentThread());
-
-  mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
-  gpu_host->DidInitialize(gpu_info_, gpu_feature_info_,
-                          gpu_info_for_hardware_gpu_,
-                          gpu_feature_info_for_hardware_gpu_, gpu_extra_info_);
-  gpu_host_ = mojo::SharedRemote<mojom::GpuHost>(gpu_host.Unbind(), io_runner_);
-  if (!in_host_process()) {
-    // The global callback is reset from the dtor. So Unretained() here is safe.
-    // Note that the callback can be called from any thread. Consequently, the
-    // callback cannot use a WeakPtr.
-    GetLogMessageManager()->InstallPostInitializeLogHandler(base::BindRepeating(
-        &GpuServiceImpl::RecordLogMessage, base::Unretained(this)));
-  }
-
   if (!sync_point_manager) {
     sync_point_manager = CreateSyncPointManager();
   }
@@ -593,15 +578,30 @@ void GpuServiceImpl::InitializeWithHost(
 #endif
   }
 
+  if (scheduler) {
+    scheduler_ = scheduler;
+  } else {
+    scheduler_ = CreateScheduler(sync_point_manager);
+  }
+
   shutdown_event_ = shutdown_event;
   if (!shutdown_event_) {
     shutdown_event_ = CreateShutdownEvent();
   }
 
-  if (scheduler) {
-    scheduler_ = scheduler;
-  } else {
-    scheduler_ = CreateScheduler(sync_point_manager);
+  DCHECK(main_runner_->BelongsToCurrentThread());
+
+  mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
+  gpu_host->DidInitialize(gpu_info_, gpu_feature_info_,
+                          gpu_info_for_hardware_gpu_,
+                          gpu_feature_info_for_hardware_gpu_, gpu_extra_info_);
+  gpu_host_ = mojo::SharedRemote<mojom::GpuHost>(gpu_host.Unbind(), io_runner_);
+  if (!in_host_process()) {
+    // The global callback is reset from the dtor. So Unretained() here is safe.
+    // Note that the callback can be called from any thread. Consequently, the
+    // callback cannot use a WeakPtr.
+    GetLogMessageManager()->InstallPostInitializeLogHandler(base::BindRepeating(
+        &GpuServiceImpl::RecordLogMessage, base::Unretained(this)));
   }
 
   // Defer creation of the render thread. This is to prevent it from handling
