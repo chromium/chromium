@@ -74,8 +74,8 @@ def add_common_args(parser):
       '-o',
       type=pathlib.Path,
       help='Path to the build dir to use for compilation and/or for invoking '
-      'test binaries. Will use the output path used by the builder if not '
-      'specified (likely //out/Release/).')
+      'test binaries. Will use a build dir in //out/ named after the builder '
+      'if not specified: //out/UTR${{builder_name}}')
   parser.add_argument(
       '--recipe-dir',
       '--recipe-path',
@@ -211,6 +211,13 @@ def main():
   if not builder_props:
     return 1
 
+  build_dir = args.build_dir
+  if not args.build_dir:
+    build_dir = _SRC_DIR.joinpath('out', 'UTR' + '_'.join(args.builder.split()))
+    logging.info('[cyan]Using the following build dir:[/]')
+    logging.getLogger('basic_logger').info(build_dir)
+    logging.info('')
+
   if not args.recipe_dir:
     recipes_path = cipd.fetch_recipe_bundle(project,
                                             args.verbosity).joinpath('recipes')
@@ -229,7 +236,7 @@ def main():
       skip_compile,
       skip_test,
       args.force,
-      args.build_dir,
+      build_dir,
       additional_test_args=None if skip_test else args.additional_test_args,
       reuse_task=args.reuse_task,
       skip_coverage=not skip_compile and args.no_coverage_instrumentation,
