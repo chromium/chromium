@@ -34,7 +34,7 @@ void DataSharingUIDelegateIOS::HandleShareURLIntercepted(
   }
 
   UIViewController* baseViewController =
-      browser->GetSceneState().window.rootViewController;
+      browser->GetSceneState().rootViewController;
 
   while (baseViewController.presentedViewController) {
     baseViewController = baseViewController.presentedViewController;
