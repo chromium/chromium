@@ -11,7 +11,6 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
