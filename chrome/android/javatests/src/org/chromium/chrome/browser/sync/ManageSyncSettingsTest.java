@@ -1117,6 +1117,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/380024812")
     @Feature({"Sync", "RenderTest"})
     @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSigninSettingsTopAvatarWithNoName() throws Exception {
