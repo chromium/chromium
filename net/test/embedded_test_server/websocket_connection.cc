@@ -132,27 +132,28 @@ void WebSocketConnection::DisconnectAfterAnyWritesDone() {
     return;
   }
 
-  if (pending_buffer_ == nullptr) {
+  if (!pending_buffer_) {
     DisconnectImmediately();
     return;
   }
 
-  handler_.reset();
   should_disconnect_after_write_ = true;
   state_ = WebSocketState::kDisconnectingSoon;
+  handler_.reset();
 }
 
 void WebSocketConnection::DisconnectImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!stream_socket_) {
     DVLOG(3) << "Socket is already disconnected.";
+    handler_.reset();
     return;
   }
-  handler_.reset();
 
   // Intentionally not calling Disconnect(), as it doesn't work with
   // SSLServerSocket. Resetting the socket here is sufficient to disconnect.
   ResetStreamSocket();
+  handler_.reset();
 }
 
 void WebSocketConnection::ResetStreamSocket() {
@@ -199,7 +200,7 @@ void WebSocketConnection::PerformWrite()
   const int result = stream_socket_->Write(
       pending_buffer_.get(), pending_buffer_->BytesRemaining(),
       base::BindOnce(&WebSocketConnection::OnWriteComplete,
-                     base::Unretained(this)),
+                     base::WrapRefCounted(this)),
       DefineNetworkTrafficAnnotation(
           "test", "Traffic annotation for unit, browser and other tests"));
 
@@ -234,16 +235,17 @@ void WebSocketConnection::OnWriteComplete(int result)
   }
 
   if (should_disconnect_after_write_) {
-    ResetStreamSocket();
+    DisconnectImmediately();
   }
 }
 
 void WebSocketConnection::Read() VALID_CONTEXT_REQUIRED(sequence_checker_) {
   read_buffer_ = base::MakeRefCounted<IOBufferWithSize>(4096);
 
-  const int result = stream_socket_->Read(
-      read_buffer_.get(), read_buffer_->size(),
-      base::BindOnce(&WebSocketConnection::OnReadComplete, this));
+  const int result =
+      stream_socket_->Read(read_buffer_.get(), read_buffer_->size(),
+                           base::BindOnce(&WebSocketConnection::OnReadComplete,
+                                          base::WrapRefCounted(this)));
   if (result != ERR_IO_PENDING) {
     OnReadComplete(result);
   }
