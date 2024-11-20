@@ -88,6 +88,7 @@ if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   sys.path.append(str(TELEMETRY_DIR))
   from telemetry.internal.browser import browser_finder
   from telemetry.internal.browser import browser_options
+  from telemetry.core import util
   from telemetry.internal.util import binary_manager
 else:
   print('Optional telemetry library not available.')
@@ -1025,7 +1026,48 @@ def parse_arguments(args):
   return options
 
 
+def _set_cwd():
+  """Change current working directory to build output directory.
+
+  On perf waterfall, the recipe sets the current working directory to the chrome
+  build output directory. Pinpoint, on the other hand, does not know where the
+  build output directory is, so it is hardcoded to set current working directory
+  to out/Release. This used to be correct most of the time, but this has been
+  changed by https://crbug.com/355218109, causing various problems (e.g.,
+  https://crbug.com/377748127). This function attempts to detect such cases and
+  change the current working directory to chrome output directory.
+  """
+
+  # If the current directory is named out/Release and is empty, we are likely
+  # running on Pinpoint with a wrong working directory.
+  cwd = pathlib.Path.cwd()
+  if list(cwd.iterdir()):
+    return
+  if cwd.name != 'Release' or cwd.parent.name != 'out':
+    return
+
+  print(f'Current directory {cwd} is empty, attempting to find build output')
+  candidates = []
+  for build_dir in util.GetBuildDirectories():
+    path = pathlib.Path(build_dir).resolve()
+    if path.exists() and list(path.iterdir()):
+      candidates.append(path)
+
+  if len(candidates) != 1:
+    if not candidates:
+      print('No build output directory found')
+    else:
+      print(f'Multiple build output directories found: {candidates}')
+    raise RuntimeError(
+        'Unable to find build output. Please change to the build output '
+        'directory before running this script.')
+
+  print(f'Changing current directory to {candidates[0]}')
+  os.chdir(candidates[0])
+
+
 def main(sys_args):
+  _set_cwd()
   args = sys_args[1:]  # Skip program name.
   options = parse_arguments(args)
   isolated_out_dir = os.path.dirname(options.isolated_script_test_output)
