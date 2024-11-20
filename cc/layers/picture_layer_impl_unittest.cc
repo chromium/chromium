@@ -4803,11 +4803,11 @@ void OcclusionTrackingPictureLayerImplTest::TestOcclusionForScale(
   }
 }
 
-TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale0_3) {
+TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale03) {
   TestOcclusionForScale(0.3f, 2);
 }
 
-TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale0_7) {
+TEST_F(OcclusionTrackingPictureLayerImplTest, OcclusionForScale07) {
   TestOcclusionForScale(0.7f, 4);
 }
 

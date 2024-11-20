@@ -501,7 +501,7 @@ class TextureLayerMailboxHolderTest : public TextureLayerTest {
   base::Thread main_thread_;
 };
 
-TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
+TEST_F(TextureLayerMailboxHolderTest, TwoCompositorsBothReleaseThenMain) {
   scoped_refptr<TextureLayer> test_layer =
       TextureLayer::CreateForMailbox(nullptr);
   ASSERT_TRUE(test_layer.get());
@@ -554,7 +554,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_BothReleaseThenMain) {
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 }
 
-TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
+TEST_F(TextureLayerMailboxHolderTest, TwoCompositorsMainReleaseBetween) {
   scoped_refptr<TextureLayer> test_layer =
       TextureLayer::CreateForMailbox(nullptr);
   ASSERT_TRUE(test_layer.get());
@@ -608,7 +608,7 @@ TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleaseBetween) {
   Mock::VerifyAndClearExpectations(&test_data_.mock_callback_);
 }
 
-TEST_F(TextureLayerMailboxHolderTest, TwoCompositors_MainReleasedFirst) {
+TEST_F(TextureLayerMailboxHolderTest, TwoCompositorsMainReleasedFirst) {
   scoped_refptr<TextureLayer> test_layer =
       TextureLayer::CreateForMailbox(nullptr);
   ASSERT_TRUE(test_layer.get());

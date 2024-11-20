@@ -328,7 +328,7 @@ TEST_F(SoftwareImageDecodeCacheTest,
   EXPECT_EQ(100u * 100u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_5Scale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt15Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -349,7 +349,7 @@ TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_5Scale) {
   EXPECT_EQ(500u * 200u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_0cale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt10Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -370,7 +370,7 @@ TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_0cale) {
   EXPECT_EQ(500u * 200u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyLowQualityAt0_75Scale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyLowQualityAt075Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -391,7 +391,7 @@ TEST_F(SoftwareImageDecodeCacheTest, ImageKeyLowQualityAt0_75Scale) {
   EXPECT_EQ(500u * 200u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_5Scale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt05Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -411,7 +411,7 @@ TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_5Scale) {
   EXPECT_EQ(250u * 100u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_49Scale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt049Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -431,7 +431,7 @@ TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_49Scale) {
   EXPECT_EQ(250u * 100u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_1Scale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt01Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -451,7 +451,7 @@ TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_1Scale) {
   EXPECT_EQ(63u * 25u * 4u, key.locked_bytes());
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_01Scale) {
+TEST_F(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt001Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
@@ -1561,7 +1561,7 @@ TEST_F(SoftwareImageDecodeCacheTest, NoneQualityScaledSubrectIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt01_5ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt015ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1593,7 +1593,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt01_5ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt1_0ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt10ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1625,7 +1625,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt1_0ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_75ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt075ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1657,7 +1657,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_75ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_5ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt05ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1689,7 +1689,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_5ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_49ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt049ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1721,7 +1721,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_49ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_1ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt01ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1753,7 +1753,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_1ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_01ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt001ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
@@ -1785,7 +1785,7 @@ TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_01ScaleIsHandled) {
   cache_.UnrefImage(draw_image);
 }
 
-TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0_001ScaleIsHandled) {
+TEST_F(SoftwareImageDecodeCacheTest, MediumQualityAt0001ScaleIsHandled) {
   bool is_decomposable = true;
   PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
