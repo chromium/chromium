@@ -10,7 +10,7 @@
   RuntimeEnabled=SanitizerAPI
 ]
 interface Sanitizer {
-  [CallWith=ExecutionContext, RaisesException]
+  [RaisesException]
   constructor(optional SanitizerConfig config = {});
 
   // Query configuration:
