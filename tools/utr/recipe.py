@@ -143,7 +143,6 @@ class LegacyRunner:
     # https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes/chromium/universal_test_runner.proto
     input_props = builder_props.copy()
     input_props['checkout_path'] = str(_SRC_DIR)
-    input_props['$recipe_engine/path'] = {'cache_dir': str(_SRC_DIR.parent)}
     input_props['test_names'] = tests
     input_props['$build/chromium_swarming'] = {'task_realm': self._luci_realm}
     if additional_test_args:
