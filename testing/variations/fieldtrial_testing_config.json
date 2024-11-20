@@ -9219,6 +9219,25 @@
             ]
         }
     ],
+    "EnableTLS13EarlyData": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableTLS13EarlyData"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableTcpPortRandomization": [
         {
             "platforms": [
