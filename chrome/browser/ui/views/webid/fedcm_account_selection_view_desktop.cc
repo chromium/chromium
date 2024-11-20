@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
@@ -594,10 +595,8 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   }
 
   dialog_type_ = DialogType::BUBBLE;
-  views::View* anchor_view = tab_->GetBrowserWindowInterface()->GetWebView();
-
   return new AccountSelectionBubbleView(rp_for_display, idp_title, rp_context,
-                                        web_contents, anchor_view,
+                                        web_contents, GetAnchorView(),
                                         GetURLLoaderFactory(), this);
 }
 
@@ -867,27 +866,13 @@ void FedCmAccountSelectionView::OnChooseAnAccountClicked() {
                             true);
 }
 
-void FedCmAccountSelectionView::PostWidgetCreate(views::Widget* widget) {
-  UpdateDialogPosition();
-  if (dialog_type_ == DialogType::MODAL) {
-    scoped_ignore_input_events_ =
-        tab_->GetContents()->IgnoreInputEvents(std::nullopt);
-  }
-  widget->AddObserver(this);
-  pip_occlusion_observation_ =
-      std::make_unique<ScopedPictureInPictureOcclusionObservation>(this);
-  pip_occlusion_observation_->Observe(widget);
-}
-
 bool FedCmAccountSelectionView::CanFitInWebContents() {
   content::WebContents* web_contents = account_selection_view_->web_contents();
-  views::Widget* dialog_widget =
-      account_selection_view_->GetDialogWidget().get();
-  CHECK(web_contents && dialog_widget);
+  CHECK(web_contents && dialog_widget_);
 
   gfx::Size web_contents_size = web_contents->GetSize();
   gfx::Size preferred_bubble_size =
-      dialog_widget->GetContentsView()->GetPreferredSize();
+      dialog_widget_->GetContentsView()->GetPreferredSize();
 
   // TODO(crbug.com/340368623): Figure out what to do when button flow modal
   // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
@@ -908,7 +893,7 @@ void FedCmAccountSelectionView::UpdateDialogPosition() {
         static_cast<AccountSelectionModalView*>(account_selection_view_);
 
     constrained_window::UpdateWebContentsModalDialogPosition(
-        GetDialogWidget().get(),
+        GetDialogWidget(),
         web_modal::WebContentsModalDialogManager::FromWebContents(
             account_selection_view_->web_contents())
             ->delegate()
@@ -1038,48 +1023,32 @@ void FedCmAccountSelectionView::Close() {
   }
 
   pip_occlusion_observation_.reset();
-  GetDialogWidget()->Close();
-  OnDismiss(DismissReason::kOther);
+
+  // This prevents re-entrancy via OnWidgetDestroying().
+  GetDialogWidget()->RemoveObserver(this);
+
+  LogDialogDismissal(DismissReason::kOther);
+
+  // Implicitly owned by the dialog widget. Must clear to avoid UaF.
+  account_selection_view_ = nullptr;
+  scoped_ignore_input_events_.reset();
+  input_protector_.reset();
+
+  // This synchronously destroys the widget.
+  dialog_widget_->CloseNow();
+
+  if (notify_delegate_of_dismiss_) {
+    delegate_->OnDismiss(DismissReason::kOther);
+  }
 }
 
+// TODO(https://crbug.com/377803489): Delete this method.
 void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   if (!GetDialogWidget()) {
     return;
   }
 
-  // Check is_mismatch_continue_clicked_ to ensure we don't record this metric
-  // after MismatchDialogResult::kContinued has been recorded.
-  if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH &&
-      !is_mismatch_continue_clicked_) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
-        dismiss_reason == DismissReason::kCloseButton
-            ? MismatchDialogResult::kDismissedByCloseIcon
-            : MismatchDialogResult::kDismissedForOtherReasons);
-  }
-
-  // Pop-up window can only be opened through clicking the "Continue" button on
-  // the mismatch dialog. Hence, we record the outcome only after the dialog is
-  // closed.
-  if (is_mismatch_continue_clicked_ && popup_window_state_) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.PopupWindowResult",
-                              *popup_window_state_);
-  }
-
-  // If a modal account chooser was open, record the outcome.
-  if (modal_account_chooser_state_) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
-                              *modal_account_chooser_state_);
-    if (tab_->GetContents()) {
-      ukm::SourceId source_id =
-          tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-      ukm::builders::Blink_FedCm(source_id)
-          .SetButton_AccountChooserResult(
-              static_cast<int>(*modal_account_chooser_state_))
-          .Record(ukm::UkmRecorder::Get());
-    }
-  }
-
+  LogDialogDismissal(dismiss_reason);
   MaybeResetAccountSelectionView();
   input_protector_.reset();
 
@@ -1088,9 +1057,50 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
   }
 }
 
-base::WeakPtr<views::Widget> FedCmAccountSelectionView::GetDialogWidget() {
-  return account_selection_view_ ? account_selection_view_->GetDialogWidget()
-                                 : nullptr;
+views::Widget* FedCmAccountSelectionView::GetDialogWidget() {
+  return account_selection_view_ ? dialog_widget_.get() : nullptr;
+}
+
+void FedCmAccountSelectionView::InitDialogWidget() {
+  if (!tab_) {
+    return;
+  }
+
+  views::Widget* widget = nullptr;
+  if (dialog_type_ == DialogType::BUBBLE) {
+    auto* bubble =
+        static_cast<AccountSelectionBubbleView*>(account_selection_view_);
+    widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
+  } else {
+    if (GetDialogWidget()) {
+      UpdateDialogPosition();
+      return;
+    }
+
+    // Create and show the dialog widget. This is functionally a tab-modal
+    // dialog.
+    auto* modal =
+        static_cast<AccountSelectionModalView*>(account_selection_view_);
+    gfx::NativeWindow top_level_native_window =
+        tab_->GetContents()->GetTopLevelNativeWindow();
+    views::Widget* top_level_widget =
+        views::Widget::GetWidgetForNativeWindow(top_level_native_window);
+    widget = views::DialogDelegate::CreateDialogWidget(
+        modal, /*context=*/nullptr,
+        /*parent=*/top_level_widget->GetNativeView());
+
+    widget->Show();
+    scoped_ignore_input_events_ =
+        tab_->GetContents()->IgnoreInputEvents(std::nullopt);
+  }
+
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+  dialog_widget_ = widget->GetWeakPtr();
+  UpdateDialogPosition();
+  widget->AddObserver(this);
+  pip_occlusion_observation_ =
+      std::make_unique<ScopedPictureInPictureOcclusionObservation>(this);
+  pip_occlusion_observation_->Observe(widget);
 }
 
 FedCmAccountSelectionView::DialogType
@@ -1104,6 +1114,10 @@ FedCmAccountSelectionView::GetURLLoaderFactory() {
       ->GetSharedURLLoaderFactory();
 }
 
+views::View* FedCmAccountSelectionView::GetAnchorView() {
+  return tab_->GetBrowserWindowInterface()->GetWebView();
+}
+
 void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
   if (!account_selection_view_) {
     return;
@@ -1112,8 +1126,8 @@ void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
     GetDialogWidget()->RemoveObserver(this);
     GetDialogWidget()->CloseWithReason(
         views::Widget::ClosedReason::kCancelButtonClicked);
-    account_selection_view_->ResetWidget();
     scoped_ignore_input_events_.reset();
+    dialog_widget_.reset();
   }
   account_selection_view_ = nullptr;
 }
@@ -1233,4 +1247,40 @@ void FedCmAccountSelectionView::OnOcclusionStateChanged(bool occluded) {
   // also set this boolean to ignore input. But we still call SetEnabled
   // to visually indicate that input is disabled where possible.
   is_occluded_by_pip_ = occluded;
+}
+
+void FedCmAccountSelectionView::LogDialogDismissal(
+    DismissReason dismiss_reason) {
+  // Check is_mismatch_continue_clicked_ to ensure we don't record this metric
+  // after MismatchDialogResult::kContinued has been recorded.
+  if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH &&
+      !is_mismatch_continue_clicked_) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
+        dismiss_reason == DismissReason::kCloseButton
+            ? MismatchDialogResult::kDismissedByCloseIcon
+            : MismatchDialogResult::kDismissedForOtherReasons);
+  }
+
+  // Pop-up window can only be opened through clicking the "Continue" button on
+  // the mismatch dialog. Hence, we record the outcome only after the dialog is
+  // closed.
+  if (is_mismatch_continue_clicked_ && popup_window_state_) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.PopupWindowResult",
+                              *popup_window_state_);
+  }
+
+  // If a modal account chooser was open, record the outcome.
+  if (modal_account_chooser_state_) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Button.AccountChooserResult",
+                              *modal_account_chooser_state_);
+    if (tab_->GetContents()) {
+      ukm::SourceId source_id =
+          tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+      ukm::builders::Blink_FedCm(source_id)
+          .SetButton_AccountChooserResult(
+              static_cast<int>(*modal_account_chooser_state_))
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
 }

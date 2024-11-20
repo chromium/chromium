@@ -218,27 +218,6 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
-void AccountSelectionBubbleView::InitDialogWidget() {
-  if (!web_contents_) {
-    return;
-  }
-
-  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
-
-  if (!widget) {
-    return;
-  }
-
-  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
-
-  dialog_widget_ = widget->GetWeakPtr();
-  // TODO(https://crbug.com/377803489): Get rid of this and move all of
-  // InitDialogWidget() into FedCmAccountSelectionView.
-  if (owner_) {
-    owner_->PostWidgetCreate(widget);
-  }
-}
-
 void AccountSelectionBubbleView::ShowMultiAccountPicker(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list,
@@ -267,7 +246,7 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
 
   if (!has_sheet_) {
     has_sheet_ = true;
-    InitDialogWidget();
+    owner_->InitDialogWidget();
     return;
   }
 
@@ -299,7 +278,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 
   if (!has_sheet_) {
     has_sheet_ = true;
-    InitDialogWidget();
+    owner_->InitDialogWidget();
     return;
   }
 
@@ -322,7 +301,7 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
 
   if (!has_sheet_) {
     has_sheet_ = true;
-    InitDialogWidget();
+    owner_->InitDialogWidget();
     return;
   }
 
@@ -371,7 +350,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   if (!has_sheet_) {
     has_sheet_ = true;
-    InitDialogWidget();
+    owner_->InitDialogWidget();
     return;
   }
 
@@ -450,7 +429,7 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 
   if (!has_sheet_) {
     has_sheet_ = true;
-    InitDialogWidget();
+    owner_->InitDialogWidget();
     return;
   }
 
@@ -486,7 +465,7 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
 
   if (!has_sheet_) {
     has_sheet_ = true;
-    InitDialogWidget();
+    owner_->InitDialogWidget();
     return;
   }
 

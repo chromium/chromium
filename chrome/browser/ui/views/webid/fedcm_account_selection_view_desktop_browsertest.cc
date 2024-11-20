@@ -62,7 +62,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
     ShowUi("");
   }
 
-  base::WeakPtr<views::Widget> GetDialog() {
+  views::Widget* GetDialog() {
     return account_selection_view_->GetDialogWidget();
   }
 

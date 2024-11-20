@@ -48,8 +48,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   ~AccountSelectionBubbleView() override;
 
   // AccountSelectionViewBase:
-  void InitDialogWidget() override;
-
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,

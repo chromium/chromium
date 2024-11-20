@@ -164,35 +164,6 @@ AccountSelectionModalView::AccountSelectionModalView(
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
 
-void AccountSelectionModalView::InitDialogWidget() {
-  if (!web_contents_) {
-    return;
-  }
-
-  if (dialog_widget_) {
-    owner_->UpdateDialogPosition();
-    return;
-  }
-
-  // Create and show the dialog widget. This is functionally a tab-modal dialog.
-  // Showing and hiding is done by FedCmAccountSelectionView. See
-  // https://crbug.com/364926910 for details.
-  gfx::NativeWindow top_level_native_window =
-      web_contents_->GetTopLevelNativeWindow();
-  views::Widget* top_level_widget =
-      views::Widget::GetWidgetForNativeWindow(top_level_native_window);
-  views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
-      this, /*context=*/nullptr, /*parent=*/top_level_widget->GetNativeView());
-  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
-
-  widget->Show();
-  dialog_widget_ = widget->GetWeakPtr();
-
-  // TODO(https://crbug.com/377803489): Get rid of this and move all of
-  // InitDialogWidget() into FedCmAccountSelectionView.
-  owner_->PostWidgetCreate(widget);
-}
-
 std::unique_ptr<views::View>
 AccountSelectionModalView::CreatePlaceholderAccountRow() {
   const SkColor kPlaceholderColor =
@@ -425,7 +396,7 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
 
-  InitDialogWidget();
+  owner_->InitDialogWidget();
 
   // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
@@ -435,7 +406,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     const std::u16string& title) {
   // A different type of sheet must have been shown prior to ShowVerifyingSheet.
   // This might change if we choose to integrate auto re-authn with button mode.
-  CHECK(dialog_widget_);
+  CHECK(owner_->GetDialogWidget());
 
   queued_announcement_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
 
@@ -495,7 +466,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   }
 
   has_spinner_ = true;
-  InitDialogWidget();
+  owner_->InitDialogWidget();
 }
 
 std::unique_ptr<views::View>
@@ -583,7 +554,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
 
-  InitDialogWidget();
+  owner_->InitDialogWidget();
 
   // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
@@ -635,7 +606,7 @@ void AccountSelectionModalView::ShowErrorDialog(
 
   AddChildView(std::move(button_container));
 
-  InitDialogWidget();
+  owner_->InitDialogWidget();
 }
 
 void AccountSelectionModalView::ShowLoadingDialog() {
@@ -643,7 +614,7 @@ void AccountSelectionModalView::ShowLoadingDialog() {
   AddChildView(CreatePlaceholderAccountRow());
   AddChildView(CreateButtonRow());
 
-  InitDialogWidget();
+  owner_->InitDialogWidget();
 }
 
 void AccountSelectionModalView::OnIdpBrandIconFetched() {
@@ -705,7 +676,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
                           base::Unretained(owner_))));
 
-  InitDialogWidget();
+  owner_->InitDialogWidget();
 }
 
 void AccountSelectionModalView::OnContinueButtonClicked(

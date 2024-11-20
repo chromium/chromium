@@ -47,7 +47,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
                                   public PictureInPictureOcclusionObserver,
-                                  views::WidgetObserver {
+                                  public views::WidgetObserver {
  public:
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
@@ -167,10 +167,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Called when the user clicks on the 'Choose an account' button
   void OnChooseAnAccountClicked();
 
-  // TODO(https://crbug.com/377803489): Get rid of this and move all of
-  // InitDialogWidget() into this class.
-  void PostWidgetCreate(views::Widget* widget);
-
   // Public for testing.
   AccountSelectionViewBase* account_selection_view() {
     return account_selection_view_.get();
@@ -185,6 +181,20 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // resized.
   // Virtual for testing.
   virtual void UpdateDialogPosition();
+
+  // Gets the dialog widget from the account selection view, if available.
+  // Otherwise, return a nullptr.
+  views::Widget* GetDialogWidget();
+
+  // Creates and sets the appropriate dialog widget, depending on whether the
+  // dialog is bubble or modal.
+  // Virtual for testing.
+  virtual void InitDialogWidget();
+
+  // Called when the tab will be removed from the window.
+  // Public for testing.
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -206,6 +216,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Virtual for testing.
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
+
+  // Returns the anchor view used by the bubble. Virtual for testing.
+  virtual views::View* GetAnchorView();
+
+  // Widget to control the dialog i.e. hide, show, add observer etc.
+  // TODO(https://crbug.com/377803489): Make private again.
+  // Protected for testing.
+  base::WeakPtr<views::Widget> dialog_widget_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
@@ -337,10 +355,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
-  // Called when the tab will be removed from the window.
-  void WillDetach(tabs::TabInterface* tab,
-                  tabs::TabInterface::DetachReason reason);
-
   // Returns false if `this` got deleted. In that case, the caller should not
   // access any further member variables.
   bool ShowVerifyingSheet(const Account& account,
@@ -356,10 +370,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // `dismiss_reason`.
   void OnDismiss(
       content::IdentityRequestDialogController::DismissReason dismiss_reason);
-
-  // Gets the dialog widget from the account selection view, if available.
-  // Otherwise, return a nullptr.
-  base::WeakPtr<views::Widget> GetDialogWidget();
 
   // Resets `account_selection_view_`. Typically, to recreate it later to show a
   // different kind of dialog. Virtual for testing purposes.
@@ -389,6 +399,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // PictureInPictureOcclusionObserver:
   void OnOcclusionStateChanged(bool occluded) override;
+
+  // This should be called exactly once when the dialog is dismissed.
+  using DismissReason = content::IdentityRequestDialogController::DismissReason;
+  void LogDialogDismissal(DismissReason dismiss_reason);
 
   std::vector<IdentityProviderDataPtr> idp_list_;
 

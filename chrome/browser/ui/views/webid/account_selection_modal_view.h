@@ -44,8 +44,6 @@ class AccountSelectionModalView : public views::DialogDelegateView,
       delete;
 
   // AccountSelectionViewBase:
-  void InitDialogWidget() override;
-
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,
       const std::vector<IdentityProviderDataPtr>& idp_list,
