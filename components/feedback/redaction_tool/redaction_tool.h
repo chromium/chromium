@@ -152,6 +152,13 @@ class RedactionTool {
   void DetectWithCustomPatterns(
       std::string input,
       std::map<PIIType, std::set<std::string>>* detected);
+
+  // Some strings can contain pieces that match like IPv4 addresses but aren't.
+  // This function can be used to determine if this was the case by evaluating
+  // the skipped piece. It returns true, if the matched address was erroneous
+  // and should be skipped instead.
+  bool ShouldSkipIPv4Address(std::string_view skipped);
+
   // Redacts PII sensitive data that matches |pattern| from |input| and returns
   // the redacted string. Adds the redacted PII sensitive data to |detected| if
   // |detected| is not nullptr.
