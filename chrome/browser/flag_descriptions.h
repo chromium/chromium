@@ -4391,9 +4391,6 @@ extern const char kTetheringExperimentalFunctionalityDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kExperimentalWebAppStoragePartitionIsolationName[];
-extern const char kExperimentalWebAppStoragePartitionIsolationDescription[];
-
 extern const char kBlinkExtensionName[];
 extern const char kBlinkExtensionDescription[];
 

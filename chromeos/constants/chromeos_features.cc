@@ -129,11 +129,6 @@ BASE_FEATURE(kEssentialSearch,
              "EssentialSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable experimental goldfish web app isolation.
-BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
-             "ExperimentalWebAppStoragePartitionIsolation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Feature flag used to gate preinstallation of the Gemini app.
 BASE_FEATURE(kGeminiAppPreinstall,
              "GeminiAppPreinstall",

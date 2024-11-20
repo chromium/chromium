@@ -7572,12 +7572,6 @@ const char kTetheringExperimentalFunctionalityDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kExperimentalWebAppStoragePartitionIsolationName[] =
-    "Enable experimental web app stroage partition isolation";
-const char kExperimentalWebAppStoragePartitionIsolationDescription[] =
-    "This is highly experimental. Enabling this flag could break things. And a "
-    "factory reset might be needed to fully recover the state.";
-
 const char kBlinkExtensionName[] = "Experimental Blink Extension";
 const char kBlinkExtensionDescription[] =
     "Enable the experimental Blink Extension.";

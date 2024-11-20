@@ -10022,13 +10022,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    {"experimental-web-app-storage-partition-isolation",
-     flag_descriptions::kExperimentalWebAppStoragePartitionIsolationName,
-     flag_descriptions::kExperimentalWebAppStoragePartitionIsolationDescription,
-     kOsLacros,
-     FEATURE_VALUE_TYPE(
-         chromeos::features::kExperimentalWebAppStoragePartitionIsolation)},
-
     {"blink-extension", flag_descriptions::kBlinkExtensionName,
      flag_descriptions::kBlinkExtensionDescription, kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::features::kBlinkExtension)},
