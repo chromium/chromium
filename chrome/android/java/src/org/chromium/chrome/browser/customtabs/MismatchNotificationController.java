@@ -25,6 +25,7 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -81,6 +82,9 @@ public class MismatchNotificationController
     public void showSignedOutMessage(Context context, Callback<Integer> onClose) {
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(
+                                MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE)
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 ContextUtils.getApplicationContext()
