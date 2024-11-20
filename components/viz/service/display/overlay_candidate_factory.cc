@@ -669,8 +669,10 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
 
   candidate.uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
 
+  const bool y_flipped = resource_provider_->GetOrigin(quad->resource_id) ==
+                         kBottomLeft_GrSurfaceOrigin;
   auto rtn =
-      FromDrawQuadResource(quad, quad->resource_id, quad->y_flipped, candidate);
+      FromDrawQuadResource(quad, quad->resource_id, y_flipped, candidate);
   if (rtn == CandidateStatus::kSuccess) {
     // Only handle clip rect for required overlays
     if (!context_.is_delegated_context && candidate.requires_overlay) {

@@ -171,7 +171,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   if (!data.ReadBackgroundColor(&quad->background_color))
     return false;
 
-  quad->y_flipped = data.y_flipped();
   quad->nearest_neighbor = data.nearest_neighbor();
   quad->secure_output_only = data.secure_output_only();
   quad->is_stream_video = data.is_stream_video();

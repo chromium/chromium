@@ -446,8 +446,11 @@ void SoftwareRenderer::DrawTextureQuad(const TextureDrawQuad* quad) {
       QuadVertexRect(), gfx::RectF(quad->rect), gfx::RectF(quad->visible_rect));
   SkRect quad_rect = gfx::RectFToSkRect(visible_quad_vertex_rect);
 
-  if (quad->y_flipped)
+  const bool y_flipped = resource_provider()->GetOrigin(quad->resource_id) ==
+                         kBottomLeft_GrSurfaceOrigin;
+  if (y_flipped) {
     current_canvas_->scale(1, -1);
+  }
 
   bool blend_background =
       quad->background_color != SkColors::kTransparent && !image->isOpaque();

@@ -104,6 +104,9 @@ bool TextureLayerImpl::WillDraw(
   if (own_resource_) {
     DCHECK(!resource_id_);
     if (!transferable_resource_.is_empty()) {
+      transferable_resource_.origin =
+          flipped_ ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+
       // Currently only Canvas supports releases resources in response to
       // eviction. Other sources will be add once they can support this. Some
       // complexity arises here from WebGL/WebGPU textures, as they do not
@@ -175,7 +178,6 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                resource_id_, premultiplied_alpha_, uv_top_left_,
                uv_bottom_right_, bg_color, nearest_neighbor_,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->y_flipped = flipped_;
   quad->set_resource_size_in_pixels(transferable_resource_.size);
   ValidateQuadResources(quad);
 }

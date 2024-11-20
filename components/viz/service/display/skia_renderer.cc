@@ -2644,8 +2644,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-      quad->y_flipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin,
-      override_color_space, false, quad->force_rgbx);
+      resource_provider()->GetOrigin(quad->resource_id), override_color_space,
+      false, quad->force_rgbx);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;

@@ -457,7 +457,6 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*background_color=*/SkColors::kTransparent,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
-    xr_content_quad->y_flipped = frame_type == FrameType::kHasWebGlContent;
 
     auto renderer_resource = viz::TransferableResource::MakeGpu(
         renderer_buffer->shared_image,
@@ -466,6 +465,9 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         viz::SinglePlaneFormat::kRGBA_8888,
         /*is_overlay_candidate=*/false,
         viz::TransferableResource::ResourceSource::kAR);
+    renderer_resource.origin = frame_type == FrameType::kHasWebGlContent
+                                   ? kBottomLeft_GrSurfaceOrigin
+                                   : kTopLeft_GrSurfaceOrigin;
 
     renderer_resource.id = renderer_buffer->id;
     id_to_frame_map_[renderer_buffer->id] = xr_frame;
@@ -500,7 +502,6 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       /*nearest_neighbor=*/false,
                       /*secure_output_only=*/false,
                       gfx::ProtectedVideoType::kClear);
-  camera_quad->y_flipped = true;
   // Additionally append to the resource_list
   auto camera_resource = viz::TransferableResource::MakeGpu(
       camera_buffer->shared_image,
@@ -509,6 +510,7 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
       viz::SinglePlaneFormat::kRGBA_8888,
       /*is_overlay_candidate=*/false,
       viz::TransferableResource::ResourceSource::kAR);
+  camera_resource.origin = kBottomLeft_GrSurfaceOrigin;
 
   camera_resource.id = camera_buffer->id;
   id_to_frame_map_[camera_buffer->id] = xr_frame;

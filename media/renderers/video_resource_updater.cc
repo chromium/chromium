@@ -676,6 +676,10 @@ void VideoResourceUpdater::ObtainFrameResource(
       CreateExternalResourceFromVideoFrame(video_frame);
   frame_resource_type_ = external_resource.type;
 
+  external_resource.resource.origin =
+      video_frame->metadata().texture_origin_is_top_left
+          ? kTopLeft_GrSurfaceOrigin
+          : kBottomLeft_GrSurfaceOrigin;
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
@@ -741,7 +745,6 @@ void VideoResourceUpdater::AppendQuad(
       bool premultiplied_alpha =
           frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED;
 
-      bool flipped = !frame->metadata().texture_origin_is_top_left;
       bool nearest_neighbor = false;
       gfx::ProtectedVideoType protected_video_type =
           ProtectedVideoTypeFromMetadata(frame->metadata());
@@ -752,7 +755,6 @@ void VideoResourceUpdater::AppendQuad(
                            premultiplied_alpha, uv_top_left, uv_bottom_right,
                            SkColors::kTransparent, nearest_neighbor, false,
                            protected_video_type);
-      texture_quad->y_flipped = flipped;
       texture_quad->set_resource_size_in_pixels(coded_size);
       // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
       // (e.g. *_layer_overlay.cc).

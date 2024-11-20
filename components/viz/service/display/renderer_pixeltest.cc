@@ -131,7 +131,8 @@ ResourceId CreateGpuResource(
     const gfx::Size& size,
     SharedImageFormat format,
     gfx::ColorSpace color_space,
-    base::span<const uint8_t> pixels) {
+    base::span<const uint8_t> pixels,
+    GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin) {
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
@@ -145,6 +146,7 @@ ResourceId CreateGpuResource(
       client_shared_image, GL_TEXTURE_2D, sync_token, size, format,
       false /* is_overlay_candidate */);
   gl_resource.color_space = std::move(color_space);
+  gl_resource.origin = origin;
   auto release_callback =
       base::BindOnce(&DeleteSharedImage, std::move(client_shared_image));
   return resource_provider->ImportResource(gl_resource,
@@ -299,12 +301,16 @@ void CreateTestTwoColoredTextureDrawQuad(
     }
   }
 
+  const GrSurfaceOrigin origin = flipped_texture_quad
+                                     ? kBottomLeft_GrSurfaceOrigin
+                                     : kTopLeft_GrSurfaceOrigin;
+
   ResourceId resource;
   if (gpu_resource) {
     resource =
         CreateGpuResource(child_context_provider, child_resource_provider,
                           rect.size(), SinglePlaneFormat::kBGRA_8888,
-                          gfx::ColorSpace(), MakePixelSpan(pixels));
+                          gfx::ColorSpace(), MakePixelSpan(pixels), origin);
   } else {
     scoped_refptr<gpu::ClientSharedImage> shared_image;
     base::WritableSharedMemoryMapping mapping;
@@ -315,6 +321,7 @@ void CreateTestTwoColoredTextureDrawQuad(
     auto transferable_resource = TransferableResource::MakeSoftwareSharedImage(
         shared_image, sync_token, rect.size(), SinglePlaneFormat::kBGRA_8888,
         TransferableResource::ResourceSource::kTileRasterTask);
+    transferable_resource.origin = origin;
     auto release_callback =
         base::BindOnce(&DeleteSharedImage, std::move(shared_image));
 
@@ -341,7 +348,6 @@ void CreateTestTwoColoredTextureDrawQuad(
                premultiplied_alpha, uv_top_left, uv_bottom_right,
                background_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->y_flipped = flipped_texture_quad;
 }
 
 // TODO(crbug.com/40219248): Make this function use SkColor4f

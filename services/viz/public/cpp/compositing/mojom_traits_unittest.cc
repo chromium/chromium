@@ -1078,7 +1078,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const gfx::PointF uv_top_left(12.1f, 34.2f);
   const gfx::PointF uv_bottom_right(56.3f, 78.4f);
   const SkColor4f background_color = SkColors::kGreen;
-  const bool y_flipped = true;
   const bool nearest_neighbor = true;
   const bool secure_output_only = true;
   const gfx::ProtectedVideoType protected_video_type =
@@ -1090,7 +1089,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
       sqs, rect5, rect5, needs_blending, resource_id5, resource_size_in_pixels5,
       premultiplied_alpha, uv_top_left, uv_bottom_right, background_color,
       nearest_neighbor, secure_output_only, protected_video_type);
-  texture_draw_quad->y_flipped = y_flipped;
   // Create a stream video TextureDrawQuad.
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
@@ -1190,7 +1188,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
   EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
-  EXPECT_EQ(y_flipped, out_texture_draw_quad->y_flipped);
   EXPECT_EQ(nearest_neighbor, out_texture_draw_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, out_texture_draw_quad->secure_output_only);
 
@@ -1311,6 +1308,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   input.synchronization_type = sync_type;
   input.is_software = is_software;
   input.is_overlay_candidate = is_overlay_candidate;
+  input.origin = kBottomLeft_GrSurfaceOrigin;
 
   TransferableResource output;
   mojo::test::SerializeAndDeserialize<mojom::TransferableResource>(input,
@@ -1325,6 +1323,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(sync_type, output.synchronization_type);
   EXPECT_EQ(is_software, output.is_software);
   EXPECT_EQ(is_overlay_candidate, output.is_overlay_candidate);
+  EXPECT_EQ(kBottomLeft_GrSurfaceOrigin, output.origin);
 }
 
 TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {

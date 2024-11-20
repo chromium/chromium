@@ -13,6 +13,7 @@ import "services/viz/public/mojom/compositing/shared_bitmap_id.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_metadata.mojom";
+import "skia/public/mojom/surface_origin.mojom";
 
 // See viz::TransferableResource::SynchronizationType in
 // components/viz/common/resources/transferable_resource.h
@@ -53,4 +54,5 @@ struct TransferableResource {
   gfx.mojom.HDRMetadata hdr_metadata;
   bool needs_detiling;
   gpu.mojom.VulkanYCbCrInfo? ycbcr_info;
+  skia.mojom.SurfaceOrigin origin;
 };

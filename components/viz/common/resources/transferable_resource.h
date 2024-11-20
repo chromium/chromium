@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
@@ -219,6 +220,9 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // If true, we need to run a detiling image processor on the quad before we
   // can scan it out.
   bool needs_detiling = false;
+
+  // Origin of the underlying resource.
+  GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin;
 
   // The source that originally allocated this resource. For determining which
   // sources are maintaining lifetime after surface eviction.

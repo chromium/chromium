@@ -14,6 +14,7 @@
 #include "gpu/ipc/common/vulkan_ycbcr_info_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom-shared.h"
+#include "skia/public/mojom/surface_origin_mojom_traits.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace mojo {
@@ -109,6 +110,10 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
   static const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(
       const viz::TransferableResource& resource) {
     return resource.ycbcr_info;
+  }
+
+  static GrSurfaceOrigin origin(const viz::TransferableResource& resource) {
+    return resource.origin;
   }
 
   static bool Read(viz::mojom::TransferableResourceDataView data,

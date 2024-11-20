@@ -549,7 +549,9 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
   // Quad rect is in quad content space so both quad to target, and target to
   // root transforms must be applied to it.
   gfx::Transform quad_to_root_transform;
-  if (quad->y_flipped) {
+  const bool y_flipped = resource_provider->GetOrigin(quad->resource_id) ==
+                         kBottomLeft_GrSurfaceOrigin;
+  if (y_flipped) {
     quad_to_root_transform.Scale(1.0, -1.0);
     quad_to_root_transform.PostTranslate(
         0.0, dc_layer.resource_size_in_pixels.height());

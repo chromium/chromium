@@ -148,7 +148,9 @@ gfx::CALayerResult FromTextureQuad(
   if (!resource_provider->IsOverlayCandidate(resource_id)) {
     return gfx::kCALayerFailedTextureNotCandidate;
   }
-  if (quad->y_flipped) {
+  const bool y_flipped =
+      resource_provider->GetOrigin(resource_id) == kBottomLeft_GrSurfaceOrigin;
+  if (y_flipped) {
     auto transform = absl::get<gfx::Transform>(ca_layer_overlay->transform);
     // The anchor point is at the bottom-left corner of the CALayer. The
     // transformation that flips the contents of the layer without changing its

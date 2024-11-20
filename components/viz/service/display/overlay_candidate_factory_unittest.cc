@@ -65,7 +65,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     child_resource_provider_.ReleaseAllExportedResources(true);
   }
 
-  ResourceId CreateResource(bool is_overlay_candidate) {
+  ResourceId CreateResource(bool is_overlay_candidate, GrSurfaceOrigin origin) {
     scoped_refptr<RasterContextProvider> child_context_provider =
         TestContextProvider::Create();
 
@@ -74,6 +74,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     auto resource = TransferableResource::MakeGpu(
         gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(),
         gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
+    resource.origin = origin;
 
     ResourceId resource_id =
         child_resource_provider_.ImportResource(resource, base::DoNothing());
@@ -349,11 +350,9 @@ class OverlayCandidateFactoryArbitraryTransformTest
     sqs->quad_to_target_transform = quad_to_target_transform;
     TextureDrawQuad quad;
     quad.SetNew(sqs, quad_rect, quad_rect, false,
-                CreateResource(/*is_overlay_candidate=*/true), false,
+                CreateResource(/*is_overlay_candidate=*/true, origin), false,
                 gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
                 false, gfx::ProtectedVideoType::kClear);
-
-    quad.y_flipped = origin == kBottomLeft_GrSurfaceOrigin;
     return quad;
   }
 };
@@ -760,11 +759,11 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     sqs->quad_to_target_transform = quad_to_target_transform;
     sqs->clip_rect = clip_rect;
     TextureDrawQuad quad;
-    quad.SetNew(sqs, quad_rect, quad_rect, false,
-                CreateResource(/*is_overlay_candidate=*/true), false,
-                quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
-                SkColors::kTransparent, false, false,
-                gfx::ProtectedVideoType::kClear);
+    quad.SetNew(
+        sqs, quad_rect, quad_rect, false,
+        CreateResource(/*is_overlay_candidate=*/true, kTopLeft_GrSurfaceOrigin),
+        false, quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
+        SkColors::kTransparent, false, false, gfx::ProtectedVideoType::kClear);
 
     return quad;
   }

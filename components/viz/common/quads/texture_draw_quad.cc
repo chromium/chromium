@@ -116,7 +116,6 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
           static_cast<int>(
               rounded_display_masks_info.is_horizontally_positioned)));
 
-  value->SetBoolean("y_flipped", y_flipped);
   value->SetBoolean("nearest_neighbor", nearest_neighbor);
   value->SetBoolean("is_video_frame", is_video_frame);
   value->SetBoolean("is_stream_video", is_stream_video);

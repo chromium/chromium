@@ -275,6 +275,16 @@ bool CanvasResourceDispatcher::PrepareFrame(
   canvas_resource->PrepareTransferableResource(
       &resource, &frame_resource->release_callback,
       /*needs_verified_synctoken=*/true);
+
+  // Accelerated resources have the origin of coordinates in the upper left
+  // corner while canvases have it in the lower left corner. The DrawQuad is
+  // marked as vertically flipped unless someone else has done the flip for us.
+  // TODO(crbug.com/378688985) Remove gpu composition condition.
+  const bool yflipped = SharedGpuContext::IsGpuCompositingEnabled() &&
+                        !canvas_resource->IsOriginTopLeft();
+  resource.origin =
+      yflipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
@@ -282,12 +292,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   // TODO(crbug.com/869913): add unit testing for this.
   const gfx::Size canvas_resource_size = canvas_resource->Size();
-
-  // Software canvases always have top left origin, accelerated canvases can
-  // have bottom left origin if they come from webgl.
-  // TODO(crbug.com/378688985) Remove gpu composition condition.
-  const bool yflipped = SharedGpuContext::IsGpuCompositingEnabled() &&
-                        !canvas_resource->IsOriginTopLeft();
 
   PostImageToPlaceholderIfNotBlocked(std::move(canvas_resource), resource_id);
 
@@ -306,7 +310,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
                uv_bottom_right, SkColors::kTransparent, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->y_flipped = yflipped;
   frame->render_pass_list.push_back(std::move(pass));
 
   if (change_size_for_next_commit_ ||

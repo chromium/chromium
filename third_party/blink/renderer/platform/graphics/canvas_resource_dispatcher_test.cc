@@ -298,7 +298,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
             // `y_flipped` should follow CanvasResource::IsOriginTopLeft on GPU
             // compositing; but we don't have that in unit tests, so it's always
             // false.
-            EXPECT_FALSE(texture_quad->y_flipped);
+            EXPECT_EQ(frame->resource_list.front().origin,
+                      kTopLeft_GrSurfaceOrigin);
           })));
 
   constexpr SkIRect damage_rect = SkIRect::MakeWH(kDamageWidth, kDamageHeight);

@@ -90,7 +90,6 @@ struct TextureQuadState {
   gfx.mojom.PointF uv_top_left;
   gfx.mojom.PointF uv_bottom_right;
   skia.mojom.SkColor4f background_color;
-  bool y_flipped;
   bool nearest_neighbor;
   bool secure_output_only;
   bool is_stream_video;
