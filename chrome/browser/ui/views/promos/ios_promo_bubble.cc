@@ -16,6 +16,7 @@
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/promos/promos_utils.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -167,7 +168,8 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateFooter(
           .SetText(
               l10n_util::GetStringUTF16(ios_promo_config.promo_description_id))
           .SetTextContext(views::style::CONTEXT_BUBBLE_FOOTER)
-          .SetTextStyle(views::style::STYLE_DISABLED)
+          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetEnabledColorId(kColorDesktopToIOSPromoFooterSubtitleLabel)
           .SetMultiLine(true)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
@@ -340,6 +342,8 @@ void IOSPromoBubble::ShowPromoBubble(views::View* anchor_view,
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(promo_bubble));
   widget->Show();
+
+  highlighted_button->SetVisible(true);
 }
 
 // static
