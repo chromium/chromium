@@ -105,8 +105,7 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
         {chromeos::features::kUploadOfficeToCloud,
          features::kReleaseNotesNotificationAllChannels,
          features::kHelpAppLauncherSearch},
-        {features::kHelpAppOpensInsteadOfReleaseNotesNotification,
-         features::kHelpAppOnboardingRevamp});
+        {features::kHelpAppOpensInsteadOfReleaseNotesNotification});
     https_server()->AddDefaultHandlers(GetChromeTestDataDir());
   }
 
@@ -178,20 +177,6 @@ class HelpAppIntegrationTestWithBirchFeatureEnabled
         /*enabled_features=*/
         {features::kHelpAppOpensInsteadOfReleaseNotesNotification,
          features::kForestFeature},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled
-    : public HelpAppIntegrationTest {
- public:
-  HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kHelpAppOnboardingRevamp},
         /*disabled_features=*/{});
   }
 
@@ -707,7 +692,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenSettings) {
 
 // Test that the Help App can call setHasCompletedNewDeviceChecklist to update
 // the pref.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled,
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2SetHasCompletedNewDeviceChecklist) {
   WaitForTestSystemAppInstall();
   profile()->GetPrefs()->SetBoolean(
@@ -733,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled,
 }
 
 // Test that the Help App can call setHasVisitedHowToPage to update the pref.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled,
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2SetHasVisitedHowToPage) {
   WaitForTestSystemAppInstall();
   profile()->GetPrefs()->SetBoolean(
@@ -756,29 +741,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled,
   EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
                 help_app::prefs::kHelpAppHasVisitedHowToPage),
             true);
-}
-
-// Test that the prefs don't get set when the onboarding revamp feature is off.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
-                       HelpAppV2SetHasDonePrefsOnboardingRevampDisabled) {
-  WaitForTestSystemAppInstall();
-  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
-
-  constexpr char kScript[] = R"(
-    (() => {
-      window.customLaunchData.delegate.setHasCompletedNewDeviceChecklist();
-      window.customLaunchData.delegate.setHasVisitedHowToPage();
-    })();
-  )";
-  // Trigger the script. Use ExecJs instead of EvalJsInAppFrame because the
-  // script needs to run in the same world as the page's code.
-  EXPECT_TRUE(content::ExecJs(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
-
-  EXPECT_FALSE(profile()->GetPrefs()->FindPreference(
-      help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist));
-  EXPECT_FALSE(profile()->GetPrefs()->FindPreference(
-      help_app::prefs::kHelpAppHasVisitedHowToPage));
 }
 
 // Test that the Help App can open the on device app controls part section in OS
@@ -1406,8 +1368,4 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithAppMallEnabled);
-
-INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
-    HelpAppIntegrationTestWithOnboardingRevampFeatureEnabled);
-
 }  // namespace ash
