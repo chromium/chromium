@@ -270,46 +270,6 @@ bool IsOnlyPolicyPinned(app_list::AppListSyncableService::SyncItem* sync_item) {
          ash::features::IsRemoveStalePolicyPinnedAppsFromShelfEnabled();
 }
 
-// In order to ensure that the chrome icon in the shelf is consistent across
-// devices, we must apply the following rules:
-// (1) If lacros is the only web-browser (lacros_only), transform [sync id]
-// kChromeAppId <-> [shelf id] kLacrosAppId
-// (2) If lacros is the only web-browser and ash debug browser is enabled,
-// transform [sync id] kAshDebugBrowserAppId <-> [shelf id] kChromeAppId
-std::string GetShelfId(const std::string& sync_id) {
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    if (sync_id == app_constants::kChromeAppId) {
-      return app_constants::kLacrosAppId;
-    }
-    if (ash::switches::IsAshDebugBrowserEnabled() &&
-        sync_id == app_constants::kAshDebugBrowserAppId) {
-      return app_constants::kChromeAppId;
-    }
-  }
-
-  return sync_id;
-}
-
-// In order to ensure that the chrome icon in the shelf is consistent across
-// devices, we must apply the following rules:
-// (1) If lacros is the only web-browser (lacros_only), transform [shelf id]
-// kLacrosAppId <-> [sync id] kChromeAppId
-// (2) If lacros is the only web-browser and ash debug browser is enabled,
-// transform [shelf id] kChromeAppId <-> [sync id] kAshDebugBrowserAppId
-std::string GetSyncId(const std::string& shelf_id) {
-  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    if (shelf_id == app_constants::kLacrosAppId) {
-      return app_constants::kChromeAppId;
-    }
-    if (ash::switches::IsAshDebugBrowserEnabled() &&
-        shelf_id == app_constants::kChromeAppId) {
-      return app_constants::kAshDebugBrowserAppId;
-    }
-  }
-
-  return shelf_id;
-}
-
 // Helper to create and insert pins on the shelf for the set of apps defined in
 // |app_ids| after Chrome in the first position and before any other pinned app.
 // If Chrome is not the first pinned app then apps are pinned before any other
@@ -623,7 +583,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
       continue;
     }
 
-    std::string app_id = GetShelfId(item_id);
+    std::string app_id = item_id;
 
     // All sync items must be valid app service apps to be added to the shelf
     // with the exception of ash-chrome, which for legacy reasons does not use
@@ -682,7 +642,7 @@ void ChromeShelfPrefs::SetPinPosition(
     const ash::ShelfID& shelf_id_before,
     base::span<const ash::ShelfID> shelf_ids_after,
     bool pinned_by_policy) {
-  const std::string app_id = GetSyncId(shelf_id.app_id);
+  const std::string app_id = shelf_id.app_id;
 
   if (!shelf_id.launch_id.empty()) {
     VLOG(2) << "Syncing set pin for '" << app_id
@@ -691,7 +651,7 @@ void ChromeShelfPrefs::SetPinPosition(
     return;
   }
 
-  const std::string app_id_before = GetSyncId(shelf_id_before.app_id);
+  const std::string app_id_before = shelf_id_before.app_id;
 
   DCHECK(!app_id.empty());
   DCHECK_NE(app_id, app_id_before);
@@ -707,7 +667,7 @@ void ChromeShelfPrefs::SetPinPosition(
                             : syncable_service->GetPinPosition(app_id_before);
   syncer::StringOrdinal position_after;
   for (const auto& shelf_id_after : shelf_ids_after) {
-    std::string app_id_after = GetSyncId(shelf_id_after.app_id);
+    std::string app_id_after = shelf_id_after.app_id;
     DCHECK_NE(app_id_after, app_id);
     DCHECK_NE(app_id_after, app_id_before);
     syncer::StringOrdinal position =
