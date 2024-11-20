@@ -59,10 +59,9 @@ void CreateAndAddCrashesUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUICrashesHost);
 
-  for (size_t i = 0; i < crash_reporter::kCrashesUILocalizedStringsCount; ++i) {
-    source->AddLocalizedString(
-        crash_reporter::kCrashesUILocalizedStrings[i].name,
-        crash_reporter::kCrashesUILocalizedStrings[i].resource_id);
+  for (const auto& [name, resource_id] :
+       crash_reporter::kCrashesUILocalizedStrings) {
+    source->AddLocalizedString(name, resource_id);
   }
 
   source->AddLocalizedString(crash_reporter::kCrashesUIShortProductName,
