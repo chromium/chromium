@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -94,10 +95,6 @@ const int kExpectedExitAnimationCount = 2;
 // The duration of the dismiss animation when exiting the selection UI.
 const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-const CGFloat kMenuSymbolSize = 18;
-#endif
-
 }  // namespace
 
 @interface LensOverlayCoordinator () <LensOverlayConsentPresenterDelegate,
@@ -165,6 +162,9 @@ const CGFloat kMenuSymbolSize = 18;
 
   /// Consent dialog presenter.
   LensOverlayConsentPresenter* _lensOverlayConsentPresenter;
+
+  /// Factory for the  actions in the overflow menu.
+  LensOverlayOverflowMenuFactory* _overflowMenuFactory;
 }
 
 #pragma mark - public
@@ -214,8 +214,8 @@ const CGFloat kMenuSymbolSize = 18;
   LensConfiguration* config =
       [self createLensConfigurationForEntrypoint:entrypoint];
   NSArray<UIAction*>* additionalMenuItems = @[
-    [self openUserActivityAction],
-    [self learnMoreAction],
+    [_overflowMenuFactory openUserActivityAction],
+    [_overflowMenuFactory learnMoreAction],
   ];
 
   _selectionViewController = ios::provider::NewChromeLensOverlay(
@@ -304,6 +304,9 @@ const CGFloat kMenuSymbolSize = 18;
   _metricsRecorder = [[LensOverlayMetricsRecorder alloc]
       initWithEntrypoint:entrypoint
       associatedWebState:_associatedTabHelper->GetWebState()];
+
+  _overflowMenuFactory =
+      [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser];
 
   // The instance that creates the Lens UI designates itself as the command
   // handler for the associated tab.
@@ -932,39 +935,6 @@ const CGFloat kMenuSymbolSize = 18;
   CHECK(tabHelper, kLensOverlayNotFatalUntil);
 
   return tabHelper;
-}
-
-- (UIAction*)openURLAction:(GURL)URL {
-  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:self.browser
-             scenario:kMenuScenarioHistogramHistoryEntry];
-  UIAction* action = [actionFactory actionToOpenInNewTabWithURL:URL
-                                                     completion:nil];
-  return action;
-}
-
-- (UIAction*)openUserActivityAction {
-  UIAction* action = [self openURLAction:GURL(kMyActivityURL)];
-  action.title = l10n_util::GetNSString(IDS_IOS_MY_ACTIVITY_TITLE);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  action.image = MakeSymbolMonochrome(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
-#else
-  action.image = nil;
-#endif
-  return action;
-}
-
-- (UIAction*)learnMoreAction {
-  UIAction* action = [self openURLAction:GURL(kLearnMoreLensURL)];
-  action.title = l10n_util::GetNSString(IDS_IOS_LENS_LEARN_MORE);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  action.image = MakeSymbolMonochrome(
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
-#else
-  action.image = nil;
-#endif
-  return action;
 }
 
 // Captures a screenshot of the active web state.

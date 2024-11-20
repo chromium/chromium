@@ -33,9 +33,28 @@ source_set("model") {
   ]
   public_deps = [
     ":detent_state_header",
+    ":overflow_menu_factory",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
   ]
+}
+
+source_set("overflow_menu_factory") {
+  sources = [
+    "lens_overlay_overflow_menu_factory.h",
+    "lens_overlay_overflow_menu_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/menu/ui_bundled",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+    "//url",
+  ]
+  public_deps = [ ":detent_state_header" ]
 }
 
 source_set("detents_manager") {
