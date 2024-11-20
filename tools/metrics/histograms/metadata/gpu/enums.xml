@@ -106,6 +106,15 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Canvas2D not accelerated and OOPR disabled"/>
 </enum>
 
+<enum name="CommandBufferNamespace">
+  <int value="-1" label="INVALID"/>
+  <int value="0" label="GPU_IO"/>
+  <int value="1" label="IN_PROCESS"/>
+  <int value="2" label="VIZ_SKIA_OUTPUT_SURFACE"/>
+  <int value="3" label="VIZ_SKIA_OUTPUT_SURFACE_NON_DDL"/>
+  <int value="4" label="GPU_CHANNEL_SHARED_IMAGE_INTERFACE"/>
+</enum>
+
 <enum name="CompositingMode">
   <int value="0" label="Software"/>
   <int value="1" label="GL"/>
@@ -1294,6 +1303,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Missing: descriptor block serial number"/>
   <int value="3" label="Missing: week of manufacture"/>
   <int value="4" label="Missing: physical display size"/>
+</enum>
+
+<enum name="ReleaseCause">
+  <int value="0" label="ExplicitClientRelease"/>
+  <int value="1" label="TaskCompletionRelease"/>
+  <int value="2" label="ForceRelease"/>
 </enum>
 
 <enum name="ShaderModel">

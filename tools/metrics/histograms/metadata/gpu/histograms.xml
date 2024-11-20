@@ -45,6 +45,11 @@ chromium-metrics-reviews@google.com.
   <variant name="TwoDisplays"/>
 </variants>
 
+<variants name="TaskGraphValidationType">
+  <variant name="GraphValidation" summary="graph-based validation"/>
+  <variant name="OrderValidation" summary="order-based validation"/>
+</variants>
+
 <variants name="WebGPUAdapterType">
   <variant name="Discrete" summary="discrete"/>
   <variant name="Integrated" summary="integrated"/>
@@ -860,6 +865,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.FenceSyncRelease.GraphValidation.ForceReleaseNamespace"
+    enum="CommandBufferNamespace" expires_after="2025-11-15">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>sunnyps@chromium.org</owner>
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the command buffer namespace when TaskGraph validation forcefully
+    releases fence sync.
+  </summary>
+</histogram>
+
+<histogram name="GPU.FenceSyncRelease.{TaskGraphValidationType}.Cause"
+    enum="ReleaseCause" expires_after="2025-11-15">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>sunnyps@chromium.org</owner>
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records the cause of calls to SyncPointManager::EnsureFenceSyncReleased()
+    for releasing fence sync. This histogram is ~1/100 sub-sampled.
+  </summary>
+  <token key="TaskGraphValidationType" variants="TaskGraphValidationType"/>
+</histogram>
+
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
     expires_after="2025-02-10">
   <owner>magchen@chromium.org</owner>
@@ -949,6 +979,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each request of an image from GraphiteImageProvider, records whether the
     image was found in the cache or needed to be created.
+  </summary>
+</histogram>
+
+<histogram name="GPU.GraphValidation.NeedsForceRelease" enum="Boolean"
+    expires_after="2025-11-15">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>sunnyps@chromium.org</owner>
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    For each graph valiation of TaskGraph, records whether it finds invalid
+    waits that require forceful release.
   </summary>
 </histogram>
 

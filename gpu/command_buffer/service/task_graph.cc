@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -531,6 +532,9 @@ void TaskGraph::ValidateSequenceTaskFenceDeps(Sequence* root_sequence) {
                             &force_releases, &validate_states);
     }
   }
+
+  UMA_HISTOGRAM_BOOLEAN("GPU.GraphValidation.NeedsForceRelease",
+                        !force_releases.empty());
 
   for (const auto& [client_id, release] : force_releases) {
     sync_point_manager_->EnsureFenceSyncReleased(
