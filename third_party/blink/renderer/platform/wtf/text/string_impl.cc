@@ -528,63 +528,55 @@ scoped_refptr<StringImpl> StringImpl::Truncate(wtf_size_t length) {
   return Create(Span16().first(length));
 }
 
+namespace {
+
+using CharacterRange = std::pair<size_t, size_t>;
+
 template <class UCharPredicate>
-inline unsigned StringImpl::LengthWithStrippedMatchedCharacters(
-    UCharPredicate predicate) const {
-  if (!length_) {
-    return 0;
-  }
+inline CharacterRange StrippedMatchedCharactersRange(const StringImpl& impl,
+                                                     UCharPredicate predicate) {
+  return WTF::VisitCharacters(
+      impl, [predicate](auto characters) -> CharacterRange {
+        if (characters.empty()) {
+          return {0, 0};
+        }
 
-  wtf_size_t start = 0;
-  wtf_size_t end = length_ - 1;
+        size_t start = 0;
+        size_t end = characters.size() - 1;
 
-  // Skip white space from the start.
-  while (start <= end &&
-         predicate(Is8Bit() ? Characters8()[start] : Characters16()[start])) {
-    ++start;
-  }
+        // Skip white space from the start.
+        while (start <= end && predicate(characters[start])) {
+          ++start;
+        }
 
-  // String only contains white space.
-  if (start > end) {
-    return 0;
-  }
+        // String only contains matching characters.
+        if (start > end) {
+          return {0, 0};
+        }
 
-  // Skip white space from the end.
-  while (end &&
-         predicate(Is8Bit() ? Characters8()[end] : Characters16()[end])) {
-    --end;
-  }
-
-  return end + 1 - start;
+        // Skip white space from the end.
+        while (end && predicate(characters[end])) {
+          --end;
+        }
+        return {start, end + 1};
+      });
 }
+
+}  // namespace
 
 template <class UCharPredicate>
 inline scoped_refptr<StringImpl> StringImpl::StripMatchedCharacters(
     UCharPredicate predicate) {
-  if (!length_)
+  const auto [start, end] = StrippedMatchedCharactersRange(*this, predicate);
+  if (start == end) {
     return empty_;
-
-  wtf_size_t start = 0;
-  wtf_size_t end = length_ - 1;
-
-  // Skip white space from the start.
-  while (start <= end &&
-         predicate(Is8Bit() ? Characters8()[start] : Characters16()[start]))
-    ++start;
-
-  // String only contains white space.
-  if (start > end)
-    return empty_;
-
-  // Skip white space from the end
-  while (end && predicate(Is8Bit() ? Characters8()[end] : Characters16()[end]))
-    --end;
-
-  if (!start && end == length_ - 1)
+  }
+  if (start == 0 && end == length_) {
     return this;
+  }
   if (Is8Bit())
-    return Create(Span8().subspan(start, end + 1 - start));
-  return Create(Span16().subspan(start, end + 1 - start));
+    return Create(Span8().subspan(start, end - start));
+  return Create(Span16().subspan(start, end - start));
 }
 
 class UCharPredicate final {
@@ -607,8 +599,10 @@ class SpaceOrNewlinePredicate final {
   inline bool operator()(UChar ch) const { return IsSpaceOrNewline(ch); }
 };
 
-unsigned StringImpl::LengthWithStrippedWhiteSpace() const {
-  return LengthWithStrippedMatchedCharacters(SpaceOrNewlinePredicate());
+wtf_size_t StringImpl::LengthWithStrippedWhiteSpace() const {
+  const auto [start, end] =
+      StrippedMatchedCharactersRange(*this, SpaceOrNewlinePredicate());
+  return static_cast<wtf_size_t>(end - start);
 }
 
 scoped_refptr<StringImpl> StringImpl::StripWhiteSpace() {

@@ -403,7 +403,7 @@ class WTF_EXPORT StringImpl {
 
   scoped_refptr<StringImpl> Truncate(wtf_size_t length);
 
-  unsigned LengthWithStrippedWhiteSpace() const;
+  wtf_size_t LengthWithStrippedWhiteSpace() const;
 
   scoped_refptr<StringImpl> StripWhiteSpace();
   scoped_refptr<StringImpl> StripWhiteSpace(IsWhiteSpaceFunctionPtr);
@@ -586,8 +586,6 @@ class WTF_EXPORT StringImpl {
                                     const UChar* replacement,
                                     wtf_size_t replacement_length);
 
-  template <class UCharPredicate>
-  unsigned LengthWithStrippedMatchedCharacters(UCharPredicate) const;
   template <class UCharPredicate>
   scoped_refptr<StringImpl> StripMatchedCharacters(UCharPredicate);
   template <typename CharType, class UCharPredicate>
