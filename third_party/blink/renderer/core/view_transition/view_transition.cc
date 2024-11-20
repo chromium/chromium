@@ -231,6 +231,7 @@ ViewTransition::ViewTransition(PassKey,
 
 void ViewTransition::SkipTransition(PromiseResponse response) {
   DCHECK_NE(response, PromiseResponse::kResolve);
+  pending_skip_view_transitions_ = false;
   if (IsTerminalState(state_))
     return;
 
@@ -278,6 +279,10 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   // This should be the last call in this function to avoid erroneously checking
   // the `state_` against the wrong state.
   AdvanceTo(State::kAborted);
+}
+
+void ViewTransition::SkipTransitionSoon() {
+  pending_skip_view_transitions_ = true;
 }
 
 bool ViewTransition::AdvanceTo(State state) {
@@ -810,8 +815,9 @@ void ViewTransition::RunViewTransitionStepsOutsideMainFrame() {
          DocumentLifecycle::kPrePaintClean);
   DCHECK(!in_main_lifecycle_update_);
 
-  if (state_ == State::kAnimating && style_tracker_ &&
-      !style_tracker_->RunPostPrePaintSteps()) {
+  if (pending_skip_view_transitions_ ||
+      (state_ == State::kAnimating && style_tracker_ &&
+       !style_tracker_->RunPostPrePaintSteps())) {
     SkipTransition(PromiseResponse::kRejectInvalidState);
   }
 }
@@ -827,9 +833,10 @@ void ViewTransition::RunViewTransitionStepsDuringMainFrame() {
   if (StateRunsInViewTransitionStepsDuringMainFrame(state_))
     ProcessCurrentState();
 
-  if (style_tracker_ &&
-      document_->Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean &&
-      !style_tracker_->RunPostPrePaintSteps()) {
+  if (pending_skip_view_transitions_ ||
+      (style_tracker_ &&
+       document_->Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean &&
+       !style_tracker_->RunPostPrePaintSteps())) {
     SkipTransition(PromiseResponse::kRejectInvalidState);
   }
 }
