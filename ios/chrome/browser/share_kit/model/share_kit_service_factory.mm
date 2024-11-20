@@ -54,13 +54,15 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
+  data_sharing::DataSharingService* data_sharing_service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
 
   // Give the opportunity for the test hook to override the service from
   // the provider (allowing EG tests to use a test ShareKitService).
-  if (auto share_kit_service =
-          tests_hook::CreateShareKitService(sync_service)) {
+  if (auto share_kit_service = tests_hook::CreateShareKitService(
+          data_sharing_service, sync_service)) {
     return share_kit_service;
   }
 
@@ -71,8 +73,7 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       std::make_unique<ShareKitServiceConfiguration>(
           IdentityManagerFactory::GetForProfile(profile),
           AuthenticationServiceFactory::GetForProfile(profile),
-          data_sharing::DataSharingServiceFactory::GetForProfile(profile),
-          sync_service,
+          data_sharing_service, sync_service,
           std::make_unique<TabGroupFaviconsGridConfigurator>(sync_service,
                                                              favicon_loader));
   return ios::provider::CreateShareKitService(std::move(configuration));
