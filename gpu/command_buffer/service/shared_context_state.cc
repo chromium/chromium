@@ -43,6 +43,7 @@
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/PrecompileContext.h"
 #include "third_party/skia/include/gpu/graphite/precompile/PaintOptions.h"
 #include "third_party/skia/include/gpu/graphite/precompile/Precompile.h"
 #include "ui/gl/gl_bindings.h"
@@ -103,7 +104,8 @@ size_t MaxNumSkSurface() {
 
 // TODO: crbug.com/376667859 - passing the graphite::Context to here isn't safe.
 // Correct when a suitable Skia object is added.
-void PerformPrecompilation(skgpu::graphite::Context* context) {
+void PerformPrecompilation(
+    std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext) {
   constexpr skgpu::graphite::RenderPassProperties kProps = {
       skgpu::graphite::DepthStencilFlags::kDepth, kBGRA_8888_SkColorType,
       /* requiresMSAA= */ false};
@@ -112,7 +114,7 @@ void PerformPrecompilation(skgpu::graphite::Context* context) {
   skgpu::graphite::PaintOptions paintOptions;
   paintOptions.setBlendModes({SkBlendMode::kSrcOver});
 
-  Precompile(context, paintOptions,
+  Precompile(precompileContext.get(), paintOptions,
              skgpu::graphite::DrawTypeFlags::kBitmapText_Mask, {&kProps, 1});
 }
 
@@ -121,13 +123,17 @@ void InitiatePrecompilation(skgpu::graphite::Context* context) {
       base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
+  std::unique_ptr<skgpu::graphite::PrecompileContext> precompileContext =
+      context->makePrecompileContext();
+
   // TODO: crbug.com/358074434 - need to determine the actual delay or initiate
   // precompilation at first idle
   constexpr base::TimeDelta precompile_wait = base::Seconds(1);
 
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, precompile_traits,
-      base::BindOnce(&PerformPrecompilation, context), precompile_wait);
+      base::BindOnce(&PerformPrecompilation, std::move(precompileContext)),
+      precompile_wait);
 }
 
 // Creates a Graphite recorder, supplying it with a GraphiteImageProvider.
