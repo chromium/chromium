@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 
 @interface AccountMenuMediator () <ChromeAccountManagerServiceObserver,
@@ -517,20 +518,13 @@
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
 - (void)updateIdentities {
-  NSArray<id<SystemIdentity>>* allIdentities;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        _identityManager->GetAccountsOnDevice();
-    allIdentities =
-        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
-  } else {
-    allIdentities = _accountManagerService->GetAllIdentities();
-  }
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
 
   NSMutableArray<NSString*>* gaiaIDsToRemove = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToAdd = [NSMutableArray array];
   NSMutableArray<NSString*>* gaiaIDsToKeep = [NSMutableArray array];
-  for (id<SystemIdentity> secondaryIdentity : allIdentities) {
+  for (id<SystemIdentity> secondaryIdentity : identitiesOnDevice) {
     NSString* gaiaID = secondaryIdentity.gaiaID;
     if (secondaryIdentity == _primaryIdentity) {
       continue;
@@ -551,7 +545,7 @@
 
   for (NSUInteger i = 0; i < _identities.count; ++i) {
     id<SystemIdentity> identity = _identities[i];
-    if (![allIdentities containsObject:identity] ||
+    if (![identitiesOnDevice containsObject:identity] ||
         identity == _primaryIdentity) {
       [gaiaIDsToRemove addObject:identity.gaiaID];
       [_identities removeObjectAtIndex:i--];

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_consumer.h"
@@ -124,17 +125,10 @@
 - (std::vector<IdentityViewItem*>)identityViewItems {
   std::vector<IdentityViewItem*> identityViewItemsForAccounts;
 
-  NSArray<id<SystemIdentity>>* allIdentities;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        _identityManager->GetAccountsOnDevice();
-    allIdentities =
-        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
-  } else {
-    allIdentities = _accountManagerService->GetAllIdentities();
-  }
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
 
-  for (id<SystemIdentity> identity in allIdentities) {
+  for (id<SystemIdentity> identity in identitiesOnDevice) {
     identityViewItemsForAccounts.push_back(
         [self identityViewItemForIdentity:identity]);
   }

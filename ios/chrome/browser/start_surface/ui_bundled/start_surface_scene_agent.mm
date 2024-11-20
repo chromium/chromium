@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -142,18 +143,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   // TODO(crbug.com/343699504): Remove pre-fetching capabilities once these
   // are loaded in iSL.
   ProfileIOS* profile = browser->GetProfile();
-  NSArray<id<SystemIdentity>>* identitiesOnDevice;
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        IdentityManagerFactory::GetForProfile(profile)->GetAccountsOnDevice();
-    identitiesOnDevice =
-        accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
-  } else {
-    identitiesOnDevice = accountManagerService->GetAllIdentities();
-  }
-  RunSystemCapabilitiesPrefetch(identitiesOnDevice);
+  RunSystemCapabilitiesPrefetch(signin::GetIdentitiesOnDevice(profile));
 
   if (!ShouldShowStartSurfaceForSceneState(self.sceneState)) {
     return;

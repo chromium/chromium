@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/legacy_accounts_table_view_controller.h"
@@ -319,20 +320,10 @@ using signin_metrics::PromoAction;
 - (void)removeAccountDialogConfirmedWithIdentity:(id<SystemIdentity>)identity {
   [self dismissConfirmRemoveIdentityAlertCoordinator];
 
-  NSArray<id<SystemIdentity>>* allIdentities;
   ProfileIOS* profile = self.browser->GetProfile();
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        IdentityManagerFactory::GetForProfile(profile)->GetAccountsOnDevice();
-    allIdentities =
-        accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
-  } else {
-    allIdentities = accountManagerService->GetAllIdentities();
-  }
-
-  if (![allIdentities containsObject:identity]) {
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(profile);
+  if (![identitiesOnDevice containsObject:identity]) {
     // If the identity was removed by another way (another window, another app
     // or by gaia), there is nothing to do.
     return;

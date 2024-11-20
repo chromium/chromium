@@ -118,15 +118,8 @@
   }
 
   // Create all the identity items.
-  NSArray<id<SystemIdentity>>* identitiesOnDevice;
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    std::vector<AccountInfo> accountInfos =
-        _identityManager->GetAccountsOnDevice();
-    identitiesOnDevice =
-        _accountManagerService->GetIdentitiesOnDeviceWithGaiaIDs(accountInfos);
-  } else {
-    identitiesOnDevice = _accountManagerService->GetAllIdentities();
-  }
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
   NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
   for (id<SystemIdentity> identity in identitiesOnDevice) {
     TableViewIdentityItem* item =
