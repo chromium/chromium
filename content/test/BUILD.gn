@@ -2943,6 +2943,7 @@ test("content_unittests") {
     "../common/service_worker/service_worker_router_evaluator_unittest.cc",
     "../common/url_utils_unittest.cc",
     "../common/user_agent_unittest.cc",
+    "../common/web_ui_loading_util_unittest.cc",
     "../common/webid/identity_url_loader_throttle_unittest.cc",
     "../common/webplugininfo_unittest.cc",
     "../public/test/browser_task_environment_unittest.cc",

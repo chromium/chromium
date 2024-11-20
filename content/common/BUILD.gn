@@ -187,6 +187,8 @@ source_set("common") {
     "user_level_memory_pressure_signal_features.h",
     "web_package/signed_exchange_utils.cc",
     "web_package/signed_exchange_utils.h",
+    "web_ui_loading_util.cc",
+    "web_ui_loading_util.h",
     "webid/identity_url_loader_throttle.cc",
     "webid/identity_url_loader_throttle.h",
   ]

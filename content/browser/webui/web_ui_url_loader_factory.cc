@@ -21,6 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_internals_url_loader.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -29,6 +30,7 @@
 #include "content/browser/webui/network_error_url_loader.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/url_data_source_impl.h"
+#include "content/common/web_ui_loading_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
@@ -40,7 +42,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_byte_range.h"
-#include "net/http/http_util.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -211,21 +212,18 @@ void StartURLLoader(
   }
 
   // Load everything by default, but respect the Range header if present.
-  std::optional<net::HttpByteRange> range;
-  if (std::optional<std::string> range_header =
-          request.headers.GetHeader(net::HttpRequestHeaders::kRange);
-      range_header) {
-    std::vector<net::HttpByteRange> ranges;
-    // For simplicity, only allow a single range. This is expected to be
-    // sufficient for WebUI content.
-    if (!net::HttpUtil::ParseRangeHeader(*range_header, &ranges) ||
-        ranges.size() > 1u || !ranges[0].IsValid()) {
-      CallOnError(std::move(client_remote),
-                  net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
-      return;
-    }
-    range = ranges[0];
+  base::expected<net::HttpByteRange, GetRequestedRangeError> range_or_error =
+      GetRequestedRange(request.headers);
+  // Errors (aside from 'no Range header') should be surfaced to the client.
+  if (!range_or_error.has_value() &&
+      range_or_error.error() != GetRequestedRangeError::kNoRanges) {
+    CallOnError(std::move(client_remote),
+                net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
+    return;
   }
+  std::optional<net::HttpByteRange> maybe_range =
+      range_or_error.has_value() ? std::make_optional(range_or_error.value())
+                                 : std::nullopt;
 
   std::string path = URLDataSource::URLToRequestPath(request.url);
   std::string origin_header =
@@ -270,8 +268,8 @@ void StartURLLoader(
   // owned by |source| keep a reference to it in the callback.
   URLDataSource::GotDataCallback data_available_callback = base::BindOnce(
       DataAvailable, std::move(resource_response), replacements, replace_in_js,
-      base::RetainedRef(source), std::move(client_remote), std::move(range),
-      std::move(url_request_elapsed_timer));
+      base::RetainedRef(source), std::move(client_remote),
+      std::move(maybe_range), std::move(url_request_elapsed_timer));
 
   source->source()->StartDataRequest(request.url, std::move(wc_getter),
                                      std::move(data_available_callback));
