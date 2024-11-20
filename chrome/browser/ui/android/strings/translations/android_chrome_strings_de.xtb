@@ -257,6 +257,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2172905120685242547">Fenster schließen?</translation>
 <translation id="2173302385160625112">Bitte überprüfe deine Internetverbindung</translation>
 <translation id="2175927920773552910">QR-Code</translation>
+<translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="218608176142494674">Freigabe</translation>
 <translation id="219283042927675668">Tabs in Gruppe</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
@@ -342,6 +343,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2571711316400087311">Anbieten, Seiten in anderen Sprachen an Google Übersetzer zu senden</translation>
 <translation id="2571834852878229351">Eigenes erstellen</translation>
 <translation id="2574249610672786438">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) verliert dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und kann nicht mehr über Google-Dienste mit dir interagieren.</translation>
 <translation id="2578337197553672982">Inhalte von Google für betreute Nutzer</translation>
 <translation id="2579297619530305344">Die Ansicht „Deine Passwörter auf allen deinen Geräten abrufen“ ist vollständig geöffnet</translation>
 <translation id="2581165646603367611">Alle Cookies, der Cache und andere Daten von Websites, die Chrome nicht für wichtig hält, werden gelöscht.</translation>
@@ -566,6 +568,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3602290021589620013">Vorschau</translation>
 <translation id="3614126103057878858">Preisinformationen</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3619255692378312441">Zugriff verwalten</translation>
 <translation id="3622349720008044802">Fenster verwalten</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{und 1 weitere Website}other{und # weitere Websites}}</translation>
 <translation id="3631987586758005671">Wird mit "<ph name="DEVICE_NAME" />" geteilt</translation>
@@ -574,6 +577,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="363596933471559332">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, wirst du jedes Mal aufgefordert, dich manuell auf einer Website anzumelden.</translation>
 <translation id="3636940436873918441">Bevorzugte Sprachen</translation>
 <translation id="3637744895182738742">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Zur Startseite der Google App</translation>
 <translation id="368329460027487650">Abgemeldet. Anmeldeoptionen werden geöffnet.</translation>
 <translation id="3684540848053703310">Preisinformationen am unteren Rand geschlossen</translation>
@@ -585,6 +589,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3701515417135397388">Warnen, wenn ein Passwort durch eine Datenpanne gehackt wurde</translation>
 <translation id="3703166520839776970">Wenn das Problem weiterhin auftritt, wähle unten „Weitere Details“ aus, um mehr Informationen von <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> zu erhalten.</translation>
 <translation id="3710501561113687889"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren <ph name="FIELDS_STRING" /> mit dieser Website.</translation>
+<translation id="3710560693796335511">Zusammenarbeit</translation>
 <translation id="3714981814255182093">Suchleiste öffnen</translation>
 <translation id="3716182511346448902">Diese Seite benötigt zu viel Arbeitsspeicher und wurde daher von Chrome angehalten.</translation>
 <translation id="3718765429352682176">Möglicherweise siehst du den Verlauf von anderen Apps, die Links in Chrome öffnen.</translation>
@@ -873,7 +878,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4988526792673242964">Seiten</translation>
 <translation id="4991110219272367918">Ansicht für die Option, eine Website zu genehmigen oder nicht zu genehmigen (geschlossen)</translation>
 <translation id="4996095658297597226">Vorgeschlagenes Passwort verwenden?</translation>
-<translation id="499724277181351974">Aufrufen: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dieser Website folgen</translation>
 <translation id="5004416275253351869">Google-Aktivitätseinstellungen</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
@@ -956,6 +960,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) verliert dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“</translation>
 <translation id="5423934151118863508">Hier werden deine am meisten aufgerufenen Seiten angezeigt.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB verfügbar</translation>
+<translation id="543121643585717256">Jeder Nutzer mit dem Link kann alle Tabs bearbeiten. Informationen zu geteilten Tabgruppen</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
 <translation id="5433691172869980887">Nutzername kopiert</translation>
 <translation id="5438292632479953702">Noch einmal herunterladen</translation>
@@ -970,6 +975,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5468068603361015296">Möchtest du <ph name="FILE_NAME" /> trotzdem herunterladen?</translation>
 <translation id="548278423535722844">In einer Karten-App öffnen</translation>
 <translation id="5492637351392383067">Verschlüsselung auf dem Gerät</translation>
+<translation id="549660026907543296">Als <ph name="MEMBER_FULL_NAME" /> beitreten</translation>
 <translation id="5503125329065007089">Die Ansicht „Deine Passwörter auf allen deinen Geräten abrufen“ ist halb geöffnet</translation>
 <translation id="5514904542973294328">Vom Administrator dieses Geräts deaktiviert</translation>
 <translation id="5515439363601853141">Entsperren, um dein Passwort zu sehen</translation>
@@ -1372,6 +1378,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7182051712900867547">Ein anderes Konto verwenden</translation>
 <translation id="7183517696921903380">Die App-Filtertabelle ist geöffnet.</translation>
 <translation id="7186568385131859684">Festlegen, wie der Browserverlauf mit deinen anderen Daten in Google-Diensten verwendet wird</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blockieren?</translation>
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Wir empfehlen, das Passwort jetzt zu ändern}other{Wir empfehlen, die Passwörter jetzt zu ändern}}</translation>
 <translation id="7196215469483532480">Erläuterungen zum Datenschutz-Leitfaden sind vollständig geöffnet</translation>

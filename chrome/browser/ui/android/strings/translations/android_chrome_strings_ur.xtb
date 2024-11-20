@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">ونڈو کو بند کر دیں؟</translation>
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
+<translation id="2184272387334793084">اپنے تمام آلات پر اپنے پاس ورڈز وغیرہ حاصل کرنے کے لیے سائن ان کریں</translation>
 <translation id="218608176142494674">اشتراک</translation>
 <translation id="219283042927675668">گروپ میں موجود ٹیبز</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">اسٹور کردہ اسناد کا استعمال کر کے ویب سائٹس میں خود کار طور پر سائن ان کریں۔ خصوصیت آف ہونے پر، کسی ویب سائٹ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کو کہا جائے گا۔</translation>
 <translation id="3636940436873918441">ترجیحی زبانیں</translation>
 <translation id="3637744895182738742">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏‫Google ایپ ہوم پر جائیں</translation>
 <translation id="368329460027487650">سائن آؤٹ ہو گئے۔ سائن ان کرنے کے اختیارات کھولتا ہے۔</translation>
 <translation id="3684540848053703310">قیمت سے متعلق حقائق کی نیچے کی شیٹ بند ہے</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4991110219272367918">کسی بند ویب سائٹ کو منظوری دینے یا منظوری نہ دینے کا اختیار</translation>
 <translation id="4996095658297597226">تجویز کردہ پاس ورڈ استعمال کریں؟</translation>
-<translation id="499724277181351974">نیویگیٹ کریں: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">یہاں اس سائٹ کی پیروی کریں</translation>
 <translation id="5004416275253351869">‏Google سرگرمی کنٹرولز</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> پوشیدگی ٹیب}other{<ph name="TAB_COUNT_NORMAL" /> پوشیدگی ٹیبز}}</translation>
 <translation id="8051695050440594747">‏<ph name="MEGABYTES" /> MB دستیاب ہے</translation>
 <translation id="8058746566562539958">‏نئے Chrome ٹیب میں کھولیں</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{‫<ph name="OWNER_FIRST_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں}=1{‫<ph name="OWNER_FIRST_NAME" /> اور # دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}other{‫<ph name="OWNER_FIRST_NAME" /> اور # دیگر کے ساتھ ٹیب گروپ میں شامل ہوں}}</translation>
 <translation id="8062594758852531064">توسیع شدہ پیشگی لوڈنگ:</translation>
 <translation id="8063895661287329888">بُک مارک شامل کرنے میں ناکام۔</translation>
 <translation id="8066816452984416180">فوری طور پر اس صفحہ کو بُک مارک کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>

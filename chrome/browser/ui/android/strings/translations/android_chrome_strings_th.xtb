@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">ปิดหน้าต่างใช่ไหม</translation>
 <translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
+<translation id="2184272387334793084">ลงชื่อเข้าใช้เพื่อรับรหัสผ่านและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="218608176142494674">การแชร์</translation>
 <translation id="219283042927675668">แท็บในกลุ่ม</translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">ลงชื่อเข้าใช้เว็บไซต์โดยอัตโนมัติโดยใช้ข้อมูลเข้าสู่ระบบที่เก็บไว้ เมื่อฟีเจอร์นี้ปิดอยู่ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="3636940436873918441">ภาษาที่ต้องการ</translation>
 <translation id="3637744895182738742">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chrome ในบัญชี<ph name="END_LINK" /></translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">ไปที่หน้าแรกของแอป Google</translation>
 <translation id="368329460027487650">ออกจากระบบ เปิดตัวเลือกเพื่อลงชื่อเข้าใช้</translation>
 <translation id="3684540848053703310">Bottom Sheet ข้อมูลเชิงลึกด้านราคาปิดอยู่</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">หน้า</translation>
 <translation id="4991110219272367918">ตัวเลือกในการอนุมัติหรือไม่อนุมัติเว็บไซต์ปิดอยู่</translation>
 <translation id="4996095658297597226">ใช้รหัสผ่านที่แนะนำใช่ไหม</translation>
-<translation id="499724277181351974">ไปยัง: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ติดตามเว็บไซต์นี้ได้ที่นี่</translation>
 <translation id="5004416275253351869">ส่วนควบคุมกิจกรรมของ Google</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บที่ไม่ระบุตัวตน}other{<ph name="TAB_COUNT_NORMAL" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="8051695050440594747">สามารถใช้งานได้ <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">เปิดในแท็บใหม่ของ Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" />}=1{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก # คน}other{เข้าร่วมกลุ่มแท็บกับ <ph name="OWNER_FIRST_NAME" /> และอีก # คน}}</translation>
 <translation id="8062594758852531064">การโหลดล่วงหน้าที่เพิ่มขึ้น:</translation>
 <translation id="8063895661287329888">เพิ่มบุ๊กมาร์กไม่สำเร็จ</translation>
 <translation id="8066816452984416180">บุ๊กมาร์กหน้านี้อย่างรวดเร็ว หากต้องการแก้ไขทางลัดนี้ ให้แตะค้างไว้</translation>

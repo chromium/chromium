@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Atidaromas „Chrome“ nustatymas nustatyti „Chrome“ kaip numatytąją naršyklę.</translation>
 <translation id="1670609221633730681">„Chrome“ patarimas: pasirinkite adreso juostos padėtį</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Slaptažodžių išsaugojimas naršyklėje „Chrome“</translation>
 <translation id="1790080846677398234">Pridedami įvesti URL prie žymių naršyklėje „Chrome“.</translation>
 <translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1830634592642484976">Šis adresas šiuo metu išsaugotas naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
@@ -219,9 +220,11 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 
 Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
+<translation id="6924922227983877439">Atidaryti nuorodas naršyklėje „Chrome“ pagal numatytuosius nustatymus</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
 <translation id="7056826488869329999">Atidaroma ir vykdoma saugos patikra naršyklėje „Chrome“.</translation>
 <translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
+<translation id="7065813315247345131">„Chrome“ perkėlimas į doką</translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
 <translation id="7161390184744336561">„Google Chrome“ versija yra pasenusi</translation>
 <translation id="7165736900384873061">Prad. naudoti „Google Chrome“ QR skait.</translation>

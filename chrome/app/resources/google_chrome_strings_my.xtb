@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lens မှထွက်ရန် နှိပ်ပါ</translation>
 <translation id="2681444469812712297"><ph name="URL" /> ကို Google Chrome ၌ တဘ်အသစ်တွင် ဖွင့်မည်။</translation>
 <translation id="2712141162840347885">Google Lens ဖြင့် ရှာရန် တစ်ခုခုရွေးပါ (သို့) Google Lens မှ ထွက်ရန် Escape နှိပ်ပါ</translation>
-<translation id="2727713483500953825">Lens ဖြင့်ရှာရန် ပုံ/စာသား ရွေးပါ</translation>
 <translation id="2738871930057338499">အင်တာနက် ချိတ်ဆက်၍ မရပါ။ တားမြစ်ထားသည့်အမှား HTTP 403။ သင့်ပရောက်စီ စီစဉ်သတ်မှတ်ချက်ကို စစ်ဆေးပါ။</translation>
 <translation id="2742320827292110288">သတိပေးချက်- Google Chrome သည် နောက်ဆက်တွဲများက သင်၏ကြည့်ရှုခြင်းမှတ်တမ်းကို မှတ်သားမထားရန် တားမြစ်၍မရပါ။ ရုပ်ဖျက်မုဒ်တွင် ဤနောက်ဆက်တွဲကို ပိတ်ရန်အတွက် ဤရွေးချယ်မှုကို ပြန်ဖြုတ်ပါ။</translation>
 <translation id="2753623023919742414">ရှာဖွေရန် နှိပ်ပါ</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" />၊ <ph name="PERMISSION_3" /> တို့ကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="3622716124581627104">အရာဝတ္ထု (သို့) နေရာများကို ဖော်ထုတ်ပြီး စာသားကို မိတ္တူကူးသည် (သို့) ဘာသာပြန်သည်။ Google Lens သုံးသောအခါ စာမျက်နှာ၏ ဖန်သားပြင်ဓာတ်ပုံကို Google သို့ ပို့သည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ယခုအခါ သင့် Google အကောင့်ဖြင့် Chrome နှင့် မျှဝေထားသည့် ကွန်ပျူတာများတွင် အသုံးပြုရ ပိုမိုလွယ်ကူလာပါသည်။</translation>
-<translation id="3625345586754200168">Lens သုံးကြည့်ရန်</translation>
 <translation id="3635073343384702370">သင်စကားဝှက်များကို သိမ်းသည့်အခါ Chrome က၎င်းတို့ကို စစ်ဆေးနိုင်သည်</translation>
 <translation id="3667616615096815454">ဤဆာဗာတွင် အပလီကေးရှင်းကို မသိသဖြင့် ထည့်သွင်း၍မရပါ။</translation>
 <translation id="3673813398384385993">“<ph name="EXTENSION_NAME" />” တွင် မဲလ်ဝဲပါဝင်သည်ကို Chrome ကတွေ့ထားသည်</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">ထည့်သွင်းသည့်ကိရိယာ အမှား- <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> အဖြစ် Chrome သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="4450664632294415862">Chrome - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">ပုံ (သို့) စာသားများကို Lens ဖြင့် ရှာပါ</translation>
 <translation id="4458462641685292929">Google Chrome ရှိ အခြားလုပ်ဆောင်ချက်မှာ မပြီးပြတ်သေးပါ။ ခဏကြာမှ ထပ်လုပ်ကြည့်ပါ။</translation>
 <translation id="4459234553906210702">Ad measurement က သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များကို Chrome ထံမှ အချက်အလက်တောင်းဆိုခွင့်ပြုပြီး ၎င်းက ဝဘ်ဆိုက်များ၏ ကြော်ငြာစွမ်းဆောင်ရည် တိုင်းတာရာတွင် ကူညီပေးသည်။ Ad measurement သည် ဝဘ်ဆိုက်တစ်ခုနှင့်တစ်ခု အချက်အလက်အနည်းဆုံး လွှဲပြောင်းခြင်းဖြင့် ဝဘ်ဆိုက်များကြားစောင့်ကြည့်ခြင်းကို ကန့်သတ်သည်။</translation>
 <translation id="4493028449971051158">စတင်မှုဆိုင်ရာ အမှားအယွင်း- ထည့်သွင်းသည့်ဖိုင်ကို ကြီးကြပ်သူအနေဖြင့် ဖွင့်ပါ။</translation>
@@ -408,7 +405,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6025087594896450715">Google Chrome ကို <ph name="REMAINING_TIME" /> အတွင်း ပြန်စမည်</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="604424701295382420">ပင်ထိုးလိုက်ပြီ။ ကိရိယာဘားပေါ်ရှိ ခလုတ်အသစ်မှတစ်ဆင့် Google Lens ကို ထပ်သုံးနိုင်သည်</translation>
-<translation id="6060842547856900641">Lens ဖွင့်ရန်</translation>
 <translation id="6069027071882229820">ပုံအဖြစ် မိတ္တူကူးရန်</translation>
 <translation id="6070348360322141662">လုံခြုံရေး ပိုမိုတင်းကြပ်စေရန်အတွက် Google Chrome သည် သင်၏ ဒေတာများကို အသွင်ဝှက်ထားပါမည်</translation>
 <translation id="6075300983329039771">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်း <ph name="MANAGER" /> က သတ်မှတ်ထားသည်</translation>
@@ -457,7 +453,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6515549163407364048">သင်၏နောက်ဆက်တွဲများကို သင့်ကွန်ပျူတာအားလုံးတွင် ရယူနိုင်ရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6520670145826811516">သင့်တည်နေရာသုံးရန် <ph name="BEGIN_LINK" />စနစ် ဆက်တင်များ<ph name="END_LINK" /> တွင် Chrome သုံးခွင့် ပေးပါ</translation>
 <translation id="659498884637196217">ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင်</translation>
-<translation id="6600016381025017075">ဤစာမျက်နှာရှိ မည်သည်ကိုမဆိုရှာရန်</translation>
 <translation id="6632473616050862500"><ph name="BEGIN_LINK_CROS_OSS" />အခမဲ့ရင်းမြစ်ဆော့ဖ်ဝဲ<ph name="END_LINK_CROS_OSS" /> ထပ်ဆောင်းဖြည့်ခြင်းဖြင့် ChromeOS Flex ကို ရေးဆွဲထားသည်။</translation>
 <translation id="6660596345553328257">Chrome သို့ လက်မှတ်ထိုးဝင်မလား။</translation>
 <translation id="6676384891291319759">အင်တာနက် ရယူရန်</translation>
@@ -620,6 +615,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8416347857511542594">ကြော်ငြာ စိတ်ကြိုက်သတ်မှတ်ခြင်းအကြောင်း Chrome တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="8418845734693287262">သင်၏အကောင့် လက်မှတ်ထိုးဝင်ခြင်း အသေးစိတ်များမှာ ဟောင်းသွားသဖြင့် ChromeOS သည် ဒေတာကို စင့်ခ်မလုပ်ပေးနိုင်ပါ။</translation>
 <translation id="842386925677997438">Chrome ၏ လုံခြုံရေးတူးလ်များ</translation>
+<translation id="8425765582779547329">သင့်မိဘ၏ ရွေးချယ်မှုများဖြင့် အွန်လိုင်းတွင် ပိုမိုဘေးကင်းစေရန် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
 <translation id="8433638294851456451">ဤနေရာမှ သင်၏ Android ဖုန်းသို့ နံပါတ်တစ်ခုပို့ရန် စက်နှစ်ခုလုံးတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="8451192282033883849">သင့်အကောင့်ကို <ph name="MANAGER_NAME" /> က စီမံခန့်ခွဲသည်။ သင်၏စီမံခန့်ခွဲသူက ဤ Chrome ဘရောင်ဇာပရိုဖိုင်နှင့် လိပ်စာ၊ မှတ်တမ်းနှင့် စကားဝှက်များ ကဲ့သို့သော ၎င်း၏ဒေတာများကို ကြည့်နိုင်၊ ပြင်ဆင်နိုင်သည်။</translation>

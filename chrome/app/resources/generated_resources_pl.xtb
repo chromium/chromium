@@ -1384,7 +1384,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1948528728718281125">Dostęp do aparatu jest dozwolony w przypadku aplikacji i stron, które mają odpowiednie uprawnienia, oraz usług systemowych</translation>
 <translation id="1949332606889020901">Identyfikatory awarii</translation>
 <translation id="1949584741547056205">Szybkie odpowiedzi</translation>
-<translation id="1949849604471335579">Spersonalizuj tapetę, wygaszacz ekranu, kolory uzupełniające i inne elementy</translation>
 <translation id="1949980990364952348">Nazwa aplikacji</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1951823516285577843">Znajdź rozszerzenie alternatywne</translation>
@@ -3450,6 +3449,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3429174588714165399">Utwórz skrót do tej strony</translation>
 <translation id="3429271624041785769">Języki treści internetowych</translation>
 <translation id="3429275422858276529">Dodaj tę stronę do zakładek, by później łatwo ją znaleźć</translation>
+<translation id="3431530007831146102">Steruj kursorem myszy za pomocą ruchów głowy</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – zwolniono <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Blokuj, gdy odchodzę od urządzenia</translation>
@@ -6070,7 +6070,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5288678174502918605">O&amp;twórz ponownie zamkniętą kartę</translation>
 <translation id="5290020561438336792">Komputer i urządzenie przesyłające w różnych sieciach Wi-Fi (np. 2,4 GHz i 5 GHz)</translation>
 <translation id="52912272896845572">Plik kluczy prywatnych jest nieprawidłowy.</translation>
-<translation id="5291739252352359682">Automatycznie tworzy napisy do multimediów w przeglądarce Chrome (obecnie w języku angielskim). Dźwięk oraz napisy są przetwarzane lokalnie i nigdy nie opuszczają urządzenia.</translation>
 <translation id="529175790091471945">Sformatuj urządzenie</translation>
 <translation id="529296195492126134">Tryb tymczasowy nie jest obsługiwany. Skontaktuj się z administratorem</translation>
 <translation id="5293043095535566171">Włączyć dostęp do lokalizacji?</translation>
@@ -7500,7 +7499,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6338968693068997776">Dodaj urządzenie USB</translation>
 <translation id="6339668969738228384">Utwórz nowy profil dla adresu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
-<translation id="6340526405444716530">Personalizacja</translation>
 <translation id="6341850831632289108">Wykrywanie Twojej lokalizacji</translation>
 <translation id="6342069812937806050">Przed momentem</translation>
 <translation id="6343003829431264373">Tylko strony parzyste</translation>
@@ -7903,7 +7901,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6642720633335369752">Aby zobaczyć wszystkie otwarte okna aplikacji, przesuń palcem w górę od dołu ekranu i przytrzymaj.</translation>
 <translation id="664290675870910564">Wybór sieci</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
-<translation id="6644512095122093795">Proponuj zapisywanie haseł</translation>
 <translation id="6644513150317163574">Nieprawidłowy format adresu URL. Gdy używane jest uwierzytelnianie SSO, serwer musi być wskazany za pomocą nazwy hosta.</translation>
 <translation id="6644846457769259194">Aktualizuję Twoje urządzenie (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Wyłącz Szybkie parowanie</translation>
@@ -8044,7 +8041,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6739943577740687354">Ta funkcja korzysta z AI i nie zawsze działa prawidłowo</translation>
 <translation id="6740234557573873150">Wstrzymano pobieranie <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Twój administrator<ph name="END_LINK" /> wyłączył Bezpieczne przeglądanie</translation>
-<translation id="6742629250739345159">Automatycznie tworzy napisy do multimediów w przeglądarce Chrome. Dźwięk oraz napisy są przetwarzane lokalnie i nigdy nie opuszczają urządzenia.</translation>
 <translation id="6743841972744298686">Ustawienia synchronizacji</translation>
 <translation id="6745592621698551453">Aktualizuj teraz</translation>
 <translation id="6746124502594467657">W dół</translation>

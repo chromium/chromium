@@ -247,6 +247,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1166457390969131095">Usa e salva password e passkey del tuo Account Google</translation>
 <translation id="1166583374608765787">Controlla l'aggiornamento del nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
+<translation id="1166644470305877068">Le app web isolate seguono automaticamente questa impostazione</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> all'apertura del file...</translation>
 <translation id="1168704243733734901">Tema IA recente <ph name="INDEX" /> di <ph name="SUBJECT" />, in stile <ph name="STYLE" />, con stato d'animo <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambia automaticamente la lingua in base ai contenuti selezionati</translation>
@@ -635,6 +636,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1444389367706681769">Spazio cosmico</translation>
 <translation id="1444628761356461360">Questa impostazione è controllata dal proprietario del dispositivo, <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">Impossibile caricare "<ph name="IMAGE_PATH" />" per il tema.</translation>
+<translation id="1445330076053050041">Seleziona un'azione per il tasto <ph name="KEY_NAME" /></translation>
 <translation id="1447531650545977377">Attiva la &amp;sincronizzazione…</translation>
 <translation id="1447895950459090752">Scheda di anteprima che appare quando passi il mouse sopra la scheda</translation>
 <translation id="1448264954024227422">Puoi usare questo account con le app per Android. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi invece una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
@@ -1221,6 +1223,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1832459821645506983">OK</translation>
 <translation id="1832511806131704864">Cambio di telefono aggiornato</translation>
 <translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
+<translation id="1833059747301212935">Accedi facilmente ai documenti recenti e ai prossimi eventi nel calendario</translation>
 <translation id="1834503245783133039">Download non riuscito: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgrade di Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ha rifiutato la richiesta. Riprova più tardi.</translation>
@@ -1383,7 +1386,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1948528728718281125">L'accesso alla fotocamera è consentito alle app, ai siti web che dispongono dell'autorizzazione di accesso alla fotocamera e ai servizi di sistema</translation>
 <translation id="1949332606889020901">ID arresti anomali</translation>
 <translation id="1949584741547056205">Risposte rapide</translation>
-<translation id="1949849604471335579">Personalizza sfondo, salvaschermo, colori intensi e altro ancora</translation>
 <translation id="1949980990364952348">Nome dell'app</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1951823516285577843">Trova alternativa</translation>
@@ -2200,6 +2202,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2501797496290880632">Digita una scorciatoia</translation>
 <translation id="2501920221385095727">Tasti permanenti</translation>
+<translation id="2502267564852819530">Rimuovi dall'elenco <ph name="TAB_TITLE" />, <ph name="LAST_ACTIVE" /></translation>
 <translation id="2502441965851148920">Gli aggiornamenti automatici sono attivi. Gli aggiornamenti manuali sono stati disattivati dall'amministratore.</translation>
 <translation id="2502719318159902502">Accesso completo</translation>
 <translation id="2504801073028762184">Consigli per la sicurezza</translation>
@@ -2673,6 +2676,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2832124733806557606">Tuo figlio può usare il PIN per accedere al dispositivo o per sbloccarlo.</translation>
 <translation id="2833144527504272627">Naviga con il cursore di testo</translation>
 <translation id="2833727845850279275">Questo file contiene malware o proviene da un sito sospetto.</translation>
+<translation id="2834091109531651093">Visualizza i tuoi file di SharePoint e Calendario di Outlook</translation>
 <translation id="2835177225987815960">Se ripeti la configurazione della scansione, tutte le assegnazioni verranno reimpostate, compresi eventuali sensori assegnati e le preferenze di velocità per la scansione automatica.</translation>
 <translation id="2835547721736623118">Servizio di riconoscimento vocale</translation>
 <translation id="2835761321523638096">Lettura e modifica delle voci nell'elenco di lettura</translation>
@@ -3399,6 +3403,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3382737653173267704">Visualizza gruppo Famiglia</translation>
 <translation id="338323348408199233">Blocca traffico senza VPN</translation>
 <translation id="3384362484379805487">I file della lingua vengono condivisi tra gli utenti per risparmiare spazio su disco.</translation>
+<translation id="3385053436247851142">Accedi con Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti dal tuo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificarti per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti.</translation>
 <translation id="338583716107319301">Separatore</translation>
@@ -4480,6 +4485,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4106054677122819586">Organizza le tue schede</translation>
 <translation id="4107048419833779140">Identifica ed espelli i dispositivi di archiviazione</translation>
 <translation id="4107522742068568249">Vai al controllo di sicurezza</translation>
+<translation id="4107793386654579933">Seleziona una scorciatoia per l'azione <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Sposta finestra su <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Ripristina avviso</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
@@ -5340,6 +5346,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4756378406049221019">Interrompi/Ricarica</translation>
 <translation id="4756388243121344051">&amp;Cronologia</translation>
 <translation id="4756671452988984333">Testo per l'audio</translation>
+<translation id="4757654665487479524"><ph name="HEADING" />. <ph name="SUBHEADING" /></translation>
 <translation id="4759202969060787081">Non aprire</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4761104368405085019">Utilizzare il microfono</translation>
@@ -5532,6 +5539,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4882919381756638075">In genere, i siti usano il microfono per funzionalità di comunicazione come la chat video</translation>
 <translation id="4883436287898674711">Tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Task Manager</translation>
+<translation id="4884937942297374058">La Protezione avanzata è disattivata</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">L'estensione non ha accesso a siti aggiuntivi</translation>
 <translation id="4887424188275796356">Apri con visualizzatore di sistema</translation>
@@ -6082,7 +6090,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5290020561438336792">PC e dispositivo di trasmissione su diverse reti Wi-Fi (ad es. 2,4 GHz
     e 5 GHz)</translation>
 <translation id="52912272896845572">Il file della chiave privata non è valido.</translation>
-<translation id="5291739252352359682">Vengono creati automaticamente i sottotitoli per i contenuti multimediali nel browser Chrome (funzionalità attualmente disponibile in inglese). I contenuti audio e i sottotitoli vengono elaborati localmente e non possono essere trasferiti dal dispositivo.</translation>
 <translation id="529175790091471945">Formatta questo dispositivo</translation>
 <translation id="529296195492126134">La modalità temporanea non è supportata. Contatta l'amministratore.</translation>
 <translation id="5293043095535566171">Attivare l'accesso alla posizione?</translation>
@@ -6339,6 +6346,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5473099001878321374">Se prosegui, accetti che il dispositivo possa scaricare e installare automaticamente aggiornamenti e app da Google, dall'operatore di tuo figlio e dal produttore del dispositivo, utilizzando eventualmente la rete dati. Alcune di queste app potrebbero offrire acquisti in-app.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Il PIN deve contenere almeno un carattere}other{Il PIN deve contenere almeno # caratteri}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> richiede l'immediata connessione a una rete Wi-Fi per scaricare un aggiornamento. In alternativa, puoi eseguire il download tramite una connessione a consumo (potrebbero essere applicati costi).</translation>
+<translation id="5476957746413745956">Regola la velocità separatamente per ogni direzione</translation>
 <translation id="5477089831058413614">Configura l'hotspot di <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Non possono scaricare automaticamente più file</translation>
 <translation id="5481682542063333508">Offri aiuto con la scrittura</translation>
@@ -7509,7 +7517,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6338968693068997776">Aggiungi dispositivo USB</translation>
 <translation id="6339668969738228384">Crea un nuovo profilo per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocollo di stampa Internet (IPPS)</translation>
-<translation id="6340526405444716530">Personalizzazione</translation>
 <translation id="6341850831632289108">Rilevamento della posizione fisica dell'utente</translation>
 <translation id="6342069812937806050">In questo momento</translation>
 <translation id="6343003829431264373">Solo pagine pari</translation>
@@ -7908,7 +7915,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6642720633335369752">Per visualizzare le finestre di tutte le app aperte, scorri dal basso verso l'alto e tieni premuto.</translation>
 <translation id="664290675870910564">Selezione rete</translation>
 <translation id="6643016212128521049">Cancella</translation>
-<translation id="6644512095122093795">Chiedi di salvare le password</translation>
 <translation id="6644513150317163574">Formato URL non valido. Il server deve essere specificato come nome host quando viene utilizzata l'autenticazione SSO.</translation>
 <translation id="6644846457769259194">Aggiornamento del dispositivo in corso (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Disattiva l'Accoppiamento rapido</translation>
@@ -8049,7 +8055,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6739943577740687354">Questa funzionalità utilizza l'AI e non funzionerà sempre correttamente</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> in pausa</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />L'amministratore<ph name="END_LINK" /> ha disattivato Navigazione sicura</translation>
-<translation id="6742629250739345159">Vengono creati automaticamente i sottotitoli per i contenuti multimediali nel browser Chrome. I contenuti audio e i sottotitoli vengono elaborati localmente e non possono essere trasferiti dal dispositivo.</translation>
 <translation id="6743841972744298686">Impostazioni di sincronizzazione</translation>
 <translation id="6745592621698551453">Aggiorna ora</translation>
 <translation id="6746124502594467657">Sposta giù</translation>
@@ -10402,6 +10407,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8394212467245680403">Alfanumerico</translation>
 <translation id="8394908167088220973">Play/Pausa contenuti multimediali</translation>
 <translation id="8396098434728053815">Condividi anche l'audio della scheda</translation>
+<translation id="839635482147281021">Nessun lettore di smart card trovato</translation>
 <translation id="8396657283886698158">Strumenti e azioni</translation>
 <translation id="8397825320644530257">Disconnettere un telefono connesso</translation>
 <translation id="8398877366907290961">Procedi comunque</translation>

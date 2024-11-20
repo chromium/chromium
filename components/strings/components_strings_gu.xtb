@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">લેખક:</translation>
 <translation id="1247030632403369975">એલ્યુમિનિયમ</translation>
 <translation id="1252209483516427155">બહાર પહેરવાનો પોશાક</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> વડે ચુકવણી કરો</translation>
 <translation id="1253846494229886276">સ્ક્રીનશૉટ સાચવી રહ્યાં છીએ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (સમન્વયિત)</translation>
 <translation id="1255086252236620440">ભોજન મિક્સર</translation>
@@ -314,6 +313,7 @@
 <translation id="1549470594296187301">આ સુવિધાનો ઉપયોગ કરવા માટે JavaScript સક્ષમ કરેલ હોવી આવશ્યક છે.</translation>
 <translation id="1553152622374372421">શિયાળામાં રમાતી રમતો</translation>
 <translation id="1553358976309200471">Chrome અપડેટ કરો</translation>
+<translation id="1554485704925237240"><ph name="READERNAME" /> નામવાળા રીડર અને તેમની સાથે ઉપયોગ કરવામાં આવનારા સ્માર્ટ કાર્ડને નિયંત્રિત કરવાની મંજૂરી</translation>
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="1555191101192706055">તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પરના અટૅક કરનારા લોકો યુક્તિ અજમાવીને તમને હાનિકારક સૉફ્ટવેર ઇન્સ્ટૉલ કરવા છેતરી શકે છે જે તમારી બ્રાઉઝ કરવાની રીતને અસર કરી શકે છે — દાખલા તરીકે, તમારા હોમપેજમાં ફેરફાર કરીને કે તમે મુલાકાત લઈ રહ્યાં હો તે સાઇટ પર વધારાની જાહેરાતો બતાવી શકે છે.</translation>
 <translation id="1559231233244409191">કાર્ડબોર્ડ (ટ્રીપલ વૉલ)</translation>
@@ -907,6 +907,7 @@
 <translation id="2595719060046994702">આ ડિવાઇસ એક કંપની અથવા અન્ય સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="2596415276201385844">એક સુરક્ષિત કનેક્શન સ્થાપિત કરવા માટે, તમારું ઘડિયાળ યોગ્ય રીતે સેટ હોવું જરૂરી છે. આનું કારણ એ કે  વેબસાઇટ્સ તેઓને ઓળખવા માટે જે પ્રમાણપત્રોનો ઉપયોગ કરે છે તે ચોક્કસ સમય અવધિ માટે જ માન્ય હોય છે. તમારા ઉપકરણની ઘડિયાળ ખોટી હોવાને લીધે, Chrome આ પ્રમાણપત્રોને ચકાસી શકતું નથી.</translation>
 <translation id="2597378329261239068">આ દસ્તાવેજ પાસવર્ડ સુરક્ષિત છે. કૃપા કરીને પાસવર્ડ દાખલ કરો.</translation>
+<translation id="2605979593348332811">ફોનેટિક નામ</translation>
 <translation id="2606760465469169465">ઑટોમૅટિક ચકાસણી</translation>
 <translation id="2608019759319359258">જ્યારે કોઈ વિષયને બ્લૉક કરવામાં આવે છે, ત્યારે તેનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા માટે કરવામાં આવશે નહીં</translation>
 <translation id="2610561535971892504">કૉપિ કરવા માટે ક્લિક</translation>
@@ -918,6 +919,7 @@
 <translation id="2622754869869445457">તમારું સૌથી તાજેતરનું ટૅબ</translation>
 <translation id="2625385379895617796">તમારી ઘડિયાળ આગળ છે</translation>
 <translation id="262745152991669301">USB ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
+<translation id="2627847595568876492">PDFમાંથી ટેક્સ્ટ એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
 <translation id="2628224721443278970">Microsoft OneDriveમાં સાઇન ઇન કરો</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />નું સર્વર IP ઍડ્રેસ ન મળ્યું.</translation>
 <translation id="2639739919103226564">સ્થિતિ:</translation>
@@ -1522,6 +1524,7 @@
 <translation id="3711430313228789376">Chrome બ્રાઉઝર પાસવર્ડ બતાવવાનો પ્રયાસ કરી રહ્યું છે</translation>
 <translation id="3711861349027352138">કમ્પ્યૂટર અને વીડિયો ગેમ</translation>
 <translation id="3711895659073496551">સસ્પેન્ડ કરો</translation>
+<translation id="3712004750972384495">સ્ક્રીન રેકોર્ડિંગ સાચવી રહ્યાં છીએ</translation>
 <translation id="3712006010833051684">એન્વલપ #10</translation>
 <translation id="3712624925041724820">લાઇસેંસીસ પૂર્ણ</translation>
 <translation id="3713277100229669269">હવે તમે ચુકવણી કરો તે પહેલાં કાર્ડના લાભ અહીં જોઈ શકો છો</translation>
@@ -1550,6 +1553,7 @@
 <translation id="3744899669254331632">તમે અત્યારે <ph name="SITE" />ની મુલાકાત લઈ શકતા નથી કારણ કે વેબસાઇટે સમજાય નહીં તેવા ઓળખાણપત્રો મોકલ્યાં છે જેના પર Chromium પ્રક્રિયા કરી શકતું નથી. નેટવર્ક ભૂલો અને હુમલાઓ સામાન્ય રીતે અસ્થાયી હોય છે, તેથી આ પેજ સંભવિત રીતે પછીથી કાર્ય કરશે.</translation>
 <translation id="3745599309295009257">તમારી ટેક્સ્ટ તેમજ તમે જે પેજ પર લખી રહ્યાં છો તેનું કન્ટેન્ટ અને URL Googleને મોકલવામાં આવશે, માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવશે અને આ સુવિધાને બહેતર બનાવવા માટે તેને ઉપયોગમાં લેવામાં આવશે. વ્યક્તિગત માહિતી દાખલ કરવાનું ટાળો (જેમ કે તબીબી અથવા નાણાકીય વિગતો) અથવા ખાનગી અથવા સંવેદનશીલ માહિતી ધરાવતી સાઇટ પર આ ટૂલનો ઉપયોગ કરવાનું ટાળો.</translation>
 <translation id="3748009735914587286">ધાતુ (હાઇ-ગ્લોસ)</translation>
+<translation id="3752181611900535304">એકાઉન્ટમાં સરનામું સાચવીએ?</translation>
 <translation id="3752543821772132562">અવગણવામાં આવી છે કારણ કે <ph name="POLICY_NAME" /> સેટ કરેલી નથી.</translation>
 <translation id="3754210790023674521">ચિત્રમાં ચિત્રમાંથી બહાર નીકળો</translation>
 <translation id="3759461132968374835">તમે હાલમાં ક્રૅશની જાણ કરી નથી. ક્રૅશની જાણ કરવાનું બંધ હતું ત્યારે થયેલા ક્રૅશ અહીં દેખાશે નહિ.</translation>
@@ -1660,6 +1664,7 @@
 <translation id="3962859241508114581">પાછલું ટ્રૅક</translation>
 <translation id="3963721102035795474">રીડર મોડ</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{કોઈ નહીં}=1{1 સાઇટમાંથી }one{# સાઇટમાંથી }other{# સાઇટમાંથી }}</translation>
+<translation id="3965672182149944205">સરનામું સાચવીએ?</translation>
 <translation id="3966044442021752214">પ્રોડક્ટની સલામતી</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> અવરોધિત છે</translation>
@@ -2328,6 +2333,7 @@
 <translation id="5191315092027169558">તમારી પ્રોફાઇલ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માગે છે</translation>
 <translation id="519422657042045905">ટીકાટિપ્પણી ઉપલબ્ધ નથી</translation>
+<translation id="5200063972779787617">એકાઉન્ટમાં સરનામું સાચવો</translation>
 <translation id="5201306358585911203">આ પેજ પરનું શામેલ કરેલ પેજ કહે છે કે</translation>
 <translation id="5205222826937269299">નામ આવશ્યક છે</translation>
 <translation id="5206392433295093945">બેડરૂમ</translation>
@@ -2350,6 +2356,7 @@
 <translation id="5239623327352565343">લોકેશનની મંજૂરી છે</translation>
 <translation id="5241048084654737238">કાર્ડની માહિતી સાચવી શકાતી નથી તે કન્ફર્મ કરી રહ્યાં છીએ</translation>
 <translation id="5242610955375133957">ડ્રાય ફિલ્મ</translation>
+<translation id="5243004157379865295">સરનામું અપડેટ કરો</translation>
 <translation id="5244521145258281926">'Google એકાઉન્ટ મેનેજ કરો', તમારા Google એકાઉન્ટમાં તમારી માહિતી, પ્રાઇવસી અને સુરક્ષા મેનેજ કરવા માટે સક્રિય કરો</translation>
 <translation id="5244732203286792411">લોડ કરી રહ્યાં છીએ…
     આમાં એક મિનિટ લાગી શકે છે.</translation>
@@ -2847,6 +2854,7 @@
 <translation id="6159554577634054750">પેસ્ટ કન્ટ્રોલ સેવા</translation>
 <translation id="6159908896951210943">ફોર્મલ</translation>
 <translation id="6160391204859821737">જાહેરાત સંબંધિત પ્રાઇવસી સુવિધા ચાલુ કરો</translation>
+<translation id="6162403104168428984">સરનામું અપડેટ કરીએ?</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6167577165590485365">છેલ્લે પ્રાપ્ત કરવા માટે થયેલા પ્રયાસનો સમય:</translation>
 <translation id="617256461084925519">આ તમે જ છો તેની ચકાસણી કરવાનો પ્રયાસ Google Chrome કરી રહ્યું છે, જેથી તે ચુકવણી માટેની તમારી માહિતી ભરી શકે.</translation>
@@ -3081,6 +3089,7 @@
 <translation id="6569060085658103619">તમે એક્સ્ટેન્શન પેજ જોઈ રહ્યાં છો</translation>
 <translation id="6573200754375280815">જમણી બાજુએ બે કાણાં પાડો</translation>
 <translation id="6574762126505704998">પૂર્ણ સ્ક્રીન</translation>
+<translation id="6575408526598156416">એકાઉન્ટમાં સાચવો</translation>
 <translation id="6577792494180292262">વેન્ચર કેપિટલ</translation>
 <translation id="6578434528542148658">અમાન્ય એક્સ્ટેન્શન ID.</translation>
 <translation id="6579858392010591435">રજાઓ અને સીઝનલ ઇવેન્ટ</translation>
@@ -3130,7 +3139,6 @@
 <translation id="6671169470640320959">ઑટો ફાઇનાન્સિંગ</translation>
 <translation id="6671697161687535275">Chromium માંથી ફોર્મ સૂચન દૂર કરીએ?</translation>
 <translation id="6677351035258626477">ફાસ્ટ ફૂડ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{જ્યારે તમે Chromeમાં ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પ તરીકે જુઓ}one{જ્યારે તમે Chromeમાં ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પ તરીકે જુઓ}other{જ્યારે તમે Chromeમાં ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પો તરીકે જુઓ}}</translation>
 <translation id="6679354743514146922">Chrome બ્રાઉઝર <ph name="APP_NAME" /> પર તમારો પાસવર્ડ ભરવાનો પ્રયાસ કરી રહ્યું છે.</translation>
 <translation id="6681790815630918386">CVC | કાર્ડ ચકાસણી કોડ (CVC) સાચવ્યો</translation>
 <translation id="6683022854667115063">હૅડફોન</translation>
@@ -3393,6 +3401,7 @@
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
+<translation id="7152230779180489711">છેલ્લે મુલાકાત લીધી</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}one{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}other{<ph name="PAYMENT_METHOD_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> વધુ}}</translation>
 <translation id="7153618581592392745">આછો જાંબલી</translation>
 <translation id="7156870133441232244">સર્વરને TLS 1.2 અથવા તે પછીના વર્ઝન પર અપગ્રેડ કરવું જોઈએ.</translation>
@@ -4472,6 +4481,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab કી દબાવો તેમજ તમારી યાત્રા ફરી શરૂ કરવા અને તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે Enter કી દબાવો</translation>
 <translation id="9119042192571987207">અપલોડ કર્યો</translation>
 <translation id="9119308212838450857">આ તમે જ હોવાની ચકાસણી <ph name="PROVIDER_ORIGIN" /> કરવા માગે છે</translation>
+<translation id="9120593907434185157">સરનામું સાચવો</translation>
 <translation id="912327514020027767">સ્કર્ટ</translation>
 <translation id="9128870381267983090">નેટવર્કથી કનેક્ટ કરો</translation>
 <translation id="9131119348384879525">શું ગોપનીય કન્ટેન્ટ કૅપ્ચર કરીએ?</translation>

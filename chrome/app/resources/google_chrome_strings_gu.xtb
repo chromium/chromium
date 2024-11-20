@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lensમાંથી બહાર નીકળવા માટે ક્લિક કરો</translation>
 <translation id="2681444469812712297">Google Chromeમાં નવા ટૅબમાં <ph name="URL" /> ખોલો.</translation>
 <translation id="2712141162840347885">Google Lens વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા Google Lensમાંથી બહાર નીકળવા માટે Esc કી દબાવો</translation>
-<translation id="2727713483500953825">Lens વડે શોધવા માટે છબીઓ/ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="2738871930057338499">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. HTTP 403 પ્રતિબંધિત. કૃપા કરીને તમારું પ્રૉક્સી કન્ફિગ્યુરેશન ચેક કરો.</translation>
 <translation id="2742320827292110288">ચેતવણી: Google Chrome તમારો બ્રાઉઝિંગ ઇતિહાસ રેકોર્ડ કરવાથી એક્સ્ટેન્શનને અટકાવી શકતું નથી. છૂપા મોડમાં આ એક્સ્ટેન્શનને બંધ કરવા માટે, આ વિકલ્પની પસંદગીને નાપસંદ કરો.</translation>
 <translation id="2753623023919742414">શોધવા માટે ક્લિક કરો</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chrome દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />ની પરવાનગીઓ કાઢી નાખવામાં આવી</translation>
 <translation id="3622716124581627104">વસ્તુઓ અથવા સ્થાનોને ઓળખો અને ટેક્સ્ટને કૉપિ કરો અથવા અનુવાદિત કરો. જ્યારે તમે Google Lensનો ઉપયોગ કરો, ત્યારે આ પેજનો સ્ક્રીનશૉટ Googleને મોકલવામાં આવે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">હવે તમારા Google એકાઉન્ટ સાથે અને શેર કરેલા કમ્પ્યુટર પર Chromeનો ઉપયોગ કરવો વધુ સરળ છે.</translation>
-<translation id="3625345586754200168">Lens અજમાવો</translation>
 <translation id="3635073343384702370">જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે</translation>
 <translation id="3667616615096815454">ઇન્સ્ટૉલ કરી શકતા નથી, સર્વર માટે આ ઍપ્લિકેશન અજાણી છે.</translation>
 <translation id="3673813398384385993">Chromeને "<ph name="EXTENSION_NAME" />"માં માલવેર હોવાનું જાણવા મળ્યું છે</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">ઇન્સ્ટૉલરની ભૂલ <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="4450664632294415862">Chrome - નેટવર્ક સાઇન ઇન - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens વડે કોઈપણ છબી કે ટેક્સ્ટ શોધો</translation>
 <translation id="4458462641685292929">Google Chrome પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="4459234553906210702">Ad measurement તમે જેની મુલાકાત લો છો તે સાઇટને Chrome પાસેથી માહિતીની વિનંતી કરવાની મંજૂરી આપે છે, જે સાઇટને તેની જાહેરાતોનું કાર્યપ્રદર્શન માપવામાં સહાય કરે છે. Ad measurement સાઇટ વચ્ચે શક્ય તેટલી ઓછી માહિતી ટ્રાન્સફર કરીને, સાઇટ દ્વારા પરસ્પરના ટ્રૅકિંગને પ્રતિબંધિત કરે છે.</translation>
 <translation id="4493028449971051158">સ્ટાર્ટઅપ દરમિયાન ભૂલ: કૃપા કરીને ઇન્સ્ટૉલરને ઍડમિનિસ્ટ્રેટર તરીકે ચલાવો.</translation>
@@ -408,7 +405,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />માં ફરી શરૂ થશે</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604424701295382420">પિન થઈ! તમે ટૂલબાર પરના નવા બટનમાંથી Google Lensને ફરીથી ઍક્સેસ કરી શકો છો</translation>
-<translation id="6060842547856900641">Lens ખોલો</translation>
 <translation id="6069027071882229820">છબી તરીકે કૉપિ કરો</translation>
 <translation id="6070348360322141662">વધારાની સુરક્ષા માટે, Google Chrome, તમારા ડેટાને એન્ક્રિપ્ટ કરશે</translation>
 <translation id="6075300983329039771">તમારી સંસ્થાના <ph name="MANAGER" /> માટે જરૂરી છે કે તમે Chromeમાં સાઇન ઇન કરો</translation>
@@ -457,7 +453,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6515549163407364048">તમારા બધા કમ્પ્યૂટર પર તમારા એક્સ્ટેન્શન મેળવવા માટે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6520670145826811516">તમારા લોકેશનનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં જઈને Chromeને ઍક્સેસ આપો</translation>
 <translation id="659498884637196217">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં</translation>
-<translation id="6600016381025017075">આ પેજ પર કંઈપણ શોધો</translation>
 <translation id="6632473616050862500">ChromeOS Flex વધારાના <ph name="BEGIN_LINK_CROS_OSS" />ઓપન સૉર્સ સૉફ્ટવેર<ph name="END_LINK_CROS_OSS" /> દ્વારા શક્ય બન્યું છે.</translation>
 <translation id="6660596345553328257">શું Chromeમાં સાઇન ઇન કરીએ?</translation>
 <translation id="6676384891291319759">ઇંટરનેટ ઍક્સેસ કરો</translation>

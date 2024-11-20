@@ -1383,7 +1383,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1948528728718281125">Uygulamalar, kamera izni olan web siteleri ve sisteme ait hizmetlerin kameraya erişmesine izin veriliyor</translation>
 <translation id="1949332606889020901">Kilitlenme olay kimlikleri</translation>
 <translation id="1949584741547056205">Hızlı Yanıtlar</translation>
-<translation id="1949849604471335579">Duvar kağıdı, ekran koruyucu, vurgu rengi ve diğer özellikleri kişiselleştirin</translation>
 <translation id="1949980990364952348">Uygulama adı</translation>
 <translation id="1951012854035635156">Asistan</translation>
 <translation id="1951823516285577843">Alternatif uzantı bul</translation>
@@ -6076,7 +6075,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5288678174502918605">Kapatılan Sekmeyi T&amp;ekrar Aç</translation>
 <translation id="5290020561438336792">PC ve yayın cihazı farklı kablosuz ağlara bağlı (ör. 2,4 GHz ile 5 GHz)</translation>
 <translation id="52912272896845572">Özel anahtar dosyası geçersiz.</translation>
-<translation id="5291739252352359682">Chrome tarayıcıda medya için otomatik olarak altyazı oluşturur (şu anda yalnızca İngilizce olarak kullanılabilir). Tüm ses ve altyazılar yerel olarak işlenir ve cihazınızdan hiçbir zaman dışarı çıkmaz.</translation>
 <translation id="529175790091471945">Bu cihazı biçimlendir</translation>
 <translation id="529296195492126134">Geçici mod desteklenmiyor. Lütfen yöneticinizle iletişime geçin</translation>
 <translation id="5293043095535566171">Konum erişimi açılsın mı?</translation>
@@ -7506,7 +7504,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6338968693068997776">USB cihazı ekleyin</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> için yeni profil oluştur</translation>
 <translation id="6340071272923955280">İnternet Yazdırma Protokolü (IPPS)</translation>
-<translation id="6340526405444716530">Kişiselleştirme</translation>
 <translation id="6341850831632289108">Fiziksel konumunuzu belirleme</translation>
 <translation id="6342069812937806050">Az önce</translation>
 <translation id="6343003829431264373">Yalnızca çift numaralı sayfalar</translation>
@@ -7905,7 +7902,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6642720633335369752">Tüm açık pencereleri görmek için düğmeden yukarı kaydırıp basılı tutun.</translation>
 <translation id="664290675870910564">Ağ Seçimi</translation>
 <translation id="6643016212128521049">Temizle</translation>
-<translation id="6644512095122093795">Şifreleri kaydetmeyi öner</translation>
 <translation id="6644513150317163574">Geçersiz URL biçimi. TOA kimlik doğrulama kullanılırken ana makine adı olarak sunucu belirtilmelidir.</translation>
 <translation id="6644846457769259194">Cihazınız güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Hızlı Eşleme özelliğini kapat</translation>
@@ -8046,7 +8042,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6739943577740687354">Bu özellik yapay zekadan yararlanır ve her zaman doğru sonuç vermeyebilir.</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> duraklatıldı</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Yöneticiniz<ph name="END_LINK" /> Güvenli Tarama'yı kapattı</translation>
-<translation id="6742629250739345159">Chrome tarayıcıda medya için otomatik olarak altyazı oluşturur. Tüm ses ve altyazılar yerel olarak işlenir ve cihazınızdan hiçbir zaman dışarı çıkmaz.</translation>
 <translation id="6743841972744298686">Senkronizasyon ayarları</translation>
 <translation id="6745592621698551453">Şimdi güncelle</translation>
 <translation id="6746124502594467657">Aşağı taşı</translation>

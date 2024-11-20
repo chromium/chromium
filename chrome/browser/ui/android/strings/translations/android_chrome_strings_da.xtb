@@ -257,6 +257,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2184272387334793084">Log ind for at få adgang til dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="218608176142494674">Deling</translation>
 <translation id="219283042927675668">Faner i gruppe</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
@@ -574,6 +575,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="363596933471559332">Log automatisk ind på websites med gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at verificere, hver gang du vil logge ind på et website.</translation>
 <translation id="3636940436873918441">Foretrukne sprog</translation>
 <translation id="3637744895182738742">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Gå til startsiden i Google-appen</translation>
 <translation id="368329460027487650">Logget ud. Åbner valgmuligheder for login.</translation>
 <translation id="3684540848053703310">Felt i bunden med prisinfo lukket</translation>
@@ -873,7 +875,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4988526792673242964">Sider</translation>
 <translation id="4991110219272367918">Mulighed for at godkende eller ikke godkende et website – lukket</translation>
 <translation id="4996095658297597226">Vil du bruge den foreslåede adgangskode?</translation>
-<translation id="499724277181351974">Gå til: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Følg dette website her</translation>
 <translation id="5004416275253351869">Aktivitetsadministration på Google</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>

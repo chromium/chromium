@@ -1385,7 +1385,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1948528728718281125">Přístup ke kameře je povolen aplikacím, webům s oprávněním ke kameře a systémovým službám</translation>
 <translation id="1949332606889020901">ID selhání</translation>
 <translation id="1949584741547056205">Rychlé odpovědi</translation>
-<translation id="1949849604471335579">Přizpůsobte si tapetu, spořič obrazovky, barvy zvýraznění apod.</translation>
 <translation id="1949980990364952348">Název aplikace</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1951823516285577843">Najít alternativu</translation>
@@ -6078,7 +6077,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5288678174502918605">Znovu ot&amp;evřít zavřenou kartu</translation>
 <translation id="5290020561438336792">Počítač a streamovací zařízení v různých sítích Wi-Fi (např. 2,4 GHz a 5 GHz)</translation>
 <translation id="52912272896845572">Soubor soukromého klíče je neplatný.</translation>
-<translation id="5291739252352359682">Automatické vytváření titulků pro média v prohlížeči Chrome (momentálně dostupné v angličtině). Zvuk i titulky se zpracovávají místně a nikdy zařízení neopouštějí.</translation>
 <translation id="529175790091471945">Naformátovat toto zařízení</translation>
 <translation id="529296195492126134">Režim dočasných profilů není podporován. Obraťte se na administrátora.</translation>
 <translation id="5293043095535566171">Zapnout přístup k poloze?</translation>
@@ -7504,7 +7502,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6338968693068997776">Přidat zařízení USB</translation>
 <translation id="6339668969738228384">Vytvořit nový profil pro uživatele <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
-<translation id="6340526405444716530">Personalizace</translation>
 <translation id="6341850831632289108">Určit vaše fyzické umístění</translation>
 <translation id="6342069812937806050">Právě teď</translation>
 <translation id="6343003829431264373">Pouze sudé stránky</translation>
@@ -7907,7 +7904,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6642720633335369752">Všechna otevřená okna aplikací zobrazíte přejetím prstem ze spodního okraje nahoru a podržením obrazovky.</translation>
 <translation id="664290675870910564">Výběr sítě</translation>
 <translation id="6643016212128521049">Vymazat</translation>
-<translation id="6644512095122093795">Nabídnout ukládání hesel</translation>
 <translation id="6644513150317163574">Neplatný formát adresy URL. Při použití ověření SSO je jako název hostitele potřeba zadat server.</translation>
 <translation id="6644846457769259194">Aktualizace zařízení (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Vypnout Rychlé párování</translation>
@@ -8048,7 +8044,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6739943577740687354">Tato funkce využívá umělou inteligenci a nemusí vždy fungovat správně</translation>
 <translation id="6740234557573873150">Stahování souboru <ph name="FILE_NAME" /> pozastaveno</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Administrátor<ph name="END_LINK" /> Bezpečné prohlížení vypnul</translation>
-<translation id="6742629250739345159">Automatické vytváření titulků pro média v prohlížeči Chrome. Zvuk i titulky se zpracovávají místně a nikdy zařízení neopouštějí.</translation>
 <translation id="6743841972744298686">Nastavení synchronizace</translation>
 <translation id="6745592621698551453">Aktualizovat</translation>
 <translation id="6746124502594467657">Posunout dolů</translation>

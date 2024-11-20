@@ -141,7 +141,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2668094785979141847">I-click para lumabas sa Google Lens</translation>
 <translation id="2681444469812712297">Buksan ang <ph name="URL" /> sa bagong tab sa Google Chrome.</translation>
 <translation id="2712141162840347885">Pumili ng kahit anong bagay na hahanapin gamit ang Google Lens o pindutin ang escape para lumabas sa Google Lens</translation>
-<translation id="2727713483500953825">Pumili ng mga larawan/text na hahanapin gamit ang Lens</translation>
 <translation id="2738871930057338499">Hindi makakonekta sa Internet. HTTP 403 Forbidden. Tingnan ang configuration ng iyong proxy.</translation>
 <translation id="2742320827292110288">Babala: Hindi mapipigilan ng Google Chrome ang pagtatala ng mga extension ng iyong history ng pag-browse. Upang i-disable ang extension na ito sa Incognito mode, alisin sa pagkakapili ang opsyong ito.</translation>
 <translation id="2753623023919742414">I-click para maghanap</translation>
@@ -224,7 +223,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3609788354808247807">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Tukuyin ang mga bagay o lugar at kopyahin o isalin ang text. Kapag ginamit mo ang Google Lens, magpapadala ng screenshot ng page sa Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ngayon, mas madali nang gamitin ang Chrome sa iyong Google Account at sa mga nakabahaging computer.</translation>
-<translation id="3625345586754200168">Subukan ang Lens</translation>
 <translation id="3635073343384702370">Masusuri ng Chrome ang iyong mga password kapag na-save mo ang mga ito</translation>
 <translation id="3667616615096815454">Hindi na-install, hindi kilala ng server ang application.</translation>
 <translation id="3673813398384385993">Napag-alaman ng Chrome na naglalaman ng malware ang "<ph name="EXTENSION_NAME" />"</translation>
@@ -295,7 +293,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4434353761996769206">Error sa installer: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Mag-sign in sa Chrome bilang <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Pag-sign in sa Network - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Maghanap ng anumang larawan o text gamit ang Lens</translation>
 <translation id="4458462641685292929">May kasalukuyang isinasagawang isa pang pagpapatakbo sa Google Chrome. Pakisubukang muli sa ibang pagkakataon.</translation>
 <translation id="4459234553906210702">Nagbibigay-daan ang pagsukat ng ad sa mga site na binibisita mo na humiling ng impormasyon mula sa Chrome na tumutulong sa site na sukatin ang performance ng mga ad ng mga ito. Pinaghihigpitan ng pagsukat ng ad ang cross-site na pagsubaybay sa pamamagitan ng paglilipat ng kaunting impormasyon hangga't posible sa pagitan ng mga site.</translation>
 <translation id="4493028449971051158">Nagkaroon ng error sa startup: patakbuhin ang installer bilang administrator.</translation>
@@ -408,7 +405,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6025087594896450715">Magre-restart ang Google Chrome sa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="604424701295382420">Na-pin na! Maa-access mo ulit ang Google Lens mula sa bagong button sa toolbar</translation>
-<translation id="6060842547856900641">Buksan ang Lens</translation>
 <translation id="6069027071882229820">Kopyahin bilang larawan</translation>
 <translation id="6070348360322141662">Para sa karagdagang seguridad, ie-encrypt ng Google Chrome ang iyong data</translation>
 <translation id="6075300983329039771">Nire-require ka ng iyong organisasyong <ph name="MANAGER" /> na mag-sign in sa Chrome</translation>
@@ -457,7 +453,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6515549163407364048">Para makuha ang iyong mga extension sa lahat ng computer mo, mag-sign in sa Chrome</translation>
 <translation id="6520670145826811516">Para magamit ang iyong lokasyon, bigyan ng access ang Chrome sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
-<translation id="6600016381025017075">Maghanap ng kahit ano sa page na ito</translation>
 <translation id="6632473616050862500">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS Flex.</translation>
 <translation id="6660596345553328257">Mag-sign In sa Chrome?</translation>
 <translation id="6676384891291319759">I-access ang Internet</translation>
@@ -620,6 +615,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8416347857511542594">Matuto pa tungkol sa pag-personalize ng ad sa Chrome</translation>
 <translation id="8418845734693287262">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="842386925677997438">Mga tool sa kaligtasan ng Chrome</translation>
+<translation id="8425765582779547329">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, mag-sign in sa Chrome</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>
 <translation id="8451192282033883849">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong account. Makikita at mae-edit ng iyong administrator ang profile na ito sa Chrome browser at ang data nito gaya ng mga bookmark, history, at mga password.</translation>

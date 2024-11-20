@@ -38,6 +38,7 @@ Dinge om in ag te neem:
 <translation id="1646463005043273333">Maak die Chrome-instelling oop om Chrome as verstekblaaier te stel.</translation>
 <translation id="1670609221633730681">Chrome-wenk: Kies jou adresbalkposisie</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Stoor jou wagwoorde in Chrome</translation>
 <translation id="1790080846677398234">Voeg die ingevoerde URL’s by jou boekmerke in Chrome.</translation>
 <translation id="1799920918471566157">Chrome-wenke</translation>
 <translation id="1830634592642484976">Hierdie adres is tans in Chrome gestoor. Stoor dit in jou Google-rekening, <ph name="USER_EMAIL" />, om dit in alle Google-produkte te gebruik.</translation>
@@ -219,9 +220,11 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Go
 
 Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat data gebruik om jou Chrome-ervaring te verbeter.</translation>
 <translation id="6922332667202044570">Vee blaaierdata in Chrome uit.</translation>
+<translation id="6924922227983877439">Maak by verstek skakels in Chrome oop</translation>
 <translation id="6975725306479268850">Kies Chrome vir Outovul</translation>
 <translation id="7056826488869329999">Maak veiligheidskontrole in Chrome oop en laat dit loop.</translation>
 <translation id="7061455974939528301">Druk en hou die Chrome-ikoon en klik “Wysig tuisskerm”</translation>
+<translation id="7065813315247345131">Skuif Chrome na die dok</translation>
 <translation id="7124339256045485976">Hou Chrome op datum</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>
 <translation id="7165736900384873061">Begin om Google Chrome se QR-skandeerder te gebruik</translation>

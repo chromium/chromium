@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Google Lens'ten çıkmak için tıklayın</translation>
 <translation id="2681444469812712297">Google Chrome'da yeni bir sekmede <ph name="URL" /> adresini açın.</translation>
 <translation id="2712141162840347885">Google Lens ile aramak istediğiniz öğeyi seçin veya Google Lens'ten çıkmak için Escape tuşuna basın</translation>
-<translation id="2727713483500953825">Lens ile aramak istediğiniz resimleri/metinleri seçin</translation>
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
 <translation id="2742320827292110288">Uyarı: Google Chrome, uzantıların tarama geçmişinizi kaydetmesini önleyemez. Gizli modda bu uzantıyı devre dışı bırakmak için bu seçeneğin onay işaretini kaldırın.</translation>
 <translation id="2753623023919742414">Aramak için tıklayın</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="3622716124581627104">Nesneleri veya yerleri tanımlayın ve metni kopyalayın ya da çevirin. Google Lens kullanıldığında sayfanın ekran görüntüsü Google'a gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Chrome'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
-<translation id="3625345586754200168">Lens'i deneyin</translation>
 <translation id="3635073343384702370">Kaydetmeniz halinde Chrome, şifrelerinizi kontrol edebilir.</translation>
 <translation id="3667616615096815454">Uygulama, sunucu tarafından bilinmediği için yüklenemedi.</translation>
 <translation id="3673813398384385993">Chrome, "<ph name="EXTENSION_NAME" />" uzantısında kötü amaçlı yazılım tespit etti</translation>
@@ -290,7 +288,6 @@
 <translation id="4434353761996769206">Yükleyici hatası: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chrome'da <ph name="USER_EMAIL" /> olarak oturum açın</translation>
 <translation id="4450664632294415862">Chrome - Ağda Oturum Açın - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens ile istediğiniz resmi veya metni arayın</translation>
 <translation id="4458462641685292929">Google Chrome'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="4459234553906210702">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chrome'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>
 <translation id="4493028449971051158">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak çalıştırın.</translation>
@@ -401,7 +398,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> sonra yeniden başlatılacak</translation>
 <translation id="6040143037577758943">Kapat</translation>
 <translation id="604424701295382420">Sabitlendi. Araç çubuğundaki yeni düğmeyi kullanarak Google Lens'e tekrar erişebilirsiniz.</translation>
-<translation id="6060842547856900641">Lens'i aç</translation>
 <translation id="6069027071882229820">Resim olarak kopyala</translation>
 <translation id="6070348360322141662">Google Chrome ek güvenlik sağlamak için verilerinizi şifreler</translation>
 <translation id="6075300983329039771">Kuruluşunuz (<ph name="MANAGER" />), Chrome'da oturum açmanızı zorunlu kılıyor</translation>
@@ -450,7 +446,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6515549163407364048">Uzantılarınızı tüm bilgisayarlarınızda kullanmak için Chrome'da oturum açın</translation>
 <translation id="6520670145826811516">Konumunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
 <translation id="659498884637196217">Bu cihazdaki Google Şifre Yöneticisi'nde</translation>
-<translation id="6600016381025017075">Bu sayfada istediğiniz şeyi arayın</translation>
 <translation id="6632473616050862500">ChromeOS Flex, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="6660596345553328257">Chrome'da oturum açılsın mı?</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>

@@ -2847,6 +2847,10 @@ Jika nilai disetel ke <ph name="LONGPRESSONLY_ENUM_VALUE" />, entity akan terdet
           Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.
 
           Jika kebijakan ini tidak ditetapkan, kursor besar mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
+<translation id="3028201032688933333">Kebijakan ini mengontrol apakah pengguna akan diizinkan untuk memilih file dari <ph name="GOOGLE_DRIVE_NAME" /> secara langsung saat situs berisi formulir yang memungkinkan file untuk dikirimkan.
+Menyetel kebijakan ke "Tampilkan opsi <ph name="GOOGLE_DRIVE_NAME" />". (0) atau jika kebijakan tidak disetel, pengguna akan diizinkan memilih file dari <ph name="GOOGLE_DRIVE_NAME" /> di menu pemilihan file.
+Menyetel kebijakan ke "Sembunyikan opsi <ph name="GOOGLE_DRIVE_NAME" />". (1) menyembunyikan opsi <ph name="GOOGLE_DRIVE_NAME" /> di menu pemilihan file.
+Kebijakan ini tidak mencegah pengguna memilih file dari <ph name="GOOGLE_DRIVE_NAME" /> menggunakan cara lain selain tindakan 'Google Drive' di menu pemilihan file.</translation>
 <translation id="3030000825273123558">Aktifkan pelaporan metrik</translation>
 <translation id="30300807616984726">Melaporkan data inventaris aplikasi untuk pengguna terafiliasi.
 
@@ -2929,18 +2933,6 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
 <translation id="3092059499596000593">Gunakan printer default sistem sebagai pilihan default dalam Pratinjau Cetak</translation>
 <translation id="309416443108680956">Menentukan hal yang terjadi jika pengguna yang melakukan autentikasi melalui token keamanan (misalnya, dengan kartu smart) menghapus token tersebut saat berada dalam sesi. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Tidak ada yang terjadi. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Layar dikunci hingga pengguna melakukan autentikasi lagi. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Sesi diakhiri dan pengguna dipaksa logout. Jika kebijakan ini tidak disetel, <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> akan berlaku secara default.</translation>
 <translation id="3096595567015595053">Daftar plugin yang diaktifkan</translation>
-<translation id="30986061650205557">Fitur di DevTools <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk memberikan informasi proses debug tambahan. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti pesan error, stack trace, cuplikan kode, dan permintaan jaringan, lalu mengirimkannya ke server milik Google, yang menjalankan model AI generatif. Isi respons atau autentikasi dan header cookie dalam permintaan jaringan tidak disertakan dalam data yang dikirim ke server.
-
-Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI. Data yang relevan dapat mencakup perintah, input, output, dan materi sumber, bergantung pada fiturnya. Data ini dapat ditinjau secara manual dengan tujuan meningkatkan kualitas model AI. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai 1 adalah nilai default untuk pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> dan untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Menonaktifkan fitur.
-
-Fitur AI Generatif DevTools mencakup:
-
-- Console Insights: menjelaskan pesan konsol dan menawarkan saran cara memperbaiki error konsol.
-- Bantuan AI: membantu pengguna memahami gaya CSS dengan insight yang didukung AI.</translation>
 <translation id="309885424548342662">Aktifkan autentikasi cloud Microsoft®</translation>
 <translation id="3101035417394748390">Ukuran maksimum, dalam byte, yang dapat ditransfer antara klien dan host melalui sinkronisasi papan klip</translation>
 <translation id="3101501961102569744">Pilih cara menentukan setelan server proxy</translation>
@@ -3046,9 +3038,6 @@ Jika kebijakan disetel ke Nonaktif, pop-up Rating App Store tidak akan ditampilk
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
 
       Perlu diperhatikan bahwa kebijakan ini memblokir JavaScript berdasarkan apakah asal dokumen tingkat atas (biasanya URL halaman yang juga ditampilkan di kolom URL) cocok dengan pola apa pun. Oleh karena itu, kebijakan ini tidak sesuai untuk memitigasi serangan supply-chain web. Misalnya, menyediakan pola "https://[*.]foo.com/" tidak akan mencegah halaman yang dihosting di, misalnya, https://example.com, untuk menjalankan skrip yang dimuat dari https://www.foo.com/example.js. Selain itu, menyediakan pola "https://example.com/" tidak akan mencegah dokumen dari https://example.com untuk menjalankan skrip jika dokumen tersebut bukan dokumen tingkat atas, tetapi disematkan sebagai sub-frame ke halaman yang dihosting di asal lain, misalnya, https://www.bar.com.</translation>
-<translation id="3180671894201217988">Jika kebijakan disetel ke Aktif atau tidak disetel, software pihak ketiga tidak dapat memasukkan kode yang dapat dieksekusi ke dalam proses <ph name="PRODUCT_NAME" />.
-
-      Jika kebijakan disetel ke Nonaktif, software pihak ketiga akan diizinkan memasukkan kode tersebut ke dalam proses <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3181114468897395940">Setelan PageUp/PageDown menggunakan pintasan yang berisi pengubah alt</translation>
 <translation id="3182503302060513467">Halaman Tab Baru akan menampilkan pengumuman slot tengah jika tersedia</translation>
 <translation id="3184161739683646075">Mengontrol mode DNS-over-HTTPS</translation>
@@ -3327,6 +3316,7 @@ Jika disetel ke Nonaktif, fitur penulisan prediktif tidak akan diizinkan di keyb
 <translation id="3387999258705169775">Perilaku default untuk penguncian bertingkat fungsi setTimeout().</translation>
 <translation id="3388628790024977864">Jangan izinkan alur <ph name="CLOUD_UPLOAD_NAME" /> untuk <ph name="GOOGLE_DRIVE_NAME" /> dan <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Aktifkan autentikasi gnubby untuk host akses jarak jauh</translation>
+<translation id="3395744872155955051">Izinkan memilih file langsung dari <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Jangan tampilkan rekomendasi aplikasi di peluncur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Perilaku sistem default (bergantung pada ukuran layar)</translation>
 <translation id="33993310248354034">Mengizinkan deteksi entity teks biasa di halaman web.</translation>
@@ -5989,6 +5979,7 @@ Catatan: Kebijakan ini tidak berlaku untuk upgrade HSTS.</translation>
 Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan tanda command line --unsafely-treat-insecure-origin-as-secure ke daftar yang dipisahkan koma, yang berisi URL yang sama. Jika disetel, kebijakan ini akan mengganti tanda command line dan UnsafelyTreatInsecureOriginAsSecure.
 
 Untuk mendapatkan informasi selengkapnya tentang konteks aman, lihat Konteks Aman (https://www.w3.org/TR/secure-contexts ).</translation>
+<translation id="530111809849214840">Sembunyikan opsi <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Waktu dalam hari dalam waktu lokal saat kuota penggunaan diperpanjang.</translation>
 <translation id="5303080953475303561">Menyetel kebijakan akan mengontrol frekuensi layar kunci meminta sandi untuk mode buka kunci cepat. Setiap kali layar kunci ditampilkan, jika entri sandi terakhir terjadi sebelum jangka waktu yang ditentukan oleh nilai yang dipilih, mode buka kunci cepat tidak akan tersedia. Jika pengguna tetap berada di layar kunci setelah jangka waktu ini, sandi akan diminta saat pengguna salah memasukkan kode lagi atau masuk kembali ke layar kunci, mana saja yang terjadi lebih dahulu.
 
@@ -6340,6 +6331,7 @@ Lihat juga https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Ker
 
       Kebijakan ini tidak digunakan lagi - sebagai gantinya, gunakan <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">Tampilkan opsi <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Aktifkan diagnostik dan pengontrol telemetri wilco</translation>
 <translation id="5559079916187891399">Kebijakan ini tidak memengaruhi aplikasi Android.</translation>
 <translation id="5560039246134246593">Menambahkan parameter ke pengambilan bibit Variasi di <ph name="PRODUCT_NAME" />.

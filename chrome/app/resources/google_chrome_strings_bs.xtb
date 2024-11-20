@@ -141,7 +141,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2668094785979141847">Kliknite da izađete iz Google Objektiva</translation>
 <translation id="2681444469812712297">Otvorite <ph name="URL" /> u novoj kartici u Google Chromeu.</translation>
 <translation id="2712141162840347885">Odaberite bilo šta da pretražite putem Google Objektiva ili pritisnite Esc da izađete iz Google Objektiva</translation>
-<translation id="2727713483500953825">Odaberite slike/tekst da pretražite putem Objektiva</translation>
 <translation id="2738871930057338499">Nije moguće povezati se s internetom. HTTP 403 je zabranjen. Provjerite konfiguraciju proksi servera.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može spriječiti da ekstenzije čitaju vašu historiju pregledanja. Da onemogućite ovu ekstenziju u anonimnom načinu rada, poništite odabir ove opcije.</translation>
 <translation id="2753623023919742414">Kliknite da pretražite</translation>
@@ -224,7 +223,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3609788354808247807">Niste je posjetili već neko vrijeme. Chrome je uklonio odobrenja "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" i "<ph name="PERMISSION_3" />"</translation>
 <translation id="3622716124581627104">Identificirajte stvari ili mjesta i kopirajte ili prevedite tekst. Kada koristite Google Objektiv, snimak ekrana stranice se šalje Googleu. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Sada je lakše koristiti Chrome s vašim Google računom i na dijeljenim računarima.</translation>
-<translation id="3625345586754200168">Isprobajte Objektiv</translation>
 <translation id="3635073343384702370">Chrome može provjeravati vaše lozinke kada ih sačuvate</translation>
 <translation id="3667616615096815454">Nije moguće instalirati jer aplikacija nije poznata serveru.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da ekstenzija "<ph name="EXTENSION_NAME" />" sadržava zlonamjerni softver</translation>
@@ -295,7 +293,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4434353761996769206">Greška alata za instaliranje: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Prijavite se u Chrome kao <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Pretražite bilo koju sliku ili tekst putem Objektiva</translation>
 <translation id="4458462641685292929">U toku je druga radnja u Google Chromeu. Pokušajte ponovo kasnije.</translation>
 <translation id="4459234553906210702">Mjerenje oglasa omogućava web lokacijama koje posjećujete da zatraže informaciju iz Chromea koja će im pomoći da izmjere performanse svojih oglasa. Mjerenje oglasa ograničava unakrsno praćenje web lokacija prenoseći minimalnu količinu informacija između njih.</translation>
 <translation id="4493028449971051158">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao administrator.</translation>
@@ -408,7 +405,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6025087594896450715">Google Chrome će se ponovo pokrenuti za <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604424701295382420">Zakačeno! Možete ponovo pristupiti Google Objektivu pomoću novog dugmeta na alatnoj traci</translation>
-<translation id="6060842547856900641">Otvori Objektiv</translation>
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
 <translation id="6075300983329039771">Organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6515549163407364048">Da dobijete ekstenzije na svim svojim računarima, prijavite se u Chrome</translation>
 <translation id="6520670145826811516">Da koristite lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
-<translation id="6600016381025017075">Pretražite bilo šta na ovoj stranici</translation>
 <translation id="6632473616050862500">ChromeOS Flex je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Prijaviti se u Chrome?</translation>
 <translation id="6676384891291319759">Pristupite internetu</translation>
@@ -620,7 +615,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8416347857511542594">Saznajte više o personalizaciji oglasa u Chromeu</translation>
 <translation id="8418845734693287262">ChromeOS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>
 <translation id="842386925677997438">Chromeovi sigurnosni alati</translation>
-<translation id="8425765582779547329">Za više sigurnosti online uz postavke koje su odabrali tvoji roditelji, prijavi se na Chrome</translation>
+<translation id="8425765582779547329">Radi veće sigurnosti online uz roditeljeve odabire prijavi se u Chrome</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8433638294851456451">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8451192282033883849">Vašim računom upravlja <ph name="MANAGER_NAME" />. Vaš administrator može vidjeti i urediti ovaj profil Chrome preglednika i njegove podatke kao što su oznake, historija i lozinke.</translation>

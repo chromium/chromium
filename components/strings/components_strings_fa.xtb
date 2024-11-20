@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">نویسنده:</translation>
 <translation id="1247030632403369975">آلومینیوم</translation>
 <translation id="1252209483516427155">لباس بیرون</translation>
-<translation id="1253096324252841344">پرداخت با <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">درحال ذخیره کردن نماگرفت</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (همگام‌سازی‌شده)</translation>
 <translation id="1255086252236620440">مخلوط‌کن غذا</translation>
@@ -3140,7 +3139,6 @@
 <translation id="6671169470640320959">خودرو اقساطی</translation>
 <translation id="6671697161687535275">‏پیشنهاد فرم از Chromium پاک شود؟</translation>
 <translation id="6677351035258626477">فست‌فود</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{‏هنگام خرید کردن در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}one{‏هنگام خرید کردن در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}other{‏هنگام خرید کردن در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}}</translation>
 <translation id="6679354743514146922">‏مرورگر Chrome می‌خواهد گذرواژه‌تان را در <ph name="APP_NAME" /> پر کند.</translation>
 <translation id="6681790815630918386">کد تأیید کارت ذخیره شد</translation>
 <translation id="6683022854667115063">هدفون</translation>

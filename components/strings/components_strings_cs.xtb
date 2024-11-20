@@ -138,7 +138,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Hliník</translation>
 <translation id="1252209483516427155">Svrchní oblečení</translation>
-<translation id="1253096324252841344">Platit pomocí účtu <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Ukládání snímku obrazovky</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronizováno)</translation>
 <translation id="1255086252236620440">Kuchyňské mixéry</translation>
@@ -3125,7 +3124,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6671169470640320959">Financování koupě automobilu</translation>
 <translation id="6671697161687535275">Odstranit návrh položky formuláře z prohlížeče Chromium?</translation>
 <translation id="6677351035258626477">Rychlé občerstvení</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Při nakupování v Chromu zobrazovat jako možnost účet <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Při nakupování v Chromu zobrazovat jako možnosti účty <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{Při nakupování v Chromu zobrazovat jako možnosti účty <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Při nakupování v Chromu zobrazovat jako možnosti účty <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Prohlížeč Chrome se pokouší vyplnit vaše heslo na webu <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Kód CVC byl uložen</translation>
 <translation id="6683022854667115063">Sluchátka</translation>

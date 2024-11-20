@@ -2745,6 +2745,35 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
       การตั้งค่านโยบายเป็น "เท็จ" จะป้องกันไม่ให้คำแนะนำเนื้อหาซึ่งสร้างโดยอัตโนมัติแสดงในหน้าแท็บใหม่</translation>
 <translation id="3046192273793919231">ส่งแพ็กเก็ตเครือข่ายไปยังเซิร์ฟเวอร์การจัดการเพื่อติดตามดูสถานะการออนไลน์</translation>
+<translation id="3046917616600522016">การตั้งค่านโยบายนี้จะกำหนดค่าพร็อกซีสำหรับ Chrome และแอป ARC โดยไม่พิจารณาตัวเลือกเกี่ยวกับพร็อกซีทั้งหมดที่ระบุจากบรรทัดคำสั่ง
+
+การไม่ตั้งค่านโยบายนี้จะทำให้ผู้ใช้เลือกการตั้งค่าพร็อกซีได้
+
+การตั้งค่านโยบาย <ph name="PROXY_SETTINGS_POLICY_NAME" /> จะยอมรับช่องต่อไปนี้
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> ซึ่งช่วยให้คุณระบุพร็อกซีเซิร์ฟเวอร์ที่ Chrome จะใช้ได้ และป้องกันไม่ให้ผู้ใช้เปลี่ยนการตั้งค่าพร็อกซี
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> URL ไปยังไฟล์ .pac ของพร็อกซี หรือสคริปต์ PAC ที่เข้ารหัสเป็น URL ข้อมูลที่มีประเภท MIME application/x-ns-proxy-autoconfig
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> สำหรับป้องกันไม่ให้สแต็กเครือข่ายเปลี่ยนไปใช้วิธีสำรอง นั่นคือการเชื่อมต่อโดยตรงกับสคริปต์ PAC ที่ไม่ถูกต้องหรือไม่พร้อมใช้งาน
+
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> คือ URL ของพร็อกซีเซิร์ฟเวอร์
+
+  * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> คือรายการโฮสต์ที่จะข้ามพร็อกซี
+
+ช่อง <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> เลิกใช้งานแล้วเพื่อใช้ช่อง <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> สำหรับ <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> หากคุณเลือกค่าต่อไปนี้
+
+  * <ph name="PROXY_MODE_ENUM_DIRECT" /> ระบบจะไม่ใช้พร็อกซีและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" /> ระบบจะใช้พร็อกซีของระบบและจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> ระบบจะไม่พิจารณาช่องอื่นๆ ทั้งหมด
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> ระบบจะใช้ช่อง <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> ระบบจะใช้ช่อง <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> และ <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />
+
+หมายเหตุ: ดูตัวอย่างโดยละเอียดเพิ่มเติมได้ที่ The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings )</translation>
 <translation id="3047732214002457234">ควบคุมวิธีที่การทำความสะอาด Chrome รายงานข้อมูลไปยัง Google</translation>
 <translation id="3047864383610708617">ปิดใช้คีย์ติดหนึบ</translation>
 <translation id="3048744057455266684">หากนโยบายนี้ถูกตั้งค่าไว้และ URL ค้นหาที่แถบอเนกประสงค์แนะนำมีพารามิเตอร์นี้ในสตริงข้อความค้นหาหรือในตัวระบุชิ้นส่วน คำแนะนำจะแสดงคำค้นหาและผู้ให้บริการค้นหาแทน URL ค้นหาดิบ
@@ -2808,18 +2837,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="3092059499596000593">ใช้เครื่องพิมพ์เริ่มต้นของระบบเป็นตัวเลือกเริ่มต้นในตัวอย่างก่อนพิมพ์</translation>
 <translation id="309416443108680956">ระบุสิ่งที่จะเกิดขึ้นเมื่อผู้ใช้ที่ตรวจสอบสิทธิ์ผ่านโทเค็นความปลอดภัย (เช่น ด้วยสมาร์ทการ์ด) นำโทเค็นดังกล่าวออกขณะอยู่ในเซสชัน <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: ไม่มีอะไรเกิดขึ้น <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: หน้าจอจะล็อกจนกว่าผู้ใช้จะตรวจสอบสิทธิ์อีกครั้ง <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: เซสชันจะสิ้นสุดและนำผู้ใช้ออกจากระบบ หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะใช้ <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> เป็นค่าเริ่มต้น</translation>
 <translation id="3096595567015595053">รายการปลั๊กอินที่เปิดใช้งาน</translation>
-<translation id="30986061650205557">ฟีเจอร์เหล่านี้ในเครื่องมือสำหรับนักพัฒนาเว็บของ <ph name="PRODUCT_NAME" /> ใช้โมเดล Generative AI เพื่อให้ข้อมูลการแก้ไขข้อบกพร่องเพิ่มเติม หากต้องการใช้ฟีเจอร์ดังกล่าว <ph name="PRODUCT_NAME" /> จะต้องรวบรวมข้อมูล เช่น ข้อความแสดงข้อผิดพลาด สแต็กเทรซ ข้อมูลโค้ด และคำขอเครือข่าย แล้วส่งไปยังเซิร์ฟเวอร์ของ Google ซึ่งเรียกใช้โมเดล Generative AI เนื้อหาการตอบสนองหรือการตรวจสอบสิทธิ์และส่วนหัวคุกกี้ในคำขอเครือข่ายจะไม่รวมอยู่ในข้อมูลที่ส่งไปยังเซิร์ฟเวอร์
-
-0 = เปิดใช้ฟีเจอร์ให้กับผู้ใช้ แล้วส่งข้อมูลที่เกี่ยวข้องไปยัง Google เพื่อช่วยฝึกหรือปรับปรุงโมเดล AI ข้อมูลที่เกี่ยวข้องอาจรวมถึงพรอมต์ อินพุต เอาต์พุต และเนื้อหาแหล่งที่มา โดยทั้งนี้จะขึ้นอยู่กับฟีเจอร์นั้นๆ อาจมีการตรวจสอบจากเจ้าหน้าที่เพื่อวัตถุประสงค์ในการปรับปรุงโมเดล AI เท่านั้น 0 คือค่าเริ่มต้น เว้นแต่จะระบุไว้ด้านล่าง
-
-1 = เปิดใช้ฟีเจอร์ให้กับผู้ใช้ แต่ไม่ต้องส่งข้อมูลไปยัง Google เพื่อฝึกหรือปรับปรุงโมเดล AI 1 คือค่าเริ่มต้นสำหรับผู้ใช้ระดับองค์กรที่จัดการโดย <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> และบัญชี Education ที่จัดการโดย <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />
-
-2 = ปิดใช้ฟีเจอร์
-
-ฟีเจอร์ Generative AI ในเครื่องมือสำหรับนักพัฒนาเว็บรวมถึง
-
-- Console Insights: ฟีเจอร์ที่อธิบายข้อความในคอนโซลและให้คำแนะนำเกี่ยวกับวิธีแก้ไขข้อผิดพลาดของคอนโซล
-- ความช่วยเหลือจาก AI: ช่วยให้ผู้ใช้เข้าใจรูปแบบ CSS ด้วยข้อมูลเชิงลึกที่ทำงานด้วยระบบ AI</translation>
 <translation id="309885424548342662">เปิดใช้การตรวจสอบสิทธิ์ในระบบคลาวด์ของ Microsoft®</translation>
 <translation id="3101035417394748390">ขนาดสูงสุด (หน่วยเป็นไบต์) ที่สามารถโอนระหว่างไคลเอ็นต์และโฮสต์ผ่านการซิงค์ข้อมูลในคลิปบอร์ด</translation>
 <translation id="3101501961102569744">เลือกวิธีระบุการตั้งค่าพร็อกซีเซิร์ฟเวอร์</translation>
@@ -2924,9 +2941,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้องได้ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns ใช้ไวลด์การ์ด (<ph name="WILDCARD_VALUE" />) ได้
 
       โปรดทราบว่านโยบายนี้จะบล็อก JavaScript โดยขึ้นอยู่กับว่าต้นทางของเอกสารระดับบนสุด (โดยปกติคือ URL ของหน้าเว็บที่แสดงในแถบที่อยู่ด้วยเช่นกัน) ตรงกับรูปแบบใดรูปแบบหนึ่งหรือไม่ ดังนั้นนโยบายนี้จึงไม่เหมาะสำหรับใช้ลดการโจมตีซัพพลายเชนในอินเทอร์เน็ต ตัวอย่างเช่น การใช้รูปแบบ "https://[*.]foo.com/" จะไม่ป้องกันหน้าเว็บที่โฮสต์ใน https://example.com จากการเรียกใช้สคริปต์ที่โหลดจาก https://www.foo.com/example.js นอกจากนี้ การใช้รูปแบบ "https://example.com/" จะไม่ป้องกันเอกสารจาก https://example.com ในการเรียกใช้สคริปต์ หากเอกสารนั้นไม่ใช่เอกสารระดับบนสุด แต่ฝังเป็นเฟรมย่อยในหน้าเว็บที่โฮสต์อยู่ในต้นทางอื่น เช่น https://www.bar.com</translation>
-<translation id="3180671894201217988">การตั้งค่านโยบายเป็น "เปิดใช้" หรือไม่ได้ตั้งค่าจะทำให้ซอฟต์แวร์ของบุคคลที่สามแทรกโค้ดปฏิบัติการลงในกระบวนการของ <ph name="PRODUCT_NAME" /> ไม่ได้
-
-      การตั้งค่านโยบายเป็น "ปิดใช้" จะอนุญาตให้ซอฟต์แวร์นี้แทรกโค้ดดังกล่าวลงในกระบวนการของ <ph name="PRODUCT_NAME" /> ได้</translation>
 <translation id="3181114468897395940">การตั้งค่า PageUp/PageDown ใช้แป้นพิมพ์ลัดที่มีแป้นกดร่วม Alt</translation>
 <translation id="3182503302060513467">หน้าแท็บใหม่จะแสดงประกาศในช่องกลางหากมีประกาศ</translation>
 <translation id="3184161739683646075">ควบคุมโหมด DNS-over-HTTPS</translation>

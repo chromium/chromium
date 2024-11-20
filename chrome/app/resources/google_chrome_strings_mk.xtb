@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Кликнете за да излезете од Google Lens</translation>
 <translation id="2681444469812712297"><ph name="URL" /> ќе се отвори во нова картичка во Google Chrome.</translation>
 <translation id="2712141162840347885">Изберете што било за да пребарате со Google Lens или притиснете го копчето Escape за да излезете од Google Lens</translation>
-<translation id="2727713483500953825">Изберете слики/текст за да пребарате со Lens</translation>
 <translation id="2738871930057338499">Не може да се поврзе на интернет. HTTP-грешка 403: забранет пристап. Проверете ја вашата конфигурација на прокси.</translation>
 <translation id="2742320827292110288">Предупредување: Google Chrome не може да ги спречи екстензиите да ја снимаат вашата историја на прелистувањето. За да ја оневозможите оваа екстензија во режимот „Инкогнито“, поништете го изборот на опцијава.</translation>
 <translation id="2753623023919742414">Кликнете за да пребарате</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">Не сте отвориле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Идентификувајте работи или места и копирајте или преведувајте текст. При користење на Google Lens, до Google се испраќа слика од екранот на страницата. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Сега е полесно да го користите Chrome со вашата сметка на Google и на споделени компјутери.</translation>
-<translation id="3625345586754200168">Испробајте ја Lens</translation>
 <translation id="3635073343384702370">Chrome може да ги проверува вашите лозинки кога ги зачувувате</translation>
 <translation id="3667616615096815454">Не можеше да се инсталира. Апликацијата е непозната за серверот.</translation>
 <translation id="3673813398384385993">Chrome откри дека „<ph name="EXTENSION_NAME" />“ содржи злонамерен софтвер</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">Грешка на инсталаторот: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Најавете се на Chrome како <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Мрежно најавување - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Пребарајте слика или текст со Lens</translation>
 <translation id="4458462641685292929">Во тек е друга операција на Google Chrome. Обидете се повторно подоцна.</translation>
 <translation id="4459234553906210702">Мерењето на рекламите им овозможува на сајтовите што ги посетувате да бараат податоци од Chrome што му помагаат на сајтот да ја мери изведбата на своите реклами. Мерењето на рекламите го ограничува следењето меѓу сајтовите со префрлање што е можно помалку податоци меѓу сајтовите.</translation>
 <translation id="4493028449971051158">Грешка при стартување: активирајте го инсталаторот како администратор.</translation>
@@ -408,7 +405,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6025087594896450715">Google Chrome ќе се рестартира за <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604424701295382420">Закачено! Може да пристапите до Google Lens повторно од новото копче на алатникот</translation>
-<translation id="6060842547856900641">Отворете ја Lens</translation>
 <translation id="6069027071882229820">Копирај како слика</translation>
 <translation id="6070348360322141662">За дополнителна безбедност, Google Chrome ќе ги шифрира вашите податоци</translation>
 <translation id="6075300983329039771">Вашата организација, <ph name="MANAGER" />, бара да се најавите на Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6515549163407364048">За да ги добиете екстензиите на сите ваши компјутери, најавете се на Chrome</translation>
 <translation id="6520670145826811516">За да ја користи локацијата, дајте му пристап на Chrome во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Во „Управникот со лозинки на Google“ на уредов</translation>
-<translation id="6600016381025017075">Пребарајте што било на страницава</translation>
 <translation id="6632473616050862500">ChromeOS Flex е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Ќе се најавите на Chrome?</translation>
 <translation id="6676384891291319759">Пристап до интернет</translation>

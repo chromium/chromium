@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">作成者:</translation>
 <translation id="1247030632403369975">アルミニウム</translation>
 <translation id="1252209483516427155">アウター</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> でのお支払い</translation>
 <translation id="1253846494229886276">スクリーンショットを保存しています</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（同期済み）</translation>
 <translation id="1255086252236620440">フードミキサー</translation>
@@ -314,6 +313,7 @@
 <translation id="1549470594296187301">この機能を使用するには JavaScript を有効にする必要があります。</translation>
 <translation id="1553152622374372421">ウィンター スポーツ</translation>
 <translation id="1553358976309200471">Chrome を更新</translation>
+<translation id="1554485704925237240"><ph name="READERNAME" /> という名前のリーダーとリーダーに挿入されたスマートカードの制御</translation>
 <translation id="1555130319947370107">青</translation>
 <translation id="1555191101192706055">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してブラウジングに影響を与える（ホームページを変更する、アクセス先のサイトで余計な広告を表示するなど）有害なソフトウェアをインストールさせる可能性があります。</translation>
 <translation id="1559231233244409191">段ボール（三重）</translation>
@@ -907,6 +907,7 @@
 <translation id="2595719060046994702">このデバイスとアカウントは、会社またはその他の組織によって管理されていません。</translation>
 <translation id="2596415276201385844">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chrome ではこれらの証明書を確認できません。</translation>
 <translation id="2597378329261239068">このドキュメントはパスワードで保護されています。パスワードを入力してください。</translation>
+<translation id="2605979593348332811">よみがな</translation>
 <translation id="2606760465469169465">自動確認</translation>
 <translation id="2608019759319359258">トピックをブロックすると、そのトピックは広告のパーソナライズに使用されなくなります</translation>
 <translation id="2610561535971892504">クリックしてコピー</translation>
@@ -918,6 +919,7 @@
 <translation id="2622754869869445457">最近使用したタブ</translation>
 <translation id="2625385379895617796">時計が進んでいます</translation>
 <translation id="262745152991669301">USB デバイスへの接続を要求できる</translation>
+<translation id="2627847595568876492">PDF からテキストを抽出しています...</translation>
 <translation id="2628224721443278970">Microsoft OneDrive にログイン</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> のサーバーの IP アドレスが見つかりませんでした。</translation>
 <translation id="2639739919103226564">ステータス:</translation>
@@ -1522,6 +1524,7 @@
 <translation id="3711430313228789376">Chrome ブラウザがパスワードを表示しようとしています</translation>
 <translation id="3711861349027352138">テレビゲーム、ビデオゲーム</translation>
 <translation id="3711895659073496551">停止する</translation>
+<translation id="3712004750972384495">画面の録画を保存しています</translation>
 <translation id="3712006010833051684">#10 封筒</translation>
 <translation id="3712624925041724820">ライセンスを使い切りました</translation>
 <translation id="3713277100229669269">お支払いの前にカードのメリットを確認できるようになりました</translation>
@@ -1550,6 +1553,7 @@
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="3745599309295009257">入力したテキストとページのコンテンツおよび URL が Google に送信され、人間による確認が行われ、この機能の改善に使用されます。個人情報（医療や財務情報など）を入力したり、個人情報や機密情報を含むサイトでこのツールを使用したりしないでください。</translation>
 <translation id="3748009735914587286">金属（高光沢）</translation>
+<translation id="3752181611900535304">アカウントに住所を保存しますか？</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
 <translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
 <translation id="3759461132968374835">最近発生した障害はありません。障害レポートが無効になっているときに発生した障害は、ここには表示されません。</translation>
@@ -1660,6 +1664,7 @@
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963721102035795474">リーダーモード</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{なし}=1{1 件のサイトから}other{# 件のサイトから}}</translation>
+<translation id="3965672182149944205">住所を保存しますか？</translation>
 <translation id="3966044442021752214">製品の安全性</translation>
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> はブロックされています</translation>
@@ -2328,6 +2333,7 @@
 <translation id="5191315092027169558">お使いのプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> で複数のファイルがダウンロードされようとしています</translation>
 <translation id="519422657042045905">注釈は使用できません</translation>
+<translation id="5200063972779787617">アカウントに住所を保存</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
 <translation id="5205222826937269299">名前は必須です</translation>
 <translation id="5206392433295093945">ベッドルーム</translation>
@@ -2350,6 +2356,7 @@
 <translation id="5239623327352565343">位置情報が許可されています</translation>
 <translation id="5241048084654737238">カード情報を保存できないことの確認</translation>
 <translation id="5242610955375133957">ドライフィルム</translation>
+<translation id="5243004157379865295">住所を更新</translation>
 <translation id="5244521145258281926">[Google アカウントを管理] ボタンです。実行すると、Google アカウントで情報、プライバシー、セキュリティを管理できます</translation>
 <translation id="5244732203286792411">読み込んでいます...
     しばらくお待ちください。</translation>
@@ -2847,6 +2854,7 @@
 <translation id="6159554577634054750">害虫駆除</translation>
 <translation id="6159908896951210943">フォーマル</translation>
 <translation id="6160391204859821737">広告のプライバシー機能を有効にする</translation>
+<translation id="6162403104168428984">住所を更新しますか？</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6167577165590485365">最後に取得を試行した時間:</translation>
 <translation id="617256461084925519">Google Chrome でお支払い情報を入力するため、本人確認を行います。</translation>
@@ -3081,6 +3089,7 @@
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
 <translation id="6573200754375280815">2 穴パンチ（右）</translation>
 <translation id="6574762126505704998">全画面</translation>
+<translation id="6575408526598156416">アカウントに保存</translation>
 <translation id="6577792494180292262">ベンチャー キャピタル</translation>
 <translation id="6578434528542148658">拡張機能 ID が無効です。</translation>
 <translation id="6579858392010591435">祝日、年中行事</translation>
@@ -3130,7 +3139,6 @@
 <translation id="6671169470640320959">自動車ローン</translation>
 <translation id="6671697161687535275">Chromium から候補を削除してもよろしいですか？</translation>
 <translation id="6677351035258626477">ファストフード</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome で購入手続きのオプションとして <ph name="FINANCIAL_ACCOUNT_TYPES" /> が表示されます}other{Chrome で購入手続きのオプションとして <ph name="FINANCIAL_ACCOUNT_TYPES" /> が表示されます}}</translation>
 <translation id="6679354743514146922">Chrome ブラウザが <ph name="APP_NAME" /> でパスワードを入力しようとしています。</translation>
 <translation id="6681790815630918386">CVC を保存しました</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
@@ -3393,6 +3401,7 @@
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
+<translation id="7152230779180489711">前回のアクセス</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}other{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}}</translation>
 <translation id="7153618581592392745">ラベンダー</translation>
 <translation id="7156870133441232244">サーバーを TLS 1.2 以降にアップグレードする必要があります。</translation>
@@ -4474,6 +4483,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> が本人確認を求めています</translation>
+<translation id="9120593907434185157">住所を保存</translation>
 <translation id="912327514020027767">スカート</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9131119348384879525">機密コンテンツをキャプチャしますか？</translation>

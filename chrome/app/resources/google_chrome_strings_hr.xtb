@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Kliknite za zatvaranje Google objektiva</translation>
 <translation id="2681444469812712297">Otvorite <ph name="URL" /> u novoj kartici u Google Chromeu.</translation>
 <translation id="2712141162840347885">Odaberite bilo što za pretraživanje pomoću Google objektiva ili pritisnite Escape da biste zatvorili Google objektiv</translation>
-<translation id="2727713483500953825">Odaberite slike/tekst za pretraživanje pomoću Objektiva</translation>
 <translation id="2738871930057338499">Povezivanje s internetom nije moguće. HTTP 403 Zabranjeno je. Provjerite konfiguraciju proxyja.</translation>
 <translation id="2742320827292110288">Upozorenje: Google Chrome ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u anonimnom načinu, poništite odabir te opcije.</translation>
 <translation id="2753623023919742414">Kliknite za pretraživanje</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identificirajte stvari ili mjesta i kopirajte ili prevedite tekst. Kada upotrebljavate Google objektiv, snimka zaslona stranice šalje se Googleu. <ph name="LEARN_MORE" />.</translation>
 <translation id="3622797965165704966">Upotreba Chromea s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
-<translation id="3625345586754200168">Isprobajte Objektiv</translation>
 <translation id="3635073343384702370">Chrome može provjeriti vaše zaporke kad ih spremite</translation>
 <translation id="3667616615096815454">Nije moguće instalirati, aplikacija nije poznata poslužitelju.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da <ph name="EXTENSION_NAME" /> sadrži zlonamjerni softver</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Pogreška programa za instalaciju: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Prijava na Chrome kao <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Pretražujte slike ili tekst pomoću Objektiva</translation>
 <translation id="4458462641685292929">U tijeku je neka druga operacija na Google Chromeu. Pokušajte ponovo kasnije.</translation>
 <translation id="4459234553906210702">Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromea traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>
 <translation id="4493028449971051158">Pogreška pri pokretanju: pokrenite program za instalaciju kao administrator.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome ponovo će se pokrenuti za <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604424701295382420">Prikvačeno! Google objektivu možete ponovo pristupiti pomoću novog gumba na alatnoj traci</translation>
-<translation id="6060842547856900641">Otvorite Objektiv</translation>
 <translation id="6069027071882229820">Kopiraj kao sliku</translation>
 <translation id="6070348360322141662">Radi dodatne sigurnosti Google Chrome kriptirat će vaše podatke</translation>
 <translation id="6075300983329039771">Vaša organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Da biste imali svoja proširenja na svim svojim računalima, prijavite se u Chromium</translation>
 <translation id="6520670145826811516">Da biste upotrebljavali lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />sistemskim postavkama<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Na Google upravitelju zaporki na ovom uređaju</translation>
-<translation id="6600016381025017075">Pretražite bilo što na ovoj stranici</translation>
 <translation id="6632473616050862500">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Prijaviti se u Chrome?</translation>
 <translation id="6676384891291319759">Pristup Internetu</translation>

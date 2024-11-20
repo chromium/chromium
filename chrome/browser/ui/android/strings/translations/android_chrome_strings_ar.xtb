@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">هل تريد إغلاق النافذة؟</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
+<translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
@@ -578,6 +579,7 @@
 <translation id="363596933471559332">يمكنك تسجيل الدخول تلقائيًا إلى المواقع الإلكترونية باستخدام بيانات الاعتماد المخزّنة. وعندما تكون هذه الميزة غير مفعّلة، سيُطلب منك التحقّق من بيانات الاعتماد في كل مرة قبل تسجيل الدخول إلى موقع إلكتروني.</translation>
 <translation id="3636940436873918441">اللغات المفضّلة</translation>
 <translation id="3637744895182738742">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏الانتقال إلى "الصفحة الرئيسية" في تطبيق Google</translation>
 <translation id="368329460027487650">تم تسجيل الخروج. سيتم فتح خيارات لتسجيل الدخول.</translation>
 <translation id="3684540848053703310">البطاقة السفلية للمعلومات المفصّلة عن الأسعار مُغلقة</translation>
@@ -878,7 +880,6 @@
 <translation id="4988526792673242964">الصفحات</translation>
 <translation id="4991110219272367918">تم إغلاق نافذة خيار الموافقة أو عدم الموافقة على زيارة موقع إلكتروني.</translation>
 <translation id="4996095658297597226">هل تريد استخدام كلمة المرور المُقترَحة؟</translation>
-<translation id="499724277181351974">الانتقال إلى <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">متابعة هذا الموقع الإلكتروني هنا</translation>
 <translation id="5004416275253351869">‏عناصر التحكم بالنشاط على Google</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
@@ -1579,7 +1580,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{علامة تبويب واحدة في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_NORMAL" />)}few{<ph name="TAB_COUNT_NORMAL" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="8051695050440594747">هناك <ph name="MEGABYTES" /> ميغابايت متوفرة</translation>
 <translation id="8058746566562539958">‏فتح بعلامة تبويب Chrome جديدة</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />"}=1{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمًا واحدًا آخر}two{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" ومستخدمَين آخرَين}few{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و# مستخدمِين آخرِين}many{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و# مستخدمًا آخر}other{الانضمام إلى مجموعة علامات التبويب التي تضمّ "<ph name="OWNER_FIRST_NAME" />" و# مستخدم آخر}}</translation>
 <translation id="8062594758852531064">التحميل المُسبق الموسّع:</translation>
 <translation id="8063895661287329888">تعذّرت إضافة الإشارة المرجعية.</translation>
 <translation id="8066816452984416180">يتيح لك هذا الزر وضع إشارة على هذه الصفحة بسرعة. لتعديل هذا الاختصار، انقر مع الاستمرار.</translation>

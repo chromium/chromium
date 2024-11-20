@@ -125,7 +125,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2711502716910134313">Karta Chromium</translation>
 <translation id="2718390899429598676">Dla większego bezpieczeństwa Chromium szyfruje dane.</translation>
 <translation id="2721354645805494590">Aby usunąć konto Google z Chromium, wyloguj się</translation>
-<translation id="2727713483500953825">Wybierz obrazy lub tekst, które chcesz przeszukać za pomocą Obiektywu</translation>
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2753623023919742414">Kliknij, aby wyszukać</translation>
 <translation id="2770231113462710648">Zmień przeglądarkę domyślną na:</translation>
@@ -138,7 +137,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2846251086934905009">Błąd instalacji: instalator nie zakończył działania. Instalacja została przerwana.</translation>
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
 <translation id="2850691299438350830">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
-<translation id="2874602845494991903">Otwórz wyszukiwanie obrazów</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
 <translation id="2910007522516064972">&amp;Chromium – informacje</translation>
 <translation id="2915996080311180594">Uruchom ponownie później</translation>
@@ -252,7 +250,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Przeglądarką Chromium zarządza <ph name="MANAGER" /></translation>
 <translation id="4447409407328223819">Chrome for Testing – informacje</translation>
-<translation id="4453144231461812959">Przeszukaj dowolny obraz lub tekst za pomocą Obiektywu</translation>
 <translation id="4470974262661801543">Wpisz hasło wielowyrazowe, aby móc zapisywać dane z Chromium na koncie Google i ich używać</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
 <translation id="4501471624619070934">Ze względu na ograniczenie dostępu w tym kraju instalacja się nie udała.</translation>
@@ -292,7 +289,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="494490797786467921">Kliknij, aby zamknąć okno logowania się w Chromium</translation>
 <translation id="4987820182225656817">Goście mogą korzystać z Chromium, nie pozostawiając żadnych danych.</translation>
 <translation id="4994636714258228724">Dodaj siebie do Chromium</translation>
-<translation id="5051959905407134411">Wypróbuj wyszukiwanie obrazów</translation>
 <translation id="5114678101347489141">Testujemy nowe funkcje Chromium zapewniające taką samą wygodę przeglądania witryn, jednak przy wykorzystaniu mniejszej ilości informacji o użytkowniku</translation>
 <translation id="5123973130450702873">Chromium potrzebuje uprawnień do śledzenia rąk</translation>
 <translation id="5174969993834422967">Zazwyczaj blokujesz powiadomienia. Aby zezwolić tej stronie na wysyłanie powiadomień, kliknij ikonę powiadomienia w prawym rogu paska lokalizacji.</translation>

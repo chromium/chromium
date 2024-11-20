@@ -38,6 +38,7 @@ Aspetti da considerare:
 <translation id="1646463005043273333">Apre l'impostazione di Chrome per impostare Chrome come browser predefinito.</translation>
 <translation id="1670609221633730681">Suggerimento per Chrome: scegli la posizione della barra degli indirizzi</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Salva le password in Chrome</translation>
 <translation id="1790080846677398234">Aggiunge gli URL inseriti ai preferiti in Chrome.</translation>
 <translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1830634592642484976">Al momento questo indirizzo è salvato su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
@@ -219,9 +220,11 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 
 Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Elimina i dati di navigazione in Chrome.</translation>
+<translation id="6924922227983877439">Apri i link in Chrome per impostazione predefinita</translation>
 <translation id="6975725306479268850">Scegli Chrome per la compilazione automatica</translation>
 <translation id="7056826488869329999">Apre ed esegue il controllo di sicurezza in Chrome.</translation>
 <translation id="7061455974939528301">Tieni premuta l'icona di Chrome e fai clic su "Modifica la schermata Home"</translation>
+<translation id="7065813315247345131">Sposta Chrome nel dock</translation>
 <translation id="7124339256045485976">Mantieni Chrome aggiornato</translation>
 <translation id="7161390184744336561">Google Chrome non è aggiornato</translation>
 <translation id="7165736900384873061">Inizia a utilizzare lo scanner QR di Google Chrome</translation>

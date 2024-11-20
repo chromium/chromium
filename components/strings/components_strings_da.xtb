@@ -138,7 +138,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Overtøj</translation>
-<translation id="1253096324252841344">Betal med <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Gemmer screenshot</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkroniseret)</translation>
 <translation id="1255086252236620440">Foodprocessorer</translation>
@@ -3130,7 +3129,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6671169470640320959">Bilfinansiering</translation>
 <translation id="6671697161687535275">Vil du fjerne formularforslag fra Chromium?</translation>
 <translation id="6677351035258626477">Fastfood</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som en valgmulighed}one{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som en valgmulighed}other{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som valgmuligheder}}</translation>
 <translation id="6679354743514146922">Chrome-browseren forsøger at udfylde din adgangskode i <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC er gemt</translation>
 <translation id="6683022854667115063">Høretelefoner</translation>

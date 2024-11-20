@@ -1387,7 +1387,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1948528728718281125">L'accès à la caméra est autorisé pour les applications, les sites Web disposant de l'autorisation d'accéder à l'a caméra et les services système</translation>
 <translation id="1949332606889020901">Identifiants de plantage</translation>
 <translation id="1949584741547056205">Réponses rapides</translation>
-<translation id="1949849604471335579">Personnalisez le fond d'écran, l'écran de veille, les couleurs d'accentuation et plus</translation>
 <translation id="1949980990364952348">Nom de l'application</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">Trouver une extension de remplacement</translation>
@@ -2307,6 +2306,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2575407791320728464">URL incorrecte. Assurez-vous qu'elle est correctement formatée.</translation>
 <translation id="2575441894380764255">Non autorisés à afficher des annonces intrusives ou trompeuses</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Cet appareil sera mémorisé pendant 1 an, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}one{Cet appareil sera mémorisé pendant {YEARS} an, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}other{Cet appareil sera mémorisé pendant {YEARS} ans, et vous pourrez vous connecter sans code la prochaine fois. Ce paramètre est défini par votre administrateur.}}</translation>
+<translation id="2577127557293415225">Fermez brièvement les deux yeux</translation>
 <translation id="257779572837908839">Configurer en tant que Chromebox pour les réunions</translation>
 <translation id="2580889980133367162">Toujours autoriser <ph name="HOST" /> à télécharger plusieurs fichiers</translation>
 <translation id="258095186877893873">Long</translation>
@@ -2779,6 +2779,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2904210161403910217">Votre mot de passe a changé depuis votre dernière connexion</translation>
 <translation id="2904506722835398619">Connexion et synchronisation nécessaires</translation>
 <translation id="2904845070985032877">Suspendre les animations</translation>
+<translation id="2905556994482999199">Utilisez les mouvements de la tête et les expressions faciales pour contrôler votre Chromebook</translation>
 <translation id="2907619724991574506">Adresses URL de démarrage</translation>
 <translation id="2907798539022650680">Échec de la connexion à « <ph name="NAME" /> » : <ph name="DETAILS" />
     Message du serveur : <ph name="SERVER_MSG" /></translation>
@@ -6091,7 +6092,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5288678174502918605">Rouvrir l'ongl&amp;et fermé</translation>
 <translation id="5290020561438336792">Le PC et l'appareil de diffusion sont connectés à différents réseaux Wi-Fi (p. ex. 2,4 GHz et 5 GHz)</translation>
 <translation id="52912272896845572">Le fichier de clé privée est incorrect.</translation>
-<translation id="5291739252352359682">Crée automatiquement des sous-titres pour les éléments multimédias dans le navigateur Chrome (cette fonctionnalité est offerte en anglais pour le moment). L'audio et les sous-titres sont traités localement et ne quittent jamais l'appareil.</translation>
 <translation id="529175790091471945">Formater cet appareil</translation>
 <translation id="529296195492126134">Le mode Éphémère n'est pas pris en charge. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="5293043095535566171">Activer l'accès à la position?</translation>
@@ -7250,6 +7250,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6143186082490678276">Obtenir de l'aide</translation>
 <translation id="6143366292569327983">Choisissez la langue de la page à traduire</translation>
 <translation id="6144938890088808325">Aidez-nous à améliorer les Chromebook</translation>
+<translation id="6145363037359279595">Bienvenue, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">La synchronisation ne fonctionne pas. Essayez de vous connecter à nouveau.</translation>
 <translation id="6147020289383635445">Échec de création de l'aperçu avant impression.</translation>
 <translation id="6147253937684562370">Pour déverrouiller le profil, connectez-vous avec l'adresse de courriel de votre compte principal : <ph name="EMAIL" /></translation>
@@ -7521,7 +7522,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6338968693068997776">Ajouter un périphérique USB</translation>
 <translation id="6339668969738228384">Créer un autre profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocole IPPS d'impression Internet</translation>
-<translation id="6340526405444716530">Personnalisation</translation>
 <translation id="6341850831632289108">Détecter votre position géographique</translation>
 <translation id="6342069812937806050">À l'instant</translation>
 <translation id="6343003829431264373">Pages paires uniquement</translation>
@@ -7922,7 +7922,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6642720633335369752">Pour voir toutes les fenêtres d'applications ouvertes, balayez l'écran du bas vers le haut et maintenez le doigt en place.</translation>
 <translation id="664290675870910564">Sélection du réseau</translation>
 <translation id="6643016212128521049">Effacer</translation>
-<translation id="6644512095122093795">Proposer l'enregistrement des mots de passe</translation>
 <translation id="6644513150317163574">Format d'URL incorrect. Le serveur doit être indiqué comme nom d'hôte lorsque l'authentification SSO est utilisée.</translation>
 <translation id="6644846457769259194">Mise à jour de votre appareil en cours (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6646476869708241165">Désactiver le mode Association rapide</translation>
@@ -8063,7 +8062,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6739943577740687354">Cette fonctionnalité utilise l'IA et ne fonctionnera pas toujours correctement</translation>
 <translation id="6740234557573873150">Mettre en pause <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Votre administrateur<ph name="END_LINK" /> a désactivé la navigation sécurisée</translation>
-<translation id="6742629250739345159">Génère automatiquement des sous-titres pour les contenus multimédias dans le navigateur Chrome. L'audio et les sous-titres sont traités localement et ne quittent jamais l'appareil.</translation>
 <translation id="6743841972744298686">Paramètres de synchronisation</translation>
 <translation id="6745592621698551453">Mettre à jour maintenant</translation>
 <translation id="6746124502594467657">Déplacer vers le bas</translation>

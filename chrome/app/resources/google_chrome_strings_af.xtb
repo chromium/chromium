@@ -141,7 +141,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2668094785979141847">Klik om uit Google Lens te gaan</translation>
 <translation id="2681444469812712297">Maak <ph name="URL" /> in 'n nuwe oortjie in Google Chrome oop.</translation>
 <translation id="2712141162840347885">Kies enigiets om met Google Lens te soek of druk Escape om uit Google Lens te gaan</translation>
-<translation id="2727713483500953825">Kies prente of teks om met Lens te soek</translation>
 <translation id="2738871930057338499">Kon nie aan die internet koppel nie. HTTP 403 verbode. Gaan asseblief jou proxy-opstelling na.</translation>
 <translation id="2742320827292110288">Waarskuwing: Google Chrome kan nie keer dat uitbreidings jou blaaigeskiedenis opneem nie. Ontkies hierdie opsie om hierdie uitbreiding in Incognitomodus te deaktiveer.</translation>
 <translation id="2753623023919742414">Klik om te soek</translation>
@@ -224,7 +223,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3609788354808247807">Jy het nie onlangs die webwerf besoek nie. Chrome het <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> verwyder</translation>
 <translation id="3622716124581627104">Identifiseer dinge of plekke en kopieer of vertaal teks. Wanneer jy Google Lens gebruik, word ’n skermskoot van die bladsy na Google toe gestuur. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nou is dit makliker om Chrome met jou Google-rekening en op gedeelde rekenaars te gebruik.</translation>
-<translation id="3625345586754200168">Probeer Lens</translation>
 <translation id="3635073343384702370">Chrome kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
 <translation id="3667616615096815454">Kan nie installeer nie, die app is onbekend aan die bediener.</translation>
 <translation id="3673813398384385993">Chrome het bevind dat "<ph name="EXTENSION_NAME" />" wanware bevat</translation>
@@ -295,7 +293,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4434353761996769206">Installeerderfout: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Meld as <ph name="USER_EMAIL" /> by Chrome aan</translation>
 <translation id="4450664632294415862">Chrome – Netwerkaanmelding – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Soek enige prent of teks met Lens</translation>
 <translation id="4458462641685292929">'n Ander handeling in Google Chrome vind tans plaas. Probeer asseblief later weer.</translation>
 <translation id="4459234553906210702">Advertensiemeting stel werwe wat jy besoek in staat om inligting van Chrome af te versoek wat die werf help om die werkverrigting van hul advertensies te meet. Advertensiemeting beperk oorkruiswerfnasporing deur so min inligting moontlik tussen werwe oor te dra.</translation>
 <translation id="4493028449971051158">Aanskakelingfout: laat loop die installeerder as administrateur.</translation>
@@ -408,7 +405,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6025087594896450715">Google Chrome sal oor <ph name="REMAINING_TIME" /> herbegin</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="604424701295382420">Vasgespeld! Jy kan weer toegang tot Google Lens kry vanaf die nuwe knoppie op die nutsbalk</translation>
-<translation id="6060842547856900641">Maak Lens oop</translation>
 <translation id="6069027071882229820">Kopieer as prent</translation>
 <translation id="6070348360322141662">Google Chrome sal jou data enkripteer vir bykomende sekuriteit</translation>
 <translation id="6075300983329039771">Jou organisasie, <ph name="MANAGER" />, vereis dat jy by Chrome aanmeld</translation>
@@ -457,7 +453,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6515549163407364048">Meld aan by Chrome om jou uitbreidings op al jou rekenaars te kry</translation>
 <translation id="6520670145826811516">Jy moet vir Chrome toegang in <ph name="BEGIN_LINK" />stelselinstellings<ph name="END_LINK" /> gee om jou ligging te gebruik</translation>
 <translation id="659498884637196217">In Google Wagwoordbestuurder op hierdie toestel</translation>
-<translation id="6600016381025017075">Soek na enigiets op hierdie bladsy</translation>
 <translation id="6632473616050862500">Chrome OS Flex word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Meld by Chrome aan?</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
@@ -620,6 +615,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="8416347857511542594">Kom meer te wete oor personalisering in Chrome</translation>
 <translation id="8418845734693287262">Chrome-bedrystelsel kon nie jou data sinkroniseer nie omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="842386925677997438">Chrome se veiligheidnutsgoed</translation>
+<translation id="8425765582779547329">Meld aan by Chrome om met jou ouers se keuses veiliger aanlyn te bly</translation>
 <translation id="8428213095426709021">Instellings</translation>
 <translation id="8433638294851456451">Meld op albei toestelle by Chrome aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
 <translation id="8451192282033883849">Jou rekening word bestuur deur <ph name="MANAGER_NAME" />. Jou administrateur kan hierdie Chrome-blaaierprofiel en sy data soos boekmerke, geskiedenis en wagwoorde sien en wysig.</translation>

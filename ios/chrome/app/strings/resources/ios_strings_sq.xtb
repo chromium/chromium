@@ -782,6 +782,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4645575059429386691">Menaxhohet nga prindi yt</translation>
 <translation id="4647758699119474035">Identifikuar si <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Gabim i "Llogarisë së Google". Hap menynë e llogarisë.</translation>
 <translation id="4650125387981512669">Vazhdo si <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Fshih pas 1 minute}other{Fshih pas {count} minutash}}</translation>
 <translation id="4652817563047461855">Sigurohu që fjalëkalimet e tua të jetë të sigurta, zbulo nëse janë komprometuar dhe merr këshilla për të të ndihmuar për mbrojtjen tënde online. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Ruaj</translation>
 <translation id="4668929960204016307">,</translation>

@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">לסגור את החלון?</translation>
 <translation id="2173302385160625112">יש לבדוק את החיבור לאינטרנט</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
+<translation id="2184272387334793084">כדאי להיכנס לחשבון כדי שהסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="218608176142494674">שיתוף</translation>
 <translation id="219283042927675668">כרטיסיות בקבוצה</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
@@ -342,6 +343,7 @@
 <translation id="2571711316400087311">‏הצעה לשלוח דפים בשפות אחרות ל-Google Translate</translation>
 <translation id="2571834852878229351">יצירת סיסמה משלי</translation>
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון בכל המכשירים</translation>
+<translation id="2577981599306533385">‏הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", וגם האפשרות ליצור איתך אינטראקציה בשירותי Google, יאבדו באופן מיידי.</translation>
 <translation id="2578337197553672982">‏תוכן של Google לילדים</translation>
 <translation id="2579297619530305344">הסיסמאות בכל המכשירים נפתחו במסך מלא</translation>
 <translation id="2581165646603367611">‏פעולה זו תמחק את קובצי ה-Cookie, את המטמון ונתונים אחרים של אתרים ש-Chrome לא מחשיב כחשובים.</translation>
@@ -566,6 +568,7 @@
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3614126103057878858">מדדי מחירים</translation>
 <translation id="3616113530831147358">אודיו</translation>
+<translation id="3619255692378312441">ניהול הרשאות הגישה</translation>
 <translation id="3622349720008044802">ניהול החלונות</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
 <translation id="3631987586758005671">השיתוף עם <ph name="DEVICE_NAME" /> מתבצע</translation>
@@ -574,6 +577,7 @@
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
 <translation id="3636940436873918441">השפות המועדפות</translation>
 <translation id="3637744895182738742">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏מעבר לדף הבית של אפליקציית Google</translation>
 <translation id="368329460027487650">החשבון לא מחובר. ייפתחו אפשרויות הכניסה.</translation>
 <translation id="3684540848053703310">הגיליון התחתון של מדדי המחירים סגור</translation>
@@ -585,6 +589,7 @@
 <translation id="3701515417135397388">הצגת אזהרה אם סיסמה נחשפה בפרצה באבטחת מידע</translation>
 <translation id="3703166520839776970">אם הבעיה לא נפתרה, ניתן לבחור באפשרות 'פרטים נוספים' למטה כדי לעיין במידע נוסף מ-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3710501561113687889">כדי להמשיך, הפרטים '<ph name="FIELDS_STRING" />' ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה.</translation>
+<translation id="3710560693796335511">שיתוף פעולה</translation>
 <translation id="3714981814255182093">פתיחת סרגל החיפוש</translation>
 <translation id="3716182511346448902">‏הדף הזה מנצל יותר מדי זיכרון, כך שהוא הושהה על-ידי Chrome.</translation>
 <translation id="3718765429352682176">‏יכול להיות שתוצג היסטוריה מאפליקציות אחרות שפותחות קישורים ב-Chrome.</translation>
@@ -873,7 +878,6 @@
 <translation id="4988526792673242964">דפים</translation>
 <translation id="4991110219272367918">האפשרות לאשר או לא לאשר אתר נסגרה</translation>
 <translation id="4996095658297597226">להשתמש בסיסמה המוצעת?</translation>
-<translation id="499724277181351974">ניווט: <ph name="WEBSITE_TITLE" />:‏ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">כאן ניתן לעקוב אחר האתר הזה</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
@@ -956,6 +960,7 @@
 <translation id="542073632571549028">הגישה של <ph name="MEMBER_FULL_NAME" /> ‏(<ph name="EMAIL" />) לקבוצת הכרטיסיות בשם '<ph name="GROUP_NAME" />' תאבד באופן מיידי</translation>
 <translation id="5423934151118863508">הדפים שבהם ביקרת בתדירות הגבוהה ביותר יופיעו כאן</translation>
 <translation id="5424588387303617268">‏‎<ph name="GIGABYTES" /> GB זמינים</translation>
+<translation id="543121643585717256">כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. מידע על קבוצות משותפות של כרטיסיות</translation>
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5433691172869980887">שם המשתמש הועתק</translation>
 <translation id="5438292632479953702">להורדה מחדש</translation>
@@ -970,6 +975,7 @@
 <translation id="5468068603361015296">רוצה להוריד את <ph name="FILE_NAME" /> בכל זאת?</translation>
 <translation id="548278423535722844">פתיחה באפליקציית מפות</translation>
 <translation id="5492637351392383067">הצפנה במכשיר</translation>
+<translation id="549660026907543296">הצטרפות בתור <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">הסיסמאות בכל המכשירים נפתחו בחצי מגובה המסך</translation>
 <translation id="5514904542973294328">האפשרות הזו הושבתה על-ידי מנהל המערכת של המכשיר</translation>
 <translation id="5515439363601853141">ביטול הנעילה יציג את הסיסמה</translation>
@@ -1372,6 +1378,7 @@
 <translation id="7182051712900867547">שימוש בחשבון אחר</translation>
 <translation id="7183517696921903380">גיליון הסינון לפי אפליקציות פתוח.</translation>
 <translation id="7186568385131859684">‏יש לך אפשרות לשלוט בדרכים שבהן נשתמש בהיסטוריית הגלישה ביחד עם שאר הנתונים שלך בשירותי Google</translation>
+<translation id="7190921792980745354">לחסום את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{צריך לשנות את הסיסמה הזו עכשיו}one{צריך לשנות את הסיסמאות האלה עכשיו}two{צריך לשנות את הסיסמאות האלה עכשיו}other{צריך לשנות את הסיסמאות האלה עכשיו}}</translation>
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>

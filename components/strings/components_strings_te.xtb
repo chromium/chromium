@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">రచయిత:</translation>
 <translation id="1247030632403369975">అల్యూమినియం</translation>
 <translation id="1252209483516427155">పై దుస్తులు</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />‌తో పేమెంట్ చేయండి</translation>
 <translation id="1253846494229886276">స్క్రీన్‌షాట్ సేవ్ అవుతోంది</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (సింక్ చేయబడ్డాయి)</translation>
 <translation id="1255086252236620440">ఫుడ్ మిక్సర్‌లు</translation>
@@ -3135,7 +3134,6 @@
 <translation id="6671169470640320959">ఆటో ఫైనాన్సింగ్</translation>
 <translation id="6671697161687535275">Chromium నుండి ఫారమ్ సూచనను తీసివేయాలా?</translation>
 <translation id="6677351035258626477">ఫాస్ట్ ఫుడ్</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, <ph name="FINANCIAL_ACCOUNT_TYPES" />‌ను ఒక ఆప్షన్‌గా చూడండి}other{మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, <ph name="FINANCIAL_ACCOUNT_TYPES" />‌ను ఆప్షన్స్‌గా చూడండి}}</translation>
 <translation id="6679354743514146922">Chrome బ్రౌజర్ <ph name="APP_NAME" />‌లో మీ పాస్‌వర్డ్‌ను పూరించడానికి ట్రై చేస్తోంది.</translation>
 <translation id="6681790815630918386">CVC సేవ్ అయింది</translation>
 <translation id="6683022854667115063">హెడ్‌ఫోన్స్</translation>

@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">መስኮት ይዘጋ?</translation>
 <translation id="2173302385160625112">የበይነመረብ ግኑኝነትዎን ይፈትሹ</translation>
 <translation id="2175927920773552910">የQR ኮድ</translation>
+<translation id="2184272387334793084">የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሳሪያዎችዎ ላይ ለማግኘት ይግቡ</translation>
 <translation id="218608176142494674">ማጋራት</translation>
 <translation id="219283042927675668">በቡድን ውስጥ ያሉ ትሮች</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
@@ -574,6 +575,7 @@
 <translation id="363596933471559332">የተከማቹ ምስክርነቶችን በመጠቀም በራስ-ሰር ወደ የድር ጣቢያዎች መለያ ይግቡ። ባህሪው ሲጠፋ ወደ አንድ ድር ጣቢያ ከመግባትዎ በፊት ማረጋገጫ ይጠየቃሉ።</translation>
 <translation id="3636940436873918441">የተመረጡ ቋንቋዎች</translation>
 <translation id="3637744895182738742">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ይሰርዙ<ph name="END_LINK" />።</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />፦ <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">ወደ የGoogle መተግበሪያ መነሻ ሂድ</translation>
 <translation id="368329460027487650">ዘግተው ወጥተዋል። በመለያ ለመግባት አማራጮችን ይክፈቱ።</translation>
 <translation id="3684540848053703310">የዋጋ ግንዛቤዎች የግርጌ ሉህ ተዘግቷል</translation>
@@ -873,7 +875,6 @@
 <translation id="4988526792673242964">ገፆች</translation>
 <translation id="4991110219272367918">ድር ጣቢያን የማጽደቅ ወይም ያለማጽደቅ አማራጭ ተዘግቷል</translation>
 <translation id="4996095658297597226">የተጠቆመውን የይለፍ ቃል ይጠቀሙ?</translation>
-<translation id="499724277181351974">ይዳስሱ፦ <ph name="WEBSITE_TITLE" />፦ <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ይህንን ጣቢያ እዚህ ይከተሉ</translation>
 <translation id="5004416275253351869">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>

@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Laat ’n werf toe om data op jou toestel te stoor</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
+<translation id="1396327438254055134">Laat werf toe om V8-optimeerder te gebruik.</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
 <translation id="1448064542941920355">Verklein zoem</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> werf}other{<ph name="SITE_COUNT" /> werwe}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Prentdekodeerder</translation>
 <translation id="1785415724048343560">Aanbeveel vir beste ervaring</translation>
 <translation id="1799920918471566157">Chrome-wenke</translation>
+<translation id="1816835383954230954">Wanneer dit aan is, werk Chrome vinniger en kenmerke wat JavaScript gebruik behoort te werk soos ontwerp. Wanneer dit af is neem werkverrigting af, maar dit maak V8 meer bestand teen aanvalle.</translation>
 <translation id="1818308510395330587">Om <ph name="APP_NAME" /> AR te laat gebruik, moet jy kamera ook in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aanskakel.</translation>
 <translation id="1887786770086287077">Liggingtoegang is af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="1915307458270490472">Sit neer</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Wanneer dit aan is, kan werwe vra om jou kamera te gebruik. Wanneer dit af is, kan werwe nie jou kamera gebruik nie.</translation>
 <translation id="3521663503435878242">Werwe onder <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Moenie werwe toelaat om jou hande na te spoor nie</translation>
+<translation id="3532312529397438268">Werwe kan nie V8-optimeerder gebruik nie</translation>
 <translation id="3536227077203206203">Hierdie keer toegelaat</translation>
 <translation id="3538390592868664640">Verhoed werwe om 'n 3D-kaart van jou omgewing te skep of kameraposisie na te spoor</translation>
 <translation id="3544058026430919413">’n Maatskappy kan ’n groep werwe definieer wat webkoekies kan gebruik om jou aktiwiteit in die groep te deel. Dit is af in Incognito.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4807122856660838973">Skakel Veiligblaai aan</translation>
 <translation id="4811450222531576619">Kom meer te wete oor bron en onderwerp</translation>
+<translation id="481168145262973879">Werwe kan V8-optimeerder gebruik</translation>
 <translation id="4816495437032298535">Gestoorde zoem vir werwe</translation>
 <translation id="4836046166855586901">Vra as 'n werf wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="483914009762354899">Sluit alle werwe in hierdie domein in</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Vee werfdata uit? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
 <translation id="6992289844737586249">Vra eers voordat werwe toegelaat word om jou mikrofoon te gebruik (aanbeveel)</translation>
+<translation id="6999131147875565462">Chrome werk vinniger en kenmerke wat JavaScript gebruik, behoort te werk soos ontwerp</translation>
 <translation id="7000754031042624318">Afgeskakel in Android-instellings</translation>
 <translation id="7016516562562142042">Toegelaat vir huidige soekenjin</translation>
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Werwe wat jy besoek, kan verifieer dat jy ’n regte persoon is en nie ’n bot nie</translation>
 <translation id="959682366969460160">Raak georganiseerd</translation>
 <translation id="967624055006145463">Data geberg</translation>
+<translation id="969975166333045662">Blokkeer werf om V8-optimeerder te gebruik.</translation>
 </translationbundle>

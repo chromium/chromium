@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">ಲೇಖಕರು:</translation>
 <translation id="1247030632403369975">ಅಲ್ಯೂಮಿನಿಯಂ</translation>
 <translation id="1252209483516427155">ಹೊರಾಂಗಣ ಉಡುಪು</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ಮೂಲಕ ಪಾವತಿಸಿ</translation>
 <translation id="1253846494229886276">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ಸಿಂಕ್ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="1255086252236620440">ಆಹಾರ ಮಿಕ್ಸರ್‌ಗಳು</translation>
@@ -3136,7 +3135,6 @@
 <translation id="6671169470640320959">ಆಟೋಮೋಟಿವ್ ಹಣಕಾಸು</translation>
 <translation id="6671697161687535275">Chromium ನಿಂದ ಫಾರ್ಮ್ ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="6677351035258626477">ಫಾಸ್ಟ್ ಫುಡ್</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಯಾಗಿ ನೋಡಿ}one{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ}other{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ}}</translation>
 <translation id="6679354743514146922">Chrome <ph name="APP_NAME" /> ಬ್ರೌಸರ್‌ ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತುಂಬಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="6681790815630918386">CVC ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6683022854667115063">ಹೆಡ್‌ಫೋನ್‌ಗಳು</translation>

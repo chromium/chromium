@@ -257,6 +257,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2172905120685242547">Maak venster toe?</translation>
 <translation id="2173302385160625112">Gaan jou internetverbinding na</translation>
 <translation id="2175927920773552910">QR-kode</translation>
+<translation id="2184272387334793084">Meld aan om jou wagwoorde en meer op al jou toestelle te kry</translation>
 <translation id="218608176142494674">Deling</translation>
 <translation id="219283042927675668">Oortjies in groep</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
@@ -342,6 +343,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2571711316400087311">Bied aan om bladsye in ander tale na Google Vertaal te stuur</translation>
 <translation id="2571834852878229351">Skep my eie</translation>
 <translation id="2574249610672786438">Meld op al jou toestelle aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor en sal nie meer met jou in Google-dienste kan kommunikeer nie.</translation>
 <translation id="2578337197553672982">Inhoud deur Google vir jong verstande</translation>
 <translation id="2579297619530305344">Wagwoorde op al jou toestelle is teen volle hoogte oopgemaak</translation>
 <translation id="2581165646603367611">Dit sal koekies, kas en ander data uitvee van werwe wat Chrome nie dink belangrik is nie.</translation>
@@ -566,6 +568,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3614126103057878858">Prysinsigte</translation>
 <translation id="3616113530831147358">Oudio</translation>
+<translation id="3619255692378312441">Bestuur toegang</translation>
 <translation id="3622349720008044802">Bestuur vensters</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 werf}other{+ # werwe}}</translation>
 <translation id="3631987586758005671">Deel tans na <ph name="DEVICE_NAME" /></translation>
@@ -574,6 +577,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="363596933471559332">Meld outomaties met gebergde eiebewyse by webwerwe aan. As die kenmerk af is, sal jy elke keer om verifikasie gevra word voordat jy by 'n webwerf aanmeld.</translation>
 <translation id="3636940436873918441">Voorkeurtale</translation>
 <translation id="3637744895182738742"><ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Gaan na tuisblad van Google-app</translation>
 <translation id="368329460027487650">Afgemeld. Maak opsies oop om aan te meld.</translation>
 <translation id="3684540848053703310">Prysinsigte se onderste blad is toegemaak</translation>
@@ -585,6 +589,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3701515417135397388">Waarsku jou as ’n wagwoord in ’n dataskending gekompromitteer is</translation>
 <translation id="3703166520839776970">Kies “Meer besonderhede” hier onder om meer inligting van <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> te kry as hierdie kwessie aanhou voorkom.</translation>
 <translation id="3710501561113687889">Om voort te gaan, sal <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> jou <ph name="FIELDS_STRING" /> met hierdie werf deel.</translation>
+<translation id="3710560693796335511">Samewerking</translation>
 <translation id="3714981814255182093">Maak die Vindbalk oop</translation>
 <translation id="3716182511346448902">Hierdie bladsy gebruik te veel berging en daarom het Chrome dit laat wag.</translation>
 <translation id="3718765429352682176">Jy kan moontlik die geskiedenis sien van ander apps wat skakels in Chrome oopmaak.</translation>
@@ -873,7 +878,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4988526792673242964">Bladsye</translation>
 <translation id="4991110219272367918">Opsie om webwerf goed te keur of nie goed te keur nie, is toegemaak</translation>
 <translation id="4996095658297597226">Gebruik voorgestelde wagwoord?</translation>
-<translation id="499724277181351974">Gaan na: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Volg hierdie werf hier</translation>
 <translation id="5004416275253351869">Google-aktiwiteitkontroles</translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
@@ -956,6 +960,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor</translation>
 <translation id="5423934151118863508">Jou mees besoekte bladsye sal hier verskyn</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB is beskikbaar</translation>
+<translation id="543121643585717256">Enigiemand met die skakel kan alle oortjies wysig. Kry meer inligting oor gedeelde oortjiegroepe</translation>
 <translation id="543338862236136125">Wysig wagwoord</translation>
 <translation id="5433691172869980887">Gebruikernaam is gekopieer</translation>
 <translation id="5438292632479953702">Laai weer af</translation>
@@ -970,6 +975,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5468068603361015296">Wil jy <ph name="FILE_NAME" /> in elk geval aflaai?</translation>
 <translation id="548278423535722844">Maak in kaarteprogram oop</translation>
 <translation id="5492637351392383067">Enkripsie op toestel</translation>
+<translation id="549660026907543296">Sluit aan as <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Wagwoorde op al jou toestelle is teen halwe hoogte oopgemaak</translation>
 <translation id="5514904542973294328">Gedeaktiveer deur die administrateur van hierdie toestel</translation>
 <translation id="5515439363601853141">Ontsluit om jou wagwoord te sien</translation>
@@ -1372,6 +1378,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7182051712900867547">Gebruik 'n ander rekening</translation>
 <translation id="7183517696921903380">Appfilterblad is oop.</translation>
 <translation id="7186568385131859684">Beheer hoe blaaigeskiedenis met jou ander data oral in Google-dienste gebruik word</translation>
+<translation id="7190921792980745354">Blokkeer <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Oortjie is op die agtergrond oopgemaak.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Jy moet dit nou verander}other{Jy moet hierdie nou verander}}</translation>
 <translation id="7196215469483532480">Privaatheidgidsverduideliking is teen volle hoogte oopgemaak</translation>

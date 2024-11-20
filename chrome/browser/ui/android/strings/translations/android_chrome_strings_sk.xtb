@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Chcete zavrieť okno?</translation>
 <translation id="2173302385160625112">Skontrolujte svoje internetové pripojenie</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2184272387334793084">Prihláste sa a používajte heslá a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="218608176142494674">Zdieľanie</translation>
 <translation id="219283042927675668">Karty v skupine</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">Povolí automatické prihlasovanie na webové stránky pomocou uložených poverení. Keď je funkcia vypnutá, zobrazí sa výzva na overenie vždy pred prihlásením na web.</translation>
 <translation id="3636940436873918441">Preferované jazyky</translation>
 <translation id="3637744895182738742">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Prejsť na domovskú stránku aplikácie Google</translation>
 <translation id="368329460027487650">Účet je odhlásený. Otvoria sa možnosti na prihlásenie.</translation>
 <translation id="3684540848053703310">Dolný hárok cenových štatistík je zatvorený</translation>
@@ -876,7 +878,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4991110219272367918">Zatvorená možnosť schváliť alebo neschváliť web</translation>
 <translation id="4996095658297597226">Chcete použiť navrhnuté heslo?</translation>
-<translation id="499724277181351974">Prejsť: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Tu sledujte tento web</translation>
 <translation id="5004416275253351869">Riadenie aktivity Google</translation>
 <translation id="5005498671520578047">Kopírovanie hesla</translation>
@@ -1576,7 +1577,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta inkognito}few{<ph name="TAB_COUNT_NORMAL" /> karty inkognito}many{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}other{<ph name="TAB_COUNT_NORMAL" /> kariet inkognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB k dispozícii</translation>
 <translation id="8058746566562539958">Otvoriť v Chrome na novej karte</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" />}=1{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a # ďalším}few{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a # ďalšími}many{Join tab group with <ph name="OWNER_FIRST_NAME" /> and # others}other{Pripojte sa ku skupine kariet s používateľom <ph name="OWNER_FIRST_NAME" /> a # ďalšími}}</translation>
 <translation id="8062594758852531064">Rozšírené prednačítavanie:</translation>
 <translation id="8063895661287329888">Záložku sa nepodarilo pridať.</translation>
 <translation id="8066816452984416180">Rýchlo si uložte túto stránku ako záložku. Ak chcete túto skratku upraviť, pridržte ju.</translation>

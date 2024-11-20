@@ -138,7 +138,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1243027604378859286">Szerző:</translation>
 <translation id="1247030632403369975">Alumínium</translation>
 <translation id="1252209483516427155">Kinti viselet</translation>
-<translation id="1253096324252841344">Fizetés a következővel: <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Képernyőkép mentése…</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (szinkronizálva)</translation>
 <translation id="1255086252236620440">Robotgépek</translation>
@@ -3127,7 +3126,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6671169470640320959">Autófinanszírozás</translation>
 <translation id="6671697161687535275">Eltávolítja az űrlapjavaslatot a Chromiumból?</translation>
 <translation id="6677351035258626477">Gyorsétterem</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Amikor a Chrome-ban vásárol, megjelenik lehetőségként a(z) <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Amikor a Chrome-ban vásárol, megjelennek lehetőségként a következők: <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">A Chrome böngésző megpróbálja kitölteni a jelszavát itt: <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC mentve</translation>
 <translation id="6683022854667115063">Fejhallgató</translation>

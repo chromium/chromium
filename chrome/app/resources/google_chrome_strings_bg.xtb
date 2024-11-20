@@ -139,7 +139,6 @@
 <translation id="2668094785979141847">Кликнете, за да излезете от Google Обектив</translation>
 <translation id="2681444469812712297">Отваряне на <ph name="URL" /> в нов раздел в Google Chrome.</translation>
 <translation id="2712141162840347885">Изберете каквото и да е, за да търсите с Google Обектив, или натиснете Escape за изход</translation>
-<translation id="2727713483500953825">Изберете изображения/текст, за да търсите с Обектив</translation>
 <translation id="2738871930057338499">Не може да се установи връзка с интернет. HTTP код 403 – Забранено. Проверете конфигурацията на прокси сървъра си.</translation>
 <translation id="2742320827292110288">Предупреждение: Google Chrome не може да попречи на разширенията да записват историята ви на сърфиране. За да деактивирате това разширение в режим „инкогнито“, премахнете отметката от тази опция.</translation>
 <translation id="2753623023919742414">Кликнете, за да търсите</translation>
@@ -222,7 +221,6 @@
 <translation id="3609788354808247807">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“</translation>
 <translation id="3622716124581627104">Идентифицирайте неща или места и копирайте или превеждайте текст. Когато използвате Google Обектив, до нас се изпраща екранна снимка на страницата. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Вече е по-лесно да използвате Chrome с профила си в Google и на споделени компютри.</translation>
-<translation id="3625345586754200168">Изпробвайте Обектив</translation>
 <translation id="3635073343384702370">Chrome може да проверява паролите ви, когато ги запазите</translation>
 <translation id="3667616615096815454">Приложението не може да се инсталира, тъй като е непознато за сървъра.</translation>
 <translation id="3673813398384385993">Chrome установи, че „<ph name="EXTENSION_NAME" />“ съдържа злонамерен софтуер</translation>
@@ -293,7 +291,6 @@
 <translation id="4434353761996769206">Грешка в инсталационната програма: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Влезте в Chrome като <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Вход в мрежата – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Търсете изображения или текст с Обектив</translation>
 <translation id="4458462641685292929">Извършва се друго действие, свързано с Google Chrome. Моля, опитайте отново по-късно.</translation>
 <translation id="4459234553906210702">Функцията за измерване на рекламите дава възможност на посещаваните от вас сайтове да искат от Chrome информация, с чиято помощ да измерват ефективността на рекламите си. Тази функция ограничава проследяването в различни сайтове, като между тях се прехвърля възможно най-малко информация.</translation>
 <translation id="4493028449971051158">Грешка при стартирането: Моля, стартирайте инсталационната програма като администратор.</translation>
@@ -402,7 +399,6 @@
 <translation id="6025087594896450715">Google Chrome ще се рестартира след <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="604424701295382420">Успешно фиксиране. Можете да осъществявате достъп до Google Обектив чрез новия бутон в лентата с инструменти</translation>
-<translation id="6060842547856900641">Отваряне на Обектив</translation>
 <translation id="6069027071882229820">Копиране като изображение</translation>
 <translation id="6070348360322141662">За повишаване на сигурността Google Chrome ще шифрова данните ви</translation>
 <translation id="6075300983329039771">Организацията ви (<ph name="MANAGER" />) изисква да влезете в профила си в Chrome</translation>
@@ -451,7 +447,6 @@
 <translation id="6515549163407364048">За да получите разширенията си на всичките си компютри, влезте в Chrome</translation>
 <translation id="6520670145826811516">За да се използва местоположението ви, дайте достъп на Chrome от <ph name="BEGIN_LINK" />системните настройки<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">В мениджъра на паролите в Google на това устройство</translation>
-<translation id="6600016381025017075">Търсете всичко на тази страница</translation>
 <translation id="6632473616050862500">ChromeOS Flex съществува благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Искате ли да влезете в Chrome?</translation>
 <translation id="6676384891291319759">Достъп до интернет</translation>

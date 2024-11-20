@@ -128,7 +128,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2711502716910134313">„Chromium“ skirtukas</translation>
 <translation id="2718390899429598676">Kad būtų papildomai užtikrintas saugumas, „Chromium“ užšifruos jūsų duomenis.</translation>
 <translation id="2721354645805494590">Jei norite pašalinti „Google“ paskyrą iš „Chromium“, atsijunkite</translation>
-<translation id="2727713483500953825">Pasirinkite vaizdus arba tekstą, kad galėtumėte ieškoti naudodami „Lens“</translation>
 <translation id="2738871930057338499">Nepavyko prisijungti prie interneto. HTTP 403 uždrausta. Patikrinkite tarpinio serverio konfigūraciją.</translation>
 <translation id="2753623023919742414">Spustelėkite, jei norite ieškoti</translation>
 <translation id="2770231113462710648">Pakeisti numatytąją naršyklę į:</translation>
@@ -141,7 +140,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2846251086934905009">Diegimo klaida: diegimo programa neužbaigta. Diegimas nutrauktas.</translation>
 <translation id="2847479871509788944">Pašalinti iš „Chromium“...</translation>
 <translation id="2850691299438350830">Apsaugo jus naršyklėje „Chromium“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
-<translation id="2874602845494991903">Atidaryti vaizdų paiešką</translation>
 <translation id="2885378588091291677">Užduočių tvarkytuvė</translation>
 <translation id="2910007522516064972">Apie &amp;„Chromium“</translation>
 <translation id="2915996080311180594">Paleisti iš naujo vėliau</translation>
@@ -257,7 +255,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">„<ph name="MANAGER" />“ tvarko „Chromium“</translation>
 <translation id="4447409407328223819">Apie „Chrome for Testing“</translation>
-<translation id="4453144231461812959">Ieškokite bet kokio vaizdo ar teksto naudodami „Lens“</translation>
 <translation id="4470974262661801543">Jei norite naudoti ir išsaugoti „Chromium“ duomenis „Google“ paskyroje, įveskite slaptafrazę</translation>
 <translation id="4493028449971051158">Paleisties klaida: diegimo programą paleiskite kaip administratorius.</translation>
 <translation id="4501471624619070934">Diegimas nepavyko, nes šioje šalyje prieiga ribojama.</translation>
@@ -297,7 +294,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="494490797786467921">Spustelėkite, kad uždarytumėte „Chromium“ prisijungimo dialogo langą</translation>
 <translation id="4987820182225656817">Svečiai gali naudoti „Chromium“ nepalikdami jokių duomenų.</translation>
 <translation id="4994636714258228724">Pridėkite save prie „Chromium“</translation>
-<translation id="5051959905407134411">Išbandykite vaizdų paiešką</translation>
 <translation id="5114678101347489141">„Chromium“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų informacijos</translation>
 <translation id="5123973130450702873">„Chromium“ reikalingas leidimas stebėti jūsų rankas</translation>
 <translation id="5174969993834422967">Įprastai blokuojate pranešimus. Jei norite leisti šiai svetainei siųsti pranešimus, spustelėkite pranešimo piktogramą vietos juostos dešiniajame kampe.</translation>

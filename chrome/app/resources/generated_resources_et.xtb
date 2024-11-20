@@ -1384,7 +1384,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1948528728718281125">Juurdepääs kaamerale on lubatud kaameraloaga rakendustele, veebisaitidele ja süsteemiteenustele</translation>
 <translation id="1949332606889020901">Kokkujooksmiste ID-d</translation>
 <translation id="1949584741547056205">Kiired vastused</translation>
-<translation id="1949849604471335579">Isikupärastage taustapilti, ekraanisäästjat, aktsentvärve ja muudki</translation>
 <translation id="1949980990364952348">Rakenduse nimi</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Alternatiivi otsimine</translation>
@@ -6085,7 +6084,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5290020561438336792">Arvuti ja ülekandeseade on erinevates WiFi-võrkudes (nt 2,4 GHz
     vs. 5 GHz)</translation>
 <translation id="52912272896845572">Privaatvõtme fail on kehtetu.</translation>
-<translation id="5291739252352359682">Chrome'i brauseris luuakse meediale automaatselt subtiitrid (praegu saadaval inglise keeles). Heli ja kõik subtiitrid töödeldakse kohalikult ning neid ei edastata seadmest väljapoole.</translation>
 <translation id="529175790091471945">Vorminda see seade</translation>
 <translation id="529296195492126134">Ajutist režiimi ei toetata. Võtke ühendust administraatoriga.</translation>
 <translation id="5293043095535566171">Kas lülitada sisse juurdepääs asukohale?</translation>
@@ -7514,7 +7512,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6338968693068997776">USB-seadme lisamine</translation>
 <translation id="6339668969738228384">Loo e-posti aadressile <ph name="USER_EMAIL_ADDRESS" /> uus profiil</translation>
 <translation id="6340071272923955280">Interneti prindiprotokoll (IPPS)</translation>
-<translation id="6340526405444716530">Isikupärastamine</translation>
 <translation id="6341850831632289108">Teie füüsilise asukoha tuvastamine</translation>
 <translation id="6342069812937806050">Äsja</translation>
 <translation id="6343003829431264373">Ainult paarisarvulised lehed</translation>
@@ -7913,7 +7910,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6642720633335369752">Kõigi avatud rakenduste akende nägemiseks pühkige alt üles ja hoidke sõrme ekraanil.</translation>
 <translation id="664290675870910564">Võrgu valimine</translation>
 <translation id="6643016212128521049">Tühjenda</translation>
-<translation id="6644512095122093795">Paku paroolide salvestamist</translation>
 <translation id="6644513150317163574">Sobimatu URL-i vorming. Kui kasutatakse SSO autentimist, tuleb server määrata hosti nimena.</translation>
 <translation id="6644846457769259194">Seadme värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Lülita kiirsidumine välja</translation>
@@ -8054,7 +8050,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6739943577740687354">See funktsioon kasutab AI-d ja ei paku alati õigeid tulemusi</translation>
 <translation id="6740234557573873150">Peatati fail <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Administraator<ph name="END_LINK" /> lülitas Google'i ohutu sirvimise välja</translation>
-<translation id="6742629250739345159">Chrome'i brauseris luuakse meediale automaatselt subtiitrid. Heli ja kõik subtiitrid töödeldakse kohalikult ning neid ei edastata seadmest väljapoole.</translation>
 <translation id="6743841972744298686">Sünkroonimisseaded</translation>
 <translation id="6745592621698551453">Värskenda kohe</translation>
 <translation id="6746124502594467657">Liiguta alla</translation>

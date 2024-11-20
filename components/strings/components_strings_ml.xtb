@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">രചയിതാവ്:</translation>
 <translation id="1247030632403369975">അലുമിനിയം</translation>
 <translation id="1252209483516427155">ഔട്ടർവെയർ</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ഉപയോഗിച്ച് പേ ചെയ്യൂ</translation>
 <translation id="1253846494229886276">സ്‌ക്രീൻഷോട്ട് സംരക്ഷിക്കുന്നു</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (സമന്വയിപ്പിച്ചു)</translation>
 <translation id="1255086252236620440">ഫുഡ് മിക്‌സറുകൾ</translation>
@@ -3129,7 +3128,6 @@
 <translation id="6671169470640320959">ഓട്ടോമൊബൈൽ ഫിനാൻസിംഗ്</translation>
 <translation id="6671697161687535275">Chromium-ത്തിൽ നിന്ന് ഫോം നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6677351035258626477">ഫാസ്റ്റ് ഫുഡ്</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഒരു ഓപ്ഷനായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}other{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}}</translation>
 <translation id="6679354743514146922"><ph name="APP_NAME" /> എന്നതിലെ നിങ്ങളുടെ പാസ്‌വേഡ് പൂരിപ്പിക്കാൻ Chrome ബ്രൗസർ ശ്രമിക്കുന്നു.</translation>
 <translation id="6681790815630918386">CVC സംരക്ഷിച്ചു</translation>
 <translation id="6683022854667115063">ഹെഡ്ഫോണുകൾ</translation>

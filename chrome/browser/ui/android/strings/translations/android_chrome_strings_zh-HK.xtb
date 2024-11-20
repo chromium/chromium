@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">要關閉視窗嗎？</translation>
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2175927920773552910">二維條碼</translation>
+<translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">考慮因素</translation>
@@ -342,6 +343,7 @@
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2571834852878229351">建立自己的密碼</translation>
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，亦將無法再透過各項 Google 服務與你互動。</translation>
 <translation id="2578337197553672982">Google 為兒童提供的內容</translation>
 <translation id="2579297619530305344">「喺所有裝置度都可以用自己嘅密碼」說明宜家顯示喺成個畫面</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
@@ -566,6 +568,7 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3614126103057878858">價格分析資料</translation>
 <translation id="3616113530831147358">音效檔案</translation>
+<translation id="3619255692378312441">管理存取權</translation>
 <translation id="3622349720008044802">管理視窗</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
 <translation id="3631987586758005671">正在分享至 <ph name="DEVICE_NAME" /></translation>
@@ -574,6 +577,7 @@
 <translation id="363596933471559332">使用儲存的憑證自動登入網站。關閉功能時，每次登入網站之前都會要求您驗證。</translation>
 <translation id="3636940436873918441">偏好語言</translation>
 <translation id="3637744895182738742">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />刪除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">開啟 Google 應用程式主畫面</translation>
 <translation id="368329460027487650">已登出。開啟登入選項。</translation>
 <translation id="3684540848053703310">價格分析資料頁底面板閂咗</translation>
@@ -585,6 +589,7 @@
 <translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
 <translation id="3703166520839776970">如果此問題持續發生，選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
 <translation id="3710501561113687889">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享你的<ph name="FIELDS_STRING" />。</translation>
+<translation id="3710560693796335511">協作</translation>
 <translation id="3714981814255182093">開啟搜尋列</translation>
 <translation id="3716182511346448902">這個網頁使用過多記憶體，因此 Chrome 已暫停顯示這個網頁。</translation>
 <translation id="3718765429352682176">你可查看透過其他應用程式在 Chrome 中開啟連結的記錄。</translation>
@@ -873,7 +878,6 @@
 <translation id="4988526792673242964">網頁</translation>
 <translation id="4991110219272367918">核准或者唔核准網站嘅選項閂咗</translation>
 <translation id="4996095658297597226">要使用建議的密碼嗎？</translation>
-<translation id="499724277181351974">導覽：<ph name="WEBSITE_TITLE" />：<ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">按一下這裡追蹤此網站</translation>
 <translation id="5004416275253351869">Google 活動控制項</translation>
 <translation id="5005498671520578047">複製密碼</translation>
@@ -956,6 +960,7 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 將會立即失去「<ph name="GROUP_NAME" />」分頁群組的存取權</translation>
 <translation id="5423934151118863508">您最常瀏覽的網頁會在此顯示</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
+<translation id="543121643585717256">任何擁有連結的人均可編輯所有分頁。瞭解共用分頁群組</translation>
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5433691172869980887">已複製使用者名稱</translation>
 <translation id="5438292632479953702">再次下載</translation>
@@ -970,6 +975,7 @@
 <translation id="5468068603361015296">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="548278423535722844">在地圖應用程式中開啟</translation>
 <translation id="5492637351392383067">在裝置上加密</translation>
+<translation id="549660026907543296">以<ph name="MEMBER_FULL_NAME" />的身分加入</translation>
 <translation id="5503125329065007089">「喺所有裝置度都可以用自己嘅密碼」說明宜家顯示喺畫面下半部</translation>
 <translation id="5514904542973294328">此裝置的管理員已停用</translation>
 <translation id="5515439363601853141">解鎖即可查看您的密碼</translation>
@@ -1372,6 +1378,7 @@
 <translation id="7182051712900867547">使用另一個帳戶</translation>
 <translation id="7183517696921903380">應用程式篩選器工作表開咗。</translation>
 <translation id="7186568385131859684">控制瀏覽記錄和其他資料在各項 Google 服務中配合使用的方式</translation>
+<translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{你應立即更改密碼}other{你應立即更改密碼}}</translation>
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>

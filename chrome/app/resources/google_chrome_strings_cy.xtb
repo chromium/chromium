@@ -141,7 +141,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2668094785979141847">Cliciwch i adael Google Lens</translation>
 <translation id="2681444469812712297">Agor <ph name="URL" /> mewn tab newydd yn Google Chrome.</translation>
 <translation id="2712141162840347885">Dewiswch unrhyw beth i'w chwilio gyda Google Lens neu pwyswch Escape i adael Google Lens</translation>
-<translation id="2727713483500953825">Dewiswch ddelweddau/testun i chwilio gyda Lens</translation>
 <translation id="2738871930057338499">Methu â chysylltu â'r Rhyngrwyd. HTTP 403 Gwaharddedig. Gwiriwch ffurfweddiad eich dirprwy weinydd.</translation>
 <translation id="2742320827292110288">Rhybudd: Ni all Google Chrome atal estyniadau rhag cofnodi eich hanes pori. I ddiffodd yr estyniad hwn yn y modd Anhysbys, dad-ddewiswch yr opsiwn hwn.</translation>
 <translation id="2753623023919742414">Cliciwch i chwilio</translation>
@@ -224,7 +223,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3609788354808247807">Nid ydych wedi ymweld yn ddiweddar. Mae Chrome wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Adnabod pethau neu leoedd a chopïo neu gyfieithu testun. Pan fyddwch yn defnyddio Google Lens, mae sgrinlun o'r dudalen yn cael ei anfon at Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Mae'n bellach yn haws defnyddio Chrome gyda'ch Cyfrif Google ac ar gyfrifiaduron a rennir.</translation>
-<translation id="3625345586754200168">Rhowch gynnig ar Lens</translation>
 <translation id="3635073343384702370">Gall Chrome wirio'ch cyfrineiriau pan fyddwch yn eu cadw</translation>
 <translation id="3667616615096815454">Methu â gosod, mae'r ap yn anhysbys i'r gweinydd.</translation>
 <translation id="3673813398384385993">Gwnaeth Chrome ganfod bod "<ph name="EXTENSION_NAME" />" yn cynnwys drwgwedd</translation>
@@ -295,7 +293,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4434353761996769206">Gwall gosodwr: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Mewngofnodwch i Chrome fel <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Mewngofnodi Rhwydwaith - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Chwiliwch unrhyw ddelwedd neu destun gyda Lens</translation>
 <translation id="4458462641685292929">Mae gweithred arall ar Google Chrome ar y gweill. Rhowch gynnig arall arni nes ymlaen.</translation>
 <translation id="4459234553906210702">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth gan Chrome sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>
 <translation id="4493028449971051158">Gwall cychwyn: rhedwch y gosodwr fel gweinyddwr.</translation>
@@ -408,7 +405,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6025087594896450715">Bydd Google Chrome yn ailddechrau mewn <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="604424701295382420">Piniwyd! Gallwch gyrchu Google Lens eto o'r botwm newydd ar y bar offer</translation>
-<translation id="6060842547856900641">Agor Lens</translation>
 <translation id="6069027071882229820">Copïo fel llun</translation>
 <translation id="6070348360322141662">Er mwyn sicrhau mwy o ddiogelwch, bydd Google Chrome yn amgryptio eich data</translation>
 <translation id="6075300983329039771">Mae eich sefydliad, <ph name="MANAGER" />, yn gofyn i chi fewngofnodi i Chrome</translation>
@@ -457,7 +453,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6515549163407364048">I gael eich estyniadau ar eich holl gyfrifiaduron, mewngofnodwch i Chrome</translation>
 <translation id="6520670145826811516">I ddefnyddio'ch lleoliad, rhowch fynediad i Chrome yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Yn Rheolwr Cyfrineiriau Google ar y ddyfais hon</translation>
-<translation id="6600016381025017075">Chwilio unrhyw beth ar y dudalen hon</translation>
 <translation id="6632473616050862500">Mae ChromeOS Flex yn bosib oherwydd <ph name="BEGIN_LINK_CROS_OSS" />meddalwedd ffynhonnell agored<ph name="END_LINK_CROS_OSS" /> ychwanegol.</translation>
 <translation id="6660596345553328257">Mewngofnodi i Chrome?</translation>
 <translation id="6676384891291319759">Cyrchu'r Rhyngrwyd</translation>
@@ -620,6 +615,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8416347857511542594">Dysgu rhagor am bersonoleiddio hysbysebion yn Chrome</translation>
 <translation id="8418845734693287262">Ni allai ChromeOS gysoni'ch data gan fod manylion mewngofnodi eich cyfrif yn hen.</translation>
 <translation id="842386925677997438">Offer diogelwch Chrome</translation>
+<translation id="8425765582779547329">I aros yn fwy diogel ar-lein gyda dewisiadau dy riant, mewngofnoda i Chrome</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8433638294851456451">I anfon rhif oddi yma i'ch ffôn Android, mewngofnodwch i Chrome ar y ddwy ddyfais.</translation>
 <translation id="8451192282033883849">Rheolir eich cyfrif gan <ph name="MANAGER_NAME" />. Gall eich gweinyddwr weld a golygu'r proffil porwr Chrome hwn a'i ddata megis nodau tudalen, hanes a chyfrineiriau.</translation>

@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">વિન્ડો બંધ કરીએ?</translation>
 <translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
+<translation id="2184272387334793084">તમારા બધા ડિવાઇસ પર પાસવર્ડ અને બીજું ઘણું મેળવવા સાઇન ઇન કરો</translation>
 <translation id="218608176142494674">શેરિંગ</translation>
 <translation id="219283042927675668">ગ્રૂપમાંના ટૅબ</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">સંગ્રહિત ઓળખપત્રોનો ઉપયોગ કરીને વેબસાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરો. જ્યારે સુવિધા બંધ હોય છે, ત્યારે વેબસાઇટમાં સાઇન ઇન કરતાં પહેલાં દર વખતે તમને ચકાસણી માટે કહેવામાં આવશે.</translation>
 <translation id="3636940436873918441">પસંદગીની ભાષાઓ</translation>
 <translation id="3637744895182738742">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા ડિલીટ કરો<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ઍપના હોમ ટૅબ પર જાઓ</translation>
 <translation id="368329460027487650">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટેના વિકલ્પો ખોલે છે.</translation>
 <translation id="3684540848053703310">કિંમત વિશે જાણકારીની બોટમ શીટ બંધ છે</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">પેજ</translation>
 <translation id="4991110219272367918">કોઈ વેબસાઇટને મંજૂરી આપવાનો અથવા ન આપવાનો વિકલ્પ બંધ કર્યો</translation>
 <translation id="4996095658297597226">શું સૂચવેલા પાસવર્ડનો ઉપયોગ કરીએ?</translation>
-<translation id="499724277181351974">નૅવિગેટ કરીને આના પર જાઓ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">આ સાઇટને અહીં ફૉલો કરો</translation>
 <translation id="5004416275253351869">Google પ્રવૃત્તિ નિયંત્રણો</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> છૂપી ટૅબ}one{<ph name="TAB_COUNT_NORMAL" /> છૂપી ટૅબ}other{<ph name="TAB_COUNT_NORMAL" /> છૂપી ટૅબ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ઉપલબ્ધ</translation>
 <translation id="8058746566562539958">નવા Chrome ટૅબમાં ખોલો</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ}=1{<ph name="OWNER_FIRST_NAME" /> અને અન્ય # સાથે ટૅબના ગ્રૂપમાં જોડાઓ}one{<ph name="OWNER_FIRST_NAME" /> અને અન્ય # સાથે ટૅબના ગ્રૂપમાં જોડાઓ}other{<ph name="OWNER_FIRST_NAME" /> અને અન્ય # સાથે ટૅબના ગ્રૂપમાં જોડાઓ}}</translation>
 <translation id="8062594758852531064">પહેલેથી લોડ કરવાનો વિસ્તૃત મોડ:</translation>
 <translation id="8063895661287329888">બુકમાર્ક ઉમેરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="8066816452984416180">આ પેજને ઝડપથી બુકમાર્ક કરો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>

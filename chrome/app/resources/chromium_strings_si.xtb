@@ -127,7 +127,6 @@
 <translation id="2711502716910134313">Chromium පටිත්ත</translation>
 <translation id="2718390899429598676">අමතර ආරක්ෂාව සඳහා, Chromium ඔබේ දත්ත සංකේතනය කරනු ඇත.</translation>
 <translation id="2721354645805494590">Chromium වෙතින් ඔබේ Google ගිණුම ඉවත් කිරීමට, වරන්න</translation>
-<translation id="2727713483500953825">Lens සමග සෙවීමට රූප/පෙළ තෝරන්න</translation>
 <translation id="2738871930057338499">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. HTTP 403 තහනම්. ඔබේ ප්‍රොක්සි වින්‍යාසය පරීක්ෂා කරන්න.</translation>
 <translation id="2753623023919742414">සෙවීමට ක්ලික් කරන්න</translation>
 <translation id="2770231113462710648">පෙර නිමි බ්‍රවුසරය වෙනස් කරන්න:</translation>
@@ -140,7 +139,6 @@
 <translation id="2846251086934905009">ස්ථාපන දෝෂය: ස්ථාපකය සම්පූර්ණ කර නැත. ස්ථාපනය නතර කර ඇත.</translation>
 <translation id="2847479871509788944">Chromium වෙතින් ඉවත් කරන්න...</translation>
 <translation id="2850691299438350830">ඔබ පුරා සිටින විට Chromium හි ඔබව ආරක්ෂිතව තබා ගන්නා අතර අනෙකුත් Google යෙදුම් තුළ ඔබගේ ආරක්ෂාව වැඩි දියුණු කිරීමට භාවිත කළ හැකිය</translation>
-<translation id="2874602845494991903">රූප සෙවීම විවෘත කරන්න</translation>
 <translation id="2885378588091291677">කාර්ය කළමණාකරු</translation>
 <translation id="2910007522516064972">&amp;Chromium පිළිබඳ</translation>
 <translation id="2915996080311180594">පසුව යළි අරඹන්න</translation>
@@ -255,7 +253,6 @@
 <translation id="4434353761996769206">ස්ථාපක දෝෂය: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> Chromium කළමනාකරණය කරයි</translation>
 <translation id="4447409407328223819">පරීක්ෂා කිරීම සඳහා Chrome ගැන</translation>
-<translation id="4453144231461812959">Lens සමග ඕනෑම රූපයක් හෝ පෙළක් සොයන්න</translation>
 <translation id="4470974262661801543">ඔබේ Google ගිණුමේ Chromium දත්ත භාවිතා කිරීමට සහ සුරැකීමට, ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න</translation>
 <translation id="4493028449971051158">ආරම්භක දෝෂය: ස්ථාපකය පරිපාලක ලෙස ධාවනය කරන්න.</translation>
 <translation id="4501471624619070934">මෙම රට තුළ ප්‍රවේශය සීමා කර ඇති නිසා ස්ථාපනය අසමත් විය.</translation>
@@ -295,7 +292,6 @@
 <translation id="494490797786467921">Chromium පුරනය වීමේ සංවාදය වැසීමට ක්ලික් කරන්න</translation>
 <translation id="4987820182225656817">අමුත්තන්ට කිසිවක් තබා යෑමෙන් තොරව Chromium භාවිත කළ හැක.</translation>
 <translation id="4994636714258228724">ඔබව Chromium වෙත එක් කරන්න</translation>
-<translation id="5051959905407134411">රූප සෙවීම උත්සාහ කරන්න</translation>
 <translation id="5114678101347489141">Chromium ඔබගේ තතු අඩුවෙන් භාවිත කරමින් එකම බ්‍රවුස් කිරීමේ අත්දැකීම ලබා දීමට අඩවිවලට ඉඩ සලසන නව විශේෂාංග ගවේෂණය කරයි</translation>
 <translation id="5123973130450702873">Chromium හට ඔබේ අත් නිරීක්ෂණය කිරීමට අවසරය අවශ්‍යයි</translation>
 <translation id="5174969993834422967">ඔබ සාමාන්‍යයෙන් දැනුම් දීම් අවහිර කරයි. මෙම අඩවිය ඔබට දැනුම් දීමට ඉඩ දීමට, ඔබේ ස්ථාන තීරුවේ දකුණු කෙළවරේ ඇති දැනුම්දීම් නිරූපකය ක්ලික් කරන්න.</translation>

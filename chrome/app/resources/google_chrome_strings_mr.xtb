@@ -140,7 +140,6 @@
 <translation id="2668094785979141847">Google Lens मधून बाहेर पडण्यासाठी क्लिक करा</translation>
 <translation id="2681444469812712297">Google Chrome मध्ये नवीन टॅबमध्ये <ph name="URL" /> उघडा.</translation>
 <translation id="2712141162840347885">Google Lens वापरून शोधण्यासाठी काहीही निवडा किंवा Google Lens मधून बाहेर पडण्यासाठी एस्केप प्रेस करा</translation>
-<translation id="2727713483500953825">Lens वापरून शोधण्यासाठी इमेज/मजकूर निवडा</translation>
 <translation id="2738871930057338499">इंटरनेटशी कनेक्ट करता आले नाही. HTTP 403 प्रतिबंधित. कृपया तुमचे प्रॉक्सी कॉन्फिगरेशन तपासा.</translation>
 <translation id="2742320827292110288">चेतावणी: Google Chrome हे एक्स्टेंशनला तुमचा ब्राउझिंग इतिहास रेकॉर्ड करण्यापासून रोखू शकत नाही. हे एक्स्टेंशन गुप्त मोडमध्ये बंद करण्यासाठी, या पर्यायाची निवड रद्द करा.</translation>
 <translation id="2753623023919742414">शोधण्यासाठी क्लिक करा</translation>
@@ -223,7 +222,6 @@
 <translation id="3609788354808247807">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> परवानग्या काढून टाकल्या</translation>
 <translation id="3622716124581627104">गोष्टी किंवा ठिकाणे ओळखा आणि मजकूर कॉपी किंवा भाषांतरित करा. तुम्ही Google Lens वापरता, तेव्हा पेजचा स्क्रीनशॉट Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">आता आपल्या Google खात्यावर आणि शेअर केलेल्या संगणकांवर Chrome वापरणे अधिक सुलभ आहे.</translation>
-<translation id="3625345586754200168">Lens वापरून पहा</translation>
 <translation id="3635073343384702370">तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते</translation>
 <translation id="3667616615096815454">इंस्टॉल करता आले नाही, सर्व्हरला अ‍ॅप्लिकेशन माहीत नाही.</translation>
 <translation id="3673813398384385993">Chrome ला "<ph name="EXTENSION_NAME" />" मध्ये मालवेअर असल्याचे आढळले</translation>
@@ -294,7 +292,6 @@
 <translation id="4434353761996769206">इंस्टॉलर एरर: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> म्हणून Chrome मध्ये साइन इन करा</translation>
 <translation id="4450664632294415862">Chrome - नेटवर्क साइन इन - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens वापरून कोणतीही इमेज किंवा मजकूर शोधा</translation>
 <translation id="4458462641685292929">Google Chrome वर दुसरे ऑपरेशन प्रगतीपथावर आहे. कृपया नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4459234553906210702">जाहिरात मापन हे तुम्ही भेट देत असलेल्या साइटना Chrome कडे माहितीची विनंती करण्यास अनुमती देते, जे साइटला तिच्या जाहिरातींचा परफॉर्मन्स मोजण्यात मदत करते. जाहिरात मापन हे साइटदरम्यान शक्य तितकी कमी माहिती ट्रान्सफर करून क्रॉस-साइट ट्रॅकिंग प्रतिबंधित करते.</translation>
 <translation id="4493028449971051158">स्टार्टअप एरर: कृपया अ‍ॅडमिनिस्ट्रेटर म्हणून इंस्टॉलर रन करा.</translation>
@@ -406,7 +403,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6025087594896450715"><ph name="REMAINING_TIME" /> मध्ये Google Chrome रीस्टार्ट होईल</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="604424701295382420">पिन केले आहे! तुम्ही टूलबारवरील नवीन बटण वापरून Google Lens पुन्हा अ‍ॅक्सेस करू शकता</translation>
-<translation id="6060842547856900641">Lens उघडा</translation>
 <translation id="6069027071882229820">इमेज म्हणून कॉपी करा</translation>
 <translation id="6070348360322141662">अतिरिक्त सुरक्षिततेसाठी, Google Chrome तुमचा डेटा एंक्रिप्ट करेल</translation>
 <translation id="6075300983329039771">तुमची संस्थेच्या <ph name="MANAGER" /> नुसार तुम्ही Chrome मध्ये साइन इन करणे आवश्यक आहे</translation>
@@ -455,7 +451,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6515549163407364048">तुमच्या सर्व काँप्युटरवर तुमची एक्स्टेंशन मिळवण्यासाठी, Chrome मध्ये साइन इन करा</translation>
 <translation id="6520670145826811516">तुमचे स्थान वापरण्यासाठी, Chrome ला <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> मध्ये अ‍ॅक्सेस द्या</translation>
 <translation id="659498884637196217">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
-<translation id="6600016381025017075">या पेजवरील कोणतीही गोष्ट शोधा</translation>
 <translation id="6632473616050862500">ChromeOS Flex हे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="6660596345553328257">Chrome वर साइन इन करायचे का?</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>

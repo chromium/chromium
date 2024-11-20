@@ -257,6 +257,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2172905120685242547">¿Deseas cerrar la ventana?</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2184272387334793084">Accede para obtener tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="218608176142494674">Uso compartido</translation>
 <translation id="219283042927675668">Pestañas en el grupo</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
@@ -576,6 +577,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="363596933471559332">Permite acceder automáticamente a los sitios web con las credenciales almacenadas. Si la función está desactivada, siempre se solicitará verificación antes de acceder a un sitio web.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Ir a la página principal de la app de Google</translation>
 <translation id="368329460027487650">Saliste de tu cuenta. Abre las opciones de acceso.</translation>
 <translation id="3684540848053703310">La hoja inferior de información sobre precios está cerrada</translation>
@@ -876,7 +878,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">Opción para aprobar o no un sitio web cerrado</translation>
 <translation id="4996095658297597226">¿Quieres usar la contraseña sugerida?</translation>
-<translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Sigue este sitio aquí</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
@@ -1576,7 +1577,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestañas de incógnito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibles</translation>
 <translation id="8058746566562539958">Abrir en una nueva pestaña de Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" />}=1{Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y # persona más}other{Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y # personas más}}</translation>
 <translation id="8062594758852531064">Precarga extendida:</translation>
 <translation id="8063895661287329888">Se produjo un error al agregar el marcador.</translation>
 <translation id="8066816452984416180">Agrega esta página a favoritos de forma rápida. Para editar este acceso directo, mantenlo presionado.</translation>

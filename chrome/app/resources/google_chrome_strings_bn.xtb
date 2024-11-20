@@ -139,7 +139,6 @@
 <translation id="2668094785979141847">Google Lens ছেড়ে বেরিয়ে আসতে ক্লিক করুন</translation>
 <translation id="2681444469812712297">Google Chrome-এর নতুন একটি ট্যাবে <ph name="URL" /> খুলুন।</translation>
 <translation id="2712141162840347885">Google Lens ব্যবহার করে সার্চ করার জন্য যেকোনও কিছু বেছে নিন অথবা Google Lens থেকে বেরিয়ে যেতে Escape বোতাম প্রেস করুন</translation>
-<translation id="2727713483500953825">Lens ব্যবহার করে সার্চ করার জন্য ছবি/টেক্সট বেছে নিন</translation>
 <translation id="2738871930057338499">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। HTTP 403 নিষিদ্ধ। আপনার প্রক্সি কনফিগারেশন চেক করুন।</translation>
 <translation id="2742320827292110288">সতর্কতা: Google Chrome কোনও এক্সটেনশনকে আপনার ব্রাউজিং ইতিহাস রেকর্ড করার কাজে বাধা দিতে পারে না। ছদ্মবেশী মোডে এই এক্সটেনশনটি বন্ধ করতে, আপনার বেছে নেওয়া বিকল্পগুলির মধ্যে থেকে এটিকে সরিয়ে দিন।</translation>
 <translation id="2753623023919742414">সার্চ করার জন্য ক্লিক করুন</translation>
@@ -222,7 +221,6 @@
 <translation id="3609788354808247807">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="3622716124581627104">বস্তু বা জায়গা শনাক্ত করুন ও টেক্সট কপি বা অনুবাদ করুন। আপনি Google Lens ব্যবহার করার সময়, পৃষ্ঠার স্ক্রিনশট Google-এ পাঠানো হয়। <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chrome ব্যবহার করা আরো সহজ৷</translation>
-<translation id="3625345586754200168">Lens ব্যবহার করে দেখুন</translation>
 <translation id="3635073343384702370">আপনি পাসওয়ার্ড সেভ করলে Chrome তা চেক করতে পারবে</translation>
 <translation id="3667616615096815454">ইনস্টল করা যায়নি, অ্যাপ্লিকেশনটি সার্ভারের ক্ষেত্রে অজানা।</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />"-এ ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে</translation>
@@ -293,7 +291,6 @@
 <translation id="4434353761996769206">ইনস্টলার সংক্রান্ত সমস্যা: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chrome-এ, <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="4450664632294415862">Chrome - নেটওয়ার্ক সাইন-ইন - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens ব্যবহার করে যেকোনও ইমেজ অথবা টেক্সট সার্চ করুন</translation>
 <translation id="4458462641685292929">Google Chrome এ আরেকটি ক্রিয়াকলাপ প্রক্রিয়ায় আছে। দয়া করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="4459234553906210702">বিজ্ঞাপন পরিমাপ আপনি যে সাইটগুলিতে যান সেগুলিকে Chrome থেকে তথ্যের অনুরোধ করার অনুমতি দেয় যা সাইটটিকে তাদের বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করতে সহায়তা করে। বিজ্ঞাপন পরিমাপ, সাইটগুলির মধ্যে একটি থেকে অন্যটিতে যতটা সম্ভব কম তথ্য ট্রান্সফার করার মাধ্যমে ক্রস-সাইট ট্র্যাকিং সীমাবদ্ধ করে।</translation>
 <translation id="4493028449971051158">স্টার্টআপ সম্পর্কিত এরর: অ্যাডমিনিস্ট্রেটর হিসেবে ইনস্টলার চালান।</translation>
@@ -404,7 +401,6 @@
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />-এর মধ্যে রিস্টার্ট হবে</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="604424701295382420">পিন করা আছে! টুলবারে থাকা নতুন বোতাম থেকে আবার আপনি Google Lens অ্যাক্সেস করতে পারবেন</translation>
-<translation id="6060842547856900641">Lens খুলুন</translation>
 <translation id="6069027071882229820">ছবি হিসেবে কপি করুন</translation>
 <translation id="6070348360322141662">অতিরিক্ত নিরাপত্তার জন্য, Google Chrome আপনার ডেটা এনক্রিপ্ট করবে</translation>
 <translation id="6075300983329039771">আপনার সংস্থা, <ph name="MANAGER" />-এর প্রয়োজন অনুযায়ী, আপনাকে Chrome-এ সাইন-ইন করতে হবে</translation>
@@ -453,7 +449,6 @@
 <translation id="6515549163407364048">আপনার সব কম্পিউটারে এক্সটেনশন পেতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="6520670145826811516">আপনার লোকেশন ব্যবহার করতে, Chrome-কে <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> অ্যাক্সেস করতে দিন</translation>
 <translation id="659498884637196217">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
-<translation id="6600016381025017075">এই পৃষ্ঠাতে যেকোনও তথ্য খুঁজুন</translation>
 <translation id="6632473616050862500">অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS Flex তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="6660596345553328257">Chrome-এ সাইন-ইন করবেন?</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
@@ -616,6 +611,7 @@
 <translation id="8416347857511542594">Chrome-এ পছন্দ অনুযায়ী বিজ্ঞাপন বেছে নেওয়া সম্পর্কে আরও জানুন</translation>
 <translation id="8418845734693287262">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromeOS আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="842386925677997438">Chrome-এর নিরাপত্তা টুল</translation>
+<translation id="8425765582779547329">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, Chrome-এ সাইন-ইন করো</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8433638294851456451">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> আপনার অ্যাকাউন্ট ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর এই Chrome ব্রাউজার প্রোফাইল ও বুকমার্ক, ইতিহাস ও পাসওয়ার্ডের মতো ডেটা দেখতে এবং ম্যানেজ করতে পারবেন।</translation>

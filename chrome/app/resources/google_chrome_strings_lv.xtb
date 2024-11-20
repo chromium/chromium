@@ -139,7 +139,6 @@
 <translation id="2668094785979141847">Noklikšķiniet, lai izietu no Google Lens</translation>
 <translation id="2681444469812712297">Atveriet vietrādi <ph name="URL" /> jaunā cilnē pārlūkā Google Chrome.</translation>
 <translation id="2712141162840347885">Atlasiet jebko, lai meklētu ar Google Lens, vai nospiediet atsoļa taustiņu, lai izietu no Google Lens</translation>
-<translation id="2727713483500953825">Atlasiet attēlus/tekstu meklēšanai, izmantojot Lens</translation>
 <translation id="2738871930057338499">Nevar izveidot savienojumu ar internetu. HTTP 403 — aizliegts. Lūdzu, pārbaudiet starpniekservera konfigurāciju.</translation>
 <translation id="2742320827292110288">Brīdinājums! Google Chrome nevar novērst to, ka paplašinājumi ieraksta jūsu pārlūkošanas vēsturi. Lai atspējotu šo paplašinājumu inkognito režīmā, noņemiet šīs opcijas atlasi.</translation>
 <translation id="2753623023919742414">Noklikšķiniet, lai meklētu</translation>
@@ -222,7 +221,6 @@
 <translation id="3609788354808247807">Pēdējā laikā neesat apmeklējis šo vietni. Pārlūkā Chrome tika noņemtas šādas atļaujas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Varat identificēt priekšmetus vai vietas un kopēt vai tulkot tekstu. Kad izmantojat Google Lens, lapas ekrānuzņēmums tiek nosūtīts Google serveriem. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Tagad pārlūkā Chrome ir vieglāk izmantot Google kontu, kā arī ir atvieglota lietošana datoros, ko izmanto vairākas personas.</translation>
-<translation id="3625345586754200168">Izmēģināt Lens</translation>
 <translation id="3635073343384702370">Pārlūkprogrammā Chrome var pārbaudīt jūsu paroles, ja jūs tās saglabājat.</translation>
 <translation id="3667616615096815454">Nevar instalēt. Lietojumprogramma serverim nav zināma.</translation>
 <translation id="3673813398384385993">Pārlūkā Chrome tika konstatēts, ka paplašinājums “<ph name="EXTENSION_NAME" />” satur ļaunprātīgu programmatūru.</translation>
@@ -292,7 +290,6 @@
 <translation id="4434353761996769206">Instalēšanas kļūda: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Pierakstīties pārlūkā Chrome ar kontu <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome — pierakstīšanās vietnē — <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Meklējiet jebkādu attēlu vai tekstu, izmantojot Lens</translation>
 <translation id="4458462641685292929">Tiek veikta cita darbība pārlūkā Google Chrome. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4459234553906210702">Reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.</translation>
 <translation id="4493028449971051158">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā administrators.</translation>
@@ -403,7 +400,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6025087594896450715">Pārlūks Google Chrome tiks restartēts pēc: <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="604424701295382420">Piesprausta! Varat atkal piekļūt funkcijai Google Lens, izmantojot jauno rīkjoslas pogu.</translation>
-<translation id="6060842547856900641">Atvērt Lens</translation>
 <translation id="6069027071882229820">Kopēt kā attēlu</translation>
 <translation id="6070348360322141662">Papildu drošības nolūkos Google Chrome šifrēs jūsu datus.</translation>
 <translation id="6075300983329039771">Saskaņā ar jūsu organizācijas (<ph name="MANAGER" />) politiku jums ir jāpierakstās pārlūkā Chrome.</translation>
@@ -452,7 +448,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6515549163407364048">Lai paplašinājumiem piekļūtu visos savos datoros, pierakstieties pārlūkā Chrome.</translation>
 <translation id="6520670145826811516">Lai varētu izmantot atrašanās vietas datus, piešķiriet pārlūkam Chrome piekļuvi <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="659498884637196217">Google paroļu pārvaldniekā šajā ierīcē</translation>
-<translation id="6600016381025017075">Meklēt informāciju par jebkuru šīs lapas satura daļu</translation>
 <translation id="6632473616050862500">Chrome OS Flex darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Vai pierakstīties pārlūkā Chrome?</translation>
 <translation id="6676384891291319759">Piekļūt internetam</translation>
@@ -615,6 +610,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8416347857511542594">Uzziniet vairāk par reklāmu personalizēšanu pārlūkā Chrome</translation>
 <translation id="8418845734693287262">Chrome OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="842386925677997438">Chrome drošības rīki</translation>
+<translation id="8425765582779547329">Lai tiktu lietoti jūsu vecāka izvēlētie iestatījumi un jūs tiešsaistē saņemtu labāku aizsardzību, pierakstieties pārlūkā Chrome.</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
 <translation id="8451192282033883849">Jūsu kontu pārvalda <ph name="MANAGER_NAME" />. Administrators var skatīt un rediģēt šo Chrome profilu un tā datus, piemēram, grāmatzīmes, vēsturi un paroles.</translation>

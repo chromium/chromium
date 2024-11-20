@@ -128,7 +128,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2711502716910134313">Chromium-oortjie</translation>
 <translation id="2718390899429598676">Chromium sal jou data enkripteer vir bykomende sekuriteit.</translation>
 <translation id="2721354645805494590">Meld af om jou Google-rekening uit Chromium te verwyder</translation>
-<translation id="2727713483500953825">Kies prente of teks om met Lens te soek</translation>
 <translation id="2738871930057338499">Kon nie aan die internet koppel nie. HTTP 403 verbode. Gaan asseblief jou proxy-opstelling na.</translation>
 <translation id="2753623023919742414">Klik om te soek</translation>
 <translation id="2770231113462710648">Verander verstekblaaier na:</translation>
@@ -141,7 +140,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2846251086934905009">Installeerfout: Die installeerder is nie voltooi nie. Die installasie is gestaak.</translation>
 <translation id="2847479871509788944">Verwyder uit Chromium …</translation>
 <translation id="2850691299438350830">Hou jou veilig op Chromium en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is</translation>
-<translation id="2874602845494991903">Maak Prentsoektog oop</translation>
 <translation id="2885378588091291677">Taakbestuurder</translation>
 <translation id="2910007522516064972">Meer oor Chromium</translation>
 <translation id="2915996080311180594">Herbegin later</translation>
@@ -150,6 +148,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2970426615109535079">Jou organisasie bestuur Chromium</translation>
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="2977506796191543575">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
+<translation id="2981563588585023386">Meld aan by Chromium om met jou ouers se keuses veiliger aanlyn te bly</translation>
 <translation id="2987208172821108655">Chromium kan hierdie oortjies onaktief maak om jou blaai-ervaring te verbeter en hulpbronne beskikbaar te maak.</translation>
 <translation id="3013473503895162900">Maak <ph name="URL" /> in 'n nuwe oortjie in Chromium oop.</translation>
 <translation id="3032706164202344641">Chromium kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
@@ -256,7 +255,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4434353761996769206">Installeerderfout: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> bestuur Chromium</translation>
 <translation id="4447409407328223819">Meer oor Chrome-toetsweergawe</translation>
-<translation id="4453144231461812959">Soek enige prent of teks met Lens</translation>
 <translation id="4470974262661801543">Voer jou wagfrase in om Chromium-data in jou Google-rekening te gebruik en te stoor</translation>
 <translation id="4493028449971051158">Aanskakelingfout: laat loop die installeerder as administrateur.</translation>
 <translation id="4501471624619070934">Installasie het misluk omdat toegang in hierdie land beperk is.</translation>
@@ -296,7 +294,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="494490797786467921">Klik om die Chromium-aanmeldingdialoog toe te maak</translation>
 <translation id="4987820182225656817">Gaste kan Chromium gebruik sonder om iets agter te laat.</translation>
 <translation id="4994636714258228724">Voeg jouself by Chromium</translation>
-<translation id="5051959905407134411">Probeer Prentsoektog</translation>
 <translation id="5114678101347489141">Chromium verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="5123973130450702873">Chromium benodig toestemming om jou hande na te spoor</translation>
 <translation id="5174969993834422967">Jy blokkeer gewoonlik kennisgewings. Klik die kennisgewing-ikoon in die regter hoek van jou liggingbalk sodat dié werf jou in kennis kan stel.</translation>

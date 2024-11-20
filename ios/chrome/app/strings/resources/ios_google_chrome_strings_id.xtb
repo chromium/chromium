@@ -38,6 +38,7 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="1646463005043273333">Membuka Setelan Chrome untuk menyetel Chrome sebagai browser default.</translation>
 <translation id="1670609221633730681">Tips Chrome: Pilih posisi kolom URL Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Simpan Sandi Anda di Chrome</translation>
 <translation id="1790080846677398234">Menambahkan URL yang diinput ke bookmark Anda di Chrome.</translation>
 <translation id="1799920918471566157">Tips untuk Chrome</translation>
 <translation id="1830634592642484976">Alamat ini disimpan ke Chrome untuk saat ini. Untuk menggunakannya di seluruh produk Google, simpan di Akun Google Anda, <ph name="USER_EMAIL" />.</translation>
@@ -219,9 +220,11 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 
 Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chrome Anda, buka <ph name="BEGIN_LINK" />Layanan Google<ph name="END_LINK" />.</translation>
 <translation id="6922332667202044570">Menghapus data penjelajahan di Chrome.</translation>
+<translation id="6924922227983877439">Buka link di Chrome secara Default</translation>
 <translation id="6975725306479268850">Pilih Chrome untuk Isi Otomatis</translation>
 <translation id="7056826488869329999">Membuka dan Menjalankan Pemeriksaan Keamanan di Chrome.</translation>
 <translation id="7061455974939528301">Tekan lama ikon Chrome, lalu klik "Edit layar utama"</translation>
+<translation id="7065813315247345131">Pindahkan Chrome ke Dok</translation>
 <translation id="7124339256045485976">Pastikan Chrome selalu terupdate</translation>
 <translation id="7161390184744336561">Versi Google Chrome sudah usang</translation>
 <translation id="7165736900384873061">Mulai menggunakan pemindai QR Google Chrome</translation>

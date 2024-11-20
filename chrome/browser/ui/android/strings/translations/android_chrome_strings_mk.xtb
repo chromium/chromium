@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Да се затвори прозорецот?</translation>
 <translation id="2173302385160625112">Проверете ја вашата интернет-врска</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2184272387334793084">Најавете се за да ги добиете лозинките и друго на сите ваши уреди</translation>
 <translation id="218608176142494674">Се споделува</translation>
 <translation id="219283042927675668">Картички во група</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
@@ -574,6 +575,7 @@
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
 <translation id="3636940436873918441">Претпочитани јазици</translation>
 <translation id="3637744895182738742">Ако сте ја заборавиле лозинката или сакате да ја промените поставкава, <ph name="BEGIN_LINK" />избришете ги податоците од Chrome во вашата сметка<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Одете на почетната картичка во апликацијата Google</translation>
 <translation id="368329460027487650">Одјавено. Отвора опции за најавување.</translation>
 <translation id="3684540848053703310">Долниот лист со увиди во цените е затворен</translation>
@@ -873,7 +875,6 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4991110219272367918">Опцијата да се одобри или да не се одобри веб-сајт е затворена</translation>
 <translation id="4996095658297597226">Да се користи предложената лозинка?</translation>
-<translation id="499724277181351974">Одете на: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Следете го сајтов тука</translation>
 <translation id="5004416275253351869">Контроли на активноста на Google</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>

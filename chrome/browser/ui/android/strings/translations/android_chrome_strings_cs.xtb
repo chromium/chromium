@@ -257,6 +257,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2172905120685242547">Zavřít okno?</translation>
 <translation id="2173302385160625112">Zkontrolujte připojení k internetu.</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2184272387334793084">Přihlaste se a používejte svá hesla a další obsah na všech svých zařízeních</translation>
 <translation id="218608176142494674">Sdílení</translation>
 <translation id="219283042927675668">Karty ve skupině</translation>
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
@@ -574,6 +575,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="363596933471559332">Přihlašovat se na weby automaticky pomocí uložených identifikačních údajů. Když je tato funkce vypnutá, budete před každým přihlášením na web požádáni o ověření.</translation>
 <translation id="3636940436873918441">Preferované jazyky</translation>
 <translation id="3637744895182738742">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Přejít na domovskou kartu aplikace Google</translation>
 <translation id="368329460027487650">Jste odhlášeni. Otevře možnosti přihlášení.</translation>
 <translation id="3684540848053703310">Zavřená spodní tabulka s informacemi o ceně</translation>
@@ -873,7 +875,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4991110219272367918">Možnost schválit nebo neschválit web byla zavřena</translation>
 <translation id="4996095658297597226">Použít navrhované heslo?</translation>
-<translation id="499724277181351974">Navigovat: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Zde můžete web sledovat</translation>
 <translation id="5004416275253351869">Ovládací prvky aktivity Google</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>

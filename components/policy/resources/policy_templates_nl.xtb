@@ -2741,6 +2741,34 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
 
       Als je het beleid instelt op 'False', worden er geen automatisch gegenereerde contentsuggesties getoond op de pagina 'Nieuw tabblad'.</translation>
 <translation id="3046192273793919231">Netwerkpakketten verzenden naar de beheerserver om de online status bij te houden</translation>
+<translation id="3046917616600522016">Als je het beleid instelt, bepaal je de proxyinstellingen voor Chrome en ARC-apps, die alle proxygerelateerde opties negeren die via de opdrachtregel worden gespecificeerd.
+
+Als je het beleid niet instelt, kunnen gebruikers hun proxyinstellingen kiezen.
+
+Als je het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> instelt, worden de volgende velden geaccepteerd:
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Hiermee verstrek je de proxyserver die Chrome gebruikt en voorkom je dat gebruikers de proxy-instellingen kunnen wijzigen.
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: Een URL naar een proxy-pac-bestand of een PAC-script dat is gecodeerd als een gegevens-URL met het MIME-type application/x-ns-proxy-autoconfig.
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: Hiermee wordt voorkomen dat de netwerkstack terugvalt op directe verbindingen met een ongeldig of niet-beschikbaar PAC-script.
+
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: Een URL van de proxyserver.
+
+  * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: Een lijst met proxyhosts die de proxy omzeilen.
+
+Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd en vervangen door het veld <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />. Als je voor <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> de volgende waarde kiest:
+  * <ph name="PROXY_MODE_ENUM_DIRECT" />: Er wordt nooit een proxy gebruikt en alle andere velden worden genegeerd.
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" />: De proxy van het systeem wordt gebruikt en alle andere velden worden genegeerd.
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: Alle andere velden worden genegeerd.
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: De velden <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: De velden <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> en <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> worden gebruikt.
+
+Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings ).</translation>
 <translation id="3047732214002457234">Bepalen hoe Chrome Cleanup gegevens doorgeeft aan Google</translation>
 <translation id="3047864383610708617">Plaktoetsen uitzetten</translation>
 <translation id="3048744057455266684">Als dit beleid is ingesteld en een zoek-URL die is voorgesteld vanuit de omnibox, deze parameter in de zoekreeks of in de fragment-ID bevat, toont de suggestie de zoektermen en zoekprovider en niet de onbewerkte zoek-URL.
@@ -2804,18 +2832,6 @@ Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
 <translation id="3092059499596000593">De standaardprinter van het systeem gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
 <translation id="309416443108680956">Hiermee wordt aangegeven wat er gebeurt als een gebruiker die verificatie via een beveiligingstoken uitvoert (bijv. met een smartcard), die token verwijdert tijdens een sessie. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Er gebeurt niets. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Het scherm wordt vergrendeld tot de gebruiker de verificatie opnieuw uitvoert. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: De sessie wordt beëindigd en de gebruiker wordt uitgelogd. Als je dit beleid niet instelt, geldt de standaardwaarde <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lijst met aangezette plug-ins</translation>
-<translation id="30986061650205557">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
-
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = De functie uitzetten.
-
-De functies van DevTools van generatieve AI zijn onder andere:
-
-- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.
-- AI-ondersteuning: Geeft gebruikers meer inzicht in CSS-stijlen met AI-gestuurde inzichten.</translation>
 <translation id="309885424548342662">Microsoft®-cloudverificatie aanzetten</translation>
 <translation id="3101035417394748390">De maximumgrootte, in bytes, die kan worden overgezet tussen de client en host via klembordsynchronisatie</translation>
 <translation id="3101501961102569744">Kies hoe je proxyserverinstellingen wilt specificeren</translation>
@@ -2920,9 +2936,6 @@ Als je het beleid niet toepast, wordt de promotie voor appstore-beoordelingen ni
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
 
       Dit beleid blokkeert JavaScript als de oorsprong van het document op het hoogste niveau (meestal de pagina-URL die ook in de adresbalk wordt getoond) overeenkomt met een van de patronen. Dit beleid is daarom niet geschikt om aanvallen op de webtoeleveringsketen te beperken. Als je bijvoorbeeld het patroon 'https://[*.]foo.com/' invoert, voorkom je niet dat een pagina die wordt gehost op https://voorbeeld.com een script uitvoert dat is geladen vanaf https://www.foo.com/voorbeeld.js. Als je het patroon 'https://voorbeeld.com/' invoert, voorkom je daarnaast niet dat een document van https://voorbeeld.com scripts uitvoert als het niet het document op het hoogste niveau is, maar is ingebed als subframe in een pagina die wordt gehost op een andere oorsprong, bijvoorbeeld https://www.bar.com.</translation>
-<translation id="3180671894201217988">Als je dit beleid toepast of niet instelt, wordt voorkomen dat software van derden uitvoerbare code in de processen van <ph name="PRODUCT_NAME" /> injecteert.
-
-      Als je het beleid niet toepast, kan deze software dergelijke code in de processen van <ph name="PRODUCT_NAME" /> injecteren.</translation>
 <translation id="3181114468897395940">De instellingen voor PageUp/PageDown gebruiken de sneltoets met de functietoets Alt</translation>
 <translation id="3182503302060513467">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte als die beschikbaar is</translation>
 <translation id="3184161739683646075">Hiermee wordt de modus voor DNS-over-HTTPS bepaald</translation>

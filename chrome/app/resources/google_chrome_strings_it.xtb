@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Fai clic per uscire da Google Lens</translation>
 <translation id="2681444469812712297">Apri <ph name="URL" /> in una nuova scheda in Google Chrome.</translation>
 <translation id="2712141162840347885">Seleziona un elemento da cercare con Google Lens o premi Esc per uscire</translation>
-<translation id="2727713483500953825">Seleziona immagini/testo per cercare con Lens</translation>
 <translation id="2738871930057338499">Impossibile connettersi a internet. HTTP 403 Accesso negato. Controlla la configurazione del proxy.</translation>
 <translation id="2742320827292110288">Avviso: Google Chrome non è in grado di impedire alle estensioni di registrare la tua cronologia di navigazione. Per disattivare questa estensione in modalità di navigazione in incognito, deseleziona questa opzione.</translation>
 <translation id="2753623023919742414">Fai clic per cercare</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identifica cose o luoghi e copia o traduci testi. Quando usi Google Lens, viene inviato uno screenshot della pagina a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
-<translation id="3625345586754200168">Prova Lens</translation>
 <translation id="3635073343384702370">Chrome può controllare le password quando le salvi</translation>
 <translation id="3667616615096815454">Impossibile installare l'applicazione. Applicazione sconosciuta al server.</translation>
 <translation id="3673813398384385993">Chrome ha rilevato che l'estensione "<ph name="EXTENSION_NAME" />" contiene malware</translation>
@@ -290,7 +288,6 @@
 <translation id="4434353761996769206">Errore del programma di installazione: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Accedi a Chrome come <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Accesso rete - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Cerca qualsiasi immagine o testo con Lens</translation>
 <translation id="4458462641685292929">C'è un'altra operazione in corso su Google Chrome. Riprova più tardi.</translation>
 <translation id="4459234553906210702">Ad measurement consente ai siti che visiti di chiedere a Chrome informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
 <translation id="4493028449971051158">Errore di avvio: esegui il programma di installazione come amministratore.</translation>
@@ -399,7 +396,6 @@
 <translation id="6025087594896450715">Google Chrome verrà riavviato tra <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="604424701295382420">Riquadro bloccato. Puoi accedere nuovamente a Google Lens dal nuovo pulsante sulla barra degli strumenti.</translation>
-<translation id="6060842547856900641">Apri Lens</translation>
 <translation id="6069027071882229820">Copia come immagine</translation>
 <translation id="6070348360322141662">Per maggiore sicurezza, Google Chrome cripterà i tuoi dati</translation>
 <translation id="6075300983329039771">La tua organizzazione, <ph name="MANAGER" />, richiede l'accesso a Chrome</translation>
@@ -448,7 +444,6 @@
 <translation id="6515549163407364048">Accedi a Chrome per avere a disposizione le estensioni su tutti i tuoi computer</translation>
 <translation id="6520670145826811516">Per usare la posizione, concedi l'accesso a Chrome nelle <ph name="BEGIN_LINK" />impostazioni di sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">In Gestore delle password di Google su questo dispositivo</translation>
-<translation id="6600016381025017075">Cerca qualsiasi cosa in questa pagina</translation>
 <translation id="6632473616050862500">La realizzazione di ChromeOS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo.</translation>
 <translation id="6660596345553328257">Accedere a Chrome?</translation>
 <translation id="6676384891291319759">Accesso a Internet</translation>

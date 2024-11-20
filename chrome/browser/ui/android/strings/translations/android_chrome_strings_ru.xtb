@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Закрыть окно?</translation>
 <translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2184272387334793084">Войдите, чтобы получить доступ к своим паролям и другой информации на всех устройствах.</translation>
 <translation id="218608176142494674">Совместный доступ</translation>
 <translation id="219283042927675668">Вкладки в группе</translation>
 <translation id="2194856509914051091">Важная информация</translation>
@@ -342,6 +343,7 @@
 <translation id="2571711316400087311">Предлагать отправлять страницы на других языках в Google Переводчик</translation>
 <translation id="2571834852878229351">Создать свой</translation>
 <translation id="2574249610672786438">Чтобы ваши вкладки всегда были доступны вам при работе с Chrome, выполните вход на всех своих устройствах.</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) сразу потеряет доступ к группе вкладок "<ph name="GROUP_NAME" />" и больше не сможет взаимодействовать с вами в сервисах Google.</translation>
 <translation id="2578337197553672982">Контент Google для детей</translation>
 <translation id="2579297619530305344">Экран "Пароли на всех ваших устройствах" открыт полностью</translation>
 <translation id="2581165646603367611">Будет очищен кеш, а также удалены файлы cookie и другие данные, которые система сочтет маловажными.</translation>
@@ -566,6 +568,7 @@
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3614126103057878858">Информация о ценах</translation>
 <translation id="3616113530831147358">Аудио</translation>
+<translation id="3619255692378312441">Настроить доступ</translation>
 <translation id="3622349720008044802">Управление окнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
 <translation id="3631987586758005671">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
@@ -574,6 +577,7 @@
 <translation id="363596933471559332">Входить на веб-сайты с помощью сохраненного имени пользователя и пароля. Когда функция отключена, эти данные нужно указывать при каждом входе.</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637744895182738742">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3674208116086565128">Открыть главную страницу приложения Google</translation>
 <translation id="368329460027487650">Выполнен выход. Открывает окно с вариантами входа.</translation>
 <translation id="3684540848053703310">Нижний экран с информацией о ценах закрыт</translation>
@@ -585,6 +589,7 @@
 <translation id="3701515417135397388">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="3703166520839776970">Если проблема не решится, нажмите кнопку "Подробнее" ниже, чтобы получить дополнительную информацию от сервиса "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3710501561113687889">Для продолжения регистрации <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши данные (<ph name="FIELDS_STRING" />).</translation>
+<translation id="3710560693796335511">Доступ для совместной работы</translation>
 <translation id="3714981814255182093">Открыть панель поиска</translation>
 <translation id="3716182511346448902">Эта страница расходовала слишком много памяти, поэтому работа ее скриптов была приостановлена.</translation>
 <translation id="3718765429352682176">Вы можете просматривать историю из других приложений, которые открывают ссылки в Chrome.</translation>
@@ -873,7 +878,6 @@
 <translation id="4988526792673242964">Страницы</translation>
 <translation id="4991110219272367918">Нижний экран, с помощью которого можно одобрить или заблокировать сайт, закрыт</translation>
 <translation id="4996095658297597226">Использовать предложенный пароль?</translation>
-<translation id="499724277181351974">Переход на сайт "<ph name="WEBSITE_TITLE" />" по адресу <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Подписаться на этот сайт</translation>
 <translation id="5004416275253351869">Отслеживание действий в Google</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
@@ -956,6 +960,7 @@
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) сразу потеряет доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>
 <translation id="5423934151118863508">Здесь появятся страницы, которые вы чаще всего просматриваете.</translation>
 <translation id="5424588387303617268">Доступно: <ph name="GIGABYTES" /> ГБ</translation>
+<translation id="543121643585717256">Все, у кого есть ссылка, могут изменять любые вкладки. Узнать о группах вкладок с общим доступом</translation>
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
 <translation id="5438292632479953702">Да</translation>
@@ -970,6 +975,7 @@
 <translation id="5468068603361015296">Все равно скачать файл "<ph name="FILE_NAME" />"?</translation>
 <translation id="548278423535722844">Показать на карте</translation>
 <translation id="5492637351392383067">Шифрование на устройстве</translation>
+<translation id="549660026907543296">Присоединиться как <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Экран "Пароли на всех ваших устройствах" открыт наполовину</translation>
 <translation id="5514904542973294328">Отключено администратором устройства</translation>
 <translation id="5515439363601853141">Чтобы увидеть пароль, разблокируйте экран</translation>
@@ -1372,6 +1378,7 @@
 <translation id="7182051712900867547">Использовать другой аккаунт</translation>
 <translation id="7183517696921903380">Окно фильтрации по приложению открыто.</translation>
 <translation id="7186568385131859684">Выберите, как история браузера будет использоваться с другими вашими данными в сервисах Google</translation>
+<translation id="7190921792980745354">Заблокировать пользователя <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Смените его как можно скорее.}one{Смените их как можно скорее.}few{Смените их как можно скорее.}many{Смените их как можно скорее.}other{Смените их как можно скорее.}}</translation>
 <translation id="7196215469483532480">Пояснение для руководства по конфиденциальности открыто на весь экран</translation>

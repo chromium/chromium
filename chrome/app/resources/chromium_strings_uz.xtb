@@ -125,7 +125,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2711502716910134313">Chromium sahifasi</translation>
 <translation id="2718390899429598676">Xavfsizlik himoyasini oshirish maqsadida Chromium ma’lumotlaringizni shifrlaydi.</translation>
 <translation id="2721354645805494590">Chromiumdan Google hisobini olib tashlash uchun hisobdan chiqing</translation>
-<translation id="2727713483500953825">Lens orqali qidirish uchun rasm/matn tanlang</translation>
 <translation id="2738871930057338499">Internetga ulanmadi. HTTP 403, taqiqlangan. Proksi konfiguratsiyasini tekshiring.</translation>
 <translation id="2753623023919742414">Qidirish uchun bosing</translation>
 <translation id="2770231113462710648">Standart brauzer etib tayinlash:</translation>
@@ -138,7 +137,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2846251086934905009">Oʻrnatishda xato: Oʻrnatish vositasi tugallanmadi. Oʻrnatish bekor qilindi.</translation>
 <translation id="2847479871509788944">Chromium‘dan o‘chirish...</translation>
 <translation id="2850691299438350830">Hisobingizga kirganingizda Chromium va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
-<translation id="2874602845494991903">Rasm orqali qidiruvni ochish</translation>
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2910007522516064972">&amp;Chromium haqida</translation>
 <translation id="2915996080311180594">Keyinroq qayta ishga tushirish</translation>
@@ -252,7 +250,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4434353761996769206">Oʻrnatish vositasi xatosi: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="4447409407328223819">Chrome for Testing haqida</translation>
-<translation id="4453144231461812959">Lens orqali istalgan rasm yoki matnni qidiring</translation>
 <translation id="4470974262661801543">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun kodli iborani kiriting</translation>
 <translation id="4493028449971051158">Ishga tushirishda xato: oʻrnatish faylini administrator nomidan ishga tushiring.</translation>
 <translation id="4501471624619070934">Oʻrnatilmadi, chunki bu mamlakatda kirish cheklangan.</translation>
@@ -292,7 +289,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="494490797786467921">Chromium tizimiga kirish oynasini yopish uchun bosing</translation>
 <translation id="4987820182225656817">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chromium mehmon rejimidan foydalaning.</translation>
 <translation id="4994636714258228724">Chromium foydalanuvchini qo‘shish</translation>
-<translation id="5051959905407134411">Rasm orqali qidiruvni sinash</translation>
 <translation id="5114678101347489141">Chromium saytlarga kamroq maʼlumotlaringiz bilan bir xil brauzer xizmatlarini taqdim etishiga imkon beruvchi yangi funksiyalarni oʻrganib chiqmoqda</translation>
 <translation id="5123973130450702873">Chromium qoʻllaringiz holatini kuzatishi uchun ruxsat olmagan</translation>
 <translation id="5174969993834422967">Odatda bildirishnomalarni bloklaysiz. Ularni olish uchun manzillar qatoridan yuqori oʻng burchakdagi bildirishnoma belgisini bosing.</translation>

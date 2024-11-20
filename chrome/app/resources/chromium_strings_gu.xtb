@@ -128,7 +128,6 @@
 <translation id="2711502716910134313">Chromium ટૅબ</translation>
 <translation id="2718390899429598676">ઉમેરેલી સુરક્ષા માટે, Chromium તમારા ડેટાને એન્ક્રિપ્ટ કરશે.</translation>
 <translation id="2721354645805494590">Chromiumમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સાઇન આઉટ કરો</translation>
-<translation id="2727713483500953825">Lens વડે શોધવા માટે છબીઓ/ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="2738871930057338499">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકતા નથી. HTTP 403 પ્રતિબંધિત. કૃપા કરીને તમારું પ્રૉક્સી કન્ફિગ્યુરેશન ચેક કરો.</translation>
 <translation id="2753623023919742414">શોધવા માટે ક્લિક કરો</translation>
 <translation id="2770231113462710648">ડિફૉલ્ટ બ્રાઉઝરને આના પર બદલો:</translation>
@@ -141,7 +140,6 @@
 <translation id="2846251086934905009">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલર પૂર્ણ થયું નહીં. ઇન્સ્ટોલેશન રદ કરવામાં આવ્યું છે.</translation>
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
 <translation id="2850691299438350830">તમને Chromium પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં કદાચ ઉપયોગમાં લેવાઈ શકે છે</translation>
-<translation id="2874602845494991903">'છબી વડે શોધ' સુવિધા ખોલો</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
 <translation id="2915996080311180594">પછીથી ફરી શરૂ કરો</translation>
@@ -257,7 +255,6 @@
 <translation id="4434353761996769206">ઇન્સ્ટૉલરની ભૂલ <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> Chromiumને મેનેજ કરે છે</translation>
 <translation id="4447409407328223819">Chrome for Testing વિશે</translation>
-<translation id="4453144231461812959">Lens વડે કોઈપણ છબી કે ટેક્સ્ટ શોધો</translation>
 <translation id="4470974262661801543">તમારા Google એકાઉન્ટમાં Chromiumના ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="4493028449971051158">સ્ટાર્ટઅપ દરમિયાન ભૂલ: કૃપા કરીને ઇન્સ્ટૉલરને ઍડમિનિસ્ટ્રેટર તરીકે ચલાવો.</translation>
 <translation id="4501471624619070934">ઇન્સ્ટૉલેશન નિષ્ફળ ગયું કારણ કે આ દેશમાં ઍક્સેસ પ્રતિબંધિત છે.</translation>
@@ -297,7 +294,6 @@
 <translation id="494490797786467921">Chromiumમાં સાઇન ઇન કરવાનો સંવાદ બંધ કરવા માટે ક્લિક કરો</translation>
 <translation id="4987820182225656817">અતિથિઓ કંઈપણ પાછળ છોડ્યાં વિના Chromium નો ઉપયોગ કરી શકે છે.</translation>
 <translation id="4994636714258228724">સ્વયંને Chromium માં ઉમેરો</translation>
-<translation id="5051959905407134411">'છબી વડે શોધ' સુવિધા અજમાવી જુઓ</translation>
 <translation id="5114678101347489141">Chromium એવી નવી સુવિધાઓની શોધખોળ કરી રહ્યું છે કે જેના વડે સાઇટ તમારી ઓછી માહિતીનો ઉપયોગ કરીને બ્રાઉઝિંગનો એવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="5123973130450702873">Chromiumને તમારા હાથ ટ્રૅક કરવા માટે પરવાનગીની જરૂર છે</translation>
 <translation id="5174969993834422967">તમે સામાન્ય રીતે નોટિફિકેશનને બ્લૉક કરો છો. આ સાઇટ તમને સૂચિત કરી શકે તે માટે, તમારા લોકેશન બારના જમણા ખૂણે દેખાતા નોટિફિકેશનના આઇકન પર ક્લિક કરો.</translation>

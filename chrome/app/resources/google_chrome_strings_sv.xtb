@@ -141,7 +141,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2668094785979141847">Klicka för att avsluta Google Lens</translation>
 <translation id="2681444469812712297">Öppna <ph name="URL" /> på en ny flik i Google Chrome.</translation>
 <translation id="2712141162840347885">Välj vad du vill söka efter med Google Lens eller tryck på Escape för att avsluta Google Lens</translation>
-<translation id="2727713483500953825">Välj bilder/text att söka efter med Lens</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
 <translation id="2742320827292110288">Varning! Google Chrome kan inte förhindra att tillägg registrerar din webbhistorik. Om du vill inaktivera det här tillägget i inkognitoläge avmarkerar du detta alternativ.</translation>
 <translation id="2753623023919742414">Klicka för att söka</translation>
@@ -224,7 +223,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3609788354808247807">Du har inte besökt webbplatsen nyligen. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identifiera saker eller platser och kopiera eller översätt text. När du använder Google Lens skickas en skärmbild av sidan till Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nu är det enklare att använda Chrome med ditt Google-konto och på delade datorer.</translation>
-<translation id="3625345586754200168">Testa Lens</translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="3667616615096815454">Det gick inte att installera appen. Appen är okänd för servern.</translation>
 <translation id="3673813398384385993">Chrome har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
@@ -295,7 +293,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4434353761996769206">Installationsfel: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Logga in på Chrome som <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – nätverksinloggning – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Sök efter valfri bild eller text med Lens</translation>
 <translation id="4458462641685292929">En annan process i Google Chrome pågår. Försök igen senare.</translation>
 <translation id="4459234553906210702">Genom annonsmätning kan webbplatser du besöker begära information från Chrome som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>
 <translation id="4493028449971051158">Startfel: Kör installationsprogrammet som administratör.</translation>
@@ -408,7 +405,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6025087594896450715">Google Chrome startas om om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Stäng</translation>
 <translation id="604424701295382420">Fäst! Du kan komma åt Google Lens igen från den nya knappen i verktygsfältet</translation>
-<translation id="6060842547856900641">Öppna Lens</translation>
 <translation id="6069027071882229820">Kopiera som bild</translation>
 <translation id="6070348360322141662">Din data krypteras i Google Chrome för att öka säkerheten</translation>
 <translation id="6075300983329039771">Organisationen, <ph name="MANAGER" />, kräver att du loggar in i Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6515549163407364048">Logga in i Chrome om du vill ha tilläggen på alla dina datorer</translation>
 <translation id="6520670145826811516">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda platsen</translation>
 <translation id="659498884637196217">I Google Lösenordshantering på den här enheten</translation>
-<translation id="6600016381025017075">Sök efter vad som helst på den här sidan</translation>
 <translation id="6632473616050862500">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />,.</translation>
 <translation id="6660596345553328257">Vill du logga in i Chrome?</translation>
 <translation id="6676384891291319759">Gå ut på Internet</translation>

@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lens-с гарахын тулд товшино уу</translation>
 <translation id="2681444469812712297"><ph name="URL" />-г Google Chrome-д шинэ табд нээнэ үү.</translation>
 <translation id="2712141162840347885">Google Lens-р хайхыг хүссэн зүйлээ сонгох эсвэл Google Lens-с гарахын тулд escape дээр дарна уу</translation>
-<translation id="2727713483500953825">Lens-р хайхын тулд дурын зураг/текстийг сонгоно уу</translation>
 <translation id="2738871930057338499">Интернэтэд холбогдох боломжгүй байна. HTTP 403 хориотой. Прокси тохируулгаа шалгана уу.</translation>
 <translation id="2742320827292110288">Анхааруулга: Google Chrome өргөтгөлүүдийг таны хөтчийн түүхийг бичихээс хамгаалж чадахгүй. Энэ өргөтгөлийг Нууцлалтай горимд идэвхгүй болгохын тулд энэ сонголтыг болиулна уу.</translation>
 <translation id="2753623023919742414">Хайхын тулд товшино уу</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан</translation>
 <translation id="3622716124581627104">Зүйл болон газрыг таньж, текст хуулж эсвэл орчуулна. Таныг Google Lens-г ашиглах үед хуудасны дэлгэцийн агшныг Google-д илгээдэг. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Одоо та Google хаягаа ашиглан мөн өөр бусад компьютер дээр Chrome-г ашиглахад хялбар боллоо.</translation>
-<translation id="3625345586754200168">Lens-г туршиж үзэх</translation>
 <translation id="3635073343384702370">Таныг нууц үгнүүдээ хадгалах үед Chrome тэдгээрийг шалгах боломжтой</translation>
 <translation id="3667616615096815454">Суулгах боломжгүй. Аппликэйшнийг сервер танихгүй байна.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chrome олж мэдлээ</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">Суулгагчийн алдаа: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chrome-д <ph name="USER_EMAIL" />-р нэвтрэх</translation>
 <translation id="4450664632294415862">Chrome - Сүлжээнд нэвтрэх - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens-р дурын зураг эсвэл текстийг хайна уу</translation>
 <translation id="4458462641685292929">Google Chrome-н өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="4459234553906210702">Зарын хэмжилт нь таны зочилсон сайтуудад зарынхаа гүйцэтгэлийг хэмжихэд туслах мэдээллийг Chrome-с хүсэх боломжийг олгоно. Зарын хэмжилт нь сайт хооронд аль болох бага мэдээлэл шилжүүлснээр сайт хоорондын хяналтыг хязгаарлана.</translation>
 <translation id="4493028449971051158">Эхлэхэд алдаа гарлаа: суулгагчийг администратораар дахин ажиллуулна уу.</translation>
@@ -408,7 +405,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6025087594896450715">Google Chrome-г <ph name="REMAINING_TIME" />-н дараа эхлүүлнэ</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="604424701295382420">Бэхэлсэн! Та самбар дээрх шинэ товчлуураас Google Lens-д дахин хандах боломжтой</translation>
-<translation id="6060842547856900641">Lens-г нээх</translation>
 <translation id="6069027071882229820">Зургаар хуулах</translation>
 <translation id="6070348360322141662">Таны аюулгүй байдлыг сайжруулахын тулд Google Chrome таны өгөгдлийг шифрлэнэ</translation>
 <translation id="6075300983329039771">Танай байгууллага болох <ph name="MANAGER" /> таныг Chrome-д нэвтрэхийг шаардаж байна</translation>
@@ -457,7 +453,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6515549163407364048">Өргөтгөлөө бүх компьютер дээрээ авахын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="6520670145826811516">Байршлаа ашиглахын тулд <ph name="BEGIN_LINK" />системийн тохиргоонд<ph name="END_LINK" /> Chrome-д хандах эрх өгнө үү</translation>
 <translation id="659498884637196217">Энэ төхөөрөмжийн Google-н Нууц үгний менежерт байна</translation>
-<translation id="6600016381025017075">Энэ хуудсан дээрх дурын зүйлийг хайх</translation>
 <translation id="6632473616050862500">ChromeOS Flex-г нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="6660596345553328257">Chrome-д нэвтрэх үү?</translation>
 <translation id="6676384891291319759">Интернэтэд нэвтрэх</translation>
@@ -620,6 +615,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8416347857511542594">Chrome-н сонирхсон зарын тохируулгын талаар нэмэлт мэдээлэл авах</translation>
 <translation id="8418845734693287262">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromeOS таны өгөгдлийг синк хийж чадсангүй.</translation>
 <translation id="842386925677997438">Chrome-н аюулгүй байдлын хэрэгсэл</translation>
+<translation id="8425765582779547329">Эцэг эхийнхээ сонголтуудаар онлайн орчинд илүү аюулгүй байхын тулд Chrome-д нэвтэрнэ үү</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8451192282033883849">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chrome хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>

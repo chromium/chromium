@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">작성자:</translation>
 <translation id="1247030632403369975">알루미늄</translation>
 <translation id="1252209483516427155">외투</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />(으)로 결제</translation>
 <translation id="1253846494229886276">스크린샷 저장 중</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" />(동기화됨)</translation>
 <translation id="1255086252236620440">조리용 믹서</translation>
@@ -314,6 +313,7 @@
 <translation id="1549470594296187301">이 기능을 이용하려면 자바스크립트를 사용하도록 설정해야 합니다.</translation>
 <translation id="1553152622374372421">동계 스포츠</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
+<translation id="1554485704925237240">이름이 <ph name="READERNAME" />인 리더 및 해당 리더와 함께 사용되는 스마트 카드 제어</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="1555191101192706055">방문하려고 한 사이트의 공격자가 홈페이지를 변경하거나 방문하는 사이트에서 추가 광고를 표시하는 등 탐색 방식에 영향을 주는 유해한 소프트웨어를 설치하도록 유도할 수 있습니다.</translation>
 <translation id="1559231233244409191">골판지(삼중양면)</translation>
@@ -907,6 +907,7 @@
 <translation id="2595719060046994702">회사 또는 다른 조직에서 관리하지 않는 기기 및 계정입니다.</translation>
 <translation id="2596415276201385844">보안 연결을 설정하려면 시계가 올바로 설정되어 있어야 합니다. 웹사이트가 자신을 식별하는 데 사용하는 인증서는 특정 기간에만 유효하기 때문입니다. 기기의 시계가 잘못 설정되어 Chrome에서 이 인증서를 확인할 수 없습니다.</translation>
 <translation id="2597378329261239068">문서가 비밀번호로 보호되고 있습니다. 비밀번호를 입력하세요.</translation>
+<translation id="2605979593348332811">이름(소리나는 대로)</translation>
 <translation id="2606760465469169465">자동 인증</translation>
 <translation id="2608019759319359258">차단된 주제는 광고를 맞춤설정하는 데 사용되지 않습니다.</translation>
 <translation id="2610561535971892504">클릭하여 복사</translation>
@@ -918,6 +919,7 @@
 <translation id="2622754869869445457">가장 최근 탭</translation>
 <translation id="2625385379895617796">시간이 너무 먼 미래로 설정되어 있습니다.</translation>
 <translation id="262745152991669301">USB 기기에 연결하도록 요청할 수 있음</translation>
+<translation id="2627847595568876492">PDF에서 텍스트를 추출하는 중…</translation>
 <translation id="2628224721443278970">Microsoft OneDrive에 로그인</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" />의 서버 IP 주소를 찾을 수 없습니다.</translation>
 <translation id="2639739919103226564">상태:</translation>
@@ -1522,6 +1524,7 @@
 <translation id="3711430313228789376">Chrome 브라우저에서 비밀번호를 표시하려고 합니다</translation>
 <translation id="3711861349027352138">컴퓨터 및 비디오 게임</translation>
 <translation id="3711895659073496551">일시중지</translation>
+<translation id="3712004750972384495">화면 녹화 저장 중</translation>
 <translation id="3712006010833051684">봉투 #10</translation>
 <translation id="3712624925041724820">라이선스 만료됨</translation>
 <translation id="3713277100229669269">이제 결제하기 전에 카드 혜택을 확인할 수 있습니다</translation>
@@ -1550,6 +1553,7 @@
 <translation id="3744899669254331632">웹사이트가 Chromium이 처리할 수 없는 암호화된 사용자 인증 정보를 전송하였으므로 지금은 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대체로 일시적인 문제이기 때문에 이후에는 이 페이지가 제대로 작동할 가능성이 높습니다.</translation>
 <translation id="3745599309295009257">텍스트와 작성 중인 페이지의 콘텐츠 및 URL이 Google로 전송되어 담당자가 검토한 후 이 기능을 개선하는 데 사용됩니다. 의료 또는 금융 정보와 같은 개인 정보를 입력하거나 비공개 정보 또는 민감한 정보가 포함된 사이트에서는 이 도구를 사용하지 마세요.</translation>
 <translation id="3748009735914587286">금속(고광택)</translation>
+<translation id="3752181611900535304">계정에 주소를 저장하시겠습니까?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
 <translation id="3759461132968374835">최근에 보고된 비정상 종료가 없습니다. 비정상 종료 보고를 사용 중지했을 때 발생한 비정상 종료는 여기에 표시되지 않습니다.</translation>
@@ -1660,6 +1664,7 @@
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3963721102035795474">리더 모드</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{없음}=1{사이트 1개 }other{사이트 #개 }}</translation>
+<translation id="3965672182149944205">주소를 저장하시겠습니까?</translation>
 <translation id="3966044442021752214">제품 안전</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" />이(가) 차단됨</translation>
@@ -2328,6 +2333,7 @@
 <translation id="5191315092027169558">내 프로필은 <ph name="DOMAIN" />에서 관리합니다</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />에서 여러 파일을 다운로드하려고 합니다.</translation>
 <translation id="519422657042045905">주석을 사용할 수 없음</translation>
+<translation id="5200063972779787617">계정에 주소 저장</translation>
 <translation id="5201306358585911203">이 페이지에 삽입된 페이지 내용:</translation>
 <translation id="5205222826937269299">이름은 필수입니다.</translation>
 <translation id="5206392433295093945">침실</translation>
@@ -2350,6 +2356,7 @@
 <translation id="5239623327352565343">위치 허용됨</translation>
 <translation id="5241048084654737238">카드 정보를 저장할 수 없음 확인</translation>
 <translation id="5242610955375133957">드라이 필름</translation>
+<translation id="5243004157379865295">주소 업데이트</translation>
 <translation id="5244521145258281926">Google 계정 관리 버튼, Google 계정에서 정보, 개인 정보 보호, 보안 설정을 관리하려면 활성화하세요.</translation>
 <translation id="5244732203286792411">로드 중입니다.
     시간이 조금 걸릴 수 있습니다.</translation>
@@ -2847,6 +2854,7 @@
 <translation id="6159554577634054750">해충 퇴치</translation>
 <translation id="6159908896951210943">격식을 갖춰 작성</translation>
 <translation id="6160391204859821737">광고 개인 정보 보호 기능 사용 설정</translation>
+<translation id="6162403104168428984">주소를 업데이트하시겠습니까?</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6167577165590485365">마지막 가져오기 시도:</translation>
 <translation id="617256461084925519">Chrome에서 결제 정보를 입력할 수 있도록 본인 인증을 시도하고 있습니다.</translation>
@@ -3081,6 +3089,7 @@
 <translation id="6569060085658103619">확장 프로그램 페이지를 보는 중</translation>
 <translation id="6573200754375280815">오른쪽 2공 펀칭</translation>
 <translation id="6574762126505704998">채우기</translation>
+<translation id="6575408526598156416">계정에 저장</translation>
 <translation id="6577792494180292262">벤처 캐피탈</translation>
 <translation id="6578434528542148658">확장 프로그램 ID가 잘못되었습니다.</translation>
 <translation id="6579858392010591435">공휴일 및 시즌 이벤트</translation>
@@ -3130,7 +3139,6 @@
 <translation id="6671169470640320959">자동차 금융</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
 <translation id="6677351035258626477">패스트푸드</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome에서 구매할 때 <ph name="FINANCIAL_ACCOUNT_TYPES" /> 옵션이 표시됩니다.}other{Chrome에서 구매할 때 <ph name="FINANCIAL_ACCOUNT_TYPES" /> 옵션이 표시됩니다.}}</translation>
 <translation id="6679354743514146922">Chrome 브라우저가 <ph name="APP_NAME" />에서 비밀번호를 입력하려고 합니다.</translation>
 <translation id="6681790815630918386">CVC 저장됨</translation>
 <translation id="6683022854667115063">헤드폰</translation>
@@ -3393,6 +3401,7 @@
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
+<translation id="7152230779180489711">최근 방문:</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}other{<ph name="PAYMENT_METHOD_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />개}}</translation>
 <translation id="7153618581592392745">라벤더색</translation>
 <translation id="7156870133441232244">서버를 TLS 1.2 이상으로 업그레이드해야 합니다.</translation>
@@ -4471,6 +4480,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, 검색을 계속하고 Chrome 방문 기록에서 관련 활동을 보려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="9119042192571987207">업로드됨</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" />에서 본인 인증을 요청합니다</translation>
+<translation id="9120593907434185157">주소 저장</translation>
 <translation id="912327514020027767">스커트</translation>
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9131119348384879525">기밀 콘텐츠를 캡처하시겠습니까?</translation>

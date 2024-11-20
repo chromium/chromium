@@ -141,7 +141,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2668094785979141847">Kliko për të dalë nga "Lentja e Google"</translation>
 <translation id="2681444469812712297">Hap <ph name="URL" /> në një skedë të re në Google Chrome.</translation>
 <translation id="2712141162840347885">Zgjidh çdo gjë për të kërkuar me "Lenten e Google" ose shtyp butonin "Escape" për të dalë nga "Lentja e Google"</translation>
-<translation id="2727713483500953825">Zgjidh imazhet/tekstin për të kërkuar me "Lenten"</translation>
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2742320827292110288">Paralajmërim: Google Chrome nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për ta çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
@@ -224,7 +223,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3609788354808247807">Nuk ke vizituar së fundi. Chrome ka hequr lejet (<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />)</translation>
 <translation id="3622716124581627104">Identifiko gjërat ose vendet dhe kopjo ose përkthe tekstin. Kur përdor "Lenten e Google", Google i dërgohet një pamje ekrani e faqes. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
-<translation id="3625345586754200168">Provo "Lenten"</translation>
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
@@ -294,7 +292,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Identifikohu në Chrome si <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Kërko çdo imazh ose tekst me "Lenten"</translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="4459234553906210702">Ad measurement lejon që sajtet që ti viziton të kërkojnë informacione nga Chrome të cilat ndihmojnë sajtin të masë cilësinë e funksionimit të reklamave të tij. Ad measurement kufizon gjurmimin nëpër sajte duke transferuar sa më pak informacion të jetë e mundur ndërmjet sajteve.</translation>
 <translation id="4493028449971051158">Gabim në nisje: ekzekuto instaluesin si administrator.</translation>
@@ -407,7 +404,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6025087594896450715">Google Chrome do të riniset pas <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="604424701295382420">U gozhdua! Mund të qasesh sërish te "Lentja e Google" nga butoni i ri në shiritin e veglave</translation>
-<translation id="6060842547856900641">Hap "Lenten"</translation>
 <translation id="6069027071882229820">Kopjo si imazh</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="6075300983329039771">Organizata jote, <ph name="MANAGER" />, kërkon që të identifikohesh në Chrome</translation>
@@ -456,7 +452,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6515549163407364048">Për të marrë shtesat e tua në të gjithë kompjuterët e tu, identifikohu në Chrome</translation>
 <translation id="6520670145826811516">Për të përdorur vendndodhjen tënde, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Në "Menaxherin e fjalëkalimeve të Google" në këtë pajisje</translation>
-<translation id="6600016381025017075">Kërko për çdo gjë në këtë faqe</translation>
 <translation id="6632473616050862500">Chrome OS Flex mundësohet nga<ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Do të identifikohesh në Chrome?</translation>
 <translation id="6676384891291319759">Qasu në internet</translation>

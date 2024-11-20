@@ -139,7 +139,6 @@
 <translation id="2668094785979141847">Klõpsake Google Lensist väljumiseks</translation>
 <translation id="2681444469812712297">Avage <ph name="URL" /> Google Chrome’is uuel vahelehel.</translation>
 <translation id="2712141162840347885">Valige midagi, mida Google Lensiga otsida, või vajutage Google Lensist väljumiseks paoklahvi</translation>
-<translation id="2727713483500953825">Valige pildid/tekst, mida Lensiga otsida</translation>
 <translation id="2738871930057338499">Internetiga ei õnnestu ühendust luua. HTTP 403 on keelatud. Kontrollige puhverserveri seadistust.</translation>
 <translation id="2742320827292110288">Hoiatus: Google Chrome ei saa laiendustel teie sirvimisajaloo salvestamist takistada. Selle laienduse keelamiseks inkognito režiimis tühistage see valik.</translation>
 <translation id="2753623023919742414">Klõpsake otsimiseks</translation>
@@ -222,7 +221,6 @@
 <translation id="3609788354808247807">Te pole hiljuti külastanud. Chrome eemaldas <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Tuvastage asju ja kohti ning kopeerige või tõlkige teksti. Kui kasutate Google Lensi, saadetakse Google'ile lehe ekraanipilt. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nüüd on Chrome'i lihtsam kasutada Google'i kontoga ja jagatud arvutites.</translation>
-<translation id="3625345586754200168">Proovige Lensi</translation>
 <translation id="3635073343384702370">Chrome saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="3667616615096815454">Ei saa installida, rakendus on serverile tundmatu.</translation>
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
@@ -293,7 +291,6 @@
 <translation id="4434353761996769206">Installiprogrammi viga: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Logige Chrome'i sisse kui <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – võrku sisselogimine – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Otsige Lensiga mis tahes pilti või teksti</translation>
 <translation id="4458462641685292929">Teine toiming on Google Chrome'is pooleli. Proovige hiljem uuesti.</translation>
 <translation id="4459234553906210702">Reklaamide mõõtmine võimaldab külastatavatel saitidel paluda Chrome'ilt teavet, mis aitab saidil oma reklaamide toimivust mõõta. Reklaamide mõõtmine piirab saitidevahelist jälgimist, edastades saitide vahel võimalikult vähe teavet.</translation>
 <translation id="4493028449971051158">Käivitamisel ilmnes viga: käitage installiprogrammi administraatorina.</translation>
@@ -404,7 +401,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6025087594896450715">Google Chrome taaskäivitub <ph name="REMAINING_TIME" /> pärast</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="604424701295382420">Kinnitatud! Pääsete Google Lensile taas juurde tööriistariba uue nupu abil.</translation>
-<translation id="6060842547856900641">Ava Lens</translation>
 <translation id="6069027071882229820">Kopeeri pildina</translation>
 <translation id="6070348360322141662">Turvalisuse suurendamiseks krüpteerib Google Chrome teie andmed</translation>
 <translation id="6075300983329039771">Teie organisatsioon (<ph name="MANAGER" />) nõuab, et logiksite Chrome'i sisse</translation>
@@ -453,7 +449,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6515549163407364048">Oma laienduste nägemiseks kõigis arvutites logige Chrome'i sisse</translation>
 <translation id="6520670145826811516">Asukoha kasutamiseks andke Chrome'ile <ph name="BEGIN_LINK" />süsteemiseadetes<ph name="END_LINK" /> juurdepääs</translation>
 <translation id="659498884637196217">Selle seadme Google'i paroolihalduris</translation>
-<translation id="6600016381025017075">Otsige sellelt lehelt mida tahes</translation>
 <translation id="6632473616050862500">Chrome OS Flexi aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Kas logida Chrome'i sisse?</translation>
 <translation id="6676384891291319759">Pääs Internetti</translation>

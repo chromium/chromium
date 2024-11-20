@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Fes clic per sortir de Google Lens</translation>
 <translation id="2681444469812712297">Obre <ph name="URL" /> en una pestanya nova a Google Chrome.</translation>
 <translation id="2712141162840347885">Selecciona el que vulguis per cercar-ho amb Google Lens o prem Esc per sortir de Google Lens</translation>
-<translation id="2727713483500953825">Selecciona les imatges o el text que vols cercar amb Lens</translation>
 <translation id="2738871930057338499">No es pot connectar a Internet. Error d'HTTP "403 Forbidden". Comprova la configuració del servidor intermediari.</translation>
 <translation id="2742320827292110288">Advertiment: Google Chrome no pot evitar que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode d'incògnit, desselecciona aquesta opció.</translation>
 <translation id="2753623023919742414">Fes clic per cercar</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Identifica coses o llocs i copia o tradueix text. Quan utilitzes Google Lens, s'envia a Google una captura de pantalla de la pàgina. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ara resulta més fàcil utilitzar Chrome amb el vostre compte de Google i en ordinadors compartits.</translation>
-<translation id="3625345586754200168">Prova Lens</translation>
 <translation id="3635073343384702370">Chrome pot comprovar les teves contrasenyes quan les deses</translation>
 <translation id="3667616615096815454">No es pot instal·lar; el servidor no coneix l'aplicació.</translation>
 <translation id="3673813398384385993">Chrome ha detectat que l'extensió "<ph name="EXTENSION_NAME" />" conté programari maliciós</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Inicia la sessió a Chrome com a <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Cerca qualsevol imatge o text amb Lens</translation>
 <translation id="4458462641685292929">Hi ha una altra operació en curs a Google Chrome. Torna-ho a provar més tard.</translation>
 <translation id="4459234553906210702">El mesurament d'anuncis permet als llocs web que visites sol·licitar informació de Chrome que els ajudi a mesurar el rendiment dels anuncis. El mesurament d'anuncis restringeix el seguiment entre llocs web transferint la quantitat mínima possible d'informació entre llocs web.</translation>
 <translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome es reiniciarà d'aquí a <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="604424701295382420">S'ha fixat. Pots tornar a accedir a Google Lens des del botó nou de la barra d'eines.</translation>
-<translation id="6060842547856900641">Obre Lens</translation>
 <translation id="6069027071882229820">Copia com a imatge</translation>
 <translation id="6070348360322141662">Per a més seguretat, Google Chrome encriptarà les teves dades</translation>
 <translation id="6075300983329039771">La teva organització, <ph name="MANAGER" />, requereix que iniciïs la sessió a Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Per accedir a les extensions des de tots els ordinadors, inicia la sessió a Chrome</translation>
 <translation id="6520670145826811516">Per poder utilitzar la ubicació, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Al gestor de contrasenyes de Google en aquest dispositiu</translation>
-<translation id="6600016381025017075">Cerca qualsevol cosa en aquesta pàgina</translation>
 <translation id="6632473616050862500">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional.</translation>
 <translation id="6660596345553328257">Vols iniciar la sessió a Chrome?</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
@@ -612,6 +607,7 @@
 <translation id="8416347857511542594">Més informació sobre la personalització d'anuncis a Chrome</translation>
 <translation id="8418845734693287262">Chrome OS no ha pogut sincronitzar les teves dades perquè les dades d'inici de sessió del compte no estan actualitzades.</translation>
 <translation id="842386925677997438">Eines de seguretat de Chrome</translation>
+<translation id="8425765582779547329">Per protegir-te més en línia amb les opcions del teu pare o mare, inicia la sessió a Chrome</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8433638294851456451">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> gestiona el teu compte. L'administrador pot veure i editar aquest perfil del navegador Chrome i les dades associades, com ara les adreces d'interès, l'historial i les contrasenyes.</translation>

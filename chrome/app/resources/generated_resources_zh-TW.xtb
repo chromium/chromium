@@ -247,6 +247,7 @@
 <translation id="1166457390969131095">使用及儲存 Google 帳戶中的密碼和密碼金鑰</translation>
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
+<translation id="1166644470305877068">隔離網頁應用程式會自動按照這項設定運作</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
 <translation id="1168704243733734901">最近的<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格為<ph name="STYLE" />，情境為<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
@@ -635,6 +636,7 @@
 <translation id="1444389367706681769">外太空</translation>
 <translation id="1444628761356461360">這項設定是由裝置擁有者「<ph name="OWNER_EMAIL" />」管理。</translation>
 <translation id="144518587530125858"> 無法載入主題的「<ph name="IMAGE_PATH" />」。</translation>
+<translation id="1445330076053050041">選取「<ph name="KEY_NAME" />」鍵執行的動作</translation>
 <translation id="1447531650545977377">開啟同步功能(&amp;S)...</translation>
 <translation id="1447895950459090752">分頁懸停預覽資訊卡</translation>
 <translation id="1448264954024227422">你可以將這個帳戶用於 Android 應用程式。如要添加他人的帳戶，請改為<ph name="LINK_BEGIN" />將使用者新增<ph name="LINK_END" />至你的 <ph name="DEVICE_TYPE" />。
@@ -1221,6 +1223,7 @@
 <translation id="1832459821645506983">是，我同意</translation>
 <translation id="1832511806131704864">手機變更已更新</translation>
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
+<translation id="1833059747301212935">輕鬆存取最近使用的文件和近期日曆活動</translation>
 <translation id="1834503245783133039">下載失敗：<ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
 <translation id="1837441256780906162">Microsoft OneDrive 已拒絕要求，請稍後再試。</translation>
@@ -1383,7 +1386,6 @@
 <translation id="1948528728718281125">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機</translation>
 <translation id="1949332606889020901">當機 ID</translation>
 <translation id="1949584741547056205">快速解答</translation>
-<translation id="1949849604471335579">根據個人喜好設定桌布、螢幕保護程式、強調色等項目</translation>
 <translation id="1949980990364952348">應用程式名稱</translation>
 <translation id="1951012854035635156">小幫手</translation>
 <translation id="1951823516285577843">尋找替代擴充功能</translation>
@@ -1507,7 +1509,7 @@
 <translation id="2030803782168502207">從裝置上移除訂閱項目</translation>
 <translation id="2031914984822377766">新增偏好的<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />。系統會將文字翻譯成清單頂端的語言。</translation>
 <translation id="2034346955588403444">新增其他 WiFi 網路</translation>
-<translation id="2037445849770872822">你已設定這個 Google 帳戶的監督功能。如要設定更多家長監護功能，請選取 [繼續]。
+<translation id="2037445849770872822">你已設定這個 Google 帳戶的監護功能。如要設定更多家長監護功能，請選取 [繼續]。
 
 如果不想繼續設定，請立即登出，你對這個帳戶所做的變更即會反映到此裝置上。
 
@@ -2200,6 +2202,7 @@
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501797496290880632">按下快速鍵</translation>
 <translation id="2501920221385095727">相黏鍵</translation>
+<translation id="2502267564852819530">從清單中移除「<ph name="TAB_TITLE" />，<ph name="LAST_ACTIVE" />」</translation>
 <translation id="2502441965851148920">自動更新功能已啟用。您的管理員停用了手動更新功能。</translation>
 <translation id="2502719318159902502">具有完整存取權</translation>
 <translation id="2504801073028762184">安全建議</translation>
@@ -2301,6 +2304,7 @@
 <translation id="2575407791320728464">網址無效，請確認格式正確無誤。</translation>
 <translation id="2575441894380764255">不得顯示干擾性或誤導性的廣告</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{系統會記住這部裝置，在 1 年內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}other{系統會記住這部裝置，在 {YEARS} 年內無需輸入驗證碼即可再次連接。這項設定是由你系統管理員指定。}}</translation>
+<translation id="2577127557293415225">暫時閉上雙眼</translation>
 <translation id="257779572837908839">設為 Chromebox 視訊會議解決方案</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
@@ -2672,6 +2676,7 @@
 <translation id="2832124733806557606">你的孩子可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
 <translation id="2833144527504272627">使用文字游標瀏覽</translation>
 <translation id="2833727845850279275">這個檔案含有惡意軟體或來自可疑網站。</translation>
+<translation id="2834091109531651093">查看 Outlook 行事曆和 Sharepoint 檔案</translation>
 <translation id="2835177225987815960">目前的掃描設定將會重設，包含指派的外接切換裝置和自動掃描的速度偏好設定。</translation>
 <translation id="2835547721736623118">語音辨識服務</translation>
 <translation id="2835761321523638096">讀取及變更閱讀清單中的項目</translation>
@@ -2771,6 +2776,7 @@
 <translation id="2904210161403910217">密碼已在你上次登入後變更</translation>
 <translation id="2904506722835398619">必須登入並執行同步處理</translation>
 <translation id="2904845070985032877">暫停動畫</translation>
+<translation id="2905556994482999199">透過頭部動作和臉部表情操控 Chromebook</translation>
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連上「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
@@ -3390,10 +3396,11 @@
 <translation id="3379268272734690">沙漠</translation>
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3382073616108123819">糟糕！系統無法判別這個裝置的裝置 ID。</translation>
-<translation id="3382200254148930874">正在停用監督功能...</translation>
+<translation id="3382200254148930874">正在停用監護功能...</translation>
 <translation id="3382737653173267704">查看家庭群組</translation>
 <translation id="338323348408199233">封鎖沒有 VPN 連線的流量</translation>
 <translation id="3384362484379805487">為節省磁碟空間，語言檔案會由裝置的所有使用者共用。</translation>
+<translation id="3385053436247851142">使用 Microsoft 帳戶登入</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">「定位精確度」可為各種應用程式和服務提供更精確的位置資訊。為達成此目標，Google 會定期處理裝置感應器相關資訊和來自裝置的無線訊號，然後匯總這些無線訊號定位資料並建立資料庫。這些資料不含身分識別資訊，可用於提高定位精確度和適地性服務的品質，並基於 Google 和第三方的正當利益改善、提供及維護 Google 整體的服務，以滿足使用者需求。</translation>
 <translation id="338583716107319301">分隔線</translation>
@@ -4474,6 +4481,7 @@
 <translation id="4106054677122819586">現在就開始整理分頁</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
 <translation id="4107522742068568249">前往安全檢查頁面</translation>
+<translation id="4107793386654579933">選取「<ph name="ACTION_NAME" />」動作的快速鍵</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
@@ -5334,6 +5342,7 @@
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4756671452988984333">音訊文字</translation>
+<translation id="4757654665487479524"><ph name="HEADING" />。<ph name="SUBHEADING" /></translation>
 <translation id="4759202969060787081">不要開啟</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4761104368405085019">使用你的麥克風</translation>
@@ -5526,6 +5535,7 @@
 <translation id="4882919381756638075">網站通常會使用你的麥克風，以提供視訊通訊等通訊功能</translation>
 <translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="48838266408104654">工作管理員(&amp;T)</translation>
+<translation id="4884937942297374058">強化防護功能已關閉</translation>
 <translation id="4884987973312178454">6 倍</translation>
 <translation id="4885692421645694729">這個擴充功能沒有其他網站存取權</translation>
 <translation id="4887424188275796356">使用 System Viewer 開啟</translation>
@@ -5819,7 +5829,7 @@
 <translation id="5102244391872941183">系統服務和具有位置存取權的應用程式與網站可使用你的位置資訊</translation>
 <translation id="5103311607312269661">調高螢幕亮度</translation>
 <translation id="5106350808162641062">移除</translation>
-<translation id="510695978163689362"><ph name="USER_EMAIL" /> 目前受到 Family Link 的監督。你可以新增學校帳戶，以便在家長的監督之下存取學校資源。</translation>
+<translation id="510695978163689362"><ph name="USER_EMAIL" /> 目前受到 Family Link 的監護。你可以新增學校帳戶，以便在家長的監護之下存取學校資源。</translation>
 <translation id="5107093668001980925">永不顯示「<ph name="MODULE_NAME" />」</translation>
 <translation id="5107443654503185812">某個擴充功能已停用安全瀏覽功能</translation>
 <translation id="5108967062857032718">設定 - 移除 Android 應用程式</translation>
@@ -5940,7 +5950,7 @@
 <translation id="5191094172448199359">你輸入的 PIN 碼不相符</translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
 <translation id="519185197579575131">使用 QT</translation>
-<translation id="5192062846343383368">開啟 Family Link 應用程式以查看監督功能設定</translation>
+<translation id="5192062846343383368">開啟 Family Link 應用程式以查看監護功能設定</translation>
 <translation id="5193485690196207310">{COUNT,plural, =1{1 個密碼金鑰}other{{COUNT} 個密碼金鑰}}</translation>
 <translation id="5193978546360574373">這麼做會移除這部 Chromebook 的 Google 雲端硬碟存取權，包括已設為可離線存取的所有檔案存取權</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
@@ -6075,7 +6085,6 @@
 <translation id="5288678174502918605">重新開啟先前關閉的分頁(&amp;E)</translation>
 <translation id="5290020561438336792">電腦和投放裝置連上不同的 Wi-Fi 網路 (例如分別使用 2.4 GHz 和 5 GHz)</translation>
 <translation id="52912272896845572">秘密金鑰檔案無效。</translation>
-<translation id="5291739252352359682">在 Chrome 瀏覽器中自動建立媒體字幕 (目前僅支援英文)。系統只會在裝置中處理語音和字幕，絕對不會外洩。</translation>
 <translation id="529175790091471945">格式化這台裝置</translation>
 <translation id="529296195492126134">不支援暫時模式。請與管理員聯絡。</translation>
 <translation id="5293043095535566171">要開啟位置資訊存取權嗎？</translation>
@@ -6332,6 +6341,7 @@
 <translation id="5473099001878321374">如果選擇繼續，即表示您允許這部裝置自動下載及安裝來自 Google、貴子女的電信業者和裝置製造商的更新內容和應用程式，上述程序可能會使用行動數據。這類應用程式中，有些可能會提供應用程式內購。</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
+<translation id="5476957746413745956">分別調整各個方向的速度</translation>
 <translation id="5477089831058413614">設定 <ph name="DEVICE_TYPE" /> 無線基地台</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481682542063333508">提供寫作輔助</translation>
@@ -7229,6 +7239,7 @@
 <translation id="6143186082490678276">取得說明</translation>
 <translation id="6143366292569327983">選擇網頁的原文語言</translation>
 <translation id="6144938890088808325">協助我們改善 Chromebook</translation>
+<translation id="6145363037359279595"><ph name="CHILD_NAME" />，歡迎使用！</translation>
 <translation id="6146409560350811147">同步功能無法正常運作。請嘗試重新登入。</translation>
 <translation id="6147020289383635445">列印預覽失敗。</translation>
 <translation id="6147253937684562370">如要解鎖設定檔，請使用你的主要帳戶電子郵件地址登入：<ph name="EMAIL" /></translation>
@@ -7500,7 +7511,6 @@
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人資料</translation>
 <translation id="6340071272923955280">網際網路列印通訊協定 (IPPS)</translation>
-<translation id="6340526405444716530">個人化</translation>
 <translation id="6341850831632289108">偵測你的實際位置</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6343003829431264373">僅限偶數頁</translation>
@@ -7899,7 +7909,6 @@
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動然後按住螢幕。</translation>
 <translation id="664290675870910564">網路選取</translation>
 <translation id="6643016212128521049">清除</translation>
-<translation id="6644512095122093795">顯示儲存密碼的選項</translation>
 <translation id="6644513150317163574">網址格式無效。使用單一登入 (SSO) 驗證時，必須將伺服器指定為主機名稱。</translation>
 <translation id="6644846457769259194">正在更新你的裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">關閉快速配對</translation>
@@ -8040,7 +8049,6 @@
 <translation id="6739943577740687354">這項功能採用 AI 技術，執行的結果不一定符合需求</translation>
 <translation id="6740234557573873150">已暫停下載 <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />系統管理員<ph name="END_LINK" />已停用安全瀏覽功能</translation>
-<translation id="6742629250739345159">在 Chrome 瀏覽器中自動建立媒體字幕。系統只會在裝置中處理語音和字幕，絕對不會外洩。</translation>
 <translation id="6743841972744298686">同步處理設定</translation>
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">下移</translation>
@@ -10051,7 +10059,7 @@
 <translation id="8155214519979960765">如要再次在這部裝置上使用密碼金鑰登入，請驗證身分。你也可以改用其他方式 (例如密碼) 登入帳戶。</translation>
 <translation id="8155676038687609779">{COUNT,plural, =0{沒有任何密碼外洩}=1{{COUNT} 組密碼外洩}other{{COUNT} 組密碼外洩}}</translation>
 <translation id="8157248655669507702">如要安裝 eSIM 卡設定檔，請啟用行動數據</translation>
-<translation id="8157704005178149728">正在設定監督功能</translation>
+<translation id="8157704005178149728">正在設定監護功能</translation>
 <translation id="8157849462797352650">裝置可享最新版的安全性、穩定性和效能更新</translation>
 <translation id="8158117992543756526">這部裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟體和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8159652640256729753">接收相關操作 (如分割畫面和切換桌面等) 的震動確認。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -10253,7 +10261,7 @@
 <translation id="8300374739238450534">午夜藍</translation>
 <translation id="8301242268274839723">請輕觸鍵盤左下角的指紋感應器。你的指紋資料會安全地儲存在「<ph name="DEVICE_TYPE" />」上，絕不會外洩。</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 個地址}}</translation>
-<translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或使用受 Family Link 監督的 Google 帳戶登入。</translation>
+<translation id="8304383784961451596">你未獲授權，無法使用這個裝置。請與管理員聯絡，要求對方授予登入權限，或使用受 Family Link 監護的 Google 帳戶登入。</translation>
 <translation id="8306063480506363120">移除雲端硬碟存取權</translation>
 <translation id="8306430106790753902">ChromeOS 網路路徑</translation>
 <translation id="8306885873692337975">取得最新功能和改善安全性的資訊。</translation>
@@ -10392,6 +10400,7 @@
 <translation id="8394212467245680403">英數字元</translation>
 <translation id="8394908167088220973">媒體播放/暫停</translation>
 <translation id="8396098434728053815">一併分享分頁音訊</translation>
+<translation id="839635482147281021">找不到智慧卡讀卡機</translation>
 <translation id="8396657283886698158">工具與動作</translation>
 <translation id="8397825320644530257">中斷與已連結手機的連線</translation>
 <translation id="8398877366907290961">仍要繼續</translation>

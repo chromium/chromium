@@ -126,7 +126,6 @@
 <translation id="2711502716910134313">Pestanya de Chromium</translation>
 <translation id="2718390899429598676">Per a més seguretat, Chromium encriptarà les teves dades.</translation>
 <translation id="2721354645805494590">Per suprimir de Chromium el teu Compte de Google, tanca la sessió</translation>
-<translation id="2727713483500953825">Selecciona les imatges o el text que vols cercar amb Lens</translation>
 <translation id="2738871930057338499">No es pot connectar a Internet. Error d'HTTP "403 Forbidden". Comprova la configuració del servidor intermediari.</translation>
 <translation id="2753623023919742414">Fes clic per cercar</translation>
 <translation id="2770231113462710648">Canvia el navegador predeterminat a:</translation>
@@ -139,7 +138,6 @@
 <translation id="2846251086934905009">Error d'instal·lació: l'instal·lador no ha completat el procés. La instal·lació s'ha anul·lat.</translation>
 <translation id="2847479871509788944">Suprimeix de Chromium...</translation>
 <translation id="2850691299438350830">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
-<translation id="2874602845494991903">Obre la cerca d'imatges</translation>
 <translation id="2885378588091291677">Gestor de tasques</translation>
 <translation id="2910007522516064972">Quant a &amp;Chromium</translation>
 <translation id="2915996080311180594">Reinicia més tard</translation>
@@ -148,6 +146,7 @@
 <translation id="2970426615109535079">La teva organització gestiona Chromium</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="2977506796191543575">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
+<translation id="2981563588585023386">Per protegir-te més en línia amb les opcions del teu pare o mare, inicia la sessió a Chromium</translation>
 <translation id="2987208172821108655">Chromium pot desactivar aquestes pestanyes per millorar la teva experiència de navegació i alliberar recursos.</translation>
 <translation id="3013473503895162900">Obre <ph name="URL" /> en una pestanya nova a Chromium.</translation>
 <translation id="3032706164202344641">Chromium no pot comprovar les teves contrasenyes. Torna-ho a provar més tard.</translation>
@@ -254,7 +253,6 @@
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> gestiona Chromium</translation>
 <translation id="4447409407328223819">Sobre Chrome for Testing</translation>
-<translation id="4453144231461812959">Cerca qualsevol imatge o text amb Lens</translation>
 <translation id="4470974262661801543">Per utilitzar i desar les dades de Chromium al teu Compte de Google, introdueix la frase de contrasenya</translation>
 <translation id="4493028449971051158">Error d'arrencada: executa l'instal·lador com a administrador.</translation>
 <translation id="4501471624619070934">La instal·lació ha fallat perquè l'accés està restringit en aquest país.</translation>
@@ -294,7 +292,6 @@
 <translation id="494490797786467921">Fes clic per tancar el quadre de diàleg d'inici de sessió de Chromium</translation>
 <translation id="4987820182225656817">Els convidats poden utilitzar Chromium sense deixar-hi rastre.</translation>
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
-<translation id="5051959905407134411">Prova la cerca d'imatges</translation>
 <translation id="5114678101347489141">Chromium està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
 <translation id="5123973130450702873">Chromium necessita permís per fer un seguiment de les teves mans</translation>
 <translation id="5174969993834422967">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic a la icona de notificacions que hi ha a l'extrem dret de la barra d'ubicacions.</translation>

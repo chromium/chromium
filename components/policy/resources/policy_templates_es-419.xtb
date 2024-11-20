@@ -2863,6 +2863,35 @@ El usuario puede establecer la imagen de avatar de cualquiera de estas opciones 
 
       Si la estableces como falsa, no se mostrarán estas sugerencias en la página Nueva pestaña.</translation>
 <translation id="3046192273793919231">Enviar paquetes de red al servidor de administración para controlar el estado en línea</translation>
+<translation id="3046917616600522016">Si estableces la política, se especificará la configuración de proxy para Chrome y las apps de ARC, por lo que se ignorarán todas las opciones relacionadas con el proxy que se especificaron en la línea de comandos.
+
+Si no la estableces, los usuarios podrán elegir su configuración de proxy.
+
+Si estableces la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, se aceptarán los siguientes campos:
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, que te permite especificar el servidor proxy que usa Chrome y evitar que los usuarios cambien la configuración de proxy
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, una URL a un archivo .pac de proxy o una secuencia de comandos de PAC codificada como una URL de datos con el tipo de MIME application/x-ns-proxy-autoconfig
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, que evita que la pila de red recurra a conexiones directas con una secuencia de comandos de PAC no válida o no disponible
+
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, una URL del servidor proxy
+
+        * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, una lista de hosts para los que se omitirá el proxy
+
+El campo <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> está obsoleto y se recomienda usar el campo <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />. Para <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, si eliges uno de estos valores:
+
+  * <ph name="PROXY_MODE_ENUM_DIRECT" />: no se usará nunca un proxy y se ignorará el resto de los campos.
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" />: se usará el proxy del sistema y se ignorará el resto de los campos.
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: se ignorará el resto de los campos.
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: se usarán los campos <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: se usarán los campos <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> y <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+Nota: Para obtener más ejemplos detallados, visita The Chromium Projects ( https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings ).</translation>
 <translation id="3047732214002457234">Controlar cómo "Limpiar Chrome" informa datos a Google</translation>
 <translation id="3047864383610708617">Inhabilitar las teclas especiales</translation>
 <translation id="3048744057455266684">Si se establece esta política y una URL de búsqueda sugerida desde el cuadro multifunción contiene este parámetro en la cadena de consulta o en el identificador de fragmentos, la sugerencia mostrará los términos de búsqueda y el proveedor de búsqueda en lugar de la URL de búsqueda sin procesar.
@@ -2926,18 +2955,6 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="3092059499596000593">Utiliza la impresora predeterminada del sistema como la opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica lo que sucede cuando un usuario que se autentica mediante un token de seguridad (p. ej., con una tarjeta inteligente) quita ese token durante una sesión activa. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: No pasa nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Se cierra la sesión y el usuario sale. Si no estableces esta política, se aplicará la configuración predeterminada <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
-<translation id="30986061650205557">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
-
-0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función.
-
-Las funciones potenciadas por IA generativa de Herramientas para desarrolladores incluyen:
-
-- Console Insights: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.
-- AI assistance: Ayuda a los usuarios a comprender los estilos de CSS con estadísticas potenciadas por IA.</translation>
 <translation id="309885424548342662">Habilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3101035417394748390">El tamaño máximo (en bytes) que puede transferirse entre el cliente y el host a través de la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Elegir cómo especificar la configuración del servidor proxy</translation>
@@ -3042,9 +3059,6 @@ Si inhabilitas la política, no se mostrará al usuario la promoción para calif
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
       Ten en cuenta que esta política bloquea JavaScript según si el origen del documento de nivel superior (generalmente la URL de la página que también se muestra en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques a la cadena de suministro web. Por ejemplo, si proporcionas el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en, por ejemplo, https://example.com ejecute una secuencia de comandos cargada desde https://www.foo.com/example.js. Además, si proporcionas el patrón "https://example.com/", no se impedirá que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se incorpora como un submarco en una página alojada en otro origen, por ejemplo, https://www.bar.com.</translation>
-<translation id="3180671894201217988">Si habilitas la política o no la estableces, el software de terceros no podrá insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
-
-      Si inhabilitas la política, este software podrá insertar el código mencionado en los procesos de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3181114468897395940">La configuración de RePág/AvPág usa la combinación de teclas que contiene la tecla modificadora alt</translation>
 <translation id="3182503302060513467">La página Nueva pestaña mostrará la notificación del espacio del medio (si está disponible)</translation>
 <translation id="3184161739683646075">Controla el modo de DNS sobre HTTPS</translation>

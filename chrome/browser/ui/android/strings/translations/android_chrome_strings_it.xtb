@@ -257,6 +257,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2172905120685242547">Chiudere la finestra?</translation>
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
 <translation id="2175927920773552910">Codice QR</translation>
+<translation id="2184272387334793084">Accedi per avere a disposizione le password e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="218608176142494674">Condivisione</translation>
 <translation id="219283042927675668">Schede nel gruppo</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
@@ -576,6 +577,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="363596933471559332">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la verifica prima di ogni accesso ai siti web.</translation>
 <translation id="3636940436873918441">Lingue preferite</translation>
 <translation id="3637744895182738742">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Vai alla home page dell'app Google</translation>
 <translation id="368329460027487650">Account disconnesso. Consente di aprire le opzioni per accedere.</translation>
 <translation id="3684540848053703310">Riquadro inferiore di approfondimenti sul prezzo chiuso</translation>
@@ -876,7 +878,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4988526792673242964">Pagine</translation>
 <translation id="4991110219272367918">Opzione per approvare o meno un sito web chiuso</translation>
 <translation id="4996095658297597226">Vuoi utilizzare la password suggerita?</translation>
-<translation id="499724277181351974">Vai: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Segui questo sito qui</translation>
 <translation id="5004416275253351869">Gestione attività Google</translation>
 <translation id="5005498671520578047">Copia password</translation>
@@ -1576,7 +1577,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda di navigazione in incognito}other{<ph name="TAB_COUNT_NORMAL" /> schede di navigazione in incognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibili</translation>
 <translation id="8058746566562539958">Apri in nuova scheda di Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" />}=1{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e # altra persona}other{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e # altre persone}}</translation>
 <translation id="8062594758852531064">Precaricamento esteso:</translation>
 <translation id="8063895661287329888">Impossibile aggiungere preferito.</translation>
 <translation id="8066816452984416180">Aggiungi rapidamente questa pagina ai preferiti. Tocca e tieni premuto per modificare questa scorciatoia.</translation>

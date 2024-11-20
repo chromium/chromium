@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1247030632403369975">एल्युमिनियम</translation>
 <translation id="1252209483516427155">जैकेट, कोट, रेनकोट वगैरह</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> से पेमेंट करें</translation>
 <translation id="1253846494229886276">स्क्रीनशॉट सेव किया जा रहा है</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक किए गए)</translation>
 <translation id="1255086252236620440">फ़ूड मिक्सर</translation>
@@ -3140,7 +3139,6 @@
 <translation id="6671169470640320959">वाहनों के लिए क़र्ज़</translation>
 <translation id="6671697161687535275">क्रोमियम से फ़ॉर्म सुझाव निकालें?</translation>
 <translation id="6677351035258626477">फ़ास्ट फ़ूड</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome पर खरीदारी करते समय, विकल्प के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}one{Chrome पर खरीदारी करते समय, विकल्प के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}other{Chrome पर खरीदारी करते समय, विकल्पों के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}}</translation>
 <translation id="6679354743514146922">Chrome ब्राउज़र, <ph name="APP_NAME" /> पर आपका पासवर्ड भरने की कोशिश कर रहा है.</translation>
 <translation id="6681790815630918386">सीवीसी सेव किया गया</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>

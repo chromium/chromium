@@ -1397,7 +1397,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1948528728718281125">O acesso à câmera é concedido a apps e sites com essa permissão e serviços do sistema</translation>
 <translation id="1949332606889020901">IDs de falha</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
-<translation id="1949849604471335579">Personalizar papel de parede, protetor de tela, cores de destaque e muito mais</translation>
 <translation id="1949980990364952348">Nome do app</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1951823516285577843">Encontrar alternativa</translation>
@@ -6104,7 +6103,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5290020561438336792">PC e dispositivo de transmissão em diferentes redes Wi-Fi (por exemplo, 2,4 GHz
     ou 5 GHz)</translation>
 <translation id="52912272896845572">O arquivo de chave privada é inválido.</translation>
-<translation id="5291739252352359682">Cria legendas automaticamente para conteúdo de mídia no navegador Chrome (disponível em inglês). Os áudios e as legendas são processados localmente e nunca deixam o dispositivo.</translation>
 <translation id="529175790091471945">Formatar este dispositivo</translation>
 <translation id="529296195492126134">O modo temporário não é compatível. Entre em contato com seu administrador</translation>
 <translation id="5293043095535566171">Ativar o acesso ao local?</translation>
@@ -7535,7 +7533,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6338968693068997776">Adicione um dispositivo USB</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impressão via Internet (IPPS)</translation>
-<translation id="6340526405444716530">Personalização</translation>
 <translation id="6341850831632289108">Detectar sua localização física</translation>
 <translation id="6342069812937806050">Neste instante</translation>
 <translation id="6343003829431264373">Somente páginas pares</translation>
@@ -7936,7 +7933,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6642720633335369752">Para acessar todas as janelas de apps abertos, deslize de baixo para cima e mantenha a tela pressionada.</translation>
 <translation id="664290675870910564">Seleção de rede</translation>
 <translation id="6643016212128521049">Limpar</translation>
-<translation id="6644512095122093795">Oferecer para salvar senhas</translation>
 <translation id="6644513150317163574">Formato de URL inválido. O servidor precisa ser especificado como um nome de host quando a autenticação SSO é usada.</translation>
 <translation id="6644846457769259194">Atualizando seu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desligar "Pareamento rápido"</translation>
@@ -8077,7 +8073,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6739943577740687354">Este recurso usa IA e nem sempre acerta</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> pausado</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Seu administrador<ph name="END_LINK" /> desativou o "Navegação segura"</translation>
-<translation id="6742629250739345159">Cria legendas automaticamente para conteúdo de mídia no navegador Chrome. Os áudios e as legendas são processados localmente e nunca deixam o dispositivo.</translation>
 <translation id="6743841972744298686">Configurações de sincronização</translation>
 <translation id="6745592621698551453">Atualizar agora</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>

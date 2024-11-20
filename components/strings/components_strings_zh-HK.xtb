@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1247030632403369975">鋁</translation>
 <translation id="1252209483516427155">外套</translation>
-<translation id="1253096324252841344">使用「<ph name="FINANCIAL_ACCOUNT_TYPES" />」付款</translation>
 <translation id="1253846494229886276">正在儲存螢幕截圖</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" /> (已同步)</translation>
 <translation id="1255086252236620440">食物攪拌機</translation>
@@ -3139,7 +3138,6 @@
 <translation id="6671169470640320959">汽車貸款</translation>
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
 <translation id="6677351035258626477">快餐</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{在 Chrome 上購物時可選用 <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{在 Chrome 上購物時可選用 <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Chrome 瀏覽器正在嘗試在「<ph name="APP_NAME" />」填入密碼。</translation>
 <translation id="6681790815630918386">已儲存 CVC</translation>
 <translation id="6683022854667115063">耳機</translation>

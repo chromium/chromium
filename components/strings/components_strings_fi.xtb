@@ -138,7 +138,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1243027604378859286">Tekijä:</translation>
 <translation id="1247030632403369975">Alumiini</translation>
 <translation id="1252209483516427155">Ulkoiluvaatteet</translation>
-<translation id="1253096324252841344">Maksa tällä: <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Tallennetaan kuvakaappausta</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synkronoitu)</translation>
 <translation id="1255086252236620440">Sähkövatkaimet</translation>
@@ -3141,7 +3140,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6671169470640320959">Autorahoitus</translation>
 <translation id="6671697161687535275">Poistetaanko lomake-ehdotus Chromiumista?</translation>
 <translation id="6677351035258626477">Pikaruoka</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Kun teet ostoksia Chromessa, näet vaihtoehtona <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kun teet ostoksia Chromessa, näet vaihtoehtoina <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Chrome-selain yrittää täyttää salasanasi: <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC tallennettu</translation>
 <translation id="6683022854667115063">Kuulokkeet</translation>

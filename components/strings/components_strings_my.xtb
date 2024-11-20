@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">စာရေးသူ-</translation>
 <translation id="1247030632403369975">အလူမီနီယံ</translation>
 <translation id="1252209483516427155">အပေါ်ရုံ</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ဖြင့် ပေးချေရန်</translation>
 <translation id="1253846494229886276">ဖန်သားပြင်ဓာတ်ပုံ သိမ်းနေသည်</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="1255086252236620440">အစားအသောက် မွှေစက်</translation>
@@ -314,6 +313,7 @@
 <translation id="1549470594296187301">ဤလုပ်ဆောင်ချက်အား ပြုလုပ်နိုင်ရန် JavaScript အား ဖွင့်ထားရမည်ဖြစ်၏။</translation>
 <translation id="1553152622374372421">ဆောင်းရာသီ အားကစား</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
+<translation id="1554485704925237240"><ph name="READERNAME" /> ဟူသော ကတ်ဖတ်စက်များအပြင် ၎င်းနှင့်တွဲသုံးသော စမတ်ကတ်များကို ထိန်းချုပ်ရန်</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1555191101192706055">သင်ဝင်ကြည့်ရန်ကြိုးပမ်းသည့် ဝဘ်ဆိုက်ရှိ တိုက်ခိုက်သူများသည် ပင်မစာမျက်နှာပြောင်းခြင်း (သို့) ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များတွင် ထပ်ဆောင်းကြော်ငြာများပြခြင်းကဲ့သို့ သင်၏ဘရောက်စ်လုပ်မှုကို ထိခိုက်စေသော အန္တရာယ်ရှိသည့်ဆော့ဖ်ဝဲ ထည့်သွင်းရန် သင့်ကိုလှည့်စားနိုင်သည်။</translation>
 <translation id="1559231233244409191">ကတ်ထူ (သုံးထပ်)</translation>
@@ -912,6 +912,7 @@
 သက်တမ်းရှိကြ၍ ဖြစ်ပါသည်။ သင့်ကိရိယာ၏ နာရီချိန် မမှန်သောကြောင့်၊ Chromium
  က ထိုလက်မှတ်များကို စိစစ်မရနိုင်ပါ။</translation>
 <translation id="2597378329261239068">ဒီစာတမ်းကို စကားဝှက်ဖြင့် ကာကွယ်ထားသည်။ ကျေးဇူးပြုပြီး စကားဝှက် ရိုက်ထည့်ပါ။</translation>
+<translation id="2605979593348332811">အမည် အသံထွက်</translation>
 <translation id="2606760465469169465">အော်တို အတည်ပြုခြင်း</translation>
 <translation id="2608019759319359258">အကြောင်းအရာတစ်ခုကို ပိတ်ထားပါက ၎င်းကို ကြော်ငြာများ ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သုံးမည်မဟုတ်ပါ</translation>
 <translation id="2610561535971892504">မိတ္တူကူးရန် နှိပ်ပါ</translation>
@@ -923,6 +924,7 @@
 <translation id="2622754869869445457">သင့်နောက်ဆုံးတဘ်</translation>
 <translation id="2625385379895617796">သင်၏ နာရီမှာ စောနေ</translation>
 <translation id="262745152991669301">USB ကိရိယာများနှင့် ချိတ်ဆက်ရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="2627847595568876492">PDF မှ စာသားကို ထုတ်ယူနေသည်…</translation>
 <translation id="2628224721443278970">Microsoft OneDrive သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2634124572758952069"><ph name="HOST_NAME" /> ၏ ဆာဗာ IP လိပ်စာကို မတွေ့ပါ။</translation>
 <translation id="2639739919103226564">အခြေအနေ:</translation>
@@ -1522,6 +1524,7 @@
 <translation id="3711430313228789376">Chrome ဘရောင်ဇာက စကားဝှက်များကို ပြရန် ကြိုးပမ်းနေသည်</translation>
 <translation id="3711861349027352138">ကွန်ပျူတာ၊ ဗီဒီယိုဂိမ်း</translation>
 <translation id="3711895659073496551">ဆိုင်းငံ့ထားရန်</translation>
+<translation id="3712004750972384495">ဖန်သားပြင်ရိုက်ကူးခြင်းကို သိမ်းနေသည်</translation>
 <translation id="3712006010833051684">#10 စာအိတ်</translation>
 <translation id="3712624925041724820">လိုင်စင်များ ကုန်ဆုံးသွားပြီ</translation>
 <translation id="3713277100229669269">ငွေမပေးချေမီ ကတ်အကျိုးခံစားခွင့်များကို ကြည့်နိုင်ပါပြီ</translation>
@@ -1550,6 +1553,7 @@
 <translation id="3744899669254331632">ဝက်ဘ်ဆိုက်က ဗလုံးဗထွေး ပို့လိုက်သည့် အထောက်အထားများကို Chromium ဖက်မှ စီမံဆောင်ရွက် မရနိုင်သောကြောင့် သင်သည် <ph name="SITE" /> ကို ယခုချက်ချင်း ဝင်မရနိုင်ပါ။ ကွန်ရက် အမှားများ နှင့် တိုက်ခိုက်မှုများမှာ ယာယီမျှသာ ဖြစ်ကြတာမို့လို့၊ ဒီစာမျက်နှာသည် နောက်ပိုင်းမှာ အလုပ်လုပ်နိုင်ပါမည်။</translation>
 <translation id="3745599309295009257">သင်၏စာသား၊ အချက်အလက်နှင့် သင်ရေးသားနေသော စာမျက်နှာ၏ URL တို့ကို Google သို့ ပို့မည်ဖြစ်ပြီး သုံးသပ်ချက်ပေးသူများက စိစစ်မည်ဖြစ်ကာ ဤဝန်ဆောင်မှု ပိုကောင်းလာစေရန် သုံးပါမည်။ (ဆေးကုသမှုဆိုင်ရာ သို့မဟုတ် ငွေကြေးဆိုင်ရာ အသေးစိတ်ကဲ့သို့သော) ကိုယ်ရေးအချက်အလက်များ ထည့်ခြင်း (သို့) သီးသန့် သို့မဟုတ် သတိထားရမည့် အချက်အလက်ပါသော ဝဘ်ဆိုက်များပေါ်တွင် ဤတူးလ်ကိုသုံးခြင်း မပြုလုပ်ရ။</translation>
 <translation id="3748009735914587286">သတ္တု (အလွန်တောက်ပြောင်)</translation>
+<translation id="3752181611900535304">အကောင့်တွင် လိပ်စာသိမ်းမလား။</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ကို သတ်မှတ်မထားသဖြင့် လျစ်လျူရှုလိုက်သည်။</translation>
 <translation id="3754210790023674521">နှစ်ခုထပ်၍ကြည့်ခြင်း မုဒ်မှ ထွက်ရန်</translation>
 <translation id="3759461132968374835">သင့်ထံမှာ မကြာသေးမီက အစီရင်ခံခဲ့သည့် ပျက်စီးခြင်းများ မရှိပါ။ ပျက်စီးခြင်း အစီရင်ခံမှုကို ပိတ်ထားစဉ် ဖြစ်ပွားသည့် ပျက်စီးမှုများ ဤနေရာတွင် ပေါ်လာကြမည်မဟုတ်ပါ။</translation>
@@ -1660,6 +1664,7 @@
 <translation id="3962859241508114581">ယခင်တစ်ပုဒ်</translation>
 <translation id="3963721102035795474">စာဖတ်သူ မုဒ်</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခုမှ }other{ဝဘ်ဆိုက် # ခုမှ }}</translation>
+<translation id="3965672182149944205">လိပ်စာ သိမ်းမလား။</translation>
 <translation id="3966044442021752214">ထုတ်ကုန်ဘေးကင်းလုံခြုံမှု</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ကိုပိတ်ဆို့ထားသည်</translation>
@@ -2329,6 +2334,7 @@
 <translation id="5191315092027169558">သင့်ပရိုဖိုင်ကို <ph name="DOMAIN" /> က စီမံသည်</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> က ဖိုင်အများအပြားကို ​ဒေါင်းလုဒ်လုပ်လိုသည်</translation>
 <translation id="519422657042045905">မှတ်ချက် မရနိုင်ပါ</translation>
+<translation id="5200063972779787617">အကောင့်တွင် လိပ်စာသိမ်းခြင်း</translation>
 <translation id="5201306358585911203">ဤစာမျက်နှာပေါ်တွင် ထည့်ထားသည့် စာမျက်နှာက ဆိုထားသည်မှာ</translation>
 <translation id="5205222826937269299">အမည် လိုအပ်သည်</translation>
 <translation id="5206392433295093945">အိပ်ခန်း</translation>
@@ -2351,6 +2357,7 @@
 <translation id="5239623327352565343">တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="5241048084654737238">ကတ်အချက်အလက်ကို သိမ်း၍မရကြောင်း အတည်ပြုခြင်း</translation>
 <translation id="5242610955375133957">ဖလင်အခြောက်</translation>
+<translation id="5243004157379865295">လိပ်စာအပ်ဒိတ်လုပ်ခြင်း</translation>
 <translation id="5244521145258281926">Google Account တွင် သင့်အချက်အလက်၊ အချက်အလက်လုံခြုံမှုနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန်အတွက် ‘Google Account စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="5244732203286792411">ဖွင့်နေသည်...
     တစ်မိနစ်ခန့် ကြာနိုင်သည်။</translation>
@@ -2847,6 +2854,7 @@
 <translation id="6159554577634054750">ဖျက်ပိုး နှိမ်နင်းခြင်း</translation>
 <translation id="6159908896951210943">ရုံးသုံး</translation>
 <translation id="6160391204859821737">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှု အင်္ဂါရပ် ဖွင့်ရန်</translation>
+<translation id="6162403104168428984">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6167577165590485365">ရယူရန် နောက်ဆုံးကြိုးပမ်းချိန်-</translation>
 <translation id="617256461084925519">သင့်ငွေပေးချေမှု အချက်အလက်တွင် ဖြည့်နိုင်ရန် Google Chrome က သင်ဖြစ်ကြောင်း အတည်ပြုနေသည်။</translation>
@@ -3081,6 +3089,7 @@
 <translation id="6569060085658103619">သင်သည် နောက်ဆက်တွဲစာမျက်နှာကို ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
 <translation id="6573200754375280815">ညာဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
 <translation id="6574762126505704998">ဖြည့်ရန်</translation>
+<translation id="6575408526598156416">အကောင့်တွင် သိမ်းခြင်း</translation>
 <translation id="6577792494180292262">လုပ်ငန်း ရင်းနှီးငွေ</translation>
 <translation id="6578434528542148658">နောက်ဆက်တွဲ ID မမှန်ပါ။</translation>
 <translation id="6579858392010591435">အားလပ်ရက်နှင့် ရာသီအလိုက် အစီအစဉ်</translation>
@@ -3130,7 +3139,6 @@
 <translation id="6671169470640320959">ကားဝယ် ကားငှားရန် ငွေချေးခြင်း</translation>
 <translation id="6671697161687535275">Chromium ထဲမှ ပုံစံအကြံပြုချက်ကို ဖယ်ရှားရမလား။</translation>
 <translation id="6677351035258626477">အမြန်ပြင် အစားအသောက်</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ရွေးစရာအနေဖြင့် <ph name="FINANCIAL_ACCOUNT_TYPES" /> ကိုကြည့်ပါ}other{Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ရွေးစရာများအနေဖြင့် <ph name="FINANCIAL_ACCOUNT_TYPES" /> ကိုကြည့်ပါ}}</translation>
 <translation id="6679354743514146922">Chrome ဘရောင်ဇာသည် <ph name="APP_NAME" /> တွင် သင့်စကားဝှက်ကိုဖြည့်ရန် ကြိုးပမ်းနေသည်။</translation>
 <translation id="6681790815630918386">CVC သိမ်းလိုက်သည်</translation>
 <translation id="6683022854667115063">နားကြပ်</translation>
@@ -3392,6 +3400,7 @@
 <translation id="714064300541049402">ဘေး ၂ ပုံ အလျားလိုက် အရွှေ့</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
+<translation id="7152230779180489711">နောက်ဆုံး ဝင်ကြည့်ထားချိန်</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}other{<ph name="PAYMENT_METHOD_PREVIEW" /> နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ခု}}</translation>
 <translation id="7153618581592392745">လာဗင်ဒါ</translation>
 <translation id="7156870133441232244">ဆာဗာကို TLS 1.2 နှင့်နောက်ပိုင်းသို့ အဆင့်မြှင့်တင်ရမည်။</translation>
@@ -4473,6 +4482,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />။ တဘ်နှိပ်ပါ။ ထို့နောက် သင်၏ခရီးစဉ်ကို ဆက်လုပ်ရန်နှင့် သင်၏ Chrome မှတ်တမ်းရှိ သက်ဆိုင်ရာလုပ်ဆောင်ချက်ကို ကြည့်ရန် Enter နှိပ်ပါ</translation>
 <translation id="9119042192571987207">အပ်လုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> သည် သင်ဖြစ်ကြောင်း အတည်ပြုလိုသည်</translation>
+<translation id="9120593907434185157">လိပ်စာသိမ်းခြင်း</translation>
 <translation id="912327514020027767">စကပ်</translation>
 <translation id="9128870381267983090">ကွန်ယက်သို့ ချိတ်ဆက်ပါ</translation>
 <translation id="9131119348384879525">လျှို့ဝှက်အကြောင်းအရာကို ရိုက်ကူးမလား။</translation>

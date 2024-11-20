@@ -138,7 +138,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Hliník</translation>
 <translation id="1252209483516427155">Vrchné oblečenie</translation>
-<translation id="1253096324252841344">Platba cez <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Ukladá sa snímka obrazovky</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronizované)</translation>
 <translation id="1255086252236620440">Mixéry na potraviny</translation>
@@ -3135,7 +3134,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6671169470640320959">Financovanie áut</translation>
 <translation id="6671697161687535275">Chcete návrh položky formulára odstrániť z prehliadača Chromium?</translation>
 <translation id="6677351035258626477">Rýchle občerstvenie</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Pri nákupoch v Chrome uvidíte možnosť <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Pri nákupoch v Chrome uvidíte možnosti <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as options}other{Pri nákupoch v Chrome uvidíte možnosti <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Prehliadač Chrome sa pokúša doplniť heslo v aplikácii <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Overovací kód karty bol uložený</translation>
 <translation id="6683022854667115063">Slúchadlá</translation>

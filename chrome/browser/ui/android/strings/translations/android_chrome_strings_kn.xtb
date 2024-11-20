@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">ವಿಂಡೋವನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
+<translation id="2184272387334793084">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="218608176142494674">ಹಂಚಿಕೆ</translation>
 <translation id="219283042927675668">ಗುಂಪಿನಲ್ಲಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="2194856509914051091">ಪರಿಗಣಿಸಬೇಕಾದ ಸಂಗತಿಗಳು</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">ಸಂಗ್ರಹಿಸಲಾದ ರುಜುವಾತುಗಳನ್ನು ಬಳಸಿಕೊಳ್ಳುವ ಮೂಲಕ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. ವೈಶಿಷ್ಟ್ಯವು ಆಫ್ ಆಗಿರುವಾಗ, ವೆಬ್‌ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವ ಮೊದಲು ಪ್ರತಿ ಬಾರಿಯೂ ನಿಮಗೆ ಪರಿಶೀಲನೆ ಮಾಡಲು ಕೇಳಲಾಗುವುದು.</translation>
 <translation id="3636940436873918441">ಆದ್ಯತೆಯ ಭಾಷೆಗಳು</translation>
 <translation id="3637744895182738742">ನೀವು ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು ಬಯಸಿದರೆ, <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಿ<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ಆ್ಯಪ್ ಹೋಮ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="368329460027487650">ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗಿದೆ. ಸೈನ್ ಇನ್ ಮಾಡಲು ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="3684540848053703310">ದರದ ಒಳನೋಟಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -875,7 +877,6 @@
 <translation id="4988526792673242964">ಪುಟಗಳು</translation>
 <translation id="4991110219272367918">ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ಅನುಮೋದಿಸುವ ಅಥವಾ ಅನುಮೋದಿಸದಿರುವ ಕುರಿತ ಆಯ್ಕೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="4996095658297597226">ಸೂಚಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬೇಕೆ?</translation>
-<translation id="499724277181351974">ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ಇಲ್ಲಿ ಈ ಸೈಟ್ ಅನ್ನು ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="5004416275253351869">Google ಚಟುವಟಿಕೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
@@ -1575,7 +1576,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌}one{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB  ಲಭ್ಯವಿದೆ</translation>
 <translation id="8058746566562539958">ಹೊಸ Chrome ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> ಅವರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}=1{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು # ಇತರರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}one{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು # ಇತರರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}other{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು # ಇತರರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}}</translation>
 <translation id="8062594758852531064">ವಿಸ್ತರಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ:</translation>
 <translation id="8063895661287329888">ಬುಕ್‌ಮಾರ್ಕ್‌ ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="8066816452984416180">ಈ ಪುಟವನ್ನು ತ್ವರಿತವಾಗಿ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ. ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಒತ್ತಿ ಹಿಡಿಯಿರಿ.</translation>

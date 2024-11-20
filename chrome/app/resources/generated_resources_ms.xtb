@@ -1396,7 +1396,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1948528728718281125">Akses kamera dibenarkan untuk apl, laman web dengan kebenaran kamera dan perkhidmatan sistem</translation>
 <translation id="1949332606889020901">ID keranapan</translation>
 <translation id="1949584741547056205">Jawapan Pantas</translation>
-<translation id="1949849604471335579">Peribadikan kertas dinding, penyelamat skrin, warna aksen dan pelbagai lagi</translation>
 <translation id="1949980990364952348">Nama apl</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1951823516285577843">Cari alternatif</translation>
@@ -6064,7 +6063,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5261619498868361045">Nama bekas tidak boleh kosong.</translation>
 <translation id="5261683757250193089">Buka dalam Gedung Web</translation>
 <translation id="5261799091118902550">Fail ini mungkin virus atau perisian hasad. Anda boleh menghantar fail ini kepada Google untuk menyemak jika fail tersebut tidak selamat.</translation>
-<translation id="5261929928981501666">Sentiasa tunjukkan bar skrol</translation>
+<translation id="5261929928981501666">Sentiasa tunjukkan bar tatal</translation>
 <translation id="5262334727506665688">Teruskan menyimpan kata laluan dalam Google Account anda</translation>
 <translation id="5262784498883614021">Sambung kepada rangkaian secara automatik</translation>
 <translation id="5263656105659419083">Untuk kembali kepada panel sisi dengan mudah, klik Pin pada bahagian atas sebelah kanan</translation>
@@ -6105,7 +6104,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5290020561438336792">PC dan peranti cast menggunakan rangkaian Wi-Fi yang berlainan (mis. 2.4GHz
     vs. 5GHz)</translation>
 <translation id="52912272896845572">Fail penting persendirian adalah tidak sah.</translation>
-<translation id="5291739252352359682">Membuat sari kata untuk media dalam penyemak imbas Chrome secara automatik (tersedia dalam bahasa Inggeris pada masa ini). Audio dan sari kata diproses secara setempat dan tidak sekali-kali dihantar keluar daripada peranti.</translation>
 <translation id="529175790091471945">Formatkan peranti ini</translation>
 <translation id="529296195492126134">Mod sementara tidak disokong. Sila hubungi pentadbir anda</translation>
 <translation id="5293043095535566171">Hidupkan akses lokasi?</translation>
@@ -7536,7 +7534,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6338968693068997776">Tambah peranti USB</translation>
 <translation id="6339668969738228384">Buat profil baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokol Cetakan Internet (IPPS)</translation>
-<translation id="6340526405444716530">Pemperibadian</translation>
 <translation id="6341850831632289108">Kesan lokasi fizikal anda</translation>
 <translation id="6342069812937806050">Sebentar tadi</translation>
 <translation id="6343003829431264373">Halaman nombor genap sahaja</translation>
@@ -7935,7 +7932,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6642720633335369752">Untuk melihat semua tetingkap apl yang terbuka, leret ke atas dari bawah dan tahan.</translation>
 <translation id="664290675870910564">Pilihan Rangkaian</translation>
 <translation id="6643016212128521049">Kosongkan</translation>
-<translation id="6644512095122093795">Tawarkan untuk menyimpan kata laluan</translation>
 <translation id="6644513150317163574">Format URL tidak sah. Pelayan mesti dinyatakan sebagai nama hos apabila pengesahan SSO digunakan.</translation>
 <translation id="6644846457769259194">Mengemas kini peranti anda (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Matikan Ganding Pantas</translation>
@@ -8076,7 +8072,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6739943577740687354">Ciri ini menggunakan AI dan tidak sentiasa betul</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> dijeda</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Pentadbir anda<ph name="END_LINK" /> telah mematikan Penyemakan Imbas Selamat</translation>
-<translation id="6742629250739345159">Membuat sari kata untuk media dalam penyemak imbas Chrome secara automatik. Audio dan sari kata diproses secara setempat dan tidak sekali-kali dihantar keluar daripada peranti.</translation>
 <translation id="6743841972744298686">Tetapan penyegerakan</translation>
 <translation id="6745592621698551453">Kemas kini sekarang</translation>
 <translation id="6746124502594467657">Alihkan ke bawah</translation>

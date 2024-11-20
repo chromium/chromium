@@ -138,7 +138,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Alumínio</translation>
 <translation id="1252209483516427155">Roupas</translation>
-<translation id="1253096324252841344">Pagar com <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Salvando captura de tela</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Centrífugas de alimentos</translation>
@@ -3140,7 +3139,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6671169470640320959">Financiamento de automóveis</translation>
 <translation id="6671697161687535275">Remover sugestão de formulário do Chromium?</translation>
 <translation id="6677351035258626477">Fast food</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Ao fazer compras no Chrome, veja <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}one{Ao fazer compras no Chrome, veja <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}other{Ao fazer compras no Chrome, veja <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opções}}</translation>
 <translation id="6679354743514146922">O navegador Chrome está tentando preencher sua senha em <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC salvo</translation>
 <translation id="6683022854667115063">Fones de ouvido</translation>

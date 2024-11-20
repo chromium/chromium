@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">開啟 Chrome 設定，將 Chrome 設為預設瀏覽器。</translation>
 <translation id="1670609221633730681">Chrome 提示：選擇網址列位置</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">在 Chrome 中儲存密碼</translation>
 <translation id="1790080846677398234">將輸入的網址加入 Chrome 書籤。</translation>
 <translation id="1799920918471566157">Chrome 提示</translation>
 <translation id="1830634592642484976">這個地址目前儲存在 Chrome 中。如要在各項 Google 產品中使用這項資訊，請儲存到你的 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
@@ -219,9 +220,11 @@
 
 如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="6922332667202044570">刪除 Chrome 的瀏覽資料。</translation>
+<translation id="6924922227983877439">預設在 Chrome 中開啟連結</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
 <translation id="7056826488869329999">在 Chrome 中開啟並執行安全檢查。</translation>
 <translation id="7061455974939528301">按住 Chrome 圖示，然後點選「編輯主畫面」</translation>
+<translation id="7065813315247345131">將 Chrome 移至 Dock</translation>
 <translation id="7124339256045485976">確保使用最新版本的 Chrome</translation>
 <translation id="7161390184744336561">Google Chrome 版本過舊</translation>
 <translation id="7165736900384873061">開始使用 Google Chrome QR 掃描器</translation>

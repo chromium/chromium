@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome の設定を開いて Chrome を既定のブラウザに設定します。</translation>
 <translation id="1670609221633730681">Chrome のヒント: アドレスバーの位置を選択</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">パスワードを Chrome に保存</translation>
 <translation id="1790080846677398234">入力した URL を Chrome のブックマークに追加します。</translation>
 <translation id="1799920918471566157">Chrome を使いこなすヒント</translation>
 <translation id="1830634592642484976">この住所は現在、Chrome に保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="USER_EMAIL" />）に保存してください。</translation>
@@ -219,9 +220,11 @@
 
 Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="6922332667202044570">Chrome の閲覧履歴データを削除します。</translation>
+<translation id="6924922227983877439">デフォルトで Chrome を使用してリンクを開く</translation>
 <translation id="6975725306479268850">自動入力で Chrome を選択する</translation>
 <translation id="7056826488869329999">Chrome で安全チェックを開いて実行します。</translation>
 <translation id="7061455974939528301">Chrome アイコンを長押しして、[ホーム画面を編集] をクリックします</translation>
+<translation id="7065813315247345131">Chrome をドックに移動</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7161390184744336561">Google Chrome は古いバージョンです</translation>
 <translation id="7165736900384873061">Google Chrome の QR スキャナの使用を開始する</translation>

@@ -247,6 +247,7 @@
 <translation id="1166457390969131095">તમારા Google એકાઉન્ટમાંથી પાસવર્ડ અને પાસકીનો ઉપયોગ કરો અને સાચવો</translation>
 <translation id="1166583374608765787">અપડેટ કરેલા નામનો રિવ્યૂ કરો</translation>
 <translation id="1166596238782048887"><ph name="DESK_TITLE" /> ડેસ્ક <ph name="TAB_TITLE" />ની માલિકી ધરાવે છે</translation>
+<translation id="1166644470305877068">આઇસોલેટેડ વેબ ઍપ ઑટોમૅટિક રીતે આ સેટિંગને અનુસરે છે</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> માં ખુલી રહ્યું છે...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> મૂડ ધરાવતી <ph name="STYLE" /> શૈલીમાં, <ph name="SUBJECT" />ની <ph name="INDEX" /> તાજેતરની AI થીમ.</translation>
 <translation id="116896278675803795">પસંદ કરેલા કન્ટેન્ટ સાથે મેળ કરવા માટે ઑટોમૅટિક રીતે ભાષા બદલો</translation>
@@ -636,6 +637,7 @@
 <translation id="1444389367706681769">અવકાશ</translation>
 <translation id="1444628761356461360">આ સેટિંગ ડિવાઇસના માલિક <ph name="OWNER_EMAIL" /> દ્વારા મેનેજ થાય છે.</translation>
 <translation id="144518587530125858">થીમ માટે '<ph name="IMAGE_PATH" />' લોડ કરી શકાયું નથી.</translation>
+<translation id="1445330076053050041"><ph name="KEY_NAME" /> કી માટે કોઈ ક્રિયા પસંદ કરો</translation>
 <translation id="1447531650545977377">&amp;સિંક કરો સુવિધા ચાલુ કરો...</translation>
 <translation id="1447895950459090752">ટૅબ હોવર પ્રીવ્યૂ કાર્ડ</translation>
 <translation id="1448264954024227422">તમે Android ઍપ સાથે આ એકાઉન્ટનો ઉપયોગ કરી શકો છો. જો તમે કોઈ બીજી વ્યક્તિ માટે એકાઉન્ટ ઉમેરવા માગતા હો, તો તેના બદલે તમારા <ph name="DEVICE_TYPE" />માં <ph name="LINK_BEGIN" />નવી વ્યક્તિ ઉમેરો<ph name="LINK_END" />.
@@ -1218,6 +1220,7 @@
 <translation id="1832459821645506983">હા, સંમત છું</translation>
 <translation id="1832511806131704864">ફોન ફેરફાર અપડેટ કર્યો</translation>
 <translation id="1832848789136765277">તમે તમારો સિંક કરેલો ડેટા ગમે ત્યારે ઍક્સેસ કરી શકો છો, એની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
+<translation id="1833059747301212935">તાજેતરના દસ્તાવેજો અને આગામી કૅલેન્ડર ઇવેન્ટને સરળતાથી ઍક્સેસ કરો</translation>
 <translation id="1834503245783133039">ડાઉનલોડ અસફળ: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux અપગ્રેડ કરી રહ્યાં છીએ</translation>
 <translation id="1837441256780906162">Microsoft OneDrive દ્વારા વિનંતી નકારવામાં આવી છે. કૃપા કરીને થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
@@ -1380,7 +1383,6 @@
 <translation id="1948528728718281125">કૅમેરાની પરવાનગી ધરાવતી ઍપ, વેબસાઇટ અને સિસ્ટમ સર્વિસ માટે, કૅમેરાના ઍક્સેસની મંજૂરી છે</translation>
 <translation id="1949332606889020901">ક્રૅશ IDs</translation>
 <translation id="1949584741547056205">ઝડપી જવાબો</translation>
-<translation id="1949849604471335579">વૉલપેપર, સ્ક્રીન સેવર, ઍક્સન્ટ રંગ અને બીજું ઘણું મનગમતું બનાવો</translation>
 <translation id="1949980990364952348">ઍપનું નામ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">વિકલ્પ શોધો</translation>
@@ -2198,6 +2200,7 @@
 <translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2501797496290880632">એક શૉર્ટકટ લખો</translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
+<translation id="2502267564852819530">સૂચિમાંથી <ph name="TAB_TITLE" />, <ph name="LAST_ACTIVE" />ને કાઢી નાખો</translation>
 <translation id="2502441965851148920">સ્વચલિત અપડેટ્સ સક્ષમ કરેલ છે. તમારા વ્યવસ્થાપક દ્વારા મેન્યુઅલ અપડેટ્સ અક્ષમ કરવામાં આવ્યાં છે.</translation>
 <translation id="2502719318159902502">સંપૂર્ણ ઍક્સેસ</translation>
 <translation id="2504801073028762184">સલામતી માટેના સુઝાવો</translation>
@@ -2671,6 +2674,7 @@
 <translation id="2832124733806557606">ડિવાઇસમાં સાઇન ઇન કરવા માટે કે તેને અનલૉક કરવા માટે, તમારું બાળક કોઈ પિનનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="2833144527504272627">ટેક્સ્ટ કર્સર વડે નૅવિગેટ કરો</translation>
 <translation id="2833727845850279275">આ ફાઇલમાં માલવેર શામેલ છે અથવા તે કોઈ શંકાસ્પદ સાઇટ પરથી આવે છે.</translation>
+<translation id="2834091109531651093">તમારું Outlook Calendar અને Sharepointની ફાઇલો જુઓ</translation>
 <translation id="2835177225987815960">કોઈપણ સોંપવામાં આવેલી સ્વિચ અને ઑટો-સ્કૅન માટે ઝડપના સેટિંગ સહિત સ્કૅન કરવા માટેના તમારા હાલના સેટઅપને રીસેટ કરવામાં આવશે.</translation>
 <translation id="2835547721736623118">વાણી ઓળખ સેવા</translation>
 <translation id="2835761321523638096">વાંચન સૂચિમાં એન્ટ્રી વાંચો અને તેમને બદલો</translation>
@@ -3397,6 +3401,7 @@
 <translation id="3382737653173267704">કુટુંબ જુઓ</translation>
 <translation id="338323348408199233">VPN વિનાના ટ્રાફિકને બ્લૉક કરો</translation>
 <translation id="3384362484379805487">ડિસ્ક સ્પેસ સાચવવા માટે, વપરાશકર્તાઓમાં ભાષાની ફાઇલો શેર કરવામાં આવે છે.</translation>
+<translation id="3385053436247851142">Microsoft વડે સાઇન ઇન કરો</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3385172418915595177">લોકેશનની સચોટતા, ઍપ અને સેવાઓ માટે લોકેશનની વધુ સચોટ માહિતી પ્રદાન કરે છે. આમ કરવા માટે, Google સમયાંતરે તમારા ડિવાઇસના સેન્સર અને વાયરલેસ સિગ્નલ વિશેની માહિતી પર પ્રક્રિયા કરે છે, જેથી વાયરલેસ સિગ્નલવાળા લોકેશનને ક્રાઉડસૉર્સ કરી શકાય. તમારી ઓળખાણ છતી કર્યા વિના આ માહિતીનો ઉપયોગ લોકેશનની સચોટતા અને લોકેશન આધારિત સેવાઓને બહેતર બનાવવા તેમજ વપરાશકર્તાઓની જરૂરિયાતો પૂરી કરવા માટે Google અને ત્રીજા પક્ષોના કાયદેસરના હિતસંબંધોના આધારે સામાન્ય રીતે Googleની સેવાઓને બહેતર બનાવવા, પ્રદાન કરવા અને જાળવી રાખવા માટે કરવામાં આવે છે.</translation>
 <translation id="338583716107319301">વિભાજક</translation>
@@ -4478,6 +4483,7 @@
 <translation id="4106054677122819586">ચાલો, તમારા ટૅબ ગોઠવવાનું શરૂ કરીએ</translation>
 <translation id="4107048419833779140">સ્ટોરેજ ઉપકરણોને ઓળખો અને તેને બહાર કાઢો</translation>
 <translation id="4107522742068568249">સલામતી માટે તપાસ પર જાઓ</translation>
+<translation id="4107793386654579933"><ph name="ACTION_NAME" /> ક્રિયા માટે કોઈ શૉર્ટકટ પસંદ કરો</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) પર વિંડો ખસેડો</translation>
 <translation id="4110485659976215879">ચેતવણી રિસ્ટોર કરો</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ઑફલાઇન)</translation>
@@ -5338,6 +5344,7 @@
 <translation id="4756378406049221019">રોકો/ફરીથી લોડ કરો</translation>
 <translation id="4756388243121344051">&amp;ઇતિહાસ</translation>
 <translation id="4756671452988984333">ઑડિયો માટેની ટેક્સ્ટ</translation>
+<translation id="4757654665487479524"><ph name="HEADING" />. <ph name="SUBHEADING" /></translation>
 <translation id="4759202969060787081">ખોલશો નહીં</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
 <translation id="4761104368405085019">તમારા માઇક્રોફોનનો ઉપયોગ કરો</translation>
@@ -5531,6 +5538,7 @@
 <translation id="4882919381756638075">વીડિયો ચૅટ કરવા જેવી સંદેશાવ્યવહારની સુવિધા માટે, સાઇટ સામાન્ય રીતે તમારા માઇક્રોફોનનો ઉપયોગ કરે છે</translation>
 <translation id="4883436287898674711">બધી <ph name="WEBSITE_1" /> સાઇટ</translation>
 <translation id="48838266408104654">&amp;કાર્ય વ્યવસ્થાપક</translation>
+<translation id="4884937942297374058">વધારેલા સંરક્ષણનું સેટિંગ બંધ છે</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">આ એક્સ્ટેન્શનને કોઈ વધારાની સાઇટનો ઍક્સેસ નથી</translation>
 <translation id="4887424188275796356">સિસ્ટમ દર્શક સાથે ખોલો</translation>
@@ -6081,7 +6089,6 @@
 <translation id="5290020561438336792">PC અને કાસ્ટ કરી શકતું ડિવાઇસ અલગ-અલગ વાઇ-ફાઇ નેટવર્ક પર (દા.ત. 2.4GHz
     વિ. 5GHz)</translation>
 <translation id="52912272896845572">ખાનગી કી ફાઇલ અમાન્ય છે.</translation>
-<translation id="5291739252352359682">Chrome બ્રાઉઝરમાં મીડિયા માટે ઑટોમૅટિક રીતે કૅપ્શન બનાવે છે (હાલમાં ફક્ત અંગ્રેજીમાં જ ઉપલબ્ધ છે). બધા ઑડિયો અને કૅપ્શનની પ્રક્રિયા ડિવાઇસમાં જ કરવામાં આવે છે અને તેને ક્યારેય કોઈના પર મોકલવામાં આવતી નથી.</translation>
 <translation id="529175790091471945">આ ઉપકરણને ફોર્મેટ કરો</translation>
 <translation id="529296195492126134">ક્ષણિક મોડને સપોર્ટ આપવામાં આવતો નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો</translation>
 <translation id="5293043095535566171">લોકેશનનો ઍક્સેસ ચાલુ કરીએ?</translation>
@@ -6338,6 +6345,7 @@
 <translation id="5473099001878321374">આગળ વધીને, તમે સંમત થાઓ છો કે આ ડિવાઇસ Google, તમારા બાળકના મોબાઇલ ઑપરેટર અને આ ડિવાઇસના નિર્માતા તરફથી સંભવિત રીતે સેલ્યુલર ડેટાનો ઉપયોગ કરીને, અપડેટ અને ઍપને ઑટોમૅટિક રીતે ડાઉનલોડ અને ઇન્સ્ટૉલ પણ કરી શકે છે. આમાંની અમુક ઍપ, ઍપમાંથી ખરીદીઓની ઑફર કરી શકે છે.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{પિન ઓછામાં ઓછો એક અક્ષરનો હોવો આવશ્યક છે}one{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}other{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે હમણાં વાઇ-ફાઇથી કનેક્ટ થાઓ અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).</translation>
+<translation id="5476957746413745956">દરેક દિશાનિર્દેશ માટે અલગ-અલગ સ્પીડ ગોઠવો</translation>
 <translation id="5477089831058413614"><ph name="DEVICE_TYPE" />ના હૉટસ્પૉટને ગોઠવો</translation>
 <translation id="5481273127572794904">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી નથી</translation>
 <translation id="5481682542063333508">લખાણમાં સહાયની ઑફર</translation>
@@ -7513,7 +7521,6 @@ USB ડિવાઇસ</translation>
 <translation id="6338968693068997776">USB ડિવાઇસ ઉમેરો</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> માટે એક નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="6340071272923955280">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPPS)</translation>
-<translation id="6340526405444716530">મનગમતું બનાવવું</translation>
 <translation id="6341850831632289108">તમારા ભૌતિક સ્થાનને શોધો</translation>
 <translation id="6342069812937806050">હમણાં જ</translation>
 <translation id="6343003829431264373">માત્ર સમ સંખ્યાવાળા પેજ</translation>
@@ -7914,7 +7921,6 @@ USB ડિવાઇસ</translation>
 <translation id="6642720633335369752">ખુલ્લી ઍપની બધી વિંડો જોવા માટે, નીચેથી ઉપરની તરફ સ્વાઇપ કરીને હોલ્ડ કરો.</translation>
 <translation id="664290675870910564">નેટવર્કની પસંદગી</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
-<translation id="6644512095122093795">પાસવર્ડ સાચવવા સુવિધા આપો</translation>
 <translation id="6644513150317163574">અમાન્ય URL ફૉર્મેટ. જ્યારે SSO પ્રમાણીકરણનો ઉપયોગ થયો હોય ત્યારે સર્વરનો ઉલ્લેખ હોસ્ટ નામ તરીકે કરવો આવશ્યક છે.</translation>
 <translation id="6644846457769259194">તમારું ઉપકરણ અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">ઝડપી જોડાણ બંધ કરો</translation>
@@ -8055,7 +8061,6 @@ USB ડિવાઇસ</translation>
 <translation id="6739943577740687354">આ સુવિધા AIનો ઉપયોગ કરે છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> થોભાવી</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />તમારા વ્યવસ્થાપક<ph name="END_LINK" /> દ્વારા Safe Browsing બંધ કરવામાં આવ્યું છે</translation>
-<translation id="6742629250739345159">Chrome બ્રાઉઝરમાંના મીડિયા માટે ઑટોમૅટિક રીતે કૅપ્શન બનાવે છે. બધા ઑડિયો અને કૅપ્શનની પ્રક્રિયા ડિવાઇસમાં જ કરવામાં આવે છે અને તેને ક્યારેય કોઈના પર મોકલવામાં આવતી નથી.</translation>
 <translation id="6743841972744298686">સિંક સેટિંગ</translation>
 <translation id="6745592621698551453">હવે અપડેટ કરો</translation>
 <translation id="6746124502594467657">નીચે ખસેડો</translation>
@@ -10402,6 +10407,7 @@ USB ડિવાઇસ</translation>
 <translation id="8394212467245680403">અક્ષરાંકીય</translation>
 <translation id="8394908167088220973">મીડિયા ચલાવો/થોભાવો</translation>
 <translation id="8396098434728053815">ટૅબ ઑડિયો પણ શેર કરો</translation>
+<translation id="839635482147281021">કોઈ સ્માર્ટ કાર્ડ રીડર મળ્યું નથી</translation>
 <translation id="8396657283886698158">ટૂલ અને ક્રિયાઓ</translation>
 <translation id="8397825320644530257">કનેક્ટ થયેલા ફોનને ડિસકનેક્ટ કરવાના સેટિંગ</translation>
 <translation id="8398877366907290961">કોઈપણ રીતે આગળ વધારો</translation>

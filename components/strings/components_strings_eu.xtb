@@ -138,7 +138,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1243027604378859286">Egilea:</translation>
 <translation id="1247030632403369975">Aluminioa</translation>
 <translation id="1252209483516427155">Berokiak</translation>
-<translation id="1253096324252841344">Ordaindu honekin: <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Pantaila-argazkia gordetzen</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizatuta)</translation>
 <translation id="1255086252236620440">Janari-nahasgailuak</translation>
@@ -3125,7 +3124,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6671169470640320959">Auto-finantzaketa</translation>
 <translation id="6671697161687535275">Inprimaki-iradokizuna Chromium-etik kendu nahi duzu?</translation>
 <translation id="6677351035258626477">Janari lasterra</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-n erosketak egitean, izan <ph name="FINANCIAL_ACCOUNT_TYPES" /> kontuan}other{Chrome-n erosketak egitean, izan <ph name="FINANCIAL_ACCOUNT_TYPES" /> kontuan}}</translation>
 <translation id="6679354743514146922">Chrome arakatzailea <ph name="APP_NAME" /> aplikazioko pasahitza betetzen saiatzen ari da.</translation>
 <translation id="6681790815630918386">CVCa gorde da</translation>
 <translation id="6683022854667115063">Entzungailuak</translation>

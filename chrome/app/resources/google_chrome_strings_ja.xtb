@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">クリックして Google レンズを終了</translation>
 <translation id="2681444469812712297">Google Chrome の新しいタブで <ph name="URL" /> を開きます。</translation>
 <translation id="2712141162840347885">Google レンズで検索する範囲を選択してください。Esc キーを押すと Google レンズを終了します</translation>
-<translation id="2727713483500953825">画像やテキストを選択して Google レンズで検索できます</translation>
 <translation id="2738871930057338499">インターネットに接続できません。HTTP 403 アクセス不可エラーが発生しました。プロキシ設定をご確認ください。</translation>
 <translation id="2742320827292110288">警告: 拡張機能による閲覧履歴の記録を Google Chrome で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="2753623023919742414">クリックして検索</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました</translation>
 <translation id="3622716124581627104">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。Google レンズを使用すると、ページのスクリーンショットが Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
-<translation id="3625345586754200168">レンズを使ってみる</translation>
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
 <translation id="3667616615096815454">インストールできません。このアプリはサーバーに認識されていません。</translation>
 <translation id="3673813398384385993">Chrome で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
@@ -290,7 +288,6 @@
 <translation id="4434353761996769206">インストーラー エラー: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> として Chrome にログイン</translation>
 <translation id="4450664632294415862">Chrome - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Google レンズで画像やテキストを検索できます</translation>
 <translation id="4458462641685292929">Google Chrome で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="4459234553906210702">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
 <translation id="4493028449971051158">起動エラー: 管理者としてインストーラを実行してください。</translation>
@@ -399,7 +396,6 @@
 <translation id="6025087594896450715">Google Chrome は <ph name="REMAINING_TIME" /> 後に再起動します</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="604424701295382420">固定しました。ツールバーの新しいボタンから、Google レンズにアクセスできます</translation>
-<translation id="6060842547856900641">レンズを開く</translation>
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
 <translation id="6075300983329039771">組織（<ph name="MANAGER" />）が Chrome にログインするよう求めています</translation>
@@ -448,7 +444,6 @@
 <translation id="6515549163407364048">お使いのどのパソコンでも同じ拡張機能を使用するには、Chrome にログインします</translation>
 <translation id="6520670145826811516">位置情報を使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
-<translation id="6600016381025017075">このページの内容を検索</translation>
 <translation id="6632473616050862500">ChromeOS Flex は、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="6660596345553328257">Chrome にログインしますか？</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
@@ -611,6 +606,7 @@
 <translation id="8416347857511542594">Chrome での広告のパーソナライズの詳細</translation>
 <translation id="8418845734693287262">アカウントのログイン情報が最新でないため、Chrome OS はデータを同期できませんでした。</translation>
 <translation id="842386925677997438">Chrome の安全性ツール</translation>
+<translation id="8425765582779547329">保護者の方が指定した設定でインターネットをより安全に利用するには、Chrome にログインしてください</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
 <translation id="8451192282033883849">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>

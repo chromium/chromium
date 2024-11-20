@@ -126,7 +126,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2711502716910134313">Chromium-fane</translation>
 <translation id="2718390899429598676">Chromium krypterer dataene dine for å øke sikkerheten.</translation>
 <translation id="2721354645805494590">For å fjerne Google-kontoen din fra Chromium, logg av</translation>
-<translation id="2727713483500953825">Velg bilder eller tekst for å søke med Lens</translation>
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2753623023919742414">Klikk for å søke</translation>
 <translation id="2770231113462710648">Endre standardnettleser til:</translation>
@@ -139,7 +138,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2846251086934905009">Installasjonsfeil: Installasjonsprogrammet ble ikke fullført. Installasjonen er avbrutt.</translation>
 <translation id="2847479871509788944">Fjern fra Chromium</translation>
 <translation id="2850691299438350830">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget</translation>
-<translation id="2874602845494991903">Åpne bildesøk</translation>
 <translation id="2885378588091291677">Oppgavebehandling</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
 <translation id="2915996080311180594">Start på nytt senere</translation>
@@ -148,6 +146,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2970426615109535079">Organisasjonen din administrerer Chromium</translation>
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="2977506796191543575">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
+<translation id="2981563588585023386">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, logg på Chromium</translation>
 <translation id="2987208172821108655">Chromium kan gjøre disse fanene inaktive for å frigjøre ressurser og gi deg en bedre surfeopplevelse.</translation>
 <translation id="3013473503895162900">Åpne <ph name="URL" /> i en ny fane i Chromium.</translation>
 <translation id="3032706164202344641">Chromium kan ikke sjekke passordene dine. Prøv på nytt senere.</translation>
@@ -254,7 +253,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4434353761996769206">Installasjonsfeil: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> administrerer Chromium</translation>
 <translation id="4447409407328223819">Om Chrome for testing</translation>
-<translation id="4453144231461812959">Søk i bilder eller tekst med Lens</translation>
 <translation id="4470974262661801543">For å bruke og lagre Chromium-data i Google-kontoen din, skriv inn passordfrasen din</translation>
 <translation id="4493028449971051158">Oppstartsfeil: Kjør installasjonsprogrammet som administrator.</translation>
 <translation id="4501471624619070934">Installasjonen mislyktes fordi tilgangen er begrenset i dette landet.</translation>
@@ -294,7 +292,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="494490797786467921">Klikk for å lukke dialogboksen for Chromium-pålogging</translation>
 <translation id="4987820182225656817">Gjester kan bruke Chromium uten å etterlate seg spor.</translation>
 <translation id="4994636714258228724">Legg til deg selv i Chromium</translation>
-<translation id="5051959905407134411">Prøv bildesøk</translation>
 <translation id="5114678101347489141">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av dataene dine og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="5123973130450702873">Chromium trenger tillatelse til å spore hendene dine</translation>
 <translation id="5174969993834422967">Du blokkerer vanligvis varsler. For å la dette nettstedet sende deg varsler, klikk på varselikonet i høyre hjørne av adressefeltet.</translation>

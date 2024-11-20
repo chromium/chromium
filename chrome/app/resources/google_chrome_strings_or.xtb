@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lensରୁ ବାହାରିଯିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="2681444469812712297">Chromeରେ ଏକ ନୂଆ ଟାବରେ <ph name="URL" /> ଖୋଲନ୍ତୁ।</translation>
 <translation id="2712141162840347885">Google Lens ସହ ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଯେ କୌଣସି ବିଷୟକୁ ଚୟନ କରନ୍ତୁ କିମ୍ବା Google Lensରୁ ବାହାରି ଯିବା ପାଇଁ ଏସକେପ କୀ'କୁ ଦବାନ୍ତୁ</translation>
-<translation id="2727713483500953825">Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରିବାକୁ ଇମେଜ/ଟେକ୍ସଟକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2738871930057338499">ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବାରେ ଅସମର୍ଥ। HTTP 403 ନିଷିଦ୍ଧ। ଦୟାକରି ଆପଣଙ୍କ ପ୍ରକ୍ସି କନଫିଗରେସନ ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="2742320827292110288">ଚେତାବନୀ: Google Chrome କୌଣସି ଏକ୍ସଟେନସନକୁ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ ରେକର୍ଡ କରିବାରୁ ପ୍ରତିରୋଧ କରିପାରିବ ନାହିଁ। ଇନକଗ୍ନିଟୋ ମୋଡରେ ଏହି ଏକ୍ସଟେନସନକୁ ଅକ୍ଷମ କରିବା ପାଇଁ, ଏହି ବିକଳ୍ପକୁ ଅଚୟନ କରନ୍ତୁ।</translation>
 <translation id="2753623023919742414">ସର୍ଚ୍ଚ କରିବାକୁ କ୍ଲିକ କରନ୍ତୁ</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromeକୁ କାଢ଼ି ଦିଆଯାଇଛି <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">ଜିନିଷ କିମ୍ବା ସ୍ଥାନଗୁଡ଼ିକ ଚିହ୍ନଟ କରନ୍ତୁ ଏବଂ ଟେକ୍ସଟକୁ କପି କିମ୍ୱା ଅନୁବାଦ କରନ୍ତୁ। ଆପଣ Google Lens ବ୍ୟବହାର କଲେ ପୃଷ୍ଠାର ଏକ ସ୍କ୍ରିନସଟ Googleକୁ ପଠାଯାଏ। <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ବର୍ତ୍ତମାନ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଏବଂ ସେୟାର୍ ହୋଇଥିବା କମ୍ପ୍ୟୁଟର୍‌ରେ Chrome ବ୍ୟବହାର କରିବା ସହଜ ଅଟେ।</translation>
-<translation id="3625345586754200168">Lens ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="3635073343384702370">ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସେଭ କଲେ Chrome ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="3667616615096815454">ଇନଷ୍ଟଲ କରିବାରେ ଅସମର୍ଥ, ଏହି ଆପ୍ଲିକେସନ ସର୍ଭର ପାଇଁ ଅଜଣା ଅଟେ।</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"ରେ ମାଲୱେର୍ ଥିବା Chrome ଜାଣିବାକୁ ପାଇଛି</translation>
@@ -294,7 +292,6 @@
 <translation id="4434353761996769206">ଇନଷ୍ଟଲର ତ୍ରୁଟି: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> ଭାବେ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="4450664632294415862">Chrome - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens ମାଧ୍ୟମରେ ଯେ କୌଣସି ଇମେଜ କିମ୍ବା ଟେକ୍ସଟକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4458462641685292929">Google Chromeରେ ଅନ୍ୟ ଏକ କାର୍ଯ୍ୟ ପ୍ରକ୍ରିୟାରତ ଅଛି। ଦୟାକରି ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4459234553906210702">ବିଜ୍ଞାପନର ପରିମାପ ଆପଣ ଭିଜିଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକୁ Chromeରୁ ସୂଚନା ପାଇଁ ଅନୁରୋଧ କରିବାକୁ ଅନୁମତି ଦିଏ, ଯାହା ସାଇଟକୁ ତାହାର ବିଜ୍ଞାପନଗୁଡ଼ିକର ପରଫରମାନ୍ସ ମାପିବାରେ ସାହାଯ୍ୟ କରେ। ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ଯଥା ସମ୍ଭବ କମ୍ ସୂଚନା ଟ୍ରାନ୍ସଫର କରି ବିଜ୍ଞାପନର ପରିମାପ କ୍ରସ-ସାଇଟ ଟ୍ରାକିଂକୁ ପ୍ରତିବନ୍ଧିତ କରେ।</translation>
 <translation id="4493028449971051158">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: ଦୟାକରି ଆଡମିନିଷ୍ଟ୍ରେଟର ଭାବେ ଇନଷ୍ଟଲର ଚଲାନ୍ତୁ।</translation>
@@ -407,7 +404,6 @@
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />ରେ ରିଷ୍ଟାର୍ଟ ହେବ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="604424701295382420">ପିନ କରାଯାଇଛି! ଆପଣ ଟୁଲବାରରେ ଥିବା ନୂଆ ବଟନରୁ Google Lensକୁ ପୁଣି ଆକ୍ସେସ କରିପାରିବେ</translation>
-<translation id="6060842547856900641">Lens ଖୋଲନ୍ତୁ</translation>
 <translation id="6069027071882229820">ଇମେଜ ଭାବେ କପି କରନ୍ତୁ</translation>
 <translation id="6070348360322141662">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Google Chrome ଆପଣଙ୍କର ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବ</translation>
 <translation id="6075300983329039771">ଆପଣ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="MANAGER" /> ଆବଶ୍ୟକ କରନ୍ତି</translation>
@@ -456,7 +452,6 @@
 <translation id="6515549163407364048">ଆପଣଙ୍କର ସମସ୍ତ କମ୍ପ୍ୟୁଟରରେ ଆପଣଙ୍କ ଏକ୍ସଟେନସନଗୁଡ଼ିକ ପାଇବା ପାଇଁ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6520670145826811516">ଆପଣଙ୍କ ଲୋକେସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ସିଷ୍ଟମ ସେଟିଂସ<ph name="END_LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ</translation>
 <translation id="659498884637196217">ଏହି ଡିଭାଇସରେ ଥିବା Google ପାସୱାର୍ଡ ମ୍ୟାନେଜରରେ</translation>
-<translation id="6600016381025017075">ଏହି ପୃଷ୍ଠାରେ କିଛି ବି ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6632473616050862500">ChromeOS Flex ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ ସୋର୍ସ ସଫ୍ଟୱେର<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="6660596345553328257">Chromeରେ ସାଇନ ଇନ କରିବେ?</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>

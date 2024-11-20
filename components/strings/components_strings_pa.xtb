@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">ਲੇਖਕ:</translation>
 <translation id="1247030632403369975">ਐਲਮੀਨੀਅਮ</translation>
 <translation id="1252209483516427155">ਬਾਹਰੀ ਕੱਪੜੇ</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="1253846494229886276">ਸਕ੍ਰੀਨਸ਼ਾਟ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ਸਿੰਕ ਕੀਤੇ ਗਏ)</translation>
 <translation id="1255086252236620440">ਭੋਜਨ ਮਿਕਸਰ</translation>
@@ -3136,7 +3135,6 @@
 <translation id="6671169470640320959">ਆਟੋ ਵਾਹਨਾਂ ਸੰਬੰਧੀ ਵਿੱਤ ਸੇਵਾਵਾਂ</translation>
 <translation id="6671697161687535275">ਕੀ Chromium ਤੋਂ ਫ਼ਾਰਮ ਸੰਬੰਧੀ ਸੁਝਾਅ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="6677351035258626477">ਫਾਸਟ ਫੂਡ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਦੇਖੋ}one{ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਦੇਖੋ}other{ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਵਿਕਲਪਾਂ ਵਜੋਂ ਦੇਖੋ}}</translation>
 <translation id="6679354743514146922">Chrome ਬ੍ਰਾਊਜ਼ਰ <ph name="APP_NAME" /> 'ਤੇ ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਭਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="6681790815630918386">CVC ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6683022854667115063">ਹੈੱਡਫ਼ੋਨ</translation>

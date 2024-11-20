@@ -138,7 +138,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Alumiinium</translation>
 <translation id="1252209483516427155">Välisrõivad</translation>
-<translation id="1253096324252841344">Maksmine teenusega <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Ekraanipildi salvestamine</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sünkroonitud)</translation>
 <translation id="1255086252236620440">Mikserid</translation>
@@ -3130,7 +3129,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6671169470640320959">Sõidukite finantseerimisteenused</translation>
 <translation id="6671697161687535275">Kas eemaldada Chromiumist vormi soovitus?</translation>
 <translation id="6677351035258626477">Kiirtoit</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Kui teete oste Chrome'is, on valikus ka <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kui teete oste Chrome'is, on valikus ka <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Chrome'i brauser proovib täita teie parooli rakenduses <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC on salvestatud</translation>
 <translation id="6683022854667115063">Kõrvaklapid</translation>

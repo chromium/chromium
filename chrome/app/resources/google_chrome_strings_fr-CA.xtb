@@ -141,7 +141,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2668094785979141847">Cliquer pour quitter Lentille Google</translation>
 <translation id="2681444469812712297">Ouvrez l'URL <ph name="URL" /> dans un nouvel onglet dans Google Chrome.</translation>
 <translation id="2712141162840347885">Sélectionnez n'importe quel élément pour effectuer une recherche avec Lentille Google ou appuyez sur Échap. pour quitter Lentille Google</translation>
-<translation id="2727713483500953825">Sélectionner des images ou des textes à rechercher avec Lentille</translation>
 <translation id="2738871930057338499">Impossible de se connecter à Internet. HTTP 403 Forbidden. Veuillez vérifier la configuration de votre mandataire.</translation>
 <translation id="2742320827292110288">Avertissement : Google Chrome ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode de navigation privée, désélectionnez cette option.</translation>
 <translation id="2753623023919742414">Cliquer pour rechercher</translation>
@@ -224,7 +223,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3609788354808247807">Vous n'êtes pas venu récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identifiez des objets ou des lieux et copiez ou traduisez du texte. Lorsque vous utilisez Lentille Google, une capture d'écran de la page est envoyée à Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Il est maintenant plus facile d'utiliser Google Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
-<translation id="3625345586754200168">Essayer Lentille</translation>
 <translation id="3635073343384702370">Chrome peut vérifier vos mots de passe lorsque vous les enregistrez</translation>
 <translation id="3667616615096815454">Installation impossible, l'application est inconnue du serveur.</translation>
 <translation id="3673813398384385993">Chrome a constaté que « <ph name="EXTENSION_NAME" /> » contient un logiciel malveillant</translation>
@@ -294,7 +292,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Se connecter à Chrome en tant que <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Connexion au réseau – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Rechercher n'importe quel texte ou image avec Lentille</translation>
 <translation id="4458462641685292929">Une autre opération est en cours sur Google Chrome. Veuillez réessayer plus tard.</translation>
 <translation id="4459234553906210702">La mesure des annonces permet aux sites que vous visitez de demander des informations à Chrome afin de leur permettre de mesurer la performance de leurs annonces. La mesure des annonces limite les suivis intersites en transférant le moins d'informations possible entre les sites.</translation>
 <translation id="4493028449971051158">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'administrateur.</translation>
@@ -407,7 +404,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6025087594896450715">Google Chrome redémarrera dans <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="604424701295382420">La fonctionnalité a été épinglée! Vous pouvez à nouveau accéder à Lentille Google à partir du nouveau bouton de la barre d'outils</translation>
-<translation id="6060842547856900641">Ouvrir Lentille</translation>
 <translation id="6069027071882229820">Copier en tant qu'image</translation>
 <translation id="6070348360322141662">Pour une sécurité accrue, Google Chrome va crypter vos données</translation>
 <translation id="6075300983329039771">Votre organisation, <ph name="MANAGER" />, vous demande de vous connecter à Chrome</translation>
@@ -456,7 +452,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6515549163407364048">Pour obtenir vos extensions sur tous vos ordinateurs, connectez-vous à Chrome</translation>
 <translation id="6520670145826811516">Pour utiliser votre position, accordez l'accès à Chrome dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Dans le gestionnaire de mots de passe Google sur cet appareil</translation>
-<translation id="6600016381025017075">Recherchez n'importe quoi sur cette page</translation>
 <translation id="6632473616050862500">Chrome OS Flex fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Vous connecter à Chrome?</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
@@ -619,6 +614,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8416347857511542594">En savoir plus sur la personnalisation des annonces dans Chrome</translation>
 <translation id="8418845734693287262">Chrome OS n'a pas pu synchroniser vos données parce que les détails de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="842386925677997438">Les outils de sécurité de Chrome</translation>
+<translation id="8425765582779547329">Pour rester en sécurité en ligne avec les choix de tes parents, connecte-toi à Chrome</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur vos deux appareils.</translation>
 <translation id="8451192282033883849">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut voir et modifier ce profil de navigateur Chrome ainsi que ses données telles que les favoris, l'historique et les mots de passe.</translation>

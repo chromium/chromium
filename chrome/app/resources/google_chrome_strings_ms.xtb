@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Klik untuk keluar daripada Google Lens</translation>
 <translation id="2681444469812712297">Buka <ph name="URL" /> dalam tab baharu dalam Google Chrome.</translation>
 <translation id="2712141162840347885">Pilih apa-apa sahaja untuk mencari dengan Google Lens atau tekan kekunci Esc untuk keluar daripada Google Lens</translation>
-<translation id="2727713483500953825">Pilih imej/teks untuk membuat carian dengan Lens</translation>
 <translation id="2738871930057338499">Tidak dapat disambungkan kepada Internet. HTTP 403 Dilarang. Sila semak konfigurasi proksi anda.</translation>
 <translation id="2742320827292110288">Amaran: Google Chrome tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="2753623023919742414">Klik untuk mencari</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Kenal pasti perkara atau tempat dan salin atau terjemahkan teks. Apabila anda menggunakan Google Lens, tangkapan skrin halaman dihantar kepada Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Kini lebih mudah menggunakan Chrome dengan Google Account anda dan pada komputer yang dikongsi.</translation>
-<translation id="3625345586754200168">Cuba Lens</translation>
 <translation id="3635073343384702370">Chrome boleh menyemak kata laluan anda apabila anda menyimpan kata laluan tersebut</translation>
 <translation id="3667616615096815454">Tidak dapat memasang, aplikasi tidak dikenali oleh pelayan.</translation>
 <translation id="3673813398384385993">Chrome mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Ralat pemasang: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Log masuk ke Chrome sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Log Masuk Rangkaian - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Cari sebarang imej atau teks dengan Lens</translation>
 <translation id="4458462641685292929">Terdapat operasi lain sedang dijalankan pada Google Chrome. Sila cuba sebentar lagi.</translation>
 <translation id="4459234553906210702">Pengukuran iklan membolehkan laman yang anda lawati meminta maklumat daripada Chrome yang membantu laman tersebut mengukur prestasi iklan mereka. Pengukuran iklan mengehadkan penjejakan rentas laman dengan memindahkan maklumat antara laman sedikit yang mungkin.</translation>
 <translation id="4493028449971051158">Ralat permulaan: sila jalankan pemasang sebagai pentadbir.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome akan dimulakan semula dalam masa <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604424701295382420">Disemat! Anda boleh mengakses Google Lens sekali lagi daripada butang baharu pada bar alat</translation>
-<translation id="6060842547856900641">Buka Lens</translation>
 <translation id="6069027071882229820">Salin sebagai imej</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="6075300983329039771">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Untuk mendapatkan sambungan anda pada semua komputer anda, log masuk ke Chrome</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Dalam Pengurus Kata Laluan Google pada peranti ini</translation>
-<translation id="6600016381025017075">Cari apa-apa item pada halaman ini</translation>
 <translation id="6632473616050862500">Chrome OS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6660596345553328257">Log Masuk ke Chrome?</translation>
 <translation id="6676384891291319759">Akses Internet</translation>

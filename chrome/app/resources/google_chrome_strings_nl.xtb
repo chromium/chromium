@@ -141,7 +141,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2668094785979141847">Klik om Google Lens af te sluiten</translation>
 <translation id="2681444469812712297">Open <ph name="URL" /> op een nieuw tabblad in Google Chrome.</translation>
 <translation id="2712141162840347885">Selecteer iets om te zoeken met Google Lens of druk op Escape om Google Lens te sluiten</translation>
-<translation id="2727713483500953825">Selecteer afbeeldingen/tekst om te zoeken met Lens</translation>
 <translation id="2738871930057338499">Kan geen verbinding maken met internet. HTTP 403 Verboden. Check je proxyconfiguratie.</translation>
 <translation id="2742320827292110288">Waarschuwing: Google Chrome kan niet voorkomen dat extensies je browsegeschiedenis registreren. Als je deze extensie in de incognitomodus wilt uitzetten, vink je deze optie uit.</translation>
 <translation id="2753623023919742414">Klik om te zoeken</translation>
@@ -224,7 +223,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3609788354808247807">Je bent hier niet recent geweest. Chrome heeft <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> en <ph name="PERMISSION_3" /> verwijderd</translation>
 <translation id="3622716124581627104">Herken voorwerpen of plaatsen en kopieer of vertaal tekst. Als je Google Lens gebruikt, wordt een screenshot van de pagina naar Google gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Het is nu gemakkelijker om Chrome met je Google-account en op gedeelde computers te gebruiken.</translation>
-<translation id="3625345586754200168">Lens proberen</translation>
 <translation id="3635073343384702370">Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen</translation>
 <translation id="3667616615096815454">Kan niet installeren. De app is niet bekend bij de server.</translation>
 <translation id="3673813398384385993">Chrome heeft vastgesteld dat <ph name="EXTENSION_NAME" /> malware bevat</translation>
@@ -294,7 +292,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4434353761996769206">Fout met installatieprogramma: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Inloggen bij Chrome als <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Inloggen op netwerk - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Zoek een afbeelding of tekst met Lens</translation>
 <translation id="4458462641685292929">Er wordt een andere bewerking in Google Chrome uitgevoerd. Probeer het later opnieuw.</translation>
 <translation id="4459234553906210702">Via Advertentiemeting kunnen sites die je bezoekt Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Advertentiemeting beperkt tracking op meerdere sites door zo min mogelijk informatie over te dragen tussen sites.</translation>
 <translation id="4493028449971051158">Opstartfout: voer het installatieprogramma uit als beheerder.</translation>
@@ -405,7 +402,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6025087594896450715">Google Chrome wordt over <ph name="REMAINING_TIME" /> opnieuw opgestart</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604424701295382420">Vastgezet. Je krijgt weer toegang tot Google Lens via de nieuwe knop op de werkbalk</translation>
-<translation id="6060842547856900641">Lens openen</translation>
 <translation id="6069027071882229820">Kopiëren als afbeelding</translation>
 <translation id="6070348360322141662">Je gegevens worden voor extra beveiliging door Google Chrome versleuteld</translation>
 <translation id="6075300983329039771">Je organisatie, <ph name="MANAGER" />, vereist dat je inlogt bij Chrome</translation>
@@ -454,7 +450,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6515549163407364048">Log in bij Chrome om op al je computers toegang te krijgen tot je extensies</translation>
 <translation id="6520670145826811516">Geef Chrome toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je locatie te gebruiken</translation>
 <translation id="659498884637196217">In Google Wachtwoordmanager op dit apparaat</translation>
-<translation id="6600016381025017075">Zoek naar iets op deze pagina</translation>
 <translation id="6632473616050862500">Chrome OS Flex wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Inloggen bij Chrome?</translation>
 <translation id="6676384891291319759">Verbinding maken met internet</translation>

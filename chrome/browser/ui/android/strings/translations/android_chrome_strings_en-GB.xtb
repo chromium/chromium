@@ -257,6 +257,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2172905120685242547">Close window?</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="219283042927675668">Tabs in group</translation>
 <translation id="2194856509914051091">Things to consider</translation>
@@ -342,6 +343,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
 <translation id="2571834852878229351">Create my own</translation>
 <translation id="2574249610672786438">To see your tabs from wherever you use Chrome, sign in on all of your devices</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and will no longer be able to interact with you across Google services.</translation>
 <translation id="2578337197553672982">Content by Google for young minds</translation>
 <translation id="2579297619530305344">Passwords on all your devices opened at full height</translation>
 <translation id="2581165646603367611">This will clear cookies, cache and other data of sites Chrome doesn't think is important.</translation>
@@ -566,6 +568,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3614126103057878858">Price insights</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3619255692378312441">Manage access</translation>
 <translation id="3622349720008044802">Manage windows</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
@@ -574,6 +577,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3636940436873918441">Preferred languages</translation>
 <translation id="3637744895182738742">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Go to Google app home</translation>
 <translation id="368329460027487650">Signed out. Opens options to sign in.</translation>
 <translation id="3684540848053703310">Price insights bottom sheet closed</translation>
@@ -585,6 +589,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3701515417135397388">Warn you if a password was compromised in a data breach</translation>
 <translation id="3703166520839776970">If this issue keeps happening, choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3710501561113687889">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site.</translation>
+<translation id="3710560693796335511">Collaboration</translation>
 <translation id="3714981814255182093">Open the Find Bar</translation>
 <translation id="3716182511346448902">This page uses too much memory, so Chrome paused it.</translation>
 <translation id="3718765429352682176">You may see the history from other apps that open links in Chrome.</translation>
@@ -873,7 +878,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4991110219272367918">Option to approve or not approve a website closed</translation>
 <translation id="4996095658297597226">Use suggested password?</translation>
-<translation id="499724277181351974">Navigate: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Follow this site here</translation>
 <translation id="5004416275253351869">Google activity controls</translation>
 <translation id="5005498671520578047">Copy password</translation>
@@ -956,6 +960,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group</translation>
 <translation id="5423934151118863508">Your most visited pages will appear here</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB available</translation>
+<translation id="543121643585717256">Anyone with the link can edit all tabs. Learn about shared tab groups</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5433691172869980887">Username copied</translation>
 <translation id="5438292632479953702">Download again</translation>
@@ -970,6 +975,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5468068603361015296">Do you want to download <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="548278423535722844">Open in maps app</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
+<translation id="549660026907543296">Join as <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Passwords on all your devices opened at half height</translation>
 <translation id="5514904542973294328">Disabled by the administrator of this device</translation>
 <translation id="5515439363601853141">Unlock to view your password</translation>
@@ -1372,6 +1378,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7182051712900867547">Use a different account</translation>
 <translation id="7183517696921903380">App filter sheet is opened.</translation>
 <translation id="7186568385131859684">Control how browsing history is used with your other data across Google services</translation>
+<translation id="7190921792980745354">Block <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{You should change this now}other{You should change these now}}</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>

@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">Auteur :</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Vêtements d'extérieur</translation>
-<translation id="1253096324252841344">Payer au moyen de <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Enregistrement de la capture d'écran en cours…</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisés)</translation>
 <translation id="1255086252236620440">Batteurs</translation>
@@ -3140,7 +3139,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6671169470640320959">Financement automobile</translation>
 <translation id="6671697161687535275">Supprimer la suggestion de formulaire de Chromium?</translation>
 <translation id="6677351035258626477">Restauration rapide</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme option}one{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme option}other{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme options}}</translation>
 <translation id="6679354743514146922">Le navigateur Chrome tente de remplir votre mot de passe sur <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Code CVC enregistré</translation>
 <translation id="6683022854667115063">Écouteurs</translation>

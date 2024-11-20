@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lens'тен чыгуу үчүн чыкылдатыңыз</translation>
 <translation id="2681444469812712297"><ph name="URL" /> сайтын Google Chrome'догу жаңы өтмөктө ачыңыз.</translation>
 <translation id="2712141162840347885">Google Lens менен издөө үчүн каалаган нерсени тандаңыз же Google Lens кызматынан чыгуу үчүн Escape баскычын басыңыз.</translation>
-<translation id="2727713483500953825">Lens менен издөө үчүн сүрөттү/текстти тандаңыз</translation>
 <translation id="2738871930057338499">Интернетке туташуу мүмкүн болбой жатат. HTTP 403 Тыюу салынган. Прокси конфигурациясын текшериңиз.</translation>
 <translation id="2742320827292110288">Эскертүү: Google Chrome кеңейтүүлөргө көрүлгөн вебсайттарды жазып алууга тыюу сала албайт. Бул кеңейтүүнү жашыруун режимде өчүрүү үчүн бул параметрди тандоодон чыгарыңыз.</translation>
 <translation id="2753623023919742414">Издөө үчүн чыкылдатыңыз</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү</translation>
 <translation id="3622716124581627104">Нерселерди же жерлерди аныктап, текстти көчүрүп же которуңуз. Google Lens'ти колдонгонуңузда, барактын скриншоту Google'га жөнөтүлөт. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Эми Google Аккаунтуңуз аркылуу жана бөлүшүлгөн компьютерлерден Chrome'до иштөө алдаганча жеңилирээк болуп калды.</translation>
-<translation id="3625345586754200168">Lens'ти колдонуп көрүү</translation>
 <translation id="3635073343384702370">Сырсөздөрүңүздү сактаганда Chrome аларды текшере алат</translation>
 <translation id="3667616615096815454">Колдонмо сервер үчүн белгисиз болгондуктан, аны орнотуу мүмкүн эмес.</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
@@ -295,7 +293,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4434353761996769206">Орнотуу катасы: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chrome'го <ph name="USER_EMAIL" /> катары кирүү</translation>
 <translation id="4450664632294415862">Chrome – Тармакка кирүү – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens менен каалаган сүрөттү же текстти издеңиз</translation>
 <translation id="4458462641685292929">Google Chrome'до башка операция жүрүп жатат. Кийинчерээк дагы аракет кылып көрүңүз.</translation>
 <translation id="4459234553906210702">Жарнамаларды талдоо аркылуу сиз баш баккан сайттар Chrome'дон маалымат алып, жарнамаларынын майнаптуулугун талдай алышат. Жарнамаларды талдоо сайттарга мүмкүн болушунча аз маалымат өткөрүү менен башка сайттарга көз салууну чектейт.</translation>
 <translation id="4493028449971051158">Ишке киргизүү катасы: орноткучту администратор катары иштетиңиз.</translation>
@@ -408,7 +405,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> кийин кайра ачылат</translation>
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="604424701295382420">Кадалды! Эми Google Lens функциясын куралдар тилкесиндеги жаңы баскыч аркылуу колдоно аласыз</translation>
-<translation id="6060842547856900641">Lens'ти ачуу</translation>
 <translation id="6069027071882229820">Сүрөт катары көчүрүү</translation>
 <translation id="6070348360322141662">Кошумча коопсуздук максатында, Google Chrome дайын-даректериңизди шифрлеп коёт</translation>
 <translation id="6075300983329039771">Уюмуңуз, <ph name="MANAGER" />, Chrome'го кирүүнү талап кылат</translation>
@@ -457,7 +453,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6515549163407364048">Бардык компьютерлериңизден кеңейтүүлөрүңүздү алуу үчүн Chrome'го кириңиз</translation>
 <translation id="6520670145826811516">Жүргөн жерди колдонуу үчүн Chrome'го <ph name="BEGIN_LINK" />системанын параметрлеринен<ph name="END_LINK" /> кирүүгө уруксат бериңиз</translation>
 <translation id="659498884637196217">Бул түзмөктөгү Google Сырсөздөрдү башкаргычта</translation>
-<translation id="6600016381025017075">Бул барактан каалаган нерсени издеңиз</translation>
 <translation id="6632473616050862500">ChromeOS Flex тутуму кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен, иштейт.</translation>
 <translation id="6660596345553328257">Chrome'го киресизби?</translation>
 <translation id="6676384891291319759">Интернетке кирүү</translation>
@@ -620,6 +615,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8416347857511542594">Chrome'до жарнамаларды жекелештирүү жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="8418845734693287262">Аккаунтуңуздун кирүү чоо-жайы эскирип калгандыктан, ChromeOS дайын-даректериңизди шайкештештире алган жок.</translation>
 <translation id="842386925677997438">Chrome’дун коопсуздук куралдары</translation>
+<translation id="8425765582779547329">Интернетти ата-энең тандаган параметрлер менен коопсуз колдонуу үчүн Chrome'го кир</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
 <translation id="8433638294851456451">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chrome'го кириңиз.</translation>
 <translation id="8451192282033883849">Аккаунтуңуз <ph name="MANAGER_NAME" /> тарабынан башкарылууда. Администраторуңуз Chrome серепчисиндеги профилди жана андагы маалыматты, мисалы, кыстармаларды, таржымалды жана сырсөздөрдү көрүп, түзөтө алат.</translation>

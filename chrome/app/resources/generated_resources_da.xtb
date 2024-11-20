@@ -1394,7 +1394,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1948528728718281125">Apps, websites, der har kameratilladelsen, og systemtjenester har adgang til kameraet</translation>
 <translation id="1949332606889020901">Id'er for nedbrud</translation>
 <translation id="1949584741547056205">Hurtige svar</translation>
-<translation id="1949849604471335579">Tilpas baggrunden, pauseskærmen, kontrastfarver m.m.</translation>
 <translation id="1949980990364952348">Appens navn</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Find en anden</translation>
@@ -6095,7 +6094,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5290020561438336792">Pc'en og Cast-enheden er på forskellige Wi-Fi-netværk (f.eks. 2,4 GHz
     i forhold til 5 GHz)</translation>
 <translation id="52912272896845572">Den private nøglefil er ugyldig.</translation>
-<translation id="5291739252352359682">Der genereres automatisk undertekster til medier i Chrome-browseren (i øjeblikket tilgængelig på engelsk). Lyd og undertekster behandles lokalt og forlader aldrig enheden.</translation>
 <translation id="529175790091471945">Formatér denne enhed</translation>
 <translation id="529296195492126134">Engangsbruger understøttes ikke. Kontakt din administrator</translation>
 <translation id="5293043095535566171">Vil du aktivere lokationsadgang?</translation>
@@ -7524,7 +7522,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6338968693068997776">Tilføj USB-enhed</translation>
 <translation id="6339668969738228384">Opret en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
-<translation id="6340526405444716530">Personlig tilpasning</translation>
 <translation id="6341850831632289108">Find din fysiske placering</translation>
 <translation id="6342069812937806050">Lige nu</translation>
 <translation id="6343003829431264373">Kun lige sider</translation>
@@ -7925,7 +7922,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6642720633335369752">Hvis du vil se alle åbne appvinduer, skal du stryge opad fra bunden og holde fingeren nede.</translation>
 <translation id="664290675870910564">Valg af netværk</translation>
 <translation id="6643016212128521049">Ryd</translation>
-<translation id="6644512095122093795">Få tilbudt at gemme adgangskoder</translation>
 <translation id="6644513150317163574">Webadresseformatet er ugyldigt. Serveren skal angives som hostname, når der anvendes SSO-godkendelse.</translation>
 <translation id="6644846457769259194">Opdaterer din enhed (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Slå Hurtig parring fra</translation>
@@ -8066,7 +8062,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6739943577740687354">Denne funktion anvender AI, som ikke altid rammer plet</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> er sat på pause</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Din administrator<ph name="END_LINK" /> har deaktiveret Beskyttet browsing</translation>
-<translation id="6742629250739345159">Der genereres automatisk undertekster til medier i Chrome-browseren. Lyd og undertekster behandles lokalt og forlader aldrig enheden.</translation>
 <translation id="6743841972744298686">Indstillinger for synkronisering</translation>
 <translation id="6745592621698551453">Opdater nu</translation>
 <translation id="6746124502594467657">Flyt ned</translation>

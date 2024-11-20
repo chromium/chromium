@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lens-ൽ നിന്ന് പുറത്തുകടക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="2681444469812712297">Google Chrome-ൽ പുതിയ ടാബിൽ <ph name="URL" /> തുറക്കുക.</translation>
 <translation id="2712141162840347885">Google Lens ഉപയോഗിച്ച് തിരയാൻ എന്തെങ്കിലും തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ Google Lens-ൽ നിന്ന് പുറത്ത് കടക്കാൻ 'Escape' അമർത്തുക</translation>
-<translation id="2727713483500953825">Lens ഉപയോഗിച്ച് തിരയാൻ ചിത്രം/ടെക്‌സ്‌റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2738871930057338499">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. HTTP 403 നിരോധിച്ചിരിക്കുന്നു. നിങ്ങളുടെ പ്രോക്‌സി കോൺഫിഗറേഷൻ പരിശോധിക്കുക.</translation>
 <translation id="2742320827292110288">മുന്നറിയിപ്പ്: നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രം റെക്കോർഡ് ചെയ്യുന്നതിൽ നിന്ന് വിപുലീകരണങ്ങളെ തടയാൻ Google Chrome-ന് കഴിയില്ല. അദൃശ്യമോഡിൽ ഈ വിപുലീകരണം പ്രവർത്തനരഹിതമാക്കാൻ, ഈ ഓപ്ഷൻ തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക.</translation>
 <translation id="2753623023919742414">തിരയാൻ ക്ലിക്ക് ചെയ്യുക</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ല. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> എന്നീ അനുമതികൾ Chrome നീക്കം ചെയ്തു</translation>
 <translation id="3622716124581627104">വസ്തുക്കളോ സ്ഥലങ്ങളോ കണ്ടെത്തൂ, ടെക്‌സ്റ്റ് വിവർത്തനം ചെയ്യുകയോ പകർത്തുകയോ ചെയ്യൂ. നിങ്ങൾ Google Lens ഉപയോഗിക്കുമ്പോൾ, പേജിന്റെ ഒരു സ്ക്രീൻഷോട്ട് Google-ന് അയയ്‌ക്കും. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ഇപ്പോൾ നിങ്ങളുടെ Google Account ഉപയോഗിച്ച്, പങ്കിട്ട കമ്പ്യൂട്ടറുകളിൽ Chromium ഉപയോഗിക്കാൻ എളുപ്പമാണ്.</translation>
-<translation id="3625345586754200168">Lens പരീക്ഷിക്കുക</translation>
 <translation id="3635073343384702370">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുകയാണങ്കിൽ, Chrome-ന് അവ പരിശോധിക്കാനാകും</translation>
 <translation id="3667616615096815454">ഇൻസ്റ്റാൾ ചെയ്യാനാകുന്നില്ല, സെർവറിന് ഈ ആപ്പ് പരിചിതമല്ല.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" എന്നതിൽ മാൽ‌വെയർ അടങ്ങുന്നതായി Chrome കണ്ടെത്തി</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">ഇൻസ്റ്റാളർ പിശക്: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> എന്നതായി Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4450664632294415862">Chrome - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens ഉപയോഗിച്ച് ഏതെങ്കിലും ചിത്രമോ ടെക്‌സ്‌റ്റോ തിരയുക</translation>
 <translation id="4458462641685292929">Google Chrome-ലെ മറ്റൊരു പ്രവർത്തനം പുരോഗതിയിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4459234553906210702">നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റുകളെ അവയുടെ പരസ്യങ്ങളുടെ പ്രകടനം അളക്കാൻ സഹായിക്കുന്ന Chrome-ൽ നിന്നുള്ള വിവരങ്ങൾ അഭ്യർത്ഥിക്കാൻ ആഡ് മെഷർമെന്റ് അനുവദിക്കുന്നു. സൈറ്റുകൾക്കിടയിൽ കഴിയുന്നത്ര കുറച്ച് വിവരങ്ങൾ കൈമാറുന്നതിലൂടെ ആഡ് മെഷർമെന്റ് ക്രോസ്-സൈറ്റ് ട്രാക്കിംഗ് നിയന്ത്രിക്കുന്നു.</translation>
 <translation id="4493028449971051158">സ്റ്റാർട്ടപ്പിലെ പിശക്: അഡ്‌മിൻ എന്ന നിലവിൽ ഇൻസ്റ്റാളർ റൺ ചെയ്യുക.</translation>
@@ -408,7 +405,6 @@
 <translation id="6025087594896450715"><ph name="REMAINING_TIME" />-നുള്ളിൽ Google Chrome റീസ്റ്റാർട്ട് ചെയ്യും</translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="604424701295382420">പിൻ ചെയ്‌തു! ടൂൾബാറിലെ പുതിയ ബട്ടൺ വഴി നിങ്ങൾക്ക് Google Lens വീണ്ടും ആക്സസ് ചെയ്യാൻ കഴിയും</translation>
-<translation id="6060842547856900641">Lens തുറക്കുക</translation>
 <translation id="6069027071882229820">ചിത്രം ആയി പകർത്തുക</translation>
 <translation id="6070348360322141662">കൂടുതൽ സുരക്ഷ ലഭ്യമാക്കാൻ, Google Chrome നിങ്ങളുടെ ഡാറ്റ എന്‍‌ക്രിപ്‌റ്റ് ചെയ്യും</translation>
 <translation id="6075300983329039771">നിങ്ങളുടെ സ്ഥാപനം, <ph name="MANAGER" />, Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
@@ -457,7 +453,6 @@
 <translation id="6515549163407364048">എല്ലാ കമ്പ്യൂട്ടറുകളിലും നിങ്ങളുടെ വിപുലീകരണങ്ങൾ ലഭിക്കാൻ, Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6520670145826811516">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ, <ph name="BEGIN_LINK" />സിസ്റ്റം ക്രമീകരണം<ph name="END_LINK" /> എന്നതിൽ Chrome-ന് ആക്‌സസ് നൽകുക</translation>
 <translation id="659498884637196217">ഈ ഉപകരണത്തിലെ Google പാസ്‌വേഡ് മാനേജരിൽ</translation>
-<translation id="6600016381025017075">ഈ പേജിൽ എന്തും തിരയുക</translation>
 <translation id="6632473616050862500">ChromeOS Flex സാധ്യമാക്കിയത് അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്‌റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
 <translation id="6660596345553328257">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യണോ?</translation>
 <translation id="6676384891291319759">ഇന്റര്‍‌നെറ്റ് ആക്‌സസ് ചെയ്യുക</translation>

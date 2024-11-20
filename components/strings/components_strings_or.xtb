@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">ଲେଖକ:</translation>
 <translation id="1247030632403369975">ଆଲୁମିନିୟମ</translation>
 <translation id="1252209483516427155">ଆଉଟୱେର</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1253846494229886276">ସ୍କ୍ରିନସଟ ସେଭ କରାଯାଉଛି</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (ସିଙ୍କ୍ କରାଯାଇଛି)</translation>
 <translation id="1255086252236620440">ଖାଦ୍ୟ ମିକ୍ସର</translation>
@@ -3126,7 +3125,6 @@
 <translation id="6671169470640320959">ଅଟୋ ଫାଇନାନ୍ସିଂ</translation>
 <translation id="6671697161687535275">Chromiumରୁ ପରାମର୍ଶରୁ କାଢ଼ି ଦେବେ?</translation>
 <translation id="6677351035258626477">ଫାଷ୍ଟ ଫୁଡ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ଏକ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}other{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}}</translation>
 <translation id="6679354743514146922">Chrome ବ୍ରାଉଜର <ph name="APP_NAME" />ରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପୂରଣ କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="6681790815630918386">CVC ସେଭ କରାଯାଇଛି</translation>
 <translation id="6683022854667115063">ହେଡଫୋନଗୁଡ଼ିକ</translation>

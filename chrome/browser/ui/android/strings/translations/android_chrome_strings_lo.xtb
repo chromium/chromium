@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">ປິດໜ້າຈໍບໍ?</translation>
 <translation id="2173302385160625112">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
 <translation id="2175927920773552910">ລະຫັດ QR</translation>
+<translation id="2184272387334793084">ເຂົ້າສູ່ລະບົບເພື່ອຮັບລະຫັດຜ່ານ ແລະ ອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="218608176142494674">ການແບ່ງປັນ</translation>
 <translation id="219283042927675668">ແຖບໃນກຸ່ມ</translation>
 <translation id="2194856509914051091">ສິ່ງທີ່ຕ້ອງພິຈາລະນາ</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">ເຂົ້າສູ່ລະບົບເວັບ​ໄຊ​ໂດຍ​ອັດຕະ​ໂນ​ມັດໂດຍ​ໃຊ້​ຂໍ້​ມູນ​ປະ​ຈໍາ​ຕົວ​ທີ່​ຮັກສາ​ໄວ້. ​ເມື່ອຄຸນສົມບັດນີ້ຖືກປິດການນຳໃຊ້, ທ່ານ​ຈະ​ຖືກ​ຮ້ອງ​ຂໍ​ໃຫ້​ກວດ​ສອບ​ໃນ​ທຸກໆເທື່ອ ກ່ອນ​ທີ່​ຈະ​ລົງ​ຊື່​ເຂົ້າ​ເວັບ​ໄຊໃດ​ໜຶ່ງ.</translation>
 <translation id="3636940436873918441">ພາສາທີ່ຕ້ອງການ</translation>
 <translation id="3637744895182738742">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">ເຂົ້າໄປໜ້າຫຼັກຂອງແອັບ Google</translation>
 <translation id="368329460027487650">ອອກຈາກລະບົບແລ້ວ. ເປີດຕົວເລືອກເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3684540848053703310">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກດ້ານລາຄາປິດຢູ່</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">ໜ້າ</translation>
 <translation id="4991110219272367918">ຕົວເລືອກເພື່ອອະນຸມັດ ຫຼື ບໍ່ອະນຸມັດເວັບໄຊປິດຢູ່</translation>
 <translation id="4996095658297597226">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳບໍ?</translation>
-<translation id="499724277181351974">ນຳທາງ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ຕິດຕາມເວັບໄຊນີ້ຢູ່ບ່ອນນີ້</translation>
 <translation id="5004416275253351869">ການຄວບຄຸມການເຄື່ອນໄຫວໃນ Google</translation>
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ}other{<ph name="TAB_COUNT_NORMAL" /> ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
 <translation id="8051695050440594747">ຍັງເຫຼືອ <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">ເປີດໃນແຖບໃໝ່ຂອງ Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" />}=1{ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ # ຄົນ}other{ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /> ແລະ ອີກ # ຄົນ}}</translation>
 <translation id="8062594758852531064">ການໂຫຼດກ່ອນລ່ວງໜ້າແບບຂະຫຍາຍ:</translation>
 <translation id="8063895661287329888">ເພີ່ມບຸກມາກບໍ່ສຳເລັດ</translation>
 <translation id="8066816452984416180">ບຸກມາກໜ້ານີ້ຢ່າງວ່ອງໄວ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>

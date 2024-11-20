@@ -257,6 +257,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2172905120685242547">Đóng cửa sổ?</translation>
 <translation id="2173302385160625112">Kiểm tra đường kết nối Internet của bạn</translation>
 <translation id="2175927920773552910">Mã QR</translation>
+<translation id="2184272387334793084">Đăng nhập để sử dụng mật khẩu và nhiều nội dung khác trên mọi thiết bị của bạn</translation>
 <translation id="218608176142494674">Chia sẻ</translation>
 <translation id="219283042927675668">Các thẻ trong nhóm</translation>
 <translation id="2194856509914051091">Những yếu tố cần xem xét</translation>
@@ -574,6 +575,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3636940436873918441">Ngôn ngữ ưu tiên</translation>
 <translation id="3637744895182738742">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Chuyển đến thẻ Trang chủ trong ứng dụng Google</translation>
 <translation id="368329460027487650">Đã đăng xuất. Mở các tuỳ chọn đăng nhập.</translation>
 <translation id="3684540848053703310">Đã đóng bảng thông tin chi tiết về giá ở dưới cùng</translation>
@@ -873,7 +875,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4988526792673242964">Trang</translation>
 <translation id="4991110219272367918">Lựa chọn phê duyệt hoặc không phê duyệt một trang web đã đóng</translation>
 <translation id="4996095658297597226">Sử dụng mật khẩu đề xuất?</translation>
-<translation id="499724277181351974">Di chuyển: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Theo dõi trang web này tại đây</translation>
 <translation id="5004416275253351869">Kiểm soát hoạt động trên Google</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>

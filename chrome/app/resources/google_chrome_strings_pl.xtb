@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Kliknij, aby zamknąć Obiektyw Google</translation>
 <translation id="2681444469812712297">Otwórz nową kartę <ph name="URL" /> w Google Chrome.</translation>
 <translation id="2712141162840347885">Wybierz, co chcesz wyszukać go za pomocą Obiektywu Google, lub naciśnij Escape, aby zamknąć Obiektyw</translation>
-<translation id="2727713483500953825">Wybierz obrazy lub tekst, które chcesz przeszukać za pomocą Obiektywu</translation>
 <translation id="2738871930057338499">Nie można połączyć się z internetem. Kod HTTP 403 (Zabroniony). Sprawdź konfigurację proxy.</translation>
 <translation id="2742320827292110288">Ostrzeżenie: Google Chrome nie może uniemożliwić rozszerzeniom zapisywania historii przeglądania. Aby wyłączyć to rozszerzenie w trybie incognito, odznacz tę opcję.</translation>
 <translation id="2753623023919742414">Kliknij, aby wyszukać</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chrome usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Rozpoznawaj obiekty lub miejsca i kopiuj lub tłumacz tekst. Gdy używasz Obiektywu Google, do Google jest wysyłany zrzut ekranu ze strony. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Korzystanie z Chrome na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
-<translation id="3625345586754200168">Wypróbuj Obiektyw</translation>
 <translation id="3635073343384702370">Chrome może sprawdzać Twoje hasła, gdy je zapiszesz</translation>
 <translation id="3667616615096815454">Nie można zainstalować aplikacji. Serwer jej nie rozpoznaje.</translation>
 <translation id="3673813398384385993">Przeglądarka Chrome wykryła, że rozszerzenie „<ph name="EXTENSION_NAME" />” zawiera złośliwe oprogramowanie</translation>
@@ -290,7 +288,6 @@
 <translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Zaloguj się w Chrome jako <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Przeszukaj dowolny obraz lub tekst za pomocą Obiektywu</translation>
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4459234553906210702">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>
 <translation id="4493028449971051158">Błąd uruchamiania: uruchom instalator z uprawnieniami administratora.</translation>
@@ -399,7 +396,6 @@
 <translation id="6025087594896450715">Google Chrome uruchomi się ponownie za <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="604424701295382420">Przypięto. Teraz możesz otwierać Obiektyw Google za pomocą nowego przycisku na pasku narzędzi</translation>
-<translation id="6060842547856900641">Uruchom Obiektyw</translation>
 <translation id="6069027071882229820">Skopiuj jako obraz</translation>
 <translation id="6070348360322141662">Dla większego bezpieczeństwa Google Chrome szyfruje dane</translation>
 <translation id="6075300983329039771">Twoja organizacja (<ph name="MANAGER" />) wymaga od Ciebie zalogowania się w Chrome</translation>
@@ -448,7 +444,6 @@
 <translation id="6515549163407364048">Aby korzystać z rozszerzeń na wszystkich swoich komputerach, zaloguj się w Chrome</translation>
 <translation id="6520670145826811516">Aby używać lokalizacji, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">W menedżerze haseł Google w przypadku tego urządzenia</translation>
-<translation id="6600016381025017075">Wyszukaj dowolną rzecz na tej stronie</translation>
 <translation id="6632473616050862500">Opracowanie ChromeOS Flex było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Chcesz zalogować się w Chrome?</translation>
 <translation id="6676384891291319759">Skorzystaj z internetu</translation>

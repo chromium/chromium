@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">വിൻഡോ അടയ്‌ക്കണോ?</translation>
 <translation id="2173302385160625112">ഇന്‍റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
 <translation id="2175927920773552910">QR കോഡ്</translation>
+<translation id="2184272387334793084">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും പാസ്‌വേഡുകളും മറ്റും ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="218608176142494674">പങ്കിടൽ</translation>
 <translation id="219283042927675668">ഗ്രൂപ്പിലെ ടാബുകൾ</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">സൂക്ഷിച്ചിരിക്കുന്ന ക്രെഡൻഷ്യലുകൾ ഉപയോഗിച്ച് വെബ്‌സൈറ്റുകളിലേക്ക് സ്വയമേവ സൈൻ ഇൻ ചെയ്യുക. ഫീച്ചർ ഓഫായിരിക്കുമ്പോൾ, ഒരു വെബ്‌സൈറ്റിലേക്ക് സൈൻ ഇൻ ചെയ്യുന്നതിനുമുമ്പ് പരിശോധിച്ചുറപ്പിക്കാൻ ഓരോ തവണയും നിങ്ങളോടാവശ്യപ്പെടും.</translation>
 <translation id="3636940436873918441">മുൻഗണന നൽകുന്ന ഭാഷകൾ</translation>
 <translation id="3637744895182738742">നിങ്ങൾ പാസ്ഫ്രെയ്‌സ് മറന്നാലോ ഈ ക്രമീകരണം മാറ്റണമെന്നുണ്ടെങ്കിലോ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കുക<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ആപ്പ് ഹോമിലേക്ക് പോകുക</translation>
 <translation id="368329460027487650">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനുള്ള ഓപ്‌ഷനുകൾ തുറക്കുന്നു.</translation>
 <translation id="3684540848053703310">നിരക്ക് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് അടച്ചു</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">പേജുകള്‍</translation>
 <translation id="4991110219272367918">അടച്ച വെബ്‌സൈറ്റ് അംഗീകരിക്കാനോ നിരസിക്കാനോ ഉള്ള ഓപ്ഷൻ</translation>
 <translation id="4996095658297597226">നിർദ്ദേശിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കണോ?</translation>
-<translation id="499724277181351974">നാവിഗേറ്റ് ചെയ്യുക: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ഈ സൈറ്റ് ഇവിടെ ഫോളോ ചെയ്യുക</translation>
 <translation id="5004416275253351869">Google പ്രവർത്തന നിയന്ത്രണങ്ങൾ</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ്}other{<ph name="TAB_COUNT_NORMAL" /> അദൃശ്യ ടാബുകൾ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ലഭ്യമാണ്</translation>
 <translation id="8058746566562539958">പുതിയ Chrome ടാബിൽ തുറക്കുക</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}=1{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് # ആൾക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}other{<ph name="OWNER_FIRST_NAME" /> എന്നയാൾക്കും മറ്റ് # പേർക്കുമൊപ്പം ടാബ് ഗ്രൂപ്പിൽ ചേരുക}}</translation>
 <translation id="8062594758852531064">വിപുലീകരിച്ച മുൻകൂട്ടി ലോഡ് ചെയ്യൽ:</translation>
 <translation id="8063895661287329888">ബുക്ക്‌മാർക്ക് ചേർക്കാനായില്ല.</translation>
 <translation id="8066816452984416180">ഈ പേജ് വേഗത്തിൽ ബുക്ക്‌മാർക്ക് ചെയ്യുക. ഈ കുറുക്കുവഴി എഡിറ്റ് ചെയ്യാൻ, സ്‌പർശിച്ചുപിടിക്കുക.</translation>

@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">Аўтар:</translation>
 <translation id="1247030632403369975">Алюміній</translation>
 <translation id="1252209483516427155">Вопратка</translation>
-<translation id="1253096324252841344">Аплата (<ph name="FINANCIAL_ACCOUNT_TYPES" />)</translation>
 <translation id="1253846494229886276">Захоўваецца здымак экрана</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (сінхранізаваныя)</translation>
 <translation id="1255086252236620440">Міксеры</translation>
@@ -3139,7 +3138,6 @@
 <translation id="6671169470640320959">Аўтакрэдытаванне</translation>
 <translation id="6671697161687535275">Выдаліць прапанову аўтазапаўнення форм з Chromium?</translation>
 <translation id="6677351035258626477">Фаст-фуд</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабу аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}one{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Пры ажыццяўленні купляў у Chrome вы можаце дадаць у якасці спосабаў аплаты <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Браўзер Chrome спрабуе ўвесці ваш пароль у праграме "<ph name="APP_NAME" />".</translation>
 <translation id="6681790815630918386">Код CVC захаваны</translation>
 <translation id="6683022854667115063">Навушнікі</translation>

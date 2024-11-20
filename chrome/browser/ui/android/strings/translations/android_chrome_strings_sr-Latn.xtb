@@ -257,6 +257,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2172905120685242547">Želite da zatvorite prozor?</translation>
 <translation id="2173302385160625112">Proverite internet vezu</translation>
 <translation id="2175927920773552910">QR kôd</translation>
+<translation id="2184272387334793084">Prijavite se da biste pristupali lozinkama i drugom sadržaju na svim uređajima</translation>
 <translation id="218608176142494674">Deljenje</translation>
 <translation id="219283042927675668">Kartice u grupi</translation>
 <translation id="2194856509914051091">Šta treba imati u vidu</translation>
@@ -576,6 +577,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="363596933471559332">Automatski se prijavljujte na veb-sajtove pomoću sačuvanih akreditiva. Kada je ova funkcija isključena, tražićemo vam da se verifikujete pre svakog prijavljivanja na veb-sajt.</translation>
 <translation id="3636940436873918441">Željeni jezici</translation>
 <translation id="3637744895182738742">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Idi na početnu stranicu aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavljivanje.</translation>
 <translation id="3684540848053703310">Donja tabela sa uvidima u cene je zatvorena</translation>
@@ -876,7 +878,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4988526792673242964">Stranice</translation>
 <translation id="4991110219272367918">Opcija za odobravanje ili neodobravanje veb-sajta je zatvorena</translation>
 <translation id="4996095658297597226">Želite da koristite predloženu lozinku?</translation>
-<translation id="499724277181351974">Idite na: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Pratite ovaj sajt ovde</translation>
 <translation id="5004416275253351869">Google kontrole aktivnosti</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
@@ -1576,7 +1577,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica bez arhiviranja}one{<ph name="TAB_COUNT_NORMAL" /> kartica bez arhiviranja}few{<ph name="TAB_COUNT_NORMAL" /> kartice bez arhiviranja}other{<ph name="TAB_COUNT_NORMAL" /> kartica bez arhiviranja}}</translation>
 <translation id="8051695050440594747">Dostupno je <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Otvori na novoj Chrome kartici</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" />}=1{Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" /> i još # osobom}one{Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" /> i još # osobom}few{Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" /> i još # osobe}other{Pridružite se grupi kartica sa korisnikom <ph name="OWNER_FIRST_NAME" /> i još # osoba}}</translation>
 <translation id="8062594758852531064">Produženo predučitavanje:</translation>
 <translation id="8063895661287329888">Dodavanje obeleživača nije uspelo.</translation>
 <translation id="8066816452984416180">Brzo obeležite ovu stranicu. Da biste izmenili ovu prečicu, dodirnite i zadržite.</translation>

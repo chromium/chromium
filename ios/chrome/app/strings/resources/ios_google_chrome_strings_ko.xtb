@@ -38,6 +38,7 @@
 <translation id="1646463005043273333">Chrome 설정을 열어 Chrome을 기본 브라우저로 설정합니다.</translation>
 <translation id="1670609221633730681">Chrome 도움말: 주소 표시줄 위치 선택</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Chrome에 비밀번호 저장</translation>
 <translation id="1790080846677398234">Chrome의 북마크에 입력한 URL을 추가합니다.</translation>
 <translation id="1799920918471566157">Chrome 사용 팁</translation>
 <translation id="1830634592642484976">이 주소는 현재 Chrome에 저장되어 있습니다. Google 제품에서 사용하려면 Google 계정(<ph name="USER_EMAIL" />)에 저장하세요.</translation>
@@ -219,9 +220,11 @@
 
 Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
 <translation id="6922332667202044570">Chrome에서 인터넷 사용 기록을 삭제합니다.</translation>
+<translation id="6924922227983877439">기본적으로 Chrome에서 링크 열기</translation>
 <translation id="6975725306479268850">Chrome 자동 완성을 선택하세요</translation>
 <translation id="7056826488869329999">Chrome에서 안전 확인을 열고 실행됩니다.</translation>
 <translation id="7061455974939528301">Chrome 아이콘을 길게 누른 후 '홈 화면 편집' 클릭</translation>
+<translation id="7065813315247345131">Chrome을 도크로 이동</translation>
 <translation id="7124339256045485976">Chrome을 최신 상태로 유지합니다.</translation>
 <translation id="7161390184744336561">Chrome이 최신 버전이 아닙니다.</translation>
 <translation id="7165736900384873061">Chrome QR 스캐너 사용 시작</translation>

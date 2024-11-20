@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">Συντάκτης:</translation>
 <translation id="1247030632403369975">Αλουμίνιο</translation>
 <translation id="1252209483516427155">Πανωφόρια</translation>
-<translation id="1253096324252841344">Πληρωμή με <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Γίνεται αποθήκευση στιγμιότυπου οθόνης</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (συγχρονισμένο)</translation>
 <translation id="1255086252236620440">Μίξερ τροφίμων</translation>
@@ -214,7 +213,7 @@
 <translation id="1360955481084547712">Ανοίξτε ένα νέο παράθυρο ανώνυμης περιήγησης για ιδιωτική περιήγηση.</translation>
 <translation id="1361528602584216624">Όριο ανά Pix <ph name="TRANSACTION_LIMIT" /> R$</translation>
 <translation id="1363015776076529485">Η λίστα με τους διαθέσιμους τρόπους πληρωμής που μπορείτε να επιλέξετε για τη συνέχιση της πληρωμής άνοιξε σε πλήρες ύψος.</translation>
-<translation id="1363028406613469049">Κομμάτι</translation>
+<translation id="1363028406613469049">Παρακολούθηση</translation>
 <translation id="1364822246244961190">Αυτή η πολιτική έχει αποκλειστεί, η τιμή της παραβλέπεται.</translation>
 <translation id="1368318639262510626">Παιχνίδι Dino. Ένας δεινόσαυρος με εφέ pixel αποφεύγει κάκτους και πτεροδάκτυλους καθώς τρέχει σε ένα έρημο τοπίο. Όταν ακούσετε ένα ηχητικό σήμα, πατήστε το πλήκτρο διαστήματος για να πηδήξετε πάνω από τα εμπόδια.</translation>
 <translation id="1369735141991626842">Συμπλήρωση πεδίων με χρήση AI</translation>
@@ -3142,7 +3141,6 @@
 <translation id="6671169470640320959">Χρηματοδότηση για την αγορά αυτοκινήτου</translation>
 <translation id="6671697161687535275">Να καταργηθεί η πρόταση φόρμας από το Chromium;</translation>
 <translation id="6677351035258626477">Φαστ φουντ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Όταν κάνετε αγορές στο Chrome, να εμφανίζεται η επιλογή <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Όταν κάνετε αγορές στο Chrome, να εμφανίζονται οι επιλογές <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6679354743514146922">Το πρόγραμμα περιήγησης Chrome προσπαθεί να συμπληρώσει τον κωδικό πρόσβασής σας στην εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Το CVC αποθηκεύτηκε</translation>
 <translation id="6683022854667115063">Ακουστικά</translation>

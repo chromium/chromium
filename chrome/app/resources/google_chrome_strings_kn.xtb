@@ -139,7 +139,6 @@
 <translation id="2668094785979141847">Google Lens ನಿಂದ ನಿರ್ಗಮಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="2681444469812712297">Google Chrome ನಲ್ಲಿ <ph name="URL" /> ಅನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ.</translation>
 <translation id="2712141162840347885">Google Lens ನೊಂದಿಗೆ ಹುಡುಕಲು ಯಾವುದನ್ನಾದರೂ ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ Google Lens ನಿಂದ ನಿರ್ಗಮಿಸಲು escape ಒತ್ತಿರಿ</translation>
-<translation id="2727713483500953825">Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಲು ಚಿತ್ರಗಳು/ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2738871930057338499">ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. HTTP 403 ನಿಷೇಧಿಸಲಾಗಿದೆ. ನಿಮ್ಮ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="2742320827292110288">ಎಚ್ಚರಿಕೆ: ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡದಂತೆ ವಿಸ್ತರಣೆಗಳನ್ನು ತಡೆಯಲು Google Chrome ಗೆ ಸಾಧ್ಯವಿಲ್ಲ. ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಈ ಆಯ್ಕೆಯನ್ನು ಆರಿಸಬೇಡಿ.</translation>
 <translation id="2753623023919742414">ಹುಡುಕಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
@@ -222,7 +221,6 @@
 <translation id="3609788354808247807">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ</translation>
 <translation id="3622716124581627104">ವಸ್ತುಗಳನ್ನು ಅಥವಾ ಸ್ಥಳಗಳನ್ನು ಗುರುತಿಸಿ ಮತ್ತು ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಿ ಅಥವಾ ಅನುವಾದಿಸಿ. ನೀವು Google Lens ಅನ್ನು ಬಳಸಿದಾಗ, ಪುಟದ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ಮತ್ತು ಹಂಚಿದ ಕಂಪ್ಯೂಟರ್‌ಗಳಲ್ಲಿ Chrome ಬಳಕೆ ಈಗ ತುಂಬಾ ಸುಲಭವಾಗಿದೆ.</translation>
-<translation id="3625345586754200168">Lens ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="3635073343384702370">ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಿದಾಗ, Chrome ಅವುಗಳನ್ನು ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="3667616615096815454">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ, ಅಪ್ಲಿಕೇಶನ್ ಸರ್ವರ್‌ಗೆ ತಿಳಿದಿಲ್ಲ.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />" ನಲ್ಲಿ ಮಾಲ್‌ವೇರ್ ಇರುವುದನ್ನು Chrome ಪತ್ತೆಹಚ್ಚಿದೆ</translation>
@@ -293,7 +291,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="4434353761996769206">ಇನ್‌ಸ್ಟಾಲರ್‌‌ ದೋಷ: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> ಎಂಬುದಾಗಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4450664632294415862">Chrome - ನೆಟ್‌ವರ್ಕ್ ಸೈನ್ ಇನ್ - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens ಬಳಸಿಕೊಂಡು ಯಾವುದೇ ಚಿತ್ರ ಅಥವಾ ಪಠ್ಯವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="4458462641685292929">Google Chrome ನಲ್ಲಿ ಮತ್ತೊಂದು ಕಾರ್ಯಾಚರಣೆಯು ಪ್ರಗತಿಯಲ್ಲಿದೆ. ದಯವಿಟ್ಟು ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4459234553906210702">ತಮ್ಮ ಜಾಹೀರಾತುಗಳ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಮಾಪನ ಮಾಡಲು ನೆರವಾಗುವಂತಹ ಮಾಹಿತಿಯನ್ನು Chrome ನಿಂದ ವಿನಂತಿಸಿಕೊಳ್ಳಲು ಜಾಹೀರಾತು ಮಾಪನವು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸುತ್ತದೆ. ಸೈಟ್‌ಗಳ ನಡುವೆ ಸಾಧ್ಯವಾದಷ್ಟು ಕಡಿಮೆ ಮಾಹಿತಿಯನ್ನು ವರ್ಗಾಯಿಸುವ ಮೂಲಕ ಕ್ರಾಸ್-ಸೈಟ್ ಟ್ರ್ಯಾಕಿಂಗ್ ಅನ್ನು ಜಾಹೀರಾತು ಮಾಪನ ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
 <translation id="4493028449971051158">ಸ್ಟಾರ್ಟ್‌ಅಪ್ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಅನ್ನು ನಿರ್ವಾಹಕರಾಗಿ ರನ್ ಮಾಡಿ.</translation>
@@ -402,7 +399,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="6025087594896450715"><ph name="REMAINING_TIME" /> ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ Google Chrome ಮರುಪ್ರಾರಂಭಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="604424701295382420">ಪಿನ್ ಮಾಡಲಾಗಿದೆ! ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿರುವ ಹೊಸ ಬಟನ್‌ನಿಂದ ನೀವು ಮತ್ತೆ Google Lens ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು</translation>
-<translation id="6060842547856900641">Lens ತೆರೆಯಿರಿ</translation>
 <translation id="6069027071882229820">ಚಿತ್ರದ ರೂಪದಲ್ಲಿ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="6070348360322141662">ಹೆಚ್ಚುವರಿ ಭದ್ರತೆಗಾಗಿ, Google Chrome ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುತ್ತದೆ</translation>
 <translation id="6075300983329039771">ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವುದು ನಿಮ್ಮ ಸಂಸ್ಥೆ, <ph name="MANAGER" /> ಗೆ ಅಗತ್ಯವಿದೆ</translation>
@@ -451,7 +447,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="6515549163407364048">ನಿಮ್ಮ ಎಲ್ಲಾ ಕಂಪ್ಯೂಟರ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ಪಡೆಯಲು, Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6520670145826811516">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸಲು, <ph name="BEGIN_LINK" />ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> Chrome ಆ್ಯಕ್ಸೆಸ್ ನೀಡಿ</translation>
 <translation id="659498884637196217">ಈ ಸಾಧನದ Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ</translation>
-<translation id="6600016381025017075">ಈ ಪುಟದಲ್ಲಿ ಯಾವುದನ್ನಾದರೂ ಹುಡುಕಿ</translation>
 <translation id="6632473616050862500">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌ನಿಂದ<ph name="END_LINK_CROS_OSS" /> ChromeOS Flex ನ ರಚನೆ ಸಾಧ್ಯವಾಗಿದೆ.</translation>
 <translation id="6660596345553328257">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="6676384891291319759">ಇಂಟರ್ನೆಟ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>

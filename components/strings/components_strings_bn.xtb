@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">লেখক:</translation>
 <translation id="1247030632403369975">অ্যালুমিনিয়াম</translation>
 <translation id="1252209483516427155">বাইরের পোশাক</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" />-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="1253846494229886276">স্ক্রিনশট সেভ করা হচ্ছে</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (সিঙ্ক হয়েছে)</translation>
 <translation id="1255086252236620440">ফুড মিক্সার</translation>
@@ -3130,7 +3129,6 @@
 <translation id="6671169470640320959">অটো ফাইন্যান্সিং</translation>
 <translation id="6671697161687535275">Chromium থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="6677351035258626477">ফাস্ট ফুড</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-এ কিছু কেনাকাটা করলে বিকল্প হিসেবে <ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখতে পাবেন}one{Chrome-এ কিছু কেনাকাটা করলে বিকল্প হিসেবে <ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখতে পাবেন}other{Chrome-এ কিছু কেনাকাটা করলে বিকল্প হিসেবে <ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখতে পাবেন}}</translation>
 <translation id="6679354743514146922">Chrome ব্রাউজার <ph name="APP_NAME" />-এ আপনার পাসওয়ার্ড পূরণ করার চেষ্টা করছে।</translation>
 <translation id="6681790815630918386">CVC সেভ করা হয়েছে</translation>
 <translation id="6683022854667115063">হেডফোন</translation>

@@ -1396,7 +1396,6 @@
 <translation id="1948528728718281125">已向應用程式、具有相機權限的網站及系統服務授予相機存取權</translation>
 <translation id="1949332606889020901">當機 ID</translation>
 <translation id="1949584741547056205">快速解答</translation>
-<translation id="1949849604471335579">根據個人喜好設定桌布、螢幕保護程式、強調色等項目</translation>
 <translation id="1949980990364952348">應用程式名稱</translation>
 <translation id="1951012854035635156">助理</translation>
 <translation id="1951823516285577843">尋找替代擴充程式</translation>
@@ -2318,6 +2317,7 @@
 <translation id="2575407791320728464">網址無效。請確保網址的格式正確。</translation>
 <translation id="2575441894380764255">不允許顯示滋擾性或誤導廣告</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{系統會記住此裝置，在 1 年內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {YEARS} 年內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
+<translation id="2577127557293415225">暫時閉上雙眼</translation>
 <translation id="257779572837908839">設定為 Chromebox 視像會議</translation>
 <translation id="2580889980133367162">永遠允許 <ph name="HOST" /> 下載多個檔案</translation>
 <translation id="258095186877893873">長</translation>
@@ -2788,6 +2788,7 @@
 <translation id="2904210161403910217">密碼已在您上次登入後變更</translation>
 <translation id="2904506722835398619">需要登入和同步</translation>
 <translation id="2904845070985032877">暫停動畫</translation>
+<translation id="2905556994482999199">透過頭部動作和面部表情控制 Chromebook</translation>
 <translation id="2907619724991574506">起始網址</translation>
 <translation id="2907798539022650680">無法連線至「<ph name="NAME" />」：<ph name="DETAILS" />
     伺服器訊息：<ph name="SERVER_MSG" /></translation>
@@ -6091,7 +6092,6 @@
 <translation id="5288678174502918605">重新開啟先前關閉的分頁(&amp;E)</translation>
 <translation id="5290020561438336792">電腦和投放裝置連線至不同的 Wi-Fi 網絡 (例如分別使用 2.4 GHz 和 5 GHz)</translation>
 <translation id="52912272896845572">私密金鑰檔案無效。</translation>
-<translation id="5291739252352359682">在 Chrome 瀏覽器中自動建立媒體字幕 (目前支援英文)。系統只會在裝置中處理音訊和字幕，絕對不會外洩。</translation>
 <translation id="529175790091471945">將此裝置格式化</translation>
 <translation id="529296195492126134">不支援暫時模式。請聯絡您的管理員</translation>
 <translation id="5293043095535566171">要開啟位置資料存取權嗎？</translation>
@@ -7247,6 +7247,7 @@
 <translation id="6143186082490678276">取得說明</translation>
 <translation id="6143366292569327983">揀要翻譯邊種語言嘅網頁</translation>
 <translation id="6144938890088808325">協助我們改善 Chromebook</translation>
+<translation id="6145363037359279595"><ph name="CHILD_NAME" />，歡迎使用！</translation>
 <translation id="6146409560350811147">同步功能無法正常運作。請嘗試再次登入。</translation>
 <translation id="6147020289383635445">列印預覽失敗。</translation>
 <translation id="6147253937684562370">如要解鎖個人檔案，請使用你的主要帳戶電郵 (<ph name="EMAIL" />) 登入</translation>
@@ -7518,7 +7519,6 @@
 <translation id="6338968693068997776">新增 USB 裝置</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
-<translation id="6340526405444716530">個人化</translation>
 <translation id="6341850831632289108">偵測您的實際位置</translation>
 <translation id="6342069812937806050">剛剛完成</translation>
 <translation id="6343003829431264373">只列印雙數頁面</translation>
@@ -7917,7 +7917,6 @@
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動，然後長按。</translation>
 <translation id="664290675870910564">選取網絡</translation>
 <translation id="6643016212128521049">清除</translation>
-<translation id="6644512095122093795">儲存密碼提議</translation>
 <translation id="6644513150317163574">網址格式無效。使用單一登入 (SSO) 驗證時，必須將伺服器指定為主機名稱。</translation>
 <translation id="6644846457769259194">正在更新裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">關閉「快速配對」</translation>
@@ -8058,7 +8057,6 @@
 <translation id="6739943577740687354">此功能採用 AI，結果未必完全準確</translation>
 <translation id="6740234557573873150">已暫停下載「<ph name="FILE_NAME" />」</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />您的管理員<ph name="END_LINK" />已停用「安全瀏覽」功能</translation>
-<translation id="6742629250739345159">在 Chrome 瀏覽器中自動建立媒體字幕。系統只會在裝置中處理音訊和字幕，絕對不會外洩。</translation>
 <translation id="6743841972744298686">同步處理設定</translation>
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">向下移</translation>

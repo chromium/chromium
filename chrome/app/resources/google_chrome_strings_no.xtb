@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Klikk for å gå ut av Google Lens</translation>
 <translation id="2681444469812712297">Åpne <ph name="URL" /> i en ny fane i Google Chrome.</translation>
 <translation id="2712141162840347885">Velg hva som helst for å søke med Google Lens, eller trykk på Esc for å avslutte Google Lens</translation>
-<translation id="2727713483500953825">Velg bilder eller tekst for å søke med Lens</translation>
 <translation id="2738871930057338499">Kan ikke koble til internett. HTTP 403 – forbudt. Kontroller proxy-tjenerkonfigurasjonen.</translation>
 <translation id="2742320827292110288">Advarsel: Google Chrome kan ikke forhindre utvidelser fra å registrere nettleserloggen din. For å deaktivere denne utvidelsen i Inkognitomodus, fjern merkingen for dette alternativet.</translation>
 <translation id="2753623023919742414">Klikk for å søke</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Du har ikke vært her i det siste. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identifiser ting eller steder, og kopier eller oversett tekst. Når du bruker Google Lens, sendes et skjermbilde av siden til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nå er det enklere å bruke Chrome med Google-kontoen din og på datamaskiner du deler med andre.</translation>
-<translation id="3625345586754200168">Prøv Lens</translation>
 <translation id="3635073343384702370">Chrome kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="3667616615096815454">Kan ikke installere programmet fordi det er ukjent for tjeneren.</translation>
 <translation id="3673813398384385993">Chrome har oppdaget at «<ph name="EXTENSION_NAME" />» inneholder skadelig programvare</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Installasjonsfeil: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Logg på Chrome som <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – nettverkspålogging – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Søk i bilder eller tekst med Lens</translation>
 <translation id="4458462641685292929">En annen handling er i gang på Google Chrome. Prøv på nytt senere.</translation>
 <translation id="4459234553906210702">Med annonsemålinger kan nettsteder du besøker, spørre Chrome om informasjon som hjelper nettstedet å måle annonseresultatene sine. Annonsemålinger begrenser sporing på tvers av nettsteder ved å overføre så lite informasjon som mulig mellom nettsteder.</translation>
 <translation id="4493028449971051158">Oppstartsfeil: Kjør installasjonsprogrammet som administrator.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome startes på nytt om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="604424701295382420">Festet. Du kan åpne Google Lens igjen via den nye knappen på verktøylinjen</translation>
-<translation id="6060842547856900641">Åpne Lens</translation>
 <translation id="6069027071882229820">Kopier som bilde</translation>
 <translation id="6070348360322141662">Google Chrome krypterer dataene dine for å øke sikkerheten</translation>
 <translation id="6075300983329039771">Organisasjonen din, <ph name="MANAGER" />, krever at du logger på Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">For å få utvidelsene dine på alle datamaskinene dine, logg på Chrome</translation>
 <translation id="6520670145826811516">For å la Chrome bruke posisjonen din må du gi tilgang i <ph name="BEGIN_LINK" />systeminnstillingene<ph name="END_LINK" />.</translation>
 <translation id="659498884637196217">I Google Passordlagring på denne enheten</translation>
-<translation id="6600016381025017075">Søk etter hva som helst på denne siden</translation>
 <translation id="6632473616050862500">ChromeOS Flex er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Vil du logge på Chrome?</translation>
 <translation id="6676384891291319759">Gå til Internett</translation>
@@ -612,6 +607,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8416347857511542594">Finn ut mer om personlig tilpasning av annonser i Chrome</translation>
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>
+<translation id="8425765582779547329">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, logg på Chrome</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
 <translation id="8451192282033883849">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren kan se og redigere denne Chrome-nettleserprofilen og tilhørende data, som bokmerker, logg og passord.</translation>

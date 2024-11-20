@@ -2722,6 +2722,10 @@ Si se le asigna el valor <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectarán 
           Si asignas un valor a esta política, los usuarios no podrán cambiarlo ni anularlo.
 
           Si no asignas ningún valor a esta política, el cursor grande se inhabilitará inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarlo en cualquier momento.</translation>
+<translation id="3028201032688933333">Esta política controla si el usuario puede elegir archivos directamente de <ph name="GOOGLE_DRIVE_NAME" /> cuando un sitio web contiene un formulario en el que se pueden enviar archivos.
+Definir la política como "Mostrar la opción de <ph name="GOOGLE_DRIVE_NAME" />". Si se le asigna el valor 0 o no se define, el usuario podrá elegir archivos de <ph name="GOOGLE_DRIVE_NAME" /> en el menú de selección de archivos.
+Definir la política como "Ocultar la opción de <ph name="GOOGLE_DRIVE_NAME" />". Si se le asigna el valor 1, se oculta la opción de <ph name="GOOGLE_DRIVE_NAME" /> en el menú de selección de archivos.
+Esta política no impide que los usuarios puedan elegir archivos de <ph name="GOOGLE_DRIVE_NAME" /> de otras formas distintas a la acción "Google Drive" en el menú de selección de archivos.</translation>
 <translation id="3030000825273123558">Habilitar los informes estadísticos</translation>
 <translation id="30300807616984726">Envía informes sobre el inventario de aplicaciones de usuarios afiliados.
 
@@ -2805,18 +2809,6 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3092059499596000593">Utilizar la impresora predeterminada del sistema como opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica qué ocurre cuando un usuario que se autentica mediante un token de seguridad (por ejemplo, con una tarjeta inteligente) quita ese token durante una sesión. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: no ocurre nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sesión finaliza y se cierra la sesión del usuario. Si no se define esta política, se utiliza <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> de forma predeterminada.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
-<translation id="30986061650205557">Estas funciones de DevTools de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como mensajes de error, rastreos de la pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa. En los datos enviados al servidor no se incluyen el cuerpo de las respuestas ni los encabezados de autenticación y cookies de las solicitudes de red.
-
-Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, datos de entrada, resultados y materiales originales. Puede que los revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-Si se asigna el valor 1 a esta política, se habilitarán estas funciones para los usuarios, pero no se enviarán datos a Google para entrenar ni mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
-
-Entre las funciones de IA generativa de DevTools se incluyen las siguientes:
-
-- Console Insights: explica los mensajes de la consola y ofrece sugerencias sobre cómo corregir errores de la consola.
-- Asistencia de IA: ayuda a los usuarios a entender los estilos de CSS con información valiosa basada en IA.</translation>
 <translation id="309885424548342662">Habilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3101035417394748390">Tamaño máximo (en bytes) que se puede transferir entre el cliente y el host mediante la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Seleccionar la forma de especificar la configuración del servidor proxy</translation>
@@ -2921,9 +2913,6 @@ Si esta política se inhabilita, la promoción de valoraciones del App Store no 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).
 
       Ten en cuenta que esta política bloquea JavaScript en función de si el origen del documento de nivel superior (normalmente, la URL de la página que también aparece en la barra de direcciones) coincide con alguno de los patrones. Por lo tanto, esta política no es adecuada para mitigar los ataques de la cadena de suministro web. Por ejemplo, si se proporciona el patrón "https://[*.]foo.com/", no se impedirá que una página alojada en https://example.com ejecute una secuencia de comandos cargada desde https://www.foo.com/example.js. Además, si se proporciona el patrón "https://example.com/", no se evitará que un documento de https://example.com ejecute secuencias de comandos si no es el documento de nivel superior, sino que se inserta como submarco en una página alojada en otro origen, como https://www.bar.com.</translation>
-<translation id="3180671894201217988">Si se habilita la política o no se le asigna ningún valor, se impide que software de terceros pueda insertar código ejecutable en los procesos de <ph name="PRODUCT_NAME" />.
-
-      Si se inhabilita la política, el software podrá insertar este tipo de código en los procesos de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3181114468897395940">Los ajustes de Re Pág y Av Pág usan la combinación de teclas que incluye la tecla modificadora Alt</translation>
 <translation id="3182503302060513467">La página Nueva pestaña mostrará el anuncio del espacio intermedio en caso de estar disponible</translation>
 <translation id="3184161739683646075">Controla el modo DNS-over-HTTPS</translation>
@@ -3202,6 +3191,7 @@ Si se inhabilita esta política, no se permitirá la función de escritura predi
 <translation id="3387999258705169775">Comportamiento predeterminado de la restricción anidada de la función setTimeout().</translation>
 <translation id="3388628790024977864">No permitir el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> y <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Habilitar la autenticación gnubby para el host de acceso remoto</translation>
+<translation id="3395744872155955051">Permitir que se puedan elegir archivos directamente desde <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">No mostrar recomendaciones de aplicaciones en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamiento predeterminado del sistema (depende del tamaño de la pantalla)</translation>
 <translation id="33993310248354034">Permitir la detección de entidades de texto sin formato en las páginas web.</translation>
@@ -5759,6 +5749,7 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 Definir la lista de URLs de esta política tiene el mismo resultado que asignar la marca de línea de comandos --unsafely-treat-insecure-origin-as-secure a una lista con las mismas URL separadas por comas. Esta política anula tanto la marca de línea de comandos como UnsafelyTreatInsecureOriginAsSecure si está presente.
 
 Para obtener más información sobre contextos seguros, consulta la página Secure Contexts (https://www.w3.org/TR/secure-contexts).</translation>
+<translation id="530111809849214840">Ocultar la opción de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">La hora del día (en la zona horaria local) en la que se renovará la cuota de uso.</translation>
 <translation id="5303080953475303561">Esta política controla la frecuencia con la que la pantalla de bloqueo solicita la contraseña para el desbloqueo rápido. Cuando aparece la pantalla de bloqueo, si el tiempo transcurrido desde la última vez que se introdujo la contraseña es mayor al del valor elegido, el desbloqueo rápido no estará disponible. Si los usuarios permanecen en la pantalla de bloqueo pasado ese tiempo, la próxima vez que introduzcan un código incorrecto o vuelvan a acceder a la pantalla de bloqueo (lo que suceda primero), se les pedirá la contraseña.
 
@@ -6107,6 +6098,7 @@ Consulta también la página https://wiki.samba.org/index.php/Samba_4.6_Features
 
       Esta política está obsoleta. Usa <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> en su lugar.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">Mostrar la opción de <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Habilitar el controlador de diagnóstico y telemetría wilco</translation>
 <translation id="5559079916187891399">Esta política no influye en las aplicaciones para Android.</translation>
 <translation id="5560039246134246593">Permite añadir un parámetro para la obtención de la base de las variaciones en <ph name="PRODUCT_NAME" />.

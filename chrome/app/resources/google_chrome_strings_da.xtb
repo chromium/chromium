@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Klik for at lukke Google Lens</translation>
 <translation id="2681444469812712297">Åbn <ph name="URL" /> på en ny fane i Google Chrome.</translation>
 <translation id="2712141162840347885">Vælg det, du vil søge efter med Google Lens, eller tryk på Escape for at lukke Google Lens</translation>
-<translation id="2727713483500953825">Vælg billeder/tekst for at søge med Lens</translation>
 <translation id="2738871930057338499">Der kan ikke oprettes forbindelse til internettet. HTTP 403 (forbudt). Tjek din proxykonfiguration.</translation>
 <translation id="2742320827292110288">Advarsel! Google Chrome kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="2753623023919742414">Klik for at søge</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identificer ting eller steder, og kopiér eller oversæt tekst. Når du bruger Google Lens, sendes der et screenshot af siden til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nu er det blevet nemmere at bruge Chrome med din Google-konto og på delte computere.</translation>
-<translation id="3625345586754200168">Prøv Lens</translation>
 <translation id="3635073343384702370">Chrome kan tjekke dine adgangskoder, når du gemmer dem</translation>
 <translation id="3667616615096815454">Appen kan ikke installeres. Serveren kender ikke appen.</translation>
 <translation id="3673813398384385993">Chrome har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Installationsfejl: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Log ind i Chrome som <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Login på netværk – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Søg efter et billede eller en tekst med Lens</translation>
 <translation id="4458462641685292929">En anden handling i Google Chrome er i gang. Prøv igen senere.</translation>
 <translation id="4459234553906210702">Ad measurement giver websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.</translation>
 <translation id="4493028449971051158">Opstartsfejl: Kør installationsprogrammet som administrator.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome genstarter om <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="604424701295382420">Funktionen er fastgjort. Du kan tilgå Google Lens igen ved hjælp af den nye knap på værktøjslinjen</translation>
-<translation id="6060842547856900641">Åbn Lens</translation>
 <translation id="6069027071882229820">Kopiér som billede</translation>
 <translation id="6070348360322141662">Som et ekstra sikkerhedsniveau krypterer Google Chrome dine data</translation>
 <translation id="6075300983329039771">Din organisation, <ph name="MANAGER" />, kræver, at du logger ind i Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Log ind i Chrome for at få dine udvidelser på alle dine computere</translation>
 <translation id="6520670145826811516">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din lokation</translation>
 <translation id="659498884637196217">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
-<translation id="6600016381025017075">Søg efter hvad som helst på denne side</translation>
 <translation id="6632473616050862500">ChromeOS Flex leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Vil du logge ind i Chrome?</translation>
 <translation id="6676384891291319759">Få adgang til internettet</translation>

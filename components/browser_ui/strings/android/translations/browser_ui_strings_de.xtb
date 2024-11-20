@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Einer Website erlauben, Daten auf deinem Gerät zu speichern</translation>
 <translation id="1383876407941801731">Durchsuchen</translation>
 <translation id="1384959399684842514">Download angehalten</translation>
+<translation id="1396327438254055134">Du kannst einer Website erlauben, dass V8‑Optimierungstool zu verwenden.</translation>
 <translation id="1415402041810619267">URL abgeschnitten</translation>
 <translation id="1448064542941920355">Herauszoomen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> Website}other{<ph name="SITE_COUNT" /> Websites}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Bild-Decodierer</translation>
 <translation id="1785415724048343560">Für eine optimale Nutzung empfohlen</translation>
 <translation id="1799920918471566157">Chrome-Tipps</translation>
+<translation id="1816835383954230954">Wenn diese Option aktiviert ist, wird Chrome schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen laufen. Ist sie deaktiviert, wird die Leistung reduziert, V8 ist dafür aber widerstandsfähiger gegen Angriffe.</translation>
 <translation id="1818308510395330587">Damit <ph name="APP_NAME" /> AR verwenden kann, muss die Kameraberechtigung auch in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktiviert sein.</translation>
 <translation id="1887786770086287077">Der Standortzugriff ist für dieses Gerät deaktiviert. Du kannst ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="1915307458270490472">Auflegen</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie deine Kamera verwenden dürfen. Wenn er deaktiviert ist, können Websites deine Kamera nicht verwenden.</translation>
 <translation id="3521663503435878242">Websites unter <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Websites nicht erlauben, meine Handbewegungen zu verfolgen</translation>
+<translation id="3532312529397438268">Websites dürfen das V8‑Optimierungstool nicht verwenden</translation>
 <translation id="3536227077203206203">Einmal gewährt</translation>
 <translation id="3538390592868664640">Websites daran hindern, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen</translation>
 <translation id="3544058026430919413">Ein Unternehmen kann eine Gruppe von Websites festlegen, die deine Aktivitäten in der Gruppe mithilfe von Cookies teilen. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zoomen</translation>
 <translation id="4807122856660838973">Safe Browsing aktivieren</translation>
 <translation id="4811450222531576619">Informationen zur Quelle und zum Thema</translation>
+<translation id="481168145262973879">Websites dürfen das V8‑Optimierungstool verwenden</translation>
 <translation id="4816495437032298535">Gespeicherter Zoom für Websites</translation>
 <translation id="4836046166855586901">Nachfragen, wenn eine Website Informationen zu deiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
 <translation id="483914009762354899">Alle Websites unter dieser Domain einschließen</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Websitedaten löschen? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
 <translation id="6992289844737586249">Nachfragen, bevor Websites auf mein Mikrofon zugreifen dürfen (empfohlen)</translation>
+<translation id="6999131147875565462">Chrome wird schneller ausgeführt und Funktionen, die JavaScript verwenden, sollten wie vorgesehen laufen</translation>
 <translation id="7000754031042624318">In den Android-Einstellungen deaktiviert</translation>
 <translation id="7016516562562142042">Für die aktuelle Suchmaschine zugelassen</translation>
 <translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Websites, die du besuchst, können bestätigen, dass du eine echte Person und kein Bot bist</translation>
 <translation id="959682366969460160">Besser organisiert</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>
+<translation id="969975166333045662">Du kannst einer Website verbieten, das V8‑Optimierungstools zu verwenden.</translation>
 </translationbundle>

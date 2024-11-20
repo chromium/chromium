@@ -128,7 +128,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2711502716910134313">Kartica Chromiuma</translation>
 <translation id="2718390899429598676">Chromium će šifrirati vaše podatke radi dodatne sigurnosti.</translation>
 <translation id="2721354645805494590">Odjavite se da uklonite Google račun iz Chromiuma</translation>
-<translation id="2727713483500953825">Odaberite slike/tekst da pretražite putem Objektiva</translation>
 <translation id="2738871930057338499">Nije moguće povezati se s internetom. HTTP 403 je zabranjen. Provjerite konfiguraciju proksi servera.</translation>
 <translation id="2753623023919742414">Kliknite da pretražite</translation>
 <translation id="2770231113462710648">Promijenite zadani preglednik u:</translation>
@@ -141,7 +140,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2846251086934905009">Greška prilikom instaliranja: program za instaliranje nije završio. Instalacija je prekinuta.</translation>
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
 <translation id="2850691299438350830">Štiti vas na Chromiumu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
-<translation id="2874602845494991903">Otvori pretraživanje pomoću slika</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O &amp;Chromiumu</translation>
 <translation id="2915996080311180594">Ponovo pokreni kasnije</translation>
@@ -150,7 +148,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2970426615109535079">Vaša organizacija upravlja Chromiumom</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2977506796191543575">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
-<translation id="2981563588585023386">Za više sigurnosti online uz postavke koje su odabrali tvoji roditelji, prijavi se na Chromium</translation>
+<translation id="2981563588585023386">Radi veće sigurnosti online uz roditeljeve odabire prijavi se u Chromium</translation>
 <translation id="2987208172821108655">Chromium može učiniti ove kartice neaktivnima da poboljša iskustvo pregledanja i oslobodi izvore.</translation>
 <translation id="3013473503895162900">Otvorite <ph name="URL" /> u novoj kartici u Chromiumu.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
@@ -257,7 +255,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4434353761996769206">Greška alata za instaliranje: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Organizacija <ph name="MANAGER" /> upravlja Chromiumom</translation>
 <translation id="4447409407328223819">O verziji Chrome for Testing</translation>
-<translation id="4453144231461812959">Pretražite bilo koju sliku ili tekst putem Objektiva</translation>
 <translation id="4470974262661801543">Da koristite i sačuvate podatke Chromiuma na Google računu, unesite pristupni izraz</translation>
 <translation id="4493028449971051158">Došlo je do greške prilikom pokretanja. Pokrenite alat za instaliranje kao administrator.</translation>
 <translation id="4501471624619070934">Instalacija nije uspjela jer je pristup ograničen u ovoj zemlji.</translation>
@@ -297,7 +294,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="494490797786467921">Zatvaranje dijaloškog okvira za prijavu u Chromium klikom</translation>
 <translation id="4987820182225656817">Gosti mogu koristiti Chromium, a da ne ostave tragove o korištenju.</translation>
 <translation id="4994636714258228724">Dodajte se u Chromium</translation>
-<translation id="5051959905407134411">Isprobajte pretraživanje pomoću slika</translation>
 <translation id="5114678101347489141">Chromium istražuje nove funkcije koje dozvoljavaju web lokacijama da pružaju isto iskustvo pregledanja koristeći manje informacija o vama</translation>
 <translation id="5123973130450702873">Chromium treba odobrenje da prati vaše ruke</translation>
 <translation id="5174969993834422967">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite na ikonu obavještenja u desnom uglu lokacijske trake.</translation>

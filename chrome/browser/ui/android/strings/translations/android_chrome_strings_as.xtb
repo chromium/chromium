@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">ৱিণ্ড’ বন্ধ কৰিবনে?</translation>
 <translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
+<translation id="2184272387334793084">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ পাছৱৰ্ড আৰু আন বহুতো লাভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="218608176142494674">শ্বেয়াৰ কৰি থকা হৈছে</translation>
 <translation id="219283042927675668">গোটত থকা টেবসমূহ</translation>
 <translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">ষ্ট’ৰ কৰি থোৱা বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ ব্যৱহাৰ কৰি স্বয়ংক্ৰিয়ভাৱে ৱেবছাইটসমূহত ছাইন ইন কৰক। এই সুবিধাটো অফ কৰি থোৱা থাকিলে আপুনি কোনো এটা ৱেবছাইটত ছাইন ইন কৰাৰ পূর্বে প্ৰতিবাৰে আপোনাৰ পৰিচয় সত্যাপন কৰিবলৈ কোৱা হ’ব।</translation>
 <translation id="3636940436873918441">অগ্ৰাধিকাৰ দিয়া ভাষা</translation>
 <translation id="3637744895182738742">আপুনি যদি নিজৰ পাছফ্ৰে’জটো পাহৰিছে অথবা এই ছেটিংটো সলাব বিচাৰে, <ph name="BEGIN_LINK" />আপোনাৰ একাউণ্টৰ Chromeৰ ডেটা মচক<ph name="END_LINK" />।</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google এপৰ গৃহপৃষ্ঠালৈ যাওক</translation>
 <translation id="368329460027487650">ছাইন আউট কৰা আছে। ছাইন ইন কৰিবলৈ বিকল্পসমূহ খোলে।</translation>
 <translation id="3684540848053703310">মূল্যৰ অন্তৰ্দৃষ্টি থকা তলৰ শ্বীটখন বন্ধ হৈছে</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
 <translation id="4991110219272367918">এটা ৱেবছাইট অনুমোদন জনোৱা অথবা নজনোৱাৰ বিকল্প বন্ধ কৰা হৈছে</translation>
 <translation id="4996095658297597226">পৰামৰ্শিত পাছৱৰ্ড ব্যৱহাৰ কৰিবনে?</translation>
-<translation id="499724277181351974">নেভিগে’ট কৰক: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ইয়াত এই ছাইটটো ফ’ল’ কৰক</translation>
 <translation id="5004416275253351869">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা ইনক’গ্নিট’ টেব}one{<ph name="TAB_COUNT_NORMAL" /> টা ইনক’গ্নিট’ টেব}other{<ph name="TAB_COUNT_NORMAL" /> টা ইনক’গ্নিট’ টেব}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এম.বি. উপলব্ধ</translation>
 <translation id="8058746566562539958">নতুন Chrome টেবত খোলক</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />ৰ সৈতে টেবৰ গোটত যোগদান কৰক}=1{<ph name="OWNER_FIRST_NAME" /> আৰু আন # গৰাকীৰ সৈতে টেবৰ গোটত যোগদান কৰক}one{<ph name="OWNER_FIRST_NAME" /> আৰু আন # গৰাকীৰ সৈতে টেবৰ গোটত যোগদান কৰক}other{<ph name="OWNER_FIRST_NAME" /> আৰু আন # গৰাকীৰ সৈতে টেবৰ গোটত যোগদান কৰক}}</translation>
 <translation id="8062594758852531064">বিস্তাৰিত আগতীয়া ল’ডিং:</translation>
 <translation id="8063895661287329888">বুকমার্ক যোগ কৰিব পৰা নগ'ল।</translation>
 <translation id="8066816452984416180">এই পৃষ্ঠাখন ক্ষিপ্ৰতাৰে বুকমাৰ্ক কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ, স্পৰ্শ কৰি ধৰি ৰাখক।</translation>

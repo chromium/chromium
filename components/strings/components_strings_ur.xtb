@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">مصنف:</translation>
 <translation id="1247030632403369975">ایلومینیم</translation>
 <translation id="1252209483516427155">بیرونی جامہ</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> کے ساتھ ادائیگی کریں</translation>
 <translation id="1253846494229886276">اسکرین شاٹ محفوظ ہو رہا ہے</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (مطابقت پذیر کردہ)</translation>
 <translation id="1255086252236620440">فوڈ مکسرز</translation>
@@ -3142,7 +3141,6 @@
 <translation id="6671169470640320959">آٹو فائنانسنگ</translation>
 <translation id="6671697161687535275">‏Chromium سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="6677351035258626477">فاسٹ فوڈ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{‏جب آپ Chrome میں خریداری کرتے ہیں، تو <ph name="FINANCIAL_ACCOUNT_TYPES" /> کو اختیار کے طور پر دیکھیں}other{‏جب آپ Chrome میں خريداری کرتے ہيں تو <ph name="FINANCIAL_ACCOUNT_TYPES" /> کو اختيار کے طور پر ديکھيں}}</translation>
 <translation id="6679354743514146922">‏‫Chrome براؤزر <ph name="APP_NAME" /> پر آپ کا پاس ورڈ پر کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="6681790815630918386">‏CVC محفوظ ہو گیا</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>

@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">Авторы:</translation>
 <translation id="1247030632403369975">Алюминий</translation>
 <translation id="1252209483516427155">Сырт киім</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> арқылы төлеу</translation>
 <translation id="1253846494229886276">Скриншот сақталып жатыр</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхрондалған)</translation>
 <translation id="1255086252236620440">Тамақ өнімдерін араластырғыштар</translation>
@@ -3129,7 +3128,6 @@
 <translation id="6671169470640320959">Автокөлік сатып алуды қаржыландыру</translation>
 <translation id="6671697161687535275">Chromium жүйесінен нысан ұсынысын алып тастау керек пе?</translation>
 <translation id="6677351035258626477">Фастфуд</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опция ретінде көрсетіледі}other{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опциялар ретінде көрсетіледі}}</translation>
 <translation id="6679354743514146922">Chrome браузері <ph name="APP_NAME" /> қолданбасындағы құпия сөзіңізді толтырғалы жатыр.</translation>
 <translation id="6681790815630918386">CVC сақталды</translation>
 <translation id="6683022854667115063">Құлақаспап</translation>

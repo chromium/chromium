@@ -2719,6 +2719,10 @@ Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entit�
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas configurée, le grand curseur est initialement désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="3028201032688933333">Cette règle détermine si l'utilisateur est autorisé à choisir directement des fichiers dans <ph name="GOOGLE_DRIVE_NAME" /> lorsqu'un site Web contient un formulaire permettant d'envoyer des fichiers.
+Règle définie sur "Afficher l'option <ph name="GOOGLE_DRIVE_NAME" />". Si cette règle est définie sur "(0)" ou qu'elle n'est pas définie, l'utilisateur peut choisir des fichiers dans <ph name="GOOGLE_DRIVE_NAME" /> dans le menu de sélection de fichiers.
+Règle définie sur "Masquer l'option <ph name="GOOGLE_DRIVE_NAME" />". "(1)" masque l'option <ph name="GOOGLE_DRIVE_NAME" /> dans le menu de sélection de fichiers.
+Cette règle n'empêche pas les utilisateurs de choisir des fichiers dans <ph name="GOOGLE_DRIVE_NAME" /> par d'autres moyens que le choix de "Google Drive" dans le menu de sélection de fichiers.</translation>
 <translation id="3030000825273123558">Activer la génération de rapports sur les statistiques</translation>
 <translation id="30300807616984726">Créer des rapports sur les données d'inventaire d'applis pour les utilisateurs affiliés.
 
@@ -2802,18 +2806,6 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="3092059499596000593">Définir l'imprimante système par défaut comme celle par défaut dans l'aperçu avant impression</translation>
 <translation id="309416443108680956">Indique ce qu'il se passe lorsqu'un utilisateur qui s'authentifie au moyen d'un jeton de sécurité (carte à puce, par exemple) retire ce jeton alors qu'il est connecté. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> : rien ne se passe. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> : l'écran se verrouille jusqu'à ce que l'utilisateur s'authentifie à nouveau. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> : la session prend fin, et l'utilisateur est déconnecté. Si cette règle n'est pas configurée, elle est définie par défaut sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Liste des plug-ins activés</translation>
-<translation id="30986061650205557">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Désactiver la fonctionnalité.
-
-Les fonctionnalités d'IA générative des outils de développement incluent les suivantes :
-
-- Console Insights : décrit les messages de la console et propose des suggestions pour corriger les erreurs dans la console.
-- Assistance par IA : aide les utilisateurs à comprendre les styles CSS grâce à des insights basés sur l'IA.</translation>
 <translation id="309885424548342662">Activer l'authentification cloud Microsoft®</translation>
 <translation id="3101035417394748390">La taille maximale, en octets, qui peut être transférée entre le client et l'hôte via la synchronisation du presse-papiers</translation>
 <translation id="3101501961102569744">Sélectionner le mode de spécification des paramètres de serveur proxy</translation>
@@ -2918,9 +2910,6 @@ Si cette règle est désactivée, l'utilisateur ne verra pas la promo.</translat
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
 
       Notez que cette règle bloque JavaScript selon que l'origine du document de premier niveau (généralement l'URL de la page qui s'affiche également dans la barre d'adresse) correspond ou non à l'un des formats. Par conséquent, cette règle n'est pas adaptée pour limiter les attaques de la chaîne d'approvisionnement Web. Par exemple, si vous indiquez le format "https://[*.]foo.com/", cela n'empêchera pas une page hébergée sur https://example.com d'exécuter un script chargé à partir de https://www.foo.com/example.js. De plus, si vous indiquez le format "https://example.com/", cela n'empêchera pas un document provenant de https://example.com d'exécuter des scripts, même s'il ne s'agit pas du document de premier niveau, mais d'un sous-cadre intégré dans une page hébergée sur une autre origine, par exemple https://www.bar.com.</translation>
-<translation id="3180671894201217988">Si cette règle est activée ou si elle n'est pas configurée, les logiciels tiers ne peuvent pas injecter de code exécutable dans les processus de <ph name="PRODUCT_NAME" />.
-
-      Si cette règle est désactivée, le logiciel peut injecter un tel code dans les processus de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3181114468897395940">Les paramètres Page précédente/Page suivante utilisent le raccourci qui contient la touche de modification Alt</translation>
 <translation id="3182503302060513467">La page "Nouvel onglet" affichera l'annonce d'espace intermédiaire si elle est disponible</translation>
 <translation id="3184161739683646075">Contrôle le mode DNS-over-HTTPS</translation>
@@ -3195,6 +3184,7 @@ Si elle est désactivée, la fonctionnalité d'écriture prédictive est désact
 <translation id="3387999258705169775">Comportement par défaut pour la limitation imbriquée de la fonction setTimeout().</translation>
 <translation id="3388628790024977864">Interdire le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="GOOGLE_DRIVE_NAME" /> et <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Activer l'authentification gnubby pour l'hôte d'accès à distance</translation>
+<translation id="3395744872155955051">Autoriser le choix de fichiers directement dans <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Ne pas afficher de recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportement système par défaut (varie en fonction de la taille d'écran)</translation>
 <translation id="33993310248354034">Autoriser la détection d'entités en texte brut dans les pages Web.</translation>
@@ -5733,6 +5723,7 @@ Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translatio
 La création d'une liste d'URL dans cette règle revient à définir le flag de ligne de commande "--unsafely-treat-insecure-origin-as-secure" avec une liste des URL en question séparées par une virgule. Cette règle remplace le flag de ligne de commande et la règle UnsafelyTreatInsecureOriginAsSecure (s'ils sont disponibles).
 
 Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="530111809849214840">Masquer l'option <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Heure locale à laquelle le quota d'utilisation est renouvelé.</translation>
 <translation id="5303080953475303561">Cette règle permet de contrôler la fréquence à laquelle l'écran de verrouillage exige un mot de passe pour le déverrouillage rapide. Si la dernière saisie du mot de passe est antérieure à la période définie, le déverrouillage rapide n'est pas disponible. Si l'utilisateur reste sur l'écran de verrouillage au-delà de cette période, il devra saisir son mot de passe la prochaine fois qu'il saisira un code erroné ou accédera de nouveau à l'écran de verrouillage, selon la situation qui se présente en premier.
 
@@ -6083,6 +6074,7 @@ Consultez également https://wiki.samba.org/index.php/Samba_4.6_Features_added/c
 
       Obsolète. Utilisez plutôt <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">Afficher l'option <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Activer le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
 <translation id="5559079916187891399">Cette règle n'a aucun effet sur les applications Android.</translation>
 <translation id="5560039246134246593">Permet d'ajouter un paramètre à la récupération de la valeur de départ des variantes dans <ph name="PRODUCT_NAME" />.

@@ -1386,7 +1386,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1948528728718281125">O acesso à câmara é permitido para apps, Websites com a autorização de acesso à câmara e serviços do sistema</translation>
 <translation id="1949332606889020901">IDs de falhas de sistema</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
-<translation id="1949849604471335579">Personalize a imagem de fundo, a proteção de ecrã, as cores de destaque e muito mais</translation>
 <translation id="1949980990364952348">Nome da app</translation>
 <translation id="1951012854035635156">Assistente</translation>
 <translation id="1951823516285577843">Encontrar alternativa</translation>
@@ -3471,6 +3470,7 @@ Quer pará-lo?</translation>
 <translation id="3429174588714165399">Crie um atalho para esta página</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo Web</translation>
 <translation id="3429275422858276529">Adicione esta página aos marcadores para encontrá-la facilmente mais tarde</translation>
+<translation id="3431530007831146102">Usar movimentos da cabeça para controlar o cursor do rato</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> libertados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear ao sair</translation>
@@ -6093,7 +6093,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5290020561438336792">PC e dispositivo de transmissão em redes Wi-Fi diferentes (por exemplo, 2,4 GHz
     vs. 5 GHz)</translation>
 <translation id="52912272896845572">O ficheiro de chave privada é inválido.</translation>
-<translation id="5291739252352359682">Cria automaticamente legendas para conteúdos multimédia no navegador Chrome (atualmente, disponível em inglês). O áudio e as legendas são processados localmente e nunca saem do dispositivo.</translation>
 <translation id="529175790091471945">Formatar este dispositivo</translation>
 <translation id="529296195492126134">O modo temporário não é suportado. Contacte o seu administrador</translation>
 <translation id="5293043095535566171">Ativar o acesso à localização?</translation>
@@ -7525,7 +7524,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6338968693068997776">Adicione um dispositivo USB</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
-<translation id="6340526405444716530">Personalização</translation>
 <translation id="6341850831632289108">Detetar a sua localização física</translation>
 <translation id="6342069812937806050">Mesmo agora</translation>
 <translation id="6343003829431264373">Apenas páginas pares</translation>
@@ -7924,7 +7922,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6642720633335369752">Para ver todas as janelas de apps abertas, deslize rapidamente para cima a partir da parte inferior e mantenha pressionado.</translation>
 <translation id="664290675870910564">Seleção de rede</translation>
 <translation id="6643016212128521049">Limpar</translation>
-<translation id="6644512095122093795">Propor guardar palavras-passe</translation>
 <translation id="6644513150317163574">Formato de URL inválido. É necessário especificar o servidor como um nome de anfitrião quando for utilizada a autenticação SSO.</translation>
 <translation id="6644846457769259194">A atualizar o dispositivo (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6646476869708241165">Desligue o Fast Pair</translation>
@@ -8065,7 +8062,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6739943577740687354">Esta funcionalidade usa IA e nem sempre está certa</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> em pausa</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />O seu administrador<ph name="END_LINK" /> desativou a Navegação segura.</translation>
-<translation id="6742629250739345159">Cria automaticamente legendas para conteúdos multimédia no navegador Chrome. O áudio e as legendas são processados localmente e nunca saem do dispositivo.</translation>
 <translation id="6743841972744298686">Definições de sincronização</translation>
 <translation id="6745592621698551453">Atualizar agora</translation>
 <translation id="6746124502594467657">Mover para baixo</translation>

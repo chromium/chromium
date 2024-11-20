@@ -138,7 +138,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Aluminio</translation>
 <translation id="1252209483516427155">Abrigos</translation>
-<translation id="1253096324252841344">Pagar con <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Guardando captura de pantalla</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sincronizados)</translation>
 <translation id="1255086252236620440">Batidoras</translation>
@@ -3130,7 +3129,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6671169470640320959">Financiación de automóviles</translation>
 <translation id="6671697161687535275">¿Quitar sugerencia de formulario de Chromium?</translation>
 <translation id="6677351035258626477">Comida rápida</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Cuando hagas compras en Chrome, verás <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opción}other{Cuando hagas compras en Chrome, verás <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opciones}}</translation>
 <translation id="6679354743514146922">El navegador Chrome está intentando rellenar tu contraseña en <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC guardado</translation>
 <translation id="6683022854667115063">Auriculares</translation>

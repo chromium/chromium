@@ -138,7 +138,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1243027604378859286">Muallif:</translation>
 <translation id="1247030632403369975">Alyuminiy</translation>
 <translation id="1252209483516427155">Ustki kiyimlar</translation>
-<translation id="1253096324252841344"><ph name="FINANCIAL_ACCOUNT_TYPES" /> orqali toʻlash</translation>
 <translation id="1253846494229886276">Skrinshot saqlanmoqda</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinxronlandi)</translation>
 <translation id="1255086252236620440">Oshxona mikserlari</translation>
@@ -3134,7 +3133,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6671169470640320959">Avtokreditlar</translation>
 <translation id="6671697161687535275">Bu taklif Chromium’dan o‘chirib tashlansinmi?</translation>
 <translation id="6677351035258626477">Fast-fud</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome orqali xarid qilish vaqtida <ph name="FINANCIAL_ACCOUNT_TYPES" /> tanlovi chiqsin}other{Chrome orqali xarid qilish vaqtida <ph name="FINANCIAL_ACCOUNT_TYPES" /> tanlovlari chiqsin}}</translation>
 <translation id="6679354743514146922">Chrome brauzeri <ph name="APP_NAME" /> parolingizni kiritishga urinmoqda.</translation>
 <translation id="6681790815630918386">CVC saqlandi</translation>
 <translation id="6683022854667115063">Quloqliklar</translation>

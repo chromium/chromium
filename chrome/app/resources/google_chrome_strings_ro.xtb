@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Dă clic pentru a ieși din Google Lens</translation>
 <translation id="2681444469812712297">Deschide <ph name="URL" /> într-o filă nouă în Google Chrome.</translation>
 <translation id="2712141162840347885">Selectează orice vrei să cauți cu Google Lens sau apasă Escape pentru a ieși din Google Lens</translation>
-<translation id="2727713483500953825">Selectează imagini / text pentru a căuta cu Lens</translation>
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
 <translation id="2742320827292110288">Avertisment: Google Chrome nu poate împiedica extensiile să înregistreze istoricul navigării. Pentru a dezactiva această extensie în modul incognito, debifează această opțiune.</translation>
 <translation id="2753623023919742414">Dă clic pentru a căuta</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Identifică lucruri sau locuri și copiază sau traduce text. Când folosești Google Lens, se trimite la Google o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
-<translation id="3625345586754200168">Încearcă Lens</translation>
 <translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
 <translation id="3667616615096815454">Nu se poate instala. Aplicația nu este cunoscută de server.</translation>
 <translation id="3673813398384385993">Chrome a descoperit că <ph name="EXTENSION_NAME" /> conține programe malware</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Conectează-te la Chrome ca <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Caută orice imagine sau text cu Lens</translation>
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4459234553906210702">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
 <translation id="4493028449971051158">Eroare la pornire: rulează programul de instalare ca administrator.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome va reporni în <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="604424701295382420">S-a fixat! Poți să accesezi din nou Google Lens folosind noul buton din bara de instrumente</translation>
-<translation id="6060842547856900641">Deschide Lens</translation>
 <translation id="6069027071882229820">Copiază ca imagine</translation>
 <translation id="6070348360322141662">Pentru un plus de securitate, Google Chrome îți va cripta datele</translation>
 <translation id="6075300983329039771">Organizația ta, <ph name="MANAGER" />, îți solicită să te conectezi la Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Pentru a accesa extensiile pe toate computerele, conectează-te la Chrome</translation>
 <translation id="6520670145826811516">Pentru a folosi locația, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">În Manager de parole Google pe acest dispozitiv</translation>
-<translation id="6600016381025017075">Caută orice în această pagină</translation>
 <translation id="6632473616050862500">ChromeOS Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
 <translation id="6660596345553328257">Te conectezi la Chrome?</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
@@ -612,6 +607,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8416347857511542594">Află mai multe despre personalizarea anunțurilor în Chrome</translation>
 <translation id="8418845734693287262">ChromeOS nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="842386925677997438">Instrumentele de siguranță din Chrome</translation>
+<translation id="8425765582779547329">Pentru a fi mai în siguranță online cu alegerile părintelui, conectează-te la Chrome</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8451192282033883849">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome, cum ar fi marcajele, istoricul și parolele.</translation>

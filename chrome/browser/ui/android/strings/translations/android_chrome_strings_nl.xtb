@@ -257,6 +257,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2172905120685242547">Venster sluiten?</translation>
 <translation id="2173302385160625112">Controleer je internetverbinding</translation>
 <translation id="2175927920773552910">QR-code</translation>
+<translation id="2184272387334793084">Log in om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="218608176142494674">Delen</translation>
 <translation id="219283042927675668">Tabbladen in groep</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
@@ -576,6 +577,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="363596933471559332">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit verifiëren voordat je kunt inloggen bij een website.</translation>
 <translation id="3636940436873918441">Voorkeurstalen</translation>
 <translation id="3637744895182738742">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Naar de homepage van de Google-app</translation>
 <translation id="368329460027487650">Uitgelogd. Hiermee open je de inlogopties.</translation>
 <translation id="3684540848053703310">Blad onderaan met prijsinzichten is gesloten</translation>
@@ -876,7 +878,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="4991110219272367918">Optie om een gesloten website wel of niet goed te keuren</translation>
 <translation id="4996095658297597226">Voorgesteld wachtwoord gebruiken?</translation>
-<translation id="499724277181351974">Navigeren: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Volg deze site hier</translation>
 <translation id="5004416275253351869">Google-activiteitsopties</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
@@ -1576,7 +1577,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognitotabblad}other{<ph name="TAB_COUNT_NORMAL" /> incognitotabbladen}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB beschikbaar</translation>
 <translation id="8058746566562539958">Openen op nieuw Chrome-tabblad</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" />}=1{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # andere persoon}other{Lid worden van tabbladgroep met <ph name="OWNER_FIRST_NAME" /> en # anderen}}</translation>
 <translation id="8062594758852531064">Uitgebreid vooraf laden:</translation>
 <translation id="8063895661287329888">Kan bookmark niet toevoegen.</translation>
 <translation id="8066816452984416180">Bookmark deze pagina snel. Houd je vinger op het scherm om deze snelkoppeling te bewerken.</translation>

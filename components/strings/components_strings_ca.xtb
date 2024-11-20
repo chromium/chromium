@@ -138,7 +138,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Alumini</translation>
 <translation id="1252209483516427155">Moda d'abric</translation>
-<translation id="1253096324252841344">Paga amb <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">S'està desant la captura de pantalla</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (informació sincronitzada)</translation>
 <translation id="1255086252236620440">Mescladores</translation>
@@ -3130,7 +3129,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6671169470640320959">Finançament per a automòbils</translation>
 <translation id="6671697161687535275">Voleu suprimir el suggeriment de formulari de Chromium?</translation>
 <translation id="6677351035258626477">Menjar ràpid</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Quan facis compres a Chrome, consulta <ph name="FINANCIAL_ACCOUNT_TYPES" /> com a opció}other{Quan facis compres a Chrome, consulta <ph name="FINANCIAL_ACCOUNT_TYPES" /> com a opcions}}</translation>
 <translation id="6679354743514146922">El navegador Chrome està provant d'emplenar la teva contrasenya a <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC desat</translation>
 <translation id="6683022854667115063">Auriculars</translation>

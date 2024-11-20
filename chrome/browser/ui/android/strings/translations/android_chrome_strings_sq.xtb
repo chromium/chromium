@@ -131,6 +131,7 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
 <translation id="1521774566618522728">Aktiv sot</translation>
 <translation id="153446405401665083">Ofrohet një version i ri i Chrome</translation>
+<translation id="1543379346429265919">{BOOKMARKS_COUNT,plural, =1{1 faqeshënues është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje atë në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}other{# faqeshënues janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1544084554881119930">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
 Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Për të menaxhuar "Llogarinë tënde të Google", prek butonin "Menaxho llogarinë"</translation>
@@ -146,6 +147,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1598163867407640634">Përdor <ph name="SITE_ETLD_PLUS_ONE" /> me <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="160275202205869636">Kur është aktivizuar, të dhënat përdoren dhe ruhen në "Llogarinë tënde të Google". Kur është çaktivizuar, të dhënat ruhen vetëm në këtë pajisje.</translation>
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Hiq 1 artikull të zgjedhur}other{Hiq # artikuj të zgjedhur}}</translation>
+<translation id="163206315857427258">{BOOKMARKS_COUNT,plural, =1{1 faqeshënues dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}other{# faqeshënues dhe artikuj të tjerë janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google", <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="1641113438599504367">Shfletimi i sigurt</translation>
 <translation id="164269334534774161">Po shikon një kopje offline të kësaj faqeje nga <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historiku</translation>
@@ -255,6 +257,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2172905120685242547">Të mbyllet dritarja?</translation>
 <translation id="2173302385160625112">Kontrollo lidhjen e internetit</translation>
 <translation id="2175927920773552910">Kodi QR</translation>
+<translation id="2184272387334793084">Identifikohu për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="218608176142494674">Ndarja</translation>
 <translation id="219283042927675668">Skedat te grupi</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
@@ -572,6 +575,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="363596933471559332">Identifikohu automatikisht në uebsajte duke përdorur kredencialet e ruajtura. Kur veçoria është e çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një uebsajt.</translation>
 <translation id="3636940436873918441">Gjuhët e preferuara</translation>
 <translation id="3637744895182738742">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Shko te faqja bazë e aplikacionit të Google</translation>
 <translation id="368329460027487650">Ke dalë Hap opsionet për t'u identifikuar.</translation>
 <translation id="3684540848053703310">Fleta e poshtme e statistikave të çmimeve e mbyllur</translation>
@@ -871,7 +875,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="4991110219272367918">Opsioni për të miratuar ose jo një uebsajt u mbyll</translation>
 <translation id="4996095658297597226">Të përdoren fjalëkalimet e sugjeruara?</translation>
-<translation id="499724277181351974">Navigo: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Ndiqe këtë sajt këtu</translation>
 <translation id="5004416275253351869">Kontrollet e aktivitetit të Google</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>

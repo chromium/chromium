@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">ผู้เขียน:</translation>
 <translation id="1247030632403369975">อะลูมิเนียม</translation>
 <translation id="1252209483516427155">เสื้อผ้าชั้นนอก</translation>
-<translation id="1253096324252841344">ชำระเงินด้วย <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">กำลังบันทึกภาพหน้าจอ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> <ph name="TYPE_2" /> (ซิงค์แล้ว)</translation>
 <translation id="1255086252236620440">เครื่องผสมอาหาร</translation>
@@ -3139,7 +3138,6 @@
 <translation id="6671169470640320959">สินเชื่อรถยนต์</translation>
 <translation id="6671697161687535275">ต้องการนำคำแนะนำสำหรับแบบฟอร์มออกจาก Chromium ใช่ไหม</translation>
 <translation id="6677351035258626477">ฟาสต์ฟูด</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}other{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}}</translation>
 <translation id="6679354743514146922">เบราว์เซอร์ Chrome กำลังพยายามป้อนรหัสผ่านของคุณใน <ph name="APP_NAME" /></translation>
 <translation id="6681790815630918386">บันทึก CVC แล้ว</translation>
 <translation id="6683022854667115063">หูฟัง</translation>

@@ -1383,7 +1383,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1948528728718281125">L'accés a la càmera està permès per a les aplicacions, els llocs web amb permís per accedir a la càmera i els serveis del sistema</translation>
 <translation id="1949332606889020901">Identificadors de bloquejos</translation>
 <translation id="1949584741547056205">Respostes ràpides</translation>
-<translation id="1949849604471335579">Personalitza el fons de pantalla, l'estalvi de pantalla, els colors d'èmfasi i altres elements</translation>
 <translation id="1949980990364952348">Nom de l'aplicació</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Cerca una alternativa</translation>
@@ -2301,6 +2300,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2575407791320728464">L'URL no és vàlid. Comprova que té el format correcte.</translation>
 <translation id="2575441894380764255">Sense permís per mostrar anuncis intrusius o enganyosos</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Aquest dispositiu es desarà durant 1 any i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}other{Aquest dispositiu es desarà durant {YEARS} anys i et podràs connectar sense un codi la propera vegada. Això ho ha establert el teu administrador.}}</translation>
+<translation id="2577127557293415225">Tanca breument els dos ulls</translation>
 <translation id="257779572837908839">Estableix com a Chromebox per a reunions</translation>
 <translation id="2580889980133367162">Permet sempre que <ph name="HOST" /> baixi diversos fitxers</translation>
 <translation id="258095186877893873">Llarg</translation>
@@ -2771,6 +2771,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2904210161403910217">La contrasenya ha canviat des de la darrera vegada que vas iniciar la sessió</translation>
 <translation id="2904506722835398619">Cal iniciar la sessió i sincronitzar</translation>
 <translation id="2904845070985032877">Posa en pausa les animacions</translation>
+<translation id="2905556994482999199">Utilitza moviments de cap i expressions facials per controlar el Chromebook</translation>
 <translation id="2907619724991574506">URL d'inici</translation>
 <translation id="2907798539022650680">No s'ha pogut connectar amb "<ph name="NAME" />": <ph name="DETAILS" />
     Missatge del servidor: <ph name="SERVER_MSG" /></translation>
@@ -6077,7 +6078,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5288678174502918605">T&amp;orna a obrir la pestanya tancada</translation>
 <translation id="5290020561438336792">PC i dispositiu d'emissió en xarxes Wi-Fi diferents (per exemple, 2,4 GHz i 5 GHz)</translation>
 <translation id="52912272896845572">El fitxer de clau privada no és vàlid.</translation>
-<translation id="5291739252352359682">Crea subtítols automàticament per a contingut multimèdia al navegador Chrome (actualment està disponible en anglès). L'àudio i els subtítols es processen localment i mai no surten del dispositiu.</translation>
 <translation id="529175790091471945">Formata aquest dispositiu</translation>
 <translation id="529296195492126134">El mode efímer no s'admet. Contacta amb l'administrador.</translation>
 <translation id="5293043095535566171">Vols activar l'accés a la ubicació?</translation>
@@ -7233,6 +7233,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6143186082490678276">Obtén ajuda</translation>
 <translation id="6143366292569327983">Tria l'idioma de la pàgina des del qual vulguis traduir</translation>
 <translation id="6144938890088808325">Contribuïu a millorar els dispositius Chromebook</translation>
+<translation id="6145363037359279595">Et donem la benvinguda, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">La sincronització no funciona. Prova d'iniciar la sessió de nou.</translation>
 <translation id="6147020289383635445">La previsualització d'impressió ha fallat.</translation>
 <translation id="6147253937684562370">Per desbloquejar el perfil, inicia la sessió amb l'adreça electrònica del teu compte principal: <ph name="EMAIL" /></translation>
@@ -7504,7 +7505,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6338968693068997776">Afegeix un dispositiu USB</translation>
 <translation id="6339668969738228384">Crea un perfil nou per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocol d'impressió per Internet (IPPS)</translation>
-<translation id="6340526405444716530">Personalització</translation>
 <translation id="6341850831632289108">Detecteu la vostra ubicació física</translation>
 <translation id="6342069812937806050">Ara mateix</translation>
 <translation id="6343003829431264373">Només pàgines parells</translation>
@@ -7903,7 +7903,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6642720633335369752">Per veure totes les finestres d'aplicacions obertes, llisca cap amunt des de la part inferior i mantén premut.</translation>
 <translation id="664290675870910564">Selecció de xarxa</translation>
 <translation id="6643016212128521049">Esborra</translation>
-<translation id="6644512095122093795">Ofereix desar contrasenyes</translation>
 <translation id="6644513150317163574">El format de l'URL no és vàlid. Quan s'utilitza l'autenticació SSO, el servidor ha de ser un nom d'amfitrió.</translation>
 <translation id="6644846457769259194">S'està actualitzant el dispositiu (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactiva Vinculació ràpida</translation>
@@ -8044,7 +8043,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6739943577740687354">Aquesta funció utilitza IA i no sempre l'encertarà</translation>
 <translation id="6740234557573873150">S'ha aturat la baixada del fitxer <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />L'administrador<ph name="END_LINK" /> ha desactivat Navegació segura</translation>
-<translation id="6742629250739345159">Crea subtítols automàticament per a contingut multimèdia al navegador Chrome. L'àudio i els subtítols es processen localment i mai no surten del dispositiu.</translation>
 <translation id="6743841972744298686">Configuració de sincronització</translation>
 <translation id="6745592621698551453">Actualitza ara</translation>
 <translation id="6746124502594467657">Mou avall</translation>

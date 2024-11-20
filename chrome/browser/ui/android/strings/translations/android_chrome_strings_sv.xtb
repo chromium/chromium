@@ -257,6 +257,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2172905120685242547">Vill du stänga fönstret?</translation>
 <translation id="2173302385160625112">Kontrollera internetanslutningen</translation>
 <translation id="2175927920773552910">QR-kod</translation>
+<translation id="2184272387334793084">Logga in om du vill ha dina lösenord med mera på alla dina enheter</translation>
 <translation id="218608176142494674">Delar</translation>
 <translation id="219283042927675668">Flikar i gruppen</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
@@ -574,6 +575,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
 <translation id="3637744895182738742">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Öppna startskärmen i Google-appen</translation>
 <translation id="368329460027487650">Utloggad. Öppnar inloggningsalternativen.</translation>
 <translation id="3684540848053703310">Ark för prisinsikter på nedre delen av skärmen har stängts</translation>
@@ -874,7 +876,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4988526792673242964">Sidor</translation>
 <translation id="4991110219272367918">Alternativ för att godkänna eller inte godkänna en webbplats har stängts</translation>
 <translation id="4996095658297597226">Vill du använda det föreslagna lösenordet?</translation>
-<translation id="499724277181351974">Navigera till: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Följ denna webbplats här</translation>
 <translation id="5004416275253351869">Googles aktivitetsinställningar</translation>
 <translation id="5005498671520578047">Kopiera lösenord</translation>

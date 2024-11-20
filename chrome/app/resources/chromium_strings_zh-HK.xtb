@@ -127,7 +127,6 @@
 <translation id="2711502716910134313">Chromium 分頁</translation>
 <translation id="2718390899429598676">為提高安全性，Chromium 會將您的資料加密。</translation>
 <translation id="2721354645805494590">如要從 Chromium 中移除 Google 帳戶，請登出 Chromium</translation>
-<translation id="2727713483500953825">選取圖像/文字以透過「智能鏡頭」搜尋</translation>
 <translation id="2738871930057338499">無法連線至互聯網。發生 HTTP 403 禁止錯誤，請檢查 Proxy 設定。</translation>
 <translation id="2753623023919742414">按一下即可搜尋</translation>
 <translation id="2770231113462710648">將預設瀏覽器變更為：</translation>
@@ -140,7 +139,6 @@
 <translation id="2846251086934905009">安裝錯誤：安裝程式並未完成。安裝已取消。</translation>
 <translation id="2847479871509788944">從 Chromium 中移除…</translation>
 <translation id="2850691299438350830">確保您登入使用 Chromium 的安全，並可提升您在其他 Google 應用程式的安全性</translation>
-<translation id="2874602845494991903">開啟「圖片搜尋」</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
 <translation id="2915996080311180594">稍後重新開機</translation>
@@ -149,6 +147,7 @@
 <translation id="2970426615109535079">Chromium 由你的機構管理</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
+<translation id="2981563588585023386">如要按家長所選設定加強網上安全，請登入 Chromium</translation>
 <translation id="2987208172821108655">Chromium 可讓這些分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
 <translation id="3013473503895162900">在 Chromium 中的新分頁開啟 <ph name="URL" />。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
@@ -255,7 +254,6 @@
 <translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium 由「<ph name="MANAGER" />」管理</translation>
 <translation id="4447409407328223819">關於 Chrome for Testing</translation>
-<translation id="4453144231461812959">透過「智能鏡頭」搜尋圖像或文字</translation>
 <translation id="4470974262661801543">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語</translation>
 <translation id="4493028449971051158">啟動錯誤：請以管理員身分執行安裝程式。</translation>
 <translation id="4501471624619070934">由於此國家/地區有存取限制，因此無法安裝。</translation>
@@ -295,7 +293,6 @@
 <translation id="494490797786467921">點擊即可關閉 Chromium 登入對話框</translation>
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
-<translation id="5051959905407134411">試用「圖片搜尋」</translation>
 <translation id="5114678101347489141">Chromium 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許此網站傳送通知，請按一下網址列右上角的通知圖示。</translation>

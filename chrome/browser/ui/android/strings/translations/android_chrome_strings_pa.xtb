@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">ਕੀ ਵਿੰਡੋ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2173302385160625112">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="2175927920773552910">QR ਕੋਡ</translation>
+<translation id="2184272387334793084">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="218608176142494674">ਸਾਂਝਾਕਰਨ</translation>
 <translation id="219283042927675668">ਗਰੁੱਪ ਵਿਚਲੇ ਟੈਬ</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">ਸਟੋਰ ਕੀਤੇ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਆਪਣੇ-ਆਪ ਸਾਈਟਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ। ਜਦੋਂ ਵਿਸ਼ੇਸ਼ਤਾ ਬੰਦ ਹੋਵੇ, ਤਾਂ ਤੁਹਾਨੂੰ ਇੱਕ ਵੈੱਬਸਾਈਟ 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਹਰ ਵਾਰ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਕਿਹਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3636940436873918441">ਤਰਜੀਹੀ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="3637744895182738742">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਮਿਟਾਓ<ph name="END_LINK" />।</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google ਐਪ ਦੀ ਹੋਮ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="368329460027487650">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਇਹ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੇ ਵਿਕਲਪਾਂ ਨੂੰ ਖੋਲ੍ਹਦਾ ਹੈ।</translation>
 <translation id="3684540848053703310">ਕੀਮਤਾਂ ਬਾਰੇ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੀ ਹੇਠਲੀ ਸ਼ੀਟ ਬੰਦ ਕੀਤੀ ਗਈ</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">ਸਫ਼ੇ</translation>
 <translation id="4991110219272367918">ਕਿਸੇ ਵੈੱਬਸਾਈਟ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣ ਜਾਂ ਨਾ ਦੇਣ ਦਾ ਵਿਕਲਪ ਬੰਦ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="4996095658297597226">ਕੀ ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ ਵਰਤਣਾ ਹੈ?</translation>
-<translation id="499724277181351974">ਨੈਵੀਗੇਟ ਕਰੋ: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ਇਸ ਸਾਈਟ ਦਾ ਇੱਥੇ ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="5004416275253351869">Google ਸਰਗਰਮੀ ਕੰਟਰੋਲ</translation>
 <translation id="5005498671520578047">ਪਾਸਵਰਡ ਕਾਪੀ ਕਰੋ</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬ}one{<ph name="TAB_COUNT_NORMAL" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬ}other{<ph name="TAB_COUNT_NORMAL" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ਉਪਲਬਧ ਹੈ</translation>
 <translation id="8058746566562539958">ਨਵੀਂ Chrome ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> ਨਾਲ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ}=1{<ph name="OWNER_FIRST_NAME" /> ਅਤੇ # ਹੋਰ ਵਿਅਕਤੀ ਨਾਲ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ}other{<ph name="OWNER_FIRST_NAME" /> ਅਤੇ # ਹੋਰ ਵਿਅਕਤੀਆਂ ਨਾਲ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ}}</translation>
 <translation id="8062594758852531064">ਵਿਸਤ੍ਰਿਤ ਪ੍ਰੀਲੋਡਿੰਗ:</translation>
 <translation id="8063895661287329888">ਬੁੱਕਮਾਰਕ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="8066816452984416180">ਇਸ ਪੰਨੇ ਨੂੰ ਤੁਰੰਤ ਬੁੱਕਮਾਰਕ ਕਰੋ। ਇਸ ਸ਼ਾਰਟਕੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ।</translation>

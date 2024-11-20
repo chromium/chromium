@@ -141,7 +141,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2668094785979141847">Click to exit Google Lens</translation>
 <translation id="2681444469812712297">Open <ph name="URL" /> in a new tab in Google Chrome.</translation>
 <translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
-<translation id="2727713483500953825">Select images/text to search with Lens</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
 <translation id="2742320827292110288">Warning: Google Chrome cannot prevent extensions from recording your browsing history. To disable this extension in Incognito mode, unselect this option.</translation>
 <translation id="2753623023919742414">Click to search</translation>
@@ -224,7 +223,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3609788354808247807">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
-<translation id="3625345586754200168">Try Lens</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
@@ -295,7 +293,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Sign in to Chrome as <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Search any image or text with Lens</translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4459234553906210702">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>
 <translation id="4493028449971051158">Startup error: Please run the installer as administrator.</translation>
@@ -408,7 +405,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6025087594896450715">Google Chrome will restart in <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604424701295382420">Pinned! You can access Google Lens again from the new button on the toolbar</translation>
-<translation id="6060842547856900641">Open Lens</translation>
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6515549163407364048">To get your extensions on all your computers, sign in to Chrome</translation>
 <translation id="6520670145826811516">To use your location, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">In Google Password Manager on this device</translation>
-<translation id="6600016381025017075">Search anything on this page</translation>
 <translation id="6632473616050862500">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Sign in to Chrome?</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
@@ -620,6 +615,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
+<translation id="8425765582779547329">To stay safer online with your parent's choices, sign in to Chrome</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
 <translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>

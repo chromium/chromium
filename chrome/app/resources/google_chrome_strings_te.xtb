@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Google Lens నుండి నిష్క్రమించడానికి క్లిక్ చేయండి</translation>
 <translation id="2681444469812712297"><ph name="URL" /> ను Google Chromeలో కొత్త ట్యాబ్‌లో తెరవండి.</translation>
 <translation id="2712141162840347885">Google Lensతో సెర్చ్ చేయడానికి ఏదైనా ఎంచుకోండి లేదా Google Lens నుండి ఎగ్జిట్ అవ్వడానికి ఎస్కేప్ బటన్‌ను నొక్కండి</translation>
-<translation id="2727713483500953825">Lensతో సెర్చ్ చేయడానికి ఇమేజ్‌లు/టెక్స్ట్‌ను ఎంచుకోండి</translation>
 <translation id="2738871930057338499">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు. HTTP 403 అనుమతి లేదు. దయచేసి మీ ప్రాక్సీ కాన్ఫిగరేషన్‌ను చెక్ చేయండి.</translation>
 <translation id="2742320827292110288">హెచ్చరిక: Google Chrome మీ బ్రౌజింగ్ హిస్టరీని రికార్డ్ చేయకుండా ఎక్స్‌టెన్ష‌న్‌లను నివారించలేదు. ఈ ఎక్స్‌టెన్షన్‌ను అజ్ఞాత మోడ్‌లో డిజేబుల్ చేయడానికి, ఈ ఆప్షన్‌ను రద్దు చేయండి.</translation>
 <translation id="2753623023919742414">సెర్చ్ చేయడానికి క్లిక్ చేయండి</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />‌ను తీసివేసింది</translation>
 <translation id="3622716124581627104">వస్తువులను లేదా ప్రదేశాలను గుర్తించండి, టెక్స్ట్‌ను కాపీ చేయండి లేదా అనువదించండి. మీరు Google Lensను ఉపయోగించినప్పుడు, పేజీ స్క్రీన్‌షాట్ Googleకు పంపబడుతుంది. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ఇప్పుడు మీ Google ఖాతాతో, షేర్ చేయ‌బ‌డిన కంప్యూటర్‌ల‌లో Chromeను సులభంగా ఉపయోగించవచ్చు.</translation>
-<translation id="3625345586754200168">Lensను ట్రై చేయండి</translation>
 <translation id="3635073343384702370">మీరు పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome మీ వాటిని చెక్ చేయగలదు</translation>
 <translation id="3667616615096815454">ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు, అప్లికేషన్‌ను సర్వర్ గుర్తించలేదు.</translation>
 <translation id="3673813398384385993">"<ph name="EXTENSION_NAME" />"లో మాల్‌వేర్ ఉన్నట్టుగా Chrome కనుగొన్నది</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">ఇన్‌స్టాలర్ ఎర్రర్: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chromeకు <ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="4450664632294415862">Chrome - నెట్‌వర్క్ సైన్ ఇన్ - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lensతో ఏదైనా ఇమేజ్‌ను లేదా టెక్స్ట్‌ను సెర్చ్ చేయండి</translation>
 <translation id="4458462641685292929">Google Chromeలో మరొక వ్యవస్థాపన జరుగుతోంది. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4459234553906210702">మీరు సందర్శించే సైట్‌లను Chrome నుండి సమాచారాన్ని రిక్వెస్ట్ చేసేలా 'యాడ్‌ల అంచనా' అనుమతిస్తుంది, ఇది యాడ్‌ల పనితీరును అంచనా వేయడంలో సైట్‌కు సహాయపడుతుంది. 'యాడ్‌ల అంచనా', సైట్‌ల మధ్య వీలయినంత తక్కువ సమాచారాన్ని బదిలీ చేసి, క్రాస్-సైట్ ట్రాకింగ్‌ను తగ్గిస్తుంది.</translation>
 <translation id="4493028449971051158">స్టార్టప్ ఎర్రర్: దయచేసి ఇన్‌స్టాలర్‌ను అడ్మినిస్ట్రేటర్‌గా రన్ చేయండి.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" /> సమయంలో రీస్టార్ట్ అవుతుంది</translation>
 <translation id="6040143037577758943">మూసివేయండి</translation>
 <translation id="604424701295382420">పిన్ చేశారు! మీరు టూల్‌బార్‌లోని కొత్త బటన్‌ను ఉపయోగించి Google Lensను మళ్లీ యాక్సెస్ చేయవచ్చు</translation>
-<translation id="6060842547856900641">Lensను తెరవండి</translation>
 <translation id="6069027071882229820">ఇమేజ్‌గా కాపీ చేయండి</translation>
 <translation id="6070348360322141662">అదనపు భద్రత దృష్ట్యా, Google Chrome మీ డేటాను ఎన్‌క్రిప్ట్ చేస్తుంది</translation>
 <translation id="6075300983329039771">మీ సంస్థ పాలసీ, <ph name="MANAGER" /> ప్రకారం మీరు Chromeకు సైన్ ఇన్ చేయాలి</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">మీ అన్ని కంప్యూటర్‌ల్లో మీ ఎక్స్‌టెన్షన్‌లను పొందడానికి, Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="6520670145826811516">మీ లొకేషన్‌ను ఉపయోగించడానికి, <ph name="BEGIN_LINK" />సిస్టమ్ సెట్టింగ్‌ల<ph name="END_LINK" />‌లో Chromeకు యాక్సెస్ ఇవ్వండి</translation>
 <translation id="659498884637196217">ఈ పరికరంలో Google Password Managerలో</translation>
-<translation id="6600016381025017075">ఈ పేజీలో దేన్నైనా సెర్చ్ చేయండి</translation>
 <translation id="6632473616050862500">ChromeOS Flex అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="6660596345553328257">Chromeకు సైన్ ఇన్ చేయాలా?</translation>
 <translation id="6676384891291319759">ఇంటర్నెట్‌ను యాక్సెస్ చేయండి</translation>

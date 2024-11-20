@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Google Lens වෙතින් පිටවීමට ක්ලික් කරන්න</translation>
 <translation id="2681444469812712297">Google Chrome තුළ නව පටිත්තක් තුළ <ph name="URL" /> විවෘත කරන්න.</translation>
 <translation id="2712141162840347885">Google Lens සමග සෙවීමට කිසිවක් තෝරන්න හෝ Google Lens වෙතින් පිටවීමට Escape ඔබන්න</translation>
-<translation id="2727713483500953825">Lens සමග සෙවීමට රූප/පෙළ තෝරන්න</translation>
 <translation id="2738871930057338499">අන්තර්ජාලය වෙත සම්බන්ධ වීමට නොහැකි වේ. HTTP 403 තහනම්. ඔබේ ප්‍රොක්සි වින්‍යාසය පරීක්ෂා කරන්න.</translation>
 <translation id="2742320827292110288">අනතුරු ඇඟවීමයි: Google Chrome හට ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය පටිගත කිරීමෙන් දිගු වැළැක්විය නොහැකිය. මෙම දිගුව අප්‍රසිද්ධ ප්‍රකාරය තුළ අබල කිරීමට, මෙම විකල්පය තේරීම ඉවත් කරන්න.</translation>
 <translation id="2753623023919742414">සෙවීමට ක්ලික් කරන්න</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">ඔබ මෑත පැමිණ නැත. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ඉවත් කළා</translation>
 <translation id="3622716124581627104">දේවල් හෝ ස්ථාන හඳුනාගෙන පෙළ පිටපත් කරන්න හෝ පරිවර්තනය කරන්න. ඔබ Google Lens භාවිත කරන විට, පිටුවේ තිර රුවක් Google වෙත යවනු ලැබේ. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">දැන් Chrome ඔබගේ Google ගිණුම සහ බෙදාගත් පරිගණක මත භාවිතා කිරීමට වඩාත් පහසුයි.</translation>
-<translation id="3625345586754200168">Lens උත්සාහ කරන්න</translation>
 <translation id="3635073343384702370">ඔබ ඒවා සුරකින විට Chrome හට ඔබේ මුරපද පරීක්ෂා කළ හැක</translation>
 <translation id="3667616615096815454">ස්ථාපනය කළ නොහැකි වේ, යෙදුම සේවාදායකයට නොදනී.</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" හි අනිෂ්ට මෘදුකාංග අඩංගු බව සොයා ගෙන ඇත</translation>
@@ -294,7 +292,6 @@
 <translation id="4434353761996769206">ස්ථාපක දෝෂය: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446"><ph name="USER_EMAIL" /> ලෙස Chrome වෙත පුරන්න</translation>
 <translation id="4450664632294415862">Chrome - ජාල පුරනය - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Lens සමග ඕනෑම රූපයක් හෝ පෙළක් සොයන්න</translation>
 <translation id="4458462641685292929">Google Chrome මත තවත් මෙහෙයුමක් ක්‍රියාත්මක වෙමින් පවතී. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="4459234553906210702">වෙළඳ දැන්වීම් මිනුම ඔබ පිවිසෙන අඩවිවලට Chrome වෙතින් තොරතුරු ඉල්ලීමට ඉඩදෙන අතර එය අඩවියට ඔවුන්ගේ වෙළඳ දැන්වීම්වල කාර්ය සාධනය මැනීමට උපකාරී වේ. වෙළඳ දැන්වීම් මිනුම අඩවි අතර හැකි තරම් අඩුවෙන් තතු මාරු කිරීමෙන් හරස්-අඩවි ලුහුබැඳීම සීමා කරයි.</translation>
 <translation id="4493028449971051158">ආරම්භක දෝෂය: ස්ථාපකය පරිපාලක ලෙස ධාවනය කරන්න.</translation>
@@ -407,7 +404,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6025087594896450715">Google Chrome <ph name="REMAINING_TIME" />කින් යළි ඇරඹෙනු ඇත</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="604424701295382420">අමුණන ලදි! ඔබට මෙවලම් තීරුව මත නව බොත්තමින් Google Lens හට නැවත ප්‍රවේශ විය හැක</translation>
-<translation id="6060842547856900641">Lens විවෘත කරන්න</translation>
 <translation id="6069027071882229820">රූපය ලෙස පිටපත් කරන්න</translation>
 <translation id="6070348360322141662">අමතර ආරක්ෂාව සඳහා, Google Chrome ඔබේ දත්ත සංකේතනය කරනු ඇත</translation>
 <translation id="6075300983329039771">ඔබේ සංවිධානයට, <ph name="MANAGER" />, ඔබ Chrome වෙත පුරනය වීමට අවශ්‍යයි</translation>
@@ -456,7 +452,6 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6515549163407364048">ඔබේ සියලු පරිගණක මත ඔබේ දිගු ලබා ගැනීමට, Chrome වෙත පුරන්න</translation>
 <translation id="6520670145826811516">ඔබේ ස්ථානය භාවිත කිරීමට, <ph name="BEGIN_LINK" />පද්ධති සැකසීම්<ph name="END_LINK" /> තුළ Chrome හට ප්‍රවේශය දෙන්න</translation>
 <translation id="659498884637196217">මෙම උපාංගයෙහි Google මුරපද කළමනාකරු තුළ</translation>
-<translation id="6600016381025017075">මෙම පිටුවෙහි ඕනෑම දෙයක් සොයන්න</translation>
 <translation id="6632473616050862500">අතිරේක <ph name="BEGIN_LINK_CROS_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_CROS_OSS" /> මගින් ChromeOS Flex සඳහා හැකියාව ලබා දී ඇත.</translation>
 <translation id="6660596345553328257">Chrome වෙත පුරන්නද?</translation>
 <translation id="6676384891291319759">අන්තර්ජාලය වෙත පිවිසෙන්න</translation>

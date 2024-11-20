@@ -257,6 +257,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2172905120685242547">Želite zapreti okno?</translation>
 <translation id="2173302385160625112">Preverite internetno povezavo</translation>
 <translation id="2175927920773552910">Koda QR</translation>
+<translation id="2184272387334793084">Prijavite se, da boste lahko dostopali do gesel in drugega v vseh napravah</translation>
 <translation id="218608176142494674">Deljenje z drugimi</translation>
 <translation id="219283042927675668">Zavihki v skupini</translation>
 <translation id="2194856509914051091">Kaj morate upoštevati</translation>
@@ -574,6 +575,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="363596933471559332">Samodejna prijava v spletna mesta s shranjenimi poverilnicami. Ko je ta funkcija izklopljena, bo pri vsaki prijavi v spletno mesto potrebno preverjanje.</translation>
 <translation id="3636940436873918441">Želeni jeziki</translation>
 <translation id="3637744895182738742">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chroma v računu<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Odpiranje začetne strani aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljen. Odpre možnosti za prijavo.</translation>
 <translation id="3684540848053703310">Zaprt razdelek na dnu zaslona z vpogledi v cene</translation>
@@ -873,7 +875,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4988526792673242964">Strani</translation>
 <translation id="4991110219272367918">Možnost odobritve ali neodobritve spletnega mesta je zaprta</translation>
 <translation id="4996095658297597226">Želite uporabiti predlagano geslo?</translation>
-<translation id="499724277181351974">Premikanje: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Spremljajte to spletno mesto tukaj</translation>
 <translation id="5004416275253351869">Googlovi kontrolniki za dejavnost</translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>

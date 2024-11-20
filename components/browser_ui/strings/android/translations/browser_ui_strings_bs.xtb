@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Dozvolite web lokaciji da pohranjuje podatke na uređaj</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1384959399684842514">Preuzimanje je pauzirano</translation>
+<translation id="1396327438254055134">Dozvolite web lokaciji da koristi optimizator V8.</translation>
 <translation id="1415402041810619267">URL je odsječen</translation>
 <translation id="1448064542941920355">Smanjenje zumiranja</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web lokacija}one{<ph name="SITE_COUNT" /> web lokacija}few{<ph name="SITE_COUNT" /> web lokacije}other{<ph name="SITE_COUNT" /> web lokacija}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Dekoder slike</translation>
 <translation id="1785415724048343560">Preporučeno za najbolje iskustvo</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
+<translation id="1816835383954230954">Kada je ovo uključeno, Chrome radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno. Kada je ovo isključeno, ovo smanjuje performanse, ali postiže da V8 bude otporniji na napade.</translation>
 <translation id="1818308510395330587">Da aplikaciji <ph name="APP_NAME" /> dozvolite korištenje AR-a, također uključite kameru u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Prekini vezu</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Kada je postavka uključena, web lokacije mogu zatražiti da koriste vašu kameru. Kada je postavka isključena, web lokacije ne mogu koristiti vašu kameru.</translation>
 <translation id="3521663503435878242">Web lokacije pod domenom <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Nemoj dozvoliti web lokacijama da prate ruke</translation>
+<translation id="3532312529397438268">Web lokacije ne mogu koristiti optimizator V8</translation>
 <translation id="3536227077203206203">Dozvoljeno je ovaj put</translation>
 <translation id="3538390592868664640">Web lokacijama je blokirano kreiranje 3D mape vašeg okruženja ili praćenje položaja kamere</translation>
 <translation id="3544058026430919413">Kompanija može definirati grupu web lokacija koje mogu koristiti kolačiće da dijele vašu aktivnost u grupi. Ovo je isključeno u anonimnom načinu rada.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Uvećaj</translation>
 <translation id="4807122856660838973">Uključite Sigurno pregledanje</translation>
 <translation id="4811450222531576619">Saznajte o njenom izvoru i temi</translation>
+<translation id="481168145262973879">Web lokacije mogu koristiti optimizator V8</translation>
 <translation id="4816495437032298535">Sačuvano zumiranje za web lokacije</translation>
 <translation id="4836046166855586901">Traži odobrenje kada web lokacija želi pristupiti informacijama o mom aktivnom korištenju ovog uređaja</translation>
 <translation id="483914009762354899">Uključi sve web lokacije pod ovom domenom</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Izbrisati podatke web lokacije? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6992289844737586249">Web lokacije moraju tražiti dopuštenje da koriste mikrofon (preporučeno)</translation>
+<translation id="6999131147875565462">Chrome radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno</translation>
 <translation id="7000754031042624318">Isključeno u postavkama Androida</translation>
 <translation id="7016516562562142042">Dozvoljeno za trenutni pretraživač</translation>
 <translation id="702275896380648118">Ova web lokacija utvrđuje stvari koje vam se sviđaju, a zatim predlaže oglase drugim web lokacijama. Ova web lokacija prikuplja i vaše teme oglasa iz Chromea da vam prikazuje relevantnije oglase.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Web lokacije koje posjećujete mogu potvrditi da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Postanite organizirani</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
+<translation id="969975166333045662">Blokirajte da web lokacija koristi optimizator V8.</translation>
 </translationbundle>

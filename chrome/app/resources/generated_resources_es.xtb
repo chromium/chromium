@@ -1383,7 +1383,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1948528728718281125">Se permite el acceso a la cámara a aplicaciones, sitios web con el permiso de cámara y servicios del sistema</translation>
 <translation id="1949332606889020901">IDs de fallos</translation>
 <translation id="1949584741547056205">Respuestas rápidas</translation>
-<translation id="1949849604471335579">Personaliza el fondo de pantalla, el salvapantallas, los colores para destacar y más.</translation>
 <translation id="1949980990364952348">Nombre de la aplicación</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1951823516285577843">Buscar alternativa</translation>
@@ -2302,6 +2301,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2575407791320728464">URL no válida. Comprueba que tenga el formato correcto.</translation>
 <translation id="2575441894380764255">No puede mostrar anuncios invasivos o engañosos</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Este dispositivo se guardará durante 1 año y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {YEARS} años y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
+<translation id="2577127557293415225">Cierra brevemente los dos ojos</translation>
 <translation id="257779572837908839">Configurar como Chromebox para reuniones</translation>
 <translation id="2580889980133367162">Permitir siempre a <ph name="HOST" /> descargar varios archivos</translation>
 <translation id="258095186877893873">Largo</translation>
@@ -2772,6 +2772,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2904210161403910217">Tu contraseña ha cambiado desde la última vez que iniciaste sesión</translation>
 <translation id="2904506722835398619">Inicio de sesión y sincronización necesarios</translation>
 <translation id="2904845070985032877">Pausar animaciones</translation>
+<translation id="2905556994482999199">Usa movimientos de la cabeza y expresiones faciales para controlar tu Chromebook</translation>
 <translation id="2907619724991574506">URLs de inicio</translation>
 <translation id="2907798539022650680">No se ha podido establecer conexión con <ph name="NAME" />: <ph name="DETAILS" />
     Mensaje del servidor: <ph name="SERVER_MSG" /></translation>
@@ -6079,7 +6080,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5288678174502918605">Volv&amp;er a abrir pestaña cerrada</translation>
 <translation id="5290020561438336792">PC y dispositivo de emisión en distintas redes Wi-Fi (por ejemplo, una de 2,4 GHz y otra de 5 GHz)</translation>
 <translation id="52912272896845572">El archivo de clave privada no es válido.</translation>
-<translation id="5291739252352359682">Crea subtítulos de forma automática para elementos multimedia en el navegador Chrome (actualmente está disponible en inglés). Tanto el audio como los subtítulos se procesan en el propio dispositivo y nunca se envían a otra parte.</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="529296195492126134">El modo Efímero no está admitido. Ponte en contacto con tu administrador.</translation>
 <translation id="5293043095535566171">¿Activar acceso a la ubicación?</translation>
@@ -7237,6 +7237,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6143186082490678276">Obtener ayuda</translation>
 <translation id="6143366292569327983">Elige el idioma del que quieras traducir.</translation>
 <translation id="6144938890088808325">Ayúdanos a mejorar los Chromebooks</translation>
+<translation id="6145363037359279595">Te damos la bienvenida, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">No funciona la sincronización. Inténtalo de nuevo.</translation>
 <translation id="6147020289383635445">Error al obtener la vista previa de impresión</translation>
 <translation id="6147253937684562370">Para desbloquear el perfil, inicia sesión con la dirección de correo de tu cuenta principal: <ph name="EMAIL" /></translation>
@@ -7508,7 +7509,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6338968693068997776">Añadir dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión en Internet (IPPS)</translation>
-<translation id="6340526405444716530">Personalización</translation>
 <translation id="6341850831632289108">Detectar tu ubicación física</translation>
 <translation id="6342069812937806050">Justo ahora</translation>
 <translation id="6343003829431264373">Solo páginas pares</translation>
@@ -7907,7 +7907,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6642720633335369752">Para ver todas las ventanas de las aplicaciones abiertas, desliza el dedo hacia arriba y no lo levantes.</translation>
 <translation id="664290675870910564">Selección de red</translation>
 <translation id="6643016212128521049">Borrar</translation>
-<translation id="6644512095122093795">Preguntar si quiero guardar contraseñas</translation>
 <translation id="6644513150317163574">El formato de la URL no es válido. Se debe especificar el servidor con un nombre de host cuando se usa la autenticación SSO.</translation>
 <translation id="6644846457769259194">Actualizando el dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Emparejamiento rápido</translation>
@@ -8048,7 +8047,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6739943577740687354">Esta función usa IA y no siempre lo hará bien</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> en pausa</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Tu administrador<ph name="END_LINK" /> ha desactivado la Navegación segura</translation>
-<translation id="6742629250739345159">Crea subtítulos de forma automática para elementos multimedia en el navegador Chrome. Tanto el audio como los subtítulos se procesan en el propio dispositivo y nunca se envían a otra parte.</translation>
 <translation id="6743841972744298686">Ajustes de sincronización</translation>
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6746124502594467657">Bajar</translation>

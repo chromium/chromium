@@ -257,6 +257,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2172905120685242547">Leihoa itxi nahi duzu?</translation>
 <translation id="2173302385160625112">Egiaztatu Internetera konektatuta zaudela</translation>
 <translation id="2175927920773552910">QR kodea</translation>
+<translation id="2184272387334793084">Hasi saioa pasahitzak eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="218608176142494674">Partekatzea</translation>
 <translation id="219283042927675668">Taldeko fitxak</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
@@ -574,6 +575,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="363596933471559332">Hasi saioa automatikoki webguneetan gordetako kredentzialekin. Eginbidea desaktibatuta badago, zeu zarela egiaztatzeko eskatuko dizu webguneak saioa hasten duzun bakoitzean.</translation>
 <translation id="3636940436873918441">Hizkuntza hobetsiak</translation>
 <translation id="3637744895182738742">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Joan Google aplikazioaren orri nagusira</translation>
 <translation id="368329460027487650">Amaitu da saioa. Saioa hasteko aukerak irekitzen ditu.</translation>
 <translation id="3684540848053703310">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena, itxita dago</translation>
@@ -873,7 +875,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4988526792673242964">Orriak</translation>
 <translation id="4991110219272367918">Webgune bat onartzeko edo ez onartzeko aukera itxita dago</translation>
 <translation id="4996095658297597226">Iradokitako pasahitza erabili nahi duzu?</translation>
-<translation id="499724277181351974">Nabigatu: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Jarraitu webguneari hemen</translation>
 <translation id="5004416275253351869">Google-ko jarduerak kontrolatzeko aukerak</translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>

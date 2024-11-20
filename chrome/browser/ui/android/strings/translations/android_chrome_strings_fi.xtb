@@ -257,6 +257,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2172905120685242547">Suljetaanko ikkuna?</translation>
 <translation id="2173302385160625112">Tarkista internetyhteytesi</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
+<translation id="2184272387334793084">Kirjaudu sisään, niin voit käyttää esimerkiksi salasanoja kaikilla laitteilla</translation>
 <translation id="218608176142494674">Jakaminen</translation>
 <translation id="219283042927675668">Ryhmän välilehdet</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
@@ -574,6 +575,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="363596933471559332">Kirjaudu automaattisesti verkkosivustoille käyttämällä tallennettuja kirjautumistietoja. Jos tämä toiminto ei ole käytössä, sinua pyydetään vahvistamaan kirjautuminen aina, kun kirjaudut sivustolle.</translation>
 <translation id="3636940436873918441">Ensisijaiset kielet</translation>
 <translation id="3637744895182738742">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-data<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Siirry Google-sovelluksen etusivulle</translation>
 <translation id="368329460027487650">Kirjautunut ulos. Avaa kirjautumisvaihtoehdot.</translation>
 <translation id="3684540848053703310">Hintatilastojen alapaneeli suljettu</translation>
@@ -873,7 +875,6 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4988526792673242964">Sivut</translation>
 <translation id="4991110219272367918">Suljetun verkkosivuston hyväksymisen tai hyväksymättä jättämisen vaihtoehto</translation>
 <translation id="4996095658297597226">Käytetäänkö salasanaehdotusta?</translation>
-<translation id="499724277181351974">Siirry: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seuraa sivustoa valitsemalla tämä</translation>
 <translation id="5004416275253351869">Google-toiminnan hallinta</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>

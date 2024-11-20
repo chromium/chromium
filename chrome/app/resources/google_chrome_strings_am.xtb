@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">ከGoogle ሌንስ ለመውጣት ጠቅ ያድርጉ</translation>
 <translation id="2681444469812712297"><ph name="URL" /> በGoogle Chrome ውስጥ በአዲስ ትር ይክፈቱ።</translation>
 <translation id="2712141162840347885">በGoogle ሌንስ ለመፈለግ ማንኛውንም ነገር ይጫኑ ወይም ከGoogle ሌንስ ለመውጣት ዝለልን ይጫኑ</translation>
-<translation id="2727713483500953825">በሌንስ ለመፈለግ ምስሎች/ጽሁፍን ይምረጡ</translation>
 <translation id="2738871930057338499">ከበይነመረብ ጋር መገናኘት አልተቻለም። ኤችቲቲፒኤስ 403 ተከልክሏል። እባክዎ ተኪ ውቅረትዎን ይፈትሹ።</translation>
 <translation id="2742320827292110288">ማስጠንቀቂያ፦ የGoogle Chrome ቅጥያዎች የአሰሳ ታሪክዎን እንዳይመዘግቡ መከልከል አይችልም። ይህን ቅጥያ ማንነት በማያሳውቅ ሁነት ላይ ለማሰናከል ይህን አማራጭ አይምረጡ።</translation>
 <translation id="2753623023919742414">ለመፈለግ ጠቅ ያድርጉ</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">በቅርብ ጊዜ አልጎበኙም። Chrome <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ <ph name="PERMISSION_3" /> አስወግዷል።</translation>
 <translation id="3622716124581627104">ነገሮችን ወይም ቦታዎች ይለዩ እና ጽሁፍን ይቅዱ ወይም ይተርጉሙ Google ሌንስን ሲጠቀሙ የገፁ ቅጽበታዊ ገፅ ዕይታ ወደ Google ይላካል። <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">አሁን Chromeን ከGoogle መለያዎ ጋር እና በተጋሩ ኮምፒውተሮች ላይ መጠቀም ይበልጥ ቀላል ነው።</translation>
-<translation id="3625345586754200168">ሌንስን ሞክር</translation>
 <translation id="3635073343384702370">Chrome እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው መፈተሽ ይችላል</translation>
 <translation id="3667616615096815454">መጫን አልተቻለም፣ አገልጋዩ መተግበሪያውን አያውቀውም።</translation>
 <translation id="3673813398384385993">Chrome «<ph name="EXTENSION_NAME" />» ተንኮል-አዘል ዌር እንደያዘ አግኝቷል</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">የጫኚ ስህተት፦ <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">እንደ <ph name="USER_EMAIL" /> ወደ Chrome ግባ</translation>
 <translation id="4450664632294415862">Chrome - በአውታረ መረብ ወደ መለያ መግባት - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">በሌንስ ማንኛውንም ምስል ወይም ጽሁፍ ፈልግ</translation>
 <translation id="4458462641685292929">በGoogle Chrome ላይ ሌላ ሥርዓተ ክወና በሂደት ላይ ነው። እባክዎ በኋላ ላይ እንደገና ይሞክሩ።</translation>
 <translation id="4459234553906210702">የማስታወቂያ ልኬት እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም የሚለካው ጣቢያ የሚያግዘውን መረጃ ከChrome እንዲጠይቁ ያስችላቸዋል። የማስታወቂያ ልኬት በተቻለ መጠን ትንሽ መረጃን በጣቢያዎች መካከል በማስተላለፍ የጣቢያ ተሻጋሪ ክትትልን ይገድባል።</translation>
 <translation id="4493028449971051158">የማስነሻ ስህተት፦ እባክዎ መጫኛውን እንደ አስተዳዳሪ ያሂዱ።</translation>
@@ -408,7 +405,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6025087594896450715">Google Chrome በ<ph name="REMAINING_TIME" /> ውስጥ እንደገና ይጀምራል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="604424701295382420">ተሰክቷል! Google ሌንስን እንደገና የመሣሪያ አሞሌው ላይ ካለው ከአዲሱ አዝራር ማግኘት ይችላሉ</translation>
-<translation id="6060842547856900641">ሌንስን ክፈት</translation>
 <translation id="6069027071882229820">እንደ ምስል ቅዳ</translation>
 <translation id="6070348360322141662">ለተጨማሪ ደህንነት ሲባል Google Chrome ውሂብዎን ያመሰጥረዋል</translation>
 <translation id="6075300983329039771">ድርጅትዎ፣ <ph name="MANAGER" /> ወደ Chrome እንዲገቡ ይጠይቃል።</translation>
@@ -457,7 +453,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6515549163407364048">በሁሉም ኮምፒውተሮችዎ ላይ ቅጥያዎችዎን ለማግኘት ወደ Chrome ይግቡ</translation>
 <translation id="6520670145826811516">አካባቢዎን ለመጠቀም <ph name="BEGIN_LINK" />የሥርዓት ቅንብሮች<ph name="END_LINK" /> ውስጥ ለChrome መዳረሻ ይስጡ</translation>
 <translation id="659498884637196217">በዚህ መሣሪያ ላይ በGoogle የይለፍ ቃል አስተዳዳሪ ውስጥ</translation>
-<translation id="6600016381025017075">በዚህ ገጽ ላይ ማንኛውንም ነገር ይፈልጉ</translation>
 <translation id="6632473616050862500">ChromeOS Flex ሊሠሩ የቻሉት በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />የክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> ነው።</translation>
 <translation id="6660596345553328257">ወደ Chrome ይግቡ?</translation>
 <translation id="6676384891291319759">በይነመረብን ተዳረስ</translation>

@@ -257,6 +257,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2172905120685242547">Quer fechar a janela?</translation>
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2175927920773552910">Código QR</translation>
+<translation id="2184272387334793084">Inicie sessão para ter os seus marcadores, palavras-passe e muito mais em todos os seus dispositivos</translation>
 <translation id="218608176142494674">Partilha</translation>
 <translation id="219283042927675668">Separadores no grupo</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
@@ -576,6 +577,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="363596933471559332">Inicie automaticamente sessão em Sites com as credenciais armazenadas. Quando a funcionalidade está desativada, é-lhe sempre pedida validação antes de iniciar sessão num Website.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Aceda à página inicial da app Google</translation>
 <translation id="368329460027487650">Sessão terminada. Abre as opções para iniciar sessão.</translation>
 <translation id="3684540848053703310">Secção inferior das estatísticas de preço fechada</translation>
@@ -876,7 +878,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4988526792673242964">Páginas </translation>
 <translation id="4991110219272367918">Opção para aprovar ou não aprovar um Website fechado</translation>
 <translation id="4996095658297597226">Usar a palavra-passe sugerida?</translation>
-<translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Seguir este site aqui</translation>
 <translation id="5004416275253351869">Controlos da atividade Google</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
@@ -1576,7 +1577,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima}other{<ph name="TAB_COUNT_NORMAL" /> separadores de navegação anónima}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>
 <translation id="8058746566562539958">Abrir num novo sep. do Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" />}=1{Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /> e mais # pessoa}other{Adira ao grupo de separadores com <ph name="OWNER_FIRST_NAME" /> e mais # pessoas}}</translation>
 <translation id="8062594758852531064">Pré-carregamento alargado:</translation>
 <translation id="8063895661287329888">Falha ao adicionar marcador.</translation>
 <translation id="8066816452984416180">Adicione esta página aos marcadores rapidamente. Para editar este atalho, toque sem soltar.</translation>

@@ -141,7 +141,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2668094785979141847">Spustelėkite, kad išeitumėte iš „Google Lens“</translation>
 <translation id="2681444469812712297">Atidarykite <ph name="URL" /> naujame „Google Chrome“ skirtuke.</translation>
 <translation id="2712141162840347885">Pasirinkite bet kąbet ką, ko norite ieškoti naudodami „Google Lens“, arba paspauskite „Escape“, kad išeitumėte iš „Google Lens“</translation>
-<translation id="2727713483500953825">Pasirinkite vaizdus arba tekstą, kad galėtumėte ieškoti naudodami „Lens“</translation>
 <translation id="2738871930057338499">Nepavyko prisijungti prie interneto. HTTP 403 uždrausta. Patikrinkite tarpinio serverio konfigūraciją.</translation>
 <translation id="2742320827292110288">Įspėjimas: „Google Chrome“ negali neleisti plėtiniams įrašyti jūsų naršymo istorijos. Jei norite neleisti šio plėtinio inkognito režimu, atšaukite šios parinkties pasirinkimą.</translation>
 <translation id="2753623023919742414">Spustelėkite, jei norite ieškoti</translation>
@@ -224,7 +223,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3609788354808247807">Pastaruoju metu nesilankėte. „Chrome“ pašalino <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Nustatykite daiktus ar vietas ir kopijuokite arba verskite tekstą. Kai naudojate „Google Lens“, puslapio ekrano kopija siunčiama „Google“. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Dabar galite lengviau naudoti „Chrome“ naudodami „Google“ paskyrą ir bendrinamus kompiuterius.</translation>
-<translation id="3625345586754200168">Išbandyti „Lens“</translation>
 <translation id="3635073343384702370">„Chrome“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
 <translation id="3667616615096815454">Nepavyko įdiegti, nes programa nežinoma serveriui.</translation>
 <translation id="3673813398384385993">„Chrome“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
@@ -295,7 +293,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Prisijungti prie „Chrome“ kaip <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">„Chrome“ – prisijungimas prie tinklo – „<ph name="PAGE_TITLE" />“</translation>
-<translation id="4453144231461812959">Ieškokite bet kokio vaizdo ar teksto naudodami „Lens“</translation>
 <translation id="4458462641685292929">Vykdoma kita „Google Chrome“ operacija. Vėliau bandykite dar kartą.</translation>
 <translation id="4459234553906210702">Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chrome“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.</translation>
 <translation id="4493028449971051158">Paleisties klaida: diegimo programą paleiskite kaip administratorius.</translation>
@@ -408,7 +405,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6025087594896450715">„Google Chrome“ bus paleista iš naujo po <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="604424701295382420">Prisegta! Galite vėl pasiekti „Google Lens“ naudodami naują įrankių juostos mygtuką</translation>
-<translation id="6060842547856900641">Atidaryti „Lens“</translation>
 <translation id="6069027071882229820">Kopijuoti kaip vaizdą</translation>
 <translation id="6070348360322141662">Kad būtų papildomai užtikrintas saugumas, „Google Chrome“ užšifruos duomenis</translation>
 <translation id="6075300983329039771">Jūsų organizacija (<ph name="MANAGER" />) reikalauja prisijungti prie „Chrome“</translation>
@@ -457,7 +453,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6515549163407364048">Jei norite naudoti plėtinius visuose kompiuteriuose, prisijunkite prie „Chrome“</translation>
 <translation id="6520670145826811516">Kad būtų galima naudoti jūsų vietovės informaciją, suteikite „Chrome“ prieigą <ph name="BEGIN_LINK" />sistemos nustatymuose<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">„Google“ slaptažodžių tvarkytuvė šiame įrenginyje</translation>
-<translation id="6600016381025017075">Ieškokite bet ko šiame puslapyje</translation>
 <translation id="6632473616050862500">„ChromeOS Flex“ pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Prisijungti prie „Chrome“?</translation>
 <translation id="6676384891291319759">Interneto prieiga</translation>

@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">विंडो बंद करायची आहे का?</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2175927920773552910">QR कोड</translation>
+<translation id="2184272387334793084">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="218608176142494674">शेअर करत आहे</translation>
 <translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
 <translation id="3636940436873918441">प्राधान्य दिलेल्या भाषा</translation>
 <translation id="3637744895182738742">तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा तुम्हाला हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome हटवणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google अ‍ॅप होम वर जा</translation>
 <translation id="368329460027487650">साइन आउट केले आहे. साइन इन करण्यासाठी पर्याय उघडते.</translation>
 <translation id="3684540848053703310">किमतीच्या इनसाइटची तळाशी असलेली शीट बंद केली</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">पेज</translation>
 <translation id="4991110219272367918">वेबसाइटला मंजुरी द्यायची की नाही यासाठीचा पर्याय बंद आहे</translation>
 <translation id="4996095658297597226">सुचवलेला पासवर्ड वापरायचा आहे का?</translation>
-<translation id="499724277181351974">नेव्हिगेट करा: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">या साइटला येथे फॉलो करा</translation>
 <translation id="5004416275253351869">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> गुप्त मोड टॅब}other{<ph name="TAB_COUNT_NORMAL" /> गुप्त मोड टॅब}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB उपलब्ध</translation>
 <translation id="8058746566562539958">नवीन Chrome टॅबमध्‍ये उघडा</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> सोबत टॅब गटामध्ये सामील व्हा}=1{<ph name="OWNER_FIRST_NAME" /> आणि आणखी # व्यक्तीसोबत टॅब गटामध्ये सामील व्हा}other{<ph name="OWNER_FIRST_NAME" /> आणि आणखी # लोकांसोबत टॅब गटामध्ये सामील व्हा}}</translation>
 <translation id="8062594758852531064">विस्तारित प्रीलोडिंग:</translation>
 <translation id="8063895661287329888">बुकमार्क जोडण्यात अयशस्वी झाले.</translation>
 <translation id="8066816452984416180">हे पेज झटपट बुकमार्क करा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>

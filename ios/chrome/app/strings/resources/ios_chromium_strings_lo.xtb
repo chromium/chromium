@@ -19,6 +19,7 @@
 <translation id="146407871188825689">ໃຊ້ Chromium ຢູ່ iPad ແບບເລີ່ມຕົ້ນ</translation>
 <translation id="1471084500615228555">ລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chromium</translation>
 <translation id="1472013873724362412">ບັນຊີຂອງທ່ານໃຊ້ບໍ່ໄດ້ຢູ່ໃນ Chromium. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງໂດເມນຂອງທ່ານ ຫຼືໃຊ້ບັນຊີ Google ປົກກະຕິ ເພື່ອເຂົ້າສູ່ລະບົບ.</translation>
+<translation id="148576268809812097">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານໃນ Chromium</translation>
 <translation id="1501302548410882220">ໃຊ້ Chromium ໄດ້ຢູ່ທົ່ວທຸກບ່ອນ</translation>
 <translation id="1503199973012840174">Chromium ຂອງທ່ານເປັນເວີຊັນເກົ່າ. ກະລຸນາອັບເດດເພື່ອຄວາມປອດໄພ.</translation>
 <translation id="1515748263297244785">ໃຊ້ Chromium ສຳລັບ iPad ໂດຍຄ່າເລີ່ມຕົ້ນ</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">ລະຫັດຜ່ານຂອງທ່ານຈະຖືກບັນທຶກໄປໃສ່ບັນຊີຂອງທ່ານ (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">ເພື່ອຮັບການປັບແຕ່ງເປັນແບບສ່ວນຕົວ ແລະ ຄຸນສົມບັດອື່ນໆ, ໃຫ້ຮວມ Chromium ໄວ້ໃນ <ph name="FEATURE_NAME_1" /> ພ້ອມທັງ<ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium ໄດ້ພິສູດຢືນຢັນວ່າ <ph name="ISSUER" /> ໄດ້ອອກໃບຮັບຮອງຂອງເວັບໄຊນີ້.</translation>
+<translation id="1839447949248872139">ເປີດລິ້ງໃນ Chromium ຕາມຄ່າເລີ່ມຕົ້ນ</translation>
 <translation id="1843424232666537147">Chromium ມີຄຸນສົມບັດທີ່ຊ່ວຍໃຫ້ທ່ານຈັດການຂໍ້ມູນອິນເຕີເນັດຂອງທ່ານ ແລະ ຈັດການວ່າທ່ານສາມາດໂຫຼດໜ້າເວັບຕ່າງໆໄດ້ໄວສໍ່າໃດ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">ແຜນທີ່ໃນ Chromium</translation>

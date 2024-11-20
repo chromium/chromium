@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Permite unui site să salveze date pe dispozitiv</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384959399684842514">Descărcare întreruptă</translation>
+<translation id="1396327438254055134">Permite site-ului să folosească instrumentul de optimizare V8.</translation>
 <translation id="1415402041810619267">Adresă URL trunchiată</translation>
 <translation id="1448064542941920355">Micșorează nivelul de zoom</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}few{<ph name="SITE_COUNT" /> site-uri}other{<ph name="SITE_COUNT" /> de site-uri}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Decodor de imagini</translation>
 <translation id="1785415724048343560">Se recomandă pentru o experiență optimă</translation>
 <translation id="1799920918471566157">Sfaturi Chrome</translation>
+<translation id="1816835383954230954">Când opțiunea este activată, Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător. Când este dezactivată, performanța scade, dar motorul V8 devine mai rezistent la atacuri.</translation>
 <translation id="1818308510395330587">Pentru a permite aplicației <ph name="APP_NAME" /> să folosească RA, activează camera foto și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Accesul la locație este dezactivat pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Încheie apelul</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi camera. Când opțiunea este dezactivată, site-urile nu pot folosi camera.</translation>
 <translation id="3521663503435878242">Site-uri din <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Nu permite site-urilor să-ți urmărească mâinile</translation>
+<translation id="3532312529397438268">Site-urile nu pot folosi instrumentul de optimizare V8</translation>
 <translation id="3536227077203206203">Permis de această dată</translation>
 <translation id="3538390592868664640">Împiedică site-urile să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video</translation>
 <translation id="3544058026430919413">O companie poate defini un grup de site-uri care pot folosi cookie-uri pentru a-ți afișa activitatea în grup. Această opțiune este dezactivată în modul incognito.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Activează Navigarea sigură</translation>
 <translation id="4811450222531576619">Află despre sursă și subiect</translation>
+<translation id="481168145262973879">Site-urile pot folosi instrumentul de optimizare V8</translation>
 <translation id="4816495437032298535">Zoom salvat pentru site-uri</translation>
 <translation id="4836046166855586901">Anunță-mă dacă un site vrea să afle când folosesc activ dispozitivul</translation>
 <translation id="483914009762354899">Include toate site-urile din acest domeniu</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Ștergi datele privind site-ul? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
 <translation id="6992289844737586249">Întreabă înainte de a permite site-urilor să folosească microfonul (recomandat)</translation>
+<translation id="6999131147875565462">Chrome rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător</translation>
 <translation id="7000754031042624318">Dezactivată din setările Android</translation>
 <translation id="7016516562562142042">Se permite pentru motorul de căutare actual</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Site-urile pe care le accesezi pot confirma că ești o persoană reală, nu o aplicație bot</translation>
 <translation id="959682366969460160">Organizează-te</translation>
 <translation id="967624055006145463">Date stocate</translation>
+<translation id="969975166333045662">Împiedică site-ul să folosească instrumentul de optimizare V8.</translation>
 </translationbundle>

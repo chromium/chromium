@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Цонхыг хаах уу?</translation>
 <translation id="2173302385160625112">Интернэт холболтоо шалгана уу</translation>
 <translation id="2175927920773552910">QR код</translation>
+<translation id="2184272387334793084">Нууц үг болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="218608176142494674">Хуваалцаж байна</translation>
 <translation id="219283042927675668">Бүлэг дэх табууд</translation>
 <translation id="2194856509914051091">Анхаарч үзэх зүйлс</translation>
@@ -342,6 +343,7 @@
 <translation id="2571711316400087311">Google Орчуулагчид өөр хэлнүүдийн хуудаснууд илгээх санал тавих</translation>
 <translation id="2571834852878229351">Минийхийг үүсгэ</translation>
 <translation id="2574249610672786438">Chrome-г хаанаас ч ашигласан бай табуудаа харахын тулд бүх төхөөрөмж дээрээ нэвтэрнэ үү</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тантай цаашид Google-н үйлчилгээн дээр харилцан үйлдэл хийх боломжгүй болно.</translation>
 <translation id="2578337197553672982">Залуу сэтгэлгээнд зориулсан Google-н контент</translation>
 <translation id="2579297619530305344">Таны бүх төхөөрөмж дээрх нууц үгний хуудсыг бүтэн өндрөөр нээсэн</translation>
 <translation id="2581165646603367611">Энэ нь күүки, кэш болон Chrome-н чухалд тооцдоггүй бусад сайтын өгөгдлийг устгах болно.</translation>
@@ -566,6 +568,7 @@
 <translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3614126103057878858">Үнийн статистик</translation>
 <translation id="3616113530831147358">Аудио</translation>
+<translation id="3619255692378312441">Хандалтыг удирдах</translation>
 <translation id="3622349720008044802">Цонхнуудыг удирдах</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" />-тай хуваалцаж байна</translation>
@@ -574,6 +577,7 @@
 <translation id="363596933471559332">Хадгалсан итгэмжлэлийг ашиглан вебсайтад автоматаар нэвтрэх. Энэ үйлдлийг идэвхжүүлээгүй тохиолдолд аливаа вебсайтад хандах бүрд таниас баталгаажуулалт шаардана.</translation>
 <translation id="3636940436873918441">Сонгосон хэл</translation>
 <translation id="3637744895182738742">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг устгана уу<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google Аппын нүүр хуудасны таб руу очих</translation>
 <translation id="368329460027487650">Гарсан. Нэвтрэх сонголтуудыг нээнэ.</translation>
 <translation id="3684540848053703310">Үнийн статистикийн доод хүснэгтийг хаасан</translation>
@@ -585,6 +589,7 @@
 <translation id="3701515417135397388">Нууц үг өгөгдлийн зөрчилд алдагдсан тохиолдолд танд сануулах</translation>
 <translation id="3703166520839776970">Хэрэв энэ асуудал тохиолдсоор байвал <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-с нэмэлт мэдээлэл авахын тулд доорх "Дэлгэрэнгүй мэдээлэл"-ийг сонгоно уу.</translation>
 <translation id="3710501561113687889">Үргэлжлүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны <ph name="FIELDS_STRING" />-г энэ сайттай хуваалцана.</translation>
+<translation id="3710560693796335511">Хамтын ажиллагаа</translation>
 <translation id="3714981814255182093">Find Bar-г нээх</translation>
 <translation id="3716182511346448902">Энэ хуудас хэт их хэмжээний санах ой ашиглаж байгаа тул үүнийг Chrome түр зогсоосон болно.</translation>
 <translation id="3718765429352682176">Chrome-д холбоос нээдэг бусад аппын хөтчийн түүх танд харагдаж болно.</translation>
@@ -873,7 +878,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4988526792673242964">Хуудас</translation>
 <translation id="4991110219272367918">Вебсайтыг зөвшөөрөх эсвэл зөвшөөрөхгүй байх сонголтыг хаасан</translation>
 <translation id="4996095658297597226">Санал болгосон нууц үгийг ашиглах уу?</translation>
-<translation id="499724277181351974">Шилжих: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Энэ сайтыг энд дагана уу</translation>
 <translation id="5004416275253351869">Google-н ашиглалт удирдлага</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
@@ -917,7 +921,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5204967432542742771">Нууц үгээ оруулна уу</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Файл татаж байна…}other{# файл татаж байна…}}</translation>
 <translation id="5210286577605176222">Өмнөх табад очих</translation>
-<translation id="5210365745912300556">Цонхыг хаа</translation>
+<translation id="5210365745912300556">Табыг хаах</translation>
 <translation id="5215957675041756913">Өгөгдөл, бүртгэлээ хянах</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="SEPARATOR" /> Та сүүлийн үед зочлоогүй тул Chrome эдгээр зөвшөөрлийг хассан</translation>
 <translation id="5222676887888702881">Гарах</translation>
@@ -956,6 +960,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
 <translation id="5423934151118863508">Таны хамгийн их зочилсон хуудас энд гарч ирэх болно</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ГБ боломжтой</translation>
+<translation id="543121643585717256">Холбоостой дурын хүн бүх табыг засах боломжтой. Хуваалцсан табын бүлгүүдийн талаар мэдэж авах</translation>
 <translation id="543338862236136125">Нууц үг засах</translation>
 <translation id="5433691172869980887">Хэрэглэгчийн нэрийг хуулсан</translation>
 <translation id="5438292632479953702">Дахин татах</translation>
@@ -970,6 +975,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5468068603361015296">Та <ph name="FILE_NAME" />-г ямартай ч татахыг хүсэж байна уу?</translation>
 <translation id="548278423535722844">Газрын зургийн апп-д нээх</translation>
 <translation id="5492637351392383067">Төхөөрөмж дээрх шифрлэлт</translation>
+<translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />-р нэгдэх</translation>
 <translation id="5503125329065007089">Таны бүх төхөөрөмж дээрх нууц үгний хуудсыг тал өндрөөр нээсэн</translation>
 <translation id="5514904542973294328">Энэ төхөөрөмжийн администратор цуцалсан</translation>
 <translation id="5515439363601853141">Нууц үгээ харах бол түгжээг тайлна уу</translation>
@@ -1372,6 +1378,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7182051712900867547">Өөр бүртгэл ашиглах</translation>
 <translation id="7183517696921903380">Аппын шүүлтүүрийн хүснэгтийг нээсэн.</translation>
 <translation id="7186568385131859684">Хөтчийн түүхийг Google-н үйлчилгээнүүдийн бусад өгөгдөлд хэрхэн ашиглахыг удирдах</translation>
+<translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />-г блоклох уу?</translation>
 <translation id="7191430249889272776">Арын дэвсгэр дээр нээсэн цонх.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Та үүнийг одоо өөрчлөх хэрэгтэй}other{Та эдгээрийг одоо өөрчлөх хэрэгтэй}}</translation>
 <translation id="7196215469483532480">Нууцлалын хөтчийн тайлбарыг бүтэн хэмжээгээр нээсэн</translation>

@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">คลิกเพื่อออกจาก Google Lens</translation>
 <translation id="2681444469812712297">เปิด <ph name="URL" /> ในแท็บใหม่ใน Google Chrome</translation>
 <translation id="2712141162840347885">เลือกอะไรก็ได้เพื่อค้นหาด้วย Google Lens หรือกด Escape เพื่อออกจาก Google Lens</translation>
-<translation id="2727713483500953825">เลือกรูปภาพ/ข้อความเพื่อค้นหาด้วย Lens</translation>
 <translation id="2738871930057338499">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ HTTP 403 Forbidden โปรดตรวจสอบการกำหนดค่าพร็อกซีของคุณ</translation>
 <translation id="2742320827292110288">คำเตือน: Google Chrome ไม่สามารถป้องกันไม่ให้ส่วนขยายบันทึกประวัติการท่องเว็บ หากต้องการปิดใช้ส่วนขยายนี้ในโหมดไม่ระบุตัวตน ให้ยกเลิกการเลือกตัวเลือกนี้</translation>
 <translation id="2753623023919742414">คลิกเพื่อค้นหา</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chrome นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และ<ph name="PERMISSION_3" />ออกแล้ว</translation>
 <translation id="3622716124581627104">ระบุสิ่งหรือสถานที่ต่างๆ แล้วคัดลอกหรือแปลข้อความ เมื่อใช้ Google Lens ระบบจะส่งภาพหน้าจอของหน้าเว็บไปยัง Google <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ตอนนี้การใช้ Chrome กับบัญชี Google ของคุณและบนคอมพิวเตอร์ที่ใช้ร่วมกันทำได้ง่ายกว่าเดิม</translation>
-<translation id="3625345586754200168">ลองใช้ Lens</translation>
 <translation id="3635073343384702370">Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="3667616615096815454">ติดตั้งไม่ได้เนื่องจากเซิร์ฟเวอร์ไม่รู้จักแอปพลิเคชัน</translation>
 <translation id="3673813398384385993">Chrome พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
@@ -290,7 +288,6 @@
 <translation id="4434353761996769206">ข้อผิดพลาดของโปรแกรมติดตั้ง: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">ลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - หน้าลงชื่อเข้าใช้ของเครือข่าย - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">ค้นหารูปภาพหรือข้อความต่างๆ ด้วย Lens</translation>
 <translation id="4458462641685292929">Google Chrome กำลังดำเนินการอย่างอื่นอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="4459234553906210702">การวัดผลโฆษณาจะให้เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยในการวัดประสิทธิภาพโฆษณาเว็บไซต์ดังกล่าวได้ การวัดผลโฆษณาจะจำกัดการติดตามข้ามเว็บไซต์โดยโอนข้อมูลระหว่างเว็บไซต์ให้น้อยที่สุด</translation>
 <translation id="4493028449971051158">ข้อผิดพลาดในการเริ่มต้น: โปรดเรียกใช้โปรแกรมติดตั้งในฐานะผู้ดูแลระบบ</translation>
@@ -399,7 +396,6 @@
 <translation id="6025087594896450715">Google Chrome จะรีสตาร์ทใน <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="604424701295382420">ปักหมุดแล้ว คุณเข้าถึง Google Lens ได้อีกครั้งจากปุ่มใหม่ในแถบเครื่องมือ</translation>
-<translation id="6060842547856900641">เปิด Lens</translation>
 <translation id="6069027071882229820">คัดลอกเป็นภาพ</translation>
 <translation id="6070348360322141662">Google Chrome จะเข้ารหัสลับข้อมูลของคุณเพื่อเพิ่มความปลอดภัยให้มากยิ่งขึ้น</translation>
 <translation id="6075300983329039771">องค์กร <ph name="MANAGER" /> กำหนดให้คุณต้องลงชื่อเข้าใช้ Chrome</translation>
@@ -448,7 +444,6 @@
 <translation id="6515549163407364048">ลงชื่อเข้าใช้ Chrome เพื่อรับส่วนขยายในคอมพิวเตอร์ทุกเครื่อง</translation>
 <translation id="6520670145826811516">หากต้องการใช้ตำแหน่ง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
-<translation id="6600016381025017075">ค้นหาอะไรก็ได้ในหน้านี้</translation>
 <translation id="6632473616050862500">Chrome OS Flex เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />เพิ่มเติม</translation>
 <translation id="6660596345553328257">ลงชื่อเข้าใช้ Chrome ไหม</translation>
 <translation id="6676384891291319759">เข้าถึงอินเทอร์เน็ต</translation>

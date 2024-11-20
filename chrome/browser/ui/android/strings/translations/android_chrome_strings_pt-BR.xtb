@@ -257,6 +257,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2172905120685242547">Fechar a janela?</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
 <translation id="2175927920773552910">QR code</translation>
+<translation id="2184272387334793084">Faça login para ter acesso a senhas e muito mais em todos os seus dispositivos</translation>
 <translation id="218608176142494674">Compartilhamento</translation>
 <translation id="219283042927675668">Guias no grupo</translation>
 <translation id="2194856509914051091">Considerações</translation>
@@ -574,6 +575,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="363596933471559332">Faça login automaticamente nos websites usando as credenciais armazenadas. Se o recurso estiver desativado, será preciso fazer a verificação sempre antes de fazer login em um website.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Acessar a página inicial do Google app</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
 <translation id="3684540848053703310">A página inferior de insights de preço foi fechada</translation>
@@ -874,7 +876,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4988526792673242964">Páginas</translation>
 <translation id="4991110219272367918">A opção para aprovar ou não um site foi fechada</translation>
 <translation id="4996095658297597226">Usar senha sugerida?</translation>
-<translation id="499724277181351974">Navegar: <ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="5001388021414335527">Siga este site</translation>
 <translation id="5004416275253351869">Controles de atividade do Google</translation>
 <translation id="5005498671520578047">Copiar senha</translation>

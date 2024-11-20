@@ -139,7 +139,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2668094785979141847">Kliknutím ukončíte Google Lens</translation>
 <translation id="2681444469812712297">Otvorte <ph name="URL" /> na novej karte v prehliadači Google Chrome.</translation>
 <translation id="2712141162840347885">Vyberte niečo na vyhľadávanie pomocou funkcie Google Lens alebo stlačením klávesa Escape Google Lens zavrite</translation>
-<translation id="2727713483500953825">Vyberte obrázky alebo text na vyhľadanie pomocou funkcie Lens</translation>
 <translation id="2738871930057338499">Nepodarilo sa pripojiť k internetu. Chyba odmietnutia prístupu HTTP 403. Skontrolujte konfiguráciu servera proxy.</translation>
 <translation id="2742320827292110288">Upozornenie: Google Chrome nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete dané rozšírenie v režime inkognito zakázať, zrušte výber tejto možnosti.</translation>
 <translation id="2753623023919742414">Vyhľadávanie spustíte kliknutím</translation>
@@ -222,7 +221,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3609788354808247807">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Identifikujte veci alebo miesta a skopírujte či preložte text. Keď používate Google Lens, snímka obrazovky stránky sa odošle Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Teraz je používanie prehliadača Chrome s účtom Google a na zdieľaných počítačoch oveľa ľahšie.</translation>
-<translation id="3625345586754200168">Vyskúšať Lens</translation>
 <translation id="3635073343384702370">Chrome môže skontrolovať heslá, keď ich uložíte</translation>
 <translation id="3667616615096815454">Nepodarilo sa nainštalovať, pretože server aplikáciu nepozná.</translation>
 <translation id="3673813398384385993">Chrome zistil, že <ph name="EXTENSION_NAME" /> obsahuje malvér</translation>
@@ -292,7 +290,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Prihlásiť sa do Chromu ako <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Vyhľadajte ľubovoľný obrázok alebo text pomocou funkcie Lens</translation>
 <translation id="4458462641685292929">V prehliadači Google Chrome práve prebieha ďalšia operácia. Skúste to neskôr.</translation>
 <translation id="4459234553906210702">Meranie reklám umožňuje webom, ktoré navštívite, požadovať od Chromu údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
 <translation id="4493028449971051158">Chyba pri spustení: spustite inštalátor ako správca.</translation>
@@ -405,7 +402,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6025087594896450715">Google Chrome sa reštartuje o <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="604424701295382420">Pripnuté! Google Lens môžete znova otvoriť pomocou nového tlačidla na paneli s nástrojmi</translation>
-<translation id="6060842547856900641">Otvoriť Lens</translation>
 <translation id="6069027071882229820">Kopírovať ako obrázok</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>
 <translation id="6075300983329039771">Vaša organizácia (<ph name="MANAGER" />) vyžaduje, aby ste sa prihlásili do Chromu</translation>
@@ -454,7 +450,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6515549163407364048">Ak chcete mať prístup k rozšíreniam vo všetkých svojich počítačoch, prihláste sa do Chromu</translation>
 <translation id="6520670145826811516">Ak chcete používať polohu, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">V správcovi hesiel Google v tomto zariadení</translation>
-<translation id="6600016381025017075">Vyhľadať ľubovoľný obsah tejto stránky</translation>
 <translation id="6632473616050862500">Systém Chrome OS Flex mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Chcete sa prihlásiť do Chromu?</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>

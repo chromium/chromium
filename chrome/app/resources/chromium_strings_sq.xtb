@@ -127,7 +127,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2711502716910134313">Skeda Chromium</translation>
 <translation id="2718390899429598676">Për më shumë siguri, Chromium do t'i enkriptojë të dhënat e tua.</translation>
 <translation id="2721354645805494590">Për ta hequr "Llogarinë tënde të Google" nga Chromium, dil nga llogaria</translation>
-<translation id="2727713483500953825">Zgjidh imazhet/tekstin për të kërkuar me "Lenten"</translation>
 <translation id="2738871930057338499">Lidhja me internetin nuk mund të kryhej. HTTP 403 (E ndaluar). Kontrollo konfigurimin e proxy-t.</translation>
 <translation id="2753623023919742414">Kliko për të kërkuar</translation>
 <translation id="2770231113462710648">Ndrysho shfletuesin me parazgjedhje në:</translation>
@@ -140,7 +139,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2846251086934905009">Gabim gjatë instalimit: Instaluesi nuk përfundoi. Instalimi është ndërprerë.</translation>
 <translation id="2847479871509788944">Hiqe nga Chromium...</translation>
 <translation id="2850691299438350830">Të mban të sigurt në Chromium dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je identifikuar</translation>
-<translation id="2874602845494991903">Hap "Kërkimi nëpërmjet imazheve"</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2910007522516064972">Rreth &amp;Chromium</translation>
 <translation id="2915996080311180594">Rinise më vonë</translation>
@@ -255,7 +253,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4434353761996769206">Gabim i instaluesit: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> menaxhon Chromium</translation>
 <translation id="4447409407328223819">Rreth Chrome for Testing</translation>
-<translation id="4453144231461812959">Kërko çdo imazh ose tekst me "Lenten"</translation>
 <translation id="4470974262661801543">Për të përdorur dhe për të ruajtur të dhënat e Chromium në "Llogarinë tënde të Google", fut frazën tënde të kalimit</translation>
 <translation id="4493028449971051158">Gabim në nisje: ekzekuto instaluesin si administrator.</translation>
 <translation id="4501471624619070934">Instalimi nuk u krye sepse qasja është e kufizuar në këtë shtet.</translation>
@@ -295,7 +292,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="494490797786467921">Kliko për të mbyllur dialogun e identifikimit në Chromium</translation>
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
-<translation id="5051959905407134411">Provo "Kërkimin nëpërmjet imazheve"</translation>
 <translation id="5114678101347489141">Chromium po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga informacionet e tua</translation>
 <translation id="5123973130450702873">Chromium ka nevojë për leje për të gjurmuar duart e tua</translation>
 <translation id="5174969993834422967">Ti i bllokon zakonisht njoftimet. Për ta lejuar këtë sajt që të të njoftojë, kliko tek ikona e njoftimit në këndin e djathtë të shiritit të vendndodhjes.</translation>

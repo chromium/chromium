@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">サイトによるデバイスへのデータ保存を許可します</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
+<translation id="1396327438254055134">V8 オプティマイザーの使用を許可するサイトを指定します。</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> 件のサイト}other{<ph name="SITE_COUNT" /> 件のサイト}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">画像デコーダー</translation>
 <translation id="1785415724048343560">利便性が向上します（推奨）</translation>
 <translation id="1799920918471566157">Chrome を使いこなすヒント</translation>
+<translation id="1816835383954230954">オンにすると、Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します。オフにすると、パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます。</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1915307458270490472">通話を終了</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">オンにすると、サイトはカメラの使用を要求できます。オフにすると、サイトはカメラを使用できません。</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> のサイト</translation>
 <translation id="3523447078673133727">サイトにハンド トラッキングを許可しない</translation>
+<translation id="3532312529397438268">サイトで V8 オプティマイザーを使用できません</translation>
 <translation id="3536227077203206203">一時的に許可しました</translation>
 <translation id="3538390592868664640">サイトによる周囲の 3D マップの作成またはカメラ位置の追跡をブロックします</translation>
 <translation id="3544058026430919413">企業は、Cookie を使用してグループ内のアクティビティを共有できるサイトのグループを定義できます。シークレット モードの場合、この設定はオフになっています。</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">ズーム</translation>
 <translation id="4807122856660838973">セーフ ブラウジングをオンにする</translation>
 <translation id="4811450222531576619">ソースとトピックの詳細</translation>
+<translation id="481168145262973879">サイトで V8 オプティマイザーを使用できます</translation>
 <translation id="4816495437032298535">サイトの保存済みズーム</translation>
 <translation id="4836046166855586901">サイトからこのデバイスのアクティブ状態の検出を求められたときに確認する</translation>
 <translation id="483914009762354899">このドメインのすべてのサイトを含める</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">次のサイトデータを削除しますか？<ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
+<translation id="6999131147875565462">Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します</translation>
 <translation id="7000754031042624318">Android の設定で無効</translation>
 <translation id="7016516562562142042">現在の検索エンジンに対して許可</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="959682366969460160">タブを整理</translation>
 <translation id="967624055006145463">保存データ</translation>
+<translation id="969975166333045662">V8 オプティマイザーの使用をブロックするサイトを指定します。</translation>
 </translationbundle>

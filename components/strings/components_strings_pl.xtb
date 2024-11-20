@@ -138,7 +138,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Odzież wierzchnia</translation>
-<translation id="1253096324252841344">Zapłać za pomocą: <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Zapisuję zrzut ekranu</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (zsynchronizowane)</translation>
 <translation id="1255086252236620440">Miksery</translation>
@@ -3140,7 +3139,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6671169470640320959">Finansowanie samochodów</translation>
 <translation id="6671697161687535275">Usunąć tę podpowiedź do formularza z Chromium?</translation>
 <translation id="6677351035258626477">Fast food</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcję}few{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}many{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}other{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}}</translation>
 <translation id="6679354743514146922">Przeglądarka Chrome próbuje uzupełnić hasło na stronie <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Kod CVC został zapisany</translation>
 <translation id="6683022854667115063">Słuchawki</translation>

@@ -141,7 +141,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2668094785979141847">Smelltu til að loka Google-linsu</translation>
 <translation id="2681444469812712297">Opna <ph name="URL" /> í nýjum flipa í Google Chrome.</translation>
 <translation id="2712141162840347885">Veldu hvað sem er til að leita með Google-linsu eða ýttu á Esc til að loka Linsunni</translation>
-<translation id="2727713483500953825">Veldu mynd/texta til að leita eftir með Linsu</translation>
 <translation id="2738871930057338499">Ekki er hægt að tengjast internetinu. HTTP 403 bannað. Kannaðu uppsetningu staðgengilsþjóna.</translation>
 <translation id="2742320827292110288">Viðvörun: Google Chrome getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="2753623023919742414">Smelltu til að leita</translation>
@@ -224,7 +223,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3609788354808247807">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Berðu kennsl á hluti eða staði og afritaðu eða þýddu texta. Þegar þú notar Google-linsu er skjámynd af síðunni send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nú er auðveldara að nota Chrome með Google reikningnum þínum og í samnýttum tölvum.</translation>
-<translation id="3625345586754200168">Prófa Linsu</translation>
 <translation id="3635073343384702370">Chrome getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
 <translation id="3667616615096815454">Ekki tókst að setja upp, þjónninn þekkir ekki forritið.</translation>
 <translation id="3673813398384385993">Chrome komst að því að „<ph name="EXTENSION_NAME" />“ inniheldur spilliforrit</translation>
@@ -295,7 +293,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4434353761996769206">Uppsetningarvilla: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Skrá inn í Chrome sem <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – innskráning á net – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Leitaðu eftir hvaða mynd eða texta sem er með Linsu</translation>
 <translation id="4458462641685292929">Önnur aðgerð er í gangi í Google Chrome. Reyndu aftur síðar.</translation>
 <translation id="4459234553906210702">Auglýsingamælingar gera vefsvæðum sem þú opnar kleift að biðja Chrome um upplýsingar sem hjálpa vefsvæðinu að mæla afköst auglýsinga þess. Auglýsingamælingar takmarka rakningu á milli vefsvæða með því að flytja eins lítið magn upplýsinga á milli vefsvæða og mögulegt er.</translation>
 <translation id="4493028449971051158">Villa í ræsingu: keyrðu uppsetningarforritið sem kerfisstjóri.</translation>
@@ -408,7 +405,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6025087594896450715">Google Chrome endurræsist eftir <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="604424701295382420">Fest! Nú geturðu opnað Google-linsu með því að ýta á nýja hnappinn á tækjastikunni</translation>
-<translation id="6060842547856900641">Opna Linsu</translation>
 <translation id="6069027071882229820">Afrita sem mynd</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="6075300983329039771">Fyrirtækið þitt, <ph name="MANAGER" />, krefst þess að þú skráir þig inn í Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6515549163407364048">Skráðu þig inn í Chrome til að fá aðgang að öllum viðbótum úr öllum tölvunum þínum</translation>
 <translation id="6520670145826811516">Veittu Chrome aðgang að staðsetningunni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
 <translation id="659498884637196217">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
-<translation id="6600016381025017075">Leitaðu að hverju sem er á síðunni</translation>
 <translation id="6632473616050862500">ChromeOS Flex á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Skrá þig inn í Chrome?</translation>
 <translation id="6676384891291319759">Aðgangur að internetinu</translation>
@@ -620,6 +615,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8416347857511542594">Nánar um sérsniðnar auglýsingar í Chrome</translation>
 <translation id="8418845734693287262">ChromeOS gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>
 <translation id="842386925677997438">Öryggisverkfæri Chrome</translation>
+<translation id="8425765582779547329">Til að vera öruggari á netinu með vali foreldra þinna skaltu skrá þig inn í Chrome</translation>
 <translation id="8428213095426709021">Stillingar</translation>
 <translation id="8433638294851456451">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8451192282033883849">Reikningnum þínum er stjórnað af <ph name="MANAGER_NAME" />. Stjórnandinn þinn getur séð og breytt þessum Chrome vafraprófíl og gögnum hans á borð við bókamerki, feril og aðgangsorð.</translation>

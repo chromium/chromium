@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">پنجره بسته شود؟</translation>
 <translation id="2173302385160625112">اتصال اینترنت را بررسی کنید</translation>
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
+<translation id="2184272387334793084">به سیستم وارد شوید تا گذرواژه‌ها و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="218608176142494674">هم‌رسانی</translation>
 <translation id="219283042927675668">برگه‌های موجود در گروه</translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">با استفاده از اعتبارنامه‌های ذخیره شده، به‌طور خودکار به سیستم وب‌سایت‌ها وارد شوید. وقتی این قابلیت خاموش است، هر بار قبل از وارد شدن به سیستم وب‌سایت از شما خواسته می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="3636940436873918441">زبان‌های ترجیحی</translation>
 <translation id="3637744895182738742">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏رفتن به «صفحه اصلی برنامه Google»</translation>
 <translation id="368329460027487650">از سیستم خارج شده‌اید. گزینه‌هایی را برای ورود به سیستم باز می‌کند.</translation>
 <translation id="3684540848053703310">برگ زیرین اطلاعات آماری قیمت بسته شد</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">صفحات</translation>
 <translation id="4991110219272367918">گزینه تأیید کردن یا نکردن وب‌سایت بسته شد</translation>
 <translation id="4996095658297597226">از گذرواژه پیشنهادی استفاده می‌کنید؟</translation>
-<translation id="499724277181351974">پیمایش: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">این سایت را در اینجا دنبال کنید</translation>
 <translation id="5004416275253351869">‏کنترل‌های فعالیت Google</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> برگه ناشناس}one{<ph name="TAB_COUNT_NORMAL" /> برگه ناشناس}other{<ph name="TAB_COUNT_NORMAL" /> برگه ناشناس}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> مگابایت موجود است</translation>
 <translation id="8058746566562539958">‏باز کردن در برگه جدید Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید}=1{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}one{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}other{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}}</translation>
 <translation id="8062594758852531064">پیش‌بارگذاری گسترده:</translation>
 <translation id="8063895661287329888">نشانک اضافه نشد.</translation>
 <translation id="8066816452984416180">به‌سرعت برای این صفحه نشانک بگذارید. برای ویرایش این میان‌بر، لمس کنید و نگه دارید.</translation>

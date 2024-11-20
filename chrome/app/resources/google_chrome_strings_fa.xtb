@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">‏برای خروج از «لنز Google»، کلیک کنید</translation>
 <translation id="2681444469812712297">‏‫<ph name="URL" /> در برگه جدیدی در Google Chrome باز می‌شود.</translation>
 <translation id="2712141162840347885">‏هرچیزی را که می‌خواهید برای جستجو با «لنز Google» انتخاب کنید یا کلید «گریز» را فشار دهید تا از «لنز Google» خارج شوید</translation>
-<translation id="2727713483500953825">تصویر/ نوشتاری را برای جستجو با «لنز» انتخاب کنید</translation>
 <translation id="2738871930057338499">‏اتصال به اینترنت برقرار نشد. HTTP ۴۰۳ ممنوع است. لطفاً پیکربندی پروکسی‌تان را بررسی کنید.</translation>
 <translation id="2742320827292110288">‏اخطار: Google Chrome نمی تواند مانع از ثبت سابقه مرور شما توسط افزونه‌ها شود. برای غیرفعال کردن این افزونه در «حالت ناشناس»، این گزینه را لغو انتخاب کنید.</translation>
 <translation id="2753623023919742414">برای جستجو، کلیک کنید</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت</translation>
 <translation id="3622716124581627104">‏چیزها و مکان‌ها را شناسایی کنید و نوشتار را کپی یا ترجمه کنید. وقتی از «لنز Google» استفاده می‌کنید، نماگرفتی از صفحه به Google ارسال می‌شود. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏اکنون استفاده از Chrome با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
-<translation id="3625345586754200168">امتحان کردن «لنز»</translation>
 <translation id="3635073343384702370">‏‫Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
 <translation id="3667616615096815454">نصب نشد، برنامه برای سرور ناشناس است.</translation>
 <translation id="3673813398384385993">‏Chrome متوجه شده است که این «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">خطای نصب‌کننده: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">‏ورود به سیستم Chrome با <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">‏Chrome - ورود به سیستم شبکه - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">با «لنز» هر تصویر یا نوشتاری را جستجو کنید</translation>
 <translation id="4458462641685292929">‏عملکرد دیگری در Google Chrome درحال انجام است. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="4459234553906210702">‏سنجش آگهی به سایت‌هایی که بازدید می‌کنید اجازه می‌دهد اطلاعاتی را از Chrome درخواست کنند که به آن‌ها کمک می‌کند عملکرد آگهی‌هایشان را بسنجند. «سنجش آگهی» ردیابی بین‌سایتی را با انتقال حداقل اطلاعات ممکن بین سایت‌ها محدود می‌کند.</translation>
 <translation id="4493028449971051158">خطای راه‌اندازی: لطفاً نصب‌کننده را با نقش سرپرست اجرا کنید.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">‏Google Chrome تا <ph name="REMAINING_TIME" /> دیگر بازراه‌اندازی خواهد شد</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="604424701295382420">‏سنجاق شد! دفعه بعد می‌توانید ازطریق این دکمه جدید در نوارابزار به «لنز Google» دسترسی پیدا کنید</translation>
-<translation id="6060842547856900641">باز کردن «لنز»</translation>
 <translation id="6069027071882229820">کپی کردن به‌عنوان تصویر</translation>
 <translation id="6070348360322141662">‏برای امنیت بیشتر، Google Chrome داده‌های شما را رمزگذاری می‌کند</translation>
 <translation id="6075300983329039771">‏سازمانتان (<ph name="MANAGER" />) شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">‏برای دریافت افزونه‌ها در همه رایانه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="6520670145826811516">‏برای استفاده از مکان، در <ph name="BEGIN_LINK" />تنظیمات سیستم<ph name="END_LINK" /> به Chrome دسترسی دهید</translation>
 <translation id="659498884637196217">‏در «مدیر گذرواژه Google» در این دستگاه</translation>
-<translation id="6600016381025017075">هرچیزی در این صفحه را جستجو کنید</translation>
 <translation id="6632473616050862500">‏ارائه ChromeOS Flex به‌کمک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی ممکن شده است.</translation>
 <translation id="6660596345553328257">‏به سیستم Chrome وارد می‌شوید؟</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>

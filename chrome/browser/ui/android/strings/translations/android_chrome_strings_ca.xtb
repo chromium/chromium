@@ -257,6 +257,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2172905120685242547">Vols tancar la finestra?</translation>
 <translation id="2173302385160625112">Comprova la connexió a Internet</translation>
 <translation id="2175927920773552910">Codi QR</translation>
+<translation id="2184272387334793084">Inicia la sessió per obtenir les teves contrasenyes i més en tots els teus dispositius</translation>
 <translation id="218608176142494674">Compartició</translation>
 <translation id="219283042927675668">Pestanyes al grup</translation>
 <translation id="2194856509914051091">Aspectes que cal tenir en compte</translation>
@@ -342,6 +343,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2571711316400087311">Proposa enviar pàgines en altres idiomes al Traductor de Google</translation>
 <translation id="2571834852878229351">Crea'n una de pròpia</translation>
 <translation id="2574249610672786438">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió en tots els dispositius</translation>
+<translation id="2577981599306533385"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i ja no podrà interaccionar amb tu als serveis de Google.</translation>
 <translation id="2578337197553672982">Contingut de Google per a les ments més joves</translation>
 <translation id="2579297619530305344">Contrasenyes en tots els teus dispositius està obert a alçada completa</translation>
 <translation id="2581165646603367611">Amb aquesta acció, se suprimiran les galetes, la memòria cau i altres dades de llocs que Chrome no consideri importants.</translation>
@@ -566,6 +568,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3614126103057878858">Estadístiques de preus</translation>
 <translation id="3616113530831147358">Àudio</translation>
+<translation id="3619255692378312441">Gestiona l'accés</translation>
 <translation id="3622349720008044802">Gestiona les finestres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 lloc web}other{+ # llocs web}}</translation>
 <translation id="3631987586758005671">S'està compartint amb <ph name="DEVICE_NAME" /></translation>
@@ -574,6 +577,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="363596933471559332">Inicia la sessió automàticament als llocs web amb les credencials emmagatzemades. Si la funció està desactivada, se us demana sempre que les verifiqueu per iniciar la sessió en un lloc web.</translation>
 <translation id="3636940436873918441">Idiomes preferits</translation>
 <translation id="3637744895182738742">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Ves a l'inici de l'aplicació Google</translation>
 <translation id="368329460027487650">Has tancat la sessió. Obre les opcions per iniciar la sessió.</translation>
 <translation id="3684540848053703310">Full inferior d'estadístiques de preus tancat</translation>
@@ -585,6 +589,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3701515417135397388">Rep un advertiment si una contrasenya s'ha posat en perill a causa d'una violació de les dades</translation>
 <translation id="3703166520839776970">Si el problema persisteix, tria Més detalls a continuació per obtenir més informació de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3710501561113687889">Per continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirà la teva informació (<ph name="FIELDS_STRING" />) amb aquest lloc web.</translation>
+<translation id="3710560693796335511">Col·laboració</translation>
 <translation id="3714981814255182093">Obre la barra de cerca</translation>
 <translation id="3716182511346448902">Com que aquesta pàgina fa servir massa memòria, Chrome l'ha posat en pausa.</translation>
 <translation id="3718765429352682176">És possible que vegis l'historial d'altres aplicacions que obren enllaços a Chrome.</translation>
@@ -873,7 +878,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4988526792673242964">Pàgines</translation>
 <translation id="4991110219272367918">Opció per aprovar o no aprovar un lloc web tancat</translation>
 <translation id="4996095658297597226">Vols utilitzar la contrasenya suggerida?</translation>
-<translation id="499724277181351974">Navega: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Segueix aquest lloc web aquí</translation>
 <translation id="5004416275253351869">Controls d'activitat de Google</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
@@ -956,6 +960,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="5423934151118863508">Les pàgines més visitades es mostraran aquí</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
+<translation id="543121643585717256">Tothom que tingui l'enllaç pot editar totes les pestanyes. Informació sobre els grups de pestanyes compartits</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5433691172869980887">S'ha copiat el nom d'usuari</translation>
 <translation id="5438292632479953702">Torna a baixar</translation>
@@ -970,6 +975,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5468068603361015296">Vols baixar <ph name="FILE_NAME" /> igualment?</translation>
 <translation id="548278423535722844">Obre en una aplicació de mapes</translation>
 <translation id="5492637351392383067">Encriptació al dispositiu</translation>
+<translation id="549660026907543296">Uneix-me com a <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Contrasenyes en tots els teus dispositius està obert a mitja alçada</translation>
 <translation id="5514904542973294328">Opció desactivada per l'administrador d'aquest dispositiu</translation>
 <translation id="5515439363601853141">Desbloqueja la pantalla per veure la contrasenya</translation>
@@ -1372,6 +1378,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7182051712900867547">Utilitza un altre compte</translation>
 <translation id="7183517696921903380">El full de filtratge per aplicació està obert.</translation>
 <translation id="7186568385131859684">Controla com s'utilitza l'historial de navegació amb les teves altres dades als serveis de Google</translation>
+<translation id="7190921792980745354">Vols bloquejar <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191430249889272776">Pestanya oberta en segon pla</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Hauries de canviar-la ara}other{Hauries de canviar-les ara}}</translation>
 <translation id="7196215469483532480">L'explicació de la guia de privadesa s'ha obert a alçada completa</translation>

@@ -88,7 +88,7 @@
 <translation id="1347468774581902829">Διαχείριση δραστηριότητας</translation>
 <translation id="1355088659320425659">Ιστορικό και καρτέλες</translation>
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
-<translation id="1363028406613469049">Κομμάτι</translation>
+<translation id="1363028406613469049">Παρακολούθηση</translation>
 <translation id="1366525380420346469">Όταν είναι ενεργή</translation>
 <translation id="1373696734384179344">Ανεπαρκής μνήμη για τη λήψη του επιλεγμένου περιεχομένου.</translation>
 <translation id="1376578503827013741">Υπολογισμός…</translation>
@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Κλείσιμο παραθύρου;</translation>
 <translation id="2173302385160625112">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
+<translation id="2184272387334793084">Συνδεθείτε για να έχετε τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας</translation>
 <translation id="218608176142494674">Κοινοποίηση</translation>
 <translation id="219283042927675668">Καρτέλες στην ομάδα</translation>
 <translation id="2194856509914051091">Λάβετε υπόψη τα εξής</translation>
@@ -342,6 +343,7 @@
 <translation id="2571711316400087311">Παρέχεται δυνατότητα αποστολής των σελίδων με περιεχόμενο σε διαφορετική γλώσσα στη Μετάφραση Google.</translation>
 <translation id="2571834852878229351">Δημιουργία δικού μου</translation>
 <translation id="2574249610672786438">Για να βλέπετε τις καρτέλες σας από όπου και αν χρησιμοποιείτε το Chrome, συνδεθείτε σε όλες τις συσκευές σας.</translation>
+<translation id="2577981599306533385">Ο χρήστης <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) θα χάσει αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και δεν θα έχει πλέον τη δυνατότητα να αλληλεπιδράσει μαζί σας στις υπηρεσίες Google.</translation>
 <translation id="2578337197553672982">Περιεχόμενο από την Google για νεαρούς χρήστες</translation>
 <translation id="2579297619530305344">Το φύλλο "Κωδικοί πρόσβασης σε όλες τις συσκευές σας" άνοιξε σε πλήρες ύψος</translation>
 <translation id="2581165646603367611">Αυτό θα διαγράψει τα cookie, την κρυφή μνήμη και άλλα δεδομένα ιστοτόπων που το Chrome θεωρεί ότι δεν είναι σημαντικά.</translation>
@@ -566,6 +568,7 @@
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
 <translation id="3614126103057878858">Insight τιμών</translation>
 <translation id="3616113530831147358">Ήχος</translation>
+<translation id="3619255692378312441">Διαχείριση πρόσβασης</translation>
 <translation id="3622349720008044802">Διαχείριση παραθύρων</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ιστότοπος}other{+ # ιστότοποι}}</translation>
 <translation id="3631987586758005671">Κοινοποίηση σε <ph name="DEVICE_NAME" /></translation>
@@ -574,6 +577,7 @@
 <translation id="363596933471559332">Αυτόματη σύνδεση σε ιστότοπους με χρήση αποθηκευμένων διαπιστευτηρίων. Όταν η λειτουργία είναι απενεργοποιημένη, θα σας ζητείται επαλήθευση κάθε φορά πριν από τη σύνδεση σε έναν ιστότοπο.</translation>
 <translation id="3636940436873918441">Προτιμώμενες γλώσσες</translation>
 <translation id="3637744895182738742">Εάν ξεχάσετε τη φράση πρόσβασης ή θέλετε να αλλάξετε αυτή τη ρύθμιση, <ph name="BEGIN_LINK" />διαγράψτε τα δεδομένα του Chrome στον λογαριασμό σας<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Μετάβαση στην αρχική σελίδα της εφαρμογής Google</translation>
 <translation id="368329460027487650">Αποσυνδεθήκατε. Ανοίγει επιλογές για σύνδεση.</translation>
 <translation id="3684540848053703310">Το φύλλο κάτω μέρους insight τιμών έκλεισε</translation>
@@ -585,6 +589,7 @@
 <translation id="3701515417135397388">Σας προειδοποιεί σε περίπτωση που ένας κωδικός πρόσβασής έχει παραβιαστεί σε μια παραβίαση δεδομένων</translation>
 <translation id="3703166520839776970">Εάν το πρόβλημα δεν επιλυθεί, επιλέξτε παρακάτω Περισσότερες λεπτομέρειες για να λάβετε περισσότερες πληροφορίες από το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3710501561113687889">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το <ph name="FIELDS_STRING" /> σε αυτόν τον ιστότοπο.</translation>
+<translation id="3710560693796335511">Συνεργασία</translation>
 <translation id="3714981814255182093">Άνοιγμα της γραμμής εύρεσης</translation>
 <translation id="3716182511346448902">Αυτή η σελίδα χρησιμοποιεί πάρα πολλή μνήμη. Για αυτόν τον λόγο, το Chrome την έθεσε σε παύση.</translation>
 <translation id="3718765429352682176">Μπορεί να δείτε το ιστορικό από άλλες εφαρμογές που ανοίγουν συνδέσμους στο Chrome.</translation>
@@ -873,7 +878,6 @@
 <translation id="4988526792673242964">Σελίδες</translation>
 <translation id="4991110219272367918">Κλείσιμο επιλογής για να εγκρίνετε ή να μην εγκρίνετε έναν ιστότοπο</translation>
 <translation id="4996095658297597226">Χρήση του προτεινόμενου κωδικού πρόσβασης;</translation>
-<translation id="499724277181351974">Πλοήγηση: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Ακολουθήστε αυτόν τον ιστότοπο εδώ</translation>
 <translation id="5004416275253351869">Στοιχεία ελέγχου δραστηριότητας Google</translation>
 <translation id="5005498671520578047">Αντιγραφή κωδικού πρόσβασης</translation>
@@ -956,6 +960,7 @@
 <translation id="542073632571549028">Ο χρήστης <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) θα χάσει αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="5423934151118863508">Οι πιο δημοφιλείς σελίδες σας θα εμφανίζονται εδώ</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB διαθέσιμα</translation>
+<translation id="543121643585717256">Όποιος διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες. Μάθετε περισσότερα σχετικά με τις κοινόχρηστες ομάδες καρτελών</translation>
 <translation id="543338862236136125">Επεξεργασία κωδικού πρόσβασης</translation>
 <translation id="5433691172869980887">Το όνομα χρήστη αντιγράφηκε</translation>
 <translation id="5438292632479953702">Λήψη ξανά</translation>
@@ -970,6 +975,7 @@
 <translation id="5468068603361015296">Θέλετε να κατεβάσετε ούτως ή άλλως το αρχείο <ph name="FILE_NAME" />;</translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
 <translation id="5492637351392383067">Κρυπτογράφηση στη συσκευή</translation>
+<translation id="549660026907543296">Συμμετοχή ως <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5503125329065007089">Το φύλλο "Κωδικοί πρόσβασης σε όλες τις συσκευές σας" άνοιξε σε μισό ύψος</translation>
 <translation id="5514904542973294328">Απενεργοποιήθηκε από τον διαχειριστή αυτής της συσκευής</translation>
 <translation id="5515439363601853141">Ξεκλειδώστε για προβολή του κωδικού πρόσβασης</translation>
@@ -1372,6 +1378,7 @@
 <translation id="7182051712900867547">Χρήση διαφορετικού λογαριασμού</translation>
 <translation id="7183517696921903380">Το φύλλο φίλτρου εφαρμογών είναι ανοιχτό.</translation>
 <translation id="7186568385131859684">Ελέγξτε τον τρόπο με τον οποίο το ιστορικό περιήγησης χρησιμοποιείται με τα άλλα δεδομένα σας στις υπηρεσίες Google</translation>
+<translation id="7190921792980745354">Αποκλεισμός του χρήστη <ph name="MEMBER_FULL_NAME" />;</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
 <translation id="7192397795254933433">{NUM_PASSWORDS,plural, =1{Πρέπει να τον αλλάξετε άμεσα}other{Πρέπει να τους αλλάξετε άμεσα}}</translation>
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>

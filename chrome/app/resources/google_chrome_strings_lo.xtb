@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">ຄລິກເພື່ອອອກຈາກ Google Lens</translation>
 <translation id="2681444469812712297">ເປີດ <ph name="URL" /> ໃນແຖບໃໝ່ໃນ Google Chrome.</translation>
 <translation id="2712141162840347885">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Google Lens ຫຼື ກົດ Escape ເພື່ອອອກຈາກ Google Lens</translation>
-<translation id="2727713483500953825">ເລືອກຮູບ/ຂໍ້ຄວາມເພື່ອຊອກຫາດ້ວຍ Lens</translation>
 <translation id="2738871930057338499">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. HTTP 403 ຖືກຫ້າມ. ກະລຸນາກວດສອບການຕັ້ງຄ່າພຣັອກຊີຂອງທ່ານ.</translation>
 <translation id="2742320827292110288">ຄຳເຕືອນ: Google Chrome ບໍ່ສາມາດປ້ອງກັນບໍ່ໃຫ້ສ່ວນຂະຫຍາຍບັນທຶກປະຫວັດການທ່ອງເວັບຂອງທ່ານໄດ້. ເພື່ອປິດການນຳໃຊ້ສ່ວນຂະຫຍາຍນີ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ, ກະລຸນາບໍ່ເລືອກຕົວເລືອກນີ້.</translation>
 <translation id="2753623023919742414">ຄລິກເພື່ອຊອກຫາ</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chromium ໄດ້ລຶບສິດເຂົ້າເຖິງ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ <ph name="PERMISSION_3" /> ອອກແລ້ວ</translation>
 <translation id="3622716124581627104">ລະບຸສິ່ງຂອງ ຫຼື ສະຖານທີ່ ແລ້ວສຳເນົາ ຫຼື ແປຂໍ້ຄວາມ. ເມື່ອທ່ານໃຊ້ Google Lens, ລະບົບຈະສົ່ງຮູບໜ້າຈໍຂອງໜ້າເວັບໄປໃຫ້ Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ດຽວນີ້ມັນງ່າຍທີ່ຈະໃຊ້ Chrome ກັບບັນຊີ Google ຂອງທ່ານ ແລະຢູ່ໃນຄອມພິວເຕີທີ່ແຊຣ໌ແລ້ວ.</translation>
-<translation id="3625345586754200168">ລອງໃຊ້ Lens</translation>
 <translation id="3635073343384702370">Chrome ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້</translation>
 <translation id="3667616615096815454">ບໍ່ສາມາດຕິດຕັ້ງໄດ້, ເຊີບເວີບໍ່ຮູ້ຈັກແອັບພລິເຄຊັນ.</translation>
 <translation id="3673813398384385993">Chrome ພົບວ່າ "<ph name="EXTENSION_NAME" />" ມີເມົາແວ</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">ຕົວຕິດຕັ້ງຜິດພາດ: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">ເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">ຊອກຫາຮູບ ຫຼື ຂໍ້ຄວາມໃດກໍໄດ້ດ້ວຍ Lens</translation>
 <translation id="4458462641685292929">ກຳລັງມີການດຳເນີນການອື່ນຢູ່ໃນ Google Chrome. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="4459234553906210702">ການວັດແທກໂຄສະນາຈະເຮັດໃຫ້ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດຮ້ອງຂໍຂໍ້ມູນຈາກ Chrome ທີ່ຊ່ວຍໃຫ້ເວັບໄຊວັດແທກປະສິດທິພາບຂອງໂຄສະນາຂອງເຂົາເຈົ້າໄດ້. ການວັດແທກໂຄສະນາຈະຈຳກັດການຕິດຕາມຂ້າມເວັບໄຊໂດຍການໂອນຍ້າຍຂໍ້ມູນໜ້ອຍທີ່ສຸດເທົ່າທີ່ຈະເປັນໄປໄດ້ລະຫວ່າງເວັບໄຊ.</translation>
 <translation id="4493028449971051158">ຂໍ້ຜິດພາດໃນການເລີ່ມຕົ້ນ: ກະລຸນາເອີ້ນໃຊ້ຕົວຕິດຕັ້ງໃນຖານະຜູ້ເບິ່ງແຍງລະບົບ.</translation>
@@ -408,7 +405,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6025087594896450715">Google Chrome ຈະຣີສະຕາດໃນ <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="604424701295382420">ປັກໝຸດແລ້ວ! ທ່ານສາມາດເຂົ້າເຖິງ Google Lens ໄດ້ອີກຄັ້ງຈາກປຸ່ມໃໝ່ໃນແຖບເຄື່ອງມື</translation>
-<translation id="6060842547856900641">ເປີດ Lens</translation>
 <translation id="6069027071882229820">ສຳເນົາເປັນຮູບ</translation>
 <translation id="6070348360322141662">ເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ, Google Chrome ຈະເຂົ້າລະຫັດລັບຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="6075300983329039771">ອົງກອນຂອງທ່ານ, <ph name="MANAGER" />, ກຳນົດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບ Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6515549163407364048">ເພື່ອຮັບເອົາສ່ວນຂະຫຍາຍຂອງທ່ານຢູ່ຄອມພິວເຕີທັງໝົດຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="6520670145826811516">ເພື່ອໃຊ້ສະຖານທີ່ຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">ໃນຕົວຈັດການລະຫັດຜ່ານ Google ຢູ່ອຸປະກອນນີ້</translation>
-<translation id="6600016381025017075">ຊອກຫາຫຍັງກໍໄດ້ໃນໜ້ານີ້</translation>
 <translation id="6632473616050862500">ChromeOS Flex ເກີດຂຶ້ນໄດ້ດ້ວຍການສະໜັບສະໜຸນຈາກ <ph name="BEGIN_LINK_CROS_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_CROS_OSS" /> ເພີ່ມເຕີມ.</translation>
 <translation id="6660596345553328257">ເຂົ້າສູ່ລະບົບ Chrome ບໍ?</translation>
 <translation id="6676384891291319759">ການເຂົ້າຫາອິນເຕີເນັດ</translation>

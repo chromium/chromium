@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Да се затвори ли прозорецът?</translation>
 <translation id="2173302385160625112">Проверете връзката си с интернет</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
+<translation id="2184272387334793084">Влезте в профила си, за да имате достъп до своите пароли и др. на всичките си устройства</translation>
 <translation id="218608176142494674">Споделяне</translation>
 <translation id="219283042927675668">Раздели в групата</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
@@ -574,6 +575,7 @@
 <translation id="363596933471559332">Автоматично влизане в уебсайтове посредством съхранявани идентификационни данни. Когато функцията е изключена, ще трябва да потвърждавате всяко влизане в профил в уебсайт.</translation>
 <translation id="3636940436873918441">Предпочитани езици</translation>
 <translation id="3637744895182738742">Ако сте забравили пропуска си или искате да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Към началната страница на приложението Google</translation>
 <translation id="368329460027487650">Не сте в профила си. Отваря опциите за вход.</translation>
 <translation id="3684540848053703310">Долният лист със статистика за цените е затворен</translation>
@@ -873,7 +875,6 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4991110219272367918">Опцията за одобряване или отхвърляне на уебсайт бе затворена</translation>
 <translation id="4996095658297597226">Искате ли да използвате предложената парола?</translation>
-<translation id="499724277181351974">Навигиране: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Следене на този сайт тук</translation>
 <translation id="5004416275253351869">Контроли за активността в Google</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>

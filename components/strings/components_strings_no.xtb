@@ -138,7 +138,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1243027604378859286">Forfatter:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Ytterklær</translation>
-<translation id="1253096324252841344">Betal med <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Lagrer skjermbildet</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" /> og <ph name="TYPE_2" /> (synkronisert)</translation>
 <translation id="1255086252236620440">Kjøkkenmiksere</translation>
@@ -314,6 +313,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1549470594296187301">Denne funksjonen kan ikke brukes når JavaScript er slått av.</translation>
 <translation id="1553152622374372421">Vintersport</translation>
 <translation id="1553358976309200471">Oppdater Chrome</translation>
+<translation id="1554485704925237240">kontrollere lesere med navnet <ph name="READERNAME" /> og smartkortene som brukes med dem</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1555191101192706055">Angripere på nettstedet du prøvde å besøke, kan lure deg til å installere skadelig programvare som påvirker måten du surfer på – for eksempel ved å endre startsiden eller vise deg ekstra annonser på nettstedene du besøker.</translation>
 <translation id="1559231233244409191">Kartong (trippelvegg)</translation>
@@ -907,6 +907,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2595719060046994702">Denne enheten og kontoen administreres ikke av et selskap eller en annen organisasjon.</translation>
 <translation id="2596415276201385844">Klokken din må være riktig stilt for at du skal kunne opprette en sikker forbindelse. Sertifikatene som nettsteder bruker til å identifisere seg med, er nemlig bare gyldige i en viss tid. Siden enhetens klokke er feil, kan ikke Chrome kontrollere disse sertifikatene.</translation>
 <translation id="2597378329261239068">Dette dokumentet er passordbeskyttet. Skriv inn et passord.</translation>
+<translation id="2605979593348332811">Fonetisk navn</translation>
 <translation id="2606760465469169465">Automatisk bekreftelse</translation>
 <translation id="2608019759319359258">Når et emne er blokkert, blir det ikke brukt til personlig tilpasning av annonser</translation>
 <translation id="2610561535971892504">Klikk for å kopiere</translation>
@@ -918,6 +919,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2622754869869445457">Fanen du brukte mest nylig</translation>
 <translation id="2625385379895617796">Klokken går for fort</translation>
 <translation id="262745152991669301">Kan be om å få koble til USB-enheter</translation>
+<translation id="2627847595568876492">Henter ut tekst fra PDF-filen …</translation>
 <translation id="2628224721443278970">Logg på Microsoft OneDrive</translation>
 <translation id="2634124572758952069">Fant ikke IP-adressen til tjeneren for <ph name="HOST_NAME" />.</translation>
 <translation id="2639739919103226564">Status:</translation>
@@ -1522,6 +1524,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3711430313228789376">Chrome-nettleseren prøver å vise passord</translation>
 <translation id="3711861349027352138">Data- og videospill</translation>
 <translation id="3711895659073496551">Suspender</translation>
+<translation id="3712004750972384495">Lagrer skjermopptaket</translation>
 <translation id="3712006010833051684">Konvolutt nr. 10</translation>
 <translation id="3712624925041724820">Lisensene er oppbrukt</translation>
 <translation id="3713277100229669269">Nå kan du se kortfordelene før du betaler</translation>
@@ -1550,6 +1553,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3744899669254331632">Du kan ikke gå til <ph name="SITE" /> akkurat nå, fordi nettstedet sendte kryptert legitimasjon som Chromium ikke kan behandle. Nettverksfeil og -angrep er vanligvis forbigående, så siden kommer sikkert til å virke senere.</translation>
 <translation id="3745599309295009257">Teksten din, samt innholdet på og nettadressen til siden du skriver på, blir sendt til Google, gjennomgått av mennesker og brukt til å forbedre denne funksjonen. Unngå å oppgi personopplysninger (som medisinsk eller økonomisk informasjon) eller å bruke dette verktøyet på nettsteder som inneholder privat eller sensitiv informasjon.</translation>
 <translation id="3748009735914587286">Metall (høyglans)</translation>
+<translation id="3752181611900535304">Vil du lagre adressen i kontoen?</translation>
 <translation id="3752543821772132562">Ignorert fordi <ph name="POLICY_NAME" /> ikke er angitt.</translation>
 <translation id="3754210790023674521">Avslutt bilde-i-bilde</translation>
 <translation id="3759461132968374835">Du har ingen nylig rapporterte krasj. Krasj som inntraff når rapportering om krasj var deaktivert, blir ikke vist her.</translation>
@@ -1660,6 +1664,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963721102035795474">Lesermodus</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ingen}=1{Fra 1 nettsted }other{Fra # nettsteder }}</translation>
+<translation id="3965672182149944205">Vil du lagre adressen?</translation>
 <translation id="3966044442021752214">Produktsikkerhet</translation>
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> er blokkert</translation>
@@ -2328,6 +2333,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5191315092027169558">Profilen din administreres av <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ber om å laste ned flere filer</translation>
 <translation id="519422657042045905">Annotering er ikke tilgjengelig</translation>
+<translation id="5200063972779787617">Lagre adressen i kontoen</translation>
 <translation id="5201306358585911203">På en innebygd side på denne siden står det</translation>
 <translation id="5205222826937269299">Navn er obligatorisk</translation>
 <translation id="5206392433295093945">Soverom</translation>
@@ -2350,6 +2356,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5239623327352565343">Posisjon er tillatt</translation>
 <translation id="5241048084654737238">Bekrefter at kortinformasjonen ikke kan lagres</translation>
 <translation id="5242610955375133957">Tørrfilm</translation>
+<translation id="5243004157379865295">Oppdater adressen</translation>
 <translation id="5244521145258281926">Administrer Google-konto – aktiver for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="5244732203286792411">Laster inn …
     Dette kan ta en liten stund.</translation>
@@ -2847,6 +2854,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6159554577634054750">Skadedyrkontroll</translation>
 <translation id="6159908896951210943">Formell</translation>
 <translation id="6160391204859821737">Slå på funksjonen for annonsepersonvern</translation>
+<translation id="6162403104168428984">Vil du oppdatere adressen?</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6167577165590485365">Forrige forsøk på henting:</translation>
 <translation id="617256461084925519">Google Chrome prøver å bekrefte at det er deg, så den kan fylle ut betalingsopplysningene dine.</translation>
@@ -3081,6 +3089,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6569060085658103619">Du ser på en utvidelsesside</translation>
 <translation id="6573200754375280815">To hull høyre</translation>
 <translation id="6574762126505704998">Fyll</translation>
+<translation id="6575408526598156416">Lagre i kontoen</translation>
 <translation id="6577792494180292262">Risikokapital</translation>
 <translation id="6578434528542148658">Ugyldig utvidelses-ID.</translation>
 <translation id="6579858392010591435">Høytider og sesongspesifikke begivenheter</translation>
@@ -3130,7 +3139,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6671169470640320959">Billån</translation>
 <translation id="6671697161687535275">Vil du fjerne forslaget fra Chromium?</translation>
 <translation id="6677351035258626477">Hurtigmat</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Når du kjøper noe i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som et alternativ}other{Når du kjøper noe i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som alternativer}}</translation>
 <translation id="6679354743514146922">Chrome-nettleseren prøver å fylle ut passordet ditt på <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Verifiseringskoden er lagret</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
@@ -3393,6 +3401,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
+<translation id="7152230779180489711">Sist besøkt</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> til}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Tjeneren bør oppgraderes til TLS 1.2 eller nyere.</translation>
@@ -4471,6 +4480,7 @@ Mer informasjon:
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å fortsette ferden og se relevant aktivitet i Chrome-loggen</translation>
 <translation id="9119042192571987207">Opplastet</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> vil bekrefte at det er deg</translation>
+<translation id="9120593907434185157">Lagre adressen</translation>
 <translation id="912327514020027767">Skjørt</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>
 <translation id="9131119348384879525">Vil du ta opp konfidensielt innhold?</translation>

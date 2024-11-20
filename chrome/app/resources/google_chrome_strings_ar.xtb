@@ -139,7 +139,6 @@
 <translation id="2668094785979141847">‏انقر للخروج من "عدسة Google"</translation>
 <translation id="2681444469812712297">‏افتح <ph name="URL" /> في علامة تبويب جديدة في Google Chrome.</translation>
 <translation id="2712141162840347885">‏حدِّد أي محتوى للبحث عنه باستخدام "عدسة Google" أو اضغط على مفتاح Escape للخروج من "عدسة Google"</translation>
-<translation id="2727713483500953825">‏اختَر الصور أو النصوص للبحث عنها باستخدام "عدسة Google"</translation>
 <translation id="2738871930057338499">‏تعذر الاتصال بالإنترنت. بروتوكول HTTP 403 محظور. يُرجى التحقق من إعدادات الخادم الوكيل.</translation>
 <translation id="2742320827292110288">‏تحذير: لا يستطيع Google Chrome منع الإضافات من تسجيل سجل التصفُّح الخاص بك. لإيقاف هذه الإضافة في وضع التصفُّح المتخفي، يجب إلغاء تحديد هذا الخيار.</translation>
 <translation id="2753623023919742414">انقر للبحث</translation>
@@ -222,7 +221,6 @@
 <translation id="3609788354808247807">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">‏يمكنك التعرّف على الصور أو الأماكن ونسخ النصوص أو ترجمتها. عند استخدام "عدسة Google"، يتم إرسال لقطة شاشة للصفحة إلى Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏الآن أصبح استخدام Chrome مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
-<translation id="3625345586754200168">‏تجربة "عدسة Google"</translation>
 <translation id="3635073343384702370">‏لا يستطيع Chrome التحقّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="3667616615096815454">يتعذّر تثبيت التطبيق لأنّه غير معروف لدى الخادم.</translation>
 <translation id="3673813398384385993">‏رصد Chrome أنّ الإضافة "<ph name="EXTENSION_NAME" />" تحتوي على برامج ضارة.</translation>
@@ -293,7 +291,6 @@
 <translation id="4434353761996769206">خطأ في أداة التثبيت: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">‏تسجيل الدخول إلى Chrome بحساب <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">‏Chrome - تسجيل الدخول إلى الشبكة - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">‏ابحث عن أي صورة أو نص باستخدام "عدسة Google"</translation>
 <translation id="4458462641685292929">‏عملية أخرى على Google Chrome قيد التقدم. يُرجى المحاولة مرة أخرى لاحقًا.</translation>
 <translation id="4459234553906210702">‏تسمح ميزة "قياس أداء الإعلانات" للمواقع الإلكترونية التي تزورها بطلب معلومات من Chrome تساعد الموقع الإلكتروني في قياس أداء الإعلانات التي يعرضها. وتحدّ هذه الميزة من عملية تتبّع البيانات ونشاط التصفّح على المواقع الإلكترونية، وذلك من خلال نقل أقل قدر ممكن من المعلومات بينها.</translation>
 <translation id="4493028449971051158">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مشرفًا.</translation>
@@ -404,7 +401,6 @@
 <translation id="6025087594896450715">‏ستتم إعادة تشغيل Google Chrome خلال <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="604424701295382420">‏تم تثبيت اللوحة. يمكنك الوصول إلى ميزة "عدسة Google" مرة أخرى من خلال الزر الجديد في شريط الأدوات</translation>
-<translation id="6060842547856900641">‏فتح "عدسة Google"</translation>
 <translation id="6069027071882229820">نسخ كصورة</translation>
 <translation id="6070348360322141662">‏لمزيد من الأمان، سيشفِّر Google Chrome بياناتك</translation>
 <translation id="6075300983329039771">‏تطلُب المؤسسة (<ph name="MANAGER" />) منك تسجيل الدخول إلى Chrome</translation>
@@ -453,7 +449,6 @@
 <translation id="6515549163407364048">‏للحصول على الإضافات على جميع أجهزة الكمبيوتر الخاصة بك، يُرجى تسجيل الدخول إلى Chrome</translation>
 <translation id="6520670145826811516">‏لاستخدام الموقع الجغرافي، يجب منح Chrome إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">‏تعديل كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
-<translation id="6600016381025017075">البحث عن أي محتوى على هذه الصفحة</translation>
 <translation id="6632473616050862500">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">‏هل تريد تسجيل الدخول إلى Chrome؟</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>

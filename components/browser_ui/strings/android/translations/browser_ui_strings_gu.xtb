@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">કોઈ સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપો</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1384959399684842514">ડાઉનલોડ થોભાવ્યું</translation>
+<translation id="1396327438254055134">સાઇટને V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાની મંજૂરી આપો.</translation>
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
 <translation id="1448064542941920355">નાનું-મોટું કરવાની ટકાવારી ઘટાડો</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> સાઇટ}one{<ph name="SITE_COUNT" /> સાઇટ}other{<ph name="SITE_COUNT" /> સાઇટ}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">છબી ડીકોડર</translation>
 <translation id="1785415724048343560">શ્રેષ્ઠ અનુભવ માટે આનો સુઝાવ આપવામાં આવે છે</translation>
 <translation id="1799920918471566157">Chrome વિશે ટિપ</translation>
+<translation id="1816835383954230954">ચાલુ હોય, ત્યારે Chrome વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ. બંધ હોય, ત્યારે આ પર્ફોર્મન્સ ઘટાડે છે પરંતુ V8ને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ને ARનો વપરાશ કરવા દેવા માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માંથી પણ કૅમેરા ચાલુ કરો.</translation>
 <translation id="1887786770086287077">આ ઉપકરણ માટે સ્થાન ઍક્સેસ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="1915307458270490472">સમાપ્ત કરો</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">ચાલુ હોય ત્યારે, સાઇટ તમારા કૅમેરાનો ઉપયોગ કરવાનું પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી શકતી નથી.</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> હેઠળની સાઇટ</translation>
 <translation id="3523447078673133727">સાઇટને તમારા હાથ ટ્રૅક કરવાની મંજૂરી આપશો નહીં</translation>
+<translation id="3532312529397438268">સાઇટ V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરી શકતી નથી</translation>
 <translation id="3536227077203206203">આ વખતે મંજૂરી આપી છે</translation>
 <translation id="3538390592868664640">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવવા અથવા કૅમેરાના સ્ટેટસને ટ્રૅક કરી શકવા માટે બ્લૉક કરો</translation>
 <translation id="3544058026430919413">કંપની એવી સાઇટનું ગ્રૂપ નિર્ધારિત કરી શકે છે, જે ગ્રૂપમાં તમારી પ્રવૃત્તિ શેર કરવા માટે કુકીનો ઉપયોગ કરી શકે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">ઝૂમ કરો</translation>
 <translation id="4807122856660838973">Safe Browsing ચાલુ કરો</translation>
 <translation id="4811450222531576619">તેના સૉર્સ અને વિષય વિશે જાણો</translation>
+<translation id="481168145262973879">સાઇટ V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરી શકે છે</translation>
 <translation id="4816495437032298535">સાઇટ માટે સાચવેલું ઝૂમ</translation>
 <translation id="4836046166855586901">તમે સક્રિય રૂપે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો તેના વિશે જ્યારે કોઈ સાઇટ જાણવા માગે, ત્યારે પૂછો</translation>
 <translation id="483914009762354899">આ ડોમેન હેઠળની તમામ સાઇટ શામેલ કરો</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">શું સાઇટનો ડેટા ડિલીટ કરીએ? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
 <translation id="6992289844737586249">સાઇટને તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપતાં પહેલા પૂછો (સુઝાવ આપીએ છીએ)</translation>
+<translation id="6999131147875565462">Chrome વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ</translation>
 <translation id="7000754031042624318">Android સેટિંગમાં પરવાનગી બંધ કરી છે</translation>
 <translation id="7016516562562142042">હાલનાં શોધ એન્જિન માટે મંજૂર</translation>
 <translation id="702275896380648118">તમને ગમતી બાબતો વિશે આ સાઇટ અનુમાન લગાવે છે અને પછી અન્ય સાઇટને જાહેરાતો સૂચવે છે. તમને વધુ સંબંધિત જાહેરાતો બતાવવા માટે, આ સાઇટ Chromeમાંથી જાહેરાતના તમારા વિષયોની માહિતી પણ મેળવે છે.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">તમે મુલાકાત લો છો એ વિવિધ સાઇટ એ વાતની ચકાસણી કરી શકે છે કે તમે જ અસલી વપરાશકર્તા છો અને બૉટ નથી</translation>
 <translation id="959682366969460160">સંગઠિત રહો</translation>
 <translation id="967624055006145463">સ્ટોર કરેલ ડેટા</translation>
+<translation id="969975166333045662">સાઇટને V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાથી બ્લૉક કરો.</translation>
 </translationbundle>

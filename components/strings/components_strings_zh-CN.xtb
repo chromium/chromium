@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1247030632403369975">铝</translation>
 <translation id="1252209483516427155">外套</translation>
-<translation id="1253096324252841344">使用<ph name="FINANCIAL_ACCOUNT_TYPES" />付款</translation>
 <translation id="1253846494229886276">正在保存屏幕截图</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
 <translation id="1255086252236620440">食物搅拌机</translation>
@@ -3135,7 +3134,6 @@
 <translation id="6671169470640320959">汽车贷款</translation>
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
 <translation id="6677351035258626477">快餐</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{当您在 Chrome 中购物时，可看到<ph name="FINANCIAL_ACCOUNT_TYPES" />选项}other{当您在 Chrome 中购物时，可看到<ph name="FINANCIAL_ACCOUNT_TYPES" />选项}}</translation>
 <translation id="6679354743514146922">Chrome 浏览器正尝试在 <ph name="APP_NAME" /> 上填充您的密码。</translation>
 <translation id="6681790815630918386">已保存银行卡验证码 (CVC)</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>

@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">విండోను మూసివేయాలా?</translation>
 <translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
+<translation id="2184272387334793084">మీ అన్ని పరికరాలలో మీ పాస్‌వర్డ్‌లను, మరిన్నింటిని పొందడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="218608176142494674">షేరింగ్</translation>
 <translation id="219283042927675668">గ్రూప్‌లోని ట్యాబ్‌లు</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">స్టోరేజ్‌ చేసిన ఆధారాలను ఉపయోగించి ఆటోమేటిక్‌గా వెబ్‌సైట్‌లకు సైన్ ఇన్ చేయండి. ఫీచ‌ర్‌ ఆఫ్ చేయబడినప్పుడు, మీరు వెబ్‌సైట్‌కు సైన్ ఇన్ చేసే ప్రతిసారి ధృవీకరణ కోసం మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="3636940436873918441">ప్రాధాన్య భాషలు</translation>
 <translation id="3637744895182738742">మీ రహస్య పదబంధాన్ని మీరు మర్చిపోయినా లేదా ఈ సెట్టింగ్‌ను మార్చాలనుకున్నా, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google యాప్ ఇంటి లోపలి రొటీన్‌కు వెళ్లండి</translation>
 <translation id="368329460027487650">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేయడానికి ఆప్షన్‌లను తెరుస్తుంది.</translation>
 <translation id="3684540848053703310">ధరల గణాంకాల దిగువున ఉన్న షీట్ మూసివేయబడింది</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">పేజీలు</translation>
 <translation id="4991110219272367918">ఏదైనా వెబ్‌సైట్‌ను ఆమోదించాలా లేదా వద్దా అని నిర్ణయించే ఆప్షన్ మూసివేయబడింది</translation>
 <translation id="4996095658297597226">సూచించిన పాస్‌వర్డ్‌ని ఉపయోగించాలా?</translation>
-<translation id="499724277181351974">నావిగేట్ చేయండి: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">ఈ సైట్‌ను ఇక్కడ ఫాలో అవ్వండి</translation>
 <translation id="5004416275253351869">Google యాక్టివిటీ కంట్రోల్స్</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
@@ -1574,7 +1575,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> అజ్ఞాత ట్యాబ్}other{<ph name="TAB_COUNT_NORMAL" /> అజ్ఞాత ట్యాబ్‌లు}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB అందుబాటులో ఉంది</translation>
 <translation id="8058746566562539958">కొత్త Chrome ట్యాబ్‌లో తెరువు</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}=1{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో # వ్యక్తితో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}other{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో # వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}}</translation>
 <translation id="8062594758852531064">పొడిగించిన ప్రీ - లోడింగ్:</translation>
 <translation id="8063895661287329888">బుక్‌మార్క్‌ను జోడించడంలో విఫలమైంది.</translation>
 <translation id="8066816452984416180">ఈ పేజీని క్విక్‌గా బుక్‌మార్క్ చేయండి. ఈ షార్ట్‌కట్‌ను ఎడిట్ చేయడానికి, నొక్కి, పట్టుకోండి.</translation>

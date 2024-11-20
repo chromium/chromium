@@ -2732,6 +2732,35 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果此政策设为 False，系统将不会在“新标签页”页面上显示自动生成的内容建议。</translation>
 <translation id="3046192273793919231">将网络数据包发送到管理服务器以监控联网状态</translation>
+<translation id="3046917616600522016">通过设置此政策，您可为 Chrome 和 ARC 应用配置代理设置，它们会忽略从命令行中指定的所有与代理有关的选项。
+
+如果您未设置此政策，用户便可自行选择代理设置。
+
+设置 <ph name="PROXY_SETTINGS_POLICY_NAME" /> 政策时，可以使用以下字段：
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，用于指定 Chrome 使用的代理服务器，并防止用户更改代理设置
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />，即代理 .pac 文件的网址，或以 MIME 类型 application/x-ns-proxy-autoconfig 编码为数据网址的 PAC 脚本
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />，用于防止网络栈回退到带有无效或不可用 PAC 脚本的直接连接
+
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />，即代理服务器的网址
+
+  * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />，即将要绕过代理的主机列表
+
+<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> 字段已弃用，请改用 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> 字段。对于 <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />，如果您选择以下值：
+
+  * <ph name="PROXY_MODE_ENUM_DIRECT" /> - 系统永远不会使用代理，并且会忽略所有其他字段。
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" /> - 系统会使用自己的代理，并且会忽略所有其他字段。
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" /> - 系统会忽略所有其他字段。
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" /> - 系统会使用 <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> - 系统会使用 <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />、<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> 和 <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> 字段。
+
+注意：如需查看更详细的示例，请访问 Chromium 项目 (https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings)。</translation>
 <translation id="3047732214002457234">控制 Chrome 清理功能向 Google 报告数据的方式</translation>
 <translation id="3047864383610708617">停用粘滞键</translation>
 <translation id="3048744057455266684">如果设置了此政策，且多功能框建议的搜索网址在查询字符串或片段标识符中包含此参数，则该建议将显示搜索字词和搜索服务提供商，而不是原始的搜索网址。
@@ -2795,18 +2824,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
-<translation id="30986061650205557"><ph name="PRODUCT_NAME" /> 开发者工具中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到归 Google 所有的服务器，该服务器会运行生成式 AI 模型。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。除非下文另有说明，否则默认值是 0。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
-
-2 表示停用此功能。
-
-开发者工具的生成式 AI 功能包括：
-
-- 控制台数据分析：解释控制台消息，并建议如何修复控制台错误。
-- AI 助理：借助依托 AI 技术的数据洞见，帮助用户了解 CSS 样式。</translation>
 <translation id="309885424548342662">启用 Microsoft® 云身份验证</translation>
 <translation id="3101035417394748390">可通过剪贴板同步功能在客户端和主机之间传输的数据的大小上限（以字节为单位）</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
@@ -2911,9 +2928,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://chromeenterprise.google/intl/zh_cn/policies/url-patterns/。允许使用通配符 <ph name="WILDCARD_VALUE" />。
 
       请注意，此政策会根据顶级文档的源（通常是地址栏中显示的网页网址）是否与任何格式匹配来阻止运行 JavaScript。因此，此政策不适合用于缓解网络供应链攻击。例如，提供格式“https://[*.]foo.com/”不会阻止托管在 https://example.com 上的网页运行从 https://www.foo.com/example.js 加载的脚本。此外，如果 https://example.com 上的文档不是顶级文档，而是作为子框架嵌入到由其他源（例如 https://www.bar.com）托管的网页中，则提供格式“https://example.com/”不会阻止该文档运行脚本。</translation>
-<translation id="3180671894201217988">如果此政策已启用或未设置，系统会禁止第三方软件将可执行代码注入到 <ph name="PRODUCT_NAME" /> 进程中。
-
-      如果此政策已停用，系统会允许第三方软件将此类代码注入到 <ph name="PRODUCT_NAME" /> 进程中。</translation>
 <translation id="3181114468897395940">PageUp/PageDown 设置使用包含 Alt 辅助键的快捷键</translation>
 <translation id="3182503302060513467">“新标签页”页面将会显示中间槽通知（若有）</translation>
 <translation id="3184161739683646075">控制 DNS-over-HTTPS 模式</translation>

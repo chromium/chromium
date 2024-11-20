@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Kattintson a Google Lensből való kilépéshez</translation>
 <translation id="2681444469812712297">A(z) <ph name="URL" /> megnyitása új Google Chrome-lapon.</translation>
 <translation id="2712141162840347885">Válasszon ki bármit a Google Lens segítségével való kereséshez, vagy nyomja meg az Esc billentyűt a Google Lensből való kilépéshez</translation>
-<translation id="2727713483500953825">A Lens segítségével való kereséshez használni kívánt képek/szöveg kiválasztása</translation>
 <translation id="2738871930057338499">Nem lehet csatlakozni az internethez. HTTP 403 tiltás. Ellenőrizze a proxybeállításokat.</translation>
 <translation id="2742320827292110288">Figyelmeztetés: A Google Chrome nem tudja megakadályozni, hogy a bővítmények rögzítsék a böngészési előzményeket. A bővítmény inkognitó módban való használatának letiltásához törölje e lehetőség bejelölését.</translation>
 <translation id="2753623023919742414">Kattintson a kereséshez</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Azonosíthat dolgokat és helyeket, valamint szöveget másolhat vagy fordíthat le. A Google Lens használatakor a rendszer elküldi az oldal képernyőképét a Google-nak. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Google-fiókjával most még egyszerűbben használhatja a Chrome-ot közösen használt számítógépeken.</translation>
-<translation id="3625345586754200168">A Lens kipróbálása</translation>
 <translation id="3635073343384702370">A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
 <translation id="3673813398384385993">A Chrome kártékony programot talált a következőben: „<ph name="EXTENSION_NAME" />”</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Telepítőhiba: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Bejelentkezés a Chrome-ba mint <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Hálózati bejelentkezés – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Bármilyen képre vagy szövegre rákereshet a Lens segítségével</translation>
 <translation id="4458462641685292929">Egy másik Google Chrome-művelet is folyamatban van. Próbálkozzon újra később.</translation>
 <translation id="4459234553906210702">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chrome-tól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>
 <translation id="4493028449971051158">Indítási hiba: rendszergazdaként futtassa a telepítőt.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">A Google Chrome újraindul <ph name="REMAINING_TIME" /> múlva</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="604424701295382420">Sikeres kitűzés. A Google Lens funkcióhoz az eszköztár új gombjával is hozzáférhet</translation>
-<translation id="6060842547856900641">A Lens megnyitása</translation>
 <translation id="6069027071882229820">Másolás képként</translation>
 <translation id="6070348360322141662">A nagyobb biztonság érdekében a Google Chrome titkosítja az Ön adatait</translation>
 <translation id="6075300983329039771">Szervezete (<ph name="MANAGER" />) megköveteli a Chrome-ba történő bejelentkezést</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Ha az összes számítógépén szeretne hozzáférni a bővítményeihez, jelentkezzen be a Chrome-ba.</translation>
 <translation id="6520670145826811516">A helyadatok használatához adjon hozzáférést a Chrome-nak a <ph name="BEGIN_LINK" />rendszerbeállításokban<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">A Google Jelszókezelőben ezen az eszközön</translation>
-<translation id="6600016381025017075">Bármire rákereshet ezen az oldalon</translation>
 <translation id="6632473616050862500">A ChromeOS Flex létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak.</translation>
 <translation id="6660596345553328257">Bejelentkezik a Chrome-ba?</translation>
 <translation id="6676384891291319759">Internetelérés</translation>

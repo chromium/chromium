@@ -139,7 +139,6 @@
 <translation id="1243027604378859286">អ្នក​និពន្ធ៖</translation>
 <translation id="1247030632403369975">អាលុយមីញ៉ូម</translation>
 <translation id="1252209483516427155">សម្លៀកបំពាក់ខាងក្រៅ</translation>
-<translation id="1253096324252841344">បង់ប្រាក់​តាមរយៈ <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">កំពុងរក្សាទុករូបថត​អេក្រង់</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (បានធ្វើសមកាលកម្ម)</translation>
 <translation id="1255086252236620440">ម៉ាស៊ីន​កិនអាហារ</translation>
@@ -3144,7 +3143,6 @@
 <translation id="6671169470640320959">ការផ្ដល់​ហិរញ្ញប្បទាន​រថយន្ត</translation>
 <translation id="6671697161687535275">យកការផ្តល់យោបល់ទម្រង់ចេញពី Chromium ឬ?</translation>
 <translation id="6677351035258626477">អាហារ​ទាន់ចិត្ត</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល <ph name="FINANCIAL_ACCOUNT_TYPES" /> ជាជម្រើស}other{នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល <ph name="FINANCIAL_ACCOUNT_TYPES" /> ជាជម្រើស}}</translation>
 <translation id="6679354743514146922">កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome កំពុងព្យាយាមបំពេញពាក្យ​សម្ងាត់របស់អ្នកនៅលើ <ph name="APP_NAME" />។</translation>
 <translation id="6681790815630918386">បានរក្សាទុក CVC</translation>
 <translation id="6683022854667115063">កាស</translation>

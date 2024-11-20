@@ -1383,7 +1383,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1948528728718281125">Se permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1949332606889020901">IDs de falla</translation>
 <translation id="1949584741547056205">Respuestas rápidas</translation>
-<translation id="1949849604471335579">Personaliza el fondo de pantalla, el protector de pantalla, los colores de los elementos destacados y más</translation>
 <translation id="1949980990364952348">Nombre de la app</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1951823516285577843">Buscar una alternativa</translation>
@@ -3467,6 +3466,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3429174588714165399">Crea un acceso directo a esta página</translation>
 <translation id="3429271624041785769">Idiomas del contenido web</translation>
 <translation id="3429275422858276529">Agrega esta página a favoritos para encontrarla fácilmente más tarde</translation>
+<translation id="3431530007831146102">Usar movimientos de la cabeza para controlar el cursor del mouse</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> liberados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear cuando estés ausente</translation>
@@ -6089,7 +6089,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5290020561438336792">Computadora y dispositivo de transmisión en redes Wi-Fi distintas (p. ej., una de 2.4 GHz
     y otra de 5 GHz)</translation>
 <translation id="52912272896845572">Archivo de clave privada no válido</translation>
-<translation id="5291739252352359682">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (por el momento disponible en inglés). El audio y los subtítulos se procesan en el dispositivo y nunca se envían a otra parte.</translation>
 <translation id="529175790091471945">Formatear este dispositivo</translation>
 <translation id="529296195492126134">El modo efímero no es compatible. Comunícate con tu administrador</translation>
 <translation id="5293043095535566171">¿Quieres activar el acceso a la ubicación?</translation>
@@ -7520,7 +7519,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6338968693068997776">Agregar un dispositivo USB</translation>
 <translation id="6339668969738228384">Crear un perfil nuevo para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión por Internet (IPPS)</translation>
-<translation id="6340526405444716530">Personalización</translation>
 <translation id="6341850831632289108">Detectar tu ubicación física</translation>
 <translation id="6342069812937806050">Recién</translation>
 <translation id="6343003829431264373">Solo páginas pares</translation>
@@ -7919,7 +7917,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6642720633335369752">Para ver todas las ventanas de las apps abiertas, desliza el dedo hacia arriba desde la parte inferior y mantén presionada la pantalla.</translation>
 <translation id="664290675870910564">Selección de red</translation>
 <translation id="6643016212128521049">Borrar</translation>
-<translation id="6644512095122093795">Sugerir que se guarden las contraseñas</translation>
 <translation id="6644513150317163574">El formato de URL no es válido. El servidor debe especificarse como nombre de host cuando se utiliza la autenticación SSO.</translation>
 <translation id="6644846457769259194">Actualizando tu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Desactivar Vinculación rápida</translation>
@@ -8060,7 +8057,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6739943577740687354">Esta función usa IA y no siempre funciona bien.</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> en pausa</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />El administrador<ph name="END_LINK" /> desactivó la Navegación segura</translation>
-<translation id="6742629250739345159">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome. El audio y los subtítulos se procesan en el dispositivo y nunca se envían a otra parte.</translation>
 <translation id="6743841972744298686">Configuración de sincronización</translation>
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6746124502594467657">Mover hacia abajo</translation>

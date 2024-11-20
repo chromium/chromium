@@ -2719,6 +2719,10 @@ Ist der Wert auf „<ph name="LONGPRESSONLY_ENUM_VALUE" />“ gesetzt, werden En
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist der große Cursor auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="3028201032688933333">Mit dieser Richtlinie wird festgelegt, ob der Nutzer Dateien direkt aus <ph name="GOOGLE_DRIVE_NAME" /> auswählen darf, wenn auf einer Website Dateien über ein Formular gesendet werden können.
+Wenn die Richtlinie auf „<ph name="GOOGLE_DRIVE_NAME" /> als Option anzeigen.“ (0) festgelegt oder nicht konfiguriert ist, kann der Nutzer über das Menü für die Dateiauswahl Dateien aus <ph name="GOOGLE_DRIVE_NAME" /> auswählen.
+Ist die Richtlinie auf „<ph name="GOOGLE_DRIVE_NAME" /> nicht als Option anzeigen.“ (1) festgelegt, wird <ph name="GOOGLE_DRIVE_NAME" /> im Menü für die Dateiauswahl ausgeblendet.
+Diese Richtlinie hindert Nutzer nicht daran, Dateien auf andere Weise aus <ph name="GOOGLE_DRIVE_NAME" /> auszuwählen als über die Google Drive-Option im Menü für die Dateiauswahl.</translation>
 <translation id="3030000825273123558">Messdatenberichte aktivieren</translation>
 <translation id="30300807616984726">Meldet App-Inventar-Daten für verknüpfte Nutzer.
 
@@ -2801,18 +2805,6 @@ Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
 <translation id="3092059499596000593">Systemstandarddrucker als Standardeinstellung in der Druckvorschau verwenden</translation>
 <translation id="309416443108680956">Legt fest, was passiert, wenn ein Nutzer der sich über ein Sicherheitstoken (z. B. mit einer Smartcard) authentifiziert hat, dieses Token während einer Sitzung entfernt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Es geschieht gar nichts. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Der Bildschirm ist gesperrt, bis der Nutzer noch einmal eine Authentifizierung durchführt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Die Sitzung wird beendet und der Nutzer abgemeldet. Ist die Richtlinie nicht festgelegt, ist standardmäßig <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> ausgewählt.</translation>
 <translation id="3096595567015595053">Liste der aktivierten Plug-ins</translation>
-<translation id="30986061650205557">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden Modelle basierend auf generativer KI eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein Modell basierend auf generativer KI ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert.
-
-Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören folgende:
-
-– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern.
-– KI‑Unterstützung: bietet Nutzern KI‑gestützte Informationen zu CSS‑Styles.</translation>
 <translation id="309885424548342662">Microsoft®-Cloudauthentifizierung aktivieren</translation>
 <translation id="3101035417394748390">Die maximale Größe in Byte, die zwischen dem Client und dem Host über die Synchronisierung der Zwischenablage übertragen werden kann</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
@@ -2917,9 +2909,6 @@ Ist die Richtlinie deaktiviert, wird dem Nutzer die Werbung für App Store-Bewer
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
 
       Beachte, dass diese Richtlinie JavaScript blockiert, wenn der Ursprung des obersten Dokuments (normalerweise die URL der Seite, die auch in der Adressleiste angezeigt wird) mit einem der Muster übereinstimmt. Daher ist diese Richtlinie nicht geeignet, um Web‑Lieferkettenangriffe zu verhindern. Wenn du beispielsweise das Muster „https://[*.]foo.de/“ angibst, wird nicht verhindert, dass eine Seite, die unter https://beispiel.de gehostet wird, ein Script ausführt, das von https://www.foo.de/beispiel.js geladen wird. Außerdem verhindert das Muster „https://beispiel.de/“ nicht, dass ein Dokument von https://beispiel.de Scripts ausführt, wenn es nicht das übergeordnete Dokument ist, sondern als Subframe in eine Seite eingebettet ist, die auf einem anderen Ursprung gehostet wird, z. B. https://www.bar.de.</translation>
-<translation id="3180671894201217988">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Drittanbieter-Software keinen ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.
-
-      Ist sie deaktiviert, kann diese Software ausführbaren Code in die Prozesse von <ph name="PRODUCT_NAME" /> einschleusen.</translation>
 <translation id="3181114468897395940">In den Einstellungen von „Bild-auf“ und „Bild-ab“ wird die Tastenkombination verwendet, die den Alt-Modifikator enthält</translation>
 <translation id="3182503302060513467">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot an, sofern verfügbar</translation>
 <translation id="3184161739683646075">Steuert den DoH-Modus (DNS over HTTPS)</translation>
@@ -3197,6 +3186,7 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3387999258705169775">Standardverhalten für die verschachtelte Mindestverzögerung der Funktion „setTimeout()“.</translation>
 <translation id="3388628790024977864"><ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="GOOGLE_DRIVE_NAME" /> und <ph name="GOOGLE_WORKSPACE_NAME" /> nicht zulassen</translation>
 <translation id="3389088527709746815">Gnubby-Authentifizierung für den Host für den Remote-Zugriff aktivieren</translation>
+<translation id="3395744872155955051">Auswahl von Dateien direkt aus <ph name="GOOGLE_DRIVE_NAME" /> zulassen</translation>
 <translation id="3397883909301547525">Keine App-Empfehlungen im Launcher von <ph name="PRODUCT_OS_NAME" /> anzeigen</translation>
 <translation id="3398051852031115795">Standardmäßiges Systemverhalten (abhängig von der Bildschirmgröße)</translation>
 <translation id="33993310248354034">Erkennung von Nur-Text-Entitäten auf Webseiten zulassen.</translation>
@@ -5733,6 +5723,7 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt wie das Festlegen des Befehlszeilen-Flags „--unsafely-treat-insecure-origin-as-secure“ für eine durch Kommas getrennte Liste mit denselben URLs. Die Richtlinie überschreibt das Befehlszeilen-Flag und „UnsafelyTreatInsecureOriginAsSecure“, sofern vorhanden.
 
 Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/TR/secure-contexts.</translation>
+<translation id="530111809849214840"><ph name="GOOGLE_DRIVE_NAME" /> nicht als Option anzeigen.</translation>
 <translation id="530134925949808452">Zeitpunkt (in Ortszeit), an dem das Nutzungskontingent erneuert wird.</translation>
 <translation id="5303080953475303561">Mit dieser Richtlinie kannst du festlegen, wie oft auf dem Sperrbildschirm das Passwort zum schnellen Entsperren angefordert wird. Immer dann, wenn der Sperrbildschirm angezeigt wird und die letzte Passworteingabe vor dem über den ausgewählten Wert festgelegten Zeitfenster liegt, steht schnelles Entsperren nicht zur Verfügung. Wenn Nutzer auf dem Sperrbildschirm bleiben, bis diese Zeit abgelaufen ist, wird das nächste Mal, wenn sie einen falschen Code eingeben oder wieder auf den Sperrbildschirm gelangen, ein Passwort angefordert, je nachdem, welche Situation zuerst eintritt.
 
@@ -6080,6 +6071,7 @@ Weitere Informationen findest du auch unter https://wiki.samba.org/index.php/Sam
 
       Diese Richtlinie wurde eingestellt. Verwende stattdessen „<ph name="PROMOTIONS_ENABLED_POLICY_NAME" />“.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467"><ph name="GOOGLE_DRIVE_NAME" /> als Option anzeigen.</translation>
 <translation id="5558394213067608844">Wilco Diagnostics and Telemetry Controller (DTC) aktivieren</translation>
 <translation id="5559079916187891399">Diese Richtlinie hat keine Auswirkung auf Android-Apps.</translation>
 <translation id="5560039246134246593">Hiermit fügst du beim Abrufen des Varianten-Seeds in <ph name="PRODUCT_NAME" /> einen Parameter hinzu.

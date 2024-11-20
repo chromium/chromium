@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新标签页中打开 <ph name="URL" />。</translation>
 <translation id="2712141162840347885">选择任意内容即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
-<translation id="2727713483500953825">选择要使用智能镜头搜索的图像/文字</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
 <translation id="2742320827292110288">警告：Google Chrome 无法阻止扩展程序记录您的浏览活动。若要在无痕模式下停用该扩展程序，请取消选中此选项。</translation>
 <translation id="2753623023919742414">点击即可搜索</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
 <translation id="3622716124581627104">识别事物或地点，并复制或翻译文本。当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
-<translation id="3625345586754200168">试用智能镜头</translation>
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
 <translation id="3673813398384385993">Chrome 发现“<ph name="EXTENSION_NAME" />”包含恶意软件</translation>
@@ -290,7 +288,6 @@
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">以 <ph name="USER_EMAIL" /> 的身份登录 Chrome</translation>
 <translation id="4450664632294415862">Chrome - 网络登录 - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">使用智能镜头搜索任意图像或文字</translation>
 <translation id="4458462641685292929">Google Chrome 正在执行另一项操作，请稍后重试。</translation>
 <translation id="4459234553906210702">借助 Ad measurement，您访问的网站可向 Chrome 请求信息，以便对网站上的广告进行效果衡量。Ad measurement 会在网站间传输尽可能少的信息，从而限制跨网站跟踪。</translation>
 <translation id="4493028449971051158">启动错误：请以管理员身份运行安装程序。</translation>
@@ -399,7 +396,6 @@
 <translation id="6025087594896450715">Google Chrome 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="604424701295382420">已固定！您可以通过工具栏中的新按钮再次使用 Google 智能镜头</translation>
-<translation id="6060842547856900641">打开智能镜头</translation>
 <translation id="6069027071882229820">复制为图片</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
 <translation id="6075300983329039771">贵组织 (<ph name="MANAGER" />) 要求您登录 Chrome</translation>
@@ -448,7 +444,6 @@
 <translation id="6515549163407364048">若要在所有计算机上使用您的扩展程序，请登录 Chrome</translation>
 <translation id="6520670145826811516">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="659498884637196217">在此设备上的 Google 密码管理工具中</translation>
-<translation id="6600016381025017075">搜索此页面上的任何内容</translation>
 <translation id="6632473616050862500">ChromeOS Flex 是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开放源代码软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="6660596345553328257">登录 Chrome？</translation>
 <translation id="6676384891291319759">访问互联网</translation>

@@ -137,7 +137,6 @@
 <translation id="2668094785979141847">Klik untuk keluar dari Google Lens</translation>
 <translation id="2681444469812712297">Buka <ph name="URL" /> di tab baru di Google Chrome.</translation>
 <translation id="2712141162840347885">Pilih item untuk ditelusuri dengan Google Lens atau tekan escape untuk keluar dari Google Lens</translation>
-<translation id="2727713483500953825">Pilih gambar/teks untuk ditelusuri dengan Lens</translation>
 <translation id="2738871930057338499">Tidak dapat terhubung ke internet. HTTP 403 Terlarang. Periksa konfigurasi proxy Anda.</translation>
 <translation id="2742320827292110288">Peringatan: Google Chrome tidak dapat mencegah ekstensi merekam histori penjelajahan Anda. Untuk menonaktifkan ekstensi ini dalam mode Samaran, batalkan pilihan opsi ini.</translation>
 <translation id="2753623023919742414">Klik untuk menelusuri</translation>
@@ -220,7 +219,6 @@
 <translation id="3609788354808247807">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Identifikasi berbagai hal atau tempat, serta salin atau terjemahkan teks. Saat Anda menggunakan Google Lens, screenshot halaman akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
-<translation id="3625345586754200168">Coba Lens</translation>
 <translation id="3635073343384702370">Chrome dapat memeriksa sandi jika Anda menyimpannya</translation>
 <translation id="3667616615096815454">Tidak dapat menginstal, aplikasi tidak dikenali oleh server.</translation>
 <translation id="3673813398384385993">Chrome menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
@@ -291,7 +289,6 @@
 <translation id="4434353761996769206">Error penginstal: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Login ke Chrome sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Telusuri gambar atau teks apa pun dengan Lens</translation>
 <translation id="4458462641685292929">Operasi lain di Google Chrome sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="4459234553906210702">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chrome yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>
 <translation id="4493028449971051158">Error saat sistem dimulai: jalankan penginstal sebagai administrator.</translation>
@@ -400,7 +397,6 @@
 <translation id="6025087594896450715">Google Chrome akan dimulai ulang dalam <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604424701295382420">Disematkan. Anda dapat mengakses Google Lens lagi dari tombol baru di toolbar</translation>
-<translation id="6060842547856900641">Buka Lens</translation>
 <translation id="6069027071882229820">Salin sebagai gambar</translation>
 <translation id="6070348360322141662">Untuk keamanan tambahan, Google Chrome akan mengenkripsi data Anda</translation>
 <translation id="6075300983329039771">Organisasi Anda, <ph name="MANAGER" />, mengharuskan Anda login ke Chrome</translation>
@@ -449,7 +445,6 @@
 <translation id="6515549163407364048">Agar dapat mengakses ekstensi Anda di semua komputer, login ke Chrome</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Di Pengelola Sandi Google di perangkat ini</translation>
-<translation id="6600016381025017075">Telusuri apa saja di halaman ini</translation>
 <translation id="6632473616050862500">ChromeOS Flex terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6660596345553328257">Login ke Chrome?</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
@@ -612,6 +607,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="8416347857511542594">Pelajari lebih lanjut personalisasi iklan di Chrome</translation>
 <translation id="8418845734693287262">ChromeOS tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="842386925677997438">Alat keamanan Chrome</translation>
+<translation id="8425765582779547329">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chrome</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8451192282033883849">Akun Anda dikelola oleh <ph name="MANAGER_NAME" />. Administrator dapat melihat dan mengedit profil browser Chrome ini beserta datanya seperti bookmark, histori, dan sandi.</translation>

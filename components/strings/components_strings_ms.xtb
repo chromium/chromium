@@ -138,7 +138,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1243027604378859286">Pengarang:</translation>
 <translation id="1247030632403369975">Aluminium</translation>
 <translation id="1252209483516427155">Pakaian luar</translation>
-<translation id="1253096324252841344">Bayar dengan <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Menyimpan tangkapan skrin</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (disegerakkan)</translation>
 <translation id="1255086252236620440">Pengadun Makanan</translation>
@@ -2081,7 +2080,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4743275772928623722">Sistem anda telah dikemaskinikan tetapi sesetengah apl dan fail anda tidak dapat dipulihkan. Apl anda akan dimuat turun semula secara automatik.</translation>
 <translation id="4744514002166662487">Buat pembentangan</translation>
 <translation id="4744603770635761495">Laluan Boleh Laku</translation>
-<translation id="4744816391336495134">Anda boleh menggunakan cap jari anda untuk membuka mengesahkan identiti anda apabila anda menggunakan kata laluan yang disimpan</translation>
+<translation id="4744816391336495134">Anda boleh menggunakan cap jari anda untuk mengesahkan identiti anda apabila anda menggunakan kata laluan yang disimpan</translation>
 <translation id="4749011317274908093">Anda menggunakan mod Inkognito</translation>
 <translation id="4750394297954878236">Cadangan</translation>
 <translation id="4750671009706599284">telefon ini</translation>
@@ -3141,7 +3140,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6671169470640320959">Pembiayaan Auto</translation>
 <translation id="6671697161687535275">Alih keluar cadangan borang daripada Chromium?</translation>
 <translation id="6677351035258626477">Makanan Segera</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Apabila anda membuat pembelian dalam Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai pilihan}other{Apabila anda membuat pembelian dalam Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai pilihan}}</translation>
 <translation id="6679354743514146922">Penyemak imbas Chrome cuba mengisikan kata laluan anda pada <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC disimpan</translation>
 <translation id="6683022854667115063">Fon kepala</translation>

@@ -141,7 +141,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2668094785979141847">Haz clic para salir de Google Lens</translation>
 <translation id="2681444469812712297">Abre <ph name="URL" /> en una pestaña nueva en Google Chrome.</translation>
 <translation id="2712141162840347885">Selecciona cualquier cosa para buscarla con Google Lens o pulsa la tecla Esc para salir de Google Lens</translation>
-<translation id="2727713483500953825">Selecciona imágenes o texto para buscar con Lens</translation>
 <translation id="2738871930057338499">No se puede conectar a Internet. HTTP 403 no permitido. Comprueba la configuración del proxy.</translation>
 <translation id="2742320827292110288">Advertencia: Google Chrome no puede evitar que las extensiones registren tu historial de navegación. Para inhabilitar esta extensión en el modo Incógnito, desmarca esta opción.</translation>
 <translation id="2753623023919742414">Haz clic para buscar</translation>
@@ -224,7 +223,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3609788354808247807">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Identifica objetos o lugares y copia o traduce texto. Al usar Google Lens, se envía una captura de pantalla de la página a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
-<translation id="3625345586754200168">Probar Lens</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
 <translation id="3673813398384385993">Chrome ha detectado que "<ph name="EXTENSION_NAME" />" contiene malware</translation>
@@ -295,7 +293,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4434353761996769206">Error del instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Iniciar sesión en Chrome como <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Busca cualquier imagen o texto con Lens</translation>
 <translation id="4458462641685292929">Hay otra operación en curso en Google Chrome. Vuelve a intentarlo más tarde.</translation>
 <translation id="4459234553906210702">La medición de anuncios permite a los sitios que visitas pedir a Chrome información que les ayude a medir el rendimiento de sus anuncios. La medición de anuncios restringe el seguimiento entre sitios al transferir la menor cantidad de información posible entre ellos.</translation>
 <translation id="4493028449971051158">Error de arranque: ejecuta el instalador como administrador.</translation>
@@ -408,7 +405,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6025087594896450715">Google Chrome se reiniciará dentro de <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="604424701295382420">¡Fijado! Puedes volver a acceder a Google Lens desde el nuevo botón de la barra de herramientas.</translation>
-<translation id="6060842547856900641">Abrir Lens</translation>
 <translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6070348360322141662">Para mayor seguridad, Google Chrome cifrará tus datos</translation>
 <translation id="6075300983329039771">Tu organización, <ph name="MANAGER" />, requiere que inicies sesión en Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6515549163407364048">Para obtener tus extensiones en todos tus ordenadores, inicia sesión en Chrome</translation>
 <translation id="6520670145826811516">Para usar tu ubicación, da acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">En el Gestor de contraseñas de Google de este dispositivo</translation>
-<translation id="6600016381025017075">Buscar cualquier cosa en esta página</translation>
 <translation id="6632473616050862500">ChromeOS Flex se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6660596345553328257">¿Iniciar sesión en Chrome?</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
@@ -620,6 +615,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8416347857511542594">Más información sobre la personalización de anuncios en Chrome</translation>
 <translation id="8418845734693287262">ChromeOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
+<translation id="8425765582779547329">Para tener más protección online con las opciones de tus padres, inicia sesión en Chrome</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8451192282033883849"><ph name="MANAGER_NAME" /> gestiona tu cuenta. Tu administrador puede ver y editar este perfil del navegador Chrome y sus datos, como los marcadores, el historial o las contraseñas.</translation>

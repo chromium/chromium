@@ -138,7 +138,6 @@
 <translation id="1243027604378859286">ደራሲ፦</translation>
 <translation id="1247030632403369975">አሉሚንየም</translation>
 <translation id="1252209483516427155">ውጭ የሚለበስ</translation>
-<translation id="1253096324252841344">በ<ph name="FINANCIAL_ACCOUNT_TYPES" /> ይክፈሉ</translation>
 <translation id="1253846494229886276">ቅጽበታዊ ገፅ ዕይታን በማስቀመጥ ላይ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />፣ <ph name="TYPE_2" /> (ሰምሯል)</translation>
 <translation id="1255086252236620440">ምግብ ማደባለቂያዎች</translation>
@@ -3129,7 +3128,6 @@
 <translation id="6671169470640320959">ራስ ሰር ፋይናንሲንግ</translation>
 <translation id="6671697161687535275">የአስተያየት ጥቆማ ከChromium ይወገድ?</translation>
 <translation id="6677351035258626477">ፈጣን ምግብ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{በChrome ውስጥ ግዢዎችን ሲፈፅሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚለውን እንደ አማራጭ ይመልከቱ}one{በChrome ውስጥ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚለውን እንደ አማራጭ ይመልከቱ}other{በChrome ውስጥ ግዢዎችን ሲፈፅሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚሉትን እንደ አማራጭ ይመልከቱ}}</translation>
 <translation id="6679354743514146922">Chrome አሳሽ የይለፍ ቃልዎን በ<ph name="APP_NAME" /> ላይ ለመሙላት እየሞከረ ነው።</translation>
 <translation id="6681790815630918386">ካርድ ማረጋገጫ ኮድ ተቀምጧል</translation>
 <translation id="6683022854667115063">የራስ ላይ ማዳመጫዎች</translation>

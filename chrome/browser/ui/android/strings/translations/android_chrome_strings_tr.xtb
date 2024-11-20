@@ -257,6 +257,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2172905120685242547">Pencere kapatılsın mı?</translation>
 <translation id="2173302385160625112">İnternet bağlantınızı kontrol edin</translation>
 <translation id="2175927920773552910">QR Kodu</translation>
+<translation id="2184272387334793084">Yer işaretlerinize, şifrelerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın.</translation>
 <translation id="218608176142494674">Paylaşım</translation>
 <translation id="219283042927675668">Gruptaki sekmeler</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
@@ -574,6 +575,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
 <translation id="3636940436873918441">Tercih edilen diller</translation>
 <translation id="3637744895182738742">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chrome verilerini silin<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Google uygulamasının ana sayfasına gidin</translation>
 <translation id="368329460027487650">Oturum kapatıldı. Oturum açma seçeneklerini açar.</translation>
 <translation id="3684540848053703310">Fiyat analizleri alt sayfası kapatıldı</translation>
@@ -873,7 +875,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4988526792673242964">Sayfalar</translation>
 <translation id="4991110219272367918">Kapatılan bir web sitesini onaylama veya onaylamama seçeneği</translation>
 <translation id="4996095658297597226">Önerilen şifre kullanılsın mı?</translation>
-<translation id="499724277181351974">Şu sayfaya git: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Siteyi buradan takip edin</translation>
 <translation id="5004416275253351869">Google etkinlik kontrolleri</translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>

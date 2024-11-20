@@ -2854,17 +2854,6 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
 <translation id="3092059499596000593">Yazdırma Önizleme'de varsayılan seçenek olarak sistem varsayılan yazıcısını kullan</translation>
 <translation id="309416443108680956">Güvenlik jetonuyla (ör. akıllı kart) kimlik doğrulaması yapan bir kullanıcı, oturum sırasında bu jetonu çıkardığında ne olacağını belirtir. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Hiçbir şey olmaz. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Kullanıcı tekrar kimlik doğrulayana kadar ekran kilitlenir. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Oturum sona erdirilir ve kullanıcının oturumu kapatılır. Bu politika ayarlanmazsa <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> kabul edilir.</translation>
 <translation id="3096595567015595053">Etkin eklentilerin listesi</translation>
-<translation id="30986061650205557"><ph name="PRODUCT_NAME" /> ürününün geliştirici araçlarında bulunan bu özellikler, ilave hata ayıklama bilgileri sağlamak için üretken yapay zeka modellerini kullanır. Bu özellikleri kullanmak için <ph name="PRODUCT_NAME" /> ürününün hata mesajı, yığın izleme (stack trace), kod snippet'i ve ağ istekleri gibi verileri toplayıp Google'ın sahip olduğu ve üretken yapay zeka modeli kullanan bir sunucuya göndermesi gerekir. Ağ isteklerindeki yanıt gövdesi veya kimlik doğrulama ve çerez başlıkları, sunucuya gönderilen verilere dahil edilmez.
-
-0 = Özelliği kullanıcılar için etkinleştirin ve Google'a alakalı verileri göndererek yapay zeka modellerini eğitmesine ya da iyileştirmesine yardımcı olun. Alakalı veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar ve kaynak materyalleri yer alabilir. Bu bilgiler, gerçek kişiler tarafından yalnızca yapay zeka modellerini iyileştirmek amacıyla incelenebilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliği kullanıcılar için etkinleştirin ancak yapay zeka modellerini eğitmesi veya iyileştirmesi için Google'a veri göndermeyin. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliği devre dışı bırakın.
-
-Aşağıdakiler Geliştirici Araçları üretken yapay zeka özellikleri arasındadır:
-- Konsol Analizleri: Konsol mesajlarını açıklar ve konsol hatalarının düzeltilmesine yönelik öneriler sunar.
-- Yapay zeka yardımı, Yapay zeka destekli analizlerle kullanıcıların CSS stillerini anlamalarına yardımcı olur.</translation>
 <translation id="309885424548342662">Microsoft® bulut kimlik doğrulamasını etkinleştir</translation>
 <translation id="3101035417394748390">Pano senkronizasyonu aracılığıyla istemci ve ana makine arasında aktarılabilecek bayt cinsinden maksimum boyut</translation>
 <translation id="3101501961102569744">Proxy sunucu ayarlarının nasıl belirtileceğini seç</translation>
@@ -2970,9 +2959,6 @@ Politika, Devre Dışı değerine ayarlanırsa App Store puan promosyonu, kullan
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
 
       Bu politikanın, JavaScript'i üst düzey dokümanın kaynağının (genellikle adres çubuğunda da görüntülenen sayfa URL'si) kalıplardan herhangi biriyle eşleşip eşleşmediğine göre engellediğini unutmayın. Dolayısıyla bu politika web tedarik zinciri saldırılarını azaltmak için uygun değildir. Örneğin "https://[*.]foo.com/" kalıbının kullanılması, https://example.com/ adresinde barındırılan bir sayfanın https://www.foo.com/example.js adresinden yüklenen bir komut dosyasını çalıştırmasını engellemez. Ayrıca, "https://example.com/" kalıbının kullanılması, https://example.com adresindeki bir dokümanın üst düzey doküman olmamasına rağmen başka bir kaynakta (ör. https://www.bar.com) barındırılan bir sayfanın alt çerçevesi olarak yerleştirilmiş olması durumunda bu dokümanın komut dosyası çalıştırmasını da engellemez.</translation>
-<translation id="3180671894201217988">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa üçüncü taraf yazılımlarının <ph name="PRODUCT_NAME" /> işlemlerine çalıştırılabilir kod yerleştirmesi önlenir.
-
-      Politika, Devre Dışı değerine ayarlanırsa bu yazılımın <ph name="PRODUCT_NAME" /> işlemlerine bu tür kod yerleştirmesine izin verilir.</translation>
 <translation id="3181114468897395940">PageUp/PageDown ayarları, alt tuşu değiştiriciyi içeren kısayolu kullanır</translation>
 <translation id="3182503302060513467">Orta aralık duyurusu mevcut olduğunda yeni sekme sayfasında gösterilir</translation>
 <translation id="3184161739683646075">DNS-over-HTTPS modunu denetler</translation>

@@ -257,6 +257,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="2172905120685242547">Zamknąć okno?</translation>
 <translation id="2173302385160625112">Sprawdź połączenie z internetem</translation>
 <translation id="2175927920773552910">Kod QR</translation>
+<translation id="2184272387334793084">Zaloguj się, aby mieć dostęp do haseł oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="218608176142494674">Udostępnianie</translation>
 <translation id="219283042927675668">Karty w grupie</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
@@ -576,6 +577,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="363596933471559332">Automatycznie loguj się na stronach, używając zapisanych danych logowania. Gdy ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o weryfikację.</translation>
 <translation id="3636940436873918441">Preferowane języki</translation>
 <translation id="3637744895182738742">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Otwórz stronę główną aplikacji Google</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
 <translation id="3684540848053703310">Plansza dolna ze statystykami cen została zamknięta</translation>
@@ -876,7 +878,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4988526792673242964">Strony</translation>
 <translation id="4991110219272367918">Opcja zatwierdzenia lub odrzucenia witryny zamknięta</translation>
 <translation id="4996095658297597226">Użyć proponowanego hasła?</translation>
-<translation id="499724277181351974">Wejdź na stronę <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Dodaj stronę do obserwowanych tutaj</translation>
 <translation id="5004416275253351869">Zarządzanie aktywnością w Google</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
@@ -1576,7 +1577,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta incognito}few{<ph name="TAB_COUNT_NORMAL" /> karty incognito}many{<ph name="TAB_COUNT_NORMAL" /> kart incognito}other{<ph name="TAB_COUNT_NORMAL" /> karty incognito}}</translation>
 <translation id="8051695050440594747">Dostępne: <ph name="MEGABYTES" /> MB</translation>
 <translation id="8058746566562539958">Otwórz w nowej karcie Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" />}=1{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # inna osoba}few{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # inne osoby}many{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # innych osób}other{Dołącz do grupy kart, w której są już <ph name="OWNER_FIRST_NAME" /> i # innej osoby}}</translation>
 <translation id="8062594758852531064">Wczytywanie rozszerzone:</translation>
 <translation id="8063895661287329888">Nie udało się dodać zakładki.</translation>
 <translation id="8066816452984416180">W łatwy sposób dodaj tę stronę do zakładek. Aby edytować ten skrót, naciśnij i przytrzymaj.</translation>

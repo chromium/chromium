@@ -138,7 +138,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1243027604378859286">Avtor:</translation>
 <translation id="1247030632403369975">Aluminum</translation>
 <translation id="1252209483516427155">Zunanja oblačila</translation>
-<translation id="1253096324252841344">Plačajte s storitvijo <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Shranjevanje posnetka zaslona</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinhronizirano)</translation>
 <translation id="1255086252236620440">Mešalniki hrane</translation>
@@ -3130,7 +3129,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6671169470640320959">Financiranje avtomobila</translation>
 <translation id="6671697161687535275">Želite predlog obrazca odstraniti iz Chromiuma?</translation>
 <translation id="6677351035258626477">Hitra hrana</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnost}one{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}two{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}few{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}other{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}}</translation>
 <translation id="6679354743514146922">Brskalnik Chrome poskuša izpolniti vaše geslo v aplikaciji <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Koda CVC je shranjena</translation>
 <translation id="6683022854667115063">Slušalke</translation>

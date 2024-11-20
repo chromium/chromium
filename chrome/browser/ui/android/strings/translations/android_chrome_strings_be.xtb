@@ -257,6 +257,7 @@
 <translation id="2172905120685242547">Закрыць акно?</translation>
 <translation id="2173302385160625112">Праверце падключэнне да інтэрнэту</translation>
 <translation id="2175927920773552910">QR-код</translation>
+<translation id="2184272387334793084">Увайдзіце, каб атрымаць доступ да пароляў і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="218608176142494674">Абагульванне</translation>
 <translation id="219283042927675668">Укладкі ў групе</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
@@ -576,6 +577,7 @@
 <translation id="363596933471559332">Аўтаматычна ўваходзіць на вэб-сайты, выкарыстоўваючы захаваныя ўліковыя даныя. Калі функцыя выключана, кожны раз пры ўваходзе на вэб-сайт у вас будуць патрабаваць спраўджання.</translation>
 <translation id="3636940436873918441">Прыярытэтныя мовы</translation>
 <translation id="3637744895182738742">Калі вы забылі фразу-пароль або хочаце змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
+<translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Перайсці на галоўны экран праграмы Google</translation>
 <translation id="368329460027487650">Выкананы выхад. Адкрываюцца параметры для ўваходу.</translation>
 <translation id="3684540848053703310">Ніжні аркуш са статыстыкай цэн закрыўся</translation>
@@ -876,7 +878,6 @@
 <translation id="4988526792673242964">Старонкі</translation>
 <translation id="4991110219272367918">Старонка, на якой можна ўхваліць вэб-сайт, закрыта</translation>
 <translation id="4996095658297597226">Выкарыстаць прапанаваны пароль?</translation>
-<translation id="499724277181351974">Перайсці на сайт <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">Падпісацца на сайт можна тут</translation>
 <translation id="5004416275253351869">Параметры дзейнасці Google</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
@@ -1576,7 +1577,6 @@
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта}one{<ph name="TAB_COUNT_NORMAL" /> укладка ў рэжыме інкогніта}few{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}many{<ph name="TAB_COUNT_NORMAL" /> укладак у рэжыме інкогніта}other{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}}</translation>
 <translation id="8051695050440594747">Даступна <ph name="MEGABYTES" /> МБ</translation>
 <translation id="8058746566562539958">Адкрыць у новай укладцы Chrome</translation>
-<translation id="806077790954607882">{NUM_OTHER_MEMBERS,plural, =0{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" />}=1{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ # карыстальнік}one{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ # карыстальнік}few{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ # карыстальнікі}many{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ # карыстальнікаў}other{Далучэнне да групы ўкладак, у якой удзельнічае <ph name="OWNER_FIRST_NAME" /> і яшчэ # карыстальніка}}</translation>
 <translation id="8062594758852531064">Пашыраная перадзагрузка:</translation>
 <translation id="8063895661287329888">Не ўдалося дадаць закладку.</translation>
 <translation id="8066816452984416180">Хутка дадаць гэту старонку ў закладкі. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>

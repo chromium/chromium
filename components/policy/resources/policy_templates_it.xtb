@@ -2866,18 +2866,6 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
 <translation id="3092059499596000593">Usa la stampante di sistema come scelta predefinita in Anteprima di stampa</translation>
 <translation id="309416443108680956">Consente di specificare cosa succede quando un utente che sta effettuando l'autenticazione tramite un token di sicurezza (ad esempio con una smart card) rimuove il token durante una sessione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: non accade nulla. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: lo schermo viene bloccato finché l'utente non ripete l'autenticazione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sessione viene terminata e l'utente viene disconnesso. Se questo criterio non viene configurato, per impostazione predefinita viene usata l'opzione <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Elenco dei plug-in attivati</translation>
-<translation id="30986061650205557">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di AI generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di AI generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità.
-
-Le funzionalità di AI generativa di DevTools includono quanto segue.
-
-- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.
-- Assistenza AI: aiuta gli utenti a comprendere gli stili CSS con insight basati sull'AI.</translation>
 <translation id="309885424548342662">Attiva l'autenticazione cloud di Microsoft®</translation>
 <translation id="3101035417394748390">Le dimensioni massime, in byte, che è possibile trasferire tra client e host tramite la sincronizzazione degli appunti</translation>
 <translation id="3101501961102569744">Scegli come specificare le impostazioni del server proxy</translation>
@@ -2983,9 +2971,6 @@ Se viene impostato su Disabled, la promozione di valutazione dell'App Store non 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
 
       Tieni presente che questo criterio blocca JavaScript in base alla corrispondenza dell'origine del documento di primo livello (di solito l'URL della pagina visualizzato anche nella barra degli indirizzi) a uno dei due pattern. Pertanto, questo criterio non è adatto per mitigare gli attacchi alla catena di fornitura web. Ad esempio, se fornisci il pattern "https://[*.]foo.com/", non impedirai a una pagina ospitata su https://example.com, ad esempio, di eseguire uno script caricato da https://www.foo.com/example.js. Inoltre, l'inserimento del pattern "https://example.com/" non impedisce a un documento di https://example.com di eseguire script se non è il documento di primo livello, ma è incorporato come frame secondario in una pagina ospitata su un'altra origine, come https://www.bar.com.</translation>
-<translation id="3180671894201217988">Se il criterio viene impostato su Attivato o se non viene configurato, i software di terze parti non possono inserire codice eseguibile nei processi di <ph name="PRODUCT_NAME" />.
-
-      Se il criterio viene impostato su Disattivato, questi software possono inserire tale codice nei processi di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3181114468897395940">Le impostazioni di Pagina su/Pagina giù usano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="3182503302060513467">Nella pagina Nuova scheda verrà mostrata la comunicazione dell'area centrale, se è disponibile</translation>
 <translation id="3184161739683646075">Controlla la modalità di DNS over HTTPS</translation>

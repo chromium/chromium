@@ -19,6 +19,7 @@
 <translation id="146407871188825689">iPad에서 Chromium을 기본 브라우저로 사용</translation>
 <translation id="1471084500615228555">Chromium에서 인터넷 사용 기록 삭제</translation>
 <translation id="1472013873724362412">계정이 Chromium에서 작동하지 않습니다. 도메인 관리자에게 문의하거나 일반 Google 계정을 사용하여 로그인하세요.</translation>
+<translation id="148576268809812097">Chromium에 비밀번호 저장</translation>
 <translation id="1501302548410882220">어디서나 Chromium 사용</translation>
 <translation id="1503199973012840174">Chromium이 최신 버전이 아닙니다. 안전하게 사용하려면 업데이트하세요.</translation>
 <translation id="1515748263297244785">iPad에서 Chromium을 기본 브라우저로 사용</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">비밀번호가 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="1811860791247653035">맞춤설정 및 기타 기능을 사용하려면 <ph name="FEATURE_NAME_1" /> 그리고 <ph name="FEATURE_NAME_2" />에 Chromium을 포함하세요.</translation>
 <translation id="1838412507805038478">Chromium이 <ph name="ISSUER" />에서 이 웹사이트의 인증서를 발행했음을 확인했습니다.</translation>
+<translation id="1839447949248872139">기본적으로 Chromium에서 링크 열기</translation>
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium의 지도</translation>

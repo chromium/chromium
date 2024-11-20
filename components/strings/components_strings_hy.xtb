@@ -142,7 +142,6 @@
 <translation id="1243027604378859286">Հեղինակ՝</translation>
 <translation id="1247030632403369975">Ալյումին</translation>
 <translation id="1252209483516427155">Վերնահագուստ</translation>
-<translation id="1253096324252841344">Վճարել <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակների միջոցով</translation>
 <translation id="1253846494229886276">Սքրինշոթը պահվում է</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (համաժամացված)</translation>
 <translation id="1255086252236620440">Խոհանոցային միքսերներ</translation>
@@ -3149,7 +3148,6 @@
 <translation id="6671169470640320959">Ավտովարկեր</translation>
 <translation id="6671697161687535275">Հեռացնե՞լ ձևերի առաջարկները Chromium-ից:</translation>
 <translation id="6677351035258626477">Արագ սնունդ</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակը}one{Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակը}other{Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք <ph name="FINANCIAL_ACCOUNT_TYPES" /> վճարման եղանակը}}</translation>
 <translation id="6679354743514146922">Chrome դիտարկիչը փորձում է լրացնել ձեր գաղտնաբառը <ph name="APP_NAME" /> հավելվածում։</translation>
 <translation id="6681790815630918386">CVC-ն պահվեց</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>

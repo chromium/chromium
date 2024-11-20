@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">Кликните да бисте изашли из Google објектива</translation>
 <translation id="2681444469812712297">Отворите <ph name="URL" /> на новој картици у Google Chrome-у.</translation>
 <translation id="2712141162840347885">Изаберите било шта за претрагу помоћу Google објектива или притисните Escape да бисте изашли из Google објектива</translation>
-<translation id="2727713483500953825">Изаберите слике или текст за претрагу помоћу Објектива</translation>
 <translation id="2738871930057338499">Повезивање са интернетом није успело. Забрањен је приступ (HTTP 403). Проверите конфигурацију проксија.</translation>
 <translation id="2742320827292110288">Упозорење: Google Chrome не може да спречи додатке да снимају вашу историју прегледања. Да бисте онемогућили овај додатак у режиму без архивирања, поништите избор ове опције.</translation>
 <translation id="2753623023919742414">Кликните да бисте претражили</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">Нисте скоро посећивали сајт. Chrome је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">Идентификујте ствари или места и копирајте или преводите текст. Када користите Google објектив, снимак екрана странице се шаље Google-у. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Сада можете лакше да користите Chrome са Google налогом и на дељеним рачунарима.</translation>
-<translation id="3625345586754200168">Испробај Објектив</translation>
 <translation id="3635073343384702370">Chrome може да проверава лозинке када их сачувате</translation>
 <translation id="3667616615096815454">Инсталирање није успело, апликације је непозната серверу.</translation>
 <translation id="3673813398384385993">Chrome је открио да <ph name="EXTENSION_NAME" /> садржи малвер</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">Грешка програма за инсталацију: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Пријавите се у Chrome као <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – пријављивање на мрежу – <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">Претражите било коју слику или текст помоћу Објектива</translation>
 <translation id="4458462641685292929">Друга радња у Google Chrome-у је у току. Пробајте поново касније.</translation>
 <translation id="4459234553906210702">Мерење огласа омогућава сајтовима које посећујете да од Chrome-а затраже информације које сајту помажу да мери учинак огласа. Мерење огласа ограничава праћење на више сајтова тако што преноси што мање информација између сајтова.</translation>
 <translation id="4493028449971051158">Грешка при покретању: покрените програм за инсталацију као администратор.</translation>
@@ -408,7 +405,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6025087594896450715">Google Chrome ће се рестартовати за <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604424701295382420">Закачено је. Можете поново да приступите Google објективу помоћу новог дугмета на траци с алаткама</translation>
-<translation id="6060842547856900641">Отвори Објектив</translation>
 <translation id="6069027071882229820">Копирај као слику</translation>
 <translation id="6070348360322141662">Google Chrome ће шифровати податке ради додатне сигурности</translation>
 <translation id="6075300983329039771">Ваша организација, <ph name="MANAGER" />, захтева да се пријавите у Chrome</translation>
@@ -457,7 +453,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6515549163407364048">Да би вам додаци били доступни на свим рачунарима, пријавите се у Chrome</translation>
 <translation id="6520670145826811516">Да бисте користили локацију, одобрите Chrome-у приступ у <ph name="BEGIN_LINK" />подешавањима система<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">У Google менаџеру лозинки на овом уређају</translation>
-<translation id="6600016381025017075">Претражите било шта на овој страници</translation>
 <translation id="6632473616050862500">Chrome OS Flex је омогућен захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6660596345553328257">Желите да се пријавите у Chrome?</translation>
 <translation id="6676384891291319759">Приступите Интернету</translation>

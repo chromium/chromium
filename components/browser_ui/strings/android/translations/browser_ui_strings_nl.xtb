@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Toestaan dat een site gegevens op je apparaat opslaat</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1384959399684842514">Download onderbroken</translation>
+<translation id="1396327438254055134">Sta toe dat de site V8-optimalisatie gebruikt.</translation>
 <translation id="1415402041810619267">URL afgekapt</translation>
 <translation id="1448064542941920355">Zoomniveau verkleinen</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> site}other{<ph name="SITE_COUNT" /> sites}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Image Decoder</translation>
 <translation id="1785415724048343560">Aanbevolen voor de beste functionaliteit</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>
+<translation id="1816835383954230954">Als deze optie aanstaat, werkt Chrome sneller en zouden functies die JavaScript gebruiken, naar behoren moeten werken. Als deze optie uitstaat, worden de prestaties slechter, maar is V8 beter bestand tegen aanvallen.</translation>
 <translation id="1818308510395330587">Als je <ph name="APP_NAME" /> AR wilt laten gebruiken, moet je ook de camera aanzetten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1887786770086287077">Locatietoegang staat uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Ophangen</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Als deze optie aanstaat, kunnen sites vragen of ze je camera mogen gebruiken. Staat de optie uit, dan kunnen sites je camera niet gebruiken.</translation>
 <translation id="3521663503435878242">Sites onder <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Niet toestaan dat sites je handen volgen</translation>
+<translation id="3532312529397438268">Sites mogen V8-optimalisatie niet gebruiken</translation>
 <translation id="3536227077203206203">Deze keer toegestaan</translation>
 <translation id="3538390592868664640">Voorkomen dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
 <translation id="3544058026430919413">Een bedrijf kan een groep sites definiëren die cookies kunnen gebruiken om je activiteit in de groep te delen. Dit staat uit in de incognitomodus.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Safe Browsing aanzetten</translation>
 <translation id="4811450222531576619">Meer informatie over de bron en het onderwerp</translation>
+<translation id="481168145262973879">Sites kunnen V8-optimalisatie gebruiken</translation>
 <translation id="4816495437032298535">Opgeslagen zoomniveau voor sites</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
 <translation id="483914009762354899">Alle sites in dit domein opnemen</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Sitegegevens verwijderen? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="6992289844737586249">Eerst vragen voordat sites je microfoon mogen gebruiken (aanbevolen)</translation>
+<translation id="6999131147875565462">Chrome werkt sneller en functies die JavaScript gebruiken, zouden naar behoren moeten werken</translation>
 <translation id="7000754031042624318">Uitgezet in Android-instellingen</translation>
 <translation id="7016516562562142042">Toegestaan voor huidige zoekmachine</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
+<translation id="969975166333045662">Blokkeer dat de site V8-optimalisatie gebruikt.</translation>
 </translationbundle>

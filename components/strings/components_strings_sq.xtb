@@ -138,7 +138,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1243027604378859286">Autori:</translation>
 <translation id="1247030632403369975">Alumin</translation>
 <translation id="1252209483516427155">Xhaketa</translation>
-<translation id="1253096324252841344">Paguaj me <ph name="FINANCIAL_ACCOUNT_TYPES" /></translation>
 <translation id="1253846494229886276">Po ruhet pamja e ekranit</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (sinkronizuar)</translation>
 <translation id="1255086252236620440">Mikserë</translation>
@@ -3129,7 +3128,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6671169470640320959">Financim për makina</translation>
 <translation id="6671697161687535275">Të hiqet sugjerimi i formularit nga Chromium?</translation>
 <translation id="6677351035258626477">Restorant ushqimesh të shpejta</translation>
-<translation id="6679277702745908544">{FINANCIAL_ACCOUNT,plural, =1{Kur bën blerje në Chrome, shiko <ph name="FINANCIAL_ACCOUNT_TYPES" /> si opsion}other{Kur bën blerje në Chrome, shiko <ph name="FINANCIAL_ACCOUNT_TYPES" /> si opsione}}</translation>
 <translation id="6679354743514146922">Shfletuesi Chrome po përpiqet të plotësojë fjalëkalimin tënd në <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Kodi CVC u ruajt</translation>
 <translation id="6683022854667115063">Kufje</translation>
@@ -3396,6 +3394,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7156870133441232244">Serveri duhet të përmirësohet në versionin TLS 1.2 ose një version të mëvonshëm.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Për ta dërguar këtë skedar duke përdorur "<ph name="FEATURE_NAME" />", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}other{Për t'i dërguar këta skedarë duke përdorur "<ph name="FEATURE_NAME" />", liro hapësirë (<ph name="DISK_SPACE_SIZE" />) në pajisjen tënde}}</translation>
 <translation id="7160999678034985039">Ruaj punën dhe fillo përditësimin kur të jesh gati.</translation>
+<translation id="7162277662076933695">Lexuesi i kartave inteligjente</translation>
 <translation id="7163295244162773898">{0,plural, =1{Të kopjohet skedari konfidencial?}other{Të kopjohen skedarët konfidencialë?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" nuk është një kufizim i mbështetur në këtë platformë</translation>
 <translation id="717330890047184534">ID-ja e Gaia:</translation>

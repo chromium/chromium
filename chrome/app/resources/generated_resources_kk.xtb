@@ -1380,7 +1380,6 @@
 <translation id="1948528728718281125">Камераны пайдалану рұқсаты бар қолданбалар мен веб-сайттарға, сондай-ақ жүйелік қызметтерге камераны пайдалануға рұқсат берілді.</translation>
 <translation id="1949332606889020901">Бұзылу идентификаторлары</translation>
 <translation id="1949584741547056205">Жылдам жауаптар</translation>
-<translation id="1949849604471335579">Тұсқағазды, скринсейверді, акцент түстер мен т. б. жекелендіріңіз.</translation>
 <translation id="1949980990364952348">Қолданба атауы</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1951823516285577843">Балама кеңейтім табу</translation>
@@ -6074,7 +6073,6 @@
 <translation id="5288678174502918605">Жабық қойындыны қ&amp;айта ашу</translation>
 <translation id="5290020561438336792">Дербес компьютер мен трансляциялау құрылғысы бөлек Wi-Fi желілеріне (мысалы, 2,4 ГГц және 5 ГГц) қосылған</translation>
 <translation id="52912272896845572">Жеке кілт файлы жарамсыз.</translation>
-<translation id="5291739252352359682">Chrome браузерінде медиамазмұн үшін субтитрді автоматты түрде жасайды (әзірше ағылшын тілінде қолжетімді). Аудио мен субтитр құрылғыда өңделіп, сонда қалады.</translation>
 <translation id="529175790091471945">Бұл құрылғыны пішімдеу</translation>
 <translation id="529296195492126134">Эфемерлік режимге қолдау көрсетілмейді. Әкімшіге хабарласыңыз.</translation>
 <translation id="5293043095535566171">Локацияны пайдалану рұқсатын қосу қажет пе?</translation>
@@ -7500,7 +7498,6 @@
 <translation id="6338968693068997776">USB құрылғысын енгізу</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> үшін жаңа профиль жасау</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
-<translation id="6340526405444716530">Жекелендіру</translation>
 <translation id="6341850831632289108">Нақты орналасқан жеріңізді анықтау</translation>
 <translation id="6342069812937806050">Қазір ғана</translation>
 <translation id="6343003829431264373">Тек жұп беттер</translation>
@@ -7899,7 +7896,6 @@
 <translation id="6642720633335369752">Қолданбаның барлық ашық терезесін көру үшін саусақпен экранның төменгі жағынан жоғары қарай сырғытып, ұстап тұрыңыз.</translation>
 <translation id="664290675870910564">Желіні таңдау</translation>
 <translation id="6643016212128521049">Тазалау</translation>
-<translation id="6644512095122093795">Құпия сөздерді сақтауды ұсыну</translation>
 <translation id="6644513150317163574">URL форматы жарамсыз. SSO аутентификациясы қолданылған кезде, сервер хост ретінде көрсетіледі.</translation>
 <translation id="6644846457769259194">Құрылғы жаңартылуда (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Fast Pair функциясын өшіру</translation>
@@ -8040,7 +8036,6 @@
 <translation id="6739943577740687354">Бұл функция AI технологиясын пайдаланады. Ол кейде қателесуі мүмкін.</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> кідіртілді</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Әкімшіңіз<ph name="END_LINK" /> "Қауіпсіз шолу" функциясын өшірген.</translation>
-<translation id="6742629250739345159">Chrome браузерінде медиамазмұн үшін субтитрді автоматты түрде жасайды. Аудио мен субтитр құрылғыда өңделіп, сонда қалады.</translation>
 <translation id="6743841972744298686">Синхрондау параметрлері</translation>
 <translation id="6745592621698551453">Қазір жаңарту</translation>
 <translation id="6746124502594467657">Төмен қарай жылжыту</translation>

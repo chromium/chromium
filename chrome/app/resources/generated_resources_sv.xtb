@@ -1393,7 +1393,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1948528728718281125">Kameraåtkomst tillåts för appar och webbplatser med kamerabehörighet samt för systemtjänster</translation>
 <translation id="1949332606889020901">Krasch-id:n</translation>
 <translation id="1949584741547056205">Snabba svar</translation>
-<translation id="1949849604471335579">Anpassa bakgrunder, skärmsläckare, accentfärger och mer</translation>
 <translation id="1949980990364952348">Appens namn</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Hitta ett annat alternativ</translation>
@@ -6094,7 +6093,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5290020561438336792">Datorn och Cast-enheten är på olika wifi-nätverk (t.ex. 2,4 GHz
     gentemot 5 GHz)</translation>
 <translation id="52912272896845572">Den privata nyckelfilen är ogiltig.</translation>
-<translation id="5291739252352359682">Media textas automatiskt i webbläsaren Chrome (tillgängligt på engelska för närvarande) Ljud och textning bearbetas lokalt och lämnar aldrig enheten.</translation>
 <translation id="529175790091471945">Formatera enheten</translation>
 <translation id="529296195492126134">Tillfälligt läge stöds inte. Kontakta administratören</translation>
 <translation id="5293043095535566171">Vill du aktivera platsåtkomst?</translation>
@@ -7523,7 +7521,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6338968693068997776">Lägg till USB-enhet</translation>
 <translation id="6339668969738228384">Skapa en ny profil för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protokoll för internetutskrift (IPPS)</translation>
-<translation id="6340526405444716530">Anpassning</translation>
 <translation id="6341850831632289108">Identifiera din fysiska plats</translation>
 <translation id="6342069812937806050">Alldeles nyss</translation>
 <translation id="6343003829431264373">Endast jämna sidor</translation>
@@ -7922,7 +7919,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6642720633335369752">Om du sveper uppåt från skärmens nederkant och håller kvar fingret visas alla öppna appfönster.</translation>
 <translation id="664290675870910564">Välj nätverk</translation>
 <translation id="6643016212128521049">Rensa</translation>
-<translation id="6644512095122093795">Erbjud att spara lösenord</translation>
 <translation id="6644513150317163574">Ogiltigt webbadressformat. Servern måste anges som ett värdnamn med SSO-autentisering.</translation>
 <translation id="6644846457769259194">Enheten uppdateras(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Inaktivera Snabb parkoppling</translation>
@@ -8063,7 +8059,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6739943577740687354">Den här funktionen använder AI och det blir kanske inte alltid rätt</translation>
 <translation id="6740234557573873150"><ph name="FILE_NAME" /> har pausats</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Administratören<ph name="END_LINK" /> har inaktiverat Säker webbsökning</translation>
-<translation id="6742629250739345159">Media textas automatiskt i webbläsaren Chrome. Ljud och textning bearbetas lokalt och lämnar aldrig enheten.</translation>
 <translation id="6743841972744298686">Synkroniseringsinställningar</translation>
 <translation id="6745592621698551453">Uppdatera nu</translation>
 <translation id="6746124502594467657">Flytta ned</translation>

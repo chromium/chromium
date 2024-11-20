@@ -2925,18 +2925,6 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
 <translation id="3092059499596000593">Usar a impressora padrão do sistema como a escolha padrão na visualização de impressão</translation>
 <translation id="309416443108680956">Especifica o que acontece quando um usuário que está fazendo a autenticação com um token de segurança (por exemplo, com um cartão inteligente) remove o token durante a sessão. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: nada acontece. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: a tela é bloqueada até que o usuário faça a autenticação novamente. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: a sessão é encerrada e o usuário é desconectado. Se esta política não for definida, o comportamento padrão será <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lista de plug-ins ativados</translation>
-<translation id="30986061650205557">Esses recursos no DevTools do <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para dar mais informações de depuração. Para usar os recursos, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviar essas informações a um servidor de propriedade do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
-
-0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = desativa o recurso.
-
-Os recursos da IA generativa do DevTools incluem:
-
-- Console Insights: explica as mensagens do console e oferece sugestões para corrigir erros.
-- Assistência de IA: ajuda os usuários a entender os estilos CSS com insights gerados com IA.</translation>
 <translation id="309885424548342662">Ativar a autenticação na nuvem da Microsoft®</translation>
 <translation id="3101035417394748390">O tamanho máximo, em bytes, que pode ser transferido entre cliente e host pela sincronização da área de transferência</translation>
 <translation id="3101501961102569744">Escolher o modo de especificar as configurações do servidor proxy</translation>
@@ -3042,9 +3030,6 @@ Se a política for desativada, a promoção de avaliação na App Store não vai
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
 
       Esta política bloqueia o JavaScript com base na correspondência entre a origem do documento de nível superior (geralmente o URL da página que também é mostrado na barra de endereços) e um dos padrões. Ela não é adequada para mitigar ataques de cadeia de suprimentos da Web. Por exemplo, fornecer o padrão "https://[*.]foo.com/" não vai impedir que uma página hospedada em https://example.com execute um script carregado de https://www.foo.com/example.js. Além disso, fornecer o padrão "https://example.com/" não vai impedir que um documento de https://example.com execute scripts se ele não for o documento de nível superior, mas incorporado como um subframe em uma página hospedada em outra origem, como https://www.bar.com.</translation>
-<translation id="3180671894201217988">Se a política for ativada ou deixada sem definição, softwares de terceiros não poderão injetar código executável em processos do <ph name="PRODUCT_NAME" />.
-
-      Se a política for desativada, esses softwares poderão injetar os códigos executáveis nos processos do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3181114468897395940">As configurações Page Up/Page Down usam o atalho que contém a tecla modificadora Alt</translation>
 <translation id="3182503302060513467">A página "Nova guia" vai mostrar o anúncio do slot do meio, se ele estiver disponível</translation>
 <translation id="3184161739683646075">Controla o modo de DNS sobre HTTPS</translation>

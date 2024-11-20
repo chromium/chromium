@@ -38,6 +38,7 @@ Aandachtspunten:
 <translation id="1646463005043273333">Opent de Chrome-instelling om Chrome in te stellen als standaardbrowser.</translation>
 <translation id="1670609221633730681">Chrome-tip: kies de positie van de adresbalk</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1784567647421309104">Sla je wachtwoorden op in Chrome</translation>
 <translation id="1790080846677398234">Voegt de ingevoerde URL's toe aan je bookmarks in Chrome.</translation>
 <translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Dit adres is momenteel opgeslagen in Chrome. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="USER_EMAIL" />).</translation>
@@ -219,9 +220,11 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 
 Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om je Chrome-functionaliteit te verbeteren.</translation>
 <translation id="6922332667202044570">Verwijder browsegegevens in Chrome.</translation>
+<translation id="6924922227983877439">Open links standaard in Chrome</translation>
 <translation id="6975725306479268850">Chrome kiezen voor automatisch invullen</translation>
 <translation id="7056826488869329999">Opent de Veiligheidscheck in Chrome en voert deze uit.</translation>
 <translation id="7061455974939528301">Houd je vinger op het Chrome-icoon en klik op Startscherm bewerken</translation>
+<translation id="7065813315247345131">Chrome naar het dock verplaatsen</translation>
 <translation id="7124339256045485976">Houd Chrome up-to-date</translation>
 <translation id="7161390184744336561">Google Chrome is verouderd</translation>
 <translation id="7165736900384873061">QR-scanner van Google Chrome gebruiken</translation>

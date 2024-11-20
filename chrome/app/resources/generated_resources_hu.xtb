@@ -1392,7 +1392,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1948528728718281125">A kamerához való hozzáférés engedélyezett az alkalmazások, a kamerahasználati engedéllyel rendelkező webhelyek és a rendszerszolgáltatások számára</translation>
 <translation id="1949332606889020901">Összeomlás-azonosító</translation>
 <translation id="1949584741547056205">Gyors válaszok</translation>
-<translation id="1949849604471335579">Háttérkép, képernyőkímélő, kiemelési színek és egyebek személyre szabása</translation>
 <translation id="1949980990364952348">Alkalmazásnév</translation>
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1951823516285577843">Másik bővítmény keresése</translation>
@@ -3474,6 +3473,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3429174588714165399">Parancsikon létrehozása ehhez az oldalhoz</translation>
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
+<translation id="3431530007831146102">Az kurzor vezérlése fejmozgatással</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> felszabadítva</translation>
 <translation id="3432762828853624962">Shared workers</translation>
 <translation id="3433507769937235446">Zárolás távozáskor</translation>
@@ -6092,7 +6092,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5290020561438336792">A PC és az átküldő eszköz eltérő Wi-Fi-hálózatokhoz (pl. 2,4 GHz
     és 5 GHz) csatlakozik</translation>
 <translation id="52912272896845572">A privátkulcs-fájl érvénytelen.</translation>
-<translation id="5291739252352359682">Automatikusan készít feliratot a médiatartalmakhoz a Chrome böngészőben (a funkció jelenleg csak angol nyelven áll rendelkezésre). A hanganyagokat és feliratokat csak az adott helyen kezeljük, és mindig csak az Ön eszközén tároljuk őket.</translation>
 <translation id="529175790091471945">Az eszköz formázása</translation>
 <translation id="529296195492126134">Az átmeneti mód nem támogatott. Forduljon a rendszergazdához.</translation>
 <translation id="5293043095535566171">Bekapcsolja a helyhozzáférést?</translation>
@@ -7522,7 +7521,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6338968693068997776">USB-eszköz hozzáadása</translation>
 <translation id="6339668969738228384">Új profil létrehozása a következőhöz: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetes nyomtatási protokoll (IPPS)</translation>
-<translation id="6340526405444716530">Személyre szabás</translation>
 <translation id="6341850831632289108">Az Ön tartózkodási helyének észlelése</translation>
 <translation id="6342069812937806050">Éppen most</translation>
 <translation id="6343003829431264373">Csak a páros oldalak</translation>
@@ -7921,7 +7919,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6642720633335369752">Az összes megnyitott alkalmazásablak megtekintéséhez csúsztassa fel ujját a képernyő aljától, majd tartsa lenyomva.</translation>
 <translation id="664290675870910564">Hálózat kiválasztása</translation>
 <translation id="6643016212128521049">Törlés</translation>
-<translation id="6644512095122093795">Jelszavak mentésének felajánlása</translation>
 <translation id="6644513150317163574">Érvénytelen URL-formátum. A szervert gazdagépnévként kell megadni az egyszeri bejelentkezés (SSO) hitelesítési módszer használata esetén.</translation>
 <translation id="6644846457769259194">Eszköz frissítése (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">A Gyors párosítás kikapcsolása</translation>
@@ -8062,7 +8059,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6739943577740687354">Ez a funkció AI-t használ, és nem mindig működik megfelelően</translation>
 <translation id="6740234557573873150">A(z) <ph name="FILE_NAME" /> letöltése szünetel</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Az Ön rendszergazdája<ph name="END_LINK" /> kikapcsolta a Biztonságos Böngészést</translation>
-<translation id="6742629250739345159">Automatikusan készít feliratot a médiatartalmakhoz a Chrome böngészőben. A hanganyagokat és feliratokat csak az adott helyen kezeljük, és mindig csak az Ön eszközén tároljuk őket.</translation>
 <translation id="6743841972744298686">Szinkronizálási beállítások</translation>
 <translation id="6745592621698551453">Frissítés most</translation>
 <translation id="6746124502594467657">Mozgatás lefelé</translation>

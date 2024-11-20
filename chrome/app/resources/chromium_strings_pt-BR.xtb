@@ -126,7 +126,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2711502716910134313">Guia do Chromium</translation>
 <translation id="2718390899429598676">Para maior segurança, o Chromium criptografará seus dados.</translation>
 <translation id="2721354645805494590">Para remover sua Conta do Google do Chromium, saia dela</translation>
-<translation id="2727713483500953825">Selecione imagens/texto para pesquisar com o Lens</translation>
 <translation id="2738871930057338499">Não foi possível conectar à Internet. HTTP 403 Proibido. Verifique sua configuração do proxy.</translation>
 <translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2770231113462710648">Alterar navegador padrão para:</translation>
@@ -139,7 +138,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2846251086934905009">Erro de instalação: a instalação não foi concluída. A instalação foi cancelada.</translation>
 <translation id="2847479871509788944">Remover do Chromium</translation>
 <translation id="2850691299438350830">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada</translation>
-<translation id="2874602845494991903">Abrir a pesquisa por imagens</translation>
 <translation id="2885378588091291677">Gerenciador de tarefas</translation>
 <translation id="2910007522516064972">Sobre o &amp;Chromium</translation>
 <translation id="2915996080311180594">Reiniciar mais tarde</translation>
@@ -252,7 +250,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614"><ph name="MANAGER" /> gerencia o Chromium</translation>
 <translation id="4447409407328223819">Sobre o Chrome for Testing</translation>
-<translation id="4453144231461812959">Pesquise qualquer imagem ou texto com o Lens</translation>
 <translation id="4470974262661801543">Digite sua senha longa para usar e salvar dados do Chromium na sua Conta do Google</translation>
 <translation id="4493028449971051158">Erro de inicialização: execute o instalador como administrador.</translation>
 <translation id="4501471624619070934">A instalação falhou porque o acesso está restrito neste país.</translation>
@@ -292,7 +289,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="494490797786467921">Clique para fechar a caixa de diálogo de login do Chromium</translation>
 <translation id="4987820182225656817">Convidados podem usar o Chromium sem deixar nada para trás.</translation>
 <translation id="4994636714258228724">Cadastrar-se no Chromium</translation>
-<translation id="5051959905407134411">Teste a pesquisa por imagens</translation>
 <translation id="5114678101347489141">O Chromium está explorando novos recursos que permitem que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
 <translation id="5123973130450702873">O Chromium precisa de permissão para rastrear suas mãos</translation>
 <translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>

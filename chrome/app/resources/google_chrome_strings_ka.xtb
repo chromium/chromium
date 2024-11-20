@@ -141,7 +141,6 @@
 <translation id="2668094785979141847">დააწკაპუნეთ Google Lens-იდან გასასვლელად</translation>
 <translation id="2681444469812712297">გახსენით <ph name="URL" /> Google Chrome-ის ახალ ჩანართში.</translation>
 <translation id="2712141162840347885">აირჩიეთ ის, რისი მოძებნაც გსურთ Google Lens-ით, ან დააჭირეთ Escape-ს Google Lens-იდან გასასვლელად</translation>
-<translation id="2727713483500953825">მონიშნეთ სურათი ან ტექსტი Lens-ით საძიებლად</translation>
 <translation id="2738871930057338499">ინტერნეტთან დაკავშირება ვერ ხერხდება. HTTP 403 — აკრძალულია. შეამოწმეთ პროქსი-სერვერის კონფიგურაცია.</translation>
 <translation id="2742320827292110288">გაფრთხილება: Google Chrome ვერ შეუშლის ხელს გაფართოებებს ვების დათვალიერების ისტორიის შენახვაში. ამ გაფართოების ინკოგნიტო რეჟიმში გამოსართავად მოხსენით მონიშვნა ამ ვარიანტზე.</translation>
 <translation id="2753623023919742414">დააწკაპუნეთ ძიებისთვის</translation>
@@ -224,7 +223,6 @@
 <translation id="3609788354808247807">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">მოახდინეთ საგნების თუ ადგილების იდენტიფიცირება, დააკოპირეთ ან თარგმნეთ ტექსტი. Google Lens-ის გამოყენებისას გვერდის ეკრანის ანაბეჭდი არ ეგზავნება Google-ს. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ადვილი გახდა თქვენი Google-ის ანგარიშის მეშვეობით Chrome-ის გამოყენება და საერთო მოხმარების კომპიუტერებზეც.</translation>
-<translation id="3625345586754200168">Lens-ის ცდა</translation>
 <translation id="3635073343384702370">პაროლების შემოწმებას Chrome შეძლებს მათი შენახვის შემდეგ</translation>
 <translation id="3667616615096815454">ინსტალაცია ვერ მოხერხდა, რადგან აპლიკაცია სერვერისთვის ცნობილი არ არის.</translation>
 <translation id="3673813398384385993">Chrome-მა აღმოაჩინა, რომ „<ph name="EXTENSION_NAME" />“ შეიცავს მავნე პროგრამას</translation>
@@ -295,7 +293,6 @@
 <translation id="4434353761996769206">ინსტალატორის შეცდომა: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438657683599538446">Chrome-ში შესვლა, როგორც <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome — ქსელში შესვლა — <ph name="PAGE_TITLE" /></translation>
-<translation id="4453144231461812959">მოიძიეთ სურათი ან ტექსტი Lens-ით</translation>
 <translation id="4458462641685292929">Google Chrome-ში სხვა ოპერაცია მიმდინარეობს. გთხოვთ, ცადოთ მოგვიანებით.</translation>
 <translation id="4459234553906210702">რეკლამის ეფექტურობის გაზომვის მეშვეობით, თქვენ მიერ მონახულებულ საიტებს საშუალება ექნება, Chrome-ისგან მოითხოვონ გარკვეული ინფორმაცია, რომელიც ამა თუ იმ საიტს თავისი რეკლამის ეფექტურობის განსაზღვრაში დაეხმარება. რეკლამის ეფექტურობის გაზომვისას საიტებს შორის თვალის მიდევნების მექანიზმები შეზღუდულია, რაც ნიშნავს, რომ საიტებს შორის მინიმალური ინფორმაცია გადაიცემა.</translation>
 <translation id="4493028449971051158">გაშვების შეცდომა: ინსტალატორი გაუშვით, როგორც ადმინისტრატორმა.</translation>
@@ -408,7 +405,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6025087594896450715">Google Chrome ხელახლა გაეშვება <ph name="REMAINING_TIME" />-ში</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="604424701295382420">ჩამაგრებულია! Google Lens-ზე წვდომა შეგიძლიათ ხელსაწყოთა ზოლში ღილაკით „ახალი“</translation>
-<translation id="6060842547856900641">Lens-ის გახსნა</translation>
 <translation id="6069027071882229820">სურათად კოპირება</translation>
 <translation id="6070348360322141662">დამატებითი უსაფრთხოებისთვის, Google Chrome თქვენს მონაცემებს დაშიფრავს</translation>
 <translation id="6075300983329039771">თქვენი ორგანიზაცია, <ph name="MANAGER" />, მოითხოვს, რომ Chrome-ში შეხვიდეთ</translation>
@@ -457,7 +453,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6515549163407364048">თქვენს ყველა კომპიუტერში გაფართოებებზე წვდომის მისაღებად შედით Chrome-ში</translation>
 <translation id="6520670145826811516">თქვენი მდებარეობა რომ გამოიყენოთ, გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" /> და მიანიჭეთ Chrome-ს წვდომა</translation>
 <translation id="659498884637196217">Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
-<translation id="6600016381025017075">მოძებნეთ ნებისმიერი რამ ამ გვერდზე</translation>
 <translation id="6632473616050862500">ChromeOS Flex მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="6660596345553328257">გსურთ, შეხვიდეთ Chrome-ში?</translation>
 <translation id="6676384891291319759">წვდომა ინტერნეტზე</translation>
@@ -620,6 +615,7 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8416347857511542594">შეიტყვეთ მეტი Chrome-ში რეკლამის პერსონალიზების შესახებ</translation>
 <translation id="8418845734693287262">ChromeOS-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველდა.</translation>
 <translation id="842386925677997438">Chrome-ის უსაფრთხოების ხელსაწყოები</translation>
+<translation id="8425765582779547329">ონლაინუსაფრთხოების დასაცავად, თქვენი მშობლის არჩევანით, შედით Chrome-ში</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>
 <translation id="8433638294851456451">აქედან თქვენს Android ტელეფონზე ნომრის გასაგზავნად შედით Chrome-ში ორივე მოწყობილობაზე.</translation>
 <translation id="8451192282033883849">თქვენს ანგარიშს მართავს <ph name="MANAGER_NAME" />. თქვენს ადმინისტრატორს შეუძლია ამ Chrome ბრაუზერის პროფილისა და მისი მონაცემების ნახვა და რედაქტირება, მაგალითად, სანიშნეების, ისტორიისა და პაროლების.</translation>

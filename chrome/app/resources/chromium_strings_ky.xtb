@@ -128,7 +128,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2711502716910134313">Chromium өтмөгү</translation>
 <translation id="2718390899429598676">Кошумча коопсуздук үчүн, Chromium дайын-даректериңизди шифрлейт.</translation>
 <translation id="2721354645805494590">Google аккаунтуңузду Chromium'дан өчүрүү үчүн чыгыңыз</translation>
-<translation id="2727713483500953825">Lens менен издөө үчүн сүрөттү/текстти тандаңыз</translation>
 <translation id="2738871930057338499">Интернетке туташуу мүмкүн болбой жатат. HTTP 403 Тыюу салынган. Прокси конфигурациясын текшериңиз.</translation>
 <translation id="2753623023919742414">Издөө үчүн чыкылдатыңыз</translation>
 <translation id="2770231113462710648">Демейки серепчини төмөнкүгө өзгөртүү:</translation>
@@ -141,7 +140,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2846251086934905009">Орнотуу катасы: Орнотуу аягына чыккан жок. Орнотуу токтотулду.</translation>
 <translation id="2847479871509788944">Chromium'дан чыгарып салуу…</translation>
 <translation id="2850691299438350830">Аккаунтуңузга киргенде Chromium'да жана башка Google колдонмолорунда коопсуздугуңузду коргоп турат</translation>
-<translation id="2874602845494991903">Сүрөт издөө функциясын ачуу</translation>
 <translation id="2885378588091291677">Тапшырмаларды башкаргыч</translation>
 <translation id="2910007522516064972">&amp;Chromium жөнүндө</translation>
 <translation id="2915996080311180594">Кийинчерээк өчүрүп күйгүзүү</translation>
@@ -150,6 +148,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="2970426615109535079">Chromium'ду уюмуңуз тескейт</translation>
 <translation id="2977470724722393594">Chromium жаңырган</translation>
 <translation id="2977506796191543575">Эгер сайт сырсөзүңүздү уурдоого аракет кылса же кооптуу файлды жүктөп алсаңыз, Chromium URL даректерди, анын ичинде барактагы мазмундун үлгүлөрүн Коопсуз серептөөгө жөнөтүшү мүмкүн</translation>
+<translation id="2981563588585023386">Интернетти ата-энең тандаган параметрлер менен коопсуз колдонуу үчүн Chromium'га кир</translation>
 <translation id="2987208172821108655">Chromium серептөөнү жакшыртып, ресурстарды бошотуу үчүн бул өтмөктөрдү жигерсиз кыла алат.</translation>
 <translation id="3013473503895162900"><ph name="URL" /> сайтын Chromium'дагы жаңы өтмөктө ачыңыз.</translation>
 <translation id="3032706164202344641">Chromium сырсөздөрүңүздү текшере албай жатат. Кийинчерээк кайталаңыз.</translation>
@@ -256,7 +255,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4434353761996769206">Орнотуу катасы: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">Chromium'ду <ph name="MANAGER" /> тескейт</translation>
 <translation id="4447409407328223819">Chrome for Testing жөнүндө</translation>
-<translation id="4453144231461812959">Lens менен каалаган сүрөттү же текстти издеңиз</translation>
 <translation id="4470974262661801543">Chromium'дагы маалыматты колдонуп жана Google аккаунтуңузга сактоо үчүн сыр сүйлөмүңүздү киргизиңиз</translation>
 <translation id="4493028449971051158">Ишке киргизүү катасы: орноткучту администратор катары иштетиңиз.</translation>
 <translation id="4501471624619070934">Бул өлкөдөн кирүү мүмкүнчүлүгү чектелгендиктен, орнотулбай калды.</translation>
@@ -296,7 +294,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="494490797786467921">Chromium'га кирүү диалогун жабуу үчүн басыңыз</translation>
 <translation id="4987820182225656817">Коноктор Chromium'ду артында эч нерсе калтырбай колдоно алышат.</translation>
 <translation id="4994636714258228724">Өзүңүздү Chromium'га кошуңуз</translation>
-<translation id="5051959905407134411">Сүрөт издөөнү колдонуп көрүңүз</translation>
 <translation id="5114678101347489141">Chromium сайттар маалыматыңызды азыраак колдонуу менен бирдей карап чыгуу мүмкүнчүлүгүн бере турган жаңы функцияларды изилдеп жатат</translation>
 <translation id="5123973130450702873">Chromium'га колдорго көз салууга уруксат керек</translation>
 <translation id="5174969993834422967">Адатта сиз билдирмелерге тыюу саласыз. Бул сайттан билдирмелерди алуу үчүн дарек тилкесинин оң бурчундагы билдирменин сүрөтчөсүн басыңыз.</translation>

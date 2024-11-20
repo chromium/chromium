@@ -1385,7 +1385,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1948528728718281125">Ilova va saytlar hamda tizim xizmatlariga kameradan foydalanishga ruxsat berilgan</translation>
 <translation id="1949332606889020901">Ishdan chiqish identifikatorlari</translation>
 <translation id="1949584741547056205">Tezkor javoblar</translation>
-<translation id="1949849604471335579">Fon rasmi, ekran lavhasi, aksent rangi va boshqalarni moslang</translation>
 <translation id="1949980990364952348">Ilova nomi</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1951823516285577843">Muqobilini topish</translation>
@@ -6092,7 +6091,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5290020561438336792">Kompyuter va translatsiya qurilmasi har xil Wi-Fi tarmoqqa ulangan (m-n, 2,4 GGs
     va 5 GGs)</translation>
 <translation id="52912272896845572">Xususiy kalilt fayli yaroqsiz.</translation>
-<translation id="5291739252352359682">Chrome brauzerida media fayllar uchun avtomatik tarzda taglavhalar yaratadi (hozircha ingliz tilida chiqadi) Audio va taglavhalar kompyuteringizda qayta ishlanadi va shu yerda saqlanadi.</translation>
 <translation id="529175790091471945">Bu qurilmani formatlash</translation>
 <translation id="529296195492126134">Vaqtinchalik rejim ishlamaydi. Administratorga murojaat qiling</translation>
 <translation id="5293043095535566171">Joylashuv axborotiga ruxsat berilsinmi?</translation>
@@ -7523,7 +7521,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6338968693068997776">USB qurilma qoʻshish</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> hisobi uchun yangi profil yaratilsin.</translation>
 <translation id="6340071272923955280">Internet orqali chop etish protokoli (IPPS)</translation>
-<translation id="6340526405444716530">Personalizatsiya</translation>
 <translation id="6341850831632289108">Joylashuvingizni aniqlash</translation>
 <translation id="6342069812937806050">Hozirgina</translation>
 <translation id="6343003829431264373">Faqat juft sonli sahifalar</translation>
@@ -7922,7 +7919,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6642720633335369752">Barcha ochiq oynalarni koʻrish uchun pastdan tepaga suring va ushlab turing.</translation>
 <translation id="664290675870910564">Tarmoqni tanlash</translation>
 <translation id="6643016212128521049">Tozalash</translation>
-<translation id="6644512095122093795">Parollarni saqlashni taklif qilish</translation>
 <translation id="6644513150317163574">URL manzil yaroqsiz. SSO protokoli orqali kirishda server host nomi sifatida belgilanishi kerak.</translation>
 <translation id="6644846457769259194">Qurilmangiz yangilanmoqda (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">Tezkor ulanish funksiyasini faolsizlantirish</translation>
@@ -8063,7 +8059,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6739943577740687354">Bu funksiya AI ishlatadi va ishlashida xatolar chiqishi mumkin</translation>
 <translation id="6740234557573873150">“<ph name="FILE_NAME" />” faylini yuklab olish vaqtincha to‘xtatildi</translation>
 <translation id="6741063444351041466">Saytlarni xavfsiz kezish rejimini <ph name="BEGIN_LINK" />administrator<ph name="END_LINK" /> faolsizlantirgan</translation>
-<translation id="6742629250739345159">Chrome brauzeridagi media ijrosida taglavhalarni avtomatik yaratadi. Audio va taglavhalar kompyuteringizda qayta ishlanadi va shu yerda saqlanadi.</translation>
 <translation id="6743841972744298686">Sinxronizatsiya sozlamalari</translation>
 <translation id="6745592621698551453">Hozir yangilash</translation>
 <translation id="6746124502594467657">Pastga tushish</translation>

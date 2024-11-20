@@ -1386,7 +1386,6 @@
 <translation id="1948528728718281125">อนุญาตให้เข้าถึงกล้องสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง และบริการของระบบ</translation>
 <translation id="1949332606889020901">รหัสข้อขัดข้อง</translation>
 <translation id="1949584741547056205">คำตอบด่วน</translation>
-<translation id="1949849604471335579">ปรับเปลี่ยนวอลเปเปอร์ โปรแกรมรักษาหน้าจอ สีเฉพาะจุด และอื่นๆ ในแบบของคุณ</translation>
 <translation id="1949980990364952348">ชื่อแอป</translation>
 <translation id="1951012854035635156">ผู้ช่วย</translation>
 <translation id="1951823516285577843">ค้นหาทางเลือก</translation>
@@ -3468,6 +3467,7 @@
 <translation id="3429174588714165399">สร้างทางลัดไปยังหน้านี้</translation>
 <translation id="3429271624041785769">ภาษาของเนื้อหาเว็บ</translation>
 <translation id="3429275422858276529">บุ๊กมาร์กหน้านี้เพื่อให้หาเจอง่ายในภายหลัง</translation>
+<translation id="3431530007831146102">ใช้การขยับศีรษะเพื่อควบคุมเคอร์เซอร์เมาส์</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - เพิ่มพื้นที่ว่าง <ph name="MEMORY_VALUE" /> แล้ว</translation>
 <translation id="3432762828853624962">คนทำงานที่แชร์</translation>
 <translation id="3433507769937235446">ล็อกเมื่อไม่อยู่หน้าจอ</translation>
@@ -6088,7 +6088,6 @@
 <translation id="5288678174502918605">เ&amp;ปิดแท็บที่ถูกปิดขึ้นใหม่</translation>
 <translation id="5290020561438336792">PC และอุปกรณ์แคสต์ใช้เครือข่าย Wi-Fi ต่างกัน (เช่น 2.4 GHz กับ 5 GHz)</translation>
 <translation id="52912272896845572">ไฟล์กุญแจส่วนตัวไม่ถูกต้อง</translation>
-<translation id="5291739252352359682">สร้างคำบรรยายแทนเสียงสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ (ปัจจุบันพร้อมให้บริการเป็นภาษาอังกฤษ) เสียงและคำบรรยายแทนเสียงจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
 <translation id="529175790091471945">ฟอร์แมตอุปกรณ์นี้</translation>
 <translation id="529296195492126134">ไม่รองรับโหมดชั่วคราว โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="5293043095535566171">เปิดการเข้าถึงตำแหน่งไหม</translation>
@@ -7516,7 +7515,6 @@
 <translation id="6338968693068997776">เพิ่มอุปกรณ์ USB</translation>
 <translation id="6339668969738228384">สร้างโปรไฟล์ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">โปรโตคอลการพิมพ์ผ่านอินเทอร์เน็ต (IPPS)</translation>
-<translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="6341850831632289108">ตรวจหาตำแหน่งทางกายภาพของคุณ</translation>
 <translation id="6342069812937806050">เมื่อสักครู่</translation>
 <translation id="6343003829431264373">หน้าเลขคู่เท่านั้น</translation>
@@ -7915,7 +7913,6 @@
 <translation id="6642720633335369752">หากต้องการดูหน้าต่างแอปที่เปิดอยู่ทั้งหมด ให้เลื่อนขึ้นจากด้านล่างแล้วค้างไว้</translation>
 <translation id="664290675870910564">การเลือกเครือข่าย</translation>
 <translation id="6643016212128521049">ล้าง</translation>
-<translation id="6644512095122093795">เสนอให้บันทึกรหัสผ่าน</translation>
 <translation id="6644513150317163574">รูปแบบ URL ไม่ถูกต้อง ต้องระบุเซิร์ฟเวอร์เป็นชื่อโฮสต์เมื่อมีการใช้การตรวจสอบสิทธิ์ SSO</translation>
 <translation id="6644846457769259194">กำลังอัปเดตอุปกรณ์ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6646476869708241165">ปิดฟีเจอร์จับคู่ด่วน</translation>
@@ -8056,7 +8053,6 @@
 <translation id="6739943577740687354">ฟีเจอร์นี้ใช้ AI และอาจไม่ถูกต้องเสมอไป</translation>
 <translation id="6740234557573873150">หยุด <ph name="FILE_NAME" /> ชั่วคราว</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />ผู้ดูแลระบบของคุณ<ph name="END_LINK" />ปิด Google Safe Browsing</translation>
-<translation id="6742629250739345159">สร้างคำบรรยายแทนเสียงสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ เสียงและคำบรรยายแทนเสียงจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
 <translation id="6743841972744298686">การตั้งค่าการซิงค์</translation>
 <translation id="6745592621698551453">อัปเดตเลย</translation>
 <translation id="6746124502594467657">เลื่อนลง</translation>

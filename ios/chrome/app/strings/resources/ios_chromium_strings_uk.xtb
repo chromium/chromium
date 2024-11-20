@@ -19,6 +19,7 @@
 <translation id="146407871188825689">Використовуйте Chromium як вебпереглядач за умовчанням на iPad</translation>
 <translation id="1471084500615228555">Видалити дані вебперегляду в Chromium</translation>
 <translation id="1472013873724362412">Ваш обліковий запис не працює в Chromium. Зв’яжіться з адміністратором свого домену або ввійдіть у звичайний обліковий запис Google.</translation>
+<translation id="148576268809812097">Зберігайте паролі в Chromium</translation>
 <translation id="1501302548410882220">Користуйтеся Chromium будь-де</translation>
 <translation id="1503199973012840174">Версія Chromium застаріла. Оновіть її, щоб захистити свої дані.</translation>
 <translation id="1515748263297244785">Використовуйте Chromium як вебпереглядач за умовчанням на iPad</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Ваш пароль буде збережено в обліковому записі (<ph name="EMAIL" />).</translation>
 <translation id="1811860791247653035">Щоб користуватися персоналізацією і іншими можливостями, включіть Chromium у такі функції: <ph name="FEATURE_NAME_1" /> і <ph name="FEATURE_NAME_2" /></translation>
 <translation id="1838412507805038478">Chromium підтвердив, що сертифікат цьому веб-сайту надала компанія <ph name="ISSUER" />.</translation>
+<translation id="1839447949248872139">Відкривайте посилання в Chromium за умовчанням</translation>
 <translation id="1843424232666537147">У Chromium є функції, які допомагають керувати інтернет-даними та швидкістю завантаження веб-сторінок.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Карти в Chromium</translation>
