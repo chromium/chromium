@@ -244,12 +244,6 @@ void AccountSelectionBubbleView::ShowMultiAccountPicker(
   RemoveNonHeaderChildViews();
   AddSeparatorAndMultipleAccountChooser(accounts, idp_list);
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    owner_->InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
 }
 
@@ -276,12 +270,6 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
                                      /*should_include_idp=*/false));
   AddChildView(std::move(row));
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    owner_->InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
 }
 
@@ -298,12 +286,6 @@ void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateSingleAccountChooser(account));
-
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    owner_->InitDialogWidget();
-    return;
-  }
 
   PreferredSizeChanged();
 }
@@ -347,12 +329,6 @@ void AccountSelectionBubbleView::ShowFailureDialog(
       /*extra_accessible_text=*/std::nullopt);
   row->AddChildView(std::move(button));
   AddChildView(std::move(row));
-
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    owner_->InitDialogWidget();
-    return;
-  }
 
   PreferredSizeChanged();
 }
@@ -427,12 +403,6 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 
   AddChildView(std::move(button_row));
 
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    owner_->InitDialogWidget();
-    return;
-  }
-
   PreferredSizeChanged();
 }
 
@@ -462,12 +432,6 @@ void AccountSelectionBubbleView::ShowSingleReturningAccountDialog(
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
   AddChildView(CreateSingleReturningAccountChooser(accounts, idp_list));
-
-  if (!has_sheet_) {
-    has_sheet_ = true;
-    owner_->InitDialogWidget();
-    return;
-  }
 
   PreferredSizeChanged();
 }

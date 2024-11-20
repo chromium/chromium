@@ -396,8 +396,6 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
 
-  owner_->InitDialogWidget();
-
   // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
 
@@ -466,7 +464,6 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   }
 
   has_spinner_ = true;
-  owner_->InitDialogWidget();
 }
 
 std::unique_ptr<views::View>
@@ -554,8 +551,6 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
 
-  owner_->InitDialogWidget();
-
   // TODO(crbug.com/324052630): Connect with multi IDP API.
 }
 
@@ -605,16 +600,12 @@ void AccountSelectionModalView::ShowErrorDialog(
   button_container->AddChildView(std::move(got_it_button));
 
   AddChildView(std::move(button_container));
-
-  owner_->InitDialogWidget();
 }
 
 void AccountSelectionModalView::ShowLoadingDialog() {
   header_view_ = AddChildView(CreateHeader());
   AddChildView(CreatePlaceholderAccountRow());
   AddChildView(CreateButtonRow());
-
-  owner_->InitDialogWidget();
 }
 
 void AccountSelectionModalView::OnIdpBrandIconFetched() {
@@ -675,8 +666,6 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       /*use_other_account_callback=*/std::nullopt,
       base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
                           base::Unretained(owner_))));
-
-  owner_->InitDialogWidget();
 }
 
 void AccountSelectionModalView::OnContinueButtonClicked(

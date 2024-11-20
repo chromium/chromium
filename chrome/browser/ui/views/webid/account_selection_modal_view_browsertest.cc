@@ -104,6 +104,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       content::IdentityRequestAccount& account) {
     CreateAccountSelectionModal();
     dialog_->ShowSingleAccountConfirmDialog(account, show_back_button);
+    account_selection_view_->InitDialogWidget();
   }
 
   void CreateAndShowMultiAccountPicker(
@@ -117,6 +118,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_->ShowMultiAccountPicker(account_list_, {idp_data_},
                                     /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
+    account_selection_view_->InitDialogWidget();
   }
 
   void CreateAndShowRequestPermissionDialog(
@@ -124,6 +126,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CreateAccountSelectionModal();
     account.identity_provider = idp_data_;
     dialog_->ShowRequestPermissionDialog(account, *idp_data_);
+    account_selection_view_->InitDialogWidget();
   }
 
   void CreateAndShowVerifyingSheet() {
@@ -133,6 +136,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         kAccountSuffix, idp_data_,
         content::IdentityRequestAccount::LoginState::kSignUp));
     dialog_->ShowVerifyingSheet(*account, kTitleSignIn);
+    account_selection_view_->InitDialogWidget();
   }
 
   IdentityRequestAccountPtr CreateSingleAccount(
@@ -596,6 +600,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
                                      /*show_back_button=*/false,
                                      /*is_choose_an_account=*/false);
+    account_selection_view_->InitDialogWidget();
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -633,6 +638,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
                                      /*show_back_button=*/false,
                                      /*is_choose_an_account=*/false);
+    account_selection_view_->InitDialogWidget();
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();

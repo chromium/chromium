@@ -154,10 +154,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
 
-  // Whether the dialog has been populated via either ShowMultiAccountPicker()
-  // or ShowVerifyingSheet().
-  bool has_sheet_{false};
-
   // View containing the logo of the identity provider and the title.
   raw_ptr<views::View> header_view_ = nullptr;
 

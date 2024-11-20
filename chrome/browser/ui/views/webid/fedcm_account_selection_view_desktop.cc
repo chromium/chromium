@@ -262,6 +262,7 @@ bool FedCmAccountSelectionView::Show(
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(*new_accounts_[0],
                                                              new_idp_data);
+        InitDialogWidget();
       } else {
         // Normally we'd show the request permission dialog but without the
         // disclosure text, there is no material difference between the account
@@ -280,6 +281,7 @@ bool FedCmAccountSelectionView::Show(
             *new_accounts_[0],
             /*show_back_button=*/accounts_or_mismatches_size > 1u ||
                 supports_add_account);
+        InitDialogWidget();
       } else {
         ShowMultiAccountPicker(
             new_accounts_, {new_accounts_[0]->identity_provider},
@@ -303,6 +305,7 @@ bool FedCmAccountSelectionView::Show(
       account_selection_view_->ShowSingleAccountConfirmDialog(
           *accounts_[0],
           /*show_back_button=*/false);
+      InitDialogWidget();
     }
   } else if (idp_list_.size() > 1u && returning_accounts_size == 1u) {
     // For now we only highlight the single returning account in the multi IDP
@@ -312,6 +315,7 @@ bool FedCmAccountSelectionView::Show(
     started_as_single_returning_account_ = true;
     account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
                                                               idp_list_);
+    InitDialogWidget();
   } else {
     ShowMultiAccountPicker(accounts_, idp_list_,
                            /*show_back_button=*/false,
@@ -409,11 +413,7 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
 
   account_selection_view_->ShowFailureDialog(
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata);
-
-  if (!GetDialogWidget()) {
-    delegate_->OnDismiss(DismissReason::kOther);
-    return false;
-  }
+  InitDialogWidget();
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -469,11 +469,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
 
   account_selection_view_->ShowErrorDialog(
       base::UTF8ToUTF16(idp_etld_plus_one), idp_metadata, error);
-
-  if (!GetDialogWidget()) {
-    delegate_->OnDismiss(DismissReason::kOther);
-    return false;
-  }
+  InitDialogWidget();
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -515,11 +511,7 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
   }
 
   account_selection_view_->ShowLoadingDialog();
-
-  if (!GetDialogWidget()) {
-    delegate_->OnDismiss(DismissReason::kOther);
-    return false;
-  }
+  InitDialogWidget();
 
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events. Do not override `input_protector_` set by
@@ -648,6 +640,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   if (GetDialogType() == DialogType::MODAL) {
     state_ = State::REQUEST_PERMISSION;
     account_selection_view_->ShowRequestPermissionDialog(account, idp_data);
+    InitDialogWidget();
     return;
   }
 
@@ -657,6 +650,7 @@ void FedCmAccountSelectionView::OnAccountSelected(
   state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       account, /*show_back_button=*/true);
+  InitDialogWidget();
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -679,6 +673,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleAccountConfirmDialog(
         *accounts_[0], /*show_back_button=*/false);
+    InitDialogWidget();
     return;
   }
   // If the back button was clicked while on the multi account picker, go back
@@ -687,6 +682,7 @@ void FedCmAccountSelectionView::OnBackButtonClicked() {
     state_ = State::SINGLE_RETURNING_ACCOUNT_PICKER;
     account_selection_view_->ShowSingleReturningAccountDialog(accounts_,
                                                               idp_list_);
+    InitDialogWidget();
     return;
   }
   ShowMultiAccountPicker(
@@ -978,6 +974,7 @@ bool FedCmAccountSelectionView::ShowVerifyingSheet(
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
           : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
   account_selection_view_->ShowVerifyingSheet(account, title);
+  InitDialogWidget();
   return true;
 }
 
@@ -1068,6 +1065,10 @@ void FedCmAccountSelectionView::InitDialogWidget() {
 
   views::Widget* widget = nullptr;
   if (dialog_type_ == DialogType::BUBBLE) {
+    // If a widget already exists reuse it without any changes.
+    if (dialog_widget_) {
+      return;
+    }
     auto* bubble =
         static_cast<AccountSelectionBubbleView*>(account_selection_view_);
     widget = views::BubbleDialogDelegateView::CreateBubble(bubble);
@@ -1237,6 +1238,7 @@ void FedCmAccountSelectionView::ShowMultiAccountPicker(
   last_multi_account_is_choose_an_account_ = is_choose_an_account;
   account_selection_view_->ShowMultiAccountPicker(
       accounts, idp_list, show_back_button, is_choose_an_account);
+  InitDialogWidget();
 }
 
 void FedCmAccountSelectionView::OnOcclusionStateChanged(bool occluded) {

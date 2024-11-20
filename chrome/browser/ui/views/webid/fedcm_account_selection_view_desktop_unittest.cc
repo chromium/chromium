@@ -83,7 +83,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     for (const auto& account : accounts) {
       account_ids_.push_back(account->id);
     }
-    owner_->InitDialogWidget();
   }
 
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
@@ -92,7 +91,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     account_ids_ = {account.id};
     show_back_button_ = false;
     is_choose_an_account_ = false;
-    owner_->InitDialogWidget();
   }
 
   void ShowSingleAccountConfirmDialog(
@@ -102,7 +100,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     is_choose_an_account_ = false;
     sheet_type_ = SheetType::kConfirmAccount;
     account_ids_ = {account.id};
-    owner_->InitDialogWidget();
   }
 
   void ShowFailureDialog(
@@ -112,7 +109,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     account_ids_ = {};
     show_back_button_ = false;
     is_choose_an_account_ = false;
-    owner_->InitDialogWidget();
   }
 
   void ShowErrorDialog(const std::u16string& idp_for_display,
@@ -122,7 +118,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     account_ids_ = {};
     show_back_button_ = false;
     is_choose_an_account_ = false;
-    owner_->InitDialogWidget();
   }
 
   void ShowRequestPermissionDialog(
@@ -132,7 +127,6 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     is_choose_an_account_ = false;
     sheet_type_ = SheetType::kRequestPermission;
     account_ids_ = {account.id};
-    owner_->InitDialogWidget();
   }
 
   void ShowSingleReturningAccountDialog(
@@ -145,14 +139,12 @@ class TestAccountSelectionView : public AccountSelectionViewBase,
     CHECK_EQ(accounts[0]->login_state.value_or(LoginState::kSignUp),
              LoginState::kSignIn);
     account_ids_ = {accounts[0]->id};
-    owner_->InitDialogWidget();
   }
 
   void ShowLoadingDialog() override {
     sheet_type_ = SheetType::kLoading;
     account_ids_ = {};
     show_back_button_ = false;
-    owner_->InitDialogWidget();
   }
 
   std::string GetDialogTitle() const override { return std::string(); }
