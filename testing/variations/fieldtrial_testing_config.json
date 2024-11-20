@@ -427,6 +427,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "enable_press_enter_to_search": "true"
+                    },
                     "enable_features": [
                         "AndroidHubSearch"
                     ]

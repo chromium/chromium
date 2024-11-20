@@ -946,9 +946,15 @@ class AutocompleteMediator
 
         if (mAutocompleteInput.getPageClassification().getAsInt()
                 == PageClassification.ANDROID_HUB_VALUE) {
-            // For Hub Search, searching by keyboard typed query is not allowed so do nothing.
             RecordUserAction.record("HubSearch.KeyboardEnterPressed");
-        } else if (mAutocomplete.isPresent()) {
+
+            if (!OmniboxFeatures.sAndroidHubSearchEnterPerformsSearch.getValue()) {
+                // For Hub Search, searching by keyboard typed query is not allowed so do nothing.
+                return;
+            }
+        }
+
+        if (mAutocomplete.isPresent()) {
             findMatchAndLoadUrl(urlText, eventTime, openInNewTab);
         } else {
             mDeferredLoadAction =
