@@ -317,7 +317,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     return OutputFormat::UNDEFINED;
   }
 #endif
-  auto capabilities = context_provider_->ContextCapabilities();
+  const auto& capabilities = context_provider_->ContextCapabilities();
   const auto& shared_image_capabilities =
       context_provider_->SharedImageInterface()->GetCapabilities();
   const size_t bit_depth = media::BitDepth(pixel_format);
