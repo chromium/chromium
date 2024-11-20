@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
+import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
 
@@ -57,7 +58,7 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
                             this::doGroupTabsWithoutDialog);
         } else {
             mGroupWithDialogMenuItem =
-                    items.declareItemToFacility(
+                    items.declareItem(
                             itemViewMatcher("Group " + tabOrTabs),
                             itemDataMatcher(R.id.tab_list_editor_group_menu_item),
                             this::doGroupTabs);
@@ -83,8 +84,17 @@ public class TabListEditorAppMenu extends AppMenuFacility<TabSwitcherStation> {
     }
 
     /** Factory for the result of {@link #groupTabs()}. */
-    private NewTabGroupDialogFacility doGroupTabs() {
-        return new NewTabGroupDialogFacility(mListEditor.getAllTabIdsSelected());
+    private NewTabGroupDialogFacility doGroupTabs(
+            ItemOnScreenFacility<NewTabGroupDialogFacility> itemOnScreen) {
+        SoftKeyboardFacility softKeyboard =
+                new SoftKeyboardFacility(mHostStation.getActivityElement());
+        NewTabGroupDialogFacility dialog =
+                new NewTabGroupDialogFacility(mListEditor.getAllTabIdsSelected(), softKeyboard);
+        mHostStation.swapFacilitiesSync(
+                List.of(this, mListEditor, itemOnScreen),
+                List.of(dialog, softKeyboard),
+                itemOnScreen.clickTrigger());
+        return dialog;
     }
 
     /**
