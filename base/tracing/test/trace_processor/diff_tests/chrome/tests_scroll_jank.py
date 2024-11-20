@@ -393,7 +393,7 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280246,"GESTURE_SCROLL_UPDATE_EVENT","STEP_SEND_INPUT_EVENT_UI,STEP_HANDLE_INPUT_EVENT_IMPL,STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,STEP_GESTURE_EVENT_HANDLED"
         """))
 
-  def test_task_start_time(self):
+  def test_task_start_time_input_pipeline(self):
     return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),
         query="""
@@ -422,6 +422,58 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280250,"STEP_SEND_INPUT_EVENT_UI","[NULL]"
         -2143831735395280250,"STEP_HANDLE_INPUT_EVENT_IMPL",1292554131865210
         """))
+
+  def test_task_start_time_surface_frame_steps(self):
+    return DiffTestBlueprint(
+      trace=DataPath('scroll_m132.pftrace'),
+      query="""
+      INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+      SELECT
+        step,
+        task_start_time_ts
+      FROM chrome_graphics_pipeline_surface_frame_steps
+      ORDER BY ts
+      LIMIT 10;
+      """,
+      out=Csv("""
+      "step","task_start_time_ts"
+      "STEP_ISSUE_BEGIN_FRAME","[NULL]"
+      "STEP_RECEIVE_BEGIN_FRAME",3030298007485995
+      "STEP_GENERATE_COMPOSITOR_FRAME",3030298014657995
+      "STEP_SUBMIT_COMPOSITOR_FRAME",3030298014658995
+      "STEP_RECEIVE_COMPOSITOR_FRAME",3030298015629268
+      "STEP_ISSUE_BEGIN_FRAME",3030298016857268
+      "STEP_GENERATE_COMPOSITOR_FRAME",3030298017600363
+      "STEP_ISSUE_BEGIN_FRAME","[NULL]"
+      "STEP_ISSUE_BEGIN_FRAME","[NULL]"
+      "STEP_SUBMIT_COMPOSITOR_FRAME",3030298017634363
+      """))
+
+  def test_task_start_time_display_frame_steps(self):
+    return DiffTestBlueprint(
+      trace=DataPath('scroll_m132.pftrace'),
+      query="""
+      INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+      SELECT
+        step,
+        task_start_time_ts
+      FROM chrome_graphics_pipeline_display_frame_steps
+      ORDER BY ts
+      LIMIT 10;
+      """,
+      out=Csv("""
+      "step","task_start_time_ts"
+      "STEP_DRAW_AND_SWAP",3030298019565268
+      "STEP_SURFACE_AGGREGATION",3030298019563268
+      "STEP_SEND_BUFFER_SWAP",3030298019563268
+      "STEP_BUFFER_SWAP_POST_SUBMIT",3030298020965472
+      "STEP_DRAW_AND_SWAP",3030298029758268
+      "STEP_SURFACE_AGGREGATION",3030298029755268
+      "STEP_SEND_BUFFER_SWAP",3030298029755268
+      "STEP_BUFFER_SWAP_POST_SUBMIT",3030298031460472
+      "STEP_DRAW_AND_SWAP",3030298041020268
+      "STEP_SURFACE_AGGREGATION",3030298041017268
+      """))
 
   def test_chrome_coalesced_inputs(self):
         return DiffTestBlueprint(

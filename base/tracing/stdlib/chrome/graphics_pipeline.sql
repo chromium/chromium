@@ -27,7 +27,9 @@ CREATE PERFETTO TABLE chrome_graphics_pipeline_surface_frame_steps(
   -- Id of the graphics pipeline, pre-surface aggregation.
   surface_frame_trace_id INT,
   -- Utid of the thread where this slice exists.
-  utid INT)
+  utid INT,
+  -- Start time of the parent Chrome scheduler task (if any) of this step.
+  task_start_time_ts INT)
 AS
 SELECT
   id,
@@ -36,7 +38,8 @@ SELECT
   extract_arg(arg_set_id, 'chrome_graphics_pipeline.step') AS step,
   extract_arg(arg_set_id, 'chrome_graphics_pipeline.surface_frame_trace_id')
     AS surface_frame_trace_id,
-  utid
+  utid,
+  ts - (EXTRACT_ARG(thread_slice.arg_set_id, 'current_task.event_offset_from_task_start_time_us') * 1000) AS task_start_time_ts
 FROM thread_slice
 WHERE name = 'Graphics.Pipeline' AND surface_frame_trace_id IS NOT NULL;
 
@@ -60,7 +63,9 @@ CREATE PERFETTO TABLE chrome_graphics_pipeline_display_frame_steps(
   -- Id of the graphics pipeline, post-surface aggregation.
   display_trace_id INT,
   -- Utid of the thread where this slice exists.
-  utid INT)
+  utid INT,
+  -- Start time of the parent Chrome scheduler task (if any) of this step.
+  task_start_time_ts INT)
 AS
 SELECT
   id,
@@ -69,7 +74,8 @@ SELECT
   extract_arg(arg_set_id, 'chrome_graphics_pipeline.step') AS step,
   extract_arg(arg_set_id, 'chrome_graphics_pipeline.display_trace_id')
     AS display_trace_id,
-  utid
+  utid,
+  ts - (EXTRACT_ARG(thread_slice.arg_set_id, 'current_task.event_offset_from_task_start_time_us') * 1000) AS task_start_time_ts
 FROM thread_slice
 WHERE name = 'Graphics.Pipeline' AND display_trace_id IS NOT NULL;
 
