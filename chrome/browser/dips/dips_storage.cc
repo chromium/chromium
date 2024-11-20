@@ -289,20 +289,16 @@ std::optional<base::Time> DIPSStorage::LastWebAuthnAssertionTime(
 
 std::optional<base::Time> DIPSStorage::LastUserActivationOrAuthnAssertionTime(
     const GURL& url) {
-  return LastInteractionTimeAndType(url).first;
-}
-
-std::pair<std::optional<base::Time>, bool>
-DIPSStorage::LastInteractionTimeAndType(const GURL& url) {
   std::optional<base::Time> last_user_activation_time =
       LastUserActivationTime(url);
   std::optional<base::Time> last_web_authn_assertion_time =
       LastWebAuthnAssertionTime(url);
 
   if (last_user_activation_time >= last_web_authn_assertion_time) {
-    return std::make_pair(last_user_activation_time, true);
+    return last_user_activation_time;
   }
-  return std::make_pair(last_web_authn_assertion_time, false);
+
+  return last_web_authn_assertion_time;
 }
 
 /* static */
