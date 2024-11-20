@@ -28,6 +28,7 @@ android_library("java") {
     "//base:callback_java",
     "//base:log_java",
     "//base:metrics_java",
+    "//base:resetters_java",
     "//base:service_loader_java",
     "//base:stream_util_java",
     "//base:tasks_java",
@@ -73,6 +74,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTaskUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImplUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchProviderTest.java",

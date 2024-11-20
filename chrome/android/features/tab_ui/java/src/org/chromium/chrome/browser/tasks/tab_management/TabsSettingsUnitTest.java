@@ -7,11 +7,16 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
@@ -25,21 +30,27 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tasks.tab_management.TabsSettings.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
@@ -203,7 +214,7 @@ public class TabsSettingsUnitTest {
 
     @Test
     @SmallTest
-    public void testLaunchTabsSettingsShareTitlesAndIrls_noShowWhenDisabled() {
+    public void testLaunchTabsSettingsShareTabs_noShowWhenDisabled() {
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
                 tabsSettings.findPreference(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
@@ -212,5 +223,59 @@ public class TabsSettingsUnitTest {
                         TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
         assertFalse(shareTitlesAndUrlsWithOsSwitch.isVisible());
         assertFalse(learnMoreTextMessagePreference.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    public void testLaunchTabsSettingsShareTabs() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        assertTrue(prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true));
+
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+        TextMessagePreference learnMoreTextMessagePreference =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+        assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
+        assertTrue(learnMoreTextMessagePreference.isVisible());
+
+        shareTitlesAndUrlsWithOsSwitch.onClick();
+
+        assertFalse(shareTitlesAndUrlsWithOsSwitch.isChecked());
+        assertFalse(prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true));
+    }
+
+    @Test
+    @SmallTest
+    public void testLaunchTabsSettingsShareTabs_LearnMore() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+        TextMessagePreference learnMoreTextMessagePreference =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+        assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
+        assertTrue(learnMoreTextMessagePreference.isVisible());
+
+        View view = Mockito.mock(View.class);
+        CustomTabIntentHelper customTabsHelper = Mockito.mock(CustomTabIntentHelper.class);
+        Intent intent = new Intent();
+        when(customTabsHelper.createCustomTabActivityIntent(eq(mActivity), any(Intent.class)))
+                .thenReturn(intent);
+        verify(customTabsHelper, never())
+                .createCustomTabActivityIntent(eq(mActivity), any(Intent.class));
+
+        tabsSettings.setCustomTabIntentHelper(customTabsHelper);
+        tabsSettings.onLearnMoreClicked(view);
+
+        verify(customTabsHelper).createCustomTabActivityIntent(eq(mActivity), any(Intent.class));
     }
 }

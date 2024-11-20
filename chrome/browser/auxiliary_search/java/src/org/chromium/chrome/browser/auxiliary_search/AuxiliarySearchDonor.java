@@ -34,6 +34,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -62,6 +63,7 @@ public class AuxiliarySearchDonor {
 
     private static final Executor UI_THREAD_EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+    private static boolean sSkipInitializationForTesting;
 
     private final Context mContext;
     private final String mNamespace;
@@ -81,6 +83,8 @@ public class AuxiliarySearchDonor {
 
     /** Creates a session and initializes the schema type. */
     void createSessionAndInit() {
+        if (sSkipInitializationForTesting) return;
+
         if (mAppSearchSession != null) {
             return;
         }
@@ -138,22 +142,25 @@ public class AuxiliarySearchDonor {
                     new SetSchemaRequest.Builder()
                             .setForceOverride(true)
                             .addDocumentClasses(WebPage.class);
-            AuxiliarySearchControllerFactory.setSchemaTypeVisibilityForPackage(
-                    (packageName, sha256Certificate) -> {
-                        try {
-                            requestBuilder.setDocumentClassVisibilityForPackage(
-                                    WebPage.class,
-                                    /* visible= */ true,
-                                    new PackageIdentifier(
-                                            packageName,
-                                            new Signature(sha256Certificate).toByteArray()));
-                        } catch (AppSearchException e) {
-                            Log.i(
-                                    TAG,
-                                    "Failed to set document class visibility for package %s.",
-                                    packageName);
-                        }
-                    });
+            AuxiliarySearchControllerFactory.getInstance()
+                    .setSchemaTypeVisibilityForPackage(
+                            (packageName, sha256Certificate) -> {
+                                try {
+                                    requestBuilder.setDocumentClassVisibilityForPackage(
+                                            WebPage.class,
+                                            /* visible= */ true,
+                                            new PackageIdentifier(
+                                                    packageName,
+                                                    new Signature(sha256Certificate)
+                                                            .toByteArray()));
+                                } catch (AppSearchException e) {
+                                    Log.i(
+                                            TAG,
+                                            "Failed to set document class visibility for package"
+                                                    + " %s.",
+                                            packageName);
+                                }
+                            });
             return requestBuilder.build();
         } catch (AppSearchException e) {
             Log.i(TAG, "Failed to add document when building SetSchemaRequest.");
@@ -465,5 +472,10 @@ public class AuxiliarySearchDonor {
 
     public void setPendingDocumentsForTesting(List<WebPage> docs) {
         mPendingDocuments = docs;
+    }
+
+    public static void setSkipInitializationForTesting(boolean skipInitializationForTesting) {
+        sSkipInitializationForTesting = skipInitializationForTesting;
+        ResettersForTesting.register(() -> sSkipInitializationForTesting = false);
     }
 }

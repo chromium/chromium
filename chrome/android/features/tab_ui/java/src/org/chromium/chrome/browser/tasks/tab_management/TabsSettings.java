@@ -4,16 +4,27 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Browser;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -24,6 +35,8 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 /** Fragment for tab related configurations to Chrome. */
 public class TabsSettings extends ChromeBaseSettingsFragment {
@@ -45,6 +58,23 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
+    static final String LEARN_MORE_URL = "https://support.google.com/chrome/?p=share_titles_urls";
+
+    private CustomTabIntentHelper mCustomTabHelper;
+
+    /**
+     * Functional interface to start a Chrome Custom Tab for the given intent, e.g. by using {@link
+     * org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent}.
+     * TODO(crbug.com/40751023): Update when LaunchIntentDispatcher is (partially-)modularized.
+     */
+    @FunctionalInterface
+    public interface CustomTabIntentHelper {
+        /**
+         * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
+         */
+        Intent createCustomTabActivityIntent(Context context, Intent intent);
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tabs_settings);
@@ -63,6 +93,11 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     public void onStart() {
         super.onStart();
         configureTabArchiveSettings();
+    }
+
+    /** Set the necessary CCT helpers to be able to natively open links. */
+    public void setCustomTabIntentHelper(CustomTabIntentHelper tabHelper) {
+        mCustomTabHelper = tabHelper;
     }
 
     private void configureAutoOpenSyncedTabGroupsSwitch() {
@@ -121,7 +156,54 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                 (TextMessagePreference)
                         findPreference(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
 
-        shareTitlesAndUrlsWithOsSwitch.setVisible(false);
-        learnMoreTextMessagePreference.setVisible(false);
+        if (!AuxiliarySearchControllerFactory.getInstance().isEnabled()) {
+            shareTitlesAndUrlsWithOsSwitch.setVisible(false);
+            learnMoreTextMessagePreference.setVisible(false);
+            return;
+        }
+
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        boolean isEnabled =
+                prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true);
+        shareTitlesAndUrlsWithOsSwitch.setChecked(isEnabled);
+        shareTitlesAndUrlsWithOsSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    boolean enabled = (boolean) newValue;
+                    prefsManager.writeBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, enabled);
+                    return true;
+                });
+
+        learnMoreTextMessagePreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string
+                                                .share_titles_and_urls_with_os_learn_more_setting_text),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new NoUnderlineClickableSpan(
+                                        getContext(), this::onLearnMoreClicked))));
+    }
+
+    @VisibleForTesting
+    void onLearnMoreClicked(@NonNull View view) {
+        openUrlInCct(LEARN_MORE_URL);
+    }
+
+    private void openUrlInCct(String url) {
+        assert mCustomTabHelper != null
+                : "CCT helpers must be set on TabsSettings before opening a link";
+        CustomTabsIntent customTabIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+
+        customTabIntent.intent.setData(Uri.parse(url));
+        Intent intent =
+                mCustomTabHelper.createCustomTabActivityIntent(
+                        getContext(), customTabIntent.intent);
+        intent.setPackage(getContext().getPackageName());
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(intent);
+        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

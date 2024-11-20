@@ -1616,7 +1616,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             (profileProvider) -> {
                                 if (isActivityFinishingOrDestroyed()) return;
                                 mAuxiliarySearchController =
-                                        AuxiliarySearchControllerFactory
+                                        AuxiliarySearchControllerFactory.getInstance()
                                                 .createAuxiliarySearchController(
                                                         this,
                                                         profileProvider.getOriginalProfile(),

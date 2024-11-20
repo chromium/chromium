@@ -78,8 +78,9 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
         mTaskFinishedCount = 0;
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         mAuxiliarySearchController =
-                AuxiliarySearchControllerFactory.createAuxiliarySearchController(
-                        mContext, profile, /* tabModelSelector= */ null);
+                AuxiliarySearchControllerFactory.getInstance()
+                        .createAuxiliarySearchController(
+                                mContext, profile, /* tabModelSelector= */ null);
 
         long startTimeMs = TimeUtils.uptimeMillis();
         // Record the delay from soonest expected wakeup time.
