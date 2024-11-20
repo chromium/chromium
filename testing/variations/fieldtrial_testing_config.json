@@ -8182,6 +8182,21 @@
             ]
         }
     ],
+    "DisableGeoLanguageModel": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableGeoLanguageModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
