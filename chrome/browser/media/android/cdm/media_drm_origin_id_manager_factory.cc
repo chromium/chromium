@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "media/base/media_switches.h"
@@ -38,10 +39,12 @@ MediaDrmOriginIdManagerFactory::MediaDrmOriginIdManagerFactory()
 
 MediaDrmOriginIdManagerFactory::~MediaDrmOriginIdManagerFactory() = default;
 
-KeyedService* MediaDrmOriginIdManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MediaDrmOriginIdManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new MediaDrmOriginIdManager(profile->GetPrefs());
+  return std::make_unique<MediaDrmOriginIdManager>(
+      profile->GetPrefs(), base::PassKey<MediaDrmOriginIdManagerFactory>());
 }
 
 bool MediaDrmOriginIdManagerFactory::ServiceIsCreatedWithBrowserContext()
