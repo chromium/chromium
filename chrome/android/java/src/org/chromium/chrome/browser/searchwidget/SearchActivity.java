@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.rlz.RevenueStats;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -170,6 +171,7 @@ public class SearchActivity extends AsyncInitializationActivity
         TerminationReason.ACTIVITY_FOCUS_LOST,
         TerminationReason.FRE_NOT_COMPLETED,
         TerminationReason.CUSTOM_BACK_ARROW,
+        TerminationReason.BRING_TAB_TO_FRONT,
         TerminationReason.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -182,7 +184,8 @@ public class SearchActivity extends AsyncInitializationActivity
         int ACTIVITY_FOCUS_LOST = 5;
         int FRE_NOT_COMPLETED = 6;
         int CUSTOM_BACK_ARROW = 7;
-        int COUNT = 8;
+        int BRING_TAB_TO_FRONT = 8;
+        int COUNT = 9;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SearchActivityTerminationReason)
@@ -319,7 +322,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         this::loadUrl,
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
-                        IntentHandler::bringTabToFront,
+                        this::bringTabToFront,
                         /* saveOfflineButtonState= */ (tab) -> false,
                         /*omniboxUma*/ (url, transition, isNtp) -> {},
                         TabWindowManagerSingleton::getInstance,
@@ -852,6 +855,11 @@ public class SearchActivity extends AsyncInitializationActivity
                     };
             RecordHistogram.recordEnumeratedHistogram(histogramName + suffix, sample, max);
         }
+    }
+
+    private void bringTabToFront(Tab tab) {
+        IntentHandler.bringTabToFront(tab);
+        finish(TerminationReason.BRING_TAB_TO_FRONT, /* loadUrlParams= */ null);
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {
