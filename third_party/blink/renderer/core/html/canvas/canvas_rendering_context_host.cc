@@ -181,8 +181,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       DCHECK(LowLatencyEnabled());
       provider = CanvasResourceProvider::CreatePassThroughProvider(
           resource_info, FilterQuality(),
-          SharedGpuContext::ContextProviderWrapper(), dispatcher,
-          RenderingContext()->IsOriginTopLeft(), this);
+          SharedGpuContext::ContextProviderWrapper(), dispatcher, this);
     }
     if (!provider) {
       // If PassThrough failed, try a SharedImage with usage display enabled,

@@ -633,7 +633,7 @@ TEST_F(CanvasResourceProviderTest,
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       kInfo, cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /*resource_dispatcher */, true /*is_origin_top_left*/);
+      nullptr /*resource_dispatcher */);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -737,17 +737,17 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize - 1, kMaxTextureSize),
       cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
+      nullptr /* resource_dispatcher */);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize, kMaxTextureSize),
       cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
+      nullptr /* resource_dispatcher */);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
       SkImageInfo::MakeN32Premul(kMaxTextureSize + 1, kMaxTextureSize),
       cc::PaintFlags::FilterQuality::kLow, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
+      nullptr /* resource_dispatcher */);
   // The CanvasResourceProvider for PassThrough should not be created or valid
   // if the texture size is greater than the maximum value
   EXPECT_TRUE(!provider || !provider->IsValid());

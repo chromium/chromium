@@ -142,7 +142,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceDispatcher>,
-      bool is_origin_top_left,
       CanvasResourceHost* resource_host = nullptr);
 
   static std::unique_ptr<CanvasResourceProvider> CreateSwapChainProvider(
@@ -181,7 +180,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
     filter_quality_ = quality;
   }
   gfx::Size Size() const;
-  virtual bool IsOriginTopLeft() const { return true; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.

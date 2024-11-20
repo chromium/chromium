@@ -405,7 +405,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return nullptr;
 
-    CHECK(IsOriginTopLeft());
     const SkImageInfo& info = GetSkImageInfo();
     return CanvasResourceSharedImage::Create(
         gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
@@ -815,22 +814,19 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
-      bool is_origin_top_left,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kPassThrough,
                                info,
                                filter_quality,
                                std::move(context_provider_wrapper),
                                std::move(resource_dispatcher),
-                               resource_host),
-        is_origin_top_left_(is_origin_top_left) {}
+                               resource_host) {}
 
   ~CanvasResourceProviderPassThrough() override = default;
   bool IsValid() const final { return true; }
   bool IsAccelerated() const final { return true; }
   bool SupportsDirectCompositing() const override { return true; }
   bool SupportsSingleBuffering() const override { return true; }
-  bool IsOriginTopLeft() const override { return is_origin_top_left_; }
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
@@ -852,8 +848,6 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
       return nullptr;
     return resource->Bitmap();
   }
-
-  const bool is_origin_top_left_;
 };
 
 // * Renders to back buffer of a shared image swap chain.
@@ -1195,7 +1189,6 @@ CanvasResourceProvider::CreatePassThroughProvider(
     cc::PaintFlags::FilterQuality filter_quality,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
-    bool is_origin_top_left,
     CanvasResourceHost* resource_host) {
   // SharedGpuContext::IsGpuCompositingEnabled can potentially replace the
   // context_provider_wrapper, so it's important to call that first as it can
@@ -1228,7 +1221,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
   // classes).
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
       info, filter_quality, context_provider_wrapper, resource_dispatcher,
-      is_origin_top_left, resource_host);
+      resource_host);
   CHECK(provider->IsValid());
   return provider;
 }
