@@ -220,22 +220,8 @@ def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
 
     else:
         extra_args = []
-    filtered_input_files = []
-    for f in input_files:
-        size_in_bytes = os.path.getsize(f)
-        if size_in_bytes <= 1 * 1024 * 1024:
-            # A valid profile on android is usually 108MB, and typically 2-3 of
-            # those are produced, so this would be less than 0.5% ignored. These
-            # small ones need to be ignored since otherwise they fail the merge.
-            _LOGGER.warning(f'Skipping due to size={size_in_bytes} <1MB: {f}')
-        else:
-            filtered_input_files.append(f)
 
-    if not filtered_input_files:
-        raise MergeError('No valid profraw/profdata file after filter.')
-
-    cmd = [_PROFDATA, 'merge', '-o', output_path
-           ] + extra_args + filtered_input_files
+    cmd = [_PROFDATA, 'merge', '-o', output_path] + extra_args + input_files
     _LOGGER.debug(f"Running command: {' '.join(cmd)}")
 
     proc = subprocess.run(cmd, check=True, capture_output=True, text=True)
@@ -305,6 +291,12 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
         # to produce valid profdata. Fail fast and rely on repeats to get a
         # valid profdata.
         '--max-failures=0',
+        # Disabling spare renderer features when profiling prevent dumping
+        # profile data too early during benchmarks which would result in
+        # incomplete profraw files. See https://crbug.com/366235732.
+        '--extra-browser-args='
+        '"--disable-features=SpareRendererForSitePerProcess,'
+        'AndroidWarmUpSpareRendererWithTimeout"',
     ] + ['-v'] * args.verbose + ['-q'] * args.quiet
 
     if args.android_browser:
