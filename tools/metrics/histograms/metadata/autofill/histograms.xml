@@ -3689,25 +3689,6 @@ TODO(crbug.com/378835293): Remove metric.
 </histogram>
 
 <!--
-TODO(crbug.com/378835293): Remove metric.
--->
-
-<histogram
-    name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Total"
-    enum="BooleanSelectManualFallback" expires_after="2025-03-23">
-  <owner>brunobraga@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the total acceptance of manual fallback suggestions on fields that
-    are either unclassified or classified differently as the filling product.
-    This tracks the number of times a user accepted/didn't accept the manual
-    fallback option in the context menu. Emitted on navigation (when the
-    AutofillManager/PasswordAutofillManager is destroyed/reset), at most once
-    per page.
-  </summary>
-</histogram>
-
-<!--
 TODO(crbug.com/378835293): Keep this metric only for passwords.
 -->
 

@@ -964,14 +964,6 @@ IN_PROC_BROWSER_TEST_P(SelectPasswordFallbackMetricsTest,
 
   histogram_tester.ExpectUniqueSample(GetExplicitlyTriggeredMetricName(),
                                       params.option_accepted, 1);
-  // TODO(crbug.com/378835293): Remove this expectation. We don't need a "Total"
-  // metric anymore.
-  if (params.is_field_unclassified) {
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.ManualFallback.ExplicitlyTriggered."
-        "NotClassifiedAsTargetFilling.Total",
-        params.option_accepted, 1);
-  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
