@@ -38,11 +38,9 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
@@ -415,15 +413,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Caches the credit card data for server and virtual credit cards.
   void OnCreditCardFetchedSuccessfully(const CreditCard& credit_card);
 
-  autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger&
-  GetAutocompleteUnrecognizedFallbackEventLogger() {
-    return metrics_->autocomplete_unrecognized_fallback_logger;
-  }
-
-  autofill_metrics::ManualFallbackEventLogger& GetManualFallbackEventLogger() {
-    return metrics_->manual_fallback_logger;
-  }
-
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.
@@ -466,20 +455,6 @@ class BrowserAutofillManager : public AutofillManager {
     // metrics.
     autofill_metrics::AddressFormEventLogger address_form_event_logger;
     autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
-
-    // The autocomplete unrecognized fallback logger is used to collect metrics
-    // around the manual fallback for autocomplete=unrecognized fields.
-    // Since no metrics for autocomplete=unrecognized fields are emitted through
-    // the `address_form_event_logger`, a separate logger specifically for
-    // autocomplete=unrecognized fields is used.
-    autofill_metrics::AutocompleteUnrecognizedFallbackEventLogger
-        autocomplete_unrecognized_fallback_logger;
-
-    // The manual fallback logger is used to collect metrics
-    // around Autofill being triggered on unclassified fields or fields that are
-    // classified differently from the target `FillingProduct` (address or
-    // payments).
-    autofill_metrics::ManualFallbackEventLogger manual_fallback_logger;
 
     // The (masked) CreditCard last selected by the user.
     CreditCard last_selected_card;

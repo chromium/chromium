@@ -95,13 +95,11 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
-#include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
@@ -168,39 +166,6 @@ namespace {
 // our analysis.
 constexpr size_t kMinNumberAddressFieldsToTriggerAddressUserPerceptionSurvey =
     4;
-
-// Checks if the user triggered address Autofill through the
-// Chrome context menu on a field not classified as address.
-// `type` defines the suggestion type shown.
-// `autofill_field` is the `AutofillField` from where the user triggered
-// suggestions.
-bool IsAddressAutofillManuallyTriggeredOnNonAddressField(
-    SuggestionType type,
-    const AutofillField* autofill_field) {
-  return GetFillingProductFromSuggestionType(type) ==
-             FillingProduct::kAddress &&
-         (!autofill_field ||
-          !IsAddressType(autofill_field->Type().GetStorableType()));
-}
-
-// Checks if the user triggered payments Autofill through the
-// Chrome context menu on a field not classified as credit card.
-// `type` defines the suggestion type shown.
-// `autofill_field` is the `AutofillField` from where the user triggered
-// suggestions.
-bool IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-    SuggestionType type,
-    const AutofillField* autofill_field) {
-  if (GetFillingProductFromSuggestionType(type) !=
-      FillingProduct::kCreditCard) {
-    return false;
-  }
-
-  return !autofill_field ||
-         !FieldTypeGroupSet{FieldTypeGroup::kCreditCard,
-                            FieldTypeGroup::kStandaloneCvcField}
-              .contains(autofill_field->Type().group());
-}
 
 // Converts `filling_stats` to a key-value representation, where the key
 // is the "stats category" and the value is the number of fields that match
@@ -1956,17 +1921,6 @@ void BrowserAutofillManager::FillOrPreviewField(
       metrics_->credit_card_form_event_logger.OnFilledByFieldByFieldFilling(
           type);
     }
-
-    const bool is_address_manual_fallback_on_non_address_field =
-        IsAddressAutofillManuallyTriggeredOnNonAddressField(type,
-                                                            autofill_field);
-    const bool is_payments_manual_fallback_on_non_payments_field =
-        IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-            type, autofill_field);
-    if (is_address_manual_fallback_on_non_address_field ||
-        is_payments_manual_fallback_on_non_payments_field) {
-      metrics_->manual_fallback_logger.OnDidFillSuggestion(filling_product);
-    }
   }
 }
 
@@ -2149,34 +2103,6 @@ void BrowserAutofillManager::DidShowSuggestions(
   const bool has_cached_form_and_field = GetCachedFormAndField(
       form.global_id(), field_id, &form_structure, &autofill_field);
 
-  // Check if Autofill was triggered via manual fallback on a field that was
-  // either unclassified or classified differently as the target
-  // `FillingProduct`.
-  // Note that in this type of flow we purposely do not log key metrics so we do
-  // not mess with the current denominator (classified forms).
-  const bool is_address_manual_fallback_on_non_address_field =
-      std::ranges::any_of(
-          shown_suggestion_types, [autofill_field](SuggestionType type) {
-            return IsAddressAutofillManuallyTriggeredOnNonAddressField(
-                type, autofill_field);
-          });
-  const bool is_payments_manual_fallback_on_non_payments_field =
-      std::ranges::any_of(
-          shown_suggestion_types, [autofill_field](SuggestionType type) {
-            return IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-                type, autofill_field);
-          });
-  if (is_address_manual_fallback_on_non_address_field) {
-    metrics_->manual_fallback_logger.OnDidShowSuggestions(
-        FillingProduct::kAddress);
-    return;
-  }
-  if (is_payments_manual_fallback_on_non_payments_field) {
-    metrics_->manual_fallback_logger.OnDidShowSuggestions(
-        FillingProduct::kCreditCard);
-    return;
-  }
-
   if (!has_cached_form_and_field) {
     return;
   }
@@ -2191,9 +2117,6 @@ void BrowserAutofillManager::DidShowSuggestions(
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
                                  form_structure->form_parsed_timestamp(),
                                  client().IsOffTheRecord());
-  } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-    // Suggestions were triggered on an ac=unrecognized address field.
-    metrics_->autocomplete_unrecognized_fallback_logger.OnDidShowSuggestions();
   }
 }
 
@@ -2806,9 +2729,6 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
           *filled_profile, form_structure, trigger_autofill_field,
           trigger_details.trigger_source);
     }
-  } else if (!is_refill) {
-    metrics_->autocomplete_unrecognized_fallback_logger
-        .OnDidFillFormFillingSuggestion();
   }
   if (!is_refill) {
     client().GetPersonalDataManager().address_data_manager().RecordUseOf(

@@ -75,14 +75,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Suggestion Deleted"/>
 </enum>
 
-<enum name="AutofillAddNewAddressPromptOutcome">
-  <summary>
-    Describes the user's decision on the 'And new address' prompt.
-  </summary>
-  <int value="0" label="Accepted and saved a new address."/>
-  <int value="1" label="Canceled explicitly or ignored"/>
-</enum>
-
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>

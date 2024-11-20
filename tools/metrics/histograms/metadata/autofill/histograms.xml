@@ -2918,26 +2918,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<!--
-TODO(crbug.com/378835293): Remove metric.
--->
-
-<histogram
-    name="Autofill.Funnel.ClassifiedFieldAutocompleteUnrecognized.FillAfterSuggestion.Address"
-    enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-05-11">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Like Autofill.Funnel.FillAfterSuggestion.Address, but conditioned on
-    autocomplete=unrecognized fields. The metric is only recorded if the user
-    saw a suggestion on an autocomplete=unrecognized field. On desktop, that
-    means using the manual fallback option through the context menu. On mobile,
-    keyboard accessory suggestions appear independently of the autocomplete
-    attribute. Emitted on navigation (when the AutofillManager is destroyed), at
-    most once per page.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Funnel.FillAfterSuggestion.{FormType}"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>
@@ -2981,32 +2961,27 @@ TODO(crbug.com/378835293): Remove metric.
   <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
-<!--
-TODO(crbug.com/378835293): Keep this metric only for passwords.
--->
-
 <histogram
-    name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion{AutofillFormType}"
+    name="Autofill.Funnel.NotClassifiedAsTargetFilling.FillAfterSuggestion.Password"
     enum="BooleanAutofillFillAfterSuggestion" expires_after="2025-03-23">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Counts whether users accepted any autofill suggestion that was shown to them
+    Counts whether users accepted any password suggestion that was shown to them
     for a given form. This metric is conditioned to those suggestions that were
     triggered via the context menu on a field that does not match the target
     filling product.
 
-    This metric is only recorded if a suggestion for the {AutofillFormType} was
-    shown, accepted, and the suggestion was filled successfully. This is
-    recorded once per navigation. It is reported as &quot;User chose to
-    fill&quot; once. It does not matter if the user clears the filled values nor
-    if the user accepts a different suggestion later.
+    This metric is only recorded if a password suggestion was shown, accepted,
+    and the suggestion was filled successfully. This is recorded once per
+    navigation. It is reported as &quot;User chose to fill&quot; once. It does
+    not matter if the user clears the filled values nor if the user accepts a
+    different suggestion later.
 
     If the accepted suggestion is not filled (e.g., if it required
     authentication and the user cancelled or failed that step), then this metric
     is not recorded.
   </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
 <histogram name="Autofill.Funnel.ParsedAsType.{FormType}"
@@ -3659,21 +3634,6 @@ TODO(crbug.com/378835293): Keep this metric only for passwords.
   </summary>
 </histogram>
 
-<!--
-TODO(crbug.com/378835293): Remove metric.
--->
-
-<histogram name="Autofill.ManualFallback.AddNewAddressPromptShown"
-    enum="AutofillAddNewAddressPromptOutcome" expires_after="2025-05-18">
-  <owner>brunobraga@google.com</owner>
-  <owner>vykochko@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs the outcome of the 'Add new address' popup prompt interaction (new
-    address added or prompt canceled/ignored).
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.ManualFallback.ExplicitlyTriggered.ClassifiedAsTargetFilling.Password"
     enum="BooleanSelectManualFallback" expires_after="2025-01-20">
@@ -3688,52 +3648,19 @@ TODO(crbug.com/378835293): Remove metric.
   </summary>
 </histogram>
 
-<!--
-TODO(crbug.com/378835293): Keep this metric only for passwords.
--->
-
 <histogram
-    name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling{AutofillFormType}"
+    name="Autofill.ManualFallback.ExplicitlyTriggered.NotClassifiedAsTargetFilling.Password"
     enum="BooleanSelectManualFallback" expires_after="2025-03-23">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records per form type the acceptance of manual fallback suggestions on
-    fields that are either unclassified or classified differently as the filling
-    product. This tracks the number of times a user accepted/didn't accept the
-    manual fallback option in the context menu. Emitted on navigation (when the
-    AutofillManager/PasswordAutofillManager is destroyed/reset), at most once
-    per page.
+    fields that are either unclassified or classified differently than the
+    filling product password. This tracks the number of times a user
+    accepted/didn't accept the manual fallback option in the context menu.
+    Emitted on navigation (when the PasswordAutofillManager is destroyed/reset),
+    at most once per page.
   </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-</histogram>
-
-<!--
-TODO(crbug.com/378835293): Remove metric.
--->
-
-<histogram
-    name="Autofill.ManualFallback.ExplicitlyTriggered.{AutocompleteState}.Address"
-    enum="BooleanSelectManualFallback" expires_after="2025-05-04">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records the acceptance of manual fallback suggestions, by tracking the
-    number of times a user accepted/didn't accept the manual fallback option in
-    the context menu. Emitted on navigation (when the AutofillManager is
-    destroyed), at most once per page.
-
-    The &quot;Total&quot; variant of this metric is recorded only on classified
-    address fields. It represents the sum of classified address fields with
-    autocomplete unrecognized and with autocomplete recognized.
-  </summary>
-  <token key="AutocompleteState">
-    <variant name="ClassifiedFieldAutocompleteRecognized"
-        summary="A classified field with recognized autocomplete attribute"/>
-    <variant name="ClassifiedFieldAutocompleteUnrecognized"
-        summary="A classified field with unrecognized autocomplete attribute"/>
-    <variant name="Total" summary="Sum of recognized and unrecognized"/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.Message.{MessageType}.{Event}" enum="BooleanShown"
