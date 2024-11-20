@@ -26,6 +26,8 @@ source_set("ui") {
     "credential_list_view_controller.mm",
     "empty_credentials_view_controller.h",
     "empty_credentials_view_controller.mm",
+    "generic_error_view_controller.h",
+    "generic_error_view_controller.mm",
     "new_password_coordinator+Testing.h",
     "new_password_coordinator.h",
     "new_password_coordinator.mm",

@@ -134,6 +134,10 @@ class CredentialProviderService
   // syncing passwords.
   void UpdateUserEmail();
 
+  // Syncs whether or not the user is currently syncing passwords. (This
+  // includes account storage.)
+  void UpdatePasswordSyncSetting();
+
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
       password_manager::PasswordStoreInterface* store,
