@@ -47,10 +47,7 @@ set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
 option(ABSL_PROPAGATE_CXX_STD
   "Use CMake C++ standard meta features (e.g. cxx_std_14) that propagate to targets that link to Abseil"
-  OFF)  # TODO: Default to ON for CMake 3.8 and greater.
-if(NOT ABSL_PROPAGATE_CXX_STD)
-  message(WARNING "A future Abseil release will default ABSL_PROPAGATE_CXX_STD to ON for CMake 3.8 and up. We recommend enabling this option to ensure your project still builds correctly.")
-endif()
+  ON)
 
 option(ABSL_USE_SYSTEM_INCLUDES
   "Silence warnings in Abseil headers by marking them as SYSTEM includes"
