@@ -30,11 +30,7 @@ public class TrustedWebActivityCoordinator {
 
     @Inject
     public TrustedWebActivityCoordinator(
-            SharedActivityCoordinator sharedActivityCoordinator,
-            DisclosureUiPicker unused_disclosureUiPicker,
-            BaseCustomTabActivity activity) {
-        // We don't need to do anything with the unused_ classes above, we just need to resolve them
-        // so they start working.
+            SharedActivityCoordinator sharedActivityCoordinator, BaseCustomTabActivity activity) {
         mSharedActivityCoordinator = sharedActivityCoordinator;
         mCurrentPageVerifier = activity.getCurrentPageVerifier();
         mClientPackageNameProvider = activity.getClientPackageNameProvider();

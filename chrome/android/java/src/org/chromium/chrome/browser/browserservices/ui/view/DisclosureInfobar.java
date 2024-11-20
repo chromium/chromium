@@ -13,29 +13,24 @@ import android.content.res.Resources;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyObservable;
 
-import javax.inject.Inject;
-
 /**
  * Shows the Trusted Web Activity disclosure when appropriate and notifies of its acceptance.
  *
  * <p>Thread safety: All methods on this class should be called on the UI thread.
  */
-@ActivityScope
 public class DisclosureInfobar
         implements PropertyObservable.PropertyObserver<PropertyKey>, StartStopWithNativeObserver {
     private final Resources mResources;
-    private final Supplier<SnackbarManager> mSnackbarManager;
+    private final SnackbarManager mSnackbarManager;
     private final TrustedWebActivityModel mModel;
 
     /**
@@ -54,13 +49,16 @@ public class DisclosureInfobar
                 }
             };
 
-    @Inject
-    DisclosureInfobar(Resources resources, BaseCustomTabActivity activity) {
+    public DisclosureInfobar(
+            Resources resources,
+            SnackbarManager snackbarManager,
+            TrustedWebActivityModel model,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mResources = resources;
-        mSnackbarManager = activity::getSnackbarManager;
-        mModel = activity.getTrustedWebActivityModel();
+        mSnackbarManager = snackbarManager;
+        mModel = model;
         mModel.addObserver(this);
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     @Override
@@ -73,7 +71,7 @@ public class DisclosureInfobar
                 showIfNeeded();
                 break;
             case DISCLOSURE_STATE_NOT_SHOWN:
-                mSnackbarManager.get().dismissSnackbars(mSnackbarController);
+                mSnackbarManager.dismissSnackbars(mSnackbarController);
                 break;
         }
     }
@@ -112,7 +110,7 @@ public class DisclosureInfobar
             return;
         }
 
-        mSnackbarManager.get().showSnackbar(snackbar);
+        mSnackbarManager.showSnackbar(snackbar);
         mModel.get(DISCLOSURE_EVENTS_CALLBACK).onDisclosureShown();
     }
 }

@@ -38,7 +38,6 @@ public class CustomTabStatusBarColorProviderTest {
     @Mock public Tab mTab;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     @Mock private ColorProvider mColorProvider;
-    @Mock public BaseCustomTabActivity mActivity;
 
     @Before
     public void setUp() {

@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
 import org.chromium.chrome.browser.webapps.WebappDeferredStartupWithStorageHandler;
@@ -56,7 +55,6 @@ public class WebappDisclosureControllerTest {
     private static final String SCOPE = "https://www.example.com";
 
     @Mock public CurrentPageVerifier mCurrentPageVerifier;
-    @Mock public BaseCustomTabActivity mActivity;
 
     @Captor public ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 

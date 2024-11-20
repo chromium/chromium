@@ -58,7 +58,11 @@ import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkV
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebappDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
+import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureUiPicker;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureInfobar;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotification;
+import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
@@ -162,6 +166,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private WebappDeferredStartupWithStorageHandler mWebappDeferredStartupWithStorageHandler;
     private TrustedWebActivityModel mTrustedWebActivityModel;
     private CustomTabIntentHandlingStrategy mCustomTabIntentHandlingStrategy;
+    private DisclosureInfobar mDisclosureInfobar;
+    private DisclosureSnackbar mDisclosureSnackbar;
+    private DisclosureNotification mDisclosureNotification;
+    private DisclosureUiPicker mDisclosureUiPicker;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -510,6 +518,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (intentDataProvider.isWebApkActivity()) {
             component.resolveWebApkActivityCoordinator();
+            // DisclosureInfobar manages its own lifecycle and just needs to be initialized.
+            getDisclosureInfobar();
             new WebApkActivityLifecycleUmaTracker(
                     this,
                     getIntentDataProvider(),
@@ -529,6 +539,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (mIntentDataProvider.isTrustedWebActivity()) {
             mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
+            // DisclosureUiPicker manages its own lifecycle and just needs to be initialized.
+            getDisclosureUiPicker();
             new TrustedWebActivityDisclosureController(
                     getTrustedWebActivityModel(),
                     getLifecycleDispatcher(),
@@ -1315,5 +1327,51 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CustomTabIntentHandler getCustomTabIntentHandler() {
         return mCustomTabIntentHandler;
+    }
+
+    public DisclosureInfobar getDisclosureInfobar() {
+        if (mDisclosureInfobar == null) {
+            mDisclosureInfobar =
+                    new DisclosureInfobar(
+                            getResources(),
+                            getSnackbarManager(),
+                            getTrustedWebActivityModel(),
+                            getLifecycleDispatcher());
+        }
+        return mDisclosureInfobar;
+    }
+
+    public DisclosureSnackbar getDisclosureSnackbar() {
+        if (mDisclosureSnackbar == null) {
+            mDisclosureSnackbar =
+                    new DisclosureSnackbar(
+                            getResources(),
+                            getSnackbarManager(),
+                            getTrustedWebActivityModel(),
+                            getLifecycleDispatcher());
+        }
+        return mDisclosureSnackbar;
+    }
+
+    public DisclosureNotification getDisclosureNotification() {
+        if (mDisclosureNotification == null) {
+            mDisclosureNotification =
+                    new DisclosureNotification(
+                            getResources(), getTrustedWebActivityModel(), getLifecycleDispatcher());
+        }
+        return mDisclosureNotification;
+    }
+
+    public DisclosureUiPicker getDisclosureUiPicker() {
+        if (mDisclosureUiPicker == null) {
+            mDisclosureUiPicker =
+                    new DisclosureUiPicker(
+                            this::getDisclosureInfobar,
+                            this::getDisclosureSnackbar,
+                            this::getDisclosureNotification,
+                            getIntentDataProvider(),
+                            getLifecycleDispatcher());
+        }
+        return mDisclosureUiPicker;
     }
 }

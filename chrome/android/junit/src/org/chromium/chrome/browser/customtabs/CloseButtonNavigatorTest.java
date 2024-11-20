@@ -70,7 +70,6 @@ public class CloseButtonNavigatorTest {
     @Mock public WebappExtras mWebappExtras;
     @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
-    @Mock public BaseCustomTabActivity mActivity;
 
     private final Stack<Tab> mTabs = new Stack<>();
     private CloseButtonNavigator mCloseButtonNavigator;
