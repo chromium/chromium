@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -18,14 +20,9 @@ GlicKeyedService::GlicKeyedService(content::BrowserContext* browser_context)
 GlicKeyedService::~GlicKeyedService() = default;
 
 void GlicKeyedService::LaunchUI() {
-  Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (browser) {
-    GURL web_ui_url(std::string("chrome://glic"));
-    NavigateParams params(browser, web_ui_url,
-                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    Navigate(&params);
-  } else {
-    LOG(ERROR) << "No active browser found to launch Glic UI.";
+  if (!window_controller_) {
+    window_controller_ = std::make_unique<GlicWindowController>(
+        Profile::FromBrowserContext(browser_context_));
   }
+  window_controller_->Show();
 }

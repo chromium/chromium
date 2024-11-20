@@ -6,11 +6,14 @@ source_set("glic") {
   sources = [
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
+    "glic_window_controller.h",
+    "glic_window_manager.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
+    "//ui/views:views",
   ]
 }
 
@@ -18,6 +21,8 @@ source_set("impl") {
   sources = [
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
+    "glic_window_controller.cc",
+    "glic_window_manager.cc",
   ]
   public_deps = [ "//chrome/browser/ui:ui" ]
   deps = [

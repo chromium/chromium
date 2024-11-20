@@ -8405,10 +8405,6 @@ static_library("browser") {
     sources += [
       "glic/glic_enabling.cc",
       "glic/glic_enabling.h",
-      "glic/glic_window_controller.cc",
-      "glic/glic_window_controller.h",
-      "glic/glic_window_manager.cc",
-      "glic/glic_window_manager.h",
     ]
   }
 

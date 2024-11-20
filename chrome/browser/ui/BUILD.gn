@@ -5239,6 +5239,7 @@ static_library("ui") {
         "views/glic/glic_view.cc",
         "views/glic/glic_view.h",
       ]
+      deps += [ "//chrome/browser/glic:glic" ]
     }
   }
 

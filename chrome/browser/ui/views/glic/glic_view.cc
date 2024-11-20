@@ -13,11 +13,11 @@
 
 namespace glic {
 
-GlicView::GlicView(Profile* profile) {
+GlicView::GlicView(Profile* profile, const gfx::Size& initial_size) {
   auto web_view = std::make_unique<views::WebView>(profile);
+  web_view->SetSize(initial_size);
   web_view->LoadInitialURL(GURL("chrome://glic"));
   web_view->GetWebContents()->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
-
   AddChildView(std::move(web_view));
 }
 
@@ -37,7 +37,8 @@ views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
   views::UniqueWidgetPtr widget =
       std::make_unique<views::Widget>(std::move(params));
 
-  widget->SetContentsView(std::make_unique<GlicView>(profile));
+  widget->SetContentsView(
+      std::make_unique<GlicView>(profile, initial_bounds.size()));
 
   return widget;
 }

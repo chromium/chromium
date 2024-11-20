@@ -4,25 +4,25 @@
 
 #include "chrome/browser/glic/glic_window_manager.h"
 
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+
 GlicWindowManager* GlicWindowManager::GetInstance() {
   return base::Singleton<GlicWindowManager>::get();
 }
 
 void GlicWindowManager::ShowGlicWindowForProfile(Profile* profile) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+
   // If there was already a controller, close the existing window before
   // creating the next one.
-  if (glic_window_controller_) {
+  if (glic_window_controller_ &&
+      glic_window_controller_.get() != service->window_controller()) {
     CloseGlicWindow();
   }
 
-  auto* controller =
-      GlicWindowController::GetOrCreateGlicWindowController(profile);
-
-  if (controller) {
-    glic_window_controller_ = controller->GetWeakPtr();
-    ;
-    glic_window_controller_->Show();
-  }
+  service->LaunchUI();
+  glic_window_controller_ = service->window_controller()->GetWeakPtr();
 }
 
 void GlicWindowManager::CloseGlicWindow() {

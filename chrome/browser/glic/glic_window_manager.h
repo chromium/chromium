@@ -11,6 +11,7 @@
 #include "chrome/browser/glic/glic_window_controller.h"
 
 class GlicWindowController;
+class Profile;
 
 // GlicWindowManager is a singleton that guarantees that only one panel will be
 // present per Chrome instance regardless of the number of windows, tabs,

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_VIEW_H_
 
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
@@ -18,7 +19,7 @@ namespace glic {
 
 class GlicView : public views::View {
  public:
-  explicit GlicView(Profile* profile);
+  GlicView(Profile* profile, const gfx::Size& initial_size);
   GlicView(const GlicView&) = delete;
   GlicView& operator=(const GlicView&) = delete;
   ~GlicView() override;

@@ -12,6 +12,8 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+class GlicWindowController;
+
 class GlicKeyedService : public KeyedService {
  public:
   explicit GlicKeyedService(content::BrowserContext* browser_context);
@@ -22,8 +24,12 @@ class GlicKeyedService : public KeyedService {
   // Launches the Glic UI.
   void LaunchUI();
 
+  GlicWindowController* window_controller() { return window_controller_.get(); }
+
  private:
   raw_ptr<content::BrowserContext> browser_context_;
+
+  std::unique_ptr<GlicWindowController> window_controller_;
 };
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_KEYED_SERVICE_H_
