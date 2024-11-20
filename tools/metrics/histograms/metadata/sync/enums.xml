@@ -655,7 +655,7 @@ chromium-metrics-reviews@google.com.
   <int value="100279" label="KeyboardDefaultSplitModifierSettings"/>
   <int value="100280" label="DisplayAmbientLightSensorLastEnabled"/>
   <int value="100281" label="AccessibilityMainNodeAnnotationsEnabled"/>
-  <int value="100282" label="SyncableVersionedWallpaperInfo"/>
+  <int value="100282" label="(obsolete) SyncableVersionedWallpaperInfo"/>
   <int value="100283" label="FocusModeSelectedTask"/>
   <int value="100284" label="FocusModeSoundSection"/>
   <int value="100285" label="kAccessibilityFaceGazeActionsEnabled"/>

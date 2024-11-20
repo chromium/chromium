@@ -1466,15 +1466,8 @@ inline constexpr char kUserWallpaperInfo[] = "user_wallpaper_info";
 inline constexpr char kRecentDailyGooglePhotosWallpapers[] =
     "recent_daily_google_photos_wallpapers";
 
-// A dictionary pref that maps usernames to versioned wallpaper info.
-// This is for wallpapers that are syncable across devices.
-inline constexpr char kSyncableVersionedWallpaperInfo[] =
-    "syncable_versioned_wallpaper_info";
-
 // A dictionary pref that maps usernames to wallpaper info.
-// This is for wallpapers that are syncable across devices. It is being replaced
-// by `kSyncableVersionedWallpaperInfo`. Data from this pref will be migrated to
-// the new pref.
+// This is for wallpapers that are syncable across devices.
 inline constexpr char kSyncableWallpaperInfo[] = "syncable_wallpaper_info";
 
 // A dictionary pref that maps wallpaper file paths to their prominent colors.

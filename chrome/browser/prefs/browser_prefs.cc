@@ -1112,6 +1112,10 @@ constexpr char kNoteTakingAppsLockScreenToastShown[] =
 constexpr char kRestoreLastLockScreenNote[] =
     "settings.restore_last_lock_screen_note";
 constexpr char kLockScreenDataPrefKey[] = "lockScreenDataItems";
+
+// Deprecated 11/2024
+inline constexpr char kSyncableVersionedWallpaperInfo[] =
+    "syncable_versioned_wallpaper_info";
 #endif
 
 // Deprecated 11/2024
@@ -1575,6 +1579,9 @@ void RegisterProfilePrefsForMigration(
                              base::Value::List());
   registry->RegisterDictionaryPref(kNoteTakingAppsLockScreenToastShown);
   registry->RegisterBooleanPref(kRestoreLastLockScreenNote, false);
+
+  // Deprecated 11/2024
+  registry->RegisterDictionaryPref(kSyncableVersionedWallpaperInfo);
 #endif
 
   // Deprecated 11/2024
@@ -2914,6 +2921,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenAllowlist);
   profile_prefs->ClearPref(kNoteTakingAppsLockScreenToastShown);
   profile_prefs->ClearPref(kRestoreLastLockScreenNote);
+
+  // Deprecated 11/2024
+  profile_prefs->ClearPref(kSyncableVersionedWallpaperInfo);
 #endif
 
   // Added 11/2024

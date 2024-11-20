@@ -26,7 +26,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/test_personalization_app_webui_provider.h"
@@ -262,9 +261,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   // Expects asset_id, unit_id, and variants to be set.
-  if (!features::IsVersionWallpaperInfoEnabled()) {
-    EXPECT_TRUE(new_info.asset_id.has_value());
-  }
+  EXPECT_TRUE(new_info.asset_id.has_value());
   EXPECT_TRUE(new_info.unit_id.has_value());
   EXPECT_EQ(new_info.variants.size(), 1u);
   EXPECT_EQ(new_info.collection_id, kDummyCollectionId);
@@ -290,9 +287,7 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppWallpaperInfoBrowserTest,
   WallpaperInfo new_info =
       *wallpaper_controller()->GetActiveUserWallpaperInfo();
   // Expects asset_id, unit_id, and variants to be set.
-  if (!features::IsVersionWallpaperInfoEnabled()) {
-    EXPECT_TRUE(new_info.asset_id.has_value());
-  }
+  EXPECT_TRUE(new_info.asset_id.has_value());
   EXPECT_TRUE(new_info.unit_id.has_value());
   EXPECT_EQ(new_info.variants.size(), 1u);
   EXPECT_EQ(new_info.collection_id, kDummyCollectionId);

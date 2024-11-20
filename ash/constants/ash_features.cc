@@ -3070,11 +3070,6 @@ BASE_FEATURE(kVcLightIntensity,
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, "VcWebApi", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables versioned wallpaper info.
-BASE_FEATURE(kVersionedWallpaperInfo,
-             "VersionedWallpaperInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable or disable global preferences for skin tone and gender in the virtual
 // keyboard emoji picker.
 BASE_FEATURE(kVirtualKeyboardGlobalEmojiPreferences,
@@ -4691,10 +4686,6 @@ bool IsVcTrayTitleHeaderEnabled() {
 
 bool IsVcWebApiEnabled() {
   return base::FeatureList::IsEnabled(kVcWebApi) && IsVideoConferenceEnabled();
-}
-
-bool IsVersionWallpaperInfoEnabled() {
-  return base::FeatureList::IsEnabled(kVersionedWallpaperInfo);
 }
 
 bool IsWallpaperFastRefreshEnabled() {

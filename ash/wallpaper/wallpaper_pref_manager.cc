@@ -485,8 +485,6 @@ void WallpaperPrefManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterDictionaryPref(prefs::kSyncableWallpaperInfo,
                                    PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  registry->RegisterDictionaryPref(prefs::kSyncableVersionedWallpaperInfo,
-                                   PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 }  // namespace ash
