@@ -6319,47 +6319,24 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
   std::sort(relevant_ranges.begin(), relevant_ranges.end(),
             sort_ranges_by_start_offset);
 
-  // Validate that the desired range has a contiguous MarkerType.
-  std::optional<std::pair<int, int>> contiguous_range;
+  // Validate that the desired range has instance of MarkerType.
+  bool has_marker_in_desired_range = false;
   for (const std::pair<int, int>& range : relevant_ranges) {
-    if (end_offset && range.first > end_offset.value())
+    if (end_offset && range.first >= end_offset.value()) {
       break;
-    if (start_offset && range.second < start_offset.value())
-      continue;
-
-    if (!contiguous_range) {
-      contiguous_range = range;
+    }
+    if (start_offset && range.second <= start_offset.value()) {
       continue;
     }
 
-    // If there is a gap, then the range must be mixed.
-    if ((range.first - contiguous_range->second) > 1)
-      return MarkerTypeRangeResult::kMixed;
-
-    // Expand the range if possible.
-    contiguous_range->second = std::max(contiguous_range->second, range.second);
+    has_marker_in_desired_range = true;
+    break;
   }
 
-  // The desired range does not overlap with |marker_type|.
-  if (!contiguous_range)
+  if (!has_marker_in_desired_range) {
     return MarkerTypeRangeResult::kNone;
+  }
 
-  // If there is a partial overlap, then the desired range must be mixed.
-  // 1. The |start_offset| is not specified, treat it as offset 0.
-  if (!start_offset && contiguous_range->first > 0)
-    return MarkerTypeRangeResult::kMixed;
-  // 2. The |end_offset| is not specified, treat it as max text offset.
-  if (!end_offset &&
-      static_cast<size_t>(contiguous_range->second) < GetHypertext().length())
-    return MarkerTypeRangeResult::kMixed;
-  // 3. The |start_offset| is specified, but is before the first matching range.
-  if (start_offset && start_offset.value() < contiguous_range->first)
-    return MarkerTypeRangeResult::kMixed;
-  // 4. The |end_offset| is specified, but is after the last matching range.
-  if (end_offset && end_offset.value() > contiguous_range->second)
-    return MarkerTypeRangeResult::kMixed;
-
-  // The desired range is a complete match for |marker_type|.
   return MarkerTypeRangeResult::kMatch;
 }
 
