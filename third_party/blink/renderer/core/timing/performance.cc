@@ -32,6 +32,7 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_info.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -853,6 +854,9 @@ void Performance::AddRenderCoarsenedEntry(
     return;
   }
 
+  // https://w3c.github.io/paint-timing/#mark-paint-timing
+  // 10.3.2 Wait until the current high resolution time is paintTimingInfo’s
+  //        implementation-defined presentation time.
   base::TimeTicks target_time =
       time_origin_ + base::Milliseconds(earliest_timestamp_for_timeline);
   if (pending_entry_operations_with_render_coarsening_.empty()) {
@@ -902,24 +906,30 @@ void Performance::FlushPendingRenderCoarsenedEntries() {
   }
 }
 
-void Performance::AddFirstPaintTiming(base::TimeTicks start_time,
+void Performance::AddFirstPaintTiming(const PaintTimingInfo& paint_timing_info,
                                       bool is_triggered_by_soft_navigation) {
-  AddPaintTiming(PerformancePaintTiming::PaintType::kFirstPaint, start_time,
-                 is_triggered_by_soft_navigation);
+  AddPaintTiming(PerformancePaintTiming::PaintType::kFirstPaint,
+                 paint_timing_info, is_triggered_by_soft_navigation);
 }
 
 void Performance::AddFirstContentfulPaintTiming(
-    base::TimeTicks start_time,
+    const PaintTimingInfo& paint_timing_info,
     bool is_triggered_by_soft_navigation) {
   AddPaintTiming(PerformancePaintTiming::PaintType::kFirstContentfulPaint,
-                 start_time, is_triggered_by_soft_navigation);
+                 paint_timing_info, is_triggered_by_soft_navigation);
 }
 
 void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
-                                 base::TimeTicks start_time,
+                                 const PaintTimingInfo& paint_timing_info,
                                  bool is_triggered_by_soft_navigation) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
-      type, RenderTimeToDOMHighResTimeStamp(start_time),
+      type,
+      // https://w3c.github.io/paint-timing/#mark-paint-timing
+      // 10.3.1 Coarsen paintTimingInfo’s implementation-defined presentation
+      // time to the next multiple of 4 milliseconds, or coarser.
+      RenderTimeToDOMHighResTimeStamp(paint_timing_info.presentation_time),
+      MonotonicTimeToDOMHighResTimeStamp(
+          paint_timing_info.rendering_update_end_time),
       DynamicTo<LocalDOMWindow>(GetExecutionContext()),
       is_triggered_by_soft_navigation);
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||

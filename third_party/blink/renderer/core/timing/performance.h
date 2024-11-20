@@ -72,6 +72,7 @@ class LayoutShift;
 class MemoryInfo;
 class MemoryMeasurement;
 class Node;
+struct PaintTimingInfo;
 class PerformanceElementTiming;
 class PerformanceEventTiming;
 class PerformanceMark;
@@ -210,10 +211,10 @@ class CORE_EXPORT Performance : public EventTarget {
 
   void NotifyNavigationTimingToObservers();
 
-  void AddFirstPaintTiming(base::TimeTicks start_time,
+  void AddFirstPaintTiming(const PaintTimingInfo& paint_timing_info,
                            bool is_triggered_by_soft_navigation);
 
-  void AddFirstContentfulPaintTiming(base::TimeTicks start_time,
+  void AddFirstContentfulPaintTiming(const PaintTimingInfo& paint_timing_info,
                                      bool is_triggered_by_soft_navigation);
 
   bool IsElementTimingBufferFull() const;
@@ -343,7 +344,7 @@ class CORE_EXPORT Performance : public EventTarget {
 
  private:
   void AddPaintTiming(PerformancePaintTiming::PaintType,
-                      base::TimeTicks start_time,
+                      const PaintTimingInfo& paint_timing_info,
                       bool is_triggered_by_soft_navigation);
 
   PerformanceMeasure* MeasureInternal(

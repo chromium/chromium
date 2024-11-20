@@ -7285,7 +7285,10 @@ interface PerformanceObserverEntryList
     method getEntriesByType
 interface PerformancePaintTiming : PerformanceEntry
     attribute @@toStringTag
+    getter paintTime
+    getter presentationTime
     method constructor
+    method toJSON
 interface PerformanceResourceTiming : PerformanceEntry
     attribute @@toStringTag
     getter connectEnd

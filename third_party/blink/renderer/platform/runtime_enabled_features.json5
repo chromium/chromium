@@ -3198,6 +3198,10 @@
       status: "stable",
     },
     {
+      name: "PaintTimingMixin",
+      status: "experimental",
+    },
+    {
       name: "PaintUnderInvalidationChecking",
       settable_from_internals: true,
     },

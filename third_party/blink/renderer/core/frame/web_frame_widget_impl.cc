@@ -129,6 +129,7 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -1716,11 +1717,26 @@ void WebFrameWidgetImpl::DidBeginMainFrame() {
     frame_view->RunPostLifecycleSteps();
   }
 
+  base::TimeTicks rendering_update_time = base::TimeTicks::Now();
+
+  // https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
+  // 20. For each doc of docs, record rendering time for doc given
+  // unsafeStyleAndLayoutStartTime.
+  //     (we passed |unsafeStyleAndLayoutStartTime| already in UpdateLifecycle)
   if (animation_frame_timing_monitor_) {
     CHECK(local_root_frame->DomWindow());
     animation_frame_timing_monitor_->DidBeginMainFrame(
-        *local_root_frame->DomWindow());
+        *local_root_frame->DomWindow(), rendering_update_time);
   }
+
+  // https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
+  // 21. For each doc of docs, mark paint timing for doc.
+  ForEachLocalFrameControlledByWidget(
+      local_root_frame, [&](WebLocalFrameImpl* frame) {
+        PaintTiming::From(
+            *To<LocalFrame>(WebFrame::ToCoreFrame(*frame))->GetDocument())
+            .SetRenderingUpdateEndTime(rendering_update_time);
+      });
 
   if (Page* page = local_root_frame->GetPage()) {
     page->Animator().PostAnimate();
