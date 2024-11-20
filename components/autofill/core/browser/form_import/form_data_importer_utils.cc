@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_data_importer_utils.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,8 +18,9 @@ namespace {
 
 bool IsOriginPartOfDeletionInfo(const std::optional<url::Origin>& origin,
                                 const history::DeletionInfo& deletion_info) {
-  if (!origin)
+  if (!origin) {
     return false;
+  }
   return deletion_info.IsAllHistory() ||
          base::Contains(deletion_info.deleted_rows(), *origin,
                         [](const history::URLRow& url_row) {
@@ -115,8 +116,10 @@ void MultiStepImportMerger::MergeImportMetadata(
 
 void MultiStepImportMerger::OnBrowsingHistoryCleared(
     const history::DeletionInfo& deletion_info) {
-  if (IsOriginPartOfDeletionInfo(multistep_candidates_.origin(), deletion_info))
+  if (IsOriginPartOfDeletionInfo(multistep_candidates_.origin(),
+                                 deletion_info)) {
     Clear();
+  }
 }
 
 void MultiStepImportMerger::OnAddressDataChanged(
@@ -163,8 +166,9 @@ void FormAssociator::TrackFormAssociations(const url::Origin& origin,
 std::optional<FormStructure::FormAssociations>
 FormAssociator::GetFormAssociations(FormSignature form_signature) const {
   FormStructure::FormAssociations associations;
-  if (!recent_address_forms_.empty())
+  if (!recent_address_forms_.empty()) {
     associations.last_address_form_submitted = *recent_address_forms_.begin();
+  }
   if (!recent_credit_card_forms_.empty()) {
     associations.last_credit_card_form_submitted =
         *recent_credit_card_forms_.begin();
@@ -195,8 +199,9 @@ void FormAssociator::Clear() {
 
 void FormAssociator::OnBrowsingHistoryCleared(
     const history::DeletionInfo& deletion_info) {
-  if (IsOriginPartOfDeletionInfo(origin(), deletion_info))
+  if (IsOriginPartOfDeletionInfo(origin(), deletion_info)) {
     Clear();
+  }
 }
 
 }  // namespace autofill

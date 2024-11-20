@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_
 
 #include <map>
 #include <memory>
@@ -17,8 +17,8 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_profile_import_process.h"
-#include "components/autofill/core/browser/form_data_importer_utils.h"
+#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/history/core/browser/history_service_observer.h"
 
@@ -378,4 +378,4 @@ class FormDataImporter : public AddressDataManager::Observer,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_

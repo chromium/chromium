@@ -13,7 +13,7 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
-#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_prefs.h"

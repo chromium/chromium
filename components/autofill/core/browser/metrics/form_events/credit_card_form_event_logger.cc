@@ -14,7 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"

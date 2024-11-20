@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

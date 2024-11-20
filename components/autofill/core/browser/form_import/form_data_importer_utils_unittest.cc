@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_data_importer_utils.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 
 #include <string_view>
 #include <vector>
@@ -37,8 +37,9 @@ TEST_F(FormDataImporterUtilsTest, TimestampedSameOriginQueue) {
   TimestampedSameOriginQueue<IntWrapper> queue;
   EXPECT_TRUE(queue.empty());
   const url::Origin irrelevant_origin;
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++) {
     queue.Push({i}, irrelevant_origin);
+  }
   EXPECT_EQ(queue.size(), 4u);
   EXPECT_THAT(queue, testing::ElementsAre(3, 2, 1, 0));
   queue.Pop();
@@ -125,8 +126,9 @@ TEST_P(FormAssociatorTest, FormAssociator) {
                     : FormAssociator::FormType::kCreditCardForm;
     form_associator.TrackFormAssociations(irrelevant_origin, signature, type);
     // Fill `expected_associations` depending on `type`.
-    if (base::IsAsciiLower(test[i]))
+    if (base::IsAsciiLower(test[i])) {
       continue;
+    }
     if (type == FormAssociator::FormType::kAddressForm) {
       if (expected_associations.last_address_form_submitted) {
         // There should be at most two address form associations expected.

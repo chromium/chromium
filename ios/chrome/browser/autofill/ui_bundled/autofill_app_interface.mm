@@ -15,7 +15,7 @@
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #import "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"

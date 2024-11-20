@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/address_profile_save_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -40,6 +39,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_import/address_profile_save_manager.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -203,8 +203,9 @@ void FormDataImporter::ImportAndProcessFormData(
   std::vector<AutofillProfile> preliminary_imported_address_profiles;
   for (const auto& candidate :
        extracted_data.address_profile_import_candidates) {
-    if (candidate.all_requirements_fulfilled)
+    if (candidate.all_requirements_fulfilled) {
       preliminary_imported_address_profiles.push_back(candidate.profile);
+    }
   }
   credit_card_save_manager_->SetPreliminarilyImportedAutofillProfile(
       preliminary_imported_address_profiles);
@@ -248,8 +249,9 @@ bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
 bool FormDataImporter::SetPhoneNumber(
     AutofillProfile& profile,
     const PhoneNumber::PhoneCombineHelper& combined_phone) {
-  if (combined_phone.IsEmpty())
+  if (combined_phone.IsEmpty()) {
     return true;
+  }
 
   bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
       combined_phone, client_->GetAppLocale(), profile);
@@ -360,8 +362,9 @@ size_t FormDataImporter::ExtractAddressProfiles(
     }
 
     for (const auto& [section, fields] : section_fields) {
-      if (num_complete_profiles == kMaxNumAddressProfilesSaved)
+      if (num_complete_profiles == kMaxNumAddressProfilesSaved) {
         break;
+      }
       // Log the output from a section in a separate div for readability.
       LOG_AF(import_log_buffer)
           << Tag{"div"} << Attrib{"class", "profile_import_from_form_section"};
@@ -654,8 +657,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // If the profile does not fulfill import requirements but contains the
   // structured address or name information, it is eligible for silently
   // updating the existing profiles.
-  if (!finalized_import || (!all_fulfilled && !candidate_has_structured_data))
+  if (!finalized_import || (!all_fulfilled && !candidate_has_structured_data)) {
     return false;
+  }
 
   // At this stage, the saving of the profile can only be omitted by the
   // incognito mode but the import is not triggered if the browser is in the
@@ -686,20 +690,23 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
   if (allow_prompt) {
     for (const auto& candidate : address_profile_import_candidates) {
       // First try to import a single complete profile.
-      if (!candidate.all_requirements_fulfilled)
+      if (!candidate.all_requirements_fulfilled) {
         continue;
+      }
       address_profile_save_manager_->ImportProfileFromForm(
           candidate.profile, client_->GetAppLocale(), candidate.url,
           /*allow_only_silent_updates=*/false, candidate.import_metadata);
       // Limit the number of importable profiles to 2.
-      if (++imported_profiles >= 2)
+      if (++imported_profiles >= 2) {
         return true;
+      }
     }
   }
   // If a profile was already imported, do not try to use partial profiles for
   // silent updates.
-  if (imported_profiles > 0)
+  if (imported_profiles > 0) {
     return true;
+  }
   // Otherwise try again but restrict the import to silent updates.
   for (const auto& candidate : address_profile_import_candidates) {
     // First try to import a single complete profile.
@@ -800,8 +807,9 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // to be rejected as indicated by the `return std::nullopt` statements below.
   auto [candidate, form_has_duplicate_cc_type] =
       ExtractCreditCardFromForm(form);
-  if (form_has_duplicate_cc_type)
+  if (form_has_duplicate_cc_type) {
     return std::nullopt;
+  }
 
   if (candidate.IsValid()) {
     AutofillMetrics::LogSubmittedCardStateMetric(
@@ -820,8 +828,9 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // Cards with invalid expiration dates can be uploaded due to the existence of
   // the expiration date fix flow. However, cards with invalid card numbers must
   // still be ignored.
-  if (!candidate.HasValidCardNumber())
+  if (!candidate.HasValidCardNumber()) {
     return std::nullopt;
+  }
 
   // If the extracted card is a known virtual card, return the extracted card.
   if (fetched_virtual_cards_.contains(candidate.LastFourDigits())) {
@@ -926,8 +935,9 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
 
 std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   Iban candidate_iban = ExtractIbanFromForm(form);
-  if (candidate_iban.value().empty())
+  if (candidate_iban.value().empty()) {
     return std::nullopt;
+  }
 
   // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
   // submitted a form with an IBAN, which indicates that the user is familiar

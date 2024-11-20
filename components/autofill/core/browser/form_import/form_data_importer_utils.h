@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_UTILS_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_
 
 #include <iterator>
 #include <limits>
@@ -14,10 +14,10 @@
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
@@ -52,8 +52,9 @@ class TimestampedSameOriginQueue {
     DCHECK(!origin_ || *origin_ == item_origin);
     items_.emplace_front(std::move(item), AutofillClock::Now());
     origin_ = item_origin;
-    if (size() - 1 == max_size_)
+    if (size() - 1 == max_size_) {
       Pop();
+    }
   }
 
   // Removes the oldest element from the queue.
@@ -68,8 +69,9 @@ class TimestampedSameOriginQueue {
       Clear();
     } else {
       const base::Time now = AutofillClock::Now();
-      while (!empty() && now - items_.back().timestamp > ttl)
+      while (!empty() && now - items_.back().timestamp > ttl) {
         Pop();
+      }
     }
   }
 
@@ -84,8 +86,9 @@ class TimestampedSameOriginQueue {
   // invalidated. Other iterators are not affected.
   void erase(const_iterator first, const_iterator last) {
     items_.erase(first, last);
-    if (empty())
+    if (empty()) {
       origin_.reset();
+    }
   }
 
   void Clear() { erase(begin(), end()); }
@@ -227,4 +230,4 @@ class FormAssociator {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_DATA_IMPORTER_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_

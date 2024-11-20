@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 
 namespace autofill {
 

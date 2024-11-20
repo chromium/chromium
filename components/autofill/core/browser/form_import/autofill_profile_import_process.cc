@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
 
 #include <map>
 
@@ -44,8 +44,9 @@ bool ShouldCountryApproximationBeRemoved(
       return comparator.AreMergeable(profile, *existing_profile);
     });
   };
-  if (IsMergeableWithExistingProfiles(profile))
+  if (IsMergeableWithExistingProfiles(profile)) {
     return false;
+  }
   AutofillProfile without_country = profile;
   without_country.ClearFields({ADDRESS_HOME_COUNTRY});
   return IsMergeableWithExistingProfiles(without_country);
@@ -445,8 +446,9 @@ void ProfileImportProcess::CollectMetrics(
     autofill_metrics::LogSilentUpdatesProfileImportType(import_type_);
     if (import_type_ == AutofillProfileImportType::kSilentUpdate ||
         import_type_ ==
-            AutofillProfileImportType::kSilentUpdateForIncompleteProfile)
+            AutofillProfileImportType::kSilentUpdateForIncompleteProfile) {
       LogUkmMetrics();
+    }
     return;
   }
 

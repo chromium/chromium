@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 
 #include <stddef.h>
 
@@ -43,7 +43,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -256,10 +256,11 @@ void SetValueForType(TypeValuePairs& pairs,
   auto it = base::ranges::find(pairs, type,
                                [](const auto& pair) { return pair.first; });
   CHECK(it != pairs.end(), base::NotFatalUntil::M130);
-  if (value.empty())
+  if (value.empty()) {
     pairs.erase(it);
-  else
+  } else {
     it->second = value;
+  }
 }
 
 // Wraps `GetDefaultProfileTypeValuePairs()` but replaces `kDefaultCountry` with
@@ -463,8 +464,9 @@ auto ComparesEqual(T expected) {
 template <typename T>
 auto UnorderedElementsCompareEqualArray(const std::vector<T>& expected_values) {
   std::vector<::testing::Matcher<const T*>> matchers;
-  for (const T& expected : expected_values)
+  for (const T& expected : expected_values) {
     matchers.push_back(::testing::Pointee(ComparesEqual(expected)));
+  }
   return ::testing::UnorderedElementsAreArray(matchers);
 }
 
@@ -3733,8 +3735,7 @@ TEST_F(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
   Iban extracted_iban = test::GetLocalIban();
 
-  EXPECT_TRUE(
-      form_data_importer().ProcessIbanImportCandidate(extracted_iban));
+  EXPECT_TRUE(form_data_importer().ProcessIbanImportCandidate(extracted_iban));
 }
 
 TEST_F(FormDataImporterTest,

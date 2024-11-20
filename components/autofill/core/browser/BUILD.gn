@@ -69,8 +69,6 @@ static_library("browser") {
     "address_normalizer.h",
     "address_normalizer_impl.cc",
     "address_normalizer_impl.h",
-    "address_profile_save_manager.cc",
-    "address_profile_save_manager.h",
     "address_suggestion_generator.cc",
     "address_suggestion_generator.h",
     "autocomplete_history_manager.cc",
@@ -108,8 +106,6 @@ static_library("browser") {
     "autofill_optimization_guide.cc",
     "autofill_optimization_guide.h",
     "autofill_plus_address_delegate.h",
-    "autofill_profile_import_process.cc",
-    "autofill_profile_import_process.h",
     "autofill_shared_storage_handler.h",
     "autofill_trigger_details.h",
     "autofill_type.cc",
@@ -212,15 +208,19 @@ static_library("browser") {
     "filling_product.h",
     "form_autofill_history.cc",
     "form_autofill_history.h",
-    "form_data_importer.cc",
-    "form_data_importer.h",
-    "form_data_importer_utils.cc",
-    "form_data_importer_utils.h",
     "form_filler.cc",
     "form_filler.h",
     "form_forest.cc",
     "form_forest.h",
     "form_forest_util_inl.h",
+    "form_import/address_profile_save_manager.cc",
+    "form_import/address_profile_save_manager.h",
+    "form_import/autofill_profile_import_process.cc",
+    "form_import/autofill_profile_import_process.h",
+    "form_import/form_data_importer.cc",
+    "form_import/form_data_importer.h",
+    "form_import/form_data_importer_utils.cc",
+    "form_import/form_data_importer_utils.h",
     "form_parsing/address_field_parser.cc",
     "form_parsing/address_field_parser.h",
     "form_parsing/address_field_parser_ng.cc",
@@ -638,8 +638,8 @@ static_library("browser") {
 
   if (is_ios) {
     sources += [
-      "autofill_save_update_address_profile_delegate_ios.cc",
-      "autofill_save_update_address_profile_delegate_ios.h",
+      "form_import/autofill_save_update_address_profile_delegate_ios.cc",
+      "form_import/autofill_save_update_address_profile_delegate_ios.h",
     ]
   }
 
@@ -879,10 +879,10 @@ static_library("test_support") {
     "data_model/credit_card_benefit_test_api.h",
     "data_model/test_autofill_data_model.cc",
     "data_model/test_autofill_data_model.h",
-    "form_data_importer_test_api.h",
     "form_filler_test_api.h",
     "form_forest_test_api.cc",
     "form_forest_test_api.h",
+    "form_import/form_data_importer_test_api.h",
     "form_parsing/regex_patterns_test_api.h",
     "form_structure_test_api.cc",
     "form_structure_test_api.h",
@@ -1116,7 +1116,6 @@ source_set("unit_tests") {
     "address_data_manager_unittest.cc",
     "address_normalization_manager_unittest.cc",
     "address_normalizer_impl_unittest.cc",
-    "address_profile_save_manager_unittest.cc",
     "address_suggestion_generator_unittest.cc",
     "autocomplete_history_manager_unittest.cc",
     "autofill_ablation_study_unittest.cc",
@@ -1130,7 +1129,6 @@ source_set("unit_tests") {
     "autofill_manager_unittest.cc",
     "autofill_merge_unittest.cc",
     "autofill_optimization_guide_unittest.cc",
-    "autofill_profile_import_process_unittest.cc",
     "autofill_type_unittest.cc",
     "browser_autofill_manager_unittest.cc",
     "crowdsourcing/autofill_crowdsourcing_encoding_unittest.cc",
@@ -1166,10 +1164,12 @@ source_set("unit_tests") {
     "field_type_utils_unittest.cc",
     "field_types_unittest.cc",
     "form_autofill_history_unittest.cc",
-    "form_data_importer_unittest.cc",
-    "form_data_importer_utils_unittest.cc",
     "form_filler_unittest.cc",
     "form_forest_unittest.cc",
+    "form_import/address_profile_save_manager_unittest.cc",
+    "form_import/autofill_profile_import_process_unittest.cc",
+    "form_import/form_data_importer_unittest.cc",
+    "form_import/form_data_importer_utils_unittest.cc",
     "form_parsing/address_field_parser_ng_unittest.cc",
     "form_parsing/address_field_parser_unittest.cc",
     "form_parsing/alternative_name_field_parser_unittest.cc",
@@ -1307,8 +1307,7 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
-    sources +=
-        [ "autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
+    sources += [ "form_import/autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
   }
 
   if (is_android) {
