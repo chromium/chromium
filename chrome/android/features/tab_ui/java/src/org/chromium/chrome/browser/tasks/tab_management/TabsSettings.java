@@ -10,12 +10,10 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -33,10 +31,6 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting
     static final String PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH =
             "auto_open_synced_tab_groups_switch";
-
-    @VisibleForTesting
-    static final String PREF_SHOW_TAB_GROUP_CREATION_DIALOG_SWITCH =
-            "show_tab_group_creation_dialog_switch";
 
     @VisibleForTesting
     static final String PREF_TAB_ARCHIVE_SETTINGS = "archive_settings_entrypoint";
@@ -57,7 +51,6 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         mPageTitle.set(getString(R.string.tabs_settings_title));
 
         configureAutoOpenSyncedTabGroupsSwitch();
-        configureShowCreationDialogSwitch();
         configureShareTitlesAndUrlsWithOsSwitch();
     }
 
@@ -93,29 +86,6 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                     prefService.setBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS, enabled);
                     RecordHistogram.recordBooleanHistogram(
                             "Tabs.AutoOpenSyncedTabGroupsSwitch.ToggledToState", enabled);
-                    return true;
-                });
-    }
-
-    private void configureShowCreationDialogSwitch() {
-        ChromeSwitchPreference showTabGroupCreationDialogSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_SHOW_TAB_GROUP_CREATION_DIALOG_SWITCH);
-        if (!TabUiFeatureUtilities.isTabGroupCreationDialogShowConfigurable()) {
-            showTabGroupCreationDialogSwitch.setVisible(false);
-            return;
-        }
-
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        boolean isEnabled =
-                prefsManager.readBoolean(ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true);
-        showTabGroupCreationDialogSwitch.setChecked(isEnabled);
-        showTabGroupCreationDialogSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    boolean enabled = (boolean) newValue;
-                    prefsManager.writeBoolean(
-                            ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, enabled);
-                    RecordHistogram.recordBooleanHistogram(
-                            "TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState", enabled);
                     return true;
                 });
     }

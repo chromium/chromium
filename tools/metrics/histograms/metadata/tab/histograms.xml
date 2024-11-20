@@ -970,20 +970,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState"
-    enum="Boolean" expires_after="2025-04-30">
-  <owner>bjfong@google.com</owner>
-  <owner>ckitagawa@chromium.org</owner>
-  <owner>clank-tab-dev@google.com</owner>
-  <summary>
-    Records when a user toggles the settings entry for showing the tab group
-    creation dialog on Android. The default state is enabled and is not
-    recorded. This histogram tracks the new state of the toggle and is emitted
-    each time it is changed. True corresponds to enabled and false corresponds
-    to disabled.
-  </summary>
-</histogram>
-
 <histogram name="TabGroups.SpecificsToDataMigration.ParseFailurePercentage"
     units="%" expires_after="2025-04-06">
   <owner>shaktisahu@chromium.org</owner>

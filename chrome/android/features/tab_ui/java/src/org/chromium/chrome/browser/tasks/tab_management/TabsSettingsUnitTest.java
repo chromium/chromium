@@ -28,21 +28,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
@@ -55,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link TabsSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
-    ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
     ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
     ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH
 })
@@ -65,7 +61,6 @@ public class TabsSettingsUnitTest {
 
     private ActivityScenario<TestActivity> mActivityScenario;
     private TestActivity mActivity;
-    private SharedPreferencesManager mSharedPreferencesManager;
 
     @Mock private Profile mProfileMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -81,12 +76,10 @@ public class TabsSettingsUnitTest {
 
         mActivityScenario = ActivityScenario.launch(TestActivity.class);
         mActivityScenario.onActivity(this::onActivity);
-        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
     }
 
     @After
     public void tearDown() {
-        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG);
         mActivityScenario.close();
     }
 
@@ -178,50 +171,6 @@ public class TabsSettingsUnitTest {
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
                 tabsSettings.findPreference(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
         assertFalse(autoOpenSyncedTabGroupsSwitch.isVisible());
-    }
-
-    @Test
-    @SmallTest
-    public void testLaunchTabsSettingsGroupCreationDialogEnabled() {
-        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(true);
-
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState", false);
-        mSharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true);
-
-        TabsSettings tabsSettings = launchFragment();
-        ChromeSwitchPreference showTabGroupCreationDialogSwitch =
-                tabsSettings.findPreference(
-                        TabsSettings.PREF_SHOW_TAB_GROUP_CREATION_DIALOG_SWITCH);
-        assertTrue(showTabGroupCreationDialogSwitch.isVisible());
-        assertEquals(
-                mActivity.getString(R.string.tab_group_creation_dialog_show_setting_text),
-                showTabGroupCreationDialogSwitch.getSummary());
-        assertTrue(showTabGroupCreationDialogSwitch.isChecked());
-        assertTrue(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true));
-
-        showTabGroupCreationDialogSwitch.onClick();
-
-        assertFalse(showTabGroupCreationDialogSwitch.isChecked());
-        assertFalse(
-                mSharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true));
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    public void testTabGroupCreationDialogSettingsHiddenWhenParamOff() {
-        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
-        TabsSettings tabsSettings = launchFragment();
-        ChromeSwitchPreference showTabGroupCreationDialogSwitch =
-                tabsSettings.findPreference(
-                        TabsSettings.PREF_SHOW_TAB_GROUP_CREATION_DIALOG_SWITCH);
-        assertFalse(showTabGroupCreationDialogSwitch.isVisible());
     }
 
     @Test

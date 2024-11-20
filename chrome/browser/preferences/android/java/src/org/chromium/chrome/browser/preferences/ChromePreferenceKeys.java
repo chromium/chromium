@@ -712,10 +712,6 @@ public final class ChromePreferenceKeys {
     public static final String SHARING_LAST_SHARED_COMPONENT_NAME =
             "Chrome.Sharing.LastSharedComponentName";
 
-    /** Stores whether the tab group creation dialog should be shown. */
-    public static final String SHOW_TAB_GROUP_CREATION_DIALOG =
-            "Chrome.Tab.ShowTabGroupCreationDialog";
-
     public static final String SIGNIN_ACCOUNTS_CHANGED = "prefs_sync_accounts_changed";
 
     /** Holds the new account's name if the currently signed in account has been renamed. */
@@ -1032,7 +1028,6 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
-                SHOW_TAB_GROUP_CREATION_DIALOG,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_LAST_SHOWN_TIME,

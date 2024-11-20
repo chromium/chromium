@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabDataService;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.tabbed_mode.TabbedSystemUiCoordinator;
-import org.chromium.chrome.browser.tabmodel.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
@@ -141,7 +140,6 @@ public class ChromeCachedFlags {
                         ToolbarPhone.REMOVE_REDUNDANT_ANIM_CALL,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
-                        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_HISTORY_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,

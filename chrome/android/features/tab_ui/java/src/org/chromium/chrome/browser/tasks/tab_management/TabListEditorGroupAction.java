@@ -104,9 +104,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
             if (tabGroupModelFilter.isTabInTabGroup(tab)) return true;
 
             tabGroupModelFilter.createSingleTabGroup(tab, /* notify= */ true);
-            if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                    /* shouldShow= */ TabGroupCreationDialogManager
-                            .shouldShowGroupCreationDialogViaSettingsSwitch())) {
+            if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(/* shouldShow= */ true)) {
                 mTabGroupCreationDialogManager.showDialog(tab.getRootId(), tabGroupModelFilter);
             }
             return true;
@@ -139,9 +137,7 @@ public class TabListEditorGroupAction extends TabListEditorAction {
         tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
 
         if (willMergingCreateNewGroup
-                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                        /* shouldShow= */ TabGroupCreationDialogManager
-                                .shouldShowGroupCreationDialogViaSettingsSwitch())) {
+                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(/* shouldShow= */ true)) {
             mTabGroupCreationDialogManager.showDialog(
                     destinationTab.getRootId(), tabGroupModelFilter);
         }

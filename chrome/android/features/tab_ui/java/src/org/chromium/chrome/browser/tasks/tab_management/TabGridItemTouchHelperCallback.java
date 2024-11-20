@@ -524,9 +524,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         filter.mergeTabsToGroup(selectedCard.getId(), hoveredCard.getId());
 
         if (willMergingCreateNewGroup
-                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                        /* shouldShow= */ TabGroupCreationDialogManager
-                                .shouldShowGroupCreationDialogViaSettingsSwitch())) {
+                && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(/* shouldShow= */ true)) {
             mTabGroupCreationDialogManager.showDialog(hoveredCard.getRootId(), filter);
         }
 

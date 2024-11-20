@@ -3598,15 +3598,6 @@ const FeatureEntry::FeatureVariation kWebAuthnAndroidCredManVariations[] = {
     {"for 3rd party passkeys", &kWebAuthnAndroidCredManGpmNotInCredManParam, 1,
      nullptr}};
 
-const FeatureEntry::FeatureParam kTabGroupCreationDialogAndroidShowSetting[] = {
-    {"show_tab_group_creation_dialog_setting", "true"}};
-
-const FeatureEntry::FeatureVariation
-    kTabGroupCreationDialogAndroidVariations[] = {
-        {"Show tab group creation dialog setting",
-         kTabGroupCreationDialogAndroidShowSetting,
-         std::size(kTabGroupCreationDialogAndroidShowSetting), nullptr}};
-
 const FeatureEntry::FeatureParam kEdgeToEdgeBottomChinDebugFeatureParams[] = {
     {chrome::android::kEdgeToEdgeBottomChinDebugParam.name, "true"}};
 const FeatureEntry::FeatureVariation kEdgeToEdgeBottomChinVariations[] = {
@@ -9850,10 +9841,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"tab-group-creation-dialog-android",
      flag_descriptions::kTabGroupCreationDialogAndroidName,
      flag_descriptions::kTabGroupCreationDialogAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kTabGroupCreationDialogAndroid,
-         kTabGroupCreationDialogAndroidVariations,
-         "TabGroupCreationDialogVariations")},
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupCreationDialogAndroid)},
 
     {"tab-group-pane-android", flag_descriptions::kTabGroupPaneAndroidName,
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
