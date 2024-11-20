@@ -432,7 +432,7 @@ pass it along to / include someone who can direct it more precisely.
       cc:chrome-ios-security-bugs@google.com. This alias is monitored by the iOS
       Chrome team so they can be notified when the WebKit bug is fixed.
         * Note the WebKit bug ID in the Chromium issue report.
-    * All security issues need owners, the WebKit ones can be assigned to ajuma@.
+    * All security issues need owners, the WebKit ones can be assigned to michaeldo@.
 *  GPU driver bugs - bugs in GPU drivers that reachable from a renderer process
    and triggerable through Chrome, such as bugs in Mesa or Mali drivers,
    should be assigned to the appropriate Chrome engineering team, such as WebGL
