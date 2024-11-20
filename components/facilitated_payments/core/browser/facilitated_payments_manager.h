@@ -219,7 +219,7 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
                            NewScreenCouldNotBeShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
-                           ScreenClosedWithoutUserInteraction);
+                           ScreenClosedNotByUser);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
                            ScreenClosedByUser);
 

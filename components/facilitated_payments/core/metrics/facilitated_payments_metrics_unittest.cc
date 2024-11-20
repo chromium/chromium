@@ -270,7 +270,9 @@ INSTANTIATE_TEST_SUITE_P(
                     PayflowExitedReason::kClientTokenNotAvailable,
                     PayflowExitedReason::kInitiatePaymentFailed,
                     PayflowExitedReason::kActionTokenNotAvailable,
-                    PayflowExitedReason::kUserLoggedOut));
+                    PayflowExitedReason::kUserLoggedOut,
+                    PayflowExitedReason::kFopSelectorClosedNotByUser,
+                    PayflowExitedReason::kFopSelectorClosedByUser));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:
