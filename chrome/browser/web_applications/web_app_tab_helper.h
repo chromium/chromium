@@ -150,8 +150,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Triggers a reinstall of a placeholder app for |url|.
   void ReinstallPlaceholderAppIfNecessary(const GURL& url);
 
-  std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
-
   std::optional<webapps::AppId> app_id_;
   std::optional<webapps::AppId> window_app_id_;
 

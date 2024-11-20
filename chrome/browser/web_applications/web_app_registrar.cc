@@ -483,29 +483,6 @@ int WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
   return score;
 }
 
-std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
-    const GURL& url) const {
-  return FindBestAppWithUrlInScope(
-      url, {
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-           });
-}
-
-std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
-    const GURL& url,
-    bool window_only,
-    bool exclude_diy_apps) const {
-  return FindBestAppWithUrlInScope(
-      url,
-      {
-          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-      },
-      {.include_open_in_browser_tab = !window_only,
-       .include_diy = !exclude_diy_apps});
-}
-
 bool WebAppRegistrar::IsNonLocallyInstalledAppWithUrlInScope(
     const GURL& url) const {
   return FindBestAppWithUrlInScope(

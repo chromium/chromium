@@ -9,6 +9,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -176,9 +177,17 @@ std::optional<webapps::AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                              const GURL& url,
                                                              bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  return provider ? provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
-                        url, window_only)
-                  : std::nullopt;
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
+  return provider
+             ? provider->registrar_unsafe().FindBestAppWithUrlInScope(
+                   url,
+                   {
+                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   },
+                   {.include_open_in_browser_tab = !window_only})
+             : std::nullopt;
 }
 
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {
