@@ -1213,11 +1213,11 @@ export namespace Network {
 export namespace Network {
   export const InitiatorSchema = z.lazy(() =>
     z.object({
-      type: z.enum(['parser', 'script', 'preflight', 'other']),
       columnNumber: JsUintSchema.optional(),
       lineNumber: JsUintSchema.optional(),
       stackTrace: Script.StackTraceSchema.optional(),
       request: Network.RequestSchema.optional(),
+      type: z.enum(['parser', 'script', 'preflight', 'other']).optional(),
     }),
   );
 }
@@ -1237,6 +1237,8 @@ export namespace Network {
       cookies: z.array(Network.CookieSchema),
       headersSize: JsUintSchema,
       bodySize: z.union([JsUintSchema, z.null()]),
+      destination: z.string(),
+      initiatorType: z.union([z.string(), z.null()]),
       timings: Network.FetchTimingInfoSchema,
     }),
   );
@@ -1504,7 +1506,7 @@ export namespace Network {
   export const BeforeRequestSentParametersSchema = z.lazy(() =>
     Network.BaseParametersSchema.and(
       z.object({
-        initiator: Network.InitiatorSchema,
+        initiator: Network.InitiatorSchema.optional(),
       }),
     ),
   );

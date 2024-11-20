@@ -988,11 +988,11 @@ export namespace Network {
 }
 export namespace Network {
   export type Initiator = {
-    type: 'parser' | 'script' | 'preflight' | 'other';
     columnNumber?: JsUint;
     lineNumber?: JsUint;
     stackTrace?: Script.StackTrace;
     request?: Network.Request;
+    type?: 'parser' | 'script' | 'preflight' | 'other';
   };
 }
 export namespace Network {
@@ -1010,6 +1010,8 @@ export namespace Network {
     cookies: [...Network.Cookie[]];
     headersSize: JsUint;
     bodySize: JsUint | null;
+    destination: string;
+    initiatorType: string | null;
     timings: Network.FetchTimingInfo;
   };
 }
@@ -1215,7 +1217,7 @@ export namespace Network {
 }
 export namespace Network {
   export type BeforeRequestSentParameters = Network.BaseParameters & {
-    initiator: Network.Initiator;
+    initiator?: Network.Initiator;
   };
 }
 export namespace Network {
