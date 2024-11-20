@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "dbus/message.h"
 
@@ -184,6 +185,34 @@ DEFINE_DBUS_REF_TYPE(DbusObjectPath,
 #undef DEFINE_DBUS_REF_TYPE
 #undef DEFINE_DBUS_VALUE_TYPE
 #undef DEFINE_DBUS_TYPE
+
+// This is not a DbusTypeImpl because this class stores a base::ScopedFD, but
+// the DBus write interface takes an int.
+class COMPONENT_EXPORT(DBUS) DbusUnixFd final : public DbusType {
+ public:
+  DbusUnixFd();
+  explicit DbusUnixFd(base::ScopedFD fd);
+  DbusUnixFd(DbusUnixFd&& other) noexcept;
+  DbusUnixFd& operator=(DbusUnixFd&& other) noexcept;
+  ~DbusUnixFd() override;
+
+  // DbusType:
+  void Write(dbus::MessageWriter* writer) const override;
+  std::string GetSignatureDynamic() const override;
+  bool IsUntyped() const override;
+
+  static std::string GetSignature();
+
+  int value() const { return value_.get(); }
+
+ protected:
+  // DbusType:
+  bool IsEqual(const DbusType& other_type) const override;
+  void MoveImpl(DbusType&& object) override;
+
+ private:
+  base::ScopedFD value_;
+};
 
 class COMPONENT_EXPORT(DBUS) DbusVariant final
     : public DbusTypeImpl<DbusVariant> {

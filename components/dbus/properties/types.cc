@@ -84,6 +84,42 @@ bool UntypedDbusContainer::IsUntyped() const {
 
 }  // namespace detail
 
+DbusUnixFd::DbusUnixFd() = default;
+
+DbusUnixFd::DbusUnixFd(base::ScopedFD fd) : value_(std::move(fd)) {}
+
+DbusUnixFd::DbusUnixFd(DbusUnixFd&& other) noexcept = default;
+DbusUnixFd& DbusUnixFd::operator=(DbusUnixFd&& other) noexcept = default;
+DbusUnixFd::~DbusUnixFd() = default;
+
+void DbusUnixFd::Write(dbus::MessageWriter* writer) const {
+  // The fd will be duplicated.
+  writer->AppendFileDescriptor(value_.get());
+}
+
+std::string DbusUnixFd::GetSignatureDynamic() const {
+  return "h";
+}
+
+bool DbusUnixFd::IsEqual(const DbusType& other_type) const {
+  // FDs can't be compared, other than by value.  However, since ScopedFD has
+  // unique ownership over the FD, values will always compare false.
+  return false;
+}
+
+void DbusUnixFd::MoveImpl(DbusType&& object) {
+  value_ = std::move(static_cast<DbusUnixFd*>(&object)->value_);
+}
+
+bool DbusUnixFd::IsUntyped() const {
+  return false;
+}
+
+// static
+std::string DbusUnixFd::GetSignature() {
+  return "h";
+}
+
 DbusVariant::DbusVariant() = default;
 
 DbusVariant::DbusVariant(std::unique_ptr<DbusType> value)
