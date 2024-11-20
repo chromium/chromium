@@ -238,7 +238,7 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
   add_if(autofill_field.only_fill_when_focused() && !is_trigger_field,
          FieldFillingSkipReason::kNotFocused);
 
-  // An address fields with unrecognized autocomplete attribute) is only filled
+  // An address fields with unrecognized autocomplete attribute is only filled
   // when it is the field triggering the filling operation.
   add_if(!is_trigger_field &&
              autofill_field.ShouldSuppressSuggestionsAndFillingByDefault(),

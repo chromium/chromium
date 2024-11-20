@@ -573,7 +573,7 @@ class BrowserAutofillManager : public AutofillManager {
                                                bool cleared_value,
                                                bool formatting_only);
 
-  // Populates all the fields (except for ablation stuy related fields) in
+  // Populates all the fields (except for ablation study related fields) in
   // `SuggestionsContext` based on the given params.
   SuggestionsContext BuildSuggestionsContext(
       const FormData& form,

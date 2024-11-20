@@ -3155,7 +3155,7 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
   // The conditional_ablation_group indicates whether the form filling is
   // under ablation, under the condition that the user has data to fill on
   // file. All users that don't have data to fill are in the
-  // AbationGroup::kDefault. Note that it is possible (due to implementation
+  // AblationGroup::kDefault. Note that it is possible (due to implementation
   // details) that this is incorrectly set to kDefault: If the user has typed
   // some characters into a text field, it may look like no suggestions are
   // available, but in practice the suggestions are just filtered out
@@ -3164,7 +3164,7 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
   // over time. Any transitions of conditional_ablation_group from {kAblation,
   // kControl} to kDefault should just be ignored and the previously reported
   // value should be used. As the ablation experience is stable within period
-  // of time, such a transition typically indicates that the user has typeed a
+  // of time, such a transition typically indicates that the user has typed a
   // prefix which led to the filtering of all autofillable data. In short:
   // once either kAblation or kControl were reported, consumers should stick
   // to that. Note that we don't set the ablation group if there are no
