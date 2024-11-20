@@ -97,7 +97,6 @@ syncer::StringOrdinal GetAdjacentPosition(
       continue;
     }
     if (exclude_chrome && (item_id == app_constants::kChromeAppId ||
-                           item_id == app_constants::kLacrosAppId ||
                            item_id == app_constants::kAshDebugBrowserAppId)) {
       continue;
     }
@@ -170,8 +169,7 @@ void EnsurePinnedOrMakeFirst(
     app_list::AppListSyncableService* syncable_service) {
   // This piece prevents accidental side-effects to the SetPinPosition() call
   // below.
-  CHECK(app_id == app_constants::kChromeAppId ||
-        app_id == app_constants::kLacrosAppId);
+  CHECK_EQ(app_id, app_constants::kChromeAppId);
   syncer::StringOrdinal position = syncable_service->GetPinPosition(app_id);
   if (!position.IsValid()) {
     position = CreateFirstPinPosition(syncable_service);
@@ -551,21 +549,6 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
     PinPreloadApps();
   }
 
-  // If Lacros is enabled and allowed for this user type, ensure the Lacros icon
-  // is pinned. Lacros doesn't support multi-signin, so only add the icon for
-  // the primary user.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      ash::ProfileHelper::IsPrimaryProfile(profile_)) {
-    syncer::StringOrdinal lacros_position =
-        syncable_service->GetPinPosition(app_constants::kLacrosAppId);
-    if (!lacros_position.IsValid()) {
-      // If Lacros isn't already pinned, add it to the right of the Chrome icon.
-      InsertPinsAfterChromeAndBeforeFirstPinnedApp(
-          syncable_service, {{app_constants::kLacrosAppId}},
-          /*is_policy_initiated=*/false);
-    }
-  }
-
   std::vector<std::string> policy_delta_remove_from_shelf;
 
   std::vector<PinInfo> pin_infos;
@@ -575,11 +558,6 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
   for (const auto& [item_id, sync_item] : syncable_service->sync_items()) {
     // A null ordinal means the item has been unpinned.
     if (!sync_item->item_pin_ordinal.IsValid()) {
-      continue;
-    }
-
-    // kChromeAppId is the only valid sync ID for the browser.
-    if (item_id == app_constants::kLacrosAppId) {
       continue;
     }
 
