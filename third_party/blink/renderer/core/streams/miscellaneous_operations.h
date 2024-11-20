@@ -127,19 +127,6 @@ CORE_EXPORT StrategySizeAlgorithm* MakeSizeAlgorithmFromSizeFunction(
 
 CORE_EXPORT StrategySizeAlgorithm* CreateDefaultSizeAlgorithm();
 
-// Implements "a promise rejected with" from the INFRA standard.
-// https://www.w3.org/2001/tag/doc/promises-guide/#a-promise-rejected-with
-CORE_EXPORT v8::Local<v8::Promise> PromiseReject(ScriptState*,
-                                                 v8::Local<v8::Value>);
-
-// Implements "a promise resolved with" from the INFRA standard.
-// https://www.w3.org/2001/tag/doc/promises-guide/#a-promise-resolved-with
-CORE_EXPORT v8::Local<v8::Promise> PromiseResolve(ScriptState*,
-                                                  v8::Local<v8::Value>);
-
-// Implements "a promise resolved with *undefined*".
-CORE_EXPORT v8::Local<v8::Promise> PromiseResolveWithUndefined(ScriptState*);
-
 // Converts |value| to an object. |value| must not be empty. If |value| is
 // undefined, an empty object will be returned. If |value| is JavaScript null,
 // then an exception will be thrown. In the standard, this is performed as part

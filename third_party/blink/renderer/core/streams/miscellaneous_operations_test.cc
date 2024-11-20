@@ -494,45 +494,6 @@ TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
   ASSERT_FALSE(optional.has_value());
 }
 
-TEST(MiscellaneousOperationsTest, PromiseResolve) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto promise = PromiseResolve(scope.GetScriptState(),
-                                v8::Number::New(scope.GetIsolate(), 19));
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  ASSERT_TRUE(promise->Result()->IsNumber());
-  EXPECT_EQ(promise->Result().As<v8::Number>()->Value(), 19);
-}
-
-TEST(MiscellaneousOperationsTest, PromiseResolveWithPromise) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto original_promise = v8::Promise::Resolver::New(scope.GetContext())
-                              .ToLocalChecked()
-                              ->GetPromise();
-  auto resolved_promise =
-      PromiseResolve(scope.GetScriptState(), original_promise);
-  EXPECT_EQ(original_promise, resolved_promise);
-}
-
-TEST(MiscellaneousOperationsTest, PromiseResolveWithUndefined) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto promise = PromiseResolveWithUndefined(scope.GetScriptState());
-  ASSERT_EQ(promise->State(), v8::Promise::kFulfilled);
-  EXPECT_TRUE(promise->Result()->IsUndefined());
-}
-
-TEST(MiscellaneousOperationsTest, PromiseReject) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  auto promise = PromiseReject(scope.GetScriptState(),
-                               v8::Number::New(scope.GetIsolate(), 43));
-  ASSERT_EQ(promise->State(), v8::Promise::kRejected);
-  ASSERT_TRUE(promise->Result()->IsNumber());
-  EXPECT_EQ(promise->Result().As<v8::Number>()->Value(), 43);
-}
-
 }  // namespace
 
 }  // namespace blink

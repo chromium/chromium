@@ -27,34 +27,6 @@ namespace blink {
 
 namespace {
 
-// PromiseRejectInternal() implements Promise.reject(_r_) from the ECMASCRIPT
-// standard, https://tc39.github.io/ecma262/#sec-promise.reject.
-// The |recursion_depth| argument is used to prevent infinite recursion in the
-// case that we can't create a promise.
-v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
-                                             v8::Local<v8::Value> value,
-                                             int recursion_depth) {
-  auto context = script_state->GetContext();
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::TryCatch trycatch(isolate);
-  // TODO(ricea): Can this fail for reasons other than memory exhaustion? Can we
-  // recover if it does?
-  auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();
-  if (resolver->Reject(context, value).IsNothing()) {
-    // Assume that the exception can be successfully used to create a Promise.
-    // TODO(ricea): Can the body of this if statement actually be reached?
-    if (recursion_depth >= 2) {
-      LOG(FATAL) << "Recursion depth exceeded in PromiseRejectInternal";
-    }
-    return PromiseRejectInternal(script_state, trycatch.Exception(),
-                                 recursion_depth + 1);
-  }
-  return resolver->GetPromise();
-}
-
 class DefaultSizeAlgorithm final : public StrategySizeAlgorithm {
  public:
   std::optional<double> Run(ScriptState*, v8::Local<v8::Value>) override {
@@ -505,41 +477,6 @@ CORE_EXPORT StrategySizeAlgorithm* MakeSizeAlgorithmFromSizeFunction(
 
 CORE_EXPORT StrategySizeAlgorithm* CreateDefaultSizeAlgorithm() {
   return MakeGarbageCollected<DefaultSizeAlgorithm>();
-}
-
-// PromiseResolve implements Promise.resolve(_x_) from the ECMASCRIPT standard,
-// https://tc39.github.io/ecma262/#sec-promise.resolve, except that the
-// Get(_x_, "constructor") step is skipped.
-CORE_EXPORT v8::Local<v8::Promise> PromiseResolve(ScriptState* script_state,
-                                                  v8::Local<v8::Value> value) {
-  if (value->IsPromise()) {
-    return value.As<v8::Promise>();
-  }
-  auto context = script_state->GetContext();
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::TryCatch trycatch(isolate);
-  // TODO(ricea): Can this fail for reasons other than memory exhaustion? Can we
-  // recover if it does?
-  auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();
-  if (resolver->Resolve(context, value).IsNothing()) {
-    // TODO(ricea): Is this actually reachable?
-    return PromiseReject(script_state, trycatch.Exception());
-  }
-  return resolver->GetPromise();
-}
-
-CORE_EXPORT v8::Local<v8::Promise> PromiseResolveWithUndefined(
-    ScriptState* script_state) {
-  return PromiseResolve(script_state,
-                        v8::Undefined(script_state->GetIsolate()));
-}
-
-CORE_EXPORT v8::Local<v8::Promise> PromiseReject(ScriptState* script_state,
-                                                 v8::Local<v8::Value> value) {
-  return PromiseRejectInternal(script_state, value, 0);
 }
 
 void ScriptValueToObject(ScriptState* script_state,
