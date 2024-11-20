@@ -91,6 +91,11 @@ class LensOmniboxClient final : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
+  void OnTextChanged(const AutocompleteMatch& current_match,
+                     bool user_input_in_progress,
+                     const std::u16string& user_text,
+                     const AutocompleteResult& result,
+                     bool has_focus) override;
   void OnThumbnailRemoved() override;
   void OnFocusChanged(OmniboxFocusState state,
                       OmniboxFocusChangeReason reason) override;
@@ -117,6 +122,9 @@ class LensOmniboxClient final : public OmniboxClient {
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
   BOOL lens_result_has_thumbnail_;
+  // Whether the textfield has been clobbered during this session. (clobber:
+  // becomes empty during the edit).
+  BOOL text_clobbered_in_session_;
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_;
   NSString* omnibox_steady_state_text_;

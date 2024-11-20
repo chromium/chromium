@@ -49,7 +49,8 @@ LensOmniboxClient::LensOmniboxClient(
     : profile_(profile),
       engagement_tracker_(tracker),
       web_provider_(web_provider),
-      delegate_(omnibox_delegate) {
+      delegate_(omnibox_delegate),
+      text_clobbered_in_session_(NO) {
   CHECK(engagement_tracker_);
 }
 
@@ -214,12 +215,23 @@ gfx::Image LensOmniboxClient::GetFavicon() const {
   return gfx::Image();
 }
 
+void LensOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
+                                      bool user_input_in_progress,
+                                      const std::u16string& user_text,
+                                      const AutocompleteResult& result,
+                                      bool has_focus) {
+  if (user_input_in_progress && user_text.empty()) {
+    text_clobbered_in_session_ = YES;
+  }
+}
+
 void LensOmniboxClient::OnThumbnailRemoved() {
   [delegate_ omniboxDidRemoveThumbnail];
 }
 
 void LensOmniboxClient::OnFocusChanged(OmniboxFocusState state,
                                        OmniboxFocusChangeReason reason) {
+  text_clobbered_in_session_ = NO;
 }
 
 void LensOmniboxClient::OnAutocompleteAccept(
@@ -236,12 +248,15 @@ void LensOmniboxClient::OnAutocompleteAccept(
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
   [delegate_ omniboxDidAcceptText:match.fill_into_edit
-                   destinationURL:destination_url];
+                   destinationURL:destination_url
+                    textClobbered:text_clobbered_in_session_];
 }
 
 void LensOmniboxClient::OnThumbnailOnlyAccept() {
   // The destinationURL is not used for multimodal suggestions.
-  [delegate_ omniboxDidAcceptText:u"" destinationURL:GURL()];
+  [delegate_ omniboxDidAcceptText:u""
+                   destinationURL:GURL()
+                    textClobbered:NO];
 }
 
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {

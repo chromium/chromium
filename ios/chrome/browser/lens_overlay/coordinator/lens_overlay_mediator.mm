@@ -100,16 +100,21 @@
 #pragma mark LensOmniboxClientDelegate
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
-              destinationURL:(const GURL&)destinationURL {
+              destinationURL:(const GURL&)destinationURL
+               textClobbered:(BOOL)textClobbered {
   [self defocusOmnibox];
 
   const BOOL isUnimodalTextQuery =
       _thumbnailRemoved || _currentLensResult.isTextSelection;
   if (isUnimodalTextQuery) {
-    [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
-    [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
-    if (_omniboxClient) {
-      [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];
+    if (textClobbered) {
+      [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+      [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
+      if (_omniboxClient) {
+        [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];
+      }
+    } else if (_navigationManager) {
+      _navigationManager->LoadUnimodalOmniboxNavigation(destinationURL, text);
     }
   } else {  // Multimodal query.
     // Setting the query text generates new results.
