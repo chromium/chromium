@@ -357,6 +357,14 @@ bool IsTabstripComboButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kTabstripComboButton);
 }
 
+const base::FeatureParam<bool> kTabstripComboButtonHasBackground{
+    &kTabstripComboButton, "has_background", true};
+
+bool HasTabstripComboButtonWithBackground() {
+  return IsTabstripComboButtonEnabled() &&
+         features::kTabstripComboButtonHasBackground.Get();
+}
+
 // Force Privacy Guide to be available even if it would be unavailable
 // otherwise. This is meant for development and test purposes only.
 BASE_FEATURE(kPrivacyGuideForceAvailable,

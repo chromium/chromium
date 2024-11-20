@@ -226,6 +226,9 @@ extern const base::FeatureParam<std::string> kGlicWebUICSPOverride;
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kTabstripComboButton);
 COMPONENT_EXPORT(CHROME_FEATURES) bool IsTabstripComboButtonEnabled();
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kTabstripComboButtonHasBackground;
+COMPONENT_EXPORT(CHROME_FEATURES) bool HasTabstripComboButtonWithBackground();
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacyGuideForceAvailable);

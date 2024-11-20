@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,13 +45,17 @@ TabSearchButton::TabSearchButton(
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SEARCH));
 
-  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
-  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-  SetBackgroundFrameInactiveColorId(
-      kColorNewTabButtonCRBackgroundFrameInactive);
+  if (!features::IsTabstripComboButtonEnabled() ||
+      features::HasTabstripComboButtonWithBackground()) {
+    SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+    SetForegroundFrameInactiveColorId(
+        kColorNewTabButtonForegroundFrameInactive);
+    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+    SetBackgroundFrameInactiveColorId(
+        kColorNewTabButtonCRBackgroundFrameInactive);
 
-  UpdateColors();
+    UpdateColors();
+  }
 }
 
 TabSearchButton::~TabSearchButton() = default;

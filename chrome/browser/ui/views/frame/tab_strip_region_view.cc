@@ -213,7 +213,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     tab_strip_control_button->SetProperty(views::kElementIdentifierKey,
                                           kNewTabButtonElementId);
 
-    if (features::IsTabstripComboButtonEnabled()) {
+    if (features::HasTabstripComboButtonWithBackground()) {
       tab_strip_control_button->SetForegroundFrameActiveColorId(
           kColorNewTabButtonForegroundFrameActive);
       tab_strip_control_button->SetForegroundFrameInactiveColorId(

@@ -1921,6 +1921,18 @@ const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
 };
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+
+const FeatureEntry::FeatureParam kTabstripComboButtonNoBackground[] = {
+    {"has_background", "false"}};
+
+const FeatureEntry::FeatureVariation kTabstripComboButtonVariations[] = {
+    {" - without background", kTabstripComboButtonNoBackground,
+     std::size(kTabstripComboButtonNoBackground)},
+};
+
+#endif
+
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionRight[] = {
     {features::kTabScrollingButtonPositionParameterName, "0"}};
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionLeft[] = {
@@ -6871,7 +6883,9 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kTabstripComboButtonFlagId,
      flag_descriptions::kTabstripComboButtonName,
      flag_descriptions::kTabstripComboButtonDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabstripComboButton)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripComboButton,
+                                    kTabstripComboButtonVariations,
+                                    "TabstripComboButton")},
 
     {flag_descriptions::kScrollableTabStripOverflowFlagId,
      flag_descriptions::kScrollableTabStripOverflowName,
