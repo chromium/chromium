@@ -54,6 +54,17 @@ TEST_F(UsageTickClockTest, TestClock) {
   EXPECT_EQ(base::Minutes(2), clock()->NowTicks() - start_time);
 }
 
+TEST_F(UsageTickClockTest, TestClockWithoutInitialization) {
+  metrics::DesktopSessionDurationTracker::CleanupForTesting();
+
+  // Time moves since tracker is not initialized.
+  inner_clock()->Advance(base::Minutes(1));
+  EXPECT_EQ(inner_clock()->NowTicks(), clock()->NowTicks());
+
+  // Create the tracker again to safely clean test.
+  metrics::DesktopSessionDurationTracker::Initialize();
+}
+
 class FakeBackoffLevelProvider final : public BackoffLevelProvider {
   unsigned int Get() const override { return level_; }
   void Increment() override { level_++; }

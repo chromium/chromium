@@ -32,6 +32,10 @@ UsageTickClock::~UsageTickClock() {
 }
 
 base::TimeTicks UsageTickClock::NowTicks() const {
+  if (!metrics::DesktopSessionDurationTracker::IsInitialized()) {
+    return base_clock_->NowTicks();
+  }
+
   const base::TimeTicks completed_session_time =
       start_time_ + usage_time_in_completed_sessions_;
   if (current_usage_session_start_time_.has_value()) {
