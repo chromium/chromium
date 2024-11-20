@@ -761,8 +761,9 @@ BASE_FEATURE(kAutofillLogToTerminal,
 // * The server prediction for the field with signature 8 in the form with
 //   signature 7 is overridden to be 9 (EMAIL_ADDRESS).
 //
-// See components/autofill/core/browser/server_prediction_overrides.h for more
-// examples and details on how to specify overrides.
+// See
+// components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h
+// for more examples and details on how to specify overrides.
 BASE_FEATURE(kAutofillOverridePredictions,
              "AutofillOverridePredictions",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
+
 #include <string_view>
 
-#include "components/autofill/core/browser/randomized_encoder.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/common/signatures.h"
