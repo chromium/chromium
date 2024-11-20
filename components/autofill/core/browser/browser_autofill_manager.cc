@@ -655,8 +655,6 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
 }  // namespace
 
 VotesUploader::VotesUploader(BrowserAutofillManager* owner) : owner_(*owner) {}
-VotesUploader::VotesUploader(VotesUploader&&) = default;
-VotesUploader& VotesUploader::operator=(VotesUploader&&) = default;
 VotesUploader::~VotesUploader() = default;
 
 AutofillClient& VotesUploader::client() {
@@ -1035,21 +1033,11 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // BrowserAutofillManager::OnSubmissionFieldTypesDetermined() call.
   FormStructure* raw_form = form_structure.get();
 
-  base::OnceClosure call_after_determine_field_types = base::BindOnce(
-      [](base::WeakPtr<AutofillManager> owner, VotesUploader& self,
-         std::unique_ptr<FormStructure> submitted_form,
-         base::TimeTicks interaction_time, base::TimeTicks submission_time,
-         bool observed_submission, ukm::SourceId source_id) {
-        if (!owner) {
-          return;
-        }
-        self.OnSubmissionFieldTypesDetermined(std::move(submitted_form),
-                                              interaction_time, submission_time,
-                                              observed_submission, source_id);
-      },
-      owner_->GetWeakPtr(), std::ref(*this), std::move(form_structure),
-      initial_interaction_timestamp, base::TimeTicks::Now(),
-      observed_submission, client().GetUkmSourceId());
+  base::OnceClosure call_after_determine_field_types =
+      base::BindOnce(&VotesUploader::OnSubmissionFieldTypesDetermined,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
+                     initial_interaction_timestamp, base::TimeTicks::Now(),
+                     observed_submission, client().GetUkmSourceId());
 
   // If the form was not submitted (e.g. the user just removed the focus from
   // the form), it's possible that later modifications lead to more accurate
@@ -1057,15 +1045,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // override it with better data.
   if (!observed_submission) {
     call_after_determine_field_types = base::BindOnce(
-        [](base::WeakPtr<AutofillManager> owner, VotesUploader& self,
-           FormSignature form_signature, base::OnceClosure callback) {
-          if (!owner) {
-            return;
-          }
-          self.StoreUploadVotesAndLogQualityCallback(form_signature,
-                                                     std::move(callback));
-        },
-        owner_->GetWeakPtr(), std::ref(*this), raw_form->form_signature(),
+        &VotesUploader::StoreUploadVotesAndLogQualityCallback,
+        weak_ptr_factory_.GetWeakPtr(), raw_form->form_signature(),
         std::move(call_after_determine_field_types));
   }
 

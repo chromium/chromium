@@ -97,8 +97,6 @@ class VotesUploader {
   explicit VotesUploader(BrowserAutofillManager* owner);
   VotesUploader(const VotesUploader&) = delete;
   VotesUploader& operator=(const VotesUploader&) = delete;
-  VotesUploader(VotesUploader&&);
-  VotesUploader& operator=(VotesUploader&&);
   virtual ~VotesUploader();
 
   // Will send an upload based on the |form_structure| data and the local
@@ -183,6 +181,8 @@ class VotesUploader {
 
   // TODO(crbug.com/374086145): Remove or change to AutofillClient.
   raw_ref<BrowserAutofillManager> owner_;
+
+  base::WeakPtrFactory<VotesUploader> weak_ptr_factory_{this};
 };
 
 // Manages saving and restoring the user's personal information entered into web
