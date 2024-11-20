@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.List;
 
@@ -45,5 +47,27 @@ public class TabGroupUtils {
         assert tabs != null && tabs.size() != 0;
 
         return tabModel.indexOf(tabs.get(tabs.size() - 1));
+    }
+
+    /**
+     * Opens a new tab in the last position of the tab group and selects it.
+     *
+     * @param tabGroupModelFilter The {@link TabGroupModelFilter} to act on.
+     * @param url The url to load the new tab with.
+     * @param parentId The ID of one of the tabs in the tab group.
+     * @param type The launch type of the new tab.
+     */
+    public static void openUrlInGroup(
+            TabGroupModelFilter tabGroupModelFilter,
+            String url,
+            int parentId,
+            @TabLaunchType int type) {
+        List<Tab> relatedTabs = tabGroupModelFilter.getRelatedTabList(parentId);
+        if (relatedTabs.isEmpty()) return;
+
+        Tab lastTab = relatedTabs.get(relatedTabs.size() - 1);
+        TabCreator tabCreator = tabGroupModelFilter.getTabModel().getTabCreator();
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        tabCreator.createNewTab(loadUrlParams, type, lastTab);
     }
 }

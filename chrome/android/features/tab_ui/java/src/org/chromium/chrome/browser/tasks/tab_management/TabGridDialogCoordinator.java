@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -102,7 +101,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             @NonNull DataSharingTabManager dataSharingTabManager,
             @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
-            TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
             @Nullable TabSwitcherResetHandler resetHandler,
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
@@ -185,7 +183,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             this,
                             mModel,
                             currentTabGroupModelFilterSupplier,
-                            tabCreatorManager,
                             resetHandler,
                             this::getRecyclerViewPosition,
                             animationSourceViewProvider,

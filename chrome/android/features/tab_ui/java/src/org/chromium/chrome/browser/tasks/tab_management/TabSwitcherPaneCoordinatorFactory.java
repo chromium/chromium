@@ -158,7 +158,6 @@ public class TabSwitcherPaneCoordinatorFactory {
                 mProfileProviderSupplier,
                 createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
-                mTabCreatorManager,
                 mBrowserControlsStateProvider,
                 mScrimCoordinator,
                 mModalDialogManager,

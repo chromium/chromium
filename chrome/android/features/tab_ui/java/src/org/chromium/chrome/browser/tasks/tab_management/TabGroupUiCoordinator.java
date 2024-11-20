@@ -155,7 +155,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mDataSharingTabManager,
                         currentTabGroupModelFilterSupplier,
                         mTabContentManager,
-                        mTabCreatorManager,
                         mActivity.findViewById(R.id.coordinator),
                         null,
                         null,

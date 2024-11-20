@@ -1913,7 +1913,6 @@ public class StripLayoutHelper
                             mTabGroupModelFilter,
                             mActionConfirmationDelegate.getActionConfirmationManager(),
                             mModalDialogManager,
-                            mTabCreator,
                             mWindowAndroid,
                             mDataSharingTabManager,
                             this::onGroupSharedCallback);

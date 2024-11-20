@@ -7,13 +7,19 @@ package org.chromium.chrome.browser.tabmodel;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.text.TextUtils;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -21,7 +27,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +41,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupUtilsUnitTest {
-
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
     private static final String TAB3_TITLE = "Tab3";
@@ -49,6 +57,7 @@ public class TabGroupUtilsUnitTest {
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
+    @Mock TabCreator mTabCreator;
 
     private Tab mTab1;
     private Tab mTab2;
@@ -56,7 +65,6 @@ public class TabGroupUtilsUnitTest {
 
     @Before
     public void setUp() {
-
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE, GURL.emptyGURL());
         mTab2 = TabUiUnitTestUtils.prepareTab(TAB2_ID, TAB2_TITLE, GURL.emptyGURL());
         mTab3 = TabUiUnitTestUtils.prepareTab(TAB3_ID, TAB3_TITLE, GURL.emptyGURL());
@@ -100,6 +108,19 @@ public class TabGroupUtilsUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
 
         assertThat(TabGroupUtils.getLastTabModelIndexForList(mTabModel, tabs), equalTo(POSITION3));
+    }
+
+    @Test
+    public void testOpenUrlInGroup() {
+        when(mTabGroupModelFilter.getRelatedTabList(eq(TAB1_ID))).thenReturn(Arrays.asList(mTab1));
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+
+        @TabLaunchType int launchType = TabLaunchType.FROM_TAB_GROUP_UI;
+        String url = JUnitTestGURLs.URL_1.getSpec();
+        TabGroupUtils.openUrlInGroup(mTabGroupModelFilter, url, TAB1_ID, launchType);
+        ArgumentMatcher<LoadUrlParams> matcher = params -> TextUtils.equals(params.getUrl(), url);
+        verify(mTabCreator).createNewTab(argThat(matcher), eq(launchType), eq(mTab1));
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId) {

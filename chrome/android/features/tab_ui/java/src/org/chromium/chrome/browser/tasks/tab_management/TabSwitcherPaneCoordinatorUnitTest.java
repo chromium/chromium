@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -112,7 +111,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ScrimCoordinator mScrimCoordinator;
     @Mock private DataSharingService mDataSharingService;
@@ -208,7 +206,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mProfileProviderSupplier,
                         mTabGroupModelFilterSupplier,
                         mTabContentManager,
-                        mTabCreatorManager,
                         mBrowserControlsStateProvider,
                         mScrimCoordinator,
                         mModalDialogManager,
