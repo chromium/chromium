@@ -7,12 +7,14 @@
 
 #include <stdint.h>
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,50 +24,6 @@ namespace base {
 class RefCountedMemory;
 }
 
-namespace detail {
-
-template <std::size_t i,
-          typename... Ts,
-          std::enable_if_t<i == sizeof...(Ts), int> = 0>
-void WriteDbusTypeTuple(const std::tuple<Ts...>&, dbus::MessageWriter*) {}
-
-template <std::size_t i,
-          typename... Ts,
-          std::enable_if_t<(i < sizeof...(Ts)), int> = 0>
-void WriteDbusTypeTuple(const std::tuple<Ts...>& ts,
-                        dbus::MessageWriter* writer) {
-  std::get<i>(ts).Write(writer);
-  WriteDbusTypeTuple<i + 1, Ts...>(ts, writer);
-}
-
-template <typename... Ts>
-void WriteDbusTypeTuple(const std::tuple<Ts...>& ts,
-                        dbus::MessageWriter* writer) {
-  WriteDbusTypeTuple<0, Ts...>(ts, writer);
-}
-
-template <std::size_t i,
-          typename... Ts,
-          std::enable_if_t<i == sizeof...(Ts), int> = 0>
-std::string GetDbusTypeTupleSignature() {
-  return std::string();
-}
-
-template <std::size_t i,
-          typename... Ts,
-          std::enable_if_t<(i < sizeof...(Ts)), int> = 0>
-std::string GetDbusTypeTupleSignature() {
-  return std::tuple_element_t<i, std::tuple<Ts...>>::GetSignature() +
-         GetDbusTypeTupleSignature<i + 1, Ts...>();
-}
-
-template <typename... Ts>
-std::string GetDbusTypeTupleSignature() {
-  return GetDbusTypeTupleSignature<0, Ts...>();
-}
-
-}  // namespace detail
-
 class COMPONENT_EXPORT(DBUS) DbusType {
  public:
   virtual ~DbusType();
@@ -73,7 +31,7 @@ class COMPONENT_EXPORT(DBUS) DbusType {
   bool operator==(const DbusType& other) const;
   bool operator!=(const DbusType& other) const;
 
-  // Serializes this object to |writer|.
+  // Serializes this object to `writer`.
   virtual void Write(dbus::MessageWriter* writer) const = 0;
 
   // Both a virtual and a static version of GetSignature() are necessary.
@@ -84,6 +42,9 @@ class COMPONENT_EXPORT(DBUS) DbusType {
   // signature from.
   virtual std::string GetSignatureDynamic() const = 0;
 
+  // True iff `this` and `other` have exactly the same type.
+  bool TypeMatches(const DbusType& other) const;
+
  protected:
   // This is only safe to call after verifying GetSignatureDynamic() matches.
   virtual bool IsEqual(const DbusType& other_type) const = 0;
@@ -92,9 +53,15 @@ class COMPONENT_EXPORT(DBUS) DbusType {
 template <typename T>
 class DbusTypeImpl : public DbusType {
  public:
-  ~DbusTypeImpl() override {}
+  ~DbusTypeImpl() override = default;
 
   std::string GetSignatureDynamic() const override { return T::GetSignature(); }
+
+  const auto& value() const { return static_cast<const T*>(this)->value_; }
+  auto& value() { return static_cast<T*>(this)->value_; }
+  void set_value(const auto& new_value) {
+    static_cast<T*>(this)->value_ = new_value;
+  }
 
  protected:
   // DbusType:
@@ -104,141 +71,92 @@ class DbusTypeImpl : public DbusType {
   }
 };
 
-class COMPONENT_EXPORT(DBUS) DbusBoolean : public DbusTypeImpl<DbusBoolean> {
+template <typename T,
+          typename PassT,
+          void (dbus::MessageWriter::*WriteFn)(PassT),
+          bool (dbus::MessageReader::*ReadFn)(T*),
+          char Signature>
+class COMPONENT_EXPORT(DBUS) DbusPrimitiveType final
+    : public DbusTypeImpl<
+          DbusPrimitiveType<T, PassT, WriteFn, ReadFn, Signature>> {
  public:
-  explicit DbusBoolean(bool value);
-  DbusBoolean(DbusBoolean&& other);
-  ~DbusBoolean() override;
+  DbusPrimitiveType() = default;
+  explicit DbusPrimitiveType(T value) : value_{value} {}
+  DbusPrimitiveType(DbusPrimitiveType&& other) noexcept = default;
+  DbusPrimitiveType& operator=(DbusPrimitiveType&& other) noexcept = default;
+  ~DbusPrimitiveType() override = default;
 
   // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
+  void Write(dbus::MessageWriter* writer) const override {
+    std::invoke(WriteFn, writer, value_);
+  }
 
-  static std::string GetSignature();
-
- private:
-  friend class DbusTypeImpl<DbusBoolean>;
-
-  bool value_;
-};
-
-class COMPONENT_EXPORT(DBUS) DbusInt32 : public DbusTypeImpl<DbusInt32> {
- public:
-  explicit DbusInt32(int32_t value);
-  DbusInt32(DbusInt32&& other);
-  ~DbusInt32() override;
-
-  // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
-
-  static std::string GetSignature();
+  static std::string GetSignature() { return std::string(1, Signature); }
 
  private:
-  friend class DbusTypeImpl<DbusInt32>;
+  friend class DbusTypeImpl<
+      DbusPrimitiveType<T, PassT, WriteFn, ReadFn, Signature>>;
 
-  int32_t value_;
+  T value_ = {};
 };
 
-class COMPONENT_EXPORT(DBUS) DbusUint32 : public DbusTypeImpl<DbusUint32> {
- public:
-  explicit DbusUint32(uint32_t value);
-  DbusUint32(DbusUint32&& other);
-  ~DbusUint32() override;
+#define DEFINE_DBUS_TYPE(TYPE, PRIMITIVE, PASS_PRIMITIVE, WRITE, READ, \
+                         SIGNATURE)                                    \
+  template class COMPONENT_EXPORT(DBUS)                                \
+      DbusPrimitiveType<PRIMITIVE, PASS_PRIMITIVE,                     \
+                        &dbus::MessageWriter::WRITE,                   \
+                        &dbus::MessageReader::READ, SIGNATURE>;        \
+  using TYPE = DbusPrimitiveType<PRIMITIVE, PASS_PRIMITIVE,            \
+                                 &dbus::MessageWriter::WRITE,          \
+                                 &dbus::MessageReader::READ, SIGNATURE>
 
-  // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
+#define DEFINE_DBUS_VALUE_TYPE(TYPE, PRIMITIVE, WRITE, READ, SIGNATURE) \
+  DEFINE_DBUS_TYPE(TYPE, PRIMITIVE, PRIMITIVE, WRITE, READ, SIGNATURE)
 
-  static std::string GetSignature();
+#define DEFINE_DBUS_REF_TYPE(TYPE, PRIMITIVE, WRITE, READ, SIGNATURE) \
+  DEFINE_DBUS_TYPE(TYPE, PRIMITIVE, const PRIMITIVE&, WRITE, READ, SIGNATURE)
 
- private:
-  friend class DbusTypeImpl<DbusUint32>;
+DEFINE_DBUS_VALUE_TYPE(DbusByte, uint8_t, AppendByte, PopByte, 'y');
+DEFINE_DBUS_VALUE_TYPE(DbusBoolean, bool, AppendBool, PopBool, 'b');
+DEFINE_DBUS_VALUE_TYPE(DbusInt16, int16_t, AppendInt16, PopInt16, 'n');
+DEFINE_DBUS_VALUE_TYPE(DbusUint16, uint16_t, AppendUint16, PopUint16, 'q');
+DEFINE_DBUS_VALUE_TYPE(DbusInt32, int32_t, AppendInt32, PopInt32, 'i');
+DEFINE_DBUS_VALUE_TYPE(DbusUint32, uint32_t, AppendUint32, PopUint32, 'u');
+DEFINE_DBUS_VALUE_TYPE(DbusInt64, int64_t, AppendInt64, PopInt64, 'x');
+DEFINE_DBUS_VALUE_TYPE(DbusUint64, uint64_t, AppendUint64, PopUint64, 't');
+DEFINE_DBUS_VALUE_TYPE(DbusDouble, double, AppendDouble, PopDouble, 'd');
+DEFINE_DBUS_REF_TYPE(DbusString, std::string, AppendString, PopString, 's');
+DEFINE_DBUS_REF_TYPE(DbusObjectPath,
+                     dbus::ObjectPath,
+                     AppendObjectPath,
+                     PopObjectPath,
+                     'o');
 
-  uint32_t value_;
-};
+#undef DEFINE_DBUS_REF_TYPE
+#undef DEFINE_DBUS_VALUE_TYPE
+#undef DEFINE_DBUS_TYPE
 
-class COMPONENT_EXPORT(DBUS) DbusInt64 : public DbusTypeImpl<DbusInt64> {
- public:
-  explicit DbusInt64(int64_t value);
-  DbusInt64(DbusInt64&& other);
-  ~DbusInt64() override;
-
-  // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
-
-  static std::string GetSignature();
-
- private:
-  friend class DbusTypeImpl<DbusInt64>;
-
-  int64_t value_;
-};
-
-class COMPONENT_EXPORT(DBUS) DbusDouble : public DbusTypeImpl<DbusDouble> {
- public:
-  explicit DbusDouble(double value);
-  DbusDouble(DbusDouble&& other);
-  ~DbusDouble() override;
-
-  // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
-
-  static std::string GetSignature();
-
- private:
-  friend class DbusTypeImpl<DbusDouble>;
-
-  double value_;
-};
-
-class COMPONENT_EXPORT(DBUS) DbusString : public DbusTypeImpl<DbusString> {
- public:
-  explicit DbusString(const std::string& value);
-  DbusString(DbusString&& other);
-  ~DbusString() override;
-
-  // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
-
-  static std::string GetSignature();
-
- private:
-  friend class DbusTypeImpl<DbusString>;
-
-  std::string value_;
-};
-
-class COMPONENT_EXPORT(DBUS) DbusObjectPath
-    : public DbusTypeImpl<DbusObjectPath> {
- public:
-  explicit DbusObjectPath(const dbus::ObjectPath& value);
-  DbusObjectPath(DbusObjectPath&& other);
-  ~DbusObjectPath() override;
-
-  // DbusType:
-  void Write(dbus::MessageWriter* writer) const override;
-
-  static std::string GetSignature();
-
- private:
-  friend class DbusTypeImpl<DbusObjectPath>;
-
-  dbus::ObjectPath value_;
-};
-
-class COMPONENT_EXPORT(DBUS) DbusVariant : public DbusTypeImpl<DbusVariant> {
+class COMPONENT_EXPORT(DBUS) DbusVariant final
+    : public DbusTypeImpl<DbusVariant> {
  public:
   DbusVariant();
   explicit DbusVariant(std::unique_ptr<DbusType> value);
-  DbusVariant(DbusVariant&& other);
+  DbusVariant(DbusVariant&& other) noexcept;
+  DbusVariant& operator=(DbusVariant&& other) noexcept;
   ~DbusVariant() override;
 
   template <typename T>
   T* GetAs() {
-    return value_ && value_->GetSignatureDynamic() == T::GetSignature()
-               ? reinterpret_cast<T*>(value_.get())
-               : nullptr;
+    return const_cast<T*>(const_cast<const DbusVariant*>(this)->GetAs<T>());
   }
 
-  DbusVariant& operator=(DbusVariant&& other);
+  template <typename T>
+  const T* GetAs() const {
+    if (!value_ || value_->GetSignatureDynamic() != T::GetSignature()) {
+      return nullptr;
+    }
+    return static_cast<T*>(value_.get());
+  }
 
   explicit operator bool() const;
 
@@ -251,19 +169,22 @@ class COMPONENT_EXPORT(DBUS) DbusVariant : public DbusTypeImpl<DbusVariant> {
  private:
   friend class DbusTypeImpl<DbusVariant>;
 
-  std::unique_ptr<DbusType> value_;
+  mutable std::unique_ptr<DbusType> value_;
 };
 
 template <typename T>
-DbusVariant MakeDbusVariant(T t) {
-  return DbusVariant(std::make_unique<T>(std::move(t)));
+DbusVariant MakeDbusVariant(T&& t) {
+  return DbusVariant{std::make_unique<T>(std::move(t))};
 }
 
 template <typename T>
-class COMPONENT_EXPORT(DBUS) DbusArray : public DbusTypeImpl<DbusArray<T>> {
+class COMPONENT_EXPORT(DBUS) DbusArray final
+    : public DbusTypeImpl<DbusArray<T>> {
  public:
-  explicit DbusArray(std::vector<T>&& value) : value_(std::move(value)) {}
-  DbusArray(DbusArray<T>&& other) = default;
+  DbusArray() = default;
+  explicit DbusArray(std::vector<T>&& value) : value_{std::move(value)} {}
+  DbusArray(DbusArray<T>&& other) noexcept = default;
+  DbusArray<T>& operator=(DbusArray<T>&& other) noexcept = default;
   ~DbusArray() override = default;
 
   template <typename... Ts>
@@ -277,8 +198,9 @@ class COMPONENT_EXPORT(DBUS) DbusArray : public DbusTypeImpl<DbusArray<T>> {
   void Write(dbus::MessageWriter* writer) const override {
     dbus::MessageWriter array_writer(nullptr);
     writer->OpenArray(T::GetSignature(), &array_writer);
-    for (const T& t : value_)
+    for (const T& t : value_) {
       t.Write(&array_writer);
+    }
     writer->CloseContainer(&array_writer);
   }
 
@@ -297,15 +219,15 @@ auto MakeDbusArray(Ts&&... ts) {
   return DbusArray<std::common_type_t<Ts...>>{std::move(ts)...};
 }
 
-// (If DbusByte was defined) this is the same as DbusArray<DbusByte>.  This
-// class avoids having to create a bunch of heavy virtual objects just to wrap
-// individual bytes.
-class COMPONENT_EXPORT(DBUS) DbusByteArray
+// This is the same as DbusArray<DbusByte>.  This class avoids having to create
+// a bunch of heavy virtual objects just to wrap individual bytes.
+class COMPONENT_EXPORT(DBUS) DbusByteArray final
     : public DbusTypeImpl<DbusByteArray> {
  public:
   DbusByteArray();
   explicit DbusByteArray(scoped_refptr<base::RefCountedMemory> value);
-  DbusByteArray(DbusByteArray&& other);
+  DbusByteArray(DbusByteArray&& other) noexcept;
+  DbusByteArray& operator=(DbusByteArray&& other) noexcept;
   ~DbusByteArray() override;
 
   // DbusType:
@@ -321,23 +243,27 @@ class COMPONENT_EXPORT(DBUS) DbusByteArray
 };
 
 template <typename... Ts>
-class COMPONENT_EXPORT(DBUS) DbusStruct
+class COMPONENT_EXPORT(DBUS) DbusStruct final
     : public DbusTypeImpl<DbusStruct<Ts...>> {
  public:
-  explicit DbusStruct(Ts&&... ts) : value_(std::move(ts)...) {}
-  DbusStruct(DbusStruct<Ts...>&& other) = default;
+  DbusStruct() = default;
+  explicit DbusStruct(Ts&&... ts) : value_{std::move(ts)...} {}
+  DbusStruct(DbusStruct<Ts...>&& other) noexcept = default;
+  DbusStruct<Ts...>& operator=(DbusStruct<Ts...>&& other) noexcept = default;
   ~DbusStruct() override = default;
 
   // DbusType:
   void Write(dbus::MessageWriter* writer) const override {
     dbus::MessageWriter struct_writer(nullptr);
     writer->OpenStruct(&struct_writer);
-    detail::WriteDbusTypeTuple(value_, &struct_writer);
+    std::apply(
+        [&struct_writer](auto&&... args) { (args.Write(&struct_writer), ...); },
+        value_);
     writer->CloseContainer(&struct_writer);
   }
 
   static std::string GetSignature() {
-    return "(" + detail::GetDbusTypeTupleSignature<Ts...>() + ")";
+    return "(" + (Ts::GetSignature() + ... + std::string()) + ")";
   }
 
  private:
@@ -352,11 +278,14 @@ auto MakeDbusStruct(Ts&&... ts) {
 }
 
 template <typename K, typename V>
-class COMPONENT_EXPORT(DBUS) DbusDictEntry
+class COMPONENT_EXPORT(DBUS) DbusDictEntry final
     : public DbusTypeImpl<DbusDictEntry<K, V>> {
  public:
+  DbusDictEntry() = default;
   DbusDictEntry(K&& k, V&& v) : value_{std::move(k), std::move(v)} {}
-  DbusDictEntry(DbusDictEntry<K, V>&& other) = default;
+  DbusDictEntry(DbusDictEntry<K, V>&& other) noexcept = default;
+  DbusDictEntry<K, V>& operator=(DbusDictEntry<K, V>&& other) noexcept =
+      default;
   ~DbusDictEntry() override = default;
 
   // DbusType:
@@ -380,7 +309,7 @@ class COMPONENT_EXPORT(DBUS) DbusDictEntry
 
 template <typename K, typename V>
 auto MakeDbusDictEntry(K&& k, V&& v) {
-  return DbusDictEntry<K, V>(std::forward<K>(k), std::forward<V>(v));
+  return DbusDictEntry<K, V>{std::forward<K>(k), std::forward<V>(v)};
 }
 
 // A convenience class for DbusArray<DbusDictEntry<DbusString, DbusVariant>>,
@@ -389,25 +318,55 @@ auto MakeDbusDictEntry(K&& k, V&& v) {
 //   1. Duplicate keys are not allowed.
 //   2. You cannot control the ordering of keys.  They will always be in sorted
 //      order.
-class COMPONENT_EXPORT(DBUS) DbusDictionary
+class COMPONENT_EXPORT(DBUS) DbusDictionary final
     : public DbusTypeImpl<DbusDictionary> {
  public:
   DbusDictionary();
-  DbusDictionary(DbusDictionary&& other);
+  DbusDictionary(DbusDictionary&& other) noexcept;
+  DbusDictionary& operator=(DbusDictionary&& other) noexcept;
   ~DbusDictionary() override;
 
-  // Returns true iff the value corresponding to |key| was updated.
+  // Returns true iff the value corresponding to `key` was updated.
   bool Put(const std::string& key, DbusVariant&& value);
+
+  // Returns nullptr if `key` isn't in the dictionary.
+  DbusVariant* Get(const std::string& key);
 
   // DbusType:
   void Write(dbus::MessageWriter* writer) const override;
 
   static std::string GetSignature();
 
+  template <typename T>
+  bool PutAs(const std::string& key, T&& value) {
+    return Put(key, MakeDbusVariant(std::move(value)));
+  }
+
+  template <typename T>
+  T* GetAs(const std::string& key) {
+    DbusVariant* variant = Get(key);
+    if (!variant) {
+      return nullptr;
+    }
+    return variant->GetAs<T>();
+  }
+
  private:
   friend class DbusTypeImpl<DbusDictionary>;
 
   std::map<std::string, DbusVariant> value_;
 };
+
+COMPONENT_EXPORT(DBUS)
+DbusDictionary MakeDbusDictionary();
+
+template <typename V, typename... Args>
+DbusDictionary MakeDbusDictionary(const std::string& key,
+                                  V&& value,
+                                  Args&&... rest) {
+  DbusDictionary dict = MakeDbusDictionary(std::forward<Args>(rest)...);
+  dict.PutAs(key, std::forward<V>(value));
+  return dict;
+}
 
 #endif  // COMPONENTS_DBUS_PROPERTIES_TYPES_H_
