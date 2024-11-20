@@ -624,8 +624,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.RendererTermination.AliveRenderersCount" units="renderers"
-    expires_after="2024-12-30">
-  <owner>ajuma@chromium.org</owner>
+    expires_after="2025-12-30">
+  <owner>justincohen@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     [iOS] A count of the number of alive renderers in the current window when a
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.RendererTermination.TotalTabCount" units="tabs"
     expires_after="2025-01-26">
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <summary>
     [iOS] The number of tabs of the current window at the time of a renderer
