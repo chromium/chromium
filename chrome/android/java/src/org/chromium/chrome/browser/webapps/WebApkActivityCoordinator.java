@@ -12,38 +12,35 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.components.embedder_support.util.Origin;
-
-import javax.inject.Inject;
 
 /**
  * Coordinator for the WebAPK activity component. Add methods here if other components need to
  * communicate with the WebAPK activity component.
  */
-@ActivityScope
 public class WebApkActivityCoordinator implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Supplier<WebApkUpdateManager> mWebApkUpdateManager;
 
-    @Inject
-    public WebApkActivityCoordinator(BaseCustomTabActivity activity) {
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mWebApkUpdateManager = activity::getWebApkUpdateManager;
+    public WebApkActivityCoordinator(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Supplier<WebApkUpdateManager> webApkUpdateManager,
+            WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mIntentDataProvider = intentDataProvider;
+        mWebApkUpdateManager = webApkUpdateManager;
 
-        activity.getWebappDeferredStartupWithStorageHandler()
-                .addTask(
-                        (storage, didCreateStorage) -> {
-                            if (activity.getLifecycleDispatcher()
-                                    .isActivityFinishingOrDestroyed()) {
-                                return;
-                            }
+        webappDeferredStartupWithStorageHandler.addTask(
+                (storage, didCreateStorage) -> {
+                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) {
+                        return;
+                    }
 
-                            onDeferredStartupWithStorage(storage, didCreateStorage);
-                        });
-        activity.getLifecycleDispatcher().register(this);
+                    onDeferredStartupWithStorage(storage, didCreateStorage);
+                });
+        lifecycleDispatcher.register(this);
     }
 
     public void onDeferredStartupWithStorage(

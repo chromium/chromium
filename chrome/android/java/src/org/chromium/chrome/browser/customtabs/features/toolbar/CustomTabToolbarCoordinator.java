@@ -29,12 +29,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
+import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
@@ -44,8 +43,6 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
-
-import javax.inject.Inject;
 
 /**
  * Works with the toolbar in a Custom Tab. Encapsulates interactions with Chrome's toolbar-related
@@ -60,13 +57,12 @@ import javax.inject.Inject;
  * appear. <br>
  * 3. Refactor to MVC.
  */
-@ActivityScope
 public class CustomTabToolbarCoordinator {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabProvider;
     private final Activity mActivity;
     private final ActivityWindowAndroid mWindowAndroid;
-    private final Supplier<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final CustomTabActivityNavigationController mNavigationController;
     private final CloseButtonVisibilityManager mCloseButtonVisibilityManager;
     private final CustomTabBrowserControlsVisibilityDelegate mVisibilityDelegate;
@@ -80,20 +76,28 @@ public class CustomTabToolbarCoordinator {
 
     private static final String TAG = "CustomTabToolbarCoor";
 
-    @Inject
-    public CustomTabToolbarCoordinator(BaseCustomTabActivity activity) {
-        mIntentDataProvider = activity.getIntentDataProvider();
-        mTabProvider = activity.getCustomTabActivityTabProvider();
+    public CustomTabToolbarCoordinator(
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabActivityTabProvider tabProvider,
+            Activity activity,
+            ActivityWindowAndroid windowAndroid,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            CustomTabActivityNavigationController navigationController,
+            CloseButtonVisibilityManager closeButtonVisibilityManager,
+            CustomTabBrowserControlsVisibilityDelegate visibilityDelegate,
+            CustomTabToolbarColorController toolbarColorController,
+            CustomTabCompositorContentInitializer customTabCompositorContentInitializer) {
+        mIntentDataProvider = intentDataProvider;
+        mTabProvider = tabProvider;
         mActivity = activity;
-        mWindowAndroid = activity.getWindowAndroid();
-        mBrowserControlsVisibilityManager = activity::getBrowserControlsManager;
-        mNavigationController = activity.getCustomTabActivityNavigationController();
-        mCloseButtonVisibilityManager = activity.getCloseButtonVisibilityManager();
-        mVisibilityDelegate = activity.getCustomTabBrowserControlsVisibilityDelegate();
-        mToolbarColorController = activity.getCustomTabToolbarColorController();
+        mWindowAndroid = windowAndroid;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
+        mNavigationController = navigationController;
+        mCloseButtonVisibilityManager = closeButtonVisibilityManager;
+        mVisibilityDelegate = visibilityDelegate;
+        mToolbarColorController = toolbarColorController;
 
-        activity.getCustomTabCompositorContentInitializer()
-                .addCallback(this::onCompositorContentInitialized);
+        customTabCompositorContentInitializer.addCallback(this::onCompositorContentInitialized);
     }
 
     /**
@@ -222,28 +226,22 @@ public class CustomTabToolbarCoordinator {
         mVisibilityDelegate.setControlsState(controlsState);
         if (controlsState == BrowserControlsState.HIDDEN) {
             mControlsHidingToken =
-                    mBrowserControlsVisibilityManager
-                            .get()
-                            .hideAndroidControlsAndClearOldToken(mControlsHidingToken);
+                    mBrowserControlsVisibilityManager.hideAndroidControlsAndClearOldToken(
+                            mControlsHidingToken);
         } else {
-            mBrowserControlsVisibilityManager
-                    .get()
-                    .releaseAndroidControlsHidingToken(mControlsHidingToken);
+            mBrowserControlsVisibilityManager.releaseAndroidControlsHidingToken(
+                    mControlsHidingToken);
         }
     }
 
     /** Shows toolbar temporarily, for a few seconds. */
     public void showToolbarTemporarily() {
-        mBrowserControlsVisibilityManager
-                .get()
-                .getBrowserVisibilityDelegate()
-                .showControlsTransient();
+        mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate().showControlsTransient();
     }
 
     /**
      * Updates a custom button with a new icon and description. Provided {@link CustomButtonParams}
-     * must have the updated data.
-     * Returns whether has succeeded.
+     * must have the updated data. Returns whether has succeeded.
      */
     public boolean updateCustomButton(CustomButtonParams params) {
         if (!params.doesIconFitToolbar(mActivity)) {

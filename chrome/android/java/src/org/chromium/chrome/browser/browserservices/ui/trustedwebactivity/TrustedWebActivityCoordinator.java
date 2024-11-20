@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 
+import android.app.Activity;
+
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.InstalledWebappRegistrar;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -11,37 +14,34 @@ import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.ClientPackageNameProvider;
+import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.embedder_support.util.Origin;
-
-import javax.inject.Inject;
 
 /**
  * Coordinator for the Trusted Web Activity component. Add methods here if other components need to
  * communicate with Trusted Web Activity component.
  */
-@ActivityScope
 public class TrustedWebActivityCoordinator {
     private final SharedActivityCoordinator mSharedActivityCoordinator;
     private final CurrentPageVerifier mCurrentPageVerifier;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
-    @Inject
     public TrustedWebActivityCoordinator(
-            SharedActivityCoordinator sharedActivityCoordinator, BaseCustomTabActivity activity) {
+            Activity activity,
+            SharedActivityCoordinator sharedActivityCoordinator,
+            CurrentPageVerifier currentPageVerifier,
+            ClientPackageNameProvider clientPackageNameProvider,
+            Supplier<SplashController> splashControllerSupplier,
+            BrowserServicesIntentDataProvider intentDataProvider) {
         mSharedActivityCoordinator = sharedActivityCoordinator;
-        mCurrentPageVerifier = activity.getCurrentPageVerifier();
-        mClientPackageNameProvider = activity.getClientPackageNameProvider();
-
-        BrowserServicesIntentDataProvider intentDataProvider = activity.getIntentDataProvider();
+        mCurrentPageVerifier = currentPageVerifier;
+        mClientPackageNameProvider = clientPackageNameProvider;
 
         boolean showSplashScreen =
                 TwaSplashController.intentIsForTwaWithSplashScreen(intentDataProvider.getIntent());
         if (showSplashScreen) {
-            new TwaSplashController(
-                    activity, activity.getSplashControllerSupplier(), intentDataProvider);
+            new TwaSplashController(activity, splashControllerSupplier, intentDataProvider);
         }
         TrustedWebActivityUmaRecorder.recordSplashScreenUsage(showSplashScreen);
 

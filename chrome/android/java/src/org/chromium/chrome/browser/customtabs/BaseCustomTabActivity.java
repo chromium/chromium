@@ -43,7 +43,9 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityBrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.sharing.TwaSharingController;
+import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
@@ -107,6 +109,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
+import org.chromium.chrome.browser.webapps.WebApkActivityCoordinator;
 import org.chromium.chrome.browser.webapps.WebApkActivityLifecycleUmaTracker;
 import org.chromium.chrome.browser.webapps.WebApkUpdateManager;
 import org.chromium.chrome.browser.webapps.WebappActionsNotificationManager;
@@ -130,7 +133,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
     private CustomTabDelegateFactory mDelegateFactory;
-    protected CustomTabToolbarCoordinator mToolbarCoordinator;
+    private CustomTabToolbarCoordinator mToolbarCoordinator;
     private CustomTabActivityNavigationController mNavigationController;
     private CustomTabActivityTabController mTabController;
     private CustomTabActivityTabProvider mTabProvider;
@@ -138,8 +141,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabActivityTabFactory mTabFactory;
     private CustomTabIntentHandler mCustomTabIntentHandler;
     protected CustomTabNightModeStateController mNightModeStateController;
-    protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
-    protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
+    private @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
+    private @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
     private @Nullable AuthTabVerifier mAuthTabVerifier;
     private Verifier mVerifier;
     private FullscreenManager mFullscreenManager;
@@ -170,6 +173,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private DisclosureSnackbar mDisclosureSnackbar;
     private DisclosureNotification mDisclosureNotification;
     private DisclosureUiPicker mDisclosureUiPicker;
+    private SharedActivityCoordinator mSharedActivityCoordinator;
 
     private ActivityLifecycleDispatcher mLifecycleDispatcherForTesting;
 
@@ -468,7 +472,18 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         this,
                         getLifecycleDispatcher());
 
-        mToolbarCoordinator = component.resolveToolbarCoordinator();
+        mToolbarCoordinator =
+                new CustomTabToolbarCoordinator(
+                        getIntentDataProvider(),
+                        getCustomTabActivityTabProvider(),
+                        this,
+                        getWindowAndroid(),
+                        getBrowserControlsManager(),
+                        getCustomTabActivityNavigationController(),
+                        getCloseButtonVisibilityManager(),
+                        getCustomTabBrowserControlsVisibilityDelegate(),
+                        getCustomTabToolbarColorController(),
+                        getCustomTabCompositorContentInitializer());
 
         mCustomTabIntentHandler =
                 new CustomTabIntentHandler(
@@ -503,56 +518,76 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             component.resolveCustomTabIncognitoManager();
         }
 
-        if (intentDataProvider.isWebappOrWebApkActivity()) {
-            mWebappActivityCoordinator = component.resolveWebappActivityCoordinator();
-            new WebappActionsNotificationManager(
-                    getCustomTabActivityTabProvider(),
-                    getIntentDataProvider(),
-                    getLifecycleDispatcher());
-            new WebappSplashController(
-                    this,
-                    getSplashController(),
-                    getTabObserverRegistrar(),
-                    getIntentDataProvider());
-        }
-
-        if (intentDataProvider.isWebApkActivity()) {
-            component.resolveWebApkActivityCoordinator();
-            // DisclosureInfobar manages its own lifecycle and just needs to be initialized.
-            getDisclosureInfobar();
-            new WebApkActivityLifecycleUmaTracker(
-                    this,
-                    getIntentDataProvider(),
-                    getSplashControllerSupplier(),
-                    getLegacyTabStartupMetricsTracker(),
-                    getStartupMetricsTracker(),
-                    this::getSavedInstanceState,
-                    getWebappDeferredStartupWithStorageHandler(),
-                    getLifecycleDispatcher());
-            new WebappDisclosureController(
-                    getTrustedWebActivityModel(),
-                    getLifecycleDispatcher(),
-                    getCurrentPageVerifier(),
-                    getIntentDataProvider(),
-                    getWebappDeferredStartupWithStorageHandler());
-        }
-
-        if (mIntentDataProvider.isTrustedWebActivity()) {
-            mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
-            // DisclosureUiPicker manages its own lifecycle and just needs to be initialized.
-            getDisclosureUiPicker();
-            new TrustedWebActivityDisclosureController(
-                    getTrustedWebActivityModel(),
-                    getLifecycleDispatcher(),
-                    getCurrentPageVerifier(),
-                    getClientPackageNameProvider());
-        }
+        if (intentDataProvider.isWebappOrWebApkActivity()) initializeForWebappOrWebApk();
+        if (mIntentDataProvider.isTrustedWebActivity()) initializeForTwa();
 
         getCustomTabActivityTabFactory().setActivityType(getActivityType());
         getCustomTabDelegateFactory()
                 .setEphemeralTabCoordinatorSupplier(
                         mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
         return component;
+    }
+
+    private void initializeForWebappOrWebApk() {
+        mWebappActivityCoordinator =
+                new WebappActivityCoordinator(
+                        getIntentDataProvider(),
+                        this,
+                        getWebappDeferredStartupWithStorageHandler(),
+                        getLifecycleDispatcher());
+        // Classes manage their own lifecycles and just need to be initialized.
+        new WebappActionsNotificationManager(
+                getCustomTabActivityTabProvider(),
+                getIntentDataProvider(),
+                getLifecycleDispatcher());
+        new WebappSplashController(
+                this, getSplashController(), getTabObserverRegistrar(), getIntentDataProvider());
+        getSharedActivityCoordinator();
+
+        if (getIntentDataProvider().isWebApkActivity()) initializeForWebApk();
+    }
+
+    private void initializeForWebApk() {
+        // Classes manage their own lifecycles and just need to be initialized.
+        new WebApkActivityCoordinator(
+                getIntentDataProvider(),
+                this::getWebApkUpdateManager,
+                getWebappDeferredStartupWithStorageHandler(),
+                getLifecycleDispatcher());
+        getDisclosureInfobar();
+        new WebApkActivityLifecycleUmaTracker(
+                this,
+                getIntentDataProvider(),
+                getSplashControllerSupplier(),
+                getLegacyTabStartupMetricsTracker(),
+                getStartupMetricsTracker(),
+                this::getSavedInstanceState,
+                getWebappDeferredStartupWithStorageHandler(),
+                getLifecycleDispatcher());
+        new WebappDisclosureController(
+                getTrustedWebActivityModel(),
+                getLifecycleDispatcher(),
+                getCurrentPageVerifier(),
+                getIntentDataProvider(),
+                getWebappDeferredStartupWithStorageHandler());
+    }
+
+    private void initializeForTwa() {
+        // Classes manage their own lifecycles and just need to be initialized.
+        mTwaCoordinator =
+                new TrustedWebActivityCoordinator(
+                        this,
+                        getSharedActivityCoordinator(),
+                        getCurrentPageVerifier(),
+                        getClientPackageNameProvider(),
+                        getSplashControllerSupplier(),
+                        getIntentDataProvider());
+        getDisclosureUiPicker();
+        new TrustedWebActivityDisclosureController(
+                getTrustedWebActivityModel(),
+                getLifecycleDispatcher(),
+                getCurrentPageVerifier(),
+                getClientPackageNameProvider());
     }
 
     /**
@@ -1373,5 +1408,43 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                             getLifecycleDispatcher());
         }
         return mDisclosureUiPicker;
+    }
+
+    public CustomTabToolbarCoordinator getCustomTabToolbarCoordinator() {
+        return mToolbarCoordinator;
+    }
+
+    private TrustedWebActivityBrowserControlsVisibilityManager
+            createTrustedWebActivityBrowserControlsVisibilityManager() {
+        return new TrustedWebActivityBrowserControlsVisibilityManager(
+                getTabObserverRegistrar(),
+                getCustomTabActivityTabProvider(),
+                getCustomTabToolbarCoordinator(),
+                getCloseButtonVisibilityManager(),
+                getIntentDataProvider());
+    }
+
+    public SharedActivityCoordinator getSharedActivityCoordinator() {
+        if (mSharedActivityCoordinator == null) {
+            TrustedWebActivityBrowserControlsVisibilityManager controlsVisibilityManager =
+                    createTrustedWebActivityBrowserControlsVisibilityManager();
+            mSharedActivityCoordinator =
+                    new SharedActivityCoordinator(
+                            getCurrentPageVerifier(),
+                            controlsVisibilityManager,
+                            getCustomTabToolbarColorController(),
+                            getCustomTabStatusBarColorProvider(),
+                            this::getImmersiveModeController,
+                            getIntentDataProvider(),
+                            getCustomTabOrientationController(),
+                            getCustomTabActivityNavigationController(),
+                            getVerifier(),
+                            getLifecycleDispatcher());
+        }
+        return mSharedActivityCoordinator;
+    }
+
+    protected @Nullable WebappActivityCoordinator getWebappActivityCoordinator() {
+        return mWebappActivityCoordinator;
     }
 }

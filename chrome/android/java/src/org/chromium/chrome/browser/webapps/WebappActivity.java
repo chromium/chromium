@@ -92,8 +92,8 @@ public class WebappActivity extends BaseCustomTabActivity {
     protected LaunchCauseMetrics createLaunchCauseMetrics() {
         return new WebappLaunchCauseMetrics(
                 this,
-                mWebappActivityCoordinator == null
+                getWebappActivityCoordinator() == null
                         ? null
-                        : mWebappActivityCoordinator.getWebappInfo());
+                        : getWebappActivityCoordinator().getWebappInfo());
     }
 }

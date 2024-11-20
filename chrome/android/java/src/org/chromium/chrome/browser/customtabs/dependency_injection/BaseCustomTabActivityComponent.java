@@ -6,15 +6,11 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 
 import dagger.Subcomponent;
 
-import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
-import org.chromium.chrome.browser.webapps.WebApkActivityCoordinator;
-import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 
 /**
  * Activity-scoped component associated with {@link
@@ -27,15 +23,4 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     CustomTabIncognitoManager resolveCustomTabIncognitoManager();
 
     CustomTabSessionHandler resolveSessionHandler();
-
-    CustomTabToolbarCoordinator resolveToolbarCoordinator();
-
-    // Webapp & WebAPK only
-    WebappActivityCoordinator resolveWebappActivityCoordinator();
-
-    // WebAPK only
-    WebApkActivityCoordinator resolveWebApkActivityCoordinator();
-
-    // TWA only
-    TrustedWebActivityCoordinator resolveTrustedWebActivityCoordinator();
 }

@@ -13,21 +13,20 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller.TrustedWebActivityBrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
-import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.CustomTabOrientationController;
 import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 
-import javax.inject.Inject;
-
 /** Coordinator for shared functionality between Trusted Web Activities and webapps. */
-@ActivityScope
 public class SharedActivityCoordinator implements InflationObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
-    private TrustedWebActivityBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final TrustedWebActivityBrowserControlsVisibilityManager
+            mBrowserControlsVisibilityManager;
     private final CustomTabToolbarColorController mToolbarColorController;
     private final CustomTabStatusBarColorProvider mStatusBarColorProvider;
     private final Supplier<ImmersiveModeController> mImmersiveModeController;
@@ -37,23 +36,30 @@ public class SharedActivityCoordinator implements InflationObserver {
 
     private boolean mUseAppModeUi = true;
 
-    @Inject
     public SharedActivityCoordinator(
+            CurrentPageVerifier currentPageVerifier,
             TrustedWebActivityBrowserControlsVisibilityManager browserControlsVisibilityManager,
-            BaseCustomTabActivity activity) {
-        mCurrentPageVerifier = activity.getCurrentPageVerifier();
+            CustomTabToolbarColorController toolbarColorController,
+            CustomTabStatusBarColorProvider statusBarColorProvider,
+            Supplier<ImmersiveModeController> immersiveModeController,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            CustomTabOrientationController customTabOrientationController,
+            CustomTabActivityNavigationController customTabActivityNavigationController,
+            Verifier verifier,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mCurrentPageVerifier = currentPageVerifier;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
-        mToolbarColorController = activity.getCustomTabToolbarColorController();
-        mStatusBarColorProvider = activity.getCustomTabStatusBarColorProvider();
-        mImmersiveModeController = activity::getImmersiveModeController;
-        mImmersiveDisplayMode = computeImmersiveMode(activity.getIntentDataProvider());
-        mCustomTabOrientationController = activity.getCustomTabOrientationController();
+        mToolbarColorController = toolbarColorController;
+        mStatusBarColorProvider = statusBarColorProvider;
+        mImmersiveModeController = immersiveModeController;
+        mImmersiveDisplayMode = computeImmersiveMode(intentDataProvider);
+        mCustomTabOrientationController = customTabOrientationController;
 
-        activity.getCustomTabActivityNavigationController()
-                .setLandingPageOnCloseCriterion(activity.getVerifier()::wasPreviouslyVerified);
+        customTabActivityNavigationController.setLandingPageOnCloseCriterion(
+                verifier::wasPreviouslyVerified);
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
-        activity.getLifecycleDispatcher().register(this);
+        lifecycleDispatcher.register(this);
     }
 
     public boolean shouldUseAppModeUi() {
