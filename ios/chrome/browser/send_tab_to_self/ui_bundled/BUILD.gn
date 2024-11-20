@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("send_tab_to_self") {
+source_set("coordinator") {
   sources = [
     "send_tab_to_self_coordinator.h",
     "send_tab_to_self_coordinator.mm",
   ]
   deps = [
-    ":send_tab_to_self_ui",
+    ":ui",
     "//base",
     "//components/send_tab_to_self",
     "//components/signin/public/identity_manager",
@@ -35,7 +35,7 @@ source_set("send_tab_to_self") {
   ]
 }
 
-source_set("send_tab_to_self_ui") {
+source_set("ui") {
   sources = [
     "send_tab_to_self_image_detail_text_item.h",
     "send_tab_to_self_image_detail_text_item.mm",

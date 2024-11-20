@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -26,6 +26,9 @@
 #import "components/sync/service/sync_service_observer.h"
 #import "ios/chrome/browser/infobars/ui_bundled/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_delegate.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_presentation_controller.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -47,9 +50,6 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_presentation_controller.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 

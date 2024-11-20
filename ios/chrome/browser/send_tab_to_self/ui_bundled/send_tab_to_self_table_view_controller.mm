@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_table_view_controller.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_table_view_controller.h"
 
 #import <utility>
 
@@ -15,6 +15,9 @@
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/target_device_info.h"
 #import "components/sync_device_info/device_info.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_image_detail_text_item.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_manage_devices_item.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
@@ -23,9 +26,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_modal_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
+#import "ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_image_detail_text_item.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
