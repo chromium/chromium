@@ -307,10 +307,22 @@ class AutofillManager
   virtual void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool success)> form_extraction_finished_callback);
 
-  // Returns predictions for fields in a form identified by `form_id`.
-  // Returns an empty map if the manager has no data about the form.
+  // Returns server predictions for fields identified by `field_ids` in a form
+  // identified by `form_id`. If the manager has no data about the form with
+  // `form_id`, returns an empty map. If the form does not contain data about
+  // fields with `field_ids`, NO_SERVER_DATA type is returned for them.
   base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-  GetServerPredictionsForForm(FormGlobalId form_id) const;
+  GetServerPredictionsForForm(
+      FormGlobalId form_id,
+      const std::vector<FieldGlobalId>& field_ids) const;
+
+  // Returns predictions from a heuristic source for fields identified by
+  // `field_ids` in a form identified by `form_id`. Returns an empty map if the
+  // manager has no data about the form.
+  base::flat_map<FieldGlobalId, FieldType> GetHeursticPredictionForForm(
+      HeuristicSource source,
+      FormGlobalId form_id,
+      const std::vector<FieldGlobalId>& field_ids) const;
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 

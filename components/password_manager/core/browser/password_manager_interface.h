@@ -132,6 +132,13 @@ class PasswordManagerInterface : public FormSubmissionObserver {
                            autofill::AutofillType::ServerPrediction>&
           field_predictions) = 0;
 
+  // Processes the classification model predictions received via Autofill.
+  virtual void ProcessClassificationModelPredictions(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+          field_predictions) = 0;
+
   // Getter for the PasswordManagerClient.
   virtual PasswordManagerClient* GetClient() = 0;
 

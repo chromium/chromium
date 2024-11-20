@@ -10,6 +10,7 @@
 
 #import "base/check.h"
 #import "base/check_deref.h"
+#import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -478,12 +479,14 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     return {};
   }
 
+  auto field_ids = base::ToVector(renderer_form.value().fields(),
+                                  &autofill::FormFieldData::global_id);
   // The driver id is irrelevant here because it would only be used by password
   // manager logic that handles the `PasswordForm` returned by the parser.
   return password_manager::ClassifyAsPasswordForm(
       *renderer_form, password_manager::ConvertToFormPredictions(
                           /*driver_id=*/0, *renderer_form,
-                          form_structure->GetServerPredictions()));
+                          form_structure->GetServerPredictions(field_ids)));
 }
 
 AutofillSaveCardInfoBarDelegateIOS*

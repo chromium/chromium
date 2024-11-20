@@ -126,6 +126,7 @@ using autofill::test::CreateTestFormField;
 using content::BrowserContext;
 using content::WebContents;
 
+using password_manager::ContentPasswordManagerDriver;
 using password_manager::PasswordForm;
 using password_manager::PasswordManagerClient;
 using password_manager::PasswordManagerSetting;
@@ -391,6 +392,8 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
   // returns false.
   bool WasLoggingActivationMessageSent(bool* activation_flag);
 
+  FormData CreateLoginFormData();
+
   FakePasswordAutofillAgent fake_agent_;
   ScopedTestingLocalState local_state_;
 
@@ -447,6 +450,16 @@ bool ChromePasswordManagerClientTest::WasLoggingActivationMessageSent(
   }
   fake_agent_.reset_data();
   return true;
+}
+
+FormData ChromePasswordManagerClientTest::CreateLoginFormData() {
+  FormData form = CreateFormDataForRenderFrameHost(
+      *main_rfh(), {CreateTestFormField("Username", "username", "",
+                                        FormControlType::kInputText),
+                    CreateTestFormField("Password", "password", "",
+                                        FormControlType::kInputPassword)});
+  form.set_name(u"login");
+  return form;
 }
 
 TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
@@ -577,13 +590,7 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
       ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
   ASSERT_TRUE(autofill_driver);
 
-  FormData form = CreateFormDataForRenderFrameHost(
-      *main_rfh(), {CreateTestFormField("Username", "username", "",
-                                        FormControlType::kInputText),
-                    CreateTestFormField("Password", "password", "",
-                                        FormControlType::kInputPassword)});
-  form.set_name(u"login");
-
+  FormData form = CreateLoginFormData();
   {
     autofill::TestAutofillManagerWaiter waiter(
         autofill_driver->GetAutofillManager(),
@@ -602,6 +609,49 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
 
   EXPECT_THAT(GetClient()->GetPasswordManager()->GetFormPredictionsForTesting(),
               UnorderedElementsAre(Key(CalculateFormSignature(form))));
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       ReceivesPasswordFormClassifierPredictions) {
+  base::test::ScopedFeatureList features(
+      password_manager::features::kPasswordFormClientsideClassifier);
+  constexpr char kUrl[] = "https://www.foo.com/login.html";
+
+  NavigateAndCommit(GURL(kUrl));
+  ContentAutofillDriver* autofill_driver =
+      ContentAutofillDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(autofill_driver);
+
+  ContentPasswordManagerDriver* password_driver =
+      ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
+  ASSERT_TRUE(password_driver);
+
+  FormData form = CreateLoginFormData();
+  {
+    autofill::TestAutofillManagerWaiter waiter(
+        autofill_driver->GetAutofillManager(),
+        {autofill::AutofillManagerEvent::kFormsSeen});
+    autofill_driver->renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                                 /*removed_forms=*/{});
+    ASSERT_TRUE(waiter.Wait(/*num_expected_relevant_events=*/1));
+  }
+
+  // Simulate that the field types have been determined.
+  using Observer = autofill::AutofillManager::Observer;
+  autofill_driver->GetAutofillManager().NotifyObservers(
+      &Observer::OnFieldTypesDetermined, form.global_id(),
+      Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
+
+  auto received_predictions = GetClient()
+                                  ->GetPasswordManager()
+                                  ->GetClassifierModelPredictionsForTesting();
+  // Check that predictions are available for the form.
+  auto form_key = std::make_pair(password_driver, form.renderer_id());
+  ASSERT_THAT(received_predictions, UnorderedElementsAre(Key(form_key)));
+  // Check that predictions are available for all form fields.
+  EXPECT_THAT(received_predictions[form_key],
+              UnorderedElementsAre(Key(form.fields()[0].global_id()),
+                                   Key(form.fields()[1].global_id())));
 }
 
 TEST_F(ChromePasswordManagerClientTest,

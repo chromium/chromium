@@ -15,6 +15,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/containers/to_vector.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
@@ -466,9 +467,6 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
   FormData form_data = form_structure->ToFormData();
-  base::flat_map<autofill::FieldGlobalId,
-                 autofill::AutofillType::ServerPrediction>
-      predictions = form_structure->GetServerPredictions();
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos)) {
@@ -488,6 +486,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       if (!child_frame) {
         continue;
       }
+
+      auto predictions = manager.GetServerPredictionsForForm(
+          form, base::ToVector(renderer_form.fields(),
+                               &autofill::FormFieldData::global_id));
       _passwordManager->ProcessAutofillPredictions(
           IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
                                                                    child_frame),
@@ -499,9 +501,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     if (!frame) {
       return;
     }
-    // `GetFormDataAndServerPredictions` returns the same number of `FormData`
-    // as `FormStructure` that are passed to it, i.e. one in this case.
-    // Therefore take the front.
+    auto predictions = manager.GetServerPredictionsForForm(
+        form, base::ToVector(form_data.fields(),
+                             &autofill::FormFieldData::global_id));
     _passwordManager->ProcessAutofillPredictions(
         IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
                                                                  frame),

@@ -1529,6 +1529,16 @@ void PasswordManager::ProcessAutofillPredictions(
   manager->ProcessServerPredictions(predictions_);
 }
 
+void PasswordManager::ProcessClassificationModelPredictions(
+    PasswordManagerDriver* driver,
+    const autofill::FormData& form,
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+        field_predictions) {
+  classifier_model_predictions_[std::make_pair(driver, form.renderer_id())] =
+      std::move(field_predictions);
+  // TODO(crbug.com/371933424): Utilize these predictions for parsing.
+}
+
 PasswordFormManager* PasswordManager::GetSubmittedManager() const {
   if (owned_submitted_form_manager_) {
     return owned_submitted_form_manager_.get();

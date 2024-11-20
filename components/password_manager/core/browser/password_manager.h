@@ -107,6 +107,11 @@ class PasswordManager : public PasswordManagerInterface {
       const base::flat_map<autofill::FieldGlobalId,
                            autofill::AutofillType::ServerPrediction>&
           field_predictions) override;
+  void ProcessClassificationModelPredictions(
+      PasswordManagerDriver* driver,
+      const autofill::FormData& form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldType>&
+          field_predictions) override;
   bool HaveFormManagersReceivedData(
       const PasswordManagerDriver* driver) const override;
 
@@ -228,6 +233,12 @@ class PasswordManager : public PasswordManagerInterface {
   const std::map<autofill::FormSignature, FormPredictions>&
   GetFormPredictionsForTesting() const {
     return predictions_;
+  }
+
+  const std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
+                 base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>&
+  GetClassifierModelPredictionsForTesting() const {
+    return classifier_model_predictions_;
   }
 
   void set_leak_factory(std::unique_ptr<LeakDetectionCheckFactory> factory) {
@@ -436,6 +447,14 @@ class PasswordManager : public PasswordManagerInterface {
 
   // Server predictions for the forms on the page.
   std::map<autofill::FormSignature, FormPredictions> predictions_;
+
+  // Classification model predictions for the forms on the page, keyed by
+  // the combination of the driver and the renderer id of the form, that allow
+  // to uniquely identify forms on the page.
+  // TODO(crbug.com/371933424): Clear cached predictions when needed.
+  std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
+           base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+      classifier_model_predictions_;
 
   // The URL of the last submitted form.
   GURL submitted_form_url_;

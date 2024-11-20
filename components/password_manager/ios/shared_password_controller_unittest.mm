@@ -385,7 +385,7 @@ TEST_F(SharedPasswordControllerTest,
         ProcessAutofillPredictions(password_driver,
                                    ::testing::Property(&FormData::renderer_id,
                                                        main_form.renderer_id()),
-                                   ::testing::SizeIs(3)));
+                                   ::testing::SizeIs(1)));
   }
   {
     auto* password_driver =
@@ -396,7 +396,7 @@ TEST_F(SharedPasswordControllerTest,
                     password_driver,
                     ::testing::Property(&FormData::renderer_id,
                                         child_form.renderer_id()),
-                    ::testing::SizeIs(3)));
+                    ::testing::SizeIs(2)));
   }
 
   // Trigger `OnFieldTypesDetetermined` with source `kAutofillServer` explicitly

@@ -539,12 +539,26 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
 }
 
 base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-AutofillManager::GetServerPredictionsForForm(FormGlobalId form_id) const {
+AutofillManager::GetServerPredictionsForForm(
+    FormGlobalId form_id,
+    const std::vector<FieldGlobalId>& field_ids) const {
   FormStructure* cached_form = FindCachedFormById(form_id);
   if (!cached_form) {
     return {};
   }
-  return cached_form->GetServerPredictions();
+  return cached_form->GetServerPredictions(field_ids);
+}
+
+base::flat_map<FieldGlobalId, FieldType>
+AutofillManager::GetHeursticPredictionForForm(
+    HeuristicSource source,
+    FormGlobalId form_id,
+    const std::vector<FieldGlobalId>& field_ids) const {
+  FormStructure* cached_form = FindCachedFormById(form_id);
+  if (!cached_form) {
+    return {};
+  }
+  return cached_form->GetHeuristicPredictions(source, field_ids);
 }
 
 void AutofillManager::ParseFormsAsync(

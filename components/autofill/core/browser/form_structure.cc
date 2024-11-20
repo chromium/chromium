@@ -1123,12 +1123,36 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
 }
 
 base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-FormStructure::GetServerPredictions() const {
-  return base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
-      fields_, {}, [](const std::unique_ptr<AutofillField>& field) {
-        return std::make_pair(field->global_id(),
-                              AutofillType::ServerPrediction(*field));
+FormStructure::GetServerPredictions(
+    const std::vector<FieldGlobalId>& field_ids) const {
+  auto predictions =
+      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
+          field_ids, {}, [](const FieldGlobalId& id) {
+            return std::make_pair(id, AutofillType::ServerPrediction());
+          });
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    auto field_in_predictions = predictions.find(field->global_id());
+    if (field_in_predictions != predictions.end()) {
+      field_in_predictions->second = AutofillType::ServerPrediction(*field);
+    }
+  }
+  return predictions;
+}
+
+base::flat_map<FieldGlobalId, FieldType> FormStructure::GetHeuristicPredictions(
+    HeuristicSource source,
+    const std::vector<FieldGlobalId>& field_ids) const {
+  auto predictions = base::MakeFlatMap<FieldGlobalId, FieldType>(
+      field_ids, {}, [](const FieldGlobalId& id) {
+        return std::make_pair(id, NO_SERVER_DATA);
       });
+  for (const std::unique_ptr<AutofillField>& field : fields_) {
+    auto field_in_predictions = predictions.find(field->global_id());
+    if (field_in_predictions != predictions.end()) {
+      field_in_predictions->second = field->heuristic_type(source);
+    }
+  }
+  return predictions;
 }
 
 }  // namespace autofill

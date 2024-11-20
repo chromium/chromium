@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -1852,7 +1853,9 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     FieldTypeSource source) {
-  if (source == FieldTypeSource::kHeuristicsOrAutocomplete) {
+  if (source != FieldTypeSource::kAutofillServer &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
     return;
   }
 
@@ -1873,8 +1876,23 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     if (!driver) {
       continue;
     }
-    password_manager_.ProcessAutofillPredictions(
-        driver, form, manager.GetServerPredictionsForForm(form_id));
+
+    std::vector<autofill::FieldGlobalId> field_ids =
+        base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
+    switch (source) {
+      case FieldTypeSource::kAutofillServer:
+        password_manager_.ProcessAutofillPredictions(
+            driver, form,
+            manager.GetServerPredictionsForForm(form_id, field_ids));
+        break;
+      case FieldTypeSource::kHeuristicsOrAutocomplete:
+        password_manager_.ProcessClassificationModelPredictions(
+            driver, form,
+            manager.GetHeursticPredictionForForm(
+                autofill::HeuristicSource::kPasswordManagerMachineLearning,
+                form_id, field_ids));
+        break;
+    }
   }
 }
 

@@ -2442,5 +2442,29 @@ TEST_F(FormStructureTestImpl,
   }
 }
 
+// Tests that password manager classifier predictions are returned correctly.
+TEST_F(FormStructureTestImpl, GetHeuristicPredictions) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = USERNAME}, {.role = PASSWORD}}});
+
+  FormStructure form_structure(form);
+  form_structure.fields()[0]->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, USERNAME);
+  form_structure.fields()[1]->set_heuristic_type(
+      HeuristicSource::kPasswordManagerMachineLearning, PASSWORD);
+
+  // Fetch model predictions for one field from the form and one field not
+  // present in the form.
+  FormFieldData mystery_field = test::CreateTestFormField(
+      /*label=*/"mystery", /*name=*/"secret",
+      /*value=*/"unknown", FormControlType::kInputText);
+  EXPECT_THAT(form_structure.GetHeuristicPredictions(
+                  HeuristicSource::kPasswordManagerMachineLearning,
+                  {form.fields()[1].global_id(), mystery_field.global_id()}),
+              UnorderedElementsAre(
+                  testing::Pair(form.fields()[1].global_id(), PASSWORD),
+                  testing::Pair(mystery_field.global_id(), NO_SERVER_DATA)));
+}
+
 }  // namespace
 }  // namespace autofill
