@@ -130,7 +130,8 @@
         willEndForConfiguration:configuration
                        animator:animator];
   if (_webContents) {
-    _webContents->NotifyContextMenuClosed(_params.link_followed);
+    _webContents->NotifyContextMenuClosed(_params.link_followed,
+                                          _params.impression);
   }
 }
 
