@@ -1,4 +1,5 @@
 actions {
+  device: 1
   create_graph {
     graph_info {
       new {

@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-mojolpm.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-mojolpm.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -27,14 +28,6 @@
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_graph_mojolpm_fuzzer.pb.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-#include "services/webnn/dml/adapter.h"
-#endif
 
 namespace {
 struct InitGlobals {
@@ -52,34 +45,16 @@ struct InitGlobals {
     task_environment = std::make_unique<base::test::TaskEnvironment>(
         base::test::TaskEnvironment::MainThreadType::DEFAULT,
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
-
-#if BUILDFLAG(IS_WIN)
-    auto adapter_creation_result =
-        webnn::dml::Adapter::GetGpuInstanceForTesting();
-    if (adapter_creation_result.has_value()) {
-      adapter = adapter_creation_result.value();
-    }
-#endif
   }
 
   std::unique_ptr<base::test::TaskEnvironment> task_environment;
   base::test::ScopedFeatureList scoped_feature_list_;
-#if BUILDFLAG(IS_WIN)
-  scoped_refptr<webnn::dml::Adapter> adapter;
-#endif
 };
 
 InitGlobals* init_globals = new InitGlobals();
 
-#if BUILDFLAG(IS_WIN)
-scoped_refptr<webnn::dml::Adapter> GetAdapter() {
-  return init_globals->adapter;
-}
-#endif
-
 void BuildGraph(webnn::mojom::GraphInfoPtr graph_info,
-                webnn::mojom::CreateContextOptions::Device device =
-                    webnn::mojom::CreateContextOptions::Device::kGpu) {
+                webnn::mojom::CreateContextOptions::Device device) {
   mojo::Remote<webnn::mojom::WebNNContextProvider> webnn_provider_remote;
   mojo::Remote<webnn::mojom::WebNNContext> webnn_context_remote;
   mojo::AssociatedRemote<webnn::mojom::WebNNGraphBuilder>
@@ -98,7 +73,10 @@ void BuildGraph(webnn::mojom::GraphInfoPtr graph_info,
       create_context_future.GetCallback());
   webnn::mojom::CreateContextResultPtr create_context_result =
       create_context_future.Take();
-  CHECK(create_context_result->is_success());
+  if (!create_context_result->is_success()) {
+    return;
+  }
+
   webnn_context_remote.Bind(
       std::move(create_context_result->get_success()->context_remote));
 
@@ -134,7 +112,9 @@ class WebnnGraphLPMFuzzer {
     const auto& create_graph = action.create_graph();
     auto graph_info_ptr = webnn::mojom::GraphInfo::New();
     mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
-    BuildGraph(std::move(graph_info_ptr));
+    webnn::mojom::CreateContextOptions::Device device;
+    mojolpm::FromProto(action.device(), device);
+    BuildGraph(std::move(graph_info_ptr), device);
   }
 
   bool IsFinished() { return action_index_ >= testcase_->actions_size(); }
@@ -147,19 +127,6 @@ class WebnnGraphLPMFuzzer {
 
 DEFINE_BINARY_PROTO_FUZZER(
     const services::fuzzing::webnn_graph::proto::Testcase& testcase) {
-#if BUILDFLAG(IS_MAC)
-  if (base::mac::MacOSVersion() < 14'00'00) {
-    GTEST_SKIP() << "Skipping test because WebNN is not supported on Mac OS "
-                 << base::mac::MacOSVersion();
-  }
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  CHECK(GetAdapter());
-  // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
-  // DirectML version 1.2 (DML_FEATURE_LEVEL_2_1).
-  CHECK(GetAdapter()->IsDMLDeviceCompileGraphSupportedForTesting());
-#endif
   WebnnGraphLPMFuzzer webnn_graph_fuzzer_instance(testcase);
   while (!webnn_graph_fuzzer_instance.IsFinished()) {
     webnn_graph_fuzzer_instance.NextAction();
