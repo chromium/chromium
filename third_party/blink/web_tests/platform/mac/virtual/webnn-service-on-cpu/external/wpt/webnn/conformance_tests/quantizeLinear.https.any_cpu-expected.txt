@@ -7,6 +7,8 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
 [FAIL] quantizeLinear float32 4D constant tensor broadcasting scale and zeroPoint
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] per-tensor quantizeLinear for float32 4D constant
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
 [FAIL] quantizeLinear float32 3D input with implicit block_size = [1, 2, 1].
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
 [FAIL] quantizeLinear float32 tensor with int4 zeroPoint which has odd size

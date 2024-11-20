@@ -232,6 +232,16 @@ class GraphBuilderTflite final {
       int32_t input_tensor_index,
       base::span<const int32_t> input_dimensions);
 
+  // Get int64 zero point from int4 constant operand.
+  base::FixedArray<int64_t> GetInt64ZeroPointFromInt4(
+      uint64_t zero_point_operand_id);
+  base::FixedArray<int64_t> GetInt64ZeroPoint(uint64_t zero_point_operand_id);
+  // Serialize quantize params for quantizeLinear and dequantizeLinear.
+  std::optional<QuantizateParametersOffset> SerializeQuantizeParams(
+      uint64_t zero_point_operand_id,
+      uint64_t scale_operand_id,
+      size_t input_rank);
+
   // This function is called by `SerializeMatmul` to serialize WebNN
   // matmul operator or used to emulate WebNN operations.
   OperatorOffset SerializeMatmulOperation(int32_t a_tensor_index,
@@ -558,10 +568,6 @@ class GraphBuilderTflite final {
       const mojom::Pool2d& pool2d);
   base::expected<OperatorOffset, std::string> SerializePrelu(
       const mojom::Prelu& prelu);
-  base::FixedArray<int64_t> GetInt64ZeroPoint(uint64_t zero_point_operand_id);
-  base::expected<QuantizateParametersOffset, std::string>
-  SerializeQuantizeParams(uint64_t zero_point_operand_id,
-                          uint64_t scale_operand_id);
   base::expected<OperatorOffset, std::string> SerializeQuantizeLinear(
       const mojom::QuantizeLinear& quantize_linear);
   base::expected<OperatorOffset, std::string> SerializeDequantizeLinear(
