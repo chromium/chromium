@@ -491,6 +491,15 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     base::WeakPtrFactory<ClientGmbInterfaceImpl> weak_ptr_factory_{this};
   };
 
+  // Private helper methods to create objects needed by this class during init.
+  gpu::SyncPointManager* CreateSyncPointManager();
+  // supports_overlays is only queried when using Ozone.
+  // It should not be supplied otherwise.
+  gpu::SharedImageManager* CreateSharedImageManager(
+      bool supports_overlays = false);
+  gpu::Scheduler* CreateScheduler(gpu::SyncPointManager* sync_point_manager);
+  base::WaitableEvent* CreateShutdownEvent();
+
   bool IsNativeBufferSupported(gfx::BufferFormat format,
                                gfx::BufferUsage usage);
   void RecordLogMessage(int severity,

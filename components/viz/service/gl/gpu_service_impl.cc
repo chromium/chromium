@@ -581,43 +581,27 @@ void GpuServiceImpl::InitializeWithHost(
   }
 
   if (!sync_point_manager) {
-    owned_sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
-    sync_point_manager = owned_sync_point_manager_.get();
+    sync_point_manager = CreateSyncPointManager();
   }
 
   if (!shared_image_manager) {
-    // When using real buffers for testing overlay configurations, we need
-    // access to SharedImageManager on the viz thread to obtain the buffer
-    // corresponding to a mailbox.
-    const bool display_context_on_another_thread =
-        features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
-
-    // |display_context_on_another_thread|, features::IsUsingRawDraw(),
-    // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
-    // requires |thread_safe_manager| to be true.
-    bool thread_safe_manager = true;
-    owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
-        thread_safe_manager, display_context_on_another_thread);
 #if BUILDFLAG(IS_OZONE)
-    owned_shared_image_manager_->SetSupportsOverlays(
-        creation_params->supports_overlays);
+    shared_image_manager =
+        CreateSharedImageManager(creation_params->supports_overlays);
+#else
+    shared_image_manager = CreateSharedImageManager();
 #endif
-    shared_image_manager = owned_shared_image_manager_.get();
   }
 
   shutdown_event_ = shutdown_event;
   if (!shutdown_event_) {
-    owned_shutdown_event_ = std::make_unique<base::WaitableEvent>(
-        base::WaitableEvent::ResetPolicy::MANUAL,
-        base::WaitableEvent::InitialState::NOT_SIGNALED);
-    shutdown_event_ = owned_shutdown_event_.get();
+    shutdown_event_ = CreateShutdownEvent();
   }
 
   if (scheduler) {
     scheduler_ = scheduler;
   } else {
-    owned_scheduler_ = std::make_unique<gpu::Scheduler>(sync_point_manager);
-    scheduler_ = owned_scheduler_.get();
+    scheduler_ = CreateScheduler(sync_point_manager);
   }
 
   // Defer creation of the render thread. This is to prevent it from handling
@@ -1565,6 +1549,44 @@ void GpuServiceImpl::OnOverlayCapsChanged() {
   }
 }
 #endif
+
+gpu::SyncPointManager* GpuServiceImpl::CreateSyncPointManager() {
+  owned_sync_point_manager_ = std::make_unique<gpu::SyncPointManager>();
+  return owned_sync_point_manager_.get();
+}
+
+gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
+    bool supports_overlays) {
+  // When using real buffers for testing overlay configurations, we need
+  // access to SharedImageManager on the viz thread to obtain the buffer
+  // corresponding to a mailbox.
+  const bool display_context_on_another_thread =
+      features::IsDrDcEnabled() && !gpu_driver_bug_workarounds_.disable_drdc;
+
+  // |display_context_on_another_thread|, features::IsUsingRawDraw(),
+  // kAlwaysUseRealBufferTestingOnOzone, and kSharedBitmapToSharedImage
+  // requires |thread_safe_manager| to be true.
+  bool thread_safe_manager = true;
+  owned_shared_image_manager_ = std::make_unique<gpu::SharedImageManager>(
+      thread_safe_manager, display_context_on_another_thread);
+#if BUILDFLAG(IS_OZONE)
+  owned_shared_image_manager_->SetSupportsOverlays(supports_overlays);
+#endif
+  return owned_shared_image_manager_.get();
+}
+
+gpu::Scheduler* GpuServiceImpl::CreateScheduler(
+    gpu::SyncPointManager* sync_point_manager) {
+  owned_scheduler_ = std::make_unique<gpu::Scheduler>(sync_point_manager);
+  return owned_scheduler_.get();
+}
+
+base::WaitableEvent* GpuServiceImpl::CreateShutdownEvent() {
+  owned_shutdown_event_ = std::make_unique<base::WaitableEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  return owned_shutdown_event_.get();
+}
 
 bool GpuServiceImpl::IsNativeBufferSupported(gfx::BufferFormat format,
                                              gfx::BufferUsage usage) {
