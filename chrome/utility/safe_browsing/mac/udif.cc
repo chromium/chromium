@@ -14,6 +14,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -117,7 +118,10 @@ static void ConvertBigEndian(UDIFResourceFile* file) {
   ConvertBigEndian(&file->code_signature_length);
   ConvertBigEndian(&file->main_checksum);
   ConvertBigEndian(&file->image_variant);
-  ConvertBigEndian(&file->sector_count);
+  // `sector_count` is never consulted, so do not swap.
+  // Note: If this is ever needed in the future, one must make a copy when byte
+  // swapping to avoid unaligned access.
+
   // Reserved fields are skipped.
 }
 
@@ -187,6 +191,8 @@ static void ConvertBigEndian(UDIFBlockData* block) {
   ConvertBigEndian(&block->checksum);
   ConvertBigEndian(&block->chunk_count);
 }
+
+#pragma pack(pop)
 
 // UDIFBlock takes a raw, big-endian block data pointer and stores, in host
 // endian, the data for both the block and the chunk.
@@ -277,8 +283,6 @@ class UDIFBlock {
   UDIFBlockData block_;
   std::vector<UDIFBlockChunk> chunks_;
 };
-
-#pragma pack(pop)
 
 namespace {
 
