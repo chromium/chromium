@@ -61,6 +61,7 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
   has_payflow_started_ = true;
   client_->SetUiEventListener(base::BindRepeating(
       &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
+  pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
   trigger_source_ = TriggerSource::kCopyEvent;
   // Check whether the domain for the render_frame_host_url is allowlisted.
@@ -304,7 +305,10 @@ void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK_NE(ui_state_, UiState::kHidden);
       LogUiScreenShown(ui_state_);
-      // TODO: crbug.com/375089558 - Log latency metrics.
+      if (ui_state_ == UiState::kFopSelector) {
+        LogPixFopSelectorShownLatency(base::TimeTicks::Now() -
+                                      pix_code_copied_timestamp_);
+      }
       break;
     }
     case UiEvent::kScreenClosedNotByUser: {

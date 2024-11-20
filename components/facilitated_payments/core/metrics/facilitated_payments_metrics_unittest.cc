@@ -232,6 +232,17 @@ TEST(FacilitatedPaymentsMetricsTest, LogTransactionResult_Abandoned) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectorShownLatency) {
+  base::HistogramTester histogram_tester;
+
+  LogPixFopSelectorShownLatency(base::Milliseconds(10));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy",
+      /*sample=*/10,
+      /*expected_bucket_count=*/1);
+}
+
 class FacilitatedPaymentsMetricsExitedReasonTest
     : public testing::TestWithParam<PayflowExitedReason> {};
 

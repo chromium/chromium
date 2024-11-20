@@ -149,6 +149,10 @@ void LogTransactionResult(TransactionResult result,
 // Logs showing a new UI screen.
 void LogUiScreenShown(UiState ui_screen);
 
+// Logs the latency for seeing the Pix FOP selector after a user has copied the
+// Pix payment code on the browser.
+void LogPixFopSelectorShownLatency(base::TimeDelta latency);
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_

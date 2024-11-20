@@ -212,6 +212,8 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, ShowProgressScreen);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, ShowErrorScreen);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, DismissPrompt);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PixFopSelectorShown_LatencyHistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
                            NewScreenShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
@@ -320,6 +322,9 @@ class FacilitatedPaymentsManager {
       optimization_guide_decider_ = nullptr;
 
   ukm::SourceId ukm_source_id_;
+
+  // Stores the time when a user copies a Pix code.
+  base::TimeTicks pix_code_copied_timestamp_;
 
   // Measures the time taken to check the availability of the facilitated
   // payments API client.
