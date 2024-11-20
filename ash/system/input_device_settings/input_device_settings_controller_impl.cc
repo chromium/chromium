@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <vector>
@@ -232,10 +233,15 @@ mojom::BatteryInfoPtr GetBatteryInfo(const device::BluetoothDevice& bt_device) {
     return nullptr;
   }
   const int percentage = battery_info->percentage.value();
-  CHECK_GE(percentage, 0);
-  CHECK_LE(percentage, 100);
-  return mojom::BatteryInfo::New(percentage, GetChargeStateFromBluetoothDevice(
-                                                 battery_info->charge_state));
+  // Log if the raw percentage is outside the expected range
+  if (percentage < 0 || percentage > 100) {
+    LOG(ERROR) << "Invalid battery percentage detected: " << percentage;
+  }
+  // Clamp the value to the valid range
+  const int clamped_percentage = std::clamp(percentage, 0, 100);
+  return mojom::BatteryInfo::New(
+      clamped_percentage,
+      GetChargeStateFromBluetoothDevice(battery_info->charge_state));
 }
 
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
