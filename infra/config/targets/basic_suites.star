@@ -543,7 +543,7 @@ targets.legacy_basic_suite(
         ),
         "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 9,
+                shards = 13,
             ),
         ),
     },
@@ -668,7 +668,7 @@ targets.legacy_basic_suite(
         ),
         "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 9,
+                shards = 13,
             ),
         ),
         "content_shell_crash_test": targets.legacy_test_config(),
@@ -1705,7 +1705,7 @@ targets.legacy_basic_suite(
         ),
         "not_site_per_process_headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 3,
+                shards = 8,
             ),
         ),
         "webdriver_wpt_tests": targets.legacy_test_config(
