@@ -45,6 +45,14 @@ class TaskManagerServiceBridge {
         return TaskManagerServiceBridgeJni.get().getMemoryFootprintUsage(taskId);
     }
 
+    double getPlatformIndependentCpuUsage(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getPlatformIndependentCpuUsage(taskId);
+    }
+
+    long getProcessId(long taskId) {
+        return TaskManagerServiceBridgeJni.get().getProcessId(taskId);
+    }
+
     static class ObserverHandle {
         private long mPointer;
 
@@ -67,5 +75,9 @@ class TaskManagerServiceBridge {
         String getTitle(long taskid);
 
         long getMemoryFootprintUsage(long taskId);
+
+        double getPlatformIndependentCpuUsage(long taskId);
+
+        long getProcessId(long taskId);
     }
 }

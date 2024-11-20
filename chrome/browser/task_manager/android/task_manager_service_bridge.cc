@@ -42,3 +42,17 @@ static jlong JNI_TaskManagerServiceBridge_GetMemoryFootprintUsage(
   return task_manager::TaskManagerInterface::GetTaskManager()
       ->GetMemoryFootprintUsage(task_id);
 }
+
+static jdouble JNI_TaskManagerServiceBridge_GetPlatformIndependentCpuUsage(
+    JNIEnv* env,
+    task_manager::TaskId task_id) {
+  return task_manager::TaskManagerInterface::GetTaskManager()
+      ->GetPlatformIndependentCPUUsage(task_id);
+}
+
+static jlong JNI_TaskManagerServiceBridge_GetProcessId(
+    JNIEnv* env,
+    task_manager::TaskId task_id) {
+  return task_manager::TaskManagerInterface::GetTaskManager()->GetProcessId(
+      task_id);
+}

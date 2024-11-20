@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -28,7 +29,8 @@ public class TaskManagerActivity extends AppCompatActivity {
         TaskManagerObserver observer = createObserver();
 
         mObserverHandle =
-                mBridge.addObserver(observer, REFRESH_TIME_MS, RefreshType.MEMORY_FOOTPRINT);
+                mBridge.addObserver(
+                        observer, REFRESH_TIME_MS, RefreshType.MEMORY_FOOTPRINT | RefreshType.CPU);
     }
 
     private TaskManagerObserver createObserver() {
@@ -36,35 +38,32 @@ public class TaskManagerActivity extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.five);
 
-        Map<Long, Long> mem = new TreeMap<Long, Long>();
+        Map<Long, String> rows = new TreeMap<Long, String>();
         return new TaskManagerObserver() {
             @Override
             public void onTaskAdded(long id) {}
 
             @Override
             public void onTaskToBeRemoved(long id) {
-                mem.remove(id);
+                rows.remove(id);
                 onTasksRefreshed(new long[] {});
             }
 
             @Override
             public void onTasksRefreshed(long[] taskIds) {
                 for (long taskId : taskIds) {
-                    mem.put(taskId, mBridge.getMemoryFootprintUsage(taskId));
+                    rows.put(
+                            taskId,
+                            String.format(
+                                    Locale.US,
+                                    "Task %d [%s] memory footprint = %d CPU = %.1f pid = %d",
+                                    taskId,
+                                    mBridge.getTitle(taskId),
+                                    mBridge.getMemoryFootprintUsage(taskId),
+                                    mBridge.getPlatformIndependentCpuUsage(taskId),
+                                    mBridge.getProcessId(taskId)));
                 }
-                StringBuilder txt = new StringBuilder();
-                for (Map.Entry<Long, Long> e : mem.entrySet()) {
-                    long taskId = e.getKey();
-                    String title = mBridge.getTitle(taskId);
-                    txt.append("Task ");
-                    txt.append(taskId);
-                    txt.append(" [");
-                    txt.append(title);
-                    txt.append("] memory footprint = ");
-                    txt.append(e.getValue());
-                    txt.append("\n");
-                }
-                textView.setText(txt.toString());
+                textView.setText(String.join("\n", rows.values()));
             }
 
             @Override

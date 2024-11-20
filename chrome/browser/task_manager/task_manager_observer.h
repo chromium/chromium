@@ -28,6 +28,7 @@ using TaskIdList = std::vector<TaskId>;
 // old types.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.task_manager
 // GENERATED_JAVA_PREFIX_TO_STRIP: REFRESH_TYPE_
+// GENERATED_JAVA_IS_FLAG: true
 enum RefreshType {
   REFRESH_TYPE_NONE = 0,
   REFRESH_TYPE_CPU = 1,
