@@ -32,3 +32,4 @@ This is a testharness.js-based test.
 [FAIL] INPUT appearance: none; color
   assert_equals: Should only generate a box for pseudo-elements if it generates a box for child elements expected true but got false
 Harness: the test ran to completion.
+
