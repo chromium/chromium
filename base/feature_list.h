@@ -383,7 +383,7 @@ class BASE_EXPORT FeatureList {
                                     FieldTrial* field_trial);
 
   // Registers a field trial to override the enabled state of the specified
-  // feature to |override_state|. Command-line overrides still take precedence
+  // feature to `override_state`. Command-line overrides still take precedence
   // over field trials, so this will have no effect if the feature is being
   // overridden from the command-line. The associated field trial will be
   // activated when the feature state for this feature is queried. This should
@@ -397,10 +397,14 @@ class BASE_EXPORT FeatureList {
   // before SetInstance().
   // The ordering of calls with respect to InitFromCommandLine(),
   // RegisterFieldTrialOverride(), etc. matters. The first call wins out,
-  // because the |overrides_| map uses insert(), which retains the first
-  // inserted entry and does not overwrite it on subsequent calls to insert().
+  // because the `overrides_` map uses emplace(), which retains the first
+  // inserted entry and does not overwrite it on subsequent calls to emplace().
+  //
+  // If `replace_use_default_overrides` is true, if there is an existing entry
+  // with type OVERRIDE_USE_DEFAULT, that entry will be replaced.
   void RegisterExtraFeatureOverrides(
-      const std::vector<FeatureOverrideInfo>& extra_overrides);
+      const std::vector<FeatureOverrideInfo>& extra_overrides,
+      bool replace_use_default_overrides = false);
 
   // Loops through feature overrides and serializes them all into |allocator|.
   void AddFeaturesToAllocator(PersistentMemoryAllocator* allocator);
@@ -665,11 +669,15 @@ class BASE_EXPORT FeatureList {
   // will take precedence over the feature's default state. If |field_trial| is
   // not null, registers the specified field trial object to be associated with
   // the feature, which will activate the field trial when the feature state is
-  // queried. If an override is already registered for the given feature, it
-  // will not be changed.
+  // queried.
+  //
+  // If an override is already registered for the given feature, it will not be
+  // changed, unless `replace_use_default_overrides` is true and the existing
+  // entry has type OVERRIDE_USE_DEFAULT.
   void RegisterOverride(std::string_view feature_name,
                         OverrideState overridden_state,
-                        FieldTrial* field_trial);
+                        FieldTrial* field_trial,
+                        bool replace_use_default_overrides = false);
 
   // Implementation of GetFeatureOverrides() with a parameter that specifies
   // whether only command-line enabled overrides should be emitted. See that

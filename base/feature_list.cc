@@ -334,7 +334,7 @@ void FeatureList::InitFromCommandLine(const std::string& enable_features,
   }
 
   // Process disabled features first, so that disabled ones take precedence over
-  // enabled ones (since RegisterOverride() uses insert()).
+  // enabled ones (since RegisterOverride() uses emplace()).
   RegisterOverridesFromCommandLine(disable_features, OVERRIDE_DISABLE_FEATURE);
   RegisterOverridesFromCommandLine(parsed_enable_features,
                                    OVERRIDE_ENABLE_FEATURE);
@@ -415,10 +415,11 @@ void FeatureList::RegisterFieldTrialOverride(const std::string& feature_name,
 }
 
 void FeatureList::RegisterExtraFeatureOverrides(
-    const std::vector<FeatureOverrideInfo>& extra_overrides) {
+    const std::vector<FeatureOverrideInfo>& extra_overrides,
+    bool replace_use_default_overrides) {
   for (const FeatureOverrideInfo& override_info : extra_overrides) {
     RegisterOverride(override_info.first.get().name, override_info.second,
-                     /* field_trial = */ nullptr);
+                     /*field_trial=*/nullptr, replace_use_default_overrides);
   }
 }
 
@@ -902,7 +903,8 @@ void FeatureList::RegisterOverridesFromCommandLine(
 
 void FeatureList::RegisterOverride(std::string_view feature_name,
                                    OverrideState overridden_state,
-                                   FieldTrial* field_trial) {
+                                   FieldTrial* field_trial,
+                                   bool replace_use_default_overrides) {
   DCHECK(!initialized_);
   DCheckOverridesAllowed();
   if (field_trial) {
@@ -914,10 +916,24 @@ void FeatureList::RegisterOverride(std::string_view feature_name,
     overridden_state = OVERRIDE_USE_DEFAULT;
   }
 
+  // When `replace_use_default_overrides` is true, if an `OVERRIDE_USE_DEFAULT`
+  // entry exists, it should be replaced.
+  const std::string feature_name_str(feature_name);
+  if (replace_use_default_overrides) {
+    auto found = overrides_.find(feature_name_str);
+    if (found != overrides_.end() &&
+        found->second.overridden_state == OVERRIDE_USE_DEFAULT) {
+      // Also, keep the existing trial if a null trial was passed.
+      auto* trial = field_trial ? field_trial : &*found->second.field_trial;
+      found->second = OverrideEntry(overridden_state, trial);
+      return;
+    }
+  }
+
   // Note: The semantics of emplace() is that it does not overwrite the entry if
   // one already exists for the key. Thus, only the first override for a given
   // feature name takes effect.
-  overrides_.emplace(std::string(feature_name),
+  overrides_.emplace(feature_name_str,
                      OverrideEntry(overridden_state, field_trial));
 }
 

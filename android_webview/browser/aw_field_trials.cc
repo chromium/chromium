@@ -9,9 +9,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/base_paths_android.h"
 #include "base/check.h"
-#include "base/feature_list.h"
-#include "base/memory/raw_ref.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
@@ -32,66 +29,47 @@
 #include "ui/android/ui_android_features.h"
 #include "ui/gl/gl_features.h"
 
-namespace {
+namespace internal {
 
-class AwFeatureOverrides {
- public:
-  explicit AwFeatureOverrides(base::FeatureList& feature_list)
-      : feature_list_(feature_list) {}
+AwFeatureOverrides::AwFeatureOverrides(base::FeatureList& feature_list)
+    : feature_list_(feature_list) {}
 
-  AwFeatureOverrides(const AwFeatureOverrides& other) = delete;
-  AwFeatureOverrides& operator=(const AwFeatureOverrides& other) = delete;
-
-  ~AwFeatureOverrides() {
-    for (const auto& field_trial_override : field_trial_overrides_) {
-      feature_list_->RegisterFieldTrialOverride(
-          field_trial_override.feature->name,
-          field_trial_override.override_state,
-          field_trial_override.field_trial);
-    }
-    feature_list_->RegisterExtraFeatureOverrides(std::move(overrides_));
+AwFeatureOverrides::~AwFeatureOverrides() {
+  // TODO(crbug.com/379864779): This doesn't play well with potential server-
+  // side overrides.
+  for (const auto& field_trial_override : field_trial_overrides_) {
+    feature_list_->RegisterFieldTrialOverride(
+        field_trial_override.feature->name, field_trial_override.override_state,
+        field_trial_override.field_trial);
   }
+  feature_list_->RegisterExtraFeatureOverrides(
+      std::move(overrides_), /*replace_use_default_overrides=*/true);
+}
 
-  // Enable a feature with WebView-specific override.
-  void EnableFeature(const base::Feature& feature) {
-    overrides_.emplace_back(
-        std::cref(feature),
-        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
-  }
+void AwFeatureOverrides::EnableFeature(const base::Feature& feature) {
+  overrides_.emplace_back(
+      std::cref(feature),
+      base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE);
+}
 
-  // Disable a feature with WebView-specific override.
-  void DisableFeature(const base::Feature& feature) {
-    overrides_.emplace_back(
-        std::cref(feature),
-        base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
-  }
+void AwFeatureOverrides::DisableFeature(const base::Feature& feature) {
+  overrides_.emplace_back(
+      std::cref(feature),
+      base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+}
 
-  // Enable or disable a feature with a field trial. This can be used for
-  // setting feature parameters.
-  void OverrideFeatureWithFieldTrial(
-      const base::Feature& feature,
-      base::FeatureList::OverrideState override_state,
-      base::FieldTrial* field_trial) {
-    field_trial_overrides_.emplace_back(FieldTrialOverride{
-        .feature = raw_ref(feature),
-        .override_state = override_state,
-        .field_trial = field_trial,
-    });
-  }
+void AwFeatureOverrides::OverrideFeatureWithFieldTrial(
+    const base::Feature& feature,
+    base::FeatureList::OverrideState override_state,
+    base::FieldTrial* field_trial) {
+  field_trial_overrides_.emplace_back(FieldTrialOverride{
+      .feature = raw_ref(feature),
+      .override_state = override_state,
+      .field_trial = field_trial,
+  });
+}
 
- private:
-  struct FieldTrialOverride {
-    raw_ref<const base::Feature> feature;
-    base::FeatureList::OverrideState override_state;
-    raw_ptr<base::FieldTrial> field_trial;
-  };
-
-  base::raw_ref<base::FeatureList> feature_list_;
-  std::vector<base::FeatureList::FeatureOverrideInfo> overrides_;
-  std::vector<FieldTrialOverride> field_trial_overrides_;
-};
-
-}  // namespace
+}  // namespace internal
 
 void AwFieldTrials::OnVariationsSetupComplete() {
   // Persistent histograms must be enabled ASAP, but depends on Features.
@@ -109,7 +87,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   if (!feature_list) {
     return;
   }
-  AwFeatureOverrides aw_feature_overrides(*feature_list);
+  internal::AwFeatureOverrides aw_feature_overrides(*feature_list);
 
   // Disable third-party storage partitioning on WebView.
   aw_feature_overrides.DisableFeature(
