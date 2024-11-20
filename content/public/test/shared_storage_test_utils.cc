@@ -26,28 +26,13 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
 #include "content/test/fenced_frame_test_utils.h"
-#include "services/network/public/mojom/optional_bool.mojom.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
 namespace {
-
-std::string SharedStorageOperationTypeToString(OperationType operation_type) {
-  switch (operation_type) {
-    case OperationType::kSet:
-      return "Set";
-    case OperationType::kAppend:
-      return "Append";
-    case OperationType::kDelete:
-      return "Delete";
-    case OperationType::kClear:
-      return "Clear";
-    default:
-      NOTREACHED();
-  }
-}
 
 std::string SharedStorageOperationResultToString(OperationResult result) {
   switch (result) {
@@ -76,27 +61,34 @@ std::string SharedStorageOperationResultToString(OperationResult result) {
   }
 }
 
-std::string OptionalStringToString(const std::optional<std::string>& str) {
-  return str.has_value() ? str.value() : "[[NULL]]";
-}
-
-std::string OptionalBoolToString(std::optional<bool> opt_bool) {
-  return opt_bool.has_value() ? (opt_bool.value() ? "true" : "false")
-                              : "[[NULL]]";
-}
-
-std::optional<bool> MojomToAbslOptionalBool(
-    network::mojom::OptionalBool opt_bool) {
-  std::optional<bool> converted;
-  if (opt_bool == network::mojom::OptionalBool::kTrue) {
-    converted = true;
-  } else if (opt_bool == network::mojom::OptionalBool::kFalse) {
-    converted = false;
-  }
-  return converted;
-}
-
 }  // namespace
+
+network::mojom::SharedStorageModifierMethodPtr MojomSetMethod(
+    const std::u16string& key,
+    const std::u16string& value,
+    bool ignore_if_present) {
+  return network::mojom::SharedStorageModifierMethod::NewSetMethod(
+      network::mojom::SharedStorageSetMethod::New(key, value,
+                                                  ignore_if_present));
+}
+
+network::mojom::SharedStorageModifierMethodPtr MojomAppendMethod(
+    const std::u16string& key,
+    const std::u16string& value) {
+  return network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+      network::mojom::SharedStorageAppendMethod::New(key, value));
+}
+
+network::mojom::SharedStorageModifierMethodPtr MojomDeleteMethod(
+    const std::u16string& key) {
+  return network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+      network::mojom::SharedStorageDeleteMethod::New(key));
+}
+
+network::mojom::SharedStorageModifierMethodPtr MojomClearMethod() {
+  return network::mojom::SharedStorageModifierMethod::NewClearMethod(
+      network::mojom::SharedStorageClearMethod::New());
+}
 
 SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition) {
@@ -184,144 +176,67 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
   return fenced_frame_root_node->current_frame_host();
 }
 
-network::mojom::OptionalBool AbslToMojomOptionalBool(
-    std::optional<bool> opt_bool) {
-  return opt_bool.has_value()
-             ? (opt_bool.value() ? network::mojom::OptionalBool::kTrue
-                                 : network::mojom::OptionalBool::kFalse)
-             : network::mojom::OptionalBool::kUnset;
-}
-
-// static
-SharedStorageWriteOperationAndResult
-SharedStorageWriteOperationAndResult::SetOperation(
-    const url::Origin& request_origin,
-    std::string key,
-    std::string value,
-    std::optional<bool> ignore_if_present,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult(
-      request_origin, OperationType::kSet, std::move(key), std::move(value),
-      ignore_if_present, result);
-}
-
-// static
-SharedStorageWriteOperationAndResult
-SharedStorageWriteOperationAndResult::AppendOperation(
-    const url::Origin& request_origin,
-    std::string key,
-    std::string value,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult(
-      request_origin, OperationType::kAppend, std::move(key), std::move(value),
-      /*ignore_if_present=*/std::nullopt, result);
-}
-
-// static
-SharedStorageWriteOperationAndResult
-SharedStorageWriteOperationAndResult::DeleteOperation(
-    const url::Origin& request_origin,
-    std::string key,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult(
-      request_origin, OperationType::kDelete, std::move(key),
-      /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, result);
-}
-
-// static
-SharedStorageWriteOperationAndResult
-SharedStorageWriteOperationAndResult::ClearOperation(
-    const url::Origin& request_origin,
-    OperationResult result) {
-  return SharedStorageWriteOperationAndResult(
-      request_origin, OperationType::kClear,
-      /*key=*/std::nullopt,
-      /*value=*/std::nullopt,
-      /*ignore_if_present=*/std::nullopt, result);
-}
-
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
     const url::Origin& request_origin,
-    OperationType operation_type,
-    std::optional<std::string> key,
-    std::optional<std::string> value,
-    std::optional<bool> ignore_if_present,
+    MethodPtr method,
     OperationResult result)
     : request_origin(request_origin),
-      operation_type(operation_type),
-      key(std::move(key)),
-      value(std::move(value)),
-      ignore_if_present(ignore_if_present),
+      method(std::move(method)),
       result(result) {}
 
 SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
-    const url::Origin& request_origin,
-    OperationType operation_type,
-    std::optional<std::string> key,
-    std::optional<std::string> value,
-    network::mojom::OptionalBool ignore_if_present,
-    OperationResult result)
-    : SharedStorageWriteOperationAndResult(
-          request_origin,
-          operation_type,
-          std::move(key),
-          std::move(value),
-          MojomToAbslOptionalBool(ignore_if_present),
-          result) {}
+    const SharedStorageWriteOperationAndResult& other)
+    : request_origin(other.request_origin),
+      method(other.method.Clone()),
+      result(other.result) {}
 
-SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
-    const url::Origin& request_origin,
-    OperationPtr operation,
-    OperationResult result)
-    : SharedStorageWriteOperationAndResult(request_origin,
-                                           operation->type,
-                                           std::move(operation->key),
-                                           std::move(operation->value),
-                                           operation->ignore_if_present,
-                                           result) {}
-
-SharedStorageWriteOperationAndResult::SharedStorageWriteOperationAndResult(
-    const SharedStorageWriteOperationAndResult&) = default;
+SharedStorageWriteOperationAndResult&
+SharedStorageWriteOperationAndResult::operator=(
+    const SharedStorageWriteOperationAndResult& other) {
+  if (this != &other) {
+    request_origin = other.request_origin;
+    method = other.method.Clone();
+    result = other.result;
+  }
+  return *this;
+}
 
 SharedStorageWriteOperationAndResult::~SharedStorageWriteOperationAndResult() =
     default;
 
-bool operator==(const SharedStorageWriteOperationAndResult& a,
-                const SharedStorageWriteOperationAndResult& b) {
-  if (a.request_origin != b.request_origin) {
-    LOG(ERROR) << "request_origin mismatch: " << a.request_origin.Serialize()
-               << " <-> " << b.request_origin.Serialize();
-  }
-  if (a.operation_type != b.operation_type) {
-    LOG(ERROR) << "operation_type mismatch: "
-               << SharedStorageOperationTypeToString(a.operation_type)
-               << " <-> "
-               << SharedStorageOperationTypeToString(b.operation_type);
-  }
-  if (a.key != b.key) {
-    LOG(ERROR) << "key mismatch: " << OptionalStringToString(a.key) << " <-> "
-               << OptionalStringToString(b.key);
-  }
-  if (a.value != b.value) {
-    LOG(ERROR) << "value mismatch: " << OptionalStringToString(a.value)
-               << " <-> " << OptionalStringToString(b.value);
-  }
-  if (a.ignore_if_present != b.ignore_if_present) {
-    LOG(ERROR) << "ignore_if_present mismatch: "
-               << OptionalBoolToString(a.ignore_if_present) << " <-> "
-               << OptionalBoolToString(b.ignore_if_present);
-  }
-  if (a.result != b.result) {
-    LOG(ERROR) << "result mismatch: "
-               << SharedStorageOperationResultToString(a.result) << " <-> "
-               << SharedStorageOperationResultToString(b.result);
+std::ostream& operator<<(std::ostream& os,
+                         const SharedStorageWriteOperationAndResult& op) {
+  os << "Request Origin: " << op.request_origin;
+
+  switch (op.method->which()) {
+    case network::mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
+      network::mojom::SharedStorageSetMethodPtr& set_method =
+          op.method->get_set_method();
+      os << "; Method: Set(" << set_method->key << "," << set_method->value
+         << "," << (set_method->ignore_if_present ? "true" : "false") << ")";
+      break;
+    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
+      network::mojom::SharedStorageAppendMethodPtr& append_method =
+          op.method->get_append_method();
+      os << "; Method: Append(" << append_method->key << ","
+         << append_method->value << ")";
+      break;
+    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
+      network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+          op.method->get_delete_method();
+      os << "; Method: Delete(" << delete_method->key << ")";
+      break;
+    }
+    case network::mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
+      os << "; Method: Clear()";
+      break;
+    }
   }
 
-  return a.request_origin == b.request_origin &&
-         a.operation_type == b.operation_type && a.key == b.key &&
-         a.value == b.value && a.ignore_if_present == b.ignore_if_present &&
-         a.result == b.result;
+  os << "; Result: " << SharedStorageOperationResultToString(op.result);
+  return os;
 }
 
 PrivateAggregationHost::PipeResult

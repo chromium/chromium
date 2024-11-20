@@ -5,6 +5,7 @@
 #include "services/network/test/test_url_loader_network_observer.h"
 
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 
 namespace network {
 
@@ -79,7 +80,7 @@ void TestURLLoaderNetworkObserver::OnDataUseUpdate(
 
 void TestURLLoaderNetworkObserver::OnSharedStorageHeaderReceived(
     const url::Origin& request_origin,
-    std::vector<network::mojom::SharedStorageOperationPtr> operations,
+    std::vector<network::mojom::SharedStorageModifierMethodPtr> methods,
     OnSharedStorageHeaderReceivedCallback callback) {
   std::move(callback).Run();
 }

@@ -14,6 +14,7 @@
 #include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/shared_storage_test_utils.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 
 namespace content {
@@ -37,16 +38,16 @@ void TestSharedStorageHeaderObserver::WaitForOperations(size_t expected_total) {
 }
 
 void TestSharedStorageHeaderObserver::OnHeaderProcessed(
-    const url::Origin& request_origin,
-    const std::vector<bool>& header_results) {
-  header_results_.emplace_back(request_origin, header_results);
+    const url::Origin& request_origin) {
+  header_results_.emplace_back(request_origin);
 }
 
-void TestSharedStorageHeaderObserver::OnOperationFinished(
+void TestSharedStorageHeaderObserver::OnMethodFinished(
     const url::Origin& request_origin,
-    OperationPtr operation,
+    MethodPtr method,
     OperationResult result) {
-  operations_.emplace_back(request_origin, std::move(operation), result);
+  operations_.emplace_back(request_origin, std::move(method),
+                           std::move(result));
 
   if (loop_ && loop_->running() && operations_.size() >= expected_total_) {
     loop_->Quit();

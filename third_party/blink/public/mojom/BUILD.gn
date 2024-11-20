@@ -1647,6 +1647,7 @@ mojom("mojom_modules") {
   overridden_deps_blink = [
     ":android_mojo_bindings",
     ":mojom_core",
+    "//services/network/public/mojom:mojom_shared_storage",
   ]
   component_deps_blink = [ "//third_party/blink/renderer/core" ]
 

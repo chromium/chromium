@@ -97,14 +97,7 @@ constexpr char kSharedStorageWorkletExpiredMessage[] =
     "The sharedStorage worklet cannot execute further operations because the "
     "previous operation did not include the option \'keepAlive: true\'.";
 
-constexpr auto& SetOperation =
-    SharedStorageWriteOperationAndResult::SetOperation;
-constexpr auto& AppendOperation =
-    SharedStorageWriteOperationAndResult::AppendOperation;
-constexpr auto& DeleteOperation =
-    SharedStorageWriteOperationAndResult::DeleteOperation;
-constexpr auto& ClearOperation =
-    SharedStorageWriteOperationAndResult::ClearOperation;
+using HeaderOperationResult = SharedStorageWriteOperationAndResult;
 
 constexpr char kSimplePagePath[] = "/simple_page.html";
 
@@ -10554,7 +10547,6 @@ IN_PROC_BROWSER_TEST_P(
 class SharedStorageHeaderObserverBrowserTest
     : public SharedStorageBrowserTestBase {
  public:
-  using Operation = network::mojom::SharedStorageOperation;
   using OperationResult = storage::SharedStorageManager::OperationResult;
 
   SharedStorageHeaderObserverBrowserTest() {
@@ -10834,18 +10826,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -10905,18 +10887,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -10954,18 +10940,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -11007,18 +10997,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -11064,18 +11058,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the fetch URL.
   FrameTreeNode* iframe_node =
@@ -11146,18 +11144,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/true,
@@ -11167,18 +11169,22 @@ IN_PROC_BROWSER_TEST_F(
 
   // There won't be additional operations invoked.
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -11230,15 +11236,17 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
-                                           OperationResult::kSuccess),
-                           SetOperation(redirect_origins_.back(), "set", "will",
-                                        std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  HeaderOperationResult(redirect_origins_.back(),
+                                        MojomDeleteMethod(/*key=*/u"a"),
+                                        OperationResult::kSuccess),
+                  HeaderOperationResult(
+                      redirect_origins_.back(),
+                      MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -11303,18 +11311,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/true,
@@ -11328,21 +11340,29 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(5);
 
   EXPECT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(redirect_origins_.back(), "a",
-                                  OperationResult::kSuccess),
-                  SetOperation(redirect_origins_.back(), "set", "will",
-                               std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(redirect_origins_.back(),
+                                MojomDeleteMethod(/*key=*/u"a"),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              redirect_origins_.back(),
+              MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -11409,18 +11429,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/false,
@@ -11431,18 +11455,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
   // No new operations are invoked.
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -11502,18 +11530,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/false,
@@ -11537,21 +11569,29 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(5);
 
   EXPECT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(redirect_origins_.back(), "a",
-                                  OperationResult::kSuccess),
-                  SetOperation(redirect_origins_.back(), "set", "will",
-                               std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(redirect_origins_.back(),
+                                MojomDeleteMethod(/*key=*/u"a"),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              redirect_origins_.back(),
+              MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -11644,16 +11684,17 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
-            redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
-                                           OperationResult::kSuccess),
-                           SetOperation(redirect_origins_.back(), "set", "will",
-                                        std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().front(), redirect_origins_.back());
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  HeaderOperationResult(redirect_origins_.back(),
+                                        MojomDeleteMethod(/*key=*/u"a"),
+                                        OperationResult::kSuccess),
+                  HeaderOperationResult(
+                      redirect_origins_.back(),
+                      MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -11731,14 +11772,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  DeleteOperation(subresource_or_subframe_origin_, "hello",
-                                  OperationResult::kSuccess)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(HeaderOperationResult(
+          subresource_or_subframe_origin_, MojomDeleteMethod(/*key=*/u"hello"),
+          OperationResult::kSuccess)));
 
   // There is 1 more "worklet operation": `run()`.
   test_runtime_manager()
@@ -11803,13 +11843,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(ClearOperation(
-                  subresource_or_subframe_origin_, OperationResult::kSuccess)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_, MojomClearMethod(),
+                  OperationResult::kSuccess)));
 
   // There is 1 more "worklet operation": `run()`.
   test_runtime_manager()
@@ -11849,18 +11888,25 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", std::nullopt, OperationResult::kSet),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "friend", false, OperationResult::kSet),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "there", true, OperationResult::kIgnored)));
+                  HeaderOperationResult(
+                      subresource_or_subframe_origin_,
+                      MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet),
+                  HeaderOperationResult(
+                      subresource_or_subframe_origin_,
+                      MojomSetMethod(/*key=*/u"hello", /*value=*/u"friend",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet),
+                  HeaderOperationResult(
+                      subresource_or_subframe_origin_,
+                      MojomSetMethod(/*key=*/u"hello", /*value=*/u"there",
+                                     /*ignore_if_present=*/true),
+                      OperationResult::kIgnored)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -11929,18 +11975,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   subresource_or_subframe_origin_ =
       url::Origin::Create(subresource_or_subframe_url_);
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -12009,18 +12059,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -12072,20 +12126,25 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(4);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", std::nullopt, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(subresource_or_subframe_origin_, "toDelete",
-                                  OperationResult::kSuccess)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomDeleteMethod(/*key=*/u"toDelete"),
+                                OperationResult::kSuccess)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -12108,16 +12167,16 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, false, false, false, true));
   EXPECT_THAT(
       observer_->operations(),
-      testing::ElementsAre(ClearOperation(subresource_or_subframe_origin_,
-                                          OperationResult::kSuccess),
-                           ClearOperation(subresource_or_subframe_origin_,
-                                          OperationResult::kSuccess)));
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(),
+                                OperationResult::kSuccess)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -12164,14 +12223,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -12231,14 +12290,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -12275,14 +12334,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -12323,14 +12382,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -12395,14 +12454,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -12481,18 +12540,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -12526,15 +12589,17 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
-                                           OperationResult::kSuccess),
-                           SetOperation(redirect_origins_.back(), "set", "will",
-                                        std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  HeaderOperationResult(redirect_origins_.back(),
+                                        MojomDeleteMethod(/*key=*/u"a"),
+                                        OperationResult::kSuccess),
+                  HeaderOperationResult(
+                      redirect_origins_.back(),
+                      MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -12607,21 +12672,29 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(5);
 
   EXPECT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(redirect_origins_.back(), "a",
-                                  OperationResult::kSuccess),
-                  SetOperation(redirect_origins_.back(), "set", "will",
-                               std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(redirect_origins_.back(),
+                                MojomDeleteMethod(/*key=*/u"a"),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              redirect_origins_.back(),
+              MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -12697,18 +12770,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -12768,18 +12845,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/false,
@@ -12803,21 +12884,29 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(5);
 
   EXPECT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(redirect_origins_.back(), "a",
-                                  OperationResult::kSuccess),
-                  SetOperation(redirect_origins_.back(), "set", "will",
-                               std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(redirect_origins_.back(),
+                                MojomDeleteMethod(/*key=*/u"a"),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              redirect_origins_.back(),
+              MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -12910,16 +12999,17 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
-            redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
-                                           OperationResult::kSuccess),
-                           SetOperation(redirect_origins_.back(), "set", "will",
-                                        std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().front(), redirect_origins_.back());
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  HeaderOperationResult(redirect_origins_.back(),
+                                        MojomDeleteMethod(/*key=*/u"a"),
+                                        OperationResult::kSuccess),
+                  HeaderOperationResult(
+                      redirect_origins_.back(),
+                      MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -12983,13 +13073,13 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
-  EXPECT_THAT(observer_->operations(), testing::ElementsAre(AppendOperation(
-                                           subresource_or_subframe_origin_, "a",
-                                           "b", OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"),
+                  OperationResult::kSet)));
 
   EXPECT_EQ(
       true,
@@ -13030,13 +13120,13 @@ IN_PROC_BROWSER_TEST_F(
   // No new operations are invoked.
   ASSERT_TRUE(observer_);
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
-  EXPECT_THAT(observer_->operations(), testing::ElementsAre(AppendOperation(
-                                           subresource_or_subframe_origin_, "a",
-                                           "b", OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomAppendMethod(/*key=*/u"a", /*value=*/u"b"),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -13104,14 +13194,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -13171,14 +13261,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -13215,14 +13305,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -13263,14 +13353,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -13335,14 +13425,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
@@ -13421,18 +13511,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -13466,15 +13560,17 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
-                                           OperationResult::kSuccess),
-                           SetOperation(redirect_origins_.back(), "set", "will",
-                                        std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  HeaderOperationResult(redirect_origins_.back(),
+                                        MojomDeleteMethod(/*key=*/u"a"),
+                                        OperationResult::kSuccess),
+                  HeaderOperationResult(
+                      redirect_origins_.back(),
+                      MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet)));
 
   // Create another iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node2 =
@@ -13547,21 +13643,29 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(5);
 
   EXPECT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(redirect_origins_.back(), "a",
-                                  OperationResult::kSuccess),
-                  SetOperation(redirect_origins_.back(), "set", "will",
-                               std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(redirect_origins_.back(),
+                                MojomDeleteMethod(/*key=*/u"a"),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              redirect_origins_.back(),
+              MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet)));
 
   // Create another iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node2 =
@@ -13638,18 +13742,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node1 =
@@ -13709,18 +13817,22 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet)));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/false,
@@ -13744,21 +13856,29 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(5);
 
   EXPECT_EQ(observer_->header_results().size(), 2u);
-  EXPECT_EQ(observer_->header_results().back().first, redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().back().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(subresource_or_subframe_origin_,
-                                 OperationResult::kSuccess),
-                  SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", true, OperationResult::kSet),
-                  AppendOperation(subresource_or_subframe_origin_, "hello",
-                                  "there", OperationResult::kSet),
-                  DeleteOperation(redirect_origins_.back(), "a",
-                                  OperationResult::kSuccess),
-                  SetOperation(redirect_origins_.back(), "set", "will",
-                               std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().back(), redirect_origins_.back());
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(subresource_or_subframe_origin_,
+                                MojomClearMethod(), OperationResult::kSuccess),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                             /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              subresource_or_subframe_origin_,
+              MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet),
+          HeaderOperationResult(redirect_origins_.back(),
+                                MojomDeleteMethod(/*key=*/u"a"),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              redirect_origins_.back(),
+              MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                             /*ignore_if_present=*/false),
+              OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node2 =
@@ -13851,16 +13971,17 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
-            redirect_origins_.back());
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
-                                           OperationResult::kSuccess),
-                           SetOperation(redirect_origins_.back(), "set", "will",
-                                        std::nullopt, OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().front(), redirect_origins_.back());
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  HeaderOperationResult(redirect_origins_.back(),
+                                        MojomDeleteMethod(/*key=*/u"a"),
+                                        OperationResult::kSuccess),
+                  HeaderOperationResult(
+                      redirect_origins_.back(),
+                      MojomSetMethod(/*key=*/u"set", /*value=*/u"will",
+                                     /*ignore_if_present=*/false),
+                      OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -13922,14 +14043,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first,
+  EXPECT_EQ(observer_->header_results().front(),
             subresource_or_subframe_origin_);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", std::nullopt,
-                                                OperationResult::kSet)));
+              testing::ElementsAre(HeaderOperationResult(
+                  subresource_or_subframe_origin_,
+                  MojomSetMethod(/*key=*/u"a", /*value=*/u"b",
+                                 /*ignore_if_present=*/false),
+                  OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,

@@ -74,7 +74,7 @@ class SharedStorageRequestHelper {
                        std::string_view value,
                        base::OnceClosure done);
 
-  void OnOperationsQueued(base::OnceClosure done);
+  void OnMethodsQueued(base::OnceClosure done);
 
   // True if the current request should have the
   // `kSharedStorageWritable` header attached and is eligible to

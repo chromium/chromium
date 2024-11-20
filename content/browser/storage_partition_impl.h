@@ -393,7 +393,7 @@ class CONTENT_EXPORT StoragePartitionImpl
                        int64_t sent_bytes) override;
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
-      std::vector<network::mojom::SharedStorageOperationPtr> operations,
+      std::vector<network::mojom::SharedStorageModifierMethodPtr> methods,
       OnSharedStorageHeaderReceivedCallback callback) override;
 
   SharedStorageHeaderObserver* shared_storage_header_observer() {

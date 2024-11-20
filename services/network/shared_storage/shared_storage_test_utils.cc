@@ -50,6 +50,83 @@ std::string MakeSharedStorageRedirectPrefix() {
   return base::StrCat({kSharedStoragePathPrefix, kSharedStorageRedirectPath});
 }
 
+network::mojom::SharedStorageModifierMethodPtr MojomSetMethod(
+    const std::u16string& key,
+    const std::u16string& value,
+    bool ignore_if_present) {
+  return network::mojom::SharedStorageModifierMethod::NewSetMethod(
+      network::mojom::SharedStorageSetMethod::New(key, value,
+                                                  ignore_if_present));
+}
+
+network::mojom::SharedStorageModifierMethodPtr MojomAppendMethod(
+    const std::u16string& key,
+    const std::u16string& value) {
+  return network::mojom::SharedStorageModifierMethod::NewAppendMethod(
+      network::mojom::SharedStorageAppendMethod::New(key, value));
+}
+
+network::mojom::SharedStorageModifierMethodPtr MojomDeleteMethod(
+    const std::u16string& key) {
+  return network::mojom::SharedStorageModifierMethod::NewDeleteMethod(
+      network::mojom::SharedStorageDeleteMethod::New(key));
+}
+
+network::mojom::SharedStorageModifierMethodPtr MojomClearMethod() {
+  return network::mojom::SharedStorageModifierMethod::NewClearMethod(
+      network::mojom::SharedStorageClearMethod::New());
+}
+
+SharedStorageMethodWrapper::SharedStorageMethodWrapper(
+    mojom::SharedStorageModifierMethodPtr method)
+    : method(std::move(method)) {}
+
+SharedStorageMethodWrapper::SharedStorageMethodWrapper(
+    const SharedStorageMethodWrapper& other)
+    : method(other.method.Clone()) {}
+
+SharedStorageMethodWrapper& SharedStorageMethodWrapper::operator=(
+    const SharedStorageMethodWrapper& other) {
+  if (this != &other) {
+    method = other.method.Clone();
+  }
+  return *this;
+}
+
+SharedStorageMethodWrapper::~SharedStorageMethodWrapper() = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const SharedStorageMethodWrapper& wrapper) {
+  switch (wrapper.method->which()) {
+    case mojom::SharedStorageModifierMethod::Tag::kSetMethod: {
+      network::mojom::SharedStorageSetMethodPtr& set_method =
+          wrapper.method->get_set_method();
+      os << "Method: Set(" << set_method->key << "," << set_method->value << ","
+         << (set_method->ignore_if_present ? "true" : "false") << ")";
+      break;
+    }
+    case mojom::SharedStorageModifierMethod::Tag::kAppendMethod: {
+      network::mojom::SharedStorageAppendMethodPtr& append_method =
+          wrapper.method->get_append_method();
+      os << "Method: Append(" << append_method->key << ","
+         << append_method->value << ")";
+      break;
+    }
+    case mojom::SharedStorageModifierMethod::Tag::kDeleteMethod: {
+      network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+          wrapper.method->get_delete_method();
+      os << "Method: Delete(" << delete_method->key << ")";
+      break;
+    }
+    case mojom::SharedStorageModifierMethod::Tag::kClearMethod: {
+      os << "Method: Clear()";
+      break;
+    }
+  }
+
+  return os;
+}
+
 SharedStorageResponse::SharedStorageResponse(std::string shared_storage_write)
     : shared_storage_write_(std::move(shared_storage_write)) {}
 

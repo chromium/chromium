@@ -92,12 +92,7 @@ namespace {
 
 using OperationResult = SharedStorageManager::OperationResult;
 
-const auto& SetOperation =
-    content::SharedStorageWriteOperationAndResult::SetOperation;
-const auto& AppendOperation =
-    content::SharedStorageWriteOperationAndResult::AppendOperation;
-const auto& ClearOperation =
-    content::SharedStorageWriteOperationAndResult::ClearOperation;
+using HeaderOperationResult = content::SharedStorageWriteOperationAndResult;
 
 constexpr char kMainHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
@@ -5033,16 +5028,22 @@ IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
 
   url::Origin fetch_origin = url::Origin::Create(fetch_url);
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, fetch_origin);
-  EXPECT_THAT(observer_->header_results().front().second,
-              testing::ElementsAre(true, true, true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(
-                  ClearOperation(fetch_origin, OperationResult::kSuccess),
-                  SetOperation(fetch_origin, "hello", "world", true,
-                               OperationResult::kSet),
-                  AppendOperation(fetch_origin, "hello", "there",
-                                  OperationResult::kSet)));
+  EXPECT_EQ(observer_->header_results().front(), fetch_origin);
+
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          HeaderOperationResult(fetch_origin, content::MojomClearMethod(),
+                                OperationResult::kSuccess),
+          HeaderOperationResult(
+              fetch_origin,
+              content::MojomSetMethod(/*key=*/u"hello", /*value=*/u"world",
+                                      /*ignore_if_present=*/true),
+              OperationResult::kSet),
+          HeaderOperationResult(
+              fetch_origin,
+              content::MojomAppendMethod(/*key=*/u"hello", /*value=*/u"there"),
+              OperationResult::kSet)));
 
   response.Done();
 

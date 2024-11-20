@@ -15,12 +15,12 @@ namespace network {
 
 namespace {
 
-constexpr auto kSharedStorageOperationTypeMap =
-    base::MakeFixedFlatMap<std::string_view, mojom::SharedStorageOperationType>(
-        {{"set", network::mojom::SharedStorageOperationType::kSet},
-         {"append", network::mojom::SharedStorageOperationType::kAppend},
-         {"delete", network::mojom::SharedStorageOperationType::kDelete},
-         {"clear", network::mojom::SharedStorageOperationType::kClear}});
+constexpr auto kSharedStorageModifierMethodTypeMap =
+    base::MakeFixedFlatMap<std::string_view, SharedStorageModifierMethodType>(
+        {{"set", SharedStorageModifierMethodType::kSet},
+         {"append", SharedStorageModifierMethodType::kAppend},
+         {"delete", SharedStorageModifierMethodType::kDelete},
+         {"clear", SharedStorageModifierMethodType::kClear}});
 
 constexpr auto kSharedStorageHeaderParamTypeMap =
     base::MakeFixedFlatMap<std::string_view, SharedStorageHeaderParamType>(
@@ -31,15 +31,15 @@ constexpr auto kSharedStorageHeaderParamTypeMap =
 
 }  // namespace
 
-std::optional<mojom::SharedStorageOperationType>
-StringToSharedStorageOperationType(std::string_view operation_str) {
-  auto operation_it =
-      kSharedStorageOperationTypeMap.find(base::ToLowerASCII(operation_str));
-  if (operation_it == kSharedStorageOperationTypeMap.end()) {
+std::optional<SharedStorageModifierMethodType>
+StringToSharedStorageModifierMethodType(std::string_view method_str) {
+  auto method_it =
+      kSharedStorageModifierMethodTypeMap.find(base::ToLowerASCII(method_str));
+  if (method_it == kSharedStorageModifierMethodTypeMap.end()) {
     return std::nullopt;
   }
 
-  return operation_it->second;
+  return method_it->second;
 }
 
 std::optional<SharedStorageHeaderParamType>
