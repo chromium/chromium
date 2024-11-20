@@ -49,10 +49,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public void destroy(long nativeCPPClass, SampleForTests caller, byte[] bytes) {
     assert nativeCPPClass != 0;
-    GEN_JNI.org_jni_1zero_SampleForTests_destroy(
-        nativeCPPClass,
-        caller,
-        bytes);
+    GEN_JNI.org_jni_1zero_SampleForTests_destroy(nativeCPPClass, caller, bytes);
   }
 
   @Override
@@ -62,8 +59,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public double getDoubleFunction(SampleForTests ret) {
-    return (double) GEN_JNI.org_jni_1zero_SampleForTests_getDoubleFunction(
-        ret);
+    return (double) GEN_JNI.org_jni_1zero_SampleForTests_getDoubleFunction(ret);
   }
 
   @Override
@@ -73,8 +69,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
 
   @Override
   public Object getNonPODDatatype(SampleForTests jcaller) {
-    return (Object) GEN_JNI.org_jni_1zero_SampleForTests_getNonPODDatatype(
-        jcaller);
+    return (Object) GEN_JNI.org_jni_1zero_SampleForTests_getNonPODDatatype(jcaller);
   }
 
   @Override
@@ -95,9 +90,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public void iterateAndDoSomethingWithStructB(long nativeCPPClass, SampleForTests caller) {
     assert nativeCPPClass != 0;
-    GEN_JNI.org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(
-        nativeCPPClass,
-        caller);
+    GEN_JNI.org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(nativeCPPClass, caller);
   }
 
   @Override
@@ -113,38 +106,24 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   @Override
   public int method(long nativeCPPClass, SampleForTests caller, String[] strings) {
     assert nativeCPPClass != 0;
-    return (int) GEN_JNI.org_jni_1zero_SampleForTests_method(
-        nativeCPPClass,
-        caller,
-        strings);
+    return (int) GEN_JNI.org_jni_1zero_SampleForTests_method(nativeCPPClass, caller, strings);
   }
 
   @Override
   public double methodOtherP0(long nativePtr, SampleForTests caller) {
     assert nativePtr != 0;
-    return (double) GEN_JNI.org_jni_1zero_SampleForTests_methodOtherP0(
-        nativePtr,
-        caller);
+    return (double) GEN_JNI.org_jni_1zero_SampleForTests_methodOtherP0(nativePtr, caller);
   }
 
   @Override
   public boolean[] primitiveArrays(byte[] b, char[] c, short[] s, int[] i, long[] l, float[] f, double[] d) {
-    return (boolean[]) GEN_JNI.org_jni_1zero_SampleForTests_primitiveArrays(
-        b,
-        c,
-        s,
-        i,
-        l,
-        f,
-        d);
+    return (boolean[]) GEN_JNI.org_jni_1zero_SampleForTests_primitiveArrays(b, c, s, i, l, f, d);
   }
 
   @Override
   public String returnAString(long nativeCPPClass, SampleForTests caller) {
     assert nativeCPPClass != 0;
-    return (String) GEN_JNI.org_jni_1zero_SampleForTests_returnAString(
-        nativeCPPClass,
-        caller);
+    return (String) GEN_JNI.org_jni_1zero_SampleForTests_returnAString(nativeCPPClass, caller);
   }
 
   @Override

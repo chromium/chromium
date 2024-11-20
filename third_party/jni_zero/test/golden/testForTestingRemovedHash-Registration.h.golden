@@ -21,8 +21,7 @@ inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
 #endif
 
 
-// Forward declarations (methods).
-
+// Forward Declarations.
 JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_J_N_MYplquli(
     JNIEnv* env,
     jclass jcaller,
@@ -38,26 +37,15 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MV9JEAYF(
     jclass jcaller,
     jobject a,
     jobject b);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MKWEYRlq(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MalqUoB_1(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject arg);
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MKWEYRlq(JNIEnv* env, jclass jcaller);
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MalqUoB_1(JNIEnv* env, jclass jcaller, jobject arg);
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_M0E4cldm(
     JNIEnv* env,
     jclass jcaller,
     jobject b,
     jobject i);
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_N_MWbFhvyA(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject sb);
-JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_J_N_MWbFhvyA(
-    JNIEnv* env,
-    jclass jcaller,
-    jint sb);
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_N_MWbFhvyA(JNIEnv* env, jclass jcaller, jobject sb);
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_J_N_MWbFhvyA(JNIEnv* env, jclass jcaller, jint sb);
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
     JNIEnv* env,
     jobject jcaller,
@@ -65,5 +53,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_native
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller);
+
 
 #endif  // TEMP_DIR_HEADER_

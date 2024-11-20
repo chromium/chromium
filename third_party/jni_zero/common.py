@@ -4,6 +4,7 @@
 """Common logic needed by other modules."""
 
 import contextlib
+import dataclasses
 import filecmp
 import os
 import shutil
@@ -14,7 +15,17 @@ import zipfile
 
 # Only some methods respect line length, so this is more of a best-effort
 # limit.
-_TARGET_LINE_LENGTH = 80
+_TARGET_LINE_LENGTH = 100
+
+
+@dataclasses.dataclass(frozen=True)
+class JniMode:
+  is_hashing: bool = False
+  is_muxing: bool = False
+  is_per_file: bool = False
+
+
+JniMode.MUXING = JniMode(is_muxing=True)
 
 
 class StringBuilder:

@@ -44,9 +44,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
     JNIEnv* env,
     jclass jcaller,
     jobject handle) {
-  JNI_SampleUniqueAnnotations_Baz(
-      env,
-      jni_zero::JavaParamRef<jobject>(env, handle));
+  JNI_SampleUniqueAnnotations_Baz(env, jni_zero::JavaParamRef<jobject>(env, handle));
 }
 
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleUniqueAnnotations_1foo(
@@ -57,9 +55,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1S
   std::string arg_converted = jni_zero::FromJniType<std::string>(
       env,
       jni_zero::JavaParamRef<jobject>(env, arg));
-  reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr)->Foo(
-      env,
-      arg_converted);
+  reinterpret_cast<FooAndroid::BarDelegate*>(nativePtr)->Foo(env, arg_converted);
 }
 
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeCallWithQualifiedObject(

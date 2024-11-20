@@ -9,6 +9,7 @@ import os
 import shutil
 import sys
 
+import common
 import jni_generator
 import jni_registration_generator
 
@@ -114,7 +115,11 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')
-    mode_group.add_argument('--per-file-natives', action='store_true')
+    mode_group.add_argument(
+        '--per-file-natives',
+        action='store_true',
+        help='Generate .srcjar and .h such that a final generate-final '
+        'step is not necessary')
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',
@@ -202,8 +207,11 @@ def main():
     parser.parse_args(sys.argv[1:] + ['-h'])
   else:
     args = parser.parse_args()
-    args.func(parser, args)
-
+    bool_arg = lambda name: getattr(args, name, False)
+    jni_mode = common.JniMode(is_hashing=bool_arg('use_proxy_hash'),
+                              is_muxing=bool_arg('enable_jni_multiplexing'),
+                              is_per_file=bool_arg('per_file_natives'))
+    args.func(parser, args, jni_mode)
 
 if __name__ == '__main__':
   _maybe_relaunch_with_newer_python()

@@ -89,11 +89,7 @@ static void Java_SampleBidirectionalNonProxy_addStructB(
       "addStructB",
       "(Lorg/jni_zero/SampleForTests;Lorg/jni_zero/SampleForTests$InnerStructB;)V",
       &cached_method_id);
-  env->CallVoidMethod(
-      obj.obj(),
-      call_context.method_id(),
-      caller.obj(),
-      b.obj());
+  env->CallVoidMethod(obj.obj(), call_context.method_id(), caller.obj(), b.obj());
 }
 
 static void Java_SampleBidirectionalNonProxy_setBool(
@@ -131,8 +127,7 @@ static void Java_SampleBidirectionalNonProxy_setStringBuilder(
   env->CallVoidMethod(obj.obj(), call_context.method_id(), sb.obj());
 }
 
-static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(
-    JNIEnv* env) {
+static jdouble Java_SampleBidirectionalNonProxy_testMethodWithNoParam(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
@@ -178,10 +173,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_SampleBidirectionalNonProxy_te
       "testMethodWithParamAndReturn",
       "(I)Ljava/lang/String;",
       &cached_method_id);
-  auto _ret = env->CallObjectMethod(
-      obj.obj(),
-      call_context.method_id(),
-      as_jint(iParam));
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(iParam));
   jstring _ret2 = static_cast<jstring>(_ret);
   return jni_zero::ScopedJavaLocalRef<jstring>(env, _ret2);
 }
@@ -216,10 +208,7 @@ static jint Java_SampleBidirectionalNonProxy_testStaticMethodWithParam(
       "testStaticMethodWithParam",
       "(I)I",
       &cached_method_id);
-  auto _ret = env->CallStaticIntMethod(
-      clazz,
-      call_context.method_id(),
-      as_jint(iParam));
+  auto _ret = env->CallStaticIntMethod(clazz, call_context.method_id(), as_jint(iParam));
   return _ret;
 }
 
