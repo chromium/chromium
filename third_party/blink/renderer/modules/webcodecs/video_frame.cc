@@ -508,9 +508,6 @@ bool CopyTexturablePlanes(media::VideoFrame& src_frame,
     return false;
 
   auto* provider = wrapper->ContextProvider();
-  if (!provider)
-    return false;
-
   auto* ri = provider->RasterInterface();
   if (!ri)
     return false;

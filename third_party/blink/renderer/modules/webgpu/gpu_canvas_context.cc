@@ -816,8 +816,9 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
-  if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+  if (!shared_context_wrapper) {
     return false;
+  }
 
   auto dst_client_si =
       resource_provider->GetBackingClientSharedImageForOverwrite();

@@ -313,8 +313,8 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
                               bool ignore_video_transformation) {
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    if (auto* context_provider = wrapper->ContextProvider())
-      raster_context_provider = context_provider->RasterContextProvider();
+    raster_context_provider =
+        wrapper->ContextProvider()->RasterContextProvider();
   }
 
   media::PaintCanvasVideoRenderer video_renderer;
@@ -333,10 +333,8 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
   if (!wrapper)
     return nullptr;
 
-  if (auto* provider = wrapper->ContextProvider())
-    return base::WrapRefCounted(provider->RasterContextProvider());
-
-  return nullptr;
+  return base::WrapRefCounted(
+      wrapper->ContextProvider()->RasterContextProvider());
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(

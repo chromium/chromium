@@ -50,8 +50,7 @@ namespace {
 // TODO(crbug.com/40280152): De-dupe this method with the identical method in
 // canvas_rendering_context_2d.cc.
 gpu::ContextSupport* GetContextSupport() {
-  if (!SharedGpuContext::ContextProviderWrapper() ||
-      !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
+  if (!SharedGpuContext::ContextProviderWrapper()) {
     return nullptr;
   }
   return SharedGpuContext::ContextProviderWrapper()

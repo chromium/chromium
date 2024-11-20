@@ -150,8 +150,7 @@ static mojom::blink::ColorScheme GetColorSchemeFromCanvas(
 namespace {
 
 gpu::ContextSupport* GetContextSupport() {
-  if (!SharedGpuContext::ContextProviderWrapper() ||
-      !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
+  if (!SharedGpuContext::ContextProviderWrapper()) {
     return nullptr;
   }
   return SharedGpuContext::ContextProviderWrapper()

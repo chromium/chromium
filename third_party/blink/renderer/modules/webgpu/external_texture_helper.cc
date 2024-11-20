@@ -403,9 +403,8 @@ ExternalTexture CreateExternalTexture(
       recyclable_canvas_resource->resource_provider();
   DCHECK(resource_provider);
 
-  viz::RasterContextProvider* raster_context_provider = nullptr;
-  if (auto* context_provider = context_provider_wrapper->ContextProvider())
-    raster_context_provider = context_provider->RasterContextProvider();
+  viz::RasterContextProvider* raster_context_provider =
+      context_provider_wrapper->ContextProvider()->RasterContextProvider();
 
   if (use_copy_to_shared_image) {
     // We don't need to specify a sync token since both CanvasResourceProvider

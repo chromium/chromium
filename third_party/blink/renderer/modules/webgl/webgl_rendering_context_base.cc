@@ -1895,8 +1895,9 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
-    if (!shared_context_wrapper || !shared_context_wrapper->ContextProvider())
+    if (!shared_context_wrapper) {
       return false;
+    }
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider()->RasterInterface();
     auto client_si =
@@ -6233,8 +6234,8 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      if (auto* context_provider = wrapper->ContextProvider())
-        raster_context_provider = context_provider->RasterContextProvider();
+      raster_context_provider =
+          wrapper->ContextProvider()->RasterContextProvider();
     }
 
     // Go through the fast path doing a GPU-GPU textures copy without a readback
@@ -8605,8 +8606,8 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   if (type_ == CacheType::kVideo) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-      if (auto* context_provider = wrapper->ContextProvider())
-        raster_context_provider = context_provider->RasterContextProvider();
+      raster_context_provider =
+          wrapper->ContextProvider()->RasterContextProvider();
     }
     temp = CreateResourceProviderForVideoFrame(info, raster_context_provider);
   } else {

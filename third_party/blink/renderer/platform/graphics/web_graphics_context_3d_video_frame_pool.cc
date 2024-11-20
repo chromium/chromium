@@ -110,10 +110,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
   gpu::SharedImageInterface* SharedImageInterface() const {
     if (!weak_context_provider_)
       return nullptr;
-    auto* context_provider = weak_context_provider_->ContextProvider();
-    if (!context_provider)
-      return nullptr;
-    return context_provider->SharedImageInterface();
+    return weak_context_provider_->ContextProvider()->SharedImageInterface();
   }
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
@@ -176,11 +173,10 @@ void SignalGpuCompletion(
       [](base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper> ctx_wrapper,
          unsigned query_id, base::OnceClosure wrapped_callback) {
         if (ctx_wrapper) {
-          if (auto* ctx_provider = ctx_wrapper->ContextProvider()) {
-            if (auto* ri_provider = ctx_provider->RasterContextProvider()) {
-              auto* ri = ri_provider->RasterInterface();
-              ri->DeleteQueriesEXT(1, &query_id);
-            }
+          if (auto* ri_provider =
+                  ctx_wrapper->ContextProvider()->RasterContextProvider()) {
+            auto* ri = ri_provider->RasterInterface();
+            ri->DeleteQueriesEXT(1, &query_id);
           }
         }
         std::move(wrapped_callback).Run();
