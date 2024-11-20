@@ -447,8 +447,7 @@ std::u16string FindChildTextWithIgnoreList(
 
 struct InferredLabel {
   // Returns an `InferredLabel` if `label` contains at least one character that
-  // is neither whitespace nor "*:-–()" (or "*:" if
-  // kAutofillConsiderPhoneNumberSeparatorsValidLabels is enabled).
+  // is neither whitespace nor "*:-–()".
   static std::optional<InferredLabel> BuildIfValid(
       std::u16string label,
       FormFieldData::LabelSource source);
