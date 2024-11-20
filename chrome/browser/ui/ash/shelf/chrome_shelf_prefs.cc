@@ -777,19 +777,6 @@ void ChromeShelfPrefs::EnsureProjectorShelfPinConsistency() {
 void ChromeShelfPrefs::EnsureChromePinned() {
   auto* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
-  // If ash is the only web browser or if lacros is the only web browser, ensure
-  // that ash-chrome is pinned. The sync<->shelf translation layer ensures that
-  // we will use the appropriate shelf id.
-  if (!crosapi::browser_util::IsLacrosEnabled() ||
-      !crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    EnsurePinnedOrMakeFirst(app_constants::kChromeAppId, syncable_service);
-    return;
-  }
-
-  // Otherwise, we are in a transition situation where both the ash and lacros
-  // web browsers are available. To ensure consistency with legacy behavior, we
-  // ensure both web browsers are pinned.
-  EnsurePinnedOrMakeFirst(app_constants::kLacrosAppId, syncable_service);
   EnsurePinnedOrMakeFirst(app_constants::kChromeAppId, syncable_service);
 }
 
