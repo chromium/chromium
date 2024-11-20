@@ -1056,6 +1056,8 @@ source_set("browser") {
     "file_system_access/file_system_access_observer_host.h",
     "file_system_access/file_system_access_observer_observation.cc",
     "file_system_access/file_system_access_observer_observation.h",
+    "file_system_access/file_system_access_observer_quota_manager.cc",
+    "file_system_access/file_system_access_observer_quota_manager.h",
     "file_system_access/file_system_access_safe_move_helper.cc",
     "file_system_access/file_system_access_safe_move_helper.h",
     "file_system_access/file_system_access_transfer_token_impl.cc",

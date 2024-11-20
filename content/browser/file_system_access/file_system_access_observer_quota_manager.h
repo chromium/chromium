@@ -1,0 +1,64 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
+
+#include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+
+namespace content {
+
+// Keeps track of the total usage of observer resource for a given StorageKey.
+class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
+    : public base::RefCountedDeleteOnSequence<
+          FileSystemAccessObserverQuotaManager> {
+ public:
+  enum UsageChangeResult {
+    kOk,
+    kQuotaUnavailable,
+  };
+
+  explicit FileSystemAccessObserverQuotaManager(
+      const blink::StorageKey& storage_key,
+      FileSystemAccessWatcherManager* watcher_manager);
+
+  FileSystemAccessObserverQuotaManager(
+      FileSystemAccessObserverQuotaManager const&) = delete;
+  FileSystemAccessObserverQuotaManager& operator=(
+      FileSystemAccessObserverQuotaManager const&) = delete;
+
+  // Updates the total usage if the quota is available.
+  // Otherwise, returns `UsageChangeResult::kQuotaUnavailable`.
+  //
+  // The first call to it must always have an `old_usage` of zero. Subsequent
+  // calls must use `new_usage` of the last call as their `old_usage`.
+  // A caller should not call this again if it receives `kQuotaUnavailable`.
+  UsageChangeResult OnUsageChange(size_t old_usage, size_t new_usage);
+
+  void SetQuotaLimitForTesting(int64_t quota_limit) {
+    CHECK_GE(quota_limit, 0);
+    quota_limit_for_testing_ = quota_limit;
+  }
+
+  int64_t GetTotalUsageForTesting() { return total_usage_; }
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<
+      FileSystemAccessObserverQuotaManager>;
+  friend class base::DeleteHelper<FileSystemAccessObserverQuotaManager>;
+  ~FileSystemAccessObserverQuotaManager();
+
+  const blink::StorageKey storage_key_;
+
+  // TODO(crbug.com/338457523): Update to raw_ref once connected to watcher
+  // manager.
+  const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_;
+  int64_t total_usage_ = 0;
+  int64_t quota_limit_for_testing_ = 0;
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_OBSERVER_QUOTA_MANAGER_H_
