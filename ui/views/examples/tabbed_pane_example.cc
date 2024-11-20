@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/format_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/label_button.h"
@@ -96,8 +97,9 @@ void TabbedPaneExample::CreateTabbedPane(View* container,
 }
 
 void TabbedPaneExample::PrintCurrentStatus() {
-  PrintStatus("Tab Count:%" PRIuS ", Selected Tab:%" PRIuS,
-              tabbed_pane_->GetTabCount(), tabbed_pane_->GetSelectedTabIndex());
+  PrintStatus(base::StringPrintf("Tab Count:%" PRIuS ", Selected Tab:%" PRIuS,
+                                 tabbed_pane_->GetTabCount(),
+                                 tabbed_pane_->GetSelectedTabIndex()));
 }
 
 void TabbedPaneExample::SwapLayout() {

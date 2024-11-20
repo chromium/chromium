@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -256,7 +257,7 @@ void ButtonExample::CreateExampleView(View* container) {
 
 void ButtonExample::LabelButtonPressed(LabelButton* label_button,
                                        const ui::Event& event) {
-  PrintStatus("Label Button Pressed! count: %d", ++count_);
+  PrintStatus(base::StringPrintf("Label Button Pressed! count: %d", ++count_));
   if (event.IsControlDown()) {
     if (event.IsShiftDown()) {
       label_button->SetText(
@@ -290,7 +291,7 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
 }
 
 void ButtonExample::ImageButtonPressed() {
-  PrintStatus("Image Button Pressed! count: %d", ++count_);
+  PrintStatus(base::StringPrintf("Image Button Pressed! count: %d", ++count_));
 }
 
 }  // namespace views::examples
