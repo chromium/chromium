@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
 
 #import <Availability.h>
 
 #import "base/check.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -23,10 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
-#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 #import "ios/chrome/browser/ui/search_with/search_with_mediator.h"
@@ -67,8 +67,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.started = YES;
   DCHECK(self.browser);
   DCHECK(!_viewController);
@@ -141,8 +142,9 @@
 }
 
 - (void)stop {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   [self dismissAlertCoordinator];
   self.started = NO;
   [self.webContentAreaOverlayContainerCoordinator stop];
@@ -187,8 +189,9 @@
 // blocking view.
 - (void)setUpScreenTimeIfEnabled {
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
-  if (!IsScreenTimeIntegrationEnabled())
+  if (!IsScreenTimeIntegrationEnabled()) {
     return;
+  }
 
   ScreenTimeCoordinator* screenTimeCoordinator = [[ScreenTimeCoordinator alloc]
       initWithBaseViewController:self.viewController

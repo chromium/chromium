@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/browser_container",
+  "+ios/chrome/browser/browser_container/ui_bundled",
   "+ios/chrome/browser/bookmarks/ui_bundled",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",

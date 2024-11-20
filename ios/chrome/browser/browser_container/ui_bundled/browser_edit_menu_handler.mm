@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_container/browser_edit_menu_handler.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
 
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_delegate.h"
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_delegate.h"

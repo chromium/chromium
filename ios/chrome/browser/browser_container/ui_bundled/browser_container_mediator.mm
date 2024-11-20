@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
 
 #import "base/check_op.h"
 #import "base/scoped_observation.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
@@ -13,8 +15,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
@@ -27,19 +27,22 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
   DCHECK(web_state_list);
 
   web::WebState* web_state = web_state_list->GetActiveWebState();
-  if (!web_state)
+  if (!web_state) {
     return false;
+  }
 
   OverlayRequest* request = OverlayRequestQueue::FromWebState(
                                 web_state, OverlayModality::kWebContentArea)
                                 ->front_request();
-  if (!request)
+  if (!request) {
     return false;
+  }
 
   HTTPAuthOverlayRequestConfig* config =
       request->GetConfig<HTTPAuthOverlayRequestConfig>();
-  if (!config)
+  if (!config) {
     return false;
+  }
 
   return config->url().host() != web_state->GetLastCommittedURL().host();
 }
@@ -88,8 +91,9 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 #pragma mark - Accessors
 
 - (void)setConsumer:(id<BrowserContainerConsumer>)consumer {
-  if (_consumer == consumer)
+  if (_consumer == consumer) {
     return;
+  }
   _consumer = consumer;
   [self updateConsumer];
 }
@@ -128,8 +132,9 @@ bool IsActiveOverlayRequestForNonCommittedHttpAuthentication(
 
 // Updates the consumer based on the current state of the mediator.
 - (void)updateConsumer {
-  if (!self.consumer)
+  if (!self.consumer) {
     return;
+  }
   [self.consumer setContentBlocked:self.showingAuthDialogForNonCommittedURL];
 }
 

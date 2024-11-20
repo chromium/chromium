@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
 
 @implementation EditMenuAlertDelegateAction
 - (instancetype)initWithTitle:(NSString*)title

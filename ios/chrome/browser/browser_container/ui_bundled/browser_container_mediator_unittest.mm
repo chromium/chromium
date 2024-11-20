@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/browser_container_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
@@ -15,13 +16,12 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 // BrowserContainerConsumer for use in tests.
 @interface FakeBrowserContainerConsumer : NSObject <BrowserContainerConsumer>
