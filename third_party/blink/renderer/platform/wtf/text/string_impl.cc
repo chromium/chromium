@@ -1719,12 +1719,8 @@ bool Equal(const StringImpl* a, base::span<const UChar> b) {
 }
 
 template <typename StringType>
-bool EqualInternal(const StringType* a, const LChar* b) {
-  if (!a)
-    return !b;
-  if (!b)
-    return !a;
-
+bool EqualToCString(const StringType* a, const LChar* b) {
+  DCHECK(b);
   wtf_size_t length = a->length();
 
   if (a->Is8Bit()) {
@@ -1753,12 +1749,15 @@ bool EqualInternal(const StringType* a, const LChar* b) {
   return !b[length];
 }
 
-bool Equal(const StringImpl* a, const LChar* b) {
-  return EqualInternal(a, b);
+bool EqualToCString(const StringImpl* a, const char* latin1) {
+  if (!a) {
+    return !latin1;
+  }
+  return EqualToCString(a, reinterpret_cast<const LChar*>(latin1));
 }
 
-bool Equal(const StringView& a, const LChar* b) {
-  return EqualInternal(&a, b);
+bool EqualToCString(const StringView& a, const char* latin1) {
+  return EqualToCString(&a, reinterpret_cast<const LChar*>(latin1));
 }
 
 bool EqualNonNull(const StringImpl* a, const StringImpl* b) {

@@ -808,8 +808,9 @@ bool IsValidEnum(const String& value,
                  ExceptionState& exception_state) {
   for (size_t i = 0; i < length; ++i) {
     // Avoid the strlen inside String::operator== (because of the StringView).
-    if (WTF::Equal(value.Impl(), valid_values[i]))
+    if (WTF::EqualToCString(value.Impl(), valid_values[i])) {
       return true;
+    }
   }
   exception_state.ThrowTypeError("The provided value '" + value +
                                  "' is not a valid enum value of type " +

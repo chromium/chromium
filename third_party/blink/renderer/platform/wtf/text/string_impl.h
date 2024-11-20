@@ -644,32 +644,18 @@ ALWAYS_INLINE size_t StringImpl::AllocationSize<LChar>(wtf_size_t length) {
   return base::CheckAdd(sizeof(StringImpl), length).ValueOrDie();
 }
 
-WTF_EXPORT bool Equal(const StringView& a, const LChar* b);
-inline bool Equal(const StringView& a, const char* b) {
-  return Equal(a, reinterpret_cast<const LChar*>(b));
-}
-inline bool Equal(const char* a, const StringView& b) {
-  return Equal(b, reinterpret_cast<const LChar*>(a));
-}
-inline bool Equal(const LChar* a, const StringView& b) {
-  return Equal(b, a);
-}
+// EqualToCString() can be faster than operator== because operator== creates
+// a StringView, and it requires strlen(latin1).
+//
+// `latin1` must not be nullptr, and should point Latin-1 characters.
+WTF_EXPORT bool EqualToCString(const StringView& a, const char* latin1);
+WTF_EXPORT bool EqualToCString(const StringImpl* a, const char* latin1);
 
 WTF_EXPORT bool Equal(const StringImpl*, const StringImpl*);
-WTF_EXPORT bool Equal(const StringImpl*, const LChar*);
-inline bool Equal(const StringImpl* a, const char* b) {
-  return Equal(a, reinterpret_cast<const LChar*>(b));
-}
 WTF_EXPORT bool Equal(const StringImpl*, base::span<const LChar>);
 WTF_EXPORT bool Equal(const StringImpl*, base::span<const UChar>);
 inline bool Equal(const StringImpl* a, base::span<const char> b) {
   return Equal(a, base::as_bytes(b));
-}
-inline bool Equal(const LChar* a, StringImpl* b) {
-  return Equal(b, a);
-}
-inline bool Equal(const char* a, StringImpl* b) {
-  return Equal(b, reinterpret_cast<const LChar*>(a));
 }
 WTF_EXPORT bool EqualNonNull(const StringImpl* a, const StringImpl* b);
 
