@@ -1,0 +1,11 @@
+[
+  {
+    "id" : 1,
+    "priority": 1,
+    "action" : { "type" : "block" },
+    "condition" : {
+      "urlFilter" : "something-else.com",
+      "resourceTypes" : ["main_frame"]
+    }
+  }
+]

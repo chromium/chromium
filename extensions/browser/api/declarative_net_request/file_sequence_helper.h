@@ -94,7 +94,9 @@ class RulesetInfo {
 
 // Helper to pass information related to the ruleset being loaded.
 struct LoadRequestData {
-  LoadRequestData(ExtensionId extension_id, base::Version extension_version);
+  LoadRequestData(ExtensionId extension_id,
+                  base::Version extension_version,
+                  LoadRulesetRequestSource request_source);
   LoadRequestData(const LoadRequestData&) = delete;
   LoadRequestData(LoadRequestData&&);
 
@@ -108,6 +110,9 @@ struct LoadRequestData {
 
   // The version of the extension that is trying to load `rulesets`.
   base::Version extension_version;
+
+  // The source which requested this ruleset load.
+  LoadRulesetRequestSource request_source;
 
   // The rulesets that are being loaded.
   std::vector<RulesetInfo> rulesets;

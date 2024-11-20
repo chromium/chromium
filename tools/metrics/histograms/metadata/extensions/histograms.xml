@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DeclarativeNetRequestLoadRulesetRequestSource">
+  <variant name="OnExtensionLoad"
+      summary="Ruleset load triggered when the extension was loaded."/>
+  <variant name="UpdateDynamicRules"
+      summary="Ruleset load was triggered when the extension made an API call
+               to update its dynamic rules."/>
+  <variant name="UpdateEnabledStaticRulesets"
+      summary="Ruleset load was triggered when the extension made an API call
+               to update its set of enabled static rulesets."/>
+</variants>
+
 <variants name="DeclarativeNetRequestRegexRulesetSize">
   <variant name="15To100Rules" summary="15 to 100 regex rules"/>
   <variant name="100To500Rules" summary="100 to 500 regex rules"/>
@@ -1121,6 +1132,20 @@ This is emitted for two scenarios when a worker may be unregistered:
     Logs whether a regex rule wasn't indexed since it exceeded the per-rule
     memory limit. Emitted for every regex rule an extension adds.
   </summary>
+</histogram>
+
+<histogram
+    name="Extensions.DeclarativeNetRequest.LoadRulesetExtensionVersionMatch.{LoadRulesetRequestSource}"
+    enum="BooleanSuccess" expires_after="2025-11-30">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>src/extensions/OWNERS</owner>
+  <summary>
+    Emitted when an extension ruleset has finished loading for the Declarative
+    Net Request API. Records if the extension version at the start of the
+    ruleset load matches the version at the end.
+  </summary>
+  <token key="LoadRulesetRequestSource"
+      variants="DeclarativeNetRequestLoadRulesetRequestSource"/>
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.LoadRulesetResult"

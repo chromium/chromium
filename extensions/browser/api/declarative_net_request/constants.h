@@ -173,6 +173,20 @@ enum class RulesetMatchingStage {
   kOnHeadersReceived,
 };
 
+// Specifies what triggered a ruleset load for an extension.
+enum class LoadRulesetRequestSource {
+  // The ruleset load was triggered when the extension is loaded. This will load
+  // enabled static rulesets and dynamic rules.
+  kOnExtensionLoad = 0,
+
+  // The ruleset load was triggered by an updateEnabledRulesets API call, which
+  // enabled a disabled ruleset.
+  kUpdateEnabledStaticRulesets = 1,
+
+  // The ruleset load was triggered by an updateDynamicRules API call.
+  kUpdateDynamicRules = 2,
+};
+
 // Schemes which can be used as part of url transforms.
 extern const char* const kAllowedTransformSchemes[4];
 

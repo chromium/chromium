@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -69,6 +70,28 @@ bool RulesetInfoCompareByID(const RulesetInfo& lhs, const RulesetInfo& rhs) {
 
 void LogLoadRulesetResult(LoadRulesetResult result) {
   UMA_HISTOGRAM_ENUMERATION(kLoadRulesetResultHistogram, result);
+}
+
+void LogLoadRulesetExtensionVersionMatch(LoadRulesetRequestSource source,
+                                         bool extension_version_match) {
+  const char* variant;
+  switch (source) {
+    case LoadRulesetRequestSource::kOnExtensionLoad:
+      variant = "OnExtensionLoad";
+      break;
+    case LoadRulesetRequestSource::kUpdateEnabledStaticRulesets:
+      variant = "UpdateEnabledStaticRulesets";
+      break;
+    case LoadRulesetRequestSource::kUpdateDynamicRules:
+      variant = "UpdateDynamicRules";
+      break;
+  }
+
+  std::string histogram_name = base::StringPrintf(
+      "Extensions.DeclarativeNetRequest.LoadRulesetExtensionVersionMatch.%s",
+      variant);
+
+  base::UmaHistogramBoolean(histogram_name, extension_version_match);
 }
 
 // Returns whether the extension's allocation should be released. This would
@@ -145,6 +168,8 @@ HostPermissionsAlwaysRequired GetHostPermissionsAlwaysRequired(
   return HostPermissionsAlwaysRequired::kTrue;
 }
 
+LoadRulesetThrottleCallback* g_test_throttle_override_ = nullptr;
+
 }  // namespace
 
 // Helper to bridge tasks to FileSequenceHelper. Lives on the UI thread.
@@ -164,13 +189,28 @@ class RulesMonitorService::FileSequenceBridge {
   void LoadRulesets(
       LoadRequestData load_data,
       FileSequenceHelper::LoadRulesetsUICallback ui_callback) const {
+    // Throttle the `ui_callback` if one is set. Otherwise, this is just a
+    // trivial wrapper that immediately runs `ui_callback` with the `load_data`.
+    FileSequenceHelper::LoadRulesetsUICallback callback_wrapper =
+        base::BindOnce(
+            [](FileSequenceHelper::LoadRulesetsUICallback original_callback,
+               LoadRequestData load_data) {
+              if (g_test_throttle_override_) {
+                g_test_throttle_override_->Run(base::BindOnce(
+                    std::move(original_callback), std::move(load_data)));
+              } else {
+                std::move(original_callback).Run(std::move(load_data));
+              }
+            },
+            std::move(ui_callback));
+
     // base::Unretained is safe here because we trigger the destruction of
     // |file_sequence_helper_| on |file_task_runner_| from our destructor. Hence
     // it is guaranteed to be alive when |load_ruleset_task| is run.
     base::OnceClosure load_ruleset_task =
         base::BindOnce(&FileSequenceHelper::LoadRulesets,
                        base::Unretained(file_sequence_helper_.get()),
-                       std::move(load_data), std::move(ui_callback));
+                       std::move(load_data), std::move(callback_wrapper));
     file_task_runner_->PostTask(FROM_HERE, std::move(load_ruleset_task));
   }
 
@@ -306,6 +346,14 @@ RulesMonitorService* RulesMonitorService::Get(
     content::BrowserContext* browser_context) {
   return BrowserContextKeyedAPIFactory<RulesMonitorService>::Get(
       browser_context);
+}
+
+// static
+base::AutoReset<LoadRulesetThrottleCallback*>
+RulesMonitorService::SetLoadRulesetThrottleCallbackForTesting(
+    LoadRulesetThrottleCallback* throttle) {
+  base::AutoReset reset(&g_test_throttle_override_, throttle);
+  return reset;
 }
 
 void RulesMonitorService::UpdateDynamicRules(
@@ -483,7 +531,8 @@ void RulesMonitorService::OnExtensionLoaded(
     return;
   }
 
-  LoadRequestData load_data(extension->id(), extension->version());
+  LoadRequestData load_data(extension->id(), extension->version(),
+                            LoadRulesetRequestSource::kOnExtensionLoad);
   int expected_ruleset_checksum;
 
   PrefsHelper helper(*prefs_);
@@ -635,7 +684,8 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     return;
   }
 
-  LoadRequestData data(extension_id, extension->version());
+  LoadRequestData data(extension_id, extension->version(),
+                       LoadRulesetRequestSource::kUpdateDynamicRules);
 
   // Calculate available shared rule limits. These limits won't be affected by
   // another simultaneous api call since we ensure that for a given extension,
@@ -753,7 +803,9 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
     return;
   }
 
-  LoadRequestData load_data(extension_id, extension->version());
+  LoadRequestData load_data(
+      extension_id, extension->version(),
+      LoadRulesetRequestSource::kUpdateEnabledStaticRulesets);
   int expected_ruleset_checksum = -1;
   PrefsHelper helper(*prefs_);
   for (const RulesetID& id_to_enable : ids_to_enable) {
@@ -862,7 +914,7 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   // this block to be hit when the extension updates.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension || (load_data.extension_version != extension->version())) {
+  if (!extension || load_data.extension_version != extension->version()) {
     return;
   }
 
@@ -975,10 +1027,12 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
   LogMetricsAndUpdateChecksumsIfNeeded(load_data);
 
   // It's possible that the extension has been disabled since the initial
-  // request. If it's disabled, return early.
+  // request, or the extension was updated to a new version while the ruleset
+  // for the old version was still loading (and is thus stale). In either case,
+  // do nothing.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension) {
+  if (!extension || load_data.extension_version != extension->version()) {
     // Still dispatch the |callback|, even though it's probably a no-op.
     std::move(callback).Run(std::nullopt /* error */);
     return;
@@ -1101,10 +1155,12 @@ void RulesMonitorService::OnDynamicRulesUpdated(
   std::move(callback).Run(std::move(error));
 
   // It's possible that the extension has been disabled since the initial update
-  // rule request. If it's disabled, do nothing.
+  // rule request, or the extension was updated to a new version while the
+  // ruleset for the old version was still loading (and is thus stale). In
+  // either case, do nothing.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension) {
+  if (!extension || load_data.extension_version != extension->version()) {
     return;
   }
 
@@ -1169,7 +1225,21 @@ void RulesMonitorService::LogMetricsAndUpdateChecksumsIfNeeded(
 
   // The extension may have been uninstalled by this point. Return early if
   // that's the case.
-  if (!extension_registry_->GetInstalledExtension(load_data.extension_id)) {
+  const Extension* extension =
+      extension_registry_->GetInstalledExtension(load_data.extension_id);
+  if (!extension) {
+    return;
+  }
+
+  bool do_extension_versions_match =
+      extension->version() == load_data.extension_version;
+  LogLoadRulesetExtensionVersionMatch(load_data.request_source,
+                                      do_extension_versions_match);
+
+  // If the extension version which triggered the load does not match the
+  // current extension version, then the result of the load is considered stale
+  // and invalid. In this case, do not update checksums.
+  if (!do_extension_versions_match) {
     return;
   }
 
