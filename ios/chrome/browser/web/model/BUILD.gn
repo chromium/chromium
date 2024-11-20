@@ -264,7 +264,6 @@ source_set("web_internal") {
     "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:buildflags",
-    "//components/translate/core/browser",
     "//components/translate/ios/browser",
     "//components/url_formatter",
     "//components/variations",

@@ -28,8 +28,6 @@
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "components/flags_ui/pref_service_flags_storage.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/language/core/browser/language_usage_metrics.h"
-#import "components/language/core/browser/pref_names.h"
 #import "components/memory_system/initializer.h"
 #import "components/memory_system/parameters.h"
 #import "components/metrics/call_stacks/call_stack_profile_builder.h"
@@ -44,8 +42,6 @@
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/sampling_profiler/process_type.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/translate/core/browser/translate_download_manager.h"
-#import "components/translate/core/browser/translate_metrics_logger_impl.h"
 #import "components/variations/field_trial_config/field_trial_util.h"
 #import "components/variations/service/variations_service.h"
 #import "components/variations/synthetic_trial_registry.h"
@@ -70,7 +66,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
 #import "ios/chrome/common/channel_info.h"
@@ -82,6 +77,7 @@
 #import "net/http/http_stream_factory.h"
 #import "net/url_request/url_request.h"
 #import "rlz/buildflags/buildflags.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -324,11 +320,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // Load all Profiles.
   profile_manager->LoadProfiles();
 
-  // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
-  // initialize for every profile.
-  std::vector<ProfileIOS*> profiles = profile_manager->GetLoadedProfiles();
-  ProfileIOS* last_used_profile = profiles.at(0);
-
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.
   // TODO(crbug.com/41356264): Investigate whether metrics recording can be
@@ -358,6 +349,11 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
 #if BUILDFLAG(ENABLE_RLZ)
+  // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
+  // initialize for every profile.
+  std::vector<ProfileIOS*> profiles = profile_manager->GetLoadedProfiles();
+  ProfileIOS* last_used_profile = profiles.at(0);
+
   // Init the RLZ library. This just schedules a task on the file thread to be
   // run sometime later. If this is the first run we record the installation
   // event.
@@ -375,12 +371,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(ENABLE_RLZ)
 
   TranslateServiceIOS::Initialize();
-  language::LanguageUsageMetrics::RecordAcceptLanguages(
-      last_used_profile->GetPrefs()->GetString(
-          language::prefs::kAcceptLanguages));
-  translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
-      ChromeIOSTranslateClient::CreateTranslatePrefs(
-          last_used_profile->GetPrefs()));
 
   // Request new variations seed information from server.
   variations::VariationsService* variations_service =

@@ -20,7 +20,10 @@
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/language/core/browser/language_usage_metrics.h"
+#import "components/language/core/browser/pref_names.h"
 #import "components/prefs/pref_service.h"
+#import "components/translate/core/browser/translate_metrics_logger_impl.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
@@ -68,6 +71,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -460,6 +464,12 @@ void FlushCookieStoreOnIOThread(
   DCHECK(_state.profile);
   ProfileIOS* profile = _state.profile;
   PrefService* prefs = profile->GetPrefs();
+
+  // Record initial translation metrics.
+  language::LanguageUsageMetrics::RecordAcceptLanguages(
+      prefs->GetString(language::prefs::kAcceptLanguages));
+  translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+      ChromeIOSTranslateClient::CreateTranslatePrefs(prefs));
 
   search_engines::UpdateSearchEngineCountryCodeIfNeeded(prefs);
 
