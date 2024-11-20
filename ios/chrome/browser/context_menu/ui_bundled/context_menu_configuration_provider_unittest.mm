@@ -189,6 +189,15 @@ TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
       GetContextMenuParamsWithImageUrl(kImageUrl);
   UIMenu* menu = GetContextMenuForParams(paramsWithImage);
 
+  // Test that there is a UImenu within the image context menu.
+  NSUInteger indexOfFoundSubMenu =
+      [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menuElement,
+                                                    NSUInteger, BOOL*) {
+        return [menuElement isKindOfClass:[UIMenu class]];
+      }];
+  ASSERT_TRUE(indexOfFoundSubMenu != NSNotFound);
+
+  UIMenu* subMenu = (UIMenu*)menu.children[indexOfFoundSubMenu];
   BrowserActionFactory* actionFactory = GetBrowserActionFactory();
   UIMenuElement* expectedMenuElement =
       [actionFactory actionToSaveToPhotosWithImageURL:GURL(kImageUrl)
@@ -196,15 +205,15 @@ TEST_F(ContextMenuConfigurationProviderTest, HasSaveImageToPhotosMenuElement) {
                                              webState:GetActiveWebState()
                                                 block:nil];
 
-  // Test that there is an element with the expected title in the menu.
+  // Test that there is an element with the expected title in the submenu.
   NSUInteger indexOfFoundMenuElement =
-      [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menuElement,
-                                                    NSUInteger, BOOL*) {
+      [subMenu.children indexOfObjectPassingTest:^BOOL(
+                            UIMenuElement* menuElement, NSUInteger, BOOL*) {
         return [menuElement.title isEqualToString:expectedMenuElement.title];
       }];
   ASSERT_TRUE(indexOfFoundMenuElement != NSNotFound);
 
-  UIMenuElement* foundMenuElement = menu.children[indexOfFoundMenuElement];
+  UIMenuElement* foundMenuElement = subMenu.children[indexOfFoundMenuElement];
   // Test that the element has the expected subtitle.
   EXPECT_EQ(foundMenuElement.subtitle, expectedMenuElement.subtitle);
   // Test that the element has the expected image.
@@ -229,7 +238,7 @@ TEST_F(ContextMenuConfigurationProviderTest, HasShareInWebContextMenuElement) {
 
   ASSERT_NE(expected_menu_element, nil);
 
-  // Test that there is an element with the expected title in the menu.
+  // Test that there is a UIMenu with the expected title in the menu.
   NSUInteger index_of_found_menu_element =
       [menu.children indexOfObjectPassingTest:^BOOL(UIMenuElement* menu_element,
                                                     NSUInteger, BOOL*) {

@@ -242,17 +242,17 @@ TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
   mediator.accountSelectionConsumer = fake_consumer;
 
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
-  EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
+  EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
   profile_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_b_.gaiaID));
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
-  EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
+  EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
   profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
-  EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
+  EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
 
   [mediator disconnect];
 }
@@ -275,20 +275,20 @@ TEST_F(SaveToPhotosSettingsMediatorTest,
   mediator.accountSelectionConsumer = fake_consumer;
 
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
-  EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
+  EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
   FakeSystemIdentityManager* system_identity_manager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->ForgetIdentityFromOtherApplication(fake_identity_b_);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
-  EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
+  EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(1U, fake_consumer.identityConfigurators.count);
 
   fake_identity_b_ = [FakeSystemIdentity fakeIdentity3];
   system_identity_manager->AddIdentity(fake_identity_b_);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
-  EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
+  EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(2U, fake_consumer.identityConfigurators.count);
 
   [mediator disconnect];

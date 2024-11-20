@@ -131,7 +131,7 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   EXPECT_EQ(IdentityViewStyleConsistency,
             identity_button_item.identityViewStyle);
   CheckSwitchCellStateAndTextWithId(
-      YES, IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME, 0, 1);
+      YES, IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME, 0, 1);
 
   // Test that disabling and re-enabling the switch updates the mutator.
   EXPECT_FALSE(save_to_photos_mutator_.selectedIdentityGaiaID);
@@ -142,11 +142,11 @@ TEST_F(DownloadsSettingsTableViewControllerTest,
   switchCell.switchView.on = NO;
   [switchCell.switchView
       sendActionsForControlEvents:UIControlEventValueChanged];
-  EXPECT_FALSE(save_to_photos_mutator_.askWhichAccountToUseEveryTime);
+  EXPECT_TRUE(save_to_photos_mutator_.askWhichAccountToUseEveryTime);
   switchCell.switchView.on = YES;
   [switchCell.switchView
       sendActionsForControlEvents:UIControlEventValueChanged];
-  EXPECT_TRUE(save_to_photos_mutator_.askWhichAccountToUseEveryTime);
+  EXPECT_FALSE(save_to_photos_mutator_.askWhichAccountToUseEveryTime);
 
   // Test that tapping the Identity button calls the action delegate.
   EXPECT_FALSE(action_delegate_.selectSaveToPhotosAccountCalled);

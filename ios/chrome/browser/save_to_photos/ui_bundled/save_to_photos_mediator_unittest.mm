@@ -245,8 +245,6 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
 
   // Expect that the mediator will show the account picker with this
   // configuration.
-  NSString* expected_title_text =
-      l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_TITLE);
   NSString* expected_body_text =
       l10n_util::GetNSStringF(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_BODY,
                               base::SysNSStringToUTF16(GetFakeImageName()),
@@ -254,12 +252,11 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
   NSString* expected_submit_button_title =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_SUBMIT);
   NSString* expected_ask_every_time_switch_label_text = l10n_util::GetNSString(
-      IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
+      IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_THIS_ACCOUNT_EVERY_TIME);
   OCMExpect([mock_save_to_photos_mediator_delegate
       showAccountPickerWithConfiguration:[OCMArg checkWithBlock:^(
                                                      AccountPickerConfiguration*
                                                          configuration) {
-        EXPECT_NSEQ(expected_title_text, configuration.titleText);
         EXPECT_NSEQ(expected_body_text, configuration.bodyText);
         EXPECT_NSEQ(expected_submit_button_title,
                     configuration.submitButtonTitle);
