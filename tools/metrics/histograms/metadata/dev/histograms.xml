@@ -360,16 +360,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records which Lighthouse mode was used to audit the page.</summary>
 </histogram>
 
-<histogram name="DevTools.ManifestSectionSelected"
-    enum="DevToolsManifestSection" expires_after="2024-12-31">
-  <owner>bmeurer@google.com</owner>
-  <owner>edgedevtools@microsoft.com</owner>
-  <summary>
-    Records when certain items of the Manifest dropdown submenu in the
-    Application Tool are selected.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.NetworkPanelResponsePreviewOpened"
     enum="DevToolsMediaType" expires_after="2025-05-04">
   <owner>bmeurer@google.com</owner>

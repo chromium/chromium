@@ -1396,15 +1396,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="3" label="LegacyNavigation"/>
 </enum>
 
-<enum name="DevToolsManifestSection">
-  <int value="0" label="Other section selected"/>
-  <int value="1" label="Identity section selected"/>
-  <int value="2" label="Presentation section selected"/>
-  <int value="3" label="Protocol Handlers section selected"/>
-  <int value="4" label="Icons section selected"/>
-  <int value="5" label="Window Controls Overlay section selected"/>
-</enum>
-
 <enum name="DevToolsMediaType">
   <int value="0" label="Unknown"/>
   <int value="1" label="text/javascript (Deprecated)"/>
