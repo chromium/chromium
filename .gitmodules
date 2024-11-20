@@ -9,6 +9,10 @@
 	path = chrome/installer/mac/third_party/xz/xz
 	url = https://chromium.googlesource.com/chromium/deps/xz
 	gclient-condition = checkout_mac
+[submodule "chrome/release_scripts"]
+	path = chrome/release_scripts
+	url = https://chrome-internal.googlesource.com/chrome/tools/release/scripts
+	gclient-condition = checkout_chrome_release_scripts
 [submodule "third_party/libc++/src"]
 	path = third_party/libc++/src
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx

@@ -120,6 +120,10 @@ vars = {
   # custom_vars.
   'checkout_src_internal': False,
 
+  # Condition used by a subset of official Chrome release builders.
+  # By default, do not check out release_scripts.
+  'checkout_chrome_release_scripts': False,
+
   # Checkout legacy src_internal. This variable is ignored if
   # checkout_src_internal is set as false.
   'checkout_legacy_src_internal': True,
@@ -1095,6 +1099,11 @@ deps = {
   'src/chrome/installer/mac/third_party/xz/xz': {
       'url': Var('chromium_git') + '/chromium/deps/xz.git' + '@' + '10d236393a338a55830db628356f022a91978b61',
       'condition': 'checkout_mac',
+  },
+
+  'src/chrome/release_scripts': {
+      'url': Var('chrome_git') + '/chrome/tools/release/scripts' + '@' + '3a84659ad339f985e937eb59f70e4a3a91f05c32',
+      'condition': 'checkout_chrome_release_scripts',
   },
 
   'src/third_party/libc++/src':

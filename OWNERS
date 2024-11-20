@@ -42,6 +42,7 @@ per-file chromeos/ash/resources/internal=*
 per-file chromeos/assistant/internal=*
 per-file clank=*
 per-file content/test/data/plugin=*
+per-file chrome/release_scripts=*
 per-file docs/website=*
 per-file google_apis/internal=*
 per-file internal=*
