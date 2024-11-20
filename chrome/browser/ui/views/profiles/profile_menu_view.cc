@@ -1105,7 +1105,9 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
   AddFeatureButton(signout_button_text,
                    base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
                                        base::Unretained(this)),
-                   kSignOutIcon);
+                   switches::IsImprovedSigninUIOnDesktopEnabled()
+                       ? kLogoutIcon
+                       : kSignOutIcon);
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
