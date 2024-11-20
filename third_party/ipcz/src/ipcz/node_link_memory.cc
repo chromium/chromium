@@ -387,10 +387,6 @@ void NodeLinkMemory::WaitForBufferAsync(
   buffer_pool_.WaitForBufferAsync(id, std::move(callback));
 }
 
-void NodeLinkMemory::NotifyLinkDisconnected() {
-  buffer_pool_.DropPendingBufferCallbacks();
-}
-
 bool NodeLinkMemory::CanExpandBlockCapacity(size_t block_size) {
   return allow_memory_expansion_for_parcel_data_ &&
          buffer_pool_.GetTotalBlockCapacity(block_size) <

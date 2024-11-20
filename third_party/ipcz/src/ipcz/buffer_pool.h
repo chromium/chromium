@@ -84,14 +84,9 @@ class BufferPool {
 
   // Runs `callback` as soon as the identified buffer is added to the underlying
   // BufferPool. If the buffer is already present here, `callback` is run
-  // immediately. If this BufferPool's NodeLink is disconnected before the
-  // buffer becomes available, `callback` is destroyed and never run.
+  // immediately.
   using WaitForBufferCallback = std::function<void()>;
   void WaitForBufferAsync(BufferId id, WaitForBufferCallback callback);
-
-  // Purges all pending buffer callbacks enqueued by WaitForBufferAsync(),
-  // without invoking them.
-  void DropPendingBufferCallbacks();
 
  private:
   absl::Mutex mutex_;
@@ -106,9 +101,8 @@ class BufferPool {
   BlockAllocatorPoolMap block_allocator_pools_ ABSL_GUARDED_BY(mutex_);
 
   // Callbacks to be invoked when an identified buffer becomes available.
-  using BufferCallbackMap =
-      absl::flat_hash_map<BufferId, std::vector<WaitForBufferCallback>>;
-  BufferCallbackMap buffer_callbacks_ ABSL_GUARDED_BY(mutex_);
+  absl::flat_hash_map<BufferId, std::vector<WaitForBufferCallback>>
+      buffer_callbacks_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

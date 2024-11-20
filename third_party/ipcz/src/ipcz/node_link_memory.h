@@ -164,11 +164,6 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   void WaitForBufferAsync(BufferId id,
                           BufferPool::WaitForBufferCallback callback);
 
-  // Called when the corresponding NodeLink has had its transport disconnected.
-  // This should clean up any resources that might have been retained pending
-  // future transport activity.
-  void NotifyLinkDisconnected();
-
  private:
   struct PrimaryBuffer;
 

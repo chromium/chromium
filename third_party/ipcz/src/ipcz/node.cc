@@ -126,14 +126,8 @@ IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
 
   auto transport =
       MakeRefCounted<DriverTransport>(DriverObject(driver_, driver_transport));
-  IpczResult result = NodeConnector::ConnectNode(
-      WrapRefCounted(this), transport, flags, routers,
-      [flags, node = WrapRefCounted(this)](Ref<NodeLink> link) {
-        const bool is_broker = flags & IPCZ_CONNECT_NODE_TO_BROKER;
-        if (!link && is_broker) {
-          node->NotifyBrokerLinkDropped();
-        }
-      });
+  IpczResult result = NodeConnector::ConnectNode(WrapRefCounted(this),
+                                                 transport, flags, routers);
   if (result != IPCZ_RESULT_OK) {
     // On failure the caller retains ownership of `driver_transport`. Release
     // it here so it doesn't get closed when `transport` is destroyed.
@@ -517,7 +511,13 @@ void Node::DropConnection(const NodeLink& connection_link) {
   link->Deactivate();
 
   if (lost_broker) {
-    NotifyBrokerLinkDropped();
+    // Break all connections if the broker is lost. In practice we should only
+    // need to break connections which were introduced by the lost broker, but
+    // there's less risk of weird future inconsistencies if we just say that as
+    // a rule, primary broker disconnection serves as a sort of "reset" for a
+    // node. The node can be re-connected to a broker and continue operating
+    // normally from there.
+    ShutDown();
   } else {
     for (auto& target : pending_introductions) {
       NotifyIntroductionFailed(*link, target);
@@ -588,12 +588,10 @@ bool Node::HandleIndirectIntroductionRequest(NodeLink& from_node_link,
 
 void Node::ShutDown() {
   ConnectionMap connections;
-  std::vector<BrokerLinkCallback> broker_link_callbacks;
   {
     absl::MutexLock lock(&mutex_);
     connections_.swap(connections);
     broker_link_.reset();
-    broker_link_callbacks.swap(broker_link_callbacks_);
     allocation_delegate_link_.reset();
     other_brokers_.clear();
     assigned_name_ = {};
@@ -658,16 +656,6 @@ void Node::IntroduceRemoteNodes(NodeLink& first, NodeLink& second) {
       first_name, LinkSide::kB, first.remote_node_type(),
       first.remote_protocol_version(), first.remote_features(),
       std::move(transport_for_second_node), std::move(buffer.memory));
-}
-
-void Node::NotifyBrokerLinkDropped() {
-  // Break all connections if the broker is lost. In practice we should only
-  // need to break connections which were introduced by the lost broker, but
-  // there's less risk of weird future inconsistencies if we just say that as
-  // a rule, primary broker disconnection serves as a sort of "reset" for a
-  // node. The node can be re-connected to a broker and continue operating
-  // normally from there.
-  ShutDown();
 }
 
 }  // namespace ipcz

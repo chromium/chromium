@@ -820,13 +820,9 @@ void NodeLink::OnTransportError() {
 
 void NodeLink::HandleTransportError() {
   SublinkMap sublinks;
-  SubparcelTrackerMap subparcel_trackers;
-  ReferralCallbackMap pending_referrals;
   {
     absl::MutexLock lock(&mutex_);
     sublinks.swap(sublinks_);
-    subparcel_trackers.swap(subparcel_trackers_);
-    pending_referrals.swap(pending_referrals_);
   }
 
   for (auto& [id, sublink] : sublinks) {
@@ -836,13 +832,8 @@ void NodeLink::HandleTransportError() {
     sublink.receiver->NotifyLinkDisconnected(*sublink.router_link);
   }
 
-  for (auto& [id, callback] : pending_referrals) {
-    callback(/*link=*/nullptr, /*num_portals=*/0);
-  }
-
   Ref<NodeLink> self = WrapRefCounted(this);
   node_->DropConnection(*this);
-  memory_->NotifyLinkDisconnected();
 }
 
 void NodeLink::WaitForParcelFragmentToResolve(

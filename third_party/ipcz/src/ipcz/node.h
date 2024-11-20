@@ -187,9 +187,6 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // introduce the remote node on `first` to the remote node on `second`.
   void IntroduceRemoteNodes(NodeLink& first, NodeLink& second);
 
-  // Called when dropping or failing to establish a broker link.
-  void NotifyBrokerLinkDropped();
-
   const Type type_;
   const IpczDriver& driver_;
   const IpczCreateNodeOptions options_;
