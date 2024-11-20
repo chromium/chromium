@@ -4,10 +4,12 @@
 
 source_set("fullscreen") {
   sources = [ "toolbar_ui.h" ]
-  deps = []
+  deps = [ "//ios/chrome/browser/ui/toolbar/fullscreen" ]
 }
 
 source_set("fullscreen_broadcasting_util") {
   sources = [ "toolbar_ui_broadcasting_util.h" ]
-  deps = []
+  deps = [
+    "//ios/chrome/browser/ui/toolbar/fullscreen:fullscreen_broadcasting_util",
+  ]
 }

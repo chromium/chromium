@@ -4,5 +4,5 @@
 
 source_set("constants") {
   sources = [ "toolbar_constants.h" ]
-  deps = []
+  deps = [ "//ios/chrome/browser/ui/toolbar/public:constants" ]
 }
