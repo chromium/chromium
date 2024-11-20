@@ -53,7 +53,7 @@ void InstalledWebappGeolocationBridge::StopUpdates() {
   }
 }
 
-void InstalledWebappGeolocationBridge::SetHighAccuracy(bool high_accuracy) {
+void InstalledWebappGeolocationBridge::SetHighAccuracyHint(bool high_accuracy) {
   high_accuracy_ = high_accuracy;
 
   if (position_override_ && position_override_->is_position() &&

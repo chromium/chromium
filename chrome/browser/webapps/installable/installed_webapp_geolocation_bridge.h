@@ -60,7 +60,7 @@ class InstalledWebappGeolocationBridge : public device::mojom::Geolocation {
 
  private:
   // device::mojom::Geolocation:
-  void SetHighAccuracy(bool high_accuracy) override;
+  void SetHighAccuracyHint(bool high_accuracy) override;
   void QueryNextPosition(QueryNextPositionCallback callback) override;
 
   void OnConnectionError();

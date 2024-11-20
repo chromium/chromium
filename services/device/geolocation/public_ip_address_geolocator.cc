@@ -54,7 +54,7 @@ void PublicIpAddressGeolocator::QueryNextPosition(
 }
 
 // Low/high accuracy toggle is ignored by this implementation.
-void PublicIpAddressGeolocator::SetHighAccuracy(bool /* high_accuracy */) {}
+void PublicIpAddressGeolocator::SetHighAccuracyHint(bool high_accuracy) {}
 
 void PublicIpAddressGeolocator::OnPositionUpdate(
     mojom::GeopositionResultPtr result) {

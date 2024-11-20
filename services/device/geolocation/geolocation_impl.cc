@@ -68,7 +68,7 @@ void GeolocationImpl::StartListeningForUpdates() {
           high_accuracy_);
 }
 
-void GeolocationImpl::SetHighAccuracy(bool high_accuracy) {
+void GeolocationImpl::SetHighAccuracyHint(bool high_accuracy) {
   high_accuracy_ = high_accuracy;
 
   if (position_override_) {

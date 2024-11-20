@@ -464,8 +464,9 @@ void Geolocation::StartUpdating(GeoNotifier* notifier) {
   updating_ = true;
   if (notifier->Options()->enableHighAccuracy() && !enable_high_accuracy_) {
     enable_high_accuracy_ = true;
-    if (geolocation_.is_bound())
-      geolocation_->SetHighAccuracy(true);
+    if (geolocation_.is_bound()) {
+      geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
+    }
   }
   UpdateGeolocationConnection(notifier);
 }
@@ -503,8 +504,9 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
 
   geolocation_.set_disconnect_handler(WTF::BindOnce(
       &Geolocation::OnGeolocationConnectionError, WrapWeakPersistent(this)));
-  if (enable_high_accuracy_)
-    geolocation_->SetHighAccuracy(true);
+  if (enable_high_accuracy_) {
+    geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
+  }
   QueryNextPosition();
 }
 

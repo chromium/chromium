@@ -130,7 +130,7 @@ TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
           loop.Quit();
       }));
 
-  geolocation_->SetHighAccuracy(true);
+  geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
   loop.Run();
 
   // Clearing interceptor callback to ensure it does not outlive this scope.
@@ -149,7 +149,7 @@ TEST_F(GeolocationServiceUnitTest, DISABLED_GeolocationConfig) {
     run_loop.Run();
   }
 
-  geolocation_->SetHighAccuracy(true);
+  geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
   {
     base::RunLoop run_loop;
     geolocation_config_->IsHighAccuracyLocationBeingCaptured(

@@ -50,7 +50,7 @@ class GeolocationImpl : public mojom::Geolocation {
 
  private:
   // mojom::Geolocation:
-  void SetHighAccuracy(bool high_accuracy) override;
+  void SetHighAccuracyHint(bool high_accuracy) override;
   void QueryNextPosition(QueryNextPositionCallback callback) override;
 
   void OnConnectionError();
