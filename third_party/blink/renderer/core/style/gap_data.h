@@ -78,7 +78,7 @@ class CORE_EXPORT GapData {
   bool IsRepeaterData() const { return value_repeater_ != nullptr; }
 
  private:
-  T value_;
+  T value_ = T();
   Member<ValueRepeater<T>> value_repeater_;
 };
 
