@@ -177,15 +177,11 @@ class WTF_EXPORT StringImpl {
   // caller.
   static scoped_refptr<StringImpl> CreateUninitialized(size_t length,
                                                        base::span<LChar>& data);
-  static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
-                                                       LChar*& data);
   // Create a StringImpl with space for `length` UChar characters. `data` will
   // be the character data allocated, and _must_be_completely_filled_in_ by the
   // caller.
   static scoped_refptr<StringImpl> CreateUninitialized(size_t length,
                                                        base::span<UChar>& data);
-  static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
-                                                       UChar*& data);
 
   wtf_size_t length() const { return length_; }
   bool Is8Bit() const {
@@ -578,6 +574,11 @@ class WTF_EXPORT StringImpl {
                           base::CheckMul(length, sizeof(CharType)))
         .ValueOrDie();
   }
+
+  static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
+                                                       LChar*& data);
+  static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
+                                                       UChar*& data);
 
   scoped_refptr<StringImpl> Replace(UChar pattern,
                                     const LChar* replacement,
