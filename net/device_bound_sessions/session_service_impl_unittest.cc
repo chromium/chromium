@@ -6,7 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
-#include "net/device_bound_sessions/test_util.h"
+#include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context_builder.h"

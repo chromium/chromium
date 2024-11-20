@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
-#define NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
+#ifndef NET_DEVICE_BOUND_SESSIONS_MOCK_SESSION_SERVICE_H_
+#define NET_DEVICE_BOUND_SESSIONS_MOCK_SESSION_SERVICE_H_
 
 #include <string>
 #include <utility>
@@ -12,34 +12,11 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_service.h"
-#include "net/device_bound_sessions/session_store.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace net::device_bound_sessions {
-
-class SessionStoreMock : public SessionStore {
- public:
-  SessionStoreMock();
-  ~SessionStoreMock() override;
-
-  MOCK_METHOD(void, LoadSessions, (LoadSessionsCallback callback), (override));
-  MOCK_METHOD(void,
-              SaveSession,
-              (const SchemefulSite& site, const Session& session),
-              (override));
-  MOCK_METHOD(void,
-              DeleteSession,
-              (const SchemefulSite& site, const Session::Id& session_id),
-              (override));
-  MOCK_METHOD(SessionStore::SessionsMap, GetAllSessions, (), (const, override));
-  MOCK_METHOD(void,
-              RestoreSessionBindingKey,
-              (const SchemefulSite& site,
-               const Session::Id& session_id,
-               RestoreSessionBindingKeyCallback callback),
-              (override));
-};
 
 class SessionServiceMock : public SessionService {
  public:
@@ -80,10 +57,6 @@ class SessionServiceMock : public SessionService {
               (override));
 };
 
-// Return a hard-coded RS256 public key's SPKI bytes and JWK string for testing.
-std::pair<base::span<const uint8_t>, std::string>
-GetRS256SpkiAndJwkForTesting();
-
 }  // namespace net::device_bound_sessions
 
-#endif  // NET_DEVICE_BOUND_SESSIONS_TEST_UTIL_H_
+#endif  // NET_DEVICE_BOUND_SESSIONS_MOCK_SESSION_SERVICE_H_

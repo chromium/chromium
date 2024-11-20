@@ -2,16 +2,52 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/device_bound_sessions/test_util.h"
+#include "net/device_bound_sessions/test_support.h"
 
+#include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace net::device_bound_sessions {
 
-SessionStoreMock::SessionStoreMock() = default;
-SessionStoreMock::~SessionStoreMock() = default;
-SessionServiceMock::SessionServiceMock() = default;
-SessionServiceMock::~SessionServiceMock() = default;
+namespace {
+
+std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
+    const GURL& base_url,
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  if (request.relative_url == "/dbsc_required") {
+    response->AddCustomHeader(
+        "Sec-Session-Registration",
+        "(RS256 "
+        "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
+    return response;
+  } else if (request.relative_url == "/dbsc_register_session") {
+    response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");
+
+    const auto registration_response =
+        base::Value::Dict()
+            .Set("session_identifier", "session_id")
+            .Set("refresh_url",
+                 base_url.Resolve("/dbsc_refresh_session").spec())
+            .Set("credentials",
+                 base::Value::List().Append(base::Value::Dict()
+                                                .Set("type", "cookie")
+                                                .Set("name", "auth_cookie")
+                                                .Set("attributes", "")));
+
+    std::optional<std::string> json = base::WriteJson(registration_response);
+    EXPECT_TRUE(json.has_value());
+    response->set_content(*json);
+    return response;
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 std::pair<base::span<const uint8_t>, std::string>
 GetRS256SpkiAndJwkForTesting() {
@@ -58,6 +94,11 @@ GetRS256SpkiAndJwkForTesting() {
   base::ReplaceFirstSubstringAfterOffset(&jwk, 0, "<n>", kRsaN);
 
   return {kSpki, jwk};
+}
+
+EmbeddedTestServer::HandleRequestCallback GetTestRequestHandler(
+    const GURL& base_url) {
+  return base::BindRepeating(&RequestHandler, base_url);
 }
 
 }  // namespace net::device_bound_sessions

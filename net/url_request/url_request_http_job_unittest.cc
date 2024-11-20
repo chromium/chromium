@@ -71,8 +71,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "net/device_bound_sessions/mock_session_service.h"
 #include "net/device_bound_sessions/session_service.h"
-#include "net/device_bound_sessions/test_util.h"
 #endif
 
 using net::test::IsError;

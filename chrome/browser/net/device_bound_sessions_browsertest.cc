@@ -14,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/base/features.h"
 #include "net/device_bound_sessions/session_key.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "net/test/embedded_test_server/http_response.h"
 
 using net::device_bound_sessions::SessionKey;
@@ -49,45 +50,15 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest {
          unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
         {});
+
+    EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
     embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&DeviceBoundSessionBrowserTest::RequestHandler,
-                            base::Unretained(this)));
-    EXPECT_TRUE(embedded_test_server()->Start());
+        net::device_bound_sessions::GetTestRequestHandler(
+            embedded_test_server()->base_url()));
+    embedded_test_server()->StartAcceptingConnections();
   }
 
  private:
-  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
-      const net::test_server::HttpRequest& request) {
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    if (request.relative_url == "/") {
-      response->AddCustomHeader(
-          "Sec-Session-Registration",
-          "(RS256 "
-          "ES256);challenge=\"challenge_value\";path=\"register_session\"");
-      return response;
-    } else if (request.relative_url == "/register_session") {
-      response->AddCustomHeader("Set-Cookie", "auth_cookie=abcdef0123;");
-
-      const auto registration_response =
-          base::Value::Dict()
-              .Set("session_identifier", "session_id")
-              .Set("refresh_url",
-                   embedded_test_server()->GetURL("/refresh_session").spec())
-              .Set("credentials",
-                   base::Value::List().Append(base::Value::Dict()
-                                                  .Set("type", "cookie")
-                                                  .Set("name", "auth_cookie")
-                                                  .Set("attributes", "")));
-
-      std::optional<std::string> json = base::WriteJson(registration_response);
-      EXPECT_TRUE(json.has_value());
-      response->set_content(*json);
-      return response;
-    }
-    return nullptr;
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -98,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents(),
       future.GetRepeatingCallback<const SessionKey&>());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/")));
+      browser(), embedded_test_server()->GetURL("/dbsc_required")));
 
   SessionKey session = future.Take();
   EXPECT_EQ(session.site,

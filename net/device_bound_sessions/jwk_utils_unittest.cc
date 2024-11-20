@@ -5,7 +5,7 @@
 #include "net/device_bound_sessions/jwk_utils.h"
 
 #include "base/json/json_reader.h"
-#include "net/device_bound_sessions/test_util.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net::device_bound_sessions {
