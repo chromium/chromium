@@ -126,7 +126,8 @@ ci.builder(
         ],
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "release|builder",
@@ -306,7 +307,8 @@ ci.builder(
         ],
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "debug|builder",
@@ -366,7 +368,8 @@ ci.builder(
         ],
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     os = os.WINDOWS_ANY,
     console_view_entry = consoles.console_view_entry(
         category = "release|builder",
@@ -870,7 +873,8 @@ ci.builder(
         ],
     ),
     builderless = False,
-    cores = 32,
+    # TODO: crrev.com/i/7808548 - Drop cores=32 after bot migration.
+    cores = "16|32",
     console_view_entry = consoles.console_view_entry(
         category = "misc",
         short_name = "det",
