@@ -62,6 +62,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -652,9 +653,15 @@ std::optional<webapps::AppId> PlatformNotificationServiceImpl::FindWebAppId(
 #if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  // TODO(crbug.com/379827962): Evaluate call sites of FindBestAppWithUrlInScope
+  // for correctness.
   if (web_app_provider) {
-    return web_app_provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
-        web_app_hint_url);
+    return web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+        web_app_hint_url,
+        {
+            web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+            web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+        });
   }
 #endif
 
@@ -668,9 +675,15 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
+    // TODO(crbug.com/379827962): Evaluate call sites of
+    // FindBestAppWithUrlInScope for correctness.
     const std::optional<webapps::AppId> app_id =
-        web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
-            web_app_hint_url);
+        web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+            web_app_hint_url,
+            {
+                web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+                web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+            });
     if (app_id) {
       std::optional<WebAppIconAndTitle> icon_and_title;
       icon_and_title.emplace();
