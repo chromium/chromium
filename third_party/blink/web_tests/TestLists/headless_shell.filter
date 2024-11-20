@@ -42,6 +42,7 @@ external/wpt/*
 -external/wpt/compat/webkit-box-clamp-bottom-border.html
 -external/wpt/compat/webkit-box-horizontal-rtl-variants.html
 -external/wpt/compat/webkit-box-rtl-flex.html
+-external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.https.window.html*
 -external/wpt/console/console-log-large-array.any.html
 -external/wpt/content-security-policy/reporting-api/*
 -external/wpt/content-security-policy/securitypolicyviolation/securitypolicyviolation-block-cross-origin-image-from-script.sub.html
@@ -138,6 +139,7 @@ external/wpt/*
 -external/wpt/css/css-backgrounds/background-clip/clip-text-flex.html
 -external/wpt/css/css-backgrounds/background-clip/clip-text-text-emphasis.html
 -external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html
+-external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html
 -external/wpt/css/css-backgrounds/background-image-with-border-radius-fidelity.html
 -external/wpt/css/css-backgrounds/background-repeat-space-7.html
 -external/wpt/css/css-backgrounds/background-size-027.html
@@ -153,6 +155,7 @@ external/wpt/*
 -external/wpt/css/css-borders/border-radius-greater-than-width.html
 # Known to be very flaky: https://crbug.com/377818367
 -external/wpt/css/css-break/*
+-external/wpt/css/css-cascade/revert-val-006.html
 -external/wpt/css/css-cascade/scope-implicit-crash-print.html
 -external/wpt/css/css-color/color-mix-basic-001.html
 -external/wpt/css/css-color/composited-filters-under-opacity.html
@@ -176,6 +179,7 @@ external/wpt/*
 -external/wpt/css/css-contain/contain-layout-017.html
 -external/wpt/css/css-contain/contain-layout-018.html
 -external/wpt/css/css-contain/contain-layout-flexbox-001.html
+-external/wpt/css/css-contain/contain-paint-clip-016.html
 -external/wpt/css/css-contain/contain-paint-020.html
 -external/wpt/css/css-contain/contain-paint-021.html
 -external/wpt/css/css-contain/contain-paint-025.html
@@ -371,6 +375,7 @@ external/wpt/*
 -external/wpt/css/css-scroll-snap-2/scrollsnapchanging/scrollsnapchanging-on-*
 -external/wpt/css/css-scroll-snap-2/scroll-start/scroll-start-fieldset.tentative.html
 -external/wpt/css/css-scroll-snap-2/scroll-start-target/scroll-start-target-rtl.tentative.html
+-external/wpt/css/css-scroll-snap/input/snap-area-overflow-boundary-viewport-covering.tentative.html
 -external/wpt/css/css-scroll-snap/selection-target.html
 -external/wpt/css/css-scroll-snap/snap-after-relayout/changing-scroll-snap-align-nested.tentative.html
 -external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html
@@ -571,6 +576,8 @@ external/wpt/*
 -external/wpt/fetch/metadata/generated/audioworklet.https.sub.html
 -external/wpt/fetch/stale-while-revalidate/stale-*
 -external/wpt/fledge/tentative/component-ads.https.window.html?11-15
+-external/wpt/fledge/tentative/reporting-arguments.https.window.html?16-last
+-external/wpt/FileAPI/url/sandboxed-iframe.html
 -external/wpt/fs/FileSystemObserver-sync-access-handle.https.tentative.*
 -external/wpt/gyroscope/Gyroscope.https.html
 -external/wpt/gyroscope/Gyroscope-iframe-access.https.html
@@ -610,6 +617,7 @@ external/wpt/*
 -external/wpt/html/canvas/element/manual/building-paths/canvas_complexshapes_arcto_001.htm
 -external/wpt/html/canvas/element/manual/compositing/colr-glyph-composition.html
 -external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-*
+-external/wpt/html/canvas/element/manual/fill-and-stroke-styles/canvas_colorsandstyles_createlineargradient_001.htm
 -external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html
 -external/wpt/html/canvas/element/manual/filters/tentative/canvas-filter-object-convolve-matrix.html
 -external/wpt/html/canvas/element/manual/filters/tentative/canvas-filter-object-turbulence.html
@@ -645,6 +653,7 @@ external/wpt/*
 -external/wpt/html/canvas/offscreen/layers/2d.layer.shadow-from-outside-canvas.long-distance*
 -external/wpt/html/canvas/offscreen/line-styles/2d.line.invalid.strokestyle.html
 -external/wpt/html/canvas/offscreen/line-styles/2d.line.invalid.strokestyle.worker.html
+-external/wpt/html/canvas/offscreen/manual/filter/offscreencanvas.filter.w.html
 -external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.*
 -external/wpt/html/canvas/offscreen/path-objects/2d.path.arc.selfintersect.1.html
 -external/wpt/html/canvas/offscreen/path-objects/2d.path.arc.selfintersect.1.worker.html
@@ -678,6 +687,8 @@ external/wpt/*
 -external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html
 -external/wpt/html/interaction/focus/focusgroup/tentative/grid-navigation/rowspan.html
 -external/wpt/html/interaction/focus/the-autofocus-attribute/first-reconnected.html
+-external/wpt/html/interaction/focus/the-autofocus-attribute/not-on-first-task.html
+-external/wpt/html/interaction/focus/the-autofocus-attribute/queue-non-focusable.html
 -external/wpt/html/links/stylesheet/quirk-origin-check-recursive-import.html
 -external/wpt/html/rendering/non-replaced-elements/form-controls/select-sizing-001.html
 -external/wpt/html/rendering/non-replaced-elements/tables/table-background-print.html
@@ -729,18 +740,26 @@ external/wpt/*
 -external/wpt/html/semantics/popovers/popover-minimum-role.html
 -external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html
 -external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
+-external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 -external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/*
 -external/wpt/html/semantics/text-level-semantics/the-bdi-element/*
 -external/wpt/html/syntax/charset/without-inheritance.html
 -external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/data-xhtml-with-dtd.html
 -external/wpt/html/webappapis/microtask-queuing/queue-microtask-exceptions.any.*
 -external/wpt/html/webappapis/scripting/event-loops/fully_active_document.window.html
+-external/wpt/html/webappapis/scripting/events/event-handler-all-global-events.html
+-external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html
+-external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html
 -external/wpt/html/webappapis/scripting/events/event-handler-onmove-02.tentative.html
 -external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setInterval.html
 -external/wpt/html/webappapis/scripting/processing-model-2/runtime-error-in-setTimeout.html
 -external/wpt/idle-detection/idle-detection-allowed-by-permissions-policy.https.sub.html
 -external/wpt/idle-detection/page-visibility.https.html
+-external/wpt/import-maps/data-driven/resolving.html?scopes.json
 -external/wpt/import-maps/multiple-import-maps/resolution-consistency-in-module-tree.html
+-external/wpt/IndexedDB/idbindex_getAll.any.*
+-external/wpt/IndexedDB/idbindex_getAllRecords.tentative.any.*
+-external/wpt/IndexedDB/idbobjectstore_getAllRecords.tentative.any.*
 -external/wpt/inert/inert-iframe-hittest.html
 -external/wpt/input-events/contenteditable-insertfrompaste-type-inputevent-data.html
 -external/wpt/input-events/input-events-exec-command.html
@@ -893,6 +912,8 @@ external/wpt/*
 -external/wpt/visual-viewport/resize-event-order.html
 -external/wpt/wai-aria/role/invalid-roles.html
 -external/wpt/wai-aria/role/roles.html
+-external/wpt/web-animations/interfaces/Animation/finished.html
+-external/wpt/web-animations/interfaces/Animation/onremove.html
 -external/wpt/web-animations/timing-model/timelines/timelines.html
 -external/wpt/web-animations/responsive/toggle-animated-iframe-visibility.html
 -external/wpt/web-bundle/subresource-loading/csp-blocked.https.tentative.html
@@ -945,6 +966,8 @@ external/wpt/*
 -external/wpt/websockets/stream/tentative/remote-close.any.serviceworker.html?wpt_flags=h2
 -external/wpt/websockets/stream/tentative/remote-close.any.sharedworker.html?wpt_flags=h2
 -external/wpt/websockets/stream/tentative/remote-close.any.worker.html?wpt_flags=h2
+-external/wpt/webusb/getDevices/sandboxed_iframe.https.window.html
+-external/wpt/webusb/requestDevice/sandboxed_iframe.https.window.html
 -external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html
 -external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html
 -external/wpt/webvtt/rendering/cues-with-video/processing-model/selectors/cue/inherit_values_from_media_element.html
