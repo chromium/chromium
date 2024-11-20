@@ -1272,7 +1272,10 @@ class LcppDataMapTest : public testing::Test {
       LcppData expected;
       InitializeLcpElementLocatorBucket(expected, "/#a", ++frequency[key]);
       EXPECT_EQ(expected.lcpp_stat(), *stat)
-          << location.ToString() << url << *stat;
+          << location.ToString() << "\n{url,key} = {\"" << url << "\", \""
+          << key << "\"}\nexpected LCPPData for that learning:\n"
+          << expected.lcpp_stat() << "\nbut we got:\n"
+          << *stat;
     }
   }
 
@@ -1690,9 +1693,9 @@ TEST_P(LcppDataMapFeatures2, LcppLearnURL) {
   const std::vector<std::pair<std::string, std::string>> url_keys = {
       {"http://a.test", "a.test"},
       {"http://a.test/", "a.test"},
-      {"http://a.test/foo", "a.test"},
-      {"http://a.test/bar?q=c", "a.test"},
-      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test"},
+      {"http://a.test/foo", "a.test/foo"},
+      {"http://a.test/bar?q=c", "a.test/bar?q=c"},
+      {"http://user:pass@a.test:99/foo;bar?q=a#ref", "a.test/foo;bar?q=a#ref"},
   };
 
   TestLearnLcppURL(url_keys);

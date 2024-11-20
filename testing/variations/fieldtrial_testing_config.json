@@ -13087,54 +13087,6 @@
             ]
         }
     ],
-    "LCPPMultipleKey": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "lcpp_max_hosts_to_track": "100",
-                        "lcpp_multiple_key_max_path_length": "15",
-                        "lcpp_multiple_key_type": "default"
-                    },
-                    "enable_features": [
-                        "LCPPMultipleKey"
-                    ]
-                },
-                {
-                    "name": "WithMaxHost1000",
-                    "params": {
-                        "lcpp_max_hosts_to_track": "1000",
-                        "lcpp_multiple_key_max_path_length": "15",
-                        "lcpp_multiple_key_type": "default"
-                    },
-                    "enable_features": [
-                        "LCPPMultipleKey"
-                    ]
-                },
-                {
-                    "name": "EnabledKeyStat",
-                    "params": {
-                        "lcpp_max_hosts_to_track": "100",
-                        "lcpp_multiple_key_histogram_sliding_window_size": "1000",
-                        "lcpp_multiple_key_max_histogram_buckets": "10",
-                        "lcpp_multiple_key_max_path_length": "15",
-                        "lcpp_multiple_key_type": "lcpp_key_stat"
-                    },
-                    "enable_features": [
-                        "LCPPMultipleKey"
-                    ]
-                }
-            ]
-        }
-    ],
     "LCPPPrefetchSubresource": [
         {
             "platforms": [
