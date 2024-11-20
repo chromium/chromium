@@ -184,6 +184,19 @@ class ModelPrototypingFeatureTypeMap {
   static std::string_view ToString() { return "ModelPrototyping"; }
 };
 
+class PasswordChangeSubmissionFeatureTypeMap {
+ public:
+  using LoggingData = proto::PasswordChangeSubmissionLoggingData;
+  using Request = proto::PasswordChangeRequest;
+  using Response = proto::PasswordChangeResponse;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_password_change_submission();
+  }
+
+  static std::string_view ToString() { return "PasswordChangeSubmission"; }
+};
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_QUALITY_FEATURE_TYPE_MAP_H_
