@@ -1772,11 +1772,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "cros-safety-service",
-    "owners": [ "chensa@google.com", "jmpollock@chromium.org", "cros-odml-foundations-eng@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "cros-soul",
     "owners": [ "cschlosser@chromium.org", "cros-privacy-features-dev@google.com" ],
     "expiry_milestone": 135
@@ -5828,11 +5823,6 @@
     "name": "mbi-mode",
     "owners": [ "dom@chromium.org", "blink-isolation-dev@chromium.org" ],
     "expiry_milestone": 120
-  },
-  {
-    "name": "media-app-image-mantis",
-    "owners": ["cros-mantis@google.com"],
-    "expiry_milestone": 140
   },
   {
     "name": "media-app-pdf-a11y-ocr",

@@ -6104,10 +6104,6 @@ const char kCrosContentAdjustedRefreshRateName[] =
 const char kCrosContentAdjustedRefreshRateDescription[] =
     "Allows the display to adjust the refresh rate in order to match content.";
 
-const char kCrosSafetyServiceName[] = "Safety Service on ChromeOS";
-const char kCrosSafetyServiceDescription[] =
-    "Enables trust and safety filtering for ChromeOS on-device features.";
-
 const char kCrosSoulName[] = "CrOS SOUL";
 const char kCrosSoulDescription[] = "Enable the CrOS SOUL feature.";
 
@@ -7053,10 +7049,6 @@ const char kMahiPanelResizableDescription[] =
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =
     "Enable Mahi feature on PDF files in Gallery app.";
-
-const char kMediaAppImageMantisName[] = "Mantis feature on Media App image";
-const char kMediaAppImageMantisDescription[] =
-    "Enable Mantis feature on image files in Gallery app.";
 
 const char kMeteredShowToggleName[] = "Show Metered Toggle";
 const char kMeteredShowToggleDescription[] =
