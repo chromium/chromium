@@ -1348,7 +1348,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7544853251252956727">Spill i tilfeldig rekkefølge</translation>
 <translation id="7550715992156305117">Diagnostikkrutiner</translation>
 <translation id="7551123448725492271">Enheten er en lydenhet.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Administratoren for <ph name="MANAGER" /> har angitt når denne <ph name="DEVICE_TYPE" />-enheten skal brukes.<ph name="END_PARAGRAPH1" />
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Administratoren for <ph name="MANAGER" /> har angitt når denne <ph name="DEVICE_TYPE" />-enheten kan brukes.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan bruke denne enheten igjen <ph name="DAY" /> kl. <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Se forhåndsvisning av skjermbildet</translation>
 <translation id="7561454561030345039">Denne handlingen administreres av administratoren</translation>

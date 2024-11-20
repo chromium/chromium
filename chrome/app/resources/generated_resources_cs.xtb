@@ -110,7 +110,7 @@
 <translation id="1069355737714877171">Odstranit profil eSIM karty s názvem <ph name="PROFILE_NAME" /></translation>
 <translation id="1069778954840159202">Automaticky získat účet z telefonu Android</translation>
 <translation id="1069814191880976658">Vybrat jinou obrazovku</translation>
-<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 heslo a další položky jsou uloženy pouze na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google.}few{{PASSWORD_COUNT} hesla a další položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}many{{PASSWORD_COUNT} hesla a dalších položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}other{{PASSWORD_COUNT} hesel a dalších položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}}</translation>
+<translation id="1069842460580675018">{PASSWORD_COUNT,plural, =1{1 heslo a další položky jsou uloženy pouze na tomto zařízení. Pokud ho chcete používat i na jiných zařízeních, uložte ho do svého účtu Google.}few{{PASSWORD_COUNT} hesla a další položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}many{{PASSWORD_COUNT} hesla a další položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}other{{PASSWORD_COUNT} hesel a další položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}}</translation>
 <translation id="107022587824771715">Návrhy skupin karet momentálně nejsou k dispozici. Můžete <ph name="BEGIN_LINK" />teď obnovit kartu<ph name="END_LINK" />, nebo to zkusit znovu později</translation>
 <translation id="1070377999570795893">Jiný program ve vašem počítači nainstaloval rozšíření, které může měnit funkce Chromu.
 
@@ -5530,7 +5530,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4925320384394644410">Zde se budou zobrazovat vaše porty</translation>
 <translation id="49265687513387605">Obrazovku nelze odeslat. Zkontrolujte, zda jste potvrdili výzvu k zahájení sdílení obrazovky.</translation>
 <translation id="4927753642311223124">Tady není nic k vidění, rozejděte se.</translation>
-<translation id="4928488083257788101">Data odeslaná do Googlu mohou být vidět kontroloři, kteří tuto funkci pomáhají zlepšovat</translation>
+<translation id="4928488083257788101">Data odeslaná do Googlu mohou vidět kontroloři, kteří tuto funkci pomáhají zlepšovat</translation>
 <translation id="4929120497462893830">Hodnota hash byla zkopírována do schránky</translation>
 <translation id="4929386379796360314">Cíle tisku</translation>
 <translation id="4930406318748549391">Umístění bočního panelu</translation>
@@ -7715,7 +7715,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6555604601707417276">Záloha systému Linux byla obnovena</translation>
 <translation id="6556866813142980365">Opakovat</translation>
 <translation id="6556903358015358733">Motiv a tapeta</translation>
-<translation id="6557199166823345360">Zpřesněte vyhledávání zadáním dalších podrobnosti nebo dotazu ohledně svého výběru</translation>
+<translation id="6557199166823345360">Zpřesněte vyhledávání zadáním dalších podrobností nebo dotazu ohledně svého výběru</translation>
 <translation id="6557290421156335491">Moje zkratky</translation>
 <translation id="6560061709899140565">Zobrazit další relace odesílání</translation>
 <translation id="6560151649238390891">Návrh byl vložen</translation>
@@ -8527,7 +8527,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="713122686776214250">Přidat strá&amp;nku...</translation>
 <translation id="7131431455372521159">Všechny trackpointy byly odpojeny</translation>
 <translation id="7131896909366247105"><ph name="APP_NAME" />, čeká</translation>
-<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 heslo je uloženo pouze na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google.}few{{PASSWORD_COUNT} hesla jsou uložena pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}many{{PASSWORD_COUNT} hesla je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}other{{PASSWORD_COUNT} hesel je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}}</translation>
+<translation id="7132594232992286174">{PASSWORD_COUNT,plural, =1{1 heslo je uloženo pouze na tomto zařízení. Pokud ho chcete používat i na jiných zařízeních, uložte ho do svého účtu Google.}few{{PASSWORD_COUNT} hesla jsou uložena pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}many{{PASSWORD_COUNT} hesla je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}other{{PASSWORD_COUNT} hesel je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}}</translation>
 <translation id="7134098520442464001">Zmenšit text</translation>
 <translation id="713415364723069564">Web může zjistit, zda jsou na počítači nainstalované související webové aplikace. Tyto informace jsou dostupné pro web a jeho subdomény.</translation>
 <translation id="7134951043985383439">Byl stažen nebezpečný soubor</translation>
@@ -10983,7 +10983,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8876307312329369159">Toto nastavení v ukázkové relaci nelze změnit.</translation>
 <translation id="8876965259056847565">Funkce <ph name="FEATURE_NAME" /> vyhledává zařízení v okolí přes Bluetooth.</translation>
 <translation id="8877448029301136595">[nadřazený adresář]</translation>
-<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 položka je uložena pouze na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google.}few{{ITEM_COUNT} položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}many{{ITEM_COUNT} položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}other{{ITEM_COUNT} položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}}</translation>
+<translation id="8879106543848179883">{ITEM_COUNT,plural, =1{1 položka je uložena pouze na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google.}few{{ITEM_COUNT} položky jsou uloženy pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}many{{ITEM_COUNT} položky je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}other{{ITEM_COUNT} položek je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google}}</translation>
 <translation id="8879284080359814990">Zobrazit jako &amp;kartu</translation>
 <translation id="8879921471468674457">Zapamatovat si přihlašovací údaje</translation>
 <translation id="8880009256105053174">Pro&amp;hledat tuto stránku Googlem…</translation>
@@ -11457,7 +11457,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9215742531438648683">Odinstalovat obchod Google Play</translation>
 <translation id="9218430445555521422">Nastavit jako výchozí</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (nepodporovaná aplikace)</translation>
-<translation id="9219572436491982747">Data odeslaná do Googlu mohou vidět kontroloři, který pomáhají zlepšovat AI technologie v Chromu</translation>
+<translation id="9219572436491982747">Data odeslaná do Googlu mohou vidět kontroloři, kteří pomáhají zlepšovat AI technologie v Chromu</translation>
 <translation id="9219582468404818260">Pomozte nám vytvořit lepší web</translation>
 <translation id="9219741625496141320">Údaje o prohlížení byly automaticky smazány</translation>
 <translation id="9220525904950070496">Odstranit účet</translation>

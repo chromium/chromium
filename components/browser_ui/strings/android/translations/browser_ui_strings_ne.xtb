@@ -42,7 +42,7 @@
 <translation id="1785415724048343560">उत्कृष्ट सुविधाका लागि सिफारिस गरिएको</translation>
 <translation id="1799920918471566157">Chrome को प्रयोगसम्बन्धी सुझावहरू</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> लाई AR प्रयोग गर्न दिन <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" />मा गई क्यामेरा पनि अन गर्नुहोस्।</translation>
-<translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
+<translation id="1887786770086287077">यो डिभाइसको स्थानमाथिको पहुँच अफ छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="1915307458270490472">ह्याङ्ग अप</translation>
 <translation id="1919950603503897840">कन्ट्याक्टहरू चयन गर्नुहोस्</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
@@ -93,7 +93,7 @@
 <translation id="2498359688066513246">मद्दत र प्रतिक्रिया</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
-<translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
+<translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि अफ छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="257931822824936280">विस्तृत गरिएको - संक्षिप्त पार्न क्लिक गर्नुहोस्</translation>
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2588271083332682494">ट्याब समूहहरू बनाएर आफ्नो ब्राउजर व्यवस्थित राख्नुहोस्</translation>
@@ -514,7 +514,7 @@
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8737426583868847403">तपाईंले जुन जुन साइटका लागि कस्टम जुम लेभल सेभ गर्नुभएको छ ती साइटहरू यहाँ देखिने छन्</translation>
-<translation id="8751914237388039244">कुनै छवि छनौट गर्नुहोस्‌</translation>
+<translation id="8751914237388039244">कुनै फोटो छनौट गर्नुहोस्‌</translation>
 <translation id="8800034312320686233">साइटले काम गरिरहेको छैन?</translation>
 <translation id="8801436777607969138">कुनै खास साइटमा JavaScript लाई रोक लगाउनुहोस्।</translation>
 <translation id="8803526663383843427">अन भएका बेला</translation>

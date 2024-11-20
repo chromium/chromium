@@ -114,7 +114,7 @@
 <translation id="1616111909442424068">Búza</translation>
 <translation id="1618597272655350600">Pontosan elmondja, hogy mi az aktuális pozíció</translation>
 <translation id="1627222324347828322">Szellemfehér</translation>
-<translation id="1632810692616643246">Görgetési mód használata vagy kikapcsolása</translation>
+<translation id="1632810692616643246">Görgetés mód bekapcsolása vagy kikapcsolása</translation>
 <translation id="1639634871799530612">{COUNT,plural, =1{nagyobb jel}other{# nagyobb jel}}</translation>
 <translation id="1653266918374749391">Előző 3. szintű fejléc</translation>
 <translation id="1657616855184033958">Esemény streamszűrőinek megjelenítése</translation>
@@ -1098,7 +1098,7 @@
 <translation id="8378855320830505539">Terület</translation>
 <translation id="8382679411218029383">Automatikus kiegészítés soron belül és listaként</translation>
 <translation id="8394908167088220973">Lejátszás/szüneteltetés</translation>
-<translation id="8409502156784390079">A görgetési mód aktív</translation>
+<translation id="8409502156784390079">A görgetés mód aktív</translation>
 <translation id="8428213095426709021">Beállítások</translation>
 <translation id="8428603554127842284"><ph name="DEPTH" />. szint</translation>
 <translation id="8430049249787218991">menüsor</translation>
@@ -1176,7 +1176,7 @@
 <translation id="8986362086234534611">Elfelejt</translation>
 <translation id="8989104346085848538">Az aktuális ChromeVox-beszéd leállításához nyomja le a Control billentyűt.</translation>
 <translation id="9014206344398081366">ChromeVox-útmutató</translation>
-<translation id="9034592733577768445">Arcvezérlés szüneteltetve</translation>
+<translation id="9034592733577768445">Arcalapú vezérlés szüneteltetve</translation>
 <translation id="9040132695316389094">1-es címsor</translation>
 <translation id="9061884144798498064">8 pontos Braille-táblázat kiválasztása:</translation>
 <translation id="9063946545000394379">ugrás az előző karakterre</translation>

@@ -214,8 +214,8 @@
 <translation id="1358223345833465883">‏موتور جستجوی شما در Chromium</translation>
 <translation id="1359836962251219822">آشپزخانه و ناهارخوری</translation>
 <translation id="1360955481084547712">پنجره ناشناس جدیدی را برای مرور خصوصی باز کنید</translation>
-<translation id="1361528602584216624">‏محدودیت برای هر Pix:‏ R$ <ph name="TRANSACTION_LIMIT" /></translation>
-<translation id="1363015776076529485">فهرست روش‌های پرداختی که می‌توانند برای ادامه پرداخت انتخاب شوند به‌صورت کامل باز شده است.</translation>
+<translation id="1361528602584216624">‏محدودیت برای هر Pix:‏ R$‏ <ph name="TRANSACTION_LIMIT" /></translation>
+<translation id="1363015776076529485">فهرست روش‌های پرداخت دردسترس که می‌توانند برای ادامه پرداخت انتخاب شوند به‌صورت کامل باز شده است.</translation>
 <translation id="1363028406613469049">تراک</translation>
 <translation id="1364822246244961190">این خط‌مشی مسدود شده است، ارزش آن نادیده گرفته خواهد شد.</translation>
 <translation id="1368318639262510626">بازی داینو. دایناسوری نقطه‌ای همان‌طور که در دشتی دورافتاده می‌دود، موقع رسیدن به کاکتوس‌ها و پتروداکتیل‌ها جاخالی می‌دهد. وقتی صدای نشانه صوتی را شنیدید، برای پریدن از روی موانع کلید فاصله را فشار دهید.</translation>
@@ -1105,7 +1105,7 @@
 <translation id="299122504639061328">مدیریت موتور جستجوی پیش‌فرض و جستجوی سایت</translation>
 <translation id="2991571918955627853">‏درحال‌حاضر نمی‌توانید از <ph name="SITE" /> دیدن کنید، زیرا این وب‌سایت از HSTS استفاده می‌کند. خطاهای شبکه و حمله‌ها معمولاً موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="2991865971341174470">‏هویتتان را به‌تأیید برسانید تا Chrome بتواند اطلاعات پرداخت شما را تکمیل کند.</translation>
-<translation id="2995121550202354573">استفاده برای همه «نمایه‌های مهمان»</translation>
+<translation id="2995121550202354573">استفاده کردن برای همه نمایه‌های «مهمان»</translation>
 <translation id="2995517112308048736">اندازه فایل:</translation>
 <translation id="299990983510665749">هاچ‌بک</translation>
 <translation id="3002501248619246229">بررسی رسانه سینی ورودی</translation>
@@ -3123,7 +3123,7 @@
 <translation id="6649510485211003056">۲۷۰ × ۱۹۵ میلی‌متر</translation>
 <translation id="6651270836885078973">مدیریت توسط:</translation>
 <translation id="6652101503459149953">‏استفاده از Windows Hello</translation>
-<translation id="6654224358955673568">رسمی‌سازی</translation>
+<translation id="6654224358955673568">رسمی کردن</translation>
 <translation id="6654244995031366386">شیشه (مشجر)</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659246032834639189">این قیمت پایین است</translation>
@@ -3801,7 +3801,7 @@
 <translation id="7831993212387676366">«فهرست خرید» چیست؟</translation>
 <translation id="7840103971441592723">ضبط صفحه شروع شده است</translation>
 <translation id="784137052867620416">اطلاعات آماری خرید</translation>
-<translation id="7841633276323004751">فهرست روش‌های پرداختی که می‌توانند برای ادامه پرداخت انتخاب شوند. صفحه‌کلید پنهان است.</translation>
+<translation id="7841633276323004751">فهرست روش‌های پرداخت دردسترس که می‌توانند برای ادامه پرداخت انتخاب شوند. صفحه‌کلید پنهان است.</translation>
 <translation id="7842611866969435396">بیایید شروع کنیم</translation>
 <translation id="784404208867107517">سابقه گروه‌بندی‌شده</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{هیچ‌کدام}=1{۱ برنامه (<ph name="EXAMPLE_APP_1" />)}=2{۲ برنامه (<ph name="EXAMPLE_APP_1" />،‏ <ph name="EXAMPLE_APP_2" />)}one{# برنامه (<ph name="EXAMPLE_APP_1" />،‏ <ph name="EXAMPLE_APP_2" />،‏ <ph name="AND_MORE" />)}other{# برنامه (<ph name="EXAMPLE_APP_1" />،‏ <ph name="EXAMPLE_APP_2" />،‏ <ph name="AND_MORE" />)}}</translation>

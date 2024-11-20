@@ -1348,7 +1348,7 @@
 <translation id="7544853251252956727">არეულად დაკვრა</translation>
 <translation id="7550715992156305117">დიაგნოსტიკის რუტინები</translation>
 <translation id="7551123448725492271">მოწყობილობა არის აუდიო მოწყობილობა.</translation>
-<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" />-ის ადმინისტრატორმა დააყენა, როდის შეიძლება ამ <ph name="DEVICE_TYPE" />-ის გამოყენება.<ph name="END_PARAGRAPH1" />
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" /><ph name="MANAGER" />-ის ადმინისტრატორმა შეზღუდა ამ <ph name="DEVICE_TYPE" />-ის გამოყენების დრო.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />ამ მოწყობილობის ხელახლა გამოყენების დროა <ph name="DAY" />, <ph name="TIME" /> საათი.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">ეკრანის ანაბეჭდის გადახედვა</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
@@ -1552,7 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">შესაძლოა, ეს ვარიანტი თქვენს ოპერატორს სჭირდებოდეს, თავის ქსელთან დაკავშირების საშუალება რომ მოგცეთ. დეტალური ინფორმაციისთვის მიმართეთ ოპერატორს.</translation>
 <translation id="8576249514688522074">არაინიცირებული</translation>
-<translation id="8584654835905316966"><ph name="DEVICE_NAME" />-ისთვის <ph name="VERSION" /> ვერსიის ჩაშენებული პროგრამული უზრუნველყოფის განახლების დასასრულებლად საჭიროა გადატვირთვა. თქვენი კომპიუტერი შეიძლება რამდენჯერმე გადაიტვირთოს. მოსალოდნელია ასეთი ქცევა.</translation>
+<translation id="8584654835905316966"><ph name="DEVICE_NAME" />-ის <ph name="VERSION" /> ვერსიის ჩაშენებული პროგრამული უზრუნველყოფის განახლების დასასრულებლად საჭიროა გადატვირთვა. თქვენი კომპიუტერი შეიძლება რამდენჯერმე გადაიტვირთოს. ასეთი ქცევა მოსალოდნელია.</translation>
 <translation id="8593058461203131755">მედიის დაპაუზება</translation>
 <translation id="8620617069779373398">როუმინგის სტატუსი</translation>
 <translation id="8626489604350149811">სხვა ქმედებები <ph name="APN_NAME" />-ისთვის</translation>
