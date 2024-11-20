@@ -812,8 +812,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"speedPageTitle", IDS_SETTINGS_PERFORMANCE_SPEED_PAGE_TITLE},
       {"memorySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING},
-      {"memorySaverModeDescription",
-       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION},
       {"memorySaverModeHeuristicsLabel",
        IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_HEURISTICS_LABEL},
       {"memorySaverModeRecommendedBadge",
@@ -839,8 +837,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
       {"batteryPageTitle", IDS_SETTINGS_PERFORMANCE_BATTERY_PAGE_TITLE},
       {"batterySaverModeLabel",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING},
-      {"batterySaverModeDescription",
-       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION},
       {"batterySaverModeLinkOsDescription",
        IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_LINK_OS_SETTING_DESCRIPTION},
       {"batterySaverModeEnabledOnBatteryLabel",
@@ -865,8 +861,6 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL},
       {"tabDiscardingExceptionsActiveSiteAriaDescription",
        IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION},
-      {"preloadingToggleSummary",
-       IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY},
       {"discardRingTreatmentEnabledLabel",
        IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_LABEL},
       {"tabHoverPreviewCardLinkTitle",
@@ -878,19 +872,37 @@ void AddPerformanceStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString(
-      "discardRingTreatmentEnabledDescriptionWithLearnLink",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
-          chrome::kDiscardRingTreatmentLearnMoreUrl,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  static constexpr struct {
+    const char* id;
+    int message_id;
+    const char16_t* url;
+  } kLearnMoreStrings[] = {
+      {"batterySaverModeDescription",
+       IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_SETTING_DESCRIPTION,
+       chrome::kBatterySaverModeLearnMoreUrl},
+      {"discardRingTreatmentEnabledDescriptionWithLearnLink",
+       IDS_SETTINGS_PERFORMANCE_DISCARD_RING_TREATMENT_ENABLED_DESCRIPTION_WITH_LEARN_LINK,
+       chrome::kDiscardRingTreatmentLearnMoreUrl},
+      {"memorySaverModeDescription",
+       IDS_SETTINGS_PERFORMANCE_MEMORY_SAVER_MODE_SETTING_DESCRIPTION,
+       chrome::kMemorySaverModeLearnMoreUrl},
+      {"performanceInterventionEnabledDescription",
+       IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION,
+       chrome::kPerformanceInterventionLearnMoreUrl},
+      {"preloadingToggleSummary",
+       IDS_SETTINGS_PERFORMANCE_PRELOAD_TOGGLE_SUMMARY,
+       chrome::kPreloadingLearnMoreUrl}};
 
-  html_source->AddString(
-      "performanceInterventionEnabledDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PERFORMANCE_INTERVENTION_NOTIFICATION_ENABLED_DESCRIPTION,
-          chrome::kPerformanceInterventionLearnMoreUrl,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+  const std::u16string settings_opens_in_new_tab =
+      l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB);
+
+  for (const auto& learn_more_string : kLearnMoreStrings) {
+    html_source->AddString(
+        learn_more_string.id,
+        l10n_util::GetStringFUTF16(learn_more_string.message_id,
+                                   learn_more_string.url,
+                                   settings_opens_in_new_tab));
+  }
 
   html_source->AddString(
       "tabDiscardTimerFiveMinutes",

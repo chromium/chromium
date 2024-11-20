@@ -14,8 +14,8 @@
 <settings-toggle-button id="preloadingToggle"
     pref="{{prefs.net.network_prediction_options}}"
     label="$i18n{preloadingPageTitle}"
-    sub-label="$i18n{preloadingToggleSummary}"
-    learn-more-url="$i18n{preloadingLearnMoreUrl}"
+    sub-label-with-link="$i18n{preloadingToggleSummary}"
+    on-sub-label-link-clicked="onPreloadingLearnMoreLinkClick_"
     numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[networkPredictionOptionsEnum_.STANDARD]]"
     on-change="onPreloadingStateChange_">

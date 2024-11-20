@@ -13,10 +13,12 @@ import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import {loadTimeData} from '../i18n_setup.js';
 import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {NetworkPredictionOptions} from './constants.js';
@@ -86,6 +88,11 @@ export class SpeedPageElement extends SpeedPageElementBase {
     // updated manually.
     this.$.preloadingExtended.updateCollapsed();
     this.$.preloadingStandard.updateCollapsed();
+  }
+
+  private onPreloadingLearnMoreLinkClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('preloadingLearnMoreUrl'));
   }
 }
 
