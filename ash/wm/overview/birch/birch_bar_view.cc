@@ -357,11 +357,6 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
     return;
   }
 
-  // The privacy nudge is attached to the first chip. Hide the nudge if exists.
-  if (std::distance(chips_.begin(), iter) == 0) {
-    Shell::Get()->birch_privacy_nudge_controller()->MaybeHideNudge();
-  }
-
   BirchChipButtonBase* removing_chip = *iter;
   chips_.erase(iter);
 
