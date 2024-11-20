@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
 
 #import "base/check_op.h"
 #import "base/time/time.h"
@@ -13,16 +13,16 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mediator.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_view_controller.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_coordinator.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mediator.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_view_controller.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

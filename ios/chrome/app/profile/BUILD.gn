@@ -213,6 +213,7 @@ source_set("search_engine_choice_profile_agent") {
     "//components/search_engines",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engine_choice/ui_bundled",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
@@ -220,7 +221,6 @@ source_set("search_engine_choice_profile_agent") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
-    "//ios/chrome/browser/ui/search_engine_choice",
   ]
 }
 

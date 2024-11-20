@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_engine_choice/snippet_search_engine_button.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/snippet_search_engine_button.h"
 
 #import "base/check.h"
 #import "base/check_op.h"
@@ -10,8 +10,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"

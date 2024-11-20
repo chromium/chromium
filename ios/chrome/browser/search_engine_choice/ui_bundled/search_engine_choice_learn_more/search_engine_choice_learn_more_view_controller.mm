@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more/search_engine_choice_learn_more_view_controller.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,7 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"

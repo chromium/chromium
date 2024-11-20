@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("search_engine_choice") {
+source_set("ui_bundled") {
   sources = [
     "search_engine_choice_consumer.h",
     "search_engine_choice_coordinator.h",
@@ -28,6 +28,7 @@ source_set("search_engine_choice") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/search_engine_choice/model",
+    "//ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_learn_more",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -38,7 +39,6 @@ source_set("search_engine_choice") {
     "//ios/chrome/browser/shared/ui/list_model:list_model",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/search_engine_choice/search_engine_choice_learn_more",
     "//ios/chrome/common/ui/colors:colors",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/common/ui/promo_style:utils",
@@ -83,9 +83,9 @@ source_set("earl_grey_ui_test_util") {
     "//base:i18n",
     "//components/search_engines",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/search_engine_choice/ui_bundled:constants",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/search_engine_choice:constants",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

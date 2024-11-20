@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
 
 #import "base/strings/utf_string_conversions.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"

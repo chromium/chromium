@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
-
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_mutator.h"
+#ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_mutator.h"
 
 class TemplateURLService;
 @protocol SearchEngineChoiceConsumer;
@@ -16,7 +16,7 @@ namespace search_engines {
 class SearchEngineChoiceService;
 }  // namespace search_engines
 
-@interface SearchEngineChoiceMediator : NSObject<SearchEngineChoiceMutator>
+@interface SearchEngineChoiceMediator : NSObject <SearchEngineChoiceMutator>
 
 // The delegate object that manages interactions with the Search Engine Choice
 // table view.
@@ -37,4 +37,4 @@ class SearchEngineChoiceService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_UI_BUNDLED_SEARCH_ENGINE_CHOICE_MEDIATOR_H_

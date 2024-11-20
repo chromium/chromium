@@ -11,6 +11,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 
 namespace {
 
