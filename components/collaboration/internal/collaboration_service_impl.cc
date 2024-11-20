@@ -73,7 +73,7 @@ void CollaborationServiceImpl::StartJoinFlow(
       {token, std::make_unique<CollaborationController>(
                   CollaborationController::Flow::kJoin, token, this,
                   data_sharing_service_.get(), tab_group_sync_service_.get(),
-                  std::move(delegate),
+                  sync_service_.get(), std::move(delegate),
                   base::BindOnce(&CollaborationServiceImpl::FinishFlow,
                                  weak_ptr_factory_.GetWeakPtr(), token))});
 }

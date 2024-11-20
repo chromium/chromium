@@ -14,6 +14,10 @@
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
@@ -43,8 +47,9 @@ class CollaborationController {
     // Delegate is showing invitation screen to the user.
     kAddingUserToGroup,
 
-    // Waiting for tab group to be added in sync. Loading UI should be shown.
-    kWaitingForSyncTabGroup,
+    // Waiting for tab group to be added in sync and people group to be added in
+    // DataSharing. Loading UI should be shown.
+    kWaitingForSyncAndDataSharingGroup,
 
     // Delegate is promoting the local tab group.
     kOpeningLocalTabGroup,
@@ -69,6 +74,7 @@ class CollaborationController {
       CollaborationService* collaboration_service,
       data_sharing::DataSharingService* data_sharing_service,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
+      syncer::SyncService* sync_service,
       std::unique_ptr<CollaborationControllerDelegate> delegate,
       FinishCallback finish_and_delete);
   ~CollaborationController();
@@ -85,6 +91,7 @@ class CollaborationController {
   tab_groups::TabGroupSyncService* tab_group_sync_service() {
     return tab_group_sync_service_.get();
   }
+  syncer::SyncService* sync_service() { return sync_service_.get(); }
   const data_sharing::GroupToken& token() { return token_; }
   CollaborationService* collaboration_service() {
     return collaboration_service_.get();
@@ -133,34 +140,38 @@ class CollaborationController {
           // kCheckingFlowRequirements transition to:
           //
           //   kAddingUserToGroup: When user is not in current people group.
-          //   kWaitingForSyncTabGroup: When user is in current people group,
+          //   kWaitingForSyncAndDataSharingGroup: When user is in current
+          //   people group,
           //   but tab group not found in sync.
           //   kOpeningLocalTabGroup: When user is in current people group, and
           //   tab group found in sync.
           {StateId::kCheckingFlowRequirements, StateId::kAddingUserToGroup},
           {StateId::kCheckingFlowRequirements,
-           StateId::kWaitingForSyncTabGroup},
+           StateId::kWaitingForSyncAndDataSharingGroup},
           {StateId::kCheckingFlowRequirements, StateId::kOpeningLocalTabGroup},
 
           // kAddingUserToGroup transition to:
           //
-          //   kWaitingForSyncTabGroup: After the user accept the join
+          //   kWaitingForSyncAndDataSharingGroup: After the user accept the
+          //   join
           //   invitation and the tab group is not yet added in sync.
           //   kOpeningLocalTabGroup: After the user accept the join invitation
           //   and the tab group is in sync.
           //   kCancel: After the user cancels the join invitation
           //   kError: An error occurred during invitation screen.
-          {StateId::kAddingUserToGroup, StateId::kWaitingForSyncTabGroup},
+          {StateId::kAddingUserToGroup,
+           StateId::kWaitingForSyncAndDataSharingGroup},
           {StateId::kAddingUserToGroup, StateId::kOpeningLocalTabGroup},
           {StateId::kAddingUserToGroup, StateId::kCancel},
           {StateId::kAddingUserToGroup, StateId::kError},
 
-          // kWaitingForSyncTabGroup transition to:
+          // kWaitingForSyncAndDataSharingGroup transition to:
           //
           //   kOpeningLocalTabGroup: After tab group is added in sync.
           //   kError: An error occurred while waiting for sync tab group.
-          {StateId::kWaitingForSyncTabGroup, StateId::kOpeningLocalTabGroup},
-          {StateId::kWaitingForSyncTabGroup, StateId::kError},
+          {StateId::kWaitingForSyncAndDataSharingGroup,
+           StateId::kOpeningLocalTabGroup},
+          {StateId::kWaitingForSyncAndDataSharingGroup, StateId::kError},
 
           // kOpeningLocalTabGroup transition to:
           //
@@ -181,6 +192,7 @@ class CollaborationController {
   const raw_ptr<CollaborationService> collaboration_service_;
   const raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   const raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
   std::unique_ptr<CollaborationControllerDelegate> delegate_;
   FinishCallback finish_and_delete_;
   base::WeakPtrFactory<CollaborationController> weak_ptr_factory_{this};

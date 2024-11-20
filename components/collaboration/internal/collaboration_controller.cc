@@ -5,8 +5,12 @@
 #include "components/collaboration/internal/collaboration_controller.h"
 
 #include "base/logging.h"
+#include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/collaboration/public/collaboration_service.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace collaboration {
 
@@ -31,8 +35,8 @@ std::string GetStateIdString(StateId state) {
       return "CheckingFlowRequirements";
     case StateId::kAddingUserToGroup:
       return "AddingUserToGroup";
-    case StateId::kWaitingForSyncTabGroup:
-      return "WaitingForSyncTabGroup";
+    case StateId::kWaitingForSyncAndDataSharingGroup:
+      return "WaitingForSyncAndDataSharingGroup";
     case StateId::kOpeningLocalTabGroup:
       return "OpeningLocalTabGroup";
     case StateId::kCancel:
@@ -62,7 +66,6 @@ class ControllerState {
       controller->Exit();
       return;
     }
-
     OnProcessingFinished();
   }
 
@@ -83,18 +86,24 @@ class ControllerState {
   base::WeakPtrFactory<ControllerState> weak_ptr_factory_{this};
 
  protected:
-  // Check if the tab group is already in sync and data sharing service, then
-  // transition to the corresponding state.
-  void CheckSyncAndHandleTransition() {
-    bool is_tab_group_in_sync = false;
-    // TODO(crbug.com/360184707): Wait for both sync and data sharing group to
-    // be ready.
-    if (!is_tab_group_in_sync) {
-      controller->TransitionTo(StateId::kWaitingForSyncTabGroup);
-      return;
+  bool IsTabGroupInSync() {
+    const std::vector<tab_groups::SavedTabGroup>& all_groups =
+        controller->tab_group_sync_service()->GetAllGroups();
+    for (const auto& group : all_groups) {
+      if (group.collaboration_id().has_value() &&
+          group.collaboration_id().value() ==
+              tab_groups::CollaborationId(
+                  controller->token().group_id.value())) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    controller->TransitionTo(StateId::kOpeningLocalTabGroup);
+  bool IsPeopleGroupInDataSharing() {
+    return controller->collaboration_service()->GetCurrentUserRoleForGroup(
+               controller->token().group_id) !=
+           data_sharing::MemberRole::kUnknown;
   }
 };
 
@@ -109,6 +118,7 @@ class PendingState : public ControllerState {
     controller->delegate()->PrepareFlowUI(base::BindOnce(
         &PendingState::ProcessOutcome, weak_ptr_factory_.GetWeakPtr()));
   }
+
   void OnProcessingFinished() override {
     // Handle URL parsing errors.
     if (!controller->token().IsValid()) {
@@ -158,21 +168,24 @@ class CheckingFlowRequirementsState : public ControllerState {
     switch (controller->flow()) {
       case CollaborationController::Flow::kJoin: {
         // Check if user is already part of the group.
-        data_sharing::GroupId group_id = controller->token().group_id;
-        data_sharing::MemberRole role =
-            controller->collaboration_service()->GetCurrentUserRoleForGroup(
-                group_id);
-        if (role != data_sharing::MemberRole::kUnknown) {
-          CheckSyncAndHandleTransition();
+        if (IsPeopleGroupInDataSharing()) {
+          if (!IsTabGroupInSync()) {
+            controller->TransitionTo(
+                StateId::kWaitingForSyncAndDataSharingGroup);
+            return;
+          }
+
+          controller->TransitionTo(StateId::kOpeningLocalTabGroup);
           return;
         }
 
         // If user is not part of the group, do a readgroup to ensure version
         // match.
         controller->data_sharing_service()->ReadGroup(
-            group_id, base::BindOnce(&CheckingFlowRequirementsState::
-                                         ProcessGroupDataOrFailureOutcome,
-                                     local_weak_ptr_factory_.GetWeakPtr()));
+            controller->token().group_id,
+            base::BindOnce(&CheckingFlowRequirementsState::
+                               ProcessGroupDataOrFailureOutcome,
+                           local_weak_ptr_factory_.GetWeakPtr()));
         break;
       }
       case CollaborationController::Flow::kShare:
@@ -184,15 +197,12 @@ class CheckingFlowRequirementsState : public ControllerState {
   // Called to process the outcome of data sharing read event.
   void ProcessGroupDataOrFailureOutcome(
       const GroupDataOrFailureOutcome& group_outcome) {
-    CollaborationControllerDelegate::Outcome outcome =
-        CollaborationControllerDelegate::Outcome::kSuccess;
-
-    // ReadGroup failed. This can happen due to version mismatch.
+    // TODO(crbug.com/373403973): add version check.
     if (!group_outcome.has_value()) {
-      outcome = CollaborationControllerDelegate::Outcome::kFailure;
+      HandleError();
     }
 
-    ProcessOutcome(outcome);
+    OnProcessingFinished();
   }
 
   void OnProcessingFinished() override {
@@ -213,7 +223,65 @@ class AddingUserToGroupState : public ControllerState {
         base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-  void OnProcessingFinished() override { CheckSyncAndHandleTransition(); }
+  void OnProcessingFinished() override {
+    if (!IsTabGroupInSync() || !IsPeopleGroupInDataSharing()) {
+      controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
+      return;
+    }
+    controller->TransitionTo(StateId::kOpeningLocalTabGroup);
+  }
+};
+
+class WaitingForSyncAndDataSharingGroup
+    : public ControllerState,
+      public tab_groups::TabGroupSyncService::Observer,
+      public data_sharing::DataSharingService::Observer {
+ public:
+  WaitingForSyncAndDataSharingGroup(StateId id,
+                                    CollaborationController* controller)
+      : ControllerState(id, controller) {
+    // TODO(crbug.com/373403973): Add timeout waiting for sync and data sharing
+    // service.
+    tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
+    data_sharing_observer_.Observe(controller->data_sharing_service());
+
+    // Force update sync.
+    controller->sync_service()->TriggerRefresh({syncer::SHARED_TAB_GROUP_DATA});
+  }
+
+  // ControllerState implementation.
+  void OnProcessingFinished() override {
+    controller->TransitionTo(StateId::kOpeningLocalTabGroup);
+  }
+
+  // TabGroupSyncService::Observer implementation.
+  void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
+                       tab_groups::TriggerSource source) override {
+    if (group.collaboration_id().has_value() &&
+        group.collaboration_id().value() ==
+            tab_groups::CollaborationId(controller->token().group_id.value()) &&
+        IsPeopleGroupInDataSharing()) {
+      ProcessOutcome(Outcome::kSuccess);
+    }
+  }
+
+  // DataSharingService::Observer implementation.
+  void OnGroupAdded(const data_sharing::GroupData& group_data,
+                    const base::Time& event_time) override {
+    if (group_data.group_token.group_id.value() ==
+            controller->token().group_id.value() &&
+        IsTabGroupInSync()) {
+      ProcessOutcome(Outcome::kSuccess);
+    }
+  }
+
+ private:
+  base::ScopedObservation<tab_groups::TabGroupSyncService,
+                          tab_groups::TabGroupSyncService::Observer>
+      tab_group_sync_observer_{this};
+  base::ScopedObservation<data_sharing::DataSharingService,
+                          data_sharing::DataSharingService::Observer>
+      data_sharing_observer_{this};
 };
 
 class OpeningLocalTabGroupState : public ControllerState {
@@ -256,6 +324,7 @@ CollaborationController::CollaborationController(
     CollaborationService* collaboration_service,
     data_sharing::DataSharingService* data_sharing_service,
     tab_groups::TabGroupSyncService* tab_group_sync_service,
+    syncer::SyncService* sync_service,
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     FinishCallback finish_and_delete)
     : flow_(flow),
@@ -263,6 +332,7 @@ CollaborationController::CollaborationController(
       collaboration_service_(collaboration_service),
       data_sharing_service_(data_sharing_service),
       tab_group_sync_service_(tab_group_sync_service),
+      sync_service_(sync_service),
       delegate_(std::move(delegate)),
       finish_and_delete_(std::move(finish_and_delete)) {
   current_state_ = std::make_unique<PendingState>(StateId::kPending, this);
@@ -312,8 +382,8 @@ std::unique_ptr<ControllerState> CollaborationController::CreateStateObject(
       return std::make_unique<CheckingFlowRequirementsState>(state, this);
     case StateId::kAddingUserToGroup:
       return std::make_unique<AddingUserToGroupState>(state, this);
-    case StateId::kWaitingForSyncTabGroup:
-      return std::make_unique<ControllerState>(state, this);
+    case StateId::kWaitingForSyncAndDataSharingGroup:
+      return std::make_unique<WaitingForSyncAndDataSharingGroup>(state, this);
     case StateId::kOpeningLocalTabGroup:
       return std::make_unique<OpeningLocalTabGroupState>(state, this);
     case StateId::kCancel:
