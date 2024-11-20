@@ -19,6 +19,7 @@ export class WebCamFaceLandmarker {
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
   private onTrackEndedHandler_: () => void;
+  private stopped_ = true;
   declare private readyForTesting_: Promise<void>;
   private setReadyForTesting_?: () => void;
 
@@ -39,6 +40,7 @@ export class WebCamFaceLandmarker {
    * detecting face landmarks.
    */
   async init(): Promise<void> {
+    this.stopped_ = false;
     await this.createFaceLandmarker_();
     await this.connectToWebCam_();
     this.startDetectingFaceLandmarks_();
@@ -105,6 +107,15 @@ export class WebCamFaceLandmarker {
     };
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     const tracks = stream.getVideoTracks();
+
+    // It is possible for FaceGaze to be turned off before getUserMedia()
+    // completes. If FaceGaze has stopped when we finish this promise, then
+    // clean up the webcam resources so the webcam does not stay on.
+    if (this.stopped_) {
+      tracks[0].stop();
+      return;
+    }
+
     this.imageCapture_ = new ImageCapture(tracks[0]);
     this.imageCapture_.track.addEventListener(
         'ended', this.onTrackEndedHandler_);
@@ -148,6 +159,7 @@ export class WebCamFaceLandmarker {
   }
 
   stop(): void {
+    this.stopped_ = true;
     if (this.imageCapture_) {
       this.imageCapture_.track.removeEventListener(
           'ended', this.onTrackEndedHandler_);
