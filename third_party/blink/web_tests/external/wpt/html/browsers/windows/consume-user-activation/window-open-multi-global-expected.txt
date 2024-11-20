@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] window.open() and consuming user activation with multiple globals in play
+  assert_false: User activation of the entry global should be consumed expected false got true
+Harness: the test ran to completion.
