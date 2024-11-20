@@ -351,6 +351,9 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
         '-Dcom.android.tools.r8.allowCodeReplacement=false',
         # Required to use "-keep,allowcodereplacement"
         '-Dcom.android.tools.r8.allowTestProguardOptions=true',
+        # Can remove this once the pass is enabled by default.
+        # b/145280859
+        '-Dcom.android.tools.r8.enableListIterationRewriting=1',
     ]
     if options.sdk_extension_jars:
       # Enable API modelling for OS extensions. https://b/326252366
