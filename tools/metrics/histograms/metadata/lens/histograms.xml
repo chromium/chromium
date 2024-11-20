@@ -245,6 +245,32 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded once when the contextual search box is shown.</summary>
 </histogram>
 
+<histogram
+    name="Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType.{DocumentType}.ShownInSession"
+    enum="Boolean" expires_after="2025-05-06">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed, sliced by document
+    type. Records whether any zero prefix contextual suggestions were shown in
+    sessions in which the contextual searchbox was shown. The document type is
+    the intial document type when the lens overlay is invoked, not necessarily
+    the same as the document type as when ZPS is shown.
+  </summary>
+  <token key="DocumentType" variants="DocumentTypes"/>
+</histogram>
+
+<histogram name="Lens.Overlay.ContextualSuggest.ZPS.ShownInSession"
+    enum="Boolean" expires_after="2025-05-06">
+  <owner>niharm@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once when the Lens Overlay feature is dismissed. Records whether
+    any zero prefix contextual suggestions were shown in sessions in which the
+    contextual searchbox was shown.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.Dismissed" enum="LensOverlayDismissalSource"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>

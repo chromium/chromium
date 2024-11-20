@@ -57,6 +57,9 @@ class LensSearchboxClient {
   // Called when autocomplete returns empty results on the last update or when
   // the autocomplete stop timer triggers.
   virtual void ShowGhostLoaderErrorState() = 0;
+
+  // Called when autocomplete returns zero suggest results.
+  virtual void OnZeroSuggestShown() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_

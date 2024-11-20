@@ -621,8 +621,13 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
   SearchboxHandler::OnResultChanged(controller, default_match_changed);
   // Show the ghost loader error state if the result is empty on the last async
   // pass of the autocomplete controller (there will not be anymore updates).
-  if (lens_searchbox_client_ && controller->done() &&
-      controller->result().empty()) {
-    lens_searchbox_client_->ShowGhostLoaderErrorState();
+  if (lens_searchbox_client_) {
+    if (controller->done() && controller->result().empty()) {
+      lens_searchbox_client_->ShowGhostLoaderErrorState();
+    }
+
+    if (controller->input().IsZeroSuggest() && !controller->result().empty()) {
+      lens_searchbox_client_->OnZeroSuggestShown();
+    }
   }
 }

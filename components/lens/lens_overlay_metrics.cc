@@ -141,16 +141,29 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
-void RecordContextualSearchboxFocusedInSession(
+void RecordContextualSearchboxSessionEndMetrics(
     bool contextual_searchbox_focused_in_session,
+    bool contextual_zps_shown_in_session,
     lens::PageContentMimeType page_content_type) {
+  // UMA contextual searchbox focused in session.
   base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchbox.FocusedInSession",
                             contextual_searchbox_focused_in_session);
-  const auto histogram_name =
+  // UMA contextual searchbox focused in session sliced by document type.
+  const auto sliced_focused_histogram_name =
       "Lens.Overlay.ContextualSearchbox.ByDocumentType." +
       DocumentTypeToString(page_content_type) + ".FocusedInSession";
-  base::UmaHistogramBoolean(histogram_name,
+  base::UmaHistogramBoolean(sliced_focused_histogram_name,
                             contextual_searchbox_focused_in_session);
+
+  // UMA contextual suggest shown in session.
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
+                            contextual_zps_shown_in_session);
+  // UMA contextual suggest shown in session sliced by document type.
+  const auto sliced_contextual_zps_histogram_name =
+      "Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType." +
+      DocumentTypeToString(page_content_type) + ".ShownInSession";
+  base::UmaHistogramBoolean(sliced_contextual_zps_histogram_name,
+                            contextual_zps_shown_in_session);
 }
 
 void RecordSessionForegroundDuration(
