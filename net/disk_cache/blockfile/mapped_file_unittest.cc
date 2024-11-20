@@ -49,7 +49,7 @@ TEST_F(DiskCacheTest, MappedFile_SyncIO) {
 
   char buffer1[20];
   char buffer2[20];
-  CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
+  CacheTestFillBuffer(base::as_writable_byte_span(buffer1), false);
   base::strlcpy(buffer1, "the data", std::size(buffer1));
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 8192));
   EXPECT_TRUE(file->Read(buffer2, sizeof(buffer2), 8192));
@@ -68,7 +68,7 @@ TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
 
   char buffer1[20];
   char buffer2[20];
-  CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
+  CacheTestFillBuffer(base::as_writable_byte_span(buffer1), false);
   base::strlcpy(buffer1, "the data", std::size(buffer1));
   bool completed;
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 1024 * 1024, &callback,
