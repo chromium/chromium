@@ -34,6 +34,8 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
                            public ExtensionRegistryObserver,
                            public MediaCaptureDevicesDispatcher::Observer {
  public:
+  explicit TabCaptureRegistry(content::BrowserContext* context);
+  ~TabCaptureRegistry() override;
   TabCaptureRegistry(const TabCaptureRegistry&) = delete;
   TabCaptureRegistry& operator=(const TabCaptureRegistry&) = delete;
 
@@ -84,9 +86,6 @@ class TabCaptureRegistry : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<TabCaptureRegistry>;
   class LiveRequest;
-
-  explicit TabCaptureRegistry(content::BrowserContext* context);
-  ~TabCaptureRegistry() override;
 
   // Used by BrowserContextKeyedAPI.
   static const char* service_name() {

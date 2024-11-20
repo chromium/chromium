@@ -74,6 +74,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
     virtual ~TestObserver() = default;
   };
 
+  explicit RulesMonitorService(content::BrowserContext* browser_context);
   RulesMonitorService(const RulesMonitorService&) = delete;
   RulesMonitorService& operator=(const RulesMonitorService&) = delete;
 
@@ -169,10 +170,6 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   class ApiCallQueue;
 
   friend class BrowserContextKeyedAPIFactory<RulesMonitorService>;
-
-  // The constructor is kept private since this should only be created by the
-  // BrowserContextKeyedAPIFactory.
-  explicit RulesMonitorService(content::BrowserContext* browser_context);
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "RulesMonitorService"; }
