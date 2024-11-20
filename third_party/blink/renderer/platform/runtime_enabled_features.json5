@@ -3846,7 +3846,7 @@
       // only <option>, <optgroup>, and <hr>.
       // https://github.com/whatwg/html/issues/10310
       name: "SelectParserRelaxation",
-      status: "stable",
+      status: "experimental",
       public: true,
     },
     {
