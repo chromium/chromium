@@ -194,6 +194,16 @@ struct ShortcutBoosting : Config<ShortcutBoosting> {
   bool group_with_searches;
 };
 
+// If enabled, EnterpriseSearchAggregatorSettings are applied.
+struct SparkSearch : Config<SparkSearch> {
+  DECLARE_FEATURE(kSparkSearch);
+  SparkSearch();
+  bool enabled;
+  // If enabled, users can perform a scoped search using the policy set
+  // keywords in the omnibox.
+  bool scoped;
+};
+
 // If enabled, affects autocompleted keywords (e.g. input 'youtu Ispiryan' ->
 // match 'Ispiryan - Search YouTube').
 // 1) These autocompleted keywords will be scored `score` instead of the default
