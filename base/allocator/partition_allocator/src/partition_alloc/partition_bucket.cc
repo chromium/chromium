@@ -223,6 +223,18 @@ SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
   PartitionPageMetadata<MetadataKind::kReadOnly>* page_metadata = nullptr;
 
   {
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+    // Because of the performance reason, PartitionRoot's lock is unlocked
+    // here. However this causes multi-thread issue when running
+    // EnableShadowMetadata(). If some thread is running PartitionDirectMap()
+    // and unlock PartitionRoot lock and also another thread is running
+    // EnableShadowMetadata(), the metadata page's permission will be modified
+    // by both threads and chrome will crash. c.f. crbug.com/378809882
+    // Be careful. This should not block PartitionDirectMap() in another thread.
+    internal::SharedLock shared_lock(
+        PartitionRoot::g_shadow_metadata_init_mutex_);
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
     // Getting memory for direct-mapped allocations doesn't interact with the
     // rest of the allocator, but takes a long time, as it involves several
     // system calls. Although no mmap() (or equivalent) calls are made on

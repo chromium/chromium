@@ -71,6 +71,7 @@
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_oom.h"
 #include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_shared_mutex.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
 #include "partition_alloc/thread_cache.h"
@@ -386,6 +387,12 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Not overriding the global one to only change it for this partition.
   internal::base::TimeTicks (*now_maybe_overridden_for_testing)() =
       internal::base::TimeTicks::Now;
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  // Locks not to run EnableShadowMetadata() and PartitionDirectMap()
+  // at the same time.
+  static internal::SharedMutex g_shadow_metadata_init_mutex_;
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
   PartitionRoot();
   explicit PartitionRoot(PartitionOptions opts);

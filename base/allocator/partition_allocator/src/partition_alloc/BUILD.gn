@@ -442,6 +442,7 @@ if (is_clang_or_gcc) {
       "partition_page_constants.h",
       "partition_root.cc",
       "partition_root.h",
+      "partition_shared_mutex.h",
       "partition_stats.cc",
       "partition_stats.h",
       "partition_superpage_extent_entry.h",
