@@ -107,8 +107,10 @@ void OnTabOrganizationModelExecutionResult(
                                std::move(response_tab_ids), group_id);
   }
 
-  const std::string execution_id =
-      log_entry->log_ai_data_request()->model_execution_info().execution_id();
+  const std::string execution_id = log_entry->log_ai_data_request()
+                                       ->tab_organization()
+                                       .model_execution_info()
+                                       .execution_id();
 
   std::unique_ptr<TabOrganizationResponse> local_response =
       std::make_unique<TabOrganizationResponse>(
