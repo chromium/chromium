@@ -301,9 +301,9 @@ BASE_FEATURE(kAutofillUpstream,
 // upload save bubble.
 BASE_FEATURE(kAutofillUpstreamUpdatedUi,
              "AutofillUpstreamUpdatedUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAutofillUpstreamUpdatedUiTreatment{
-    &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 0};
+    &kAutofillUpstreamUpdatedUi, "autofill_upstream_updated_ui_treatment", 1};
 
 // When enabled, adds a timeout on the network request for VcnEnroll requests.
 BASE_FEATURE(kAutofillVcnEnrollRequestTimeout,

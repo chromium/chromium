@@ -1506,21 +1506,6 @@ TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
             u"code to your device");
 }
 
-TEST_F(SaveCardBubbleControllerImplTestWithCvCStorageAndFilling,
-       UploadCardSaveWithCvcDialogContent) {
-  // Show the server card save with CVC bubble.
-  ShowUploadBubble(
-      /*options=*/SaveCreditCardOptions()
-          .with_card_save_type(CardSaveType::kCardSaveWithCvc)
-          .with_show_prompt(true));
-
-  ASSERT_EQ(BubbleType::UPLOAD_SAVE, controller()->GetBubbleType());
-  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
-  EXPECT_EQ(controller()->GetExplanatoryMessage(),
-            u"To pay faster next time, save your card, encrypted security "
-            u"code, and billing address in your Google Account");
-}
-
 using UploadCardUpdatedDesktopUiTestData =
     std::tuple<UpdatedDesktopUiTreatmentArm, int, int>;
 
