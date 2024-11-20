@@ -268,7 +268,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
         selected_buyer_and_seller_reporting_id.has_value()) {
       const std::string reporting_key = blink::HashedKAnonKeyForAdNameReporting(
           interest_group, *maybe_matching_ad,
-          *selected_buyer_and_seller_reporting_id);
+          selected_buyer_and_seller_reporting_id);
       if (!IsKAnon(kanon_keys, reporting_key)) {
         return nullptr;
       }
@@ -1954,6 +1954,18 @@ class InterestGroupAuction::BuyerHelper
       // Bid render url must match the interest group.
       return nullptr;
     }
+
+    // If k-anonymity is enforced, the reporting k-anon key on the server has
+    // to match what we calculate on the client.
+    if (bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon) {
+      if (!bid_state->kanon_keys.contains(
+              blink::HashedKAnonKeyForAdNameReporting(
+                  interest_group, *matching_ad,
+                  selected_buyer_and_seller_reporting_id))) {
+        return nullptr;
+      }
+    }
+
     // Reporting IDs used by the server (if any) must match the ad on device.
     if (selected_buyer_and_seller_reporting_id.has_value() &&
         !IsSelectedReportingIdValid(
