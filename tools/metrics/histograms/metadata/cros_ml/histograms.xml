@@ -142,6 +142,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MachineLearningService.ImageAnnotator.AnnotateEncodedImage.Event"
+    enum="Boolean" expires_after="2025-05-04">
+  <owner>chenjih@google.com</owner>
+  <owner>nbowe@chromium.org</owner>
+  <summary>
+    The result of image annotation, which can be OK or some specific error.
+  </summary>
+</histogram>
+
 <histogram name="MachineLearningService.LoadModelResult"
     enum="MachineLearningServiceLoadModelResultEvent"
     expires_after="2025-05-01">
