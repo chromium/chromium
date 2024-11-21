@@ -4137,9 +4137,6 @@ extern const char kPhoneHubCallNotificationDescription[];
 extern const char kPompanoName[];
 extern const char kPompanoDescritpion[];
 
-extern const char kPreferDcheckName[];
-extern const char kPreferDcheckDescription[];
-
 extern const char kPrintingPpdChannelName[];
 extern const char kPrintingPpdChannelDescription[];
 

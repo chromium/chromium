@@ -18289,7 +18289,6 @@ from previous Chrome versions.
   <int value="-809640965" label="ShelfAutoHideSeparation:enabled"/>
   <int value="-809456392" label="WebViewVulkanIntermediateBuffer:enabled"/>
   <int value="-808486493" label="NewWallpaperPicker:disabled"/>
-  <int value="-807864284" label="prefer-dcheck"/>
   <int value="-807352944" label="IppFirstSetupForUsbPrinters:disabled"/>
   <int value="-806549905"
       label="TabbedAppOverflowMenuThreeButtonActionbar:disabled"/>
@@ -22774,6 +22773,7 @@ from previous Chrome versions.
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
   <int value="1008809847" label="PrivacySandboxInternalsDevUI:disabled"/>
   <int value="1009252543" label="BlinkExtension:disabled"/>
+  <int value="1009396667" label="(Obsolete) prefer-dcheck"/>
   <int value="1009437086" label="AutofillEnableOfferNotification:disabled"/>
   <int value="1009596554" label="PWAsDefaultOfflinePage:enabled"/>
   <int value="1009713313" label="NtpChromeCartHistoryClusterCoexist:disabled"/>

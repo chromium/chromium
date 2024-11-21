@@ -111,7 +111,6 @@
   "optimization-guide-enable-dogfood-logging",
   "overlay-scrollbars",
   "overlay-strategies",
-  "prefer-dcheck",
   "prerender2",
   "printing-ppd-channel",
   "protected-audience-debug-token",

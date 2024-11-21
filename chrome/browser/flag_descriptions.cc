@@ -7149,10 +7149,6 @@ const char kPhoneHubCallNotificationDescription[] =
 const char kPompanoName[] = "Pompano feature";
 const char kPompanoDescritpion[] = "Enable Pompano feature on ChromeOS.";
 
-const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
-const char kPreferDcheckDescription[] =
-    "Use a DCHECK-enabled build when available.";
-
 const char kPrintingPpdChannelName[] = "Printing PPD channel";
 const char kPrintingPpdChannelDescription[] =
     "The channel from which PPD index "

@@ -1000,24 +1000,12 @@ const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
      std::size(kZinkEnableRecommended), nullptr},
     {"for all apps", kZinkEnableAll, std::size(kZinkEnableAll), nullptr}};
 
-const char kPreferDcheckInternalName[] = "prefer-dcheck";
-
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
 const char kLacrosStabilityInternalName[] = "lacros-stability";
 const char kLacrosWaylandLoggingInternalName[] = "lacros-wayland-logging";
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
-
-const FeatureEntry::Choice kPreferDcheckChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {component_updater::kPreferDcheckOptIn,
-     component_updater::kPreferDcheckSwitch,
-     component_updater::kPreferDcheckOptIn},
-    {component_updater::kPreferDcheckOptOut,
-     component_updater::kPreferDcheckSwitch,
-     component_updater::kPreferDcheckOptOut},
-};
 
 const FeatureEntry::Choice kLacrosStabilityChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
@@ -4766,9 +4754,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosWaylandLoggingName,
      flag_descriptions::kLacrosWaylandLoggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLacrosWaylandLogging)},
-    {kPreferDcheckInternalName, flag_descriptions::kPreferDcheckName,
-     flag_descriptions::kPreferDcheckDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kPreferDcheckChoices)},
     {"lacros-profile-migration-force-off",
      flag_descriptions::kLacrosProfileMigrationForceOffName,
      flag_descriptions::kLacrosProfileMigrationForceOffDescription, kOsCrOS,
@@ -11998,10 +11983,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kArcEnableAttestationFlag, entry.internal_name)) {
     return base::CommandLine::ForCurrentProcess()->HasSwitch(
         ash::switches::kArcEnableAttestation);
-  }
-
-  if (!strcmp(kPreferDcheckInternalName, entry.internal_name)) {
-    return !crosapi::browser_util::IsLacrosAllowedToBeEnabled();
   }
 
   if (!strcmp(kLacrosStabilityInternalName, entry.internal_name)) {

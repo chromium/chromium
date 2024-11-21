@@ -6948,13 +6948,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "prefer-dcheck",
-    "owners": [ "pbos@chromium.org", "waffles@chromium.org" ],
-    // This is a long-lived flag to allow users to opt in to receive a
-    // DCHECK-enabled build from the updater.
-    "expiry_milestone": -1
-  },
-  {
     "name": "prerender-early-document-lifecycle-update",
     "owners": [ "lingqi@chromium.org", "//content/browser/preloading/prerender/OWNERS" ],
     "expiry_milestone": 140
