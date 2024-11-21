@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DeclutterPageElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {DeclutterPageElement, Tab, TabSearchItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {getAnnouncerInstance, TabSearchApiProxyImpl, TIMEOUT_MS} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -15,12 +15,19 @@ suite('DeclutterPageTest', () => {
   let declutterPage: DeclutterPageElement;
   let testApiProxy: TestTabSearchApiProxy;
 
-  function declutterPageSetup(tabCount: number = 3) {
+  function declutterPageSetup(
+      staleTabCount: number = 3, duplicateTabCount: number = 0) {
+    loadTimeData.overrideValues({
+      dedupeEnabled: true,
+    });
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
-    const staleTabs = createStaleTabs(tabCount);
+    const staleTabs = createStaleTabs(staleTabCount);
     testApiProxy.setStaleTabs(staleTabs);
+    const duplicateTabs = createDuplicateTabs(duplicateTabCount, 3);
+    testApiProxy.setDuplicateTabs(duplicateTabs);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
     declutterPage = document.createElement('declutter-page');
@@ -32,26 +39,44 @@ suite('DeclutterPageTest', () => {
     const tabList: Tab[] = [];
     for (let i = 0; i < count; i++) {
       tabList.push(
-          createTab({title: 'Tab ' + count, url: {url: 'https://tab.com/'}}));
+          createTab({title: 'Tab ' + i, url: {url: 'https://tab.com/'}}));
     }
     return tabList;
   }
 
+  function createDuplicateTabs(
+      listCount: number, duplicateCount: number): {[key: string]: Tab[]} {
+    const tabMap: {[key: string]: Tab[]} = {};
+    for (let i = 0; i < listCount; i++) {
+      const url = 'https://tab.com/' + i;
+      const tabList: Tab[] = [];
+      for (let j = 0; j < duplicateCount; j++) {
+        tabList.push(createTab({title: 'Tab ' + j, url: {url: url}}));
+      }
+      tabMap[url] = tabList;
+    }
+    return tabMap;
+  }
+
   test('Shows correct tab count', async () => {
-    const tabCount = 3;
-    await declutterPageSetup(tabCount);
-    assertEquals(1, testApiProxy.getCallCount('getStaleTabs'));
-    const staleTabElements =
-        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
-    assertEquals(tabCount, staleTabElements.length);
+    const staleTabCount = 3;
+    const duplicateTabCount = 4;
+    await declutterPageSetup(staleTabCount, duplicateTabCount);
+    assertEquals(1, testApiProxy.getCallCount('getUnusedTabs'));
+    const staleTabElements = declutterPage.shadowRoot!.querySelectorAll(
+        '#staleTabList > tab-search-item');
+    assertEquals(staleTabCount, staleTabElements.length);
+    const duplicateTabElements = declutterPage.shadowRoot!.querySelectorAll(
+        '#duplicateTabList > tab-search-item');
+    assertEquals(duplicateTabCount, duplicateTabElements.length);
   });
 
   test('Closes tabs', async () => {
     await declutterPageSetup();
     assertEquals(0, testApiProxy.getCallCount('declutterTabs'));
 
-    const staleTabElements =
-        declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
+    const staleTabElements = declutterPage.shadowRoot!.querySelectorAll(
+        '#staleTabList > tab-search-item');
     const closeButton = declutterPage.shadowRoot!.querySelector('cr-button');
     assertTrue(!!closeButton);
     closeButton.click();
@@ -70,7 +95,8 @@ suite('DeclutterPageTest', () => {
     assertEquals(0, testApiProxy.getCallCount('excludeFromStaleTabs'));
 
     const staleTabElement =
-        declutterPage.shadowRoot!.querySelector('tab-search-item');
+        declutterPage.shadowRoot!.querySelector<TabSearchItemElement>(
+            '#staleTabList > tab-search-item');
     assertTrue(!!staleTabElement);
     const removeButton =
         staleTabElement.shadowRoot!.querySelector('cr-icon-button');
@@ -87,8 +113,25 @@ suite('DeclutterPageTest', () => {
         announcer.shadowRoot!.querySelector('#messages')!.textContent);
   });
 
-  test('Shows tab list on nonzero stale tabs', async () => {
-    await declutterPageSetup(1);
+  test('Excludes from duplicate tabs', async () => {
+    await declutterPageSetup(3, 3);
+    assertEquals(0, testApiProxy.getCallCount('excludeFromDuplicateTabs'));
+
+    const duplicateTabElement =
+        declutterPage.shadowRoot!.querySelector<TabSearchItemElement>(
+            '#duplicateTabList > tab-search-item');
+    assertTrue(!!duplicateTabElement);
+    const removeButton =
+        duplicateTabElement.shadowRoot!.querySelector('cr-icon-button');
+    assertTrue(!!removeButton);
+    removeButton.click();
+
+    const [url] = await testApiProxy.whenCalled('excludeFromDuplicateTabs');
+    assertEquals(duplicateTabElement.data.tab.url, url);
+  });
+
+  test('Shows tab list on nonzero tabs', async () => {
+    await declutterPageSetup(2);
     const tabList = declutterPage.shadowRoot!.querySelector('#staleTabList');
     assertTrue(!!tabList);
     assertTrue(isVisible(tabList));
@@ -97,7 +140,7 @@ suite('DeclutterPageTest', () => {
     assertFalse(!!emptyState);
   });
 
-  test('Shows empty state on zero stale tabs', async () => {
+  test('Shows empty state on zero tabs', async () => {
     await declutterPageSetup(0);
     const tabList = declutterPage.shadowRoot!.querySelector('#staleTabList');
     assertFalse(!!tabList);

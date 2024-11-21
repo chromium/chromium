@@ -242,6 +242,12 @@ struct TabsRemovedInfo {
   array<RecentlyClosedTab> recently_closed_tabs;
 };
 
+// Information about unused tabs, inclusive of stale and duplicate tabs.
+struct UnusedTabInfo {
+  array<Tab> stale_tabs;
+  map<string, array<Tab>> duplicate_tabs;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -273,11 +279,16 @@ interface PageHandler {
   // Exclude the given tab from the stale tabs list.
   ExcludeFromStaleTabs(int32 tab_id);
 
+  // Exclude all tabs with the given URL from the duplicate tabs list.
+  ExcludeFromDuplicateTabs(url.mojom.Url url);
+
   // Get window and tab data for the current profile.
   GetProfileData() => (ProfileData profile_data);
 
-  // Get all tabs that are considered stale based on their last active time.
-  GetStaleTabs() => (array<Tab> tabs);
+  // Get all tabs that are considered stale based on their last active time,
+  // and tabs that are duplicates of other tabs based on partial URL match
+  // (excludes fragments).
+  GetUnusedTabs() => (UnusedTabInfo tabs);
 
   // Get the currently active section of the tab search bubble.
   GetTabSearchSection() => (TabSearchSection section);
@@ -385,6 +396,6 @@ interface Page {
   TabOrganizationEnabledChanged(bool enabled);
 
   // Called when the list of tabs considered stale based on their last active
-  // time has changed.
-  StaleTabsChanged(array<Tab> tabs);
+  // time, or duplicate based on partial URL match, has changed.
+  UnusedTabsChanged(UnusedTabInfo tabs);
 };

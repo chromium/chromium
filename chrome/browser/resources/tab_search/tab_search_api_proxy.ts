@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UserFeedback} from './tab_search.mojom-webui.js';
+import type {ProfileData, SwitchToTabInfo, Tab, TabOrganizationFeature, TabOrganizationModelStrategy, TabOrganizationSession, TabSearchSection, UnusedTabInfo, UserFeedback} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
 /**
@@ -31,9 +32,11 @@ export interface TabSearchApiProxy {
 
   excludeFromStaleTabs(tabId: number): void;
 
+  excludeFromDuplicateTabs(url: Url): void;
+
   getProfileData(): Promise<{profileData: ProfileData}>;
 
-  getStaleTabs(): Promise<{tabs: Tab[]}>;
+  getUnusedTabs(): Promise<{tabs: UnusedTabInfo}>;
 
   getTabSearchSection(): Promise<{section: TabSearchSection}>;
 
@@ -120,12 +123,16 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.excludeFromStaleTabs(tabId);
   }
 
+  excludeFromDuplicateTabs(url: Url) {
+    this.handler.excludeFromDuplicateTabs(url);
+  }
+
   getProfileData() {
     return this.handler.getProfileData();
   }
 
-  getStaleTabs() {
-    return this.handler.getStaleTabs();
+  getUnusedTabs() {
+    return this.handler.getUnusedTabs();
   }
 
   getTabSearchSection() {

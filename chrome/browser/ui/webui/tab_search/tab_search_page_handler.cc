@@ -399,7 +399,19 @@ void TabSearchPageHandler::ExcludeFromStaleTabs(int32_t tab_id) {
 
   std::erase(stale_tabs_, details->tab);
 
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
+}
+
+void TabSearchPageHandler::ExcludeFromDuplicateTabs(const GURL& url) {
+  if (!tab_declutter_controller_) {
+    return;
+  }
+
+  tab_declutter_controller_->ExcludeFromDuplicateTabs(url);
+
+  // TODO(crbug.com/376879701): Erase from local duplicates list
+
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::RegisterTabDeclutterCallbacks(
@@ -454,27 +466,27 @@ void TabSearchPageHandler::BrowserWindowInterfaceChanged() {
 void TabSearchPageHandler::OnStaleTabDidEnterForeground(
     tabs::TabInterface* tab) {
   RemoveStaleTab(static_cast<tabs::TabInterface*>(tab));
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::OnStaleTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
   RemoveStaleTab(static_cast<tabs::TabInterface*>(tab));
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::OnStaleTabPinnedStateChanged(tabs::TabInterface* tab,
                                                         bool new_pinned_state) {
   RemoveStaleTab(tab);
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::OnStaleTabGroupChanged(
     tabs::TabInterface* tab,
     std::optional<tab_groups::TabGroupId> new_group) {
   RemoveStaleTab(tab);
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
@@ -503,9 +515,10 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
   std::move(callback).Run(std::move(profile_tabs));
 }
 
-void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
+void TabSearchPageHandler::GetUnusedTabs(GetUnusedTabsCallback callback) {
   UpdateStaleTabs();
-  std::move(callback).Run(GetMojoStaleTabs());
+  // TODO(crbug.com/376879734): Maybe update duplicate tabs here?
+  std::move(callback).Run(GetMojoUnusedTabs());
 }
 
 void TabSearchPageHandler::GetTabSearchSection(
@@ -989,7 +1002,7 @@ void TabSearchPageHandler::SetTabDeclutterController(
   if (tab_declutter_controller_) {
     tab_declutter_observation_.Observe(tab_declutter_controller_.get());
     UpdateStaleTabs();
-    page_->StaleTabsChanged(GetMojoStaleTabs());
+    page_->UnusedTabsChanged(GetMojoUnusedTabs());
   }
 }
 
@@ -1001,7 +1014,15 @@ void TabSearchPageHandler::OnStaleTabsProcessed(
   for (tabs::TabInterface* tab : stale_tabs_) {
     RegisterTabDeclutterCallbacks(tab);
   }
-  page_->StaleTabsChanged(GetMojoStaleTabs());
+  page_->UnusedTabsChanged(GetMojoUnusedTabs());
+}
+
+mojo::StructPtr<tab_search::mojom::UnusedTabInfo>
+TabSearchPageHandler::GetMojoUnusedTabs() {
+  auto unused_tabs = tab_search::mojom::UnusedTabInfo::New();
+  unused_tabs->stale_tabs = GetMojoStaleTabs();
+  unused_tabs->duplicate_tabs = GetMojoDuplicateTabs();
+  return unused_tabs;
 }
 
 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>
@@ -1021,6 +1042,17 @@ TabSearchPageHandler::GetMojoStaleTabs() {
                                last_active_text));
   }
   return mojo_tabs;
+}
+
+base::flat_map<std::string,
+               std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+TabSearchPageHandler::GetMojoDuplicateTabs() {
+  // TODO(crbug.com/376879734): Placeholder, replace with actual duplicate tabs.
+  base::flat_map<std::string,
+                 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+      map;
+  map.emplace("about:blank", GetMojoStaleTabs());
+  return map;
 }
 
 void TabSearchPageHandler::AddRecentlyClosedEntries(

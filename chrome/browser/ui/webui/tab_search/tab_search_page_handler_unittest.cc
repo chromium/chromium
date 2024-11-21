@@ -101,7 +101,7 @@ class MockPage : public tab_search::mojom::Page {
               (tab_search::mojom::TabOrganizationFeature));
   MOCK_METHOD(void, ShowFREChanged, (bool));
   MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
-  MOCK_METHOD(void, StaleTabsChanged, (std::vector<tab_search::mojom::TabPtr>));
+  MOCK_METHOD(void, UnusedTabsChanged, (tab_search::mojom::UnusedTabInfoPtr));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,
@@ -973,7 +973,7 @@ class TabSearchPageHandlerDeclutterTest : public TabSearchPageHandlerTest {
 };
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
-  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(1);
+  EXPECT_CALL(page_, UnusedTabsChanged(_)).Times(1);
   std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
@@ -989,18 +989,18 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterFindStaleTabs) {
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
       .WillOnce(testing::Return(stale_tabs_raw_ptr));
 
-  tab_search::mojom::PageHandler::GetStaleTabsCallback callback =
+  tab_search::mojom::PageHandler::GetUnusedTabsCallback callback =
       base::BindLambdaForTesting(
-          [&](std::vector<tab_search::mojom::TabPtr> stale_tabs) {
-            EXPECT_EQ(4u, stale_tabs.size());
+          [&](tab_search::mojom::UnusedTabInfoPtr unused_tabs) {
+            EXPECT_EQ(4u, unused_tabs->stale_tabs.size());
           });
 
-  // Installing a declutter controller will trigger `GetStaleTabs()`.
-  handler()->GetStaleTabs(std::move(callback));
+  // Installing a declutter controller will trigger `GetUnusedTabs()`.
+  handler()->GetUnusedTabs(std::move(callback));
 }
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
-  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(2);
+  EXPECT_CALL(page_, UnusedTabsChanged(_)).Times(2);
   std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   for (int i = 0; i < 4; ++i) {
@@ -1027,7 +1027,7 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterObserverTest) {
 }
 
 TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterStaleTabChanges) {
-  EXPECT_CALL(page_, StaleTabsChanged(_)).Times(::testing::AtLeast(1));
+  EXPECT_CALL(page_, UnusedTabsChanged(_)).Times(::testing::AtLeast(1));
   std::vector<tabs::TabInterface*> stale_tabs_raw_ptr;
 
   // Create 10 stale tabs.
@@ -1044,13 +1044,13 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterStaleTabChanges) {
   EXPECT_CALL(*tab_declutter_controller(), GetStaleTabs())
       .WillRepeatedly(testing::Return(stale_tabs_raw_ptr));
 
-  tab_search::mojom::PageHandler::GetStaleTabsCallback callback =
+  tab_search::mojom::PageHandler::GetUnusedTabsCallback callback =
       base::BindLambdaForTesting(
-          [&](std::vector<tab_search::mojom::TabPtr> stale_tabs) {
-            EXPECT_EQ(10u, stale_tabs.size());
+          [&](tab_search::mojom::UnusedTabInfoPtr unused_tabs) {
+            EXPECT_EQ(10u, unused_tabs->stale_tabs.size());
           });
 
-  handler()->GetStaleTabs(std::move(callback));
+  handler()->GetUnusedTabs(std::move(callback));
 
   // Make a stale tab a part of a group. It should remove it from the internal
   // stale tab list.

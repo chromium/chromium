@@ -89,8 +89,9 @@ class TabSearchPageHandler
                              int32_t organization_id,
                              const std::u16string& name) override;
   void ExcludeFromStaleTabs(int32_t tab_id) override;
+  void ExcludeFromDuplicateTabs(const GURL& url) override;
   void GetProfileData(GetProfileDataCallback callback) override;
-  void GetStaleTabs(GetStaleTabsCallback callback) override;
+  void GetUnusedTabs(GetUnusedTabsCallback callback) override;
   void GetTabSearchSection(GetTabSearchSectionCallback callback) override;
   void GetTabOrganizationFeature(
       GetTabOrganizationFeatureCallback callback) override;
@@ -254,7 +255,11 @@ class TabSearchPageHandler
 
   void NotifyShowFREPrefChanged(const Profile* profile);
 
+  mojo::StructPtr<tab_search::mojom::UnusedTabInfo> GetMojoUnusedTabs();
   std::vector<mojo::StructPtr<tab_search::mojom::Tab>> GetMojoStaleTabs();
+  base::flat_map<std::string,
+                 std::vector<mojo::StructPtr<tab_search::mojom::Tab>>>
+  GetMojoDuplicateTabs();
 
   void UnregisterTabCallbacks();
   void RegisterTabDeclutterCallbacks(tabs::TabInterface* tab);

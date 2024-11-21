@@ -54,7 +54,7 @@ export function getHtml(this: DeclutterPageElement) {
                   html`
           <div id="duplicateTabList" class="tabList">
             ${
-                      this.getDuplicateTabDataList_().map(
+                      this.duplicateTabDatas_.map(
                           (item) => getTabSearchItem.bind(this)(
                               item, DeclutterType.DUPLICATE_TABS))}
           </div>
