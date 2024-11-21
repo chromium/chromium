@@ -1,33 +1,40 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
-++++++group hasAriaAttribute=true
+++++++group className='atomic-div' hasAriaAttribute=true
+++++++group className='braillelabel-div' hasAriaAttribute=true
+++++++group className='brailleroledescription-div' hasAriaAttribute=true
+++++++group className='busy-div' hasAriaAttribute=true
+++++++group className='controls-div' hasAriaAttribute=true
+++++++group className='current-div' hasAriaAttribute=true
+++++++group className='describedby-div' hasAriaAttribute=true
+++++++group className='description-div' hasAriaAttribute=true
+++++++group className='details-div' hasAriaAttribute=true
+++++++group className='flowto-div' hasAriaAttribute=true
+++++++group className='keyshortcuts-div' hasAriaAttribute=true
+++++++group className='label-div' hasAriaAttribute=true
+++++++group className='labeledby-div' hasAriaAttribute=true
+++++++group className='labelledby-div' hasAriaAttribute=true
+++++++group className='live-div' hasAriaAttribute=true
+++++++group className='owns-div' hasAriaAttribute=true
+++++++group className='relevant-div' hasAriaAttribute=true
+++++++group className='roledescription-div' hasAriaAttribute=true
 ++++++splitter horizontal
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
-++++++genericContainer hasAriaAttribute=true
+++++++genericContainer className='atomic-div' hasAriaAttribute=true
+++++++genericContainer className='braillelabel-div' hasAriaAttribute=true
+++++++genericContainer className='brailleroledescription-div' hasAriaAttribute=true
+++++++genericContainer className='busy-div' hasAriaAttribute=true
+++++++genericContainer className='controls-div' hasAriaAttribute=true
+++++++genericContainer className='current-div' hasAriaAttribute=true
+++++++genericContainer className='describedby-div' hasAriaAttribute=true
+++++++genericContainer className='description-div' hasAriaAttribute=true
+++++++genericContainer className='details-div' hasAriaAttribute=true
+++++++genericContainer className='flowto-div' hasAriaAttribute=true
+++++++genericContainer className='keyshortcuts-div' hasAriaAttribute=true
+++++++genericContainer className='label-div' hasAriaAttribute=true
+++++++genericContainer className='labeledby-div' hasAriaAttribute=true
+++++++genericContainer className='labelledby-div' hasAriaAttribute=true
+++++++genericContainer className='live-div' hasAriaAttribute=true
+++++++genericContainer className='owns-div' hasAriaAttribute=true
+++++++genericContainer className='relevant-div' hasAriaAttribute=true
+++++++genericContainer className='roledescription-div' hasAriaAttribute=true

@@ -5476,6 +5476,7 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
       HashSet<AtomicString>, aria_global_properties,
       ({
         AtomicString("ARIA-ATOMIC"),
+        AtomicString("ARIA-BRAILLELABEL"),
         AtomicString("ARIA-BRAILLEROLEDESCRIPTION"),
         AtomicString("ARIA-BUSY"),
         AtomicString("ARIA-CONTROLS"),
@@ -5484,7 +5485,6 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
         AtomicString("ARIA-DESCRIPTION"),
         AtomicString("ARIA-DETAILS"),
         AtomicString("ARIA-FLOWTO"),
-        AtomicString("ARIA-GRABBED"),
         AtomicString("ARIA-KEYSHORTCUTS"),
         AtomicString("ARIA-LABEL"),
         AtomicString("ARIA-LABELEDBY"),
