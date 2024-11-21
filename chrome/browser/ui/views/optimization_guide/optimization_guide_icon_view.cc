@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/icon_view_metadata.pb.h"
 #include "components/vector_icons/vector_icons.h"
@@ -34,6 +35,11 @@ OptimizationGuideIconView::OptimizationGuideIconView(
               browser->profile())) {
   SetProperty(views::kElementIdentifierKey, kOptimizationGuideChipElementId);
   GetViewAccessibility().SetName(u"OptimizationGuide");
+  if (optimization_guide::features::ShouldEnableOptimizationGuideIconView() &&
+      optimization_guide_service_) {
+    optimization_guide_service_->RegisterOptimizationTypes(
+        {optimization_guide::proto::OPTIMIZATION_GUIDE_ICON_VIEW});
+  }
 }
 
 OptimizationGuideIconView::~OptimizationGuideIconView() = default;
