@@ -2853,7 +2853,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2990375978470734995">Para que se aplique este cambio, vuelve a conectar los accesorios externos.</translation>
 <translation id="2990583317361835189">No permitir que los sitios utilicen sensores de movimiento</translation>
 <translation id="2991182900092497283">Ingresa un motivo para pegar estos datos:</translation>
-<translation id="2992931425024192067">Mostrar todo el contenido de notificaciones</translation>
+<translation id="2992931425024192067">Mostrar todo el contenido de las notificaciones</translation>
 <translation id="2993517869960930405">Info. de la aplicación</translation>
 <translation id="2996108796702395498">El número de serie de tu dispositivo es <ph name="SERIAL_NUMBER" />. Este número se puede usar para activar el servicio.</translation>
 <translation id="2996286169319737844">Los datos están encriptados con tu frase de contraseña de sincronización. No se incluyen formas de pago ni direcciones de Google Pay.</translation>
@@ -3361,7 +3361,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="338323348408199233">Bloquear tráfico sin VPN</translation>
 <translation id="3384362484379805487">Los archivos de idioma se comparten entre los usuarios para ahorrar espacio en el disco.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385172418915595177">La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en general en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
+<translation id="3385172418915595177">La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en la ubicación, además de mejorar, proporcionar y mantener los servicios de Google en general en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios.</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3385916046075724800">Tus grupos de pestañas ahora se guardan automáticamente.</translation>
 <translation id="3387023983419383865">,</translation>
