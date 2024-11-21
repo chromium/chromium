@@ -1220,6 +1220,13 @@
        {}
       ]
      ],
+     "inline-skipping-fragmentainer-004-crash.html": [
+      "2a29f4745ac0c384de57bc71964ae156b12ddf07",
+      [
+       null,
+       {}
+      ]
+     ],
      "large-text-node-oof-crash.html": [
       "424d663b611028762b35bccd151196759d274d1c",
       [
@@ -147497,6 +147504,32 @@
        ]
       ]
      },
+     "empty-span-size-001.html": [
+      "ea897891681462cc21516a9b62b22c5664142dcb",
+      [
+       null,
+       [
+        [
+         "/css/css-inline/empty-span-size-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "empty-span-size-002.html": [
+      "f4a80a24d2a84df5f32130ea87f2fed7e7313621",
+      [
+       null,
+       [
+        [
+         "/css/css-inline/empty-span-size-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "empty-text-node-001.html": [
       "eddf31ec59ccc206975b9947d1b4bf75e88063ed",
       [
@@ -339201,6 +339234,14 @@
        []
       ]
      },
+     "empty-span-size-001-ref.html": [
+      "6c55c63b56a0bdc1a1419b761b147cd35b54f22f",
+      []
+     ],
+     "empty-span-size-002-ref.html": [
+      "49cbe6cff93f53f1a849a54c1aae257b657b6d80",
+      []
+     ],
      "empty-text-node-001-ref.html": [
       "7ec7f1bdb0b910cb1b525535d3cc1a280a3b6136",
       []
@@ -345734,7 +345775,7 @@
       []
      ],
      "pseudo-replaced-elements-expected.txt": [
-      "fda4480a7fb75113d71ecafb982a833a3293d638",
+      "180f1a73986b17430d63d8ee8ef72c7a7d023349",
       []
      ],
      "reference": {
@@ -400235,11 +400276,7 @@
      []
     ],
     "META.yml": [
-     "1892a41ed1cffcc8ba704f28bd59f5aa64c2b46a",
-     []
-    ],
-    "idlharness.window-expected.txt": [
-     "fefd5d8416c60e71fde7df35b265c141f940f7a1",
+     "2bd06a06518723ac6832a45e5e155b0bdf9f90b5",
      []
     ],
     "resources": {
@@ -400264,7 +400301,7 @@
       []
      ],
      "utils.js": [
-      "5766971dd0d0230c644b385a4d6c282b554b2fe6",
+      "ed58c957c97132276bb813603e1d25133cf0d860",
       []
      ]
     }
@@ -417242,11 +417279,11 @@
       []
      ],
      "setParameters-maxFramerate.https-expected.txt": [
-      "a0f9da0d5245964825237d9c2f1e32596f2f7212",
+      "cb748b9de308d75754f124f255c49f610871e7ce",
       []
      ],
      "simulcast.js": [
-      "e0b90d8ac37bff19aed1c208bc84e2b649861d38",
+      "4d0da093f453a08742448b54bd03b1c54f74d3bc",
       []
      ],
      "vp9-scalability-mode.https-expected.txt": [
@@ -423542,7 +423579,7 @@
       ]
      ],
      "url-in-tags.window.js": [
-      "f20b3599013bf5b4f305549f6dc85e5756a00908",
+      "8a722dcac82b66cb80e6d428afd6f15186e468b4",
       [
        "FileAPI/url/url-in-tags.window.html",
        {}
@@ -424556,11 +424593,83 @@
       }
      ]
     ],
-    "event-dispatch-active-flag.html": [
-     "46f249c9849208288787cd5446a71725e992c233",
+    "event-dispatch-active-flag.any.js": [
+     "47c27eadb8ac314ff26d20202c19a95c18bca00b",
      [
-      null,
-      {}
+      "IndexedDB/event-dispatch-active-flag.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction - active flag is set during event dispatch"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/event-dispatch-active-flag.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction - active flag is set during event dispatch"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/event-dispatch-active-flag.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction - active flag is set during event dispatch"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/event-dispatch-active-flag.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IndexedDB Transaction - active flag is set during event dispatch"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
      ]
     ],
     "file_support.sub.html": [
@@ -640618,6 +640727,13 @@
       {}
      ]
     ],
+    "paint-timing-mixin.html": [
+     "837d45620b65c17e46c622209050a84ff48b63ae",
+     [
+      null,
+      {}
+     ]
+    ],
     "replaced-content-image.html": [
      "b3199aa0f6d54cc102ed5262c71021e232816ccc",
      [
@@ -713006,7 +713122,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "54940e3f482a0c4e1c0012733670fdae0372940a",
+      "5ac15593e4e1ea3d4921cd198166154c8628b548",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -722642,7 +722758,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "1e25d5b136806676caa400627b65d23fec26fb11",
+      "804ca88ebbaf21ec9a266db6016aae163edf52ba",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
@@ -743977,7 +744093,7 @@
     ],
     "simulcast": {
      "basic.https.html": [
-      "f7b9def7622f8f89d62bbc03924da41bf86590f9",
+      "46c0969a405b5e7b51bd63d01824abdb2342ce10",
       [
        null,
        {
@@ -743987,7 +744103,7 @@
       ]
      ],
      "getStats.https.html": [
-      "b5a9e6eb28307ccb222adaf63d28f609020edf9c",
+      "91d9ab00d874dfd200e21d9be45bf187b623da69",
       [
        null,
        {
@@ -743997,7 +744113,7 @@
       ]
      ],
      "h264.https.html": [
-      "038449aa6e7fe76125c427684b1e3cd667d13c17",
+      "2d27b963a69ee4702138bf5eb81674f416edb8a8",
       [
        null,
        {
@@ -744026,8 +744142,18 @@
        }
       ]
      ],
+     "screenshare.https.html": [
+      "5a40d8cba48dec6f08c541ffc22aeb013a9d3402",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "setParameters-active.https.html": [
-      "54191059a0628a50eb96f1b631b5ce4e1fabaf23",
+      "894014b1912a0c83acec889e927fe0fd6e86c033",
       [
        null,
        {
@@ -744056,7 +744182,7 @@
       ]
      ],
      "vp8.https.html": [
-      "3d04bc71726e719dbed700cfc72d301924b73030",
+      "9e0a8085df21ed779ca7b4b504afe6ed6e07e946",
       [
        null,
        {
@@ -744066,7 +744192,7 @@
       ]
      ],
      "vp9-scalability-mode.https.html": [
-      "8d8f974fcdcb6ec641df5d931dc5f7fac35228d3",
+      "1c2d48c5dc417be7559de0e7911b6a4a049ab354",
       [
        null,
        {
@@ -744076,7 +744202,7 @@
       ]
      ],
      "vp9.https.html": [
-      "a033dab4779684da859bb8a1e4306de50668b88e",
+      "d366120b6e84b92c1221089a89121d84af8cf08c",
       [
        null,
        {

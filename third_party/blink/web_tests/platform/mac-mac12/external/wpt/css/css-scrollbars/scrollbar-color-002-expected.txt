@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] scrollbar-color non-auto on the root overrides ::-webkit-scrollbar
+  assert_less_than: viewport has a scrollbar expected a number less than 1200 but got 1200
+Harness: the test ran to completion.

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+[FAIL] overflow scroll, scrollbar-gutter auto
+  assert_greater_than: content width expected a number greater than 200 but got 200
+[FAIL] overflow auto, scrollbar-gutter stable
+  assert_greater_than: content width expected a number greater than 200 but got 200
+[FAIL] overflow scroll, scrollbar-gutter stable
+  assert_greater_than: content width expected a number greater than 200 but got 200
+[FAIL] overflow hidden, scrollbar-gutter stable
+  assert_greater_than: content width expected a number greater than 200 but got 200
+[FAIL] overflow auto, scrollbar-gutter stable both-edges
+  assert_greater_than: content width expected a number greater than 200 but got 200
+[FAIL] overflow scroll, scrollbar-gutter stable both-edges
+  assert_greater_than: content width expected a number greater than 200 but got 200
+[FAIL] overflow hidden, scrollbar-gutter stable both-edges
+  assert_greater_than: content width expected a number greater than 200 but got 200
+Harness: the test ran to completion.
