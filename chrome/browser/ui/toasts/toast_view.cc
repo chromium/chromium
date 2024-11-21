@@ -33,6 +33,8 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -58,6 +60,10 @@ bool IsCompatibleImageSize(const ui::ImageModel* image) {
   const auto image_size = image->Size();
   return image_size.width() == intended_size &&
          image_size.height() == intended_size;
+}
+
+gfx::Insets GetLeftMargin(const int left_margin) {
+  return gfx::Insets::TLBR(0, left_margin, 0, 0);
 }
 
 // A simple `MenuModelAdapter` that runs `on_executed_command` whenever the
@@ -155,11 +161,10 @@ int ToastView::GetIconSize() {
 
 void ToastView::Init() {
   ChromeLayoutProvider* lp = ChromeLayoutProvider::Get();
-  SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets()))
-      ->set_between_child_spacing(
-          lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING));
+
+  // FlexLayout lets the toast compress itself in narrow browser windows.
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
   icon_view_->SetProperty(
@@ -176,19 +181,18 @@ void ToastView::Init() {
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetLineHeight(
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT));
+  label_->SetProperty(views::kMarginsKey,
+                      GetLeftMargin(lp->GetDistanceMetric(
+                          DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING)));
+  label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero));
+
   int max_child_height =
       lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_HEIGHT_CONTENT);
 
   if (has_action_button_) {
-    label_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(
-            0, 0, 0,
-            lp->GetDistanceMetric(
-                DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING) -
-                lp->GetDistanceMetric(
-                    DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING)));
-
     action_button_ = AddChildView(std::make_unique<views::MdTextButton>(
         action_button_callback_.Then(
             base::BindRepeating(&ToastView::Close, base::Unretained(this),
@@ -204,6 +208,10 @@ void ToastView::Init() {
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
     action_button_->SetProperty(views::kElementIdentifierKey,
                                 kToastActionButton);
+    action_button_->SetProperty(
+        views::kMarginsKey,
+        GetLeftMargin(lp->GetDistanceMetric(
+            DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_ACTION_BUTTON_SPACING)));
     SetInitiallyFocusedView(action_button_);
     max_child_height = std::max(
         max_child_height,
@@ -225,6 +233,9 @@ void ToastView::Init() {
     views::InstallCircleHighlightPathGenerator(close_button_);
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE));
     close_button_->SetProperty(views::kElementIdentifierKey, kToastCloseButton);
+    close_button_->SetProperty(
+        views::kMarginsKey, GetLeftMargin(lp->GetDistanceMetric(
+                                DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING)));
     close_button_->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOAST_CLOSE_TOOLTIP));
     if (!HasConfiguredInitiallyFocusedView()) {
@@ -252,10 +263,8 @@ void ToastView::Init() {
     const int left_margin =
         lp->GetDistanceMetric(
             DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING) -
-        lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING) -
         insets.left();
-    menu_button_->SetProperty(views::kMarginsKey,
-                              gfx::Insets::TLBR(0, left_margin, 0, 0));
+    menu_button_->SetProperty(views::kMarginsKey, GetLeftMargin(left_margin));
     max_child_height =
         std::max(max_child_height,
                  lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE) +
