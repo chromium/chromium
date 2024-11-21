@@ -2839,10 +2839,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 // with the prompt and the cancel animation is still playing, another navigation
 // commits in the main frame. The animator should continue animating and the
 // live page should be replaced by the page that was navigated to.
-//
-// TODO(https://crbug.com/379166889): Investigate and re-enable.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       DISABLED_BeforeUnload_RequestCancelledBeforeStart) {
+                       BeforeUnload_RequestCancelledBeforeStart) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
