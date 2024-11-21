@@ -99,6 +99,32 @@ void CopyAndReplace(base::span<DestChar> dest,
   }
 }
 
+// Compute the new size for a string with the original length of `length` after
+// replacing `match_count` matches of `old_pattern_length` with
+// `new_pattern_length`. Used by the various Replace() variants.
+wtf_size_t ComputeSizeAfterReplacement(wtf_size_t length,
+                                       wtf_size_t match_count,
+                                       wtf_size_t old_pattern_length,
+                                       wtf_size_t new_pattern_length) {
+  const base::CheckedNumeric<wtf_size_t> checked_match_count(match_count);
+  base::CheckedNumeric<wtf_size_t> checked_new_size(length);
+  checked_new_size -= checked_match_count * old_pattern_length;
+  checked_new_size += checked_match_count * new_pattern_length;
+  return checked_new_size.ValueOrDie();
+}
+
+template <typename StringFragment>
+void CopyStringFragmentTo16(const StringFragment& fragment,
+                            base::span<UChar> destination) {
+  CHECK(!fragment.IsNull());
+  auto destination_fragment = destination.first(fragment.length());
+  if (fragment.Is8Bit()) {
+    StringImpl::CopyChars(destination_fragment, fragment.Span8());
+  } else {
+    destination_fragment.copy_from(fragment.Span16());
+  }
+}
+
 }  // namespace
 
 void* StringImpl::operator new(size_t size) {
@@ -1313,51 +1339,39 @@ scoped_refptr<StringImpl> StringImpl::Replace(wtf_size_t position,
                                               const StringView& string) {
   position = std::min(position, length());
   length_to_replace = std::min(length_to_replace, length() - position);
-  wtf_size_t length_to_insert = string.length();
-  if (!length_to_replace && !length_to_insert)
+  if (!length_to_replace && string.empty()) {
     return this;
+  }
 
-  CHECK_LT((length() - length_to_replace),
-           (numeric_limits<wtf_size_t>::max() - length_to_insert));
+  const wtf_size_t new_length = ComputeSizeAfterReplacement(
+      length(), 1, length_to_replace, string.length());
 
   if (Is8Bit() && (string.IsNull() || string.Is8Bit())) {
-    LChar* data;
-    scoped_refptr<StringImpl> new_impl = CreateUninitialized(
-        length() - length_to_replace + length_to_insert, data);
-    memcpy(data, Characters8(), position * sizeof(LChar));
-    if (!string.IsNull())
-      memcpy(data + position, string.Characters8(),
-             length_to_insert * sizeof(LChar));
-    memcpy(data + position + length_to_insert,
-           Characters8() + position + length_to_replace,
-           (length() - position - length_to_replace) * sizeof(LChar));
+    const base::span<const LChar> source8 = Span8();
+    base::span<LChar> data8;
+    scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_length, data8);
+
+    auto [data8_before, data8_rest] = data8.split_at(position);
+    data8_before.copy_from(source8.first(position));
+    auto [data8_replaced, data8_after] = data8_rest.split_at(string.length());
+    if (!string.IsNull()) {
+      data8_replaced.copy_from(string.Span8());
+    }
+    data8_after.copy_from(source8.subspan(position + length_to_replace));
     return new_impl;
   }
-  UChar* data;
-  scoped_refptr<StringImpl> new_impl = CreateUninitialized(
-      length() - length_to_replace + length_to_insert, data);
-  if (Is8Bit())
-    for (wtf_size_t i = 0; i < position; ++i)
-      data[i] = Characters8()[i];
-  else
-    memcpy(data, Characters16(), position * sizeof(UChar));
+
+  base::span<UChar> data16;
+  scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_length, data16);
+
+  auto [data16_before, data16_rest] = data16.split_at(position);
+  CopyStringFragmentTo16(StringView(*this, 0, position), data16_before);
+  auto [data16_replaced, data16_after] = data16_rest.split_at(string.length());
   if (!string.IsNull()) {
-    if (string.Is8Bit())
-      for (wtf_size_t i = 0; i < length_to_insert; ++i)
-        data[i + position] = string.Characters8()[i];
-    else
-      memcpy(data + position, string.Characters16(),
-             length_to_insert * sizeof(UChar));
+    CopyStringFragmentTo16(string, data16_replaced);
   }
-  if (Is8Bit()) {
-    for (wtf_size_t i = 0; i < length() - position - length_to_replace; ++i)
-      data[i + position + length_to_insert] =
-          Characters8()[i + position + length_to_replace];
-  } else {
-    memcpy(data + position + length_to_insert,
-           Characters16() + position + length_to_replace,
-           (length() - position - length_to_replace) * sizeof(UChar));
-  }
+  CopyStringFragmentTo16(StringView(*this, position + length_to_replace),
+                         data16_after);
   return new_impl;
 }
 
