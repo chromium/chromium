@@ -1902,9 +1902,10 @@ BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::
         content::BrowserContext* context) const;
 
 template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const;
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const;
 
 }  // namespace extensions
 

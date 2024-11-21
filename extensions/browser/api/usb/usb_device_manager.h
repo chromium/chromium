@@ -33,6 +33,8 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
                          public EventRouter::Observer,
                          public device::mojom::UsbDeviceManagerClient {
  public:
+  explicit UsbDeviceManager(content::BrowserContext* context);
+  ~UsbDeviceManager() override;
   UsbDeviceManager(const UsbDeviceManager&) = delete;
   UsbDeviceManager& operator=(const UsbDeviceManager&) = delete;
 
@@ -87,9 +89,6 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
 
  private:
   friend class BrowserContextKeyedAPIFactory<UsbDeviceManager>;
-
-  explicit UsbDeviceManager(content::BrowserContext* context);
-  ~UsbDeviceManager() override;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "UsbDeviceManager"; }

@@ -281,9 +281,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI,
 };
 
 template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const;
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const;
 
 }  // namespace extensions
 

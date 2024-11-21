@@ -57,6 +57,8 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
     int last_checked_invocation_count_;
   };
 
+  explicit IncognitoConnectability(content::BrowserContext* context);
+  ~IncognitoConnectability() override;
   // Returns the IncognitoConnectability object for |context|. |context| must
   // be off-the-record.
   static IncognitoConnectability* Get(content::BrowserContext* context);
@@ -90,9 +92,6 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
   };
 
   friend class BrowserContextKeyedAPIFactory<IncognitoConnectability>;
-
-  explicit IncognitoConnectability(content::BrowserContext* context);
-  ~IncognitoConnectability() override;
 
   using ExtensionToOriginsMap = std::map<ExtensionId, std::set<GURL>>;
   using ExtensionOriginPair = std::pair<ExtensionId, GURL>;

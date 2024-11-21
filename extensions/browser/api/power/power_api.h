@@ -74,6 +74,8 @@ class PowerAPI : public BrowserContextKeyedAPI,
       base::RepeatingCallback<void(device::mojom::WakeLockType)>;
   using CancelWakeLockFunction = base::RepeatingCallback<void()>;
 
+  explicit PowerAPI(content::BrowserContext* context);
+  ~PowerAPI() override;
   PowerAPI(const PowerAPI&) = delete;
   PowerAPI& operator=(const PowerAPI&) = delete;
 
@@ -110,9 +112,6 @@ class PowerAPI : public BrowserContextKeyedAPI,
 
  private:
   friend class BrowserContextKeyedAPIFactory<PowerAPI>;
-
-  explicit PowerAPI(content::BrowserContext* context);
-  ~PowerAPI() override;
 
   // Updates wake lock status and |current_level_| after iterating
   // over |extension_levels_|.
