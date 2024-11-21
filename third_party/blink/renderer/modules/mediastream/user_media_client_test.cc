@@ -257,6 +257,11 @@ class MediaDevicesDispatcherHostMock
   }
 #endif
 
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
+    NOTREACHED();
+  }
+
   void GetAllVideoInputDeviceFormats(
       const String& device_id,
       GetAllVideoInputDeviceFormatsCallback callback) override {
@@ -381,6 +386,11 @@ class MockMediaDevicesDispatcherHost
   }
 
   void SetCaptureHandleConfig(mojom::blink::CaptureHandleConfigPtr) override {
+    NOTREACHED();
+  }
+
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
     NOTREACHED();
   }
 

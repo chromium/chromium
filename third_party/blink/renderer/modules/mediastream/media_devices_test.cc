@@ -290,6 +290,11 @@ class MockMediaDevicesDispatcherHost final
   }
 #endif
 
+  void SetPreferredSinkId(const String& sink_id,
+                          SetPreferredSinkIdCallback callback) override {
+    NOTREACHED();
+  }
+
   void ExpectSetCaptureHandleConfig(
       mojom::blink::CaptureHandleConfigPtr config) {
     CHECK(config);
