@@ -144,19 +144,19 @@ TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResultAndLatency) {
   }
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionResult) {
-  base::HistogramTester histogram_tester;
+TEST(FacilitatedPaymentsMetricsTest,
+     LogInitiatePurchaseActionResultAndLatency) {
+  for (const std::string& result : {"Succeeded", "Failed", "Abandoned"}) {
+    base::HistogramTester histogram_tester;
 
-  LogInitiatePurchaseActionResult(/*result=*/true, base::Milliseconds(10));
+    LogInitiatePurchaseActionResultAndLatency(result, base::Milliseconds(10));
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
+                      ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
 }
 
 TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {

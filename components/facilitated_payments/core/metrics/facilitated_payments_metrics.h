@@ -123,7 +123,10 @@ void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration);
 
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client).
-void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration);
+// TODO(crbug.com/379723883): Move the `PurchaseActionResult` and have this
+// function take in an enum instead of a string.
+void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
+                                               base::TimeDelta duration);
 
 // Log whether the request to show the FOP(form of payment) selector is
 // successful or not.

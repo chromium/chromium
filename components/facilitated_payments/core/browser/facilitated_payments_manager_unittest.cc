@@ -774,30 +774,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// Test that when a positive puchase action result is received, the UI prompt is
-// dismissed.
-TEST_F(FacilitatedPaymentsManagerTest,
-       OnPurchaseActionPositiveResult_UiPromptDismissed) {
-  // `DismissPrompt` is called once when the purchase action result is received,
-  // and again when the test fixture destroys the `manager_`.
-  EXPECT_CALL(*client_, DismissPrompt()).Times(2);
-
-  manager_->OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk);
-}
-
-// Test that when a negative puchase action result is received, the UI prompt is
-// dismissed.
-TEST_F(FacilitatedPaymentsManagerTest,
-       OnPurchaseActionNegativeResult_UiPromptDismissed) {
-  // `DismissPrompt` is called once when the purchase action result is received,
-  // and again when the test fixture destroys the `manager_`.
-  EXPECT_CALL(*client_, DismissPrompt()).Times(2);
-
-  manager_->OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled);
-}
-
 // The `IsAvailable` async call is made after a valid Pix code has been
 // detected. This test verifies that the result and latency are logged after the
 // async call is completed.
@@ -835,119 +811,49 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
 }
 
-// Test that once the purchase action response is received, the result and
+// Test that when a purchase action result is received, the UI prompt is
+// dismissed.
+TEST_F(FacilitatedPaymentsManagerTest,
+       OnPurchaseActionResult_UiPromptDismissed) {
+  // `DismissPrompt` is called once whenever a purchase action result is
+  // received, and again when the test fixture destroys the `manager_`.
+  EXPECT_CALL(*client_, DismissPrompt()).Times(3);
+
+  for (PurchaseActionResult result : {PurchaseActionResult::kResultOk,
+                                      PurchaseActionResult::kResultCanceled}) {
+    manager_->OnPurchaseActionResult(result);
+  }
+}
+
+// Test that when an InitiatePurchaseAction response is received, the result and
 // latency of the invoke purchase action is logged.
 TEST_F(FacilitatedPaymentsManagerTest,
-       InvokePurchaseActionCompleted_HistogramLogged) {
-  base::HistogramTester histogram_tester;
-  ON_CALL(*client_, GetCoreAccountInfo)
-      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
-  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
-  auto response_details =
-      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
-  manager_->OnInitiatePaymentResponseReceived(
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      std::move(response_details));
+       LogInitiatePurchaseActionResultAndLatency) {
+  for (PurchaseActionResult result :
+       {PurchaseActionResult::kResultOk, PurchaseActionResult::kCouldNotInvoke,
+        PurchaseActionResult::kResultCanceled}) {
+    base::HistogramTester histogram_tester;
+    ON_CALL(*client_, GetCoreAccountInfo)
+        .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+    EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+    auto response_details =
+        std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+    response_details->action_token_ =
+        std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+    manager_->OnInitiatePaymentResponseReceived(
+        autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+        std::move(response_details));
 
-  FastForwardBy(base::Seconds(2));
-  manager_->OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk);
+    FastForwardBy(base::Seconds(2));
+    manager_->OnPurchaseActionResult(result);
 
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
-}
-
-// Test that once the purchase action response is received, the transaction
-// result and latency is logged.
-TEST_F(FacilitatedPaymentsManagerTest, TransactionSuccess_HistogramLogged) {
-  base::HistogramTester histogram_tester;
-  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  manager_->OnApiAvailabilityReceived(true);
-
-  FastForwardBy(base::Seconds(2));
-  manager_->OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kSuccess,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Success.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
-}
-
-// Test that once the purchase action response is received as result canceled,
-// the transaction result is logged as abandoned and the latency is logged.
-TEST_F(FacilitatedPaymentsManagerTest,
-       TransactionAbandonedAfterInvokePurchaseAction_HistogramLogged) {
-  base::HistogramTester histogram_tester;
-  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  manager_->OnApiAvailabilityReceived(true);
-
-  FastForwardBy(base::Seconds(2));
-  manager_->OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kResultCanceled);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kAbandoned,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Abandoned.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
-}
-
-// Test that if the purchase action was unable to be invoked, the transaction
-// result is logged as failed and the latency is logged.
-TEST_F(FacilitatedPaymentsManagerTest,
-       TransactionFailedAfterInvokePurchaseAction_HistogramLogged) {
-  base::HistogramTester histogram_tester;
-  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  manager_->OnApiAvailabilityReceived(true);
-
-  FastForwardBy(base::Seconds(2));
-  manager_->OnPurchaseActionResult(
-      FacilitatedPaymentsApiClient::PurchaseActionResult::kCouldNotInvoke);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kFailed,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Failed.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(FacilitatedPaymentsManagerTest,
-       FOPSelectorNotShown_TransactionResultHistogramNotLogged) {
-  base::HistogramTester histogram_tester;
-  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
-  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
-  manager_->OnApiAvailabilityReceived(true);
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Result",
-      /*sample=*/TransactionResult::kFailed,
-      /*expected_bucket_count=*/0);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.Transaction.Failed.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/0);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.",
+                      manager_->GetInitiatePurchaseActionResultString(result),
+                      ".Latency"}),
+        /*sample=*/2000,
+        /*expected_count=*/1);
+  }
 }
 
 // Verify that the API client is initialized lazily, so it does not take up

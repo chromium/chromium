@@ -102,13 +102,14 @@ void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
       duration);
 }
 
-void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
+void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
+                                               base::TimeDelta duration) {
   // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
-  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
-                        result);
   base::UmaHistogramLongTimes(
-      "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency", duration);
+      base::StrCat({"FacilitatedPayments.Pix.InitiatePurchaseAction.", result,
+                    ".Latency"}),
+      duration);
 }
 
 void LogFopSelectorShown(bool shown) {
