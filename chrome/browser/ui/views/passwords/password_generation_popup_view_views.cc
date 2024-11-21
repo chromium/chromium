@@ -81,6 +81,7 @@ std::unique_ptr<views::View> CreatePasswordLabelWithIcon() {
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
   label->SetMaximumWidth(kPasswordGenerationMaxWidth);
+  label->SetAccessibleRole(ax::mojom::Role::kHeading);
 
   return view;
 }
