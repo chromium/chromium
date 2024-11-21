@@ -277,15 +277,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   virtual void ClearForcedReEnrollmentVpd(
       chromeos::VoidDBusMethodCallback callback) = 0;
 
-  virtual void UnblockDevModeForEnrollment(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForInitialStateDetermination(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
-  virtual void UnblockDevModeForCarrierLock(
-      chromeos::VoidDBusMethodCallback callback) = 0;
-
   // Triggers a TPM firmware update.
   virtual void StartTPMFirmwareUpdate(const std::string& update_mode) = 0;
 

@@ -109,12 +109,6 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       const enterprise_management::SignedData& signed_command) override;
   void ClearForcedReEnrollmentVpd(
       chromeos::VoidDBusMethodCallback callback) override;
-  void UnblockDevModeForEnrollment(
-      chromeos::VoidDBusMethodCallback callback) override;
-  void UnblockDevModeForInitialStateDetermination(
-      chromeos::VoidDBusMethodCallback callback) override;
-  void UnblockDevModeForCarrierLock(
-      chromeos::VoidDBusMethodCallback callback) override;
   void StartTPMFirmwareUpdate(const std::string& update_mode) override;
   void RequestLockScreen() override;
   void NotifyLockScreenShown() override;
