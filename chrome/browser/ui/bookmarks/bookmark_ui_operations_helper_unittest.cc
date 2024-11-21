@@ -225,13 +225,8 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
   // Now we should be able to paste from the clipboard.
   EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, new_folder));
 
-  if (std::is_same<TypeParam,
-                   BookmarkUIOperationsHelperMergedSurfaces>::value) {
-    // Not supported yet.
-    GTEST_SKIP();
-  }
-  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, new_folder);
-  helper.PasteFromClipboard(0);
+  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(new_folder);
+  helper->PasteFromClipboard(0);
   ASSERT_EQ(1u, new_folder->children().size());
 
   // Url for added node should be same as url_text.
@@ -263,13 +258,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
   // Now we should be able to paste from the clipboard.
   EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, bookmark_bar_node));
 
-  if (std::is_same<TypeParam,
-                   BookmarkUIOperationsHelperMergedSurfaces>::value) {
-    // Not supported yet.
-    GTEST_SKIP();
-  }
-  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, bookmark_bar_node);
-  helper.PasteFromClipboard(1);
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(bookmark_bar_node);
+  helper->PasteFromClipboard(1);
   ASSERT_EQ(2u, bookmark_bar_node->children().size());
 
   // Url for added node should be same as url_text.
@@ -301,14 +292,8 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
   // And make sure we can paste a bookmark from the clipboard.
   EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, folder));
 
-  if (std::is_same<TypeParam,
-                   BookmarkUIOperationsHelperMergedSurfaces>::value) {
-    // Not supported yet.
-    GTEST_SKIP();
-  }
-  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, folder);
-
-  helper.PasteFromClipboard(0);
+  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(folder);
+  helper->PasteFromClipboard(0);
   ASSERT_EQ(1u, folder->children().size());
 
   // Verify that the pasted node contains the same meta info.

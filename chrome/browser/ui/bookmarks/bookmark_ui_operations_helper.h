@@ -47,6 +47,10 @@ class BookmarkUIOperationsHelper {
       bool copy,
       chrome::BookmarkReorderDropTarget target);
 
+  // Pastes from the clipboard. The new nodes are added to `target_parent()`.
+  // The nodes are inserted at `index`.
+  void PasteFromClipboard(size_t index);
+
  protected:
   // Represents the target parent node for the operation.
   // For non-merged surfaces, it's a bookmark node.
@@ -58,6 +62,8 @@ class BookmarkUIOperationsHelper {
     virtual bool IsPermanentNode() const = 0;
     virtual bool IsDirectChild(const bookmarks::BookmarkNode* node) const = 0;
     virtual bookmarks::BookmarkNode::Type GetType() const = 0;
+    virtual const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
+    children() const = 0;
   };
 
   virtual bookmarks::BookmarkModel* model() = 0;
@@ -92,10 +98,6 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
 
   ~BookmarkUIOperationsHelperNonMergedSurfaces() override;
 
-  // Pastes from the clipboard. The new nodes are added to `target_parent()`.
-  // The nodes are inserted at `index`.
-  void PasteFromClipboard(size_t index);
-
  protected:
   bookmarks::BookmarkModel* model() override;
   void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
@@ -124,6 +126,8 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
     bool IsPermanentNode() const override;
     bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
     bookmarks::BookmarkNode::Type GetType() const override;
+    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& children()
+        const override;
 
    private:
     const raw_ptr<const bookmarks::BookmarkNode> parent_;
@@ -171,7 +175,8 @@ class BookmarkUIOperationsHelperMergedSurfaces
         BookmarkMergedSurfaceService* merged_surface_service,
         const BookmarkParentFolder* parent);
 
-    TargetParent(const BookmarkParentFolder* parent, bool is_managed);
+    TargetParent(BookmarkMergedSurfaceService* merged_surface_service,
+                 const BookmarkParentFolder* parent);
     ~TargetParent() override;
 
     const BookmarkParentFolder* parent_folder() const;
@@ -181,10 +186,12 @@ class BookmarkUIOperationsHelperMergedSurfaces
     bool IsPermanentNode() const override;
     bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
     bookmarks::BookmarkNode::Type GetType() const override;
+    const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>& children()
+        const override;
 
    private:
+    const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;
     const raw_ptr<const BookmarkParentFolder> parent_;
-    bool is_managed_;
   };
 
   const BookmarkParentFolder* parent_folder() const;

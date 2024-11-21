@@ -144,6 +144,32 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
   return DragOperation::kMove;
 }
 
+void BookmarkUIOperationsHelper::PasteFromClipboard(size_t index) {
+  if (!target_parent()) {
+    return;
+  }
+
+  BookmarkNodeData bookmark_data;
+  if (!bookmark_data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste)) {
+    GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
+    if (!url.is_valid()) {
+      return;
+    }
+    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
+    node.SetTitle(base::ASCIIToUTF16(url.spec()));
+    bookmark_data = BookmarkNodeData(&node);
+  }
+  CHECK_LE(index, target_parent()->children().size());
+  if (bookmark_data.size() == 1 &&
+      model()->IsBookmarked(bookmark_data.elements[0].url)) {
+    MakeTitleUnique(model(), target_parent()->children(),
+                    bookmark_data.elements[0].url,
+                    &bookmark_data.elements[0].title);
+  }
+
+  CopyBookmarkNodeData(bookmark_data, index);
+}
+
 }  // namespace internal
 
 // BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent:
@@ -195,6 +221,11 @@ BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::GetType() const {
   return parent_->type();
 }
 
+const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
+BookmarkUIOperationsHelperNonMergedSurfaces::TargetParent::children() const {
+  return parent_->children();
+}
+
 // BookmarkUIOperationsHelperNonMergedSurfaces:
 
 BookmarkUIOperationsHelperNonMergedSurfaces::
@@ -208,33 +239,6 @@ BookmarkUIOperationsHelperNonMergedSurfaces::
 
 BookmarkUIOperationsHelperNonMergedSurfaces::
     ~BookmarkUIOperationsHelperNonMergedSurfaces() = default;
-
-void BookmarkUIOperationsHelperNonMergedSurfaces::PasteFromClipboard(
-    size_t index) {
-  if (!parent_node()) {
-    return;
-  }
-
-  BookmarkNodeData bookmark_data;
-  if (!bookmark_data.ReadFromClipboard(ui::ClipboardBuffer::kCopyPaste)) {
-    GURL url = GetUrlFromClipboard(/*notify_if_restricted=*/true);
-    if (!url.is_valid()) {
-      return;
-    }
-    BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), url);
-    node.SetTitle(base::ASCIIToUTF16(url.spec()));
-    bookmark_data = BookmarkNodeData(&node);
-  }
-  CHECK_LE(index, parent_node()->children().size());
-  if (bookmark_data.size() == 1 &&
-      model_->IsBookmarked(bookmark_data.elements[0].url)) {
-    MakeTitleUnique(model_, parent_node()->children(),
-                    bookmark_data.elements[0].url,
-                    &bookmark_data.elements[0].title);
-  }
-
-  CopyBookmarkNodeData(bookmark_data, index);
-}
 
 bookmarks::BookmarkModel* BookmarkUIOperationsHelperNonMergedSurfaces::model() {
   return model_;
@@ -291,14 +295,13 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::CreateTargetParent(
   if (!merged_surface_service || !parent) {
     return nullptr;
   }
-  return std::make_unique<TargetParent>(
-      parent, merged_surface_service->IsParentFolderManaged(*parent));
+  return std::make_unique<TargetParent>(merged_surface_service, parent);
 }
 
 BookmarkUIOperationsHelperMergedSurfaces::TargetParent::TargetParent(
-    const BookmarkParentFolder* parent,
-    bool is_managed)
-    : parent_(parent), is_managed_(is_managed) {
+    BookmarkMergedSurfaceService* merged_surface_service,
+    const BookmarkParentFolder* parent)
+    : merged_surface_service_(merged_surface_service), parent_(parent) {
   CHECK(parent);
 }
 
@@ -311,7 +314,7 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::parent_folder() const {
 }
 
 bool BookmarkUIOperationsHelperMergedSurfaces::TargetParent::IsManaged() const {
-  return is_managed_;
+  return merged_surface_service_->IsParentFolderManaged(*parent_);
 }
 
 bool BookmarkUIOperationsHelperMergedSurfaces::TargetParent::IsPermanentNode()
@@ -343,6 +346,11 @@ BookmarkUIOperationsHelperMergedSurfaces::TargetParent::GetType() const {
       return bookmarks::BookmarkNode::Type::FOLDER;
   }
   NOTREACHED();
+}
+
+const std::vector<std::unique_ptr<bookmarks::BookmarkNode>>&
+BookmarkUIOperationsHelperMergedSurfaces::TargetParent::children() const {
+  return merged_surface_service_->GetChildren(*parent_);
 }
 
 // BookmarkUIOperationsHelperMergedSurfaces:
