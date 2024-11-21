@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/prefetch_manager.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -970,6 +971,28 @@ bool IsURLValidForLcpp(const GURL& url) {
          url.host().size() <= ResourcePrefetchPredictorTables::kMaxStringLength;
 }
 
+// TODO(crbug.com/380105415): Remove this kill switch after we confirmed that
+// this works fine.
+BASE_FEATURE(kMultipleLcppKeyInitiatorOriginFix,
+             "MultipleLcppKeyInitiatorOriginFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsValidInitiatorOrigin(const url::Origin& initiator_origin) {
+  static const bool kMultipleLcppKeyInitiatorOriginFixEnabled =
+      base::FeatureList::IsEnabled(kMultipleLcppKeyInitiatorOriginFix);
+  if (kMultipleLcppKeyInitiatorOriginFixEnabled) {
+    GURL url = initiator_origin.GetURL();
+    return !initiator_origin.opaque() && url.is_valid() &&
+           !initiator_origin.host().empty() && !net::IsLocalhost(url) &&
+           url.SchemeIsHTTPOrHTTPS() &&
+           initiator_origin.host().size() <=
+               ResourcePrefetchPredictorTables::kMaxStringLength;
+  } else {
+    return initiator_origin.host().size() <=
+           ResourcePrefetchPredictorTables::kMaxStringLength;
+  }
+}
+
 std::string GetFirstLevelPath(const GURL& url) {
   CHECK(IsURLValidForLcpp(url));
 
@@ -1089,6 +1112,7 @@ void LcppDataMap::InitializeAfterDBInitialization() {
 bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
                             const GURL& url,
                             const LcppDataInputs& inputs) {
+  TRACE_EVENT("navigation", "LcppDataMap::LearnLcpp");
   CHECK(initialized_);
   if (!IsURLValidForLcpp(url)) {
     return false;
@@ -1099,8 +1123,7 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
   LcppOrigin lcpp_origin;
   const bool use_origin_map = IsInitiatorOriginEnabled() && initiator_origin;
   if (use_origin_map) {
-    if (initiator_origin->host().size() >
-        ResourcePrefetchPredictorTables::kMaxStringLength) {
+    if (!IsValidInitiatorOrigin(*initiator_origin)) {
       return false;
     }
     origin_map_->TryGetData(key, &lcpp_origin);
@@ -1167,6 +1190,7 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
 std::optional<LcppStat> LcppDataMap::GetLcppStat(
     const std::optional<url::Origin>& initiator_origin,
     const GURL& url) const {
+  TRACE_EVENT("navigation", "LcppDataMap::GetLcppStat");
   CHECK(initialized_);
   if (!IsURLValidForLcpp(url)) {
     return std::nullopt;
@@ -1178,8 +1202,7 @@ std::optional<LcppStat> LcppDataMap::GetLcppStat(
   LcppOrigin lcpp_origin;
   const bool use_origin_map = IsInitiatorOriginEnabled() && initiator_origin;
   if (use_origin_map) {
-    if (initiator_origin->host().size() >
-        ResourcePrefetchPredictorTables::kMaxStringLength) {
+    if (!IsValidInitiatorOrigin(*initiator_origin)) {
       return std::nullopt;
     }
     if (!origin_map_->TryGetData(key, &lcpp_origin)) {
