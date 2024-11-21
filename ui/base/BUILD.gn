@@ -1290,6 +1290,10 @@ test("ui_base_unittests") {
   if (use_glib) {
     sources += [ "glib/scoped_gsignal_unittest.cc" ]
   }
+
+  if (is_linux) {
+    sources += [ "linux/xdg_shortcut_unittest.cc" ]
+  }
 }
 
 if (is_mac) {
