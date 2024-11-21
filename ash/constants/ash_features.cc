@@ -109,12 +109,6 @@ BASE_FEATURE(kAudioSelectionImprovement,
              "AudioSelectionImprovement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the AudioSourceFetcher resamples the audio for speech
-// recongnition.
-BASE_FEATURE(kAudioSourceFetcherResampling,
-             "AudioSourceFetcherResampling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Audio URL that is designed to help user debug or troubleshoot
 // common issues on ChromeOS.
 BASE_FEATURE(kAudioUrl, "AudioUrl", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3529,12 +3523,6 @@ int GetDriveFsBulkPinningQueueSize() {
 
 bool IsEapGtcWifiAuthenticationEnabled() {
   return base::FeatureList::IsEnabled(kEapGtcWifiAuthentication);
-}
-
-bool IsAudioSourceFetcherResamplingEnabled() {
-  // TODO(b/245617354): Once ready, enable this feature under
-  // kProjectorBleedingEdgeExperience flag as well.
-  return base::FeatureList::IsEnabled(kAudioSourceFetcherResampling);
 }
 
 bool IsDemoModeGMSCoreWindowCloserEnabled() {
