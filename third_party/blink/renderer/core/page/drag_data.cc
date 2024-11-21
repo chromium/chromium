@@ -69,6 +69,25 @@ String DragData::AsURL(FilenameConversionPolicy filename_policy,
   return url;
 }
 
+Vector<String> DragData::AsURLs(
+    FilenameConversionPolicy filename_policy) const {
+  Vector<String> result;
+  if (platform_drag_data_->Types().Contains(kMimeTypeTextURIList)) {
+    const auto urls = platform_drag_data_->Urls();
+    result.reserve(urls.size());
+    for (const String& url : urls) {
+      result.push_back(url);
+    }
+  } else if (filename_policy == kConvertFilenames && ContainsFiles()) {
+    const auto filenames = platform_drag_data_->Filenames();
+    result.reserve(filenames.size());
+    for (const String& filename : filenames) {
+      result.push_back(FilePathToURL(filename));
+    }
+  }
+  return result;
+}
+
 bool DragData::ContainsFiles() const {
   return platform_drag_data_->ContainsFilenames();
 }

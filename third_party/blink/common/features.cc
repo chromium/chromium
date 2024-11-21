@@ -1916,6 +1916,10 @@ BASE_FEATURE(kNoThrottlingVisibleAgent,
              "NoThrottlingVisibleAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOpenAllUrlsOrFilesOnDrop,
+             "OpenAllUrlsOrFilesOnDrop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kOptimizeLoadingDataUrls,
              "OptimizeLoadingDataUrls",
              base::FEATURE_ENABLED_BY_DEFAULT);
