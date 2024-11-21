@@ -362,7 +362,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // project is completed and we don't have ViewAXPlatformNodeDelegate anymore.
   std::u16string GetCachedDescription() const;
 
-  void OnTooltipTextChanged();
+  void OnTooltipTextChanged(
+      std::optional<std::u16string> old_tooltip_text = std::nullopt);
 
   void SetPlaceholder(const std::string& placeholder);
 

@@ -48,6 +48,8 @@ ScreenCaptureTrayItemView::ScreenCaptureTrayItemView(Shelf* shelf)
   CreateImageView();
   UpdateLabelOrImageViewColor(/*active=*/false);
 
+  SetCachedTooltipText(l10n_util::GetStringUTF16(IDS_ASH_ADMIN_SCREEN_CAPTURE));
+
   multi_capture_service_client_observation_.Observe(
       Shell::Get()->multi_capture_service_client());
   Refresh();
@@ -62,7 +64,7 @@ views::View* ScreenCaptureTrayItemView::GetTooltipHandlerForPoint(
 
 std::u16string ScreenCaptureTrayItemView::GetTooltipText(
     const gfx::Point& point) const {
-  return l10n_util::GetStringUTF16(IDS_ASH_ADMIN_SCREEN_CAPTURE);
+  return GetCachedTooltipText();
 }
 
 void ScreenCaptureTrayItemView::UpdateLabelOrImageViewColor(bool active) {

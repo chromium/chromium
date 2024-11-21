@@ -2007,7 +2007,8 @@ void View::SetCachedTooltipText(const std::u16string& text) {
     return;
   }
 
-  cached_tooltip_text_ = text;
+  GetViewAccessibility().OnTooltipTextChanged(
+      std::exchange(cached_tooltip_text_, text));
   TooltipTextChanged();
 }
 
@@ -2674,7 +2675,6 @@ void View::TooltipTextChanged() {
     widget->GetTooltipManager()->TooltipTextChanged(this);
   }
 
-  GetViewAccessibility().OnTooltipTextChanged();
   OnPropertyChanged(&cached_tooltip_text_, kPropertyEffectsNone);
 }
 

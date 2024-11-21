@@ -818,7 +818,8 @@ std::u16string ViewAccessibility::GetCachedDescription() const {
   return std::u16string();
 }
 
-void ViewAccessibility::OnTooltipTextChanged() {
+void ViewAccessibility::OnTooltipTextChanged(
+    std::optional<std::u16string> old_tooltip_text) {
   if (data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription) &&
       view_->GetCachedTooltipText() == GetCachedDescription()) {
     return;
@@ -828,10 +829,16 @@ void ViewAccessibility::OnTooltipTextChanged() {
   // it's different from the name, otherwise users might be puzzled as to why
   // their screen reader is announcing the same thing twice.
   const std::u16string tooltip = view_->GetCachedTooltipText();
-  if (!tooltip.empty() && tooltip != GetCachedName()) {
-    SetDescription(tooltip);
-  } else {
-    RemoveDescription();
+  // We only want to update the description if we were previously using the
+  // tooltip as the description or if we had no description.
+  if ((old_tooltip_text.has_value() &&
+       old_tooltip_text == GetCachedDescription()) ||
+      !data_.HasStringAttribute(ax::mojom::StringAttribute::kDescription)) {
+    if (!tooltip.empty() && tooltip != GetCachedName()) {
+      SetDescription(tooltip);
+    } else {
+      RemoveDescription();
+    }
   }
 }
 

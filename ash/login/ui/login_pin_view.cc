@@ -115,6 +115,8 @@ class BasePinButton : public views::View {
     SetBackground(holding_space_util::CreateCircleBackground(
         cros_tokens::kCrosSysSystemBaseElevated, kButtonBackgroundDiameter));
 
+    SetCachedTooltipText(accessible_name);
+
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical);
     layout->set_main_axis_alignment(
@@ -301,10 +303,6 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
 
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override {
     return this;
-  }
-
-  std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return GetViewAccessibility().GetCachedName();
   }
 
   void OnEnabledChanged() {
