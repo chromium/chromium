@@ -47,6 +47,7 @@ source_set("tab_item") {
   ]
 
   deps = [
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:activity_label_view",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/web/public",
     "//url",

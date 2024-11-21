@@ -18,6 +18,9 @@
 
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 
+// Shows the activity label.
+- (void)showActivityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_CONTEXT_MENU_TAB_CELL_H_
