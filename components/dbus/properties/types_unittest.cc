@@ -301,3 +301,60 @@ TEST(DbusTypesTest, VariantDictionaryOfDictionaryReadWrite) {
   ASSERT_TRUE(int_value);
   EXPECT_EQ(int_value->value(), 42);
 }
+
+TEST(DbusTypesTest, ParametersReadWrite) {
+  auto write_value =
+      MakeDbusParameters(DbusInt32(42), DbusString("Test"), DbusBoolean(true));
+  auto read_value = SerializeAndDeserialize(write_value);
+  EXPECT_EQ(write_value, read_value);
+}
+
+TEST(DbusTypesTest, ParametersNestedReadWrite) {
+  auto write_value = MakeDbusParameters(
+      DbusInt32(42), MakeDbusArray(DbusString("one"), DbusString("two")),
+      MakeDbusStruct(DbusBoolean(true), DbusDouble(3.14)));
+  auto read_value = SerializeAndDeserialize(write_value);
+  EXPECT_EQ(write_value, read_value);
+}
+
+TEST(DbusTypesTest, ParametersWithVariantReadWrite) {
+  auto write_value = MakeDbusParameters(
+      DbusInt32(123), MakeDbusVariant(DbusString("VariantValue")),
+      DbusDouble(6.28));
+  auto read_value = SerializeAndDeserialize(write_value);
+  EXPECT_EQ(write_value, read_value);
+}
+
+TEST(DbusTypesTest, EmptyParametersReadWrite) {
+  auto write_value = MakeDbusParameters();
+  auto read_value = SerializeAndDeserialize(write_value);
+  EXPECT_EQ(write_value, read_value);
+}
+
+TEST(DbusTypesTest, ParametersComparison) {
+  auto params1 = MakeDbusParameters(DbusInt32(1), DbusString("Test"));
+  auto params2 = MakeDbusParameters(DbusInt32(1), DbusString("Test"));
+  auto params3 = MakeDbusParameters(DbusInt32(2), DbusString("Test"));
+
+  EXPECT_EQ(params1, params2);
+  EXPECT_NE(params1, params3);
+}
+
+TEST(DbusTypesTest, ParametersMove) {
+  auto params1 = MakeDbusParameters(DbusInt32(1), DbusString("MoveTest"));
+  auto params2 = std::move(params1);
+
+  EXPECT_EQ(params2.value(),
+            std::make_tuple(DbusInt32(1), DbusString("MoveTest")));
+}
+
+TEST(DbusTypesTest, ParametersGetSignature) {
+  auto params = MakeDbusParameters(DbusInt32(1), DbusString("SignatureTest"),
+                                   DbusBoolean(true));
+  EXPECT_EQ(params.GetSignatureDynamic(), "isb");
+}
+
+TEST(DbusTypesTest, ParametersIsParameters) {
+  auto params = MakeDbusParameters(DbusInt32(1), DbusString("Test"));
+  EXPECT_TRUE(params.IsParameters());
+}

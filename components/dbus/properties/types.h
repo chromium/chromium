@@ -54,6 +54,9 @@ class COMPONENT_EXPORT(DBUS) DbusType {
   // True iff this is an UntypedDbusContainer.
   virtual bool IsUntyped() const;
 
+  // True iff this is a DbusParameters.
+  virtual bool IsParameters() const;
+
   // True iff `this` and `other` have exactly the same type.
   bool TypeMatches(const DbusType& other) const;
 
@@ -430,6 +433,96 @@ class COMPONENT_EXPORT(DBUS) DbusStruct final
 template <typename... Ts>
 auto MakeDbusStruct(Ts&&... ts) {
   return DbusStruct<Ts...>{std::move(ts)...};
+}
+
+// This is similar to DbusStruct, except there's no DBus struct container around
+// the parameters. This is meant to be used for parameters to method calls, or
+// for return values from method calls or signals.
+template <typename... Ts>
+class COMPONENT_EXPORT(DBUS) DbusParameters final
+    : public DbusTypeImpl<DbusParameters<Ts...>> {
+ public:
+  DbusParameters() = default;
+  explicit DbusParameters(Ts&&... ts) : value_{std::move(ts)...} {}
+  DbusParameters(DbusParameters<Ts...>&& other) noexcept = default;
+  DbusParameters<Ts...>& operator=(DbusParameters<Ts...>&& other) noexcept =
+      default;
+  ~DbusParameters() override = default;
+
+  // DbusType:
+  void Write(dbus::MessageWriter* writer) const override {
+    std::apply([&writer](auto&&... args) { (args.Write(writer), ...); },
+               value_);
+  }
+
+  bool Read(dbus::MessageReader* reader) override {
+    bool success = true;
+    std::apply(
+        [&reader, &success](auto&&... args) {
+          ((success = success && args.Read(reader)), ...);
+        },
+        value_);
+    return success;
+  }
+
+  void MoveImpl(DbusType&& object) override {
+    // The type signature has already been verified.
+    if (!object.IsUntyped()) {
+      value_ = std::move(static_cast<DbusParameters<Ts...>&>(object).value_);
+      return;
+    }
+    auto& dyn_params =
+        static_cast<detail::UntypedDbusContainer*>(&object)->value();
+    CHECK_EQ(dyn_params.size(), sizeof...(Ts));
+
+    size_t index = 0;
+    std::apply(
+        [&](auto&... args) {
+          ((args.Move(std::move(*dyn_params[index++]))), ...);
+        },
+        value_);
+  }
+
+  bool IsParameters() const override { return true; }
+
+  static std::string GetSignature() {
+    return (Ts::GetSignature() + ... + std::string());
+  }
+
+ private:
+  friend class DbusTypeImpl<DbusParameters<Ts...>>;
+
+  std::tuple<Ts...> value_;
+};
+
+// Template specialization for empty parameters.
+template <>
+class COMPONENT_EXPORT(DBUS) DbusParameters<> final
+    : public DbusTypeImpl<DbusParameters<>> {
+ public:
+  DbusParameters() = default;
+  DbusParameters(DbusParameters<>&& other) noexcept = default;
+  DbusParameters<>& operator=(DbusParameters<>&& other) noexcept = default;
+  ~DbusParameters() override = default;
+
+  // DbusType:
+  void Write(dbus::MessageWriter* writer) const override {}
+  bool Read(dbus::MessageReader* reader) override { return true; }
+  void MoveImpl(DbusType&& object) override {}
+  bool IsParameters() const override { return true; }
+
+  static std::string GetSignature() { return std::string(); }
+
+ private:
+  friend class DbusTypeImpl<DbusParameters<>>;
+
+  // Required for DbusTypeImpl.
+  std::tuple<> value_;
+};
+
+template <typename... Ts>
+auto MakeDbusParameters(Ts&&... ts) {
+  return DbusParameters<Ts...>{std::move(ts)...};
 }
 
 template <typename K, typename V>

@@ -115,8 +115,15 @@ bool DbusType::IsUntyped() const {
   return false;
 }
 
+bool DbusType::IsParameters() const {
+  return false;
+}
+
 bool DbusType::TypeMatches(const DbusType& other) const {
-  return GetSignatureDynamic() == other.GetSignatureDynamic();
+  // An explicit check for IsParameters() is necessary since
+  // DbusParameters<DbusInt32> has the same signature as DbusInt32.
+  return IsParameters() == other.IsParameters() &&
+         GetSignatureDynamic() == other.GetSignatureDynamic();
 }
 
 namespace detail {
