@@ -33,6 +33,16 @@ namespace blink {
 
 class CanvasResourceHost;
 
+// Canvas2DLayerBridge historically served as the means of creating resources
+// for 2D canvas contexts. It has since had almost all functionality migrated
+// out of it and is merely a wrapper of CanvasHibernationHandler. However,
+// HTMLCanvasElement and CanvasRenderingContext2D still continue to base logic
+// on the dynamic presence/absence of a bridge instance for legacy reasons.
+// Until we migrate all of that legacy logic, we are leaving Canvas2DLayerBridge
+// in place.
+// DO NOT ADD ANY CODE OR FUNCTIONALITY HERE.
+// TODO(crbug.com/40280152): Eliminate this class once it is actually used
+// strictly as a wrapper for CanvasHibernationHandler's functionality.
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
   explicit Canvas2DLayerBridge(CanvasResourceHost& resource_host);
@@ -41,9 +51,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   virtual ~Canvas2DLayerBridge();
 
-  // Allow access to the hibernation handler while Canvas2DLayerBridge is being
-  // incrementally folded into CanvasRenderingContext2D.
-  // TODO(crbug.com/40280152): Eliminate Canvas2DLayerBridge entirely.
   CanvasHibernationHandler& GetHibernationHandler() {
     return hibernation_handler_;
   }
