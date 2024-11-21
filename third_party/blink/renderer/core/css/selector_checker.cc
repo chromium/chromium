@@ -149,17 +149,22 @@ static bool MatchesTagName(const Element& element,
          namespace_uri == element.namespaceURI();
 }
 
+// The associated host, if we are matching in the context of a shadow tree.
+//
+// https://drafts.csswg.org/css-scoping-1/#in-the-context-of-a-shadow-tree
+static Element* ShadowHost(
+    const SelectorChecker::SelectorCheckingContext& context) {
+  if (auto* shadow_root = DynamicTo<ShadowRoot>(context.tree_scope)) {
+    return &shadow_root->host();
+  }
+  return nullptr;
+}
+
 static Element* ParentElement(
     const SelectorChecker::SelectorCheckingContext& context) {
-  // - If context.scope is a shadow root, we should walk up to its shadow host.
-  // - If context.scope is some element in some shadow tree and querySelector
-  //   initialized the context, e.g. shadowRoot.querySelector(':host *'),
-  //   (a) context.element has the same treescope as context.scope, need to walk
-  //       up to its shadow host.
-  //   (b) Otherwise, should not walk up from a shadow root to a shadow host.
-  if (context.scope &&
-      (context.scope == context.element->ContainingShadowRoot() ||
-       context.scope->GetTreeScope() == context.element->GetTreeScope())) {
+  if (context.tree_scope &&
+      (context.tree_scope == context.element->ContainingShadowRoot() ||
+       context.tree_scope == context.element->GetTreeScope())) {
     return context.element->ParentOrShadowHostElement();
   }
   return context.element->parentElement();
@@ -169,13 +174,13 @@ static Element* ParentElement(
 // the assigned slot for scope-less matching of ::slotted pseudo element.
 static const HTMLSlotElement* FindSlotElementInScope(
     const SelectorChecker::SelectorCheckingContext& context) {
-  if (!context.scope) {
+  if (!context.tree_scope) {
     return context.element->AssignedSlot();
   }
 
   for (const HTMLSlotElement* slot = context.element->AssignedSlot(); slot;
        slot = slot->AssignedSlot()) {
-    if (slot->GetTreeScope() == context.scope->GetTreeScope()) {
+    if (slot->GetTreeScope() == context.tree_scope) {
       return slot;
     }
   }
@@ -184,11 +189,7 @@ static const HTMLSlotElement* FindSlotElementInScope(
 
 static inline bool NextSelectorExceedsScope(
     const SelectorChecker::SelectorCheckingContext& context) {
-  if (context.scope && context.scope->IsInShadowTree()) {
-    return context.element == context.scope->OwnerShadowHost();
-  }
-
-  return false;
+  return context.element == ShadowHost(context);
 }
 
 static bool ShouldMatchHoverOrActive(
@@ -335,7 +336,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
       !context
            .is_sub_selector &&  // Don't trust bucketing in sub-selectors; we
                                 // may be in a child selector (a nested rule).
-      !context.scope;           // May be featureless; see CheckOne().
+      !context.tree_scope;      // May be featureless; see CheckOne().
 #if DCHECK_IS_ON()
   SubResult dummy_result(result);
   if (is_covered_by_bucketing) {
@@ -599,15 +600,14 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       return kSelectorFailsAllSiblings;
 
     case CSSSelector::kUAShadow: {
-      // Note: context.scope should be non-null unless we're checking user or
-      // UA origin rules, or VTT rules.  (We could CHECK() this if it weren't
-      // for the user rules part.)
+      // Note: context.tree_scope should be non-null unless we're checking user
+      // or UA origin rules, or VTT rules.  (We could CHECK() this if it
+      // weren't for the user rules part.)
 
       // If we're in the same tree-scope as the scoping element, then following
       // a kUAShadow combinator would escape that and thus the scope.
-      if (context.scope && context.scope->OwnerShadowHost() &&
-          context.scope->OwnerShadowHost()->GetTreeScope() ==
-              context.element->GetTreeScope()) {
+      if (DynamicTo<ShadowRoot>(context.tree_scope) ==
+          context.element->GetTreeScope()) {
         return kSelectorFailsCompletely;
       }
 
@@ -626,9 +626,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       // sure that we've crossed *enough* shadow scopes.  This prevents
       // ::pseudo1 from matching in a scope where it shouldn't match but where
       // ::part(p)::pseudo1 or where ::pseudo2::pseudo1 should match.
-      if (context.scope &&
-          context.scope->GetTreeScope() !=
-              next_context.element->GetTreeScope() &&
+      if (context.tree_scope &&
+          context.tree_scope != next_context.element->GetTreeScope() &&
           !next_context.selector->CrossesTreeScopes()) {
         return kSelectorFailsCompletely;
       }
@@ -662,10 +661,10 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         // Generally a ::part() rule needs to be in the host’s tree scope, but
         // if (and only if) we are preceded by :host or :host(), then the rule
         // could also be in the same scope as the subject.
-        TreeScope& host_tree_scope =
+        const TreeScope& host_tree_scope =
             next_context.selector->IsHostPseudoClass()
-                ? *context.scope->GetTreeScope().ParentTreeScope()
-                : context.scope->GetTreeScope();
+                ? *context.tree_scope->ParentTreeScope()
+                : *context.tree_scope;
 
         if (next_context.element->GetTreeScope() == host_tree_scope) {
           return MatchSelector(next_context, result);
@@ -842,7 +841,7 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   // [1] https://drafts.csswg.org/css-scoping/#host-element-in-tree
   // [2] https://github.com/w3c/csswg-drafts/issues/9025
   // [3] https://drafts.csswg.org/selectors-4/#data-model
-  if (context.scope && context.scope->OwnerShadowHost() == element &&
+  if (ShadowHost(context) == element &&
       (!selector.IsHostPseudoClass() && !selector.SelectorListOrParent() &&
        selector.GetPseudoType() != CSSSelector::kPseudoScope &&
        !context.treat_shadow_host_as_normal_scope &&
@@ -1346,6 +1345,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   Document& document = has_anchor_element->GetDocument();
   DCHECK(document.GetCheckPseudoHasCacheScope());
   SelectorCheckingContext sub_context(has_anchor_element);
+  sub_context.tree_scope = context.tree_scope;
   sub_context.scope = context.scope;
   // sub_context.match_visited is false (by default) to disable
   // :visited matching when it is in the :has argument
@@ -2368,6 +2368,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       SelectorCheckingContext sub_context(context);
       sub_context.is_sub_selector = true;
       sub_context.scope = nullptr;
+      sub_context.tree_scope = nullptr;
       sub_context.treat_shadow_host_as_normal_scope = false;
 
       for (sub_context.selector = selector.SelectorList()->First();
@@ -2415,6 +2416,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       SelectorCheckingContext sub_context(context);
       sub_context.is_sub_selector = true;
       sub_context.scope = nullptr;
+      sub_context.tree_scope = nullptr;
       sub_context.treat_shadow_host_as_normal_scope = false;
 
       // ::slotted() only allows one compound selector.
@@ -2559,10 +2561,10 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
 
   // :host only matches a shadow host when :host is in a shadow tree of the
   // shadow host.
-  if (!context.scope) {
+  if (!context.tree_scope) {
     return false;
   }
-  const ContainerNode* shadow_host = context.scope->OwnerShadowHost();
+  const Element* shadow_host = ShadowHost(context);
   if (!shadow_host || shadow_host != element) {
     return false;
   }
@@ -2581,6 +2583,7 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   sub_context.selector = selector.SelectorList()->First();
   sub_context.treat_shadow_host_as_normal_scope = true;
   sub_context.scope = context.scope;
+  sub_context.tree_scope = context.tree_scope;
   // Use FlatTreeTraversal to traverse a composed ancestor list of a given
   // element.
   Element* next_element = &element;
@@ -2593,6 +2596,7 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
     }
     host_context.treat_shadow_host_as_normal_scope = false;
     host_context.scope = nullptr;
+    host_context.tree_scope = nullptr;
 
     if (selector.GetPseudoType() == CSSSelector::kPseudoHost) {
       break;
@@ -2862,8 +2866,8 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
   StyleScopeFrame* style_scope_frame =
       match_visited ? nullptr : context.style_scope_frame;
   const StyleScopeActivations* activations = CalculateActivations(
-      context.style_scope_frame->element_, style_scope, *outer_activations,
-      style_scope_frame, match_visited);
+      context.tree_scope, context.style_scope_frame->element_, style_scope,
+      *outer_activations, style_scope_frame, match_visited);
   DCHECK(activations);
   return *activations;
 }
@@ -2874,6 +2878,7 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
 // however, if a StyleScopeFrame is provided, it will reuse cached results
 // found on that StyleScopeFrame.
 const StyleScopeActivations* SelectorChecker::CalculateActivations(
+    const TreeScope* tree_scope,
     Element& element,
     const StyleScope& style_scope,
     const StyleScopeActivations& outer_activations,
@@ -2910,9 +2915,9 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
         // Disable :visited matching when encountering the first link.
         // This matches the behavior for regular child/descendant combinators.
         bool parent_match_visited = match_visited && !element.IsLink();
-        parent_activations =
-            CalculateActivations(*parent, style_scope, outer_activations,
-                                 parent_frame, parent_match_visited);
+        parent_activations = CalculateActivations(
+            tree_scope, *parent, style_scope, outer_activations, parent_frame,
+            parent_match_visited);
       }
     }
 
@@ -2923,7 +2928,7 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 
       for (const StyleScopeActivation& activation :
            parent_activations->vector) {
-        if (!ElementIsScopingLimit(style_scope, activation, element,
+        if (!ElementIsScopingLimit(tree_scope, style_scope, activation, element,
                                    match_visited, activations->match_flags)) {
           activations->vector.push_back(
               StyleScopeActivation{activation.root, activation.proximity + 1});
@@ -2935,14 +2940,14 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
     for (const StyleScopeActivation& outer_activation :
          outer_activations.vector) {
       if (style_scope.From()
-              ? MatchesWithScope(element, *style_scope.From(),
-                                 outer_activation.root, match_visited,
+              ? MatchesWithScope(element, *style_scope.From(), tree_scope,
+                                 /*scope=*/outer_activation.root, match_visited,
                                  activations->match_flags)
               : HasImplicitRoot(style_scope, element)) {
         StyleScopeActivation activation{&element, 0};
         // It's possible for a newly created activation to be immediately
         // limited (e.g. @scope (.x) to (.x)).
-        if (!ElementIsScopingLimit(style_scope, activation, element,
+        if (!ElementIsScopingLimit(tree_scope, style_scope, activation, element,
                                    match_visited, activations->match_flags)) {
           activations->vector.push_back(activation);
         }
@@ -2962,10 +2967,12 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 
 bool SelectorChecker::MatchesWithScope(Element& element,
                                        const CSSSelector& selector_list,
+                                       const TreeScope* tree_scope,
                                        const ContainerNode* scope,
                                        bool match_visited,
                                        MatchFlags& match_flags) const {
   SelectorCheckingContext context(&element);
+  context.tree_scope = tree_scope;
   context.scope = scope;
   context.match_visited = match_visited;
   // We are matching this selector list with the intent of storing the result
@@ -2989,6 +2996,7 @@ bool SelectorChecker::MatchesWithScope(Element& element,
 }
 
 bool SelectorChecker::ElementIsScopingLimit(
+    const TreeScope* tree_scope,
     const StyleScope& style_scope,
     const StyleScopeActivation& activation,
     Element& element,
@@ -2997,8 +3005,9 @@ bool SelectorChecker::ElementIsScopingLimit(
   if (!style_scope.To()) {
     return false;
   }
-  return MatchesWithScope(element, *style_scope.To(), activation.root.Get(),
-                          match_visited, match_flags);
+  return MatchesWithScope(element, *style_scope.To(), tree_scope,
+                          /*scope=*/activation.root.Get(), match_visited,
+                          match_flags);
 }
 
 }  // namespace blink

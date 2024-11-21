@@ -105,6 +105,7 @@ inline bool SelectorMatches(const CSSSelector& selector,
   SelectorChecker::SelectorCheckingContext context(&element);
   context.selector = &selector;
   context.scope = &root_node;
+  context.tree_scope = &root_node.GetTreeScope();
   return checker.Match(context);
 }
 
