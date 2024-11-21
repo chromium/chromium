@@ -22,6 +22,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -169,7 +170,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
         shareTitlesAndUrlsWithOsSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean enabled = (boolean) newValue;
-                    prefsManager.writeBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, enabled);
+                    AuxiliarySearchConfigManager.getInstance().notifyShareTabsStateChanged(enabled);
                     return true;
                 });
 

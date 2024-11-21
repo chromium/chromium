@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /** The Controller to handle the communication between Chrome and {@link AuxiliarySearchDonor}. */
-public class AuxiliarySearchControllerImpl implements AuxiliarySearchController {
+public class AuxiliarySearchControllerImpl
+        implements AuxiliarySearchController,
+                AuxiliarySearchConfigManager.ShareTabsWithOsStateListener {
     private static final String TAG = "AuxiliarySearch";
     private final @NonNull Context mContext;
     private final @NonNull Profile mProfile;
@@ -44,6 +46,7 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
     private @NonNull ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private boolean mHasDeletingTask;
     private int mTaskFinishedCount;
+    private boolean mSharedTabsWithOsState;
 
     @VisibleForTesting
     public AuxiliarySearchControllerImpl(
@@ -62,7 +65,11 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
         mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
 
-        mDonor.createSessionAndInit();
+        mSharedTabsWithOsState = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
+        if (mSharedTabsWithOsState) {
+            initDonor();
+        }
+        AuxiliarySearchConfigManager.getInstance().addListener(this);
     }
 
     /**
@@ -93,17 +100,9 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
 
     @Override
     public void onResumeWithNative() {
-        long startTimeMs = TimeUtils.uptimeMillis();
+        if (!mSharedTabsWithOsState) return;
 
-        mDonor.deleteAllTabs(
-                (success) -> {
-                    mHasDeletingTask = false;
-                    AuxiliarySearchMetrics.recordDeleteTime(
-                            TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
-                    AuxiliarySearchMetrics.recordDeletionRequestStatus(
-                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
-                            AuxiliarySearchDataType.TAB);
-                });
+        deleteAllTabs();
     }
 
     @Override
@@ -113,6 +112,8 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
 
     @Override
     public void destroy() {
+        AuxiliarySearchConfigManager.getInstance().removeListener(this);
+
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
@@ -129,6 +130,8 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
             @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
+        assert mSharedTabsWithOsState;
+
         mDonor.donateFavicons(
                 tabs,
                 tabIdToFaviconMap,
@@ -139,8 +142,25 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
                 });
     }
 
+    // AuxiliarySearchConfigManager.ShareTabsWithOsStateListener implementations.
+    @Override
+    public void onConfigChanged(boolean enabled) {
+        if (mSharedTabsWithOsState == enabled) return;
+
+        mSharedTabsWithOsState = enabled;
+        AuxiliarySearchUtils.setSharedTabsWithOs(enabled);
+        if (enabled) {
+            // Initializes the session now.
+            initDonor();
+        } else {
+            // When disabled, remove all shared Tabs and closes the session.
+            deleteAllTabs();
+            mDonor.destroy();
+        }
+    }
+
     private void tryDonateTabs() {
-        if (mHasDeletingTask) return;
+        if (mHasDeletingTask || !mSharedTabsWithOsState) return;
 
         long startTime = TimeUtils.uptimeMillis();
         mAuxiliarySearchProvider.getTabsSearchableDataProtoAsync(
@@ -227,5 +247,24 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
             mAuxiliarySearchProvider.scheduleBackgroundTask(
                     SCHEDULE_DELAY_TIME_MS.getValue(), TimeUtils.uptimeMillis());
         }
+    }
+
+    private void deleteAllTabs() {
+        long startTimeMs = TimeUtils.uptimeMillis();
+
+        mHasDeletingTask = true;
+        mDonor.deleteAllTabs(
+                (success) -> {
+                    mHasDeletingTask = false;
+                    AuxiliarySearchMetrics.recordDeleteTime(
+                            TimeUtils.uptimeMillis() - startTimeMs, AuxiliarySearchDataType.TAB);
+                    AuxiliarySearchMetrics.recordDeletionRequestStatus(
+                            success ? RequestStatus.SUCCESSFUL : RequestStatus.UNSUCCESSFUL,
+                            AuxiliarySearchDataType.TAB);
+                });
+    }
+
+    private void initDonor() {
+        mDonor.createSessionAndInit();
     }
 }

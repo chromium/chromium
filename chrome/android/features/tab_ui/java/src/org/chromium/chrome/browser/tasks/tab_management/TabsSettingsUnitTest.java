@@ -34,16 +34,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -231,8 +231,7 @@ public class TabsSettingsUnitTest {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);
         AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        assertTrue(prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true));
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
         TabsSettings tabsSettings = launchFragment();
         ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
@@ -243,10 +242,14 @@ public class TabsSettingsUnitTest {
         assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
         assertTrue(learnMoreTextMessagePreference.isVisible());
 
+        var listener =
+                Mockito.mock(AuxiliarySearchConfigManager.ShareTabsWithOsStateListener.class);
+        AuxiliarySearchConfigManager.getInstance().addListener(listener);
         shareTitlesAndUrlsWithOsSwitch.onClick();
 
         assertFalse(shareTitlesAndUrlsWithOsSwitch.isChecked());
-        assertFalse(prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true));
+        verify(listener).onConfigChanged(eq(false));
+        AuxiliarySearchConfigManager.getInstance().removeListener(listener);
     }
 
     @Test

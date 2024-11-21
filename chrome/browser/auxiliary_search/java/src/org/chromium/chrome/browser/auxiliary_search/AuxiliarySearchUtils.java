@@ -11,7 +11,10 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 
@@ -73,5 +76,23 @@ public class AuxiliarySearchUtils {
     @VisibleForTesting
     public static File getTabDonateFile(Context context) {
         return new File(context.getFilesDir(), TAB_DONATE_FILE_NAME);
+    }
+
+    /** Returns whether sharing Tabs with the system is enabled in settings. */
+    public static boolean isShareTabsWithOsEnabled() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true);
+    }
+
+    /** Sets whether sharing Tabs with the system is enabled by users. */
+    public static void setSharedTabsWithOs(boolean enabled) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, enabled);
+        AuxiliarySearchMetrics.recordIsShareTabsWithOsEnabled(enabled);
+    }
+
+    public static void resetSharedTabsWithOsForTesting() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
     }
 }

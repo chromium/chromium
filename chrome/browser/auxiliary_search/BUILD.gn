@@ -12,6 +12,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManager.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchController.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactory.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
@@ -74,6 +75,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTaskUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridgeTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImplUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",

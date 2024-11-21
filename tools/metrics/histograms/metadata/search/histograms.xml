@@ -212,6 +212,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.AuxiliarySearch.ShareTabsWithOs" enum="Boolean"
+    expires_after="2025-09-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>gangwu@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <summary>
+    Records the whether the sharing Tabs with OS config is enabled. The
+    histogram is logged when the user changes the config on Tabs settings.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceDebug.ScrollStateWithMoreButtonClick"
     enum="SearchEngineChoiceScrollState" expires_after="2025-04-13">
   <owner>jyammine@google.com</owner>

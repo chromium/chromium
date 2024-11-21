@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.auxiliary_search;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -16,13 +17,19 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.io.File;
 
@@ -63,5 +70,34 @@ public class AuxiliarySearchUtilsUnitTest {
         int faviconSize = resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size);
 
         assertEquals(faviconSize, AuxiliarySearchUtils.getFaviconSize(resources));
+    }
+
+    @Test
+    @SmallTest
+    public void testShareTabsWithOs() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+
+        prefsManager.removeKey(ChromePreferenceKeys.SHARING_TABS_WITH_OS);
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Search.AuxiliarySearch.ShareTabsWithOs", false)
+                        .build();
+        AuxiliarySearchUtils.setSharedTabsWithOs(false);
+        assertFalse(prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true));
+        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Search.AuxiliarySearch.ShareTabsWithOs", true)
+                        .build();
+        AuxiliarySearchUtils.setSharedTabsWithOs(true);
+        assertTrue(prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true));
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+        histogramWatcher.assertExpected();
+
+        AuxiliarySearchUtils.resetSharedTabsWithOsForTesting();
     }
 }
