@@ -384,8 +384,7 @@ void AppServiceShelfContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
   size_t shortcut_index = menu_items.items.size();
   for (size_t i = index; i < menu_items.items.size(); i++) {
     // For Chrome browser, add the close item before the app info item.
-    if ((item().id.app_id == app_constants::kChromeAppId ||
-         item().id.app_id == app_constants::kLacrosAppId) &&
+    if (item().id.app_id == app_constants::kChromeAppId &&
         menu_items.items[i]->command_id == ash::SHOW_APP_INFO) {
       BuildChromeAppMenu(menu_model.get());
     }
@@ -517,10 +516,9 @@ void AppServiceShelfContextMenu::BuildCrostiniAppMenu(
 
 void AppServiceShelfContextMenu::BuildChromeAppMenu(
     ui::SimpleMenuModel* menu_model) {
-  // Don't check list of active browsers for lacros app because the list of
-  // browsers only tracks in-process browsers (i.e. instances of ash-chrome).
+  // The list of browsers only tracks in-process browsers (i.e. instances of
+  // ash-chrome).
   const bool has_active_browsers =
-      item().id.app_id != app_constants::kLacrosAppId &&
       !BrowserShortcutShelfItemController::IsListOfActiveBrowserEmpty(
           controller()->shelf_model());
   if (has_active_browsers || item().type == ash::TYPE_DIALOG ||
@@ -538,11 +536,6 @@ void AppServiceShelfContextMenu::ShowAppInfo() {
     return;
   }
 
-  // TODO(crbug.com/40176571): If this comes from Lacros app, it shows the
-  // top "Apps" settings page. This is fallback, because Lacros app is not
-  // registered. This is short term workaround to keep the relative
-  // compatibility for Lacros Primary. We should figure out what should be shown
-  // by this.
   controller()->DoShowAppInfoFlow(item().id.app_id);
 }
 
