@@ -6556,36 +6556,6 @@
             ]
         }
     ],
-    "CrOSLateBootAudioHFPOffload": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220520",
-                    "enable_features": [
-                        "CrOSLateBootAudioHFPOffload"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CrOSLateBootAudioOffloadCrasDSPToSOF": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240421",
-                    "enable_features": [
-                        "CrOSLateBootAudioOffloadCrasDSPToSOF"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLateBootAudioStyleTransferStudy": [
         {
             "platforms": [
