@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 
+#include <atomic>
 #include <deque>
 #include <map>
 #include <memory>
@@ -481,7 +482,7 @@ class BASE_EXPORT SequenceManagerImpl
   WorkTracker work_tracker_;
 
   // Whether to add the queue time to tasks.
-  base::subtle::Atomic32 add_queue_time_to_tasks_;
+  std::atomic<bool> add_queue_time_to_tasks_;
 
   AtomicFlagSet empty_queues_to_reload_;
 

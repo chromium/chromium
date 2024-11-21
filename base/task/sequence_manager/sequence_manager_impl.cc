@@ -391,11 +391,11 @@ SequenceManagerImpl::CreateTaskQueueImpl(const TaskQueue::Spec& spec) {
 }
 
 void SequenceManagerImpl::SetAddQueueTimeToTasks(bool enable) {
-  base::subtle::NoBarrier_Store(&add_queue_time_to_tasks_, enable ? 1 : 0);
+  add_queue_time_to_tasks_.store(enable, std::memory_order_relaxed);
 }
 
 bool SequenceManagerImpl::GetAddQueueTimeToTasks() {
-  return base::subtle::NoBarrier_Load(&add_queue_time_to_tasks_);
+  return add_queue_time_to_tasks_.load(std::memory_order_relaxed);
 }
 
 void SequenceManagerImpl::SetObserver(Observer* observer) {
