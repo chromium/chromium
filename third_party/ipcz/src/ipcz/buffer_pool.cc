@@ -204,4 +204,13 @@ void BufferPool::WaitForBufferAsync(BufferId id,
   callback();
 }
 
+void BufferPool::DropPendingBufferCallbacks() {
+  // Dropping callbacks may have side-effects, so do it outside of a lock.
+  BufferCallbackMap buffer_callbacks;
+  {
+    absl::MutexLock lock(&mutex_);
+    buffer_callbacks.swap(buffer_callbacks_);
+  }
+}
+
 }  // namespace ipcz
