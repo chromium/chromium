@@ -9506,6 +9506,8 @@ test("unit_tests") {
     if (enable_oop_printing) {
       sources +=
           [ "../browser/printing/print_backend_service_manager_unittest.cc" ]
+
+      public_deps += [ "//chrome/services/printing/public/mojom" ]
     }
   }
 
