@@ -188,7 +188,6 @@ If you leave, you will immediately lose access to the '<ph name="TITLE_OF_GROUP"
 <translation id="8887921976452567404">Your closed tabs and groups can be reopened from the Recent tabs section and the Tab groups section.</translation>
 <translation id="8915916167043355778">Close all</translation>
 <translation id="9090098097337832354">Information about this shop closed</translation>
-<translation id="9111228330448174435">Show dialogue on new tab group creation</translation>
 <translation id="9114502155681725011">Open the tab group action menu for tab group <ph name="TITLE_OF_GROUP" />, colour <ph name="COLOR_NAME" />.</translation>
 <translation id="9169594135889675189">Add new tab to group</translation>
 <translation id="9216898458513705996">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" /></translation>

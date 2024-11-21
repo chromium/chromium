@@ -281,7 +281,6 @@
 <translation id="1207301487141109411">ローカル ファイルシステム、カメラ、Google プロフィールからユーザーのアバターを選択できないようにする</translation>
 <translation id="1209096923317019235">指定したファイル拡張子のデフォルト ハンドラとしてアプリを割り当てます</translation>
 <translation id="120937472976628837">ファン情報を報告する</translation>
-<translation id="1212233008927724662">ログイン WebUI の遅延読み込みを無効にする。</translation>
 <translation id="1214639335214075459">GPU ハードウェアを使用した動画のデコードを有効にする</translation>
 <translation id="1214942205301731697">拡張機能ページでデベロッパー モードの使用を許可しない</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange（SXG）のサポートを有効にします</translation>
@@ -966,7 +965,6 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
       <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> も参照してください。
 
       注: この設定は <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> より優先されます（指定されている場合）。</translation>
-<translation id="1721304336924950970">ログイン WebUI を必要なときにのみ読み込みます。</translation>
 <translation id="172374442286684480">ローカル データの設定をすべてのサイトに許可する</translation>
 <translation id="1729169799290004131">このポリシーでは、画面の明るさの割合（%）を指定できます。このとき、明るさの自動調整機能は無効になります。初期画面の明るさはポリシーの値に調整されますが、ユーザーはこの設定を変更できます。
 
@@ -2639,6 +2637,35 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 
       このポリシーを False に設定した場合、自動生成されたおすすめのコンテンツは新しいタブページには表示されません。</translation>
 <translation id="3046192273793919231">オンライン ステータス監視のためにネットワーク パケットを管理サーバーに送信する</translation>
+<translation id="3046917616600522016">このポリシーでは、Chrome と ARC アプリのプロキシ設定を行います。いずれもコマンドラインで指定されたプロキシ関連の設定はすべて無視されます。
+
+このポリシーを未設定のままにした場合、ユーザーはプロキシ設定を選択できます。
+
+<ph name="PROXY_SETTINGS_POLICY_NAME" /> ポリシーを設定すると、次のフィールドを受け取れるようになります。
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />: Chrome で使用するプロキシ サーバーを指定して、ユーザーがプロキシ設定を変更できないようにします
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />: プロキシ .pac ファイルへの URL、または MIME タイプ application/x-ns-proxy-autoconfig のデータ URL としてエンコードされた PAC スクリプト
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />: PAC スクリプトが無効または使用できないためにネットワーク スタックが直接接続にフォールバックすることを防ぎます
+
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />: プロキシ サーバーの URL
+
+  * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />: プロキシが回避されるホストのリスト
+
+<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> フィールドは非推奨となったため、代わりに <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> フィールドを使用してください。<ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> については、以下のいずれかの値を指定します。
+
+  * <ph name="PROXY_MODE_ENUM_DIRECT" />: プロキシは一切使用せず、他のフィールドをすべて無視します。
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" />: システムのプロキシを使用して、他のフィールドをすべて無視します。
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />: 他のフィールドをすべて無視します。
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />: <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> フィールドと <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />: <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />、<ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />、<ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> フィールドを使用します。
+
+注: 詳しい例については、Chromium プロジェクトの説明（https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings）をご覧ください。</translation>
 <translation id="3047732214002457234">Chrome クリーンアップから Google へのデータの送信を管理する</translation>
 <translation id="3047864383610708617">固定キーを無効にする</translation>
 <translation id="3048744057455266684">このポリシーを設定していて、アドレスバーの検索 URL 候補のクエリ文字列やフラグメント識別子にこのパラメータが含まれる場合、元の検索 URL を検索キーワードや検索プロバイダに置き換えた候補が表示されます。
@@ -2772,15 +2799,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="3163167792874598128">このポリシーを未設定のままにするか有効に設定した場合、App Store の評価に関するプロモーションがユーザーに表示されます（最大で年に 1 回）。
 このポリシーを無効に設定した場合、App Store の評価に関するプロモーションはユーザーに表示されません。</translation>
 <translation id="3164531087779621747">印刷の PostScript モード</translation>
-<translation id="3165468162820163252">このポリシーでは、ログイン画面の WebUI を常に起動時に読み込むか、表示の直前に読み込むかを制御します。このポリシーはログイン画面に適用されます。
-
-      このポリシーを有効に設定した場合、ログイン画面の WebUI は表示の直前に読み込まれます。これによりログイン プロセスが迅速化されます。
-
-      このポリシーを無効に設定した場合、ログイン画面の WebUI は常に起動時に読み込まれます（従来の動作）。
-
-      未設定のままにした場合、動作は kEnableLazyLoginWebUILoading 機能によって制御されます。
-
-      このポリシーは、kEnableLazyLoginWebUILoading が完全にリリースされた後に削除されます。</translation>
 <translation id="3165808775394012744">これらのポリシーは、削除しやすいようにこのフォルダにまとめられています。</translation>
 <translation id="3166210414652928099">信頼できない提供元の Android アプリの使用をユーザーに許可する</translation>
 <translation id="316778957754360075">この設定は <ph name="PRODUCT_NAME" /> バージョン 29 で廃止されました。組織でホストする拡張機能/アプリのコレクションを設定するには、CRX パッケージをホストするサイトを ExtensionInstallSources の中で指定し、パッケージへの直接ダウンロード リンクをウェブページに置くことをおすすめします。そのウェブページのランチャーは、ExtensionInstallForcelist ポリシーを使用して作成できます。</translation>
@@ -7393,7 +7411,6 @@ False に設定すると、P2P は使用されません。
 
       * 証明書チェーンの CA（認証局）証明書に出現する <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されている。CA 証明書に X.509v3 nameConstraints 拡張による制約が適用され、permittedSubtrees に directoryName nameConstraints が 1 つ以上存在し、その directoryName に organizationName 属性が含まれている。* 証明書チェーン内の CA 証明書に出現する <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されていて、その CA 証明書のサブジェクトに organizationName 属性が 1 つ以上含まれていること。さらに、サーバーの証明書にも同じ数の organizationName 属性が同じ順序で含まれ、それらの値がバイト単位で同一である。<ph name="SUBJECT_PUBLIC_KEY_INFO" /> ハッシュは、ハッシュ アルゴリズム名とスラッシュに加え、指定された証明書の DER-エンコード済み <ph name="SUBJECT_PUBLIC_KEY_INFO" /> に適用されているハッシュ アルゴリズムの Base64 エンコードをリンクすることで指定します。Base64 エンコードの形式は、SPKI フィンガープリントの形式に一致します。認識されるハッシュ アルゴリズムは SHA256 だけです。その他は無視されます。ポリシーが未設定のまま、Certificate Transparency（証明書の透明性）による開示を必要とする証明書が開示されていない場合、<ph name="PRODUCT_NAME" /> はその証明書を信頼しません。</translation>
 <translation id="6703381779632216549">初回実行時のデフォルトの検索エンジンのインポートを有効にする</translation>
-<translation id="6704445641918520643">ログイン WebUI の遅延読み込みを有効にする。</translation>
 <translation id="6704515759227307131">このポリシーはサポートが終了しており、AdvancedProtectionAllowed に置き換えられました。
 
       このポリシーは、高度な保護機能プログラムに登録しているユーザーに対し、不正なソフトウェアがないかスキャンする目的で、ダウンロードしたコンテンツを Google に送信することを許可するかどうかを制御します。True に設定するか未設定のままにした場合、高度な保護機能プログラムに登録しているユーザーには、詳細なスキャンのためにファイルを Google に送信するかを確認するメッセージが表示されます。ユーザーが [スキャン] を選択した場合、ダウンロードしたコンテンツは Google に送信されます。False に設定した場合、ユーザーにメッセージは表示されず、ダウンロードしたコンテンツは Google に送信されません。</translation>

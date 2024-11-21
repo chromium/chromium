@@ -6089,7 +6089,6 @@
 <translation id="5279214046729249716">हां, इस डेटा को अलग रखें</translation>
 <translation id="5279600392753459966">सभी को ब्लॉक करें</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> के क्रेडेंशियल अपडेट करें</translation>
-<translation id="5280335021886535443">इस बबल पर फ़ोकस करने के लिए, |<ph name="ACCELERATOR" />| दबाएं.</translation>
 <translation id="5280426389926346830">शॉर्टकट बनाएं?</translation>
 <translation id="5281013262333731149">इस ब्राउज़र में खुलता है: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android ऐप्लिकेशन डाउनलोड करने और उनका इस्तेमाल करने के लिए, आपको सबसे पहले यह ज़रूरी अपडेट इंस्टॉल करना होगा. जब आपका <ph name="DEVICE_TYPE" /> अपडेट हो रहा हो, तो आप इसका इस्तेमाल नहीं कर सकते हैं. इंस्टॉल करने का काम पूरा हो जाने के बाद, आपका <ph name="DEVICE_TYPE" /> रीस्टार्ट होगा.</translation>
@@ -7377,7 +7376,6 @@
 <translation id="622537739776246443">प्रोफ़ाइल मिटा दी जाएगी</translation>
 <translation id="6225475702458870625">आपके <ph name="PHONE_NAME" /> से डेटा कनेक्शन उपलब्ध है</translation>
 <translation id="6226777517901268232">निजी कुंजी फ़ाइल (वैकल्पिक)</translation>
-<translation id="6227002569366039565">इस बबल पर फ़ोकस करने के लिए, ।<ph name="ACCELERATOR" />। दबाएं. इसे दोबारा दबाकर उस एलिमेंट पर फ़ोकस करें जिसकी ओर यह बबल इशारा कर रहा है.</translation>
 <translation id="6227280783235722609">एक्सटेंशन</translation>
 <translation id="622902691730729894">ग्रुप को बुकमार्क बार से अनपिन करें</translation>
 <translation id="6229062790325126537">ApnMigrator को रीसेट करें</translation>
@@ -8782,8 +8780,6 @@
 <translation id="7250616558727237648">आप जिस डिवाइस के साथ फ़ाइल को शेयर करना चाहते हैं उसने कोई रिस्पॉन्स नहीं दिया. कृपया फिर से कोशिश करें.</translation>
 <translation id="725109152065019550">क्षमा करें, आपके व्यवस्थापक ने आपके खाते पर बाहरी मेमोरी को अक्षम कर दिया है.</translation>
 <translation id="7251635775446614726">आपके एडमिन के मुताबिक: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="7252023374029588426">निर्देशों के साथ ट्यूटोरियल वाले कई बबल दिखाए जाएंगे.
-          किसी बबल पर फ़ोकस करने के लिए, |<ph name="ACCELERATOR" />| दबाएं. इसे दोबारा दबाकर उस एलिमेंट पर फ़ोकस करें जिसकी ओर यह बबल इशारा कर रहा है.</translation>
 <translation id="7253521419891527137">&amp;अधिक जानें</translation>
 <translation id="7254951428499890870">क्या आप वाकई "<ph name="APP_NAME" />" को डाइग्नॉस्टिक मोड में लॉन्च करना चाहते हैं?</translation>
 <translation id="725497546968438223">बुकमार्क फ़ोल्डर बटन</translation>

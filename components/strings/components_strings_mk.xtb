@@ -313,6 +313,7 @@
 <translation id="1549470594296187301">За да се користи функцијава, мора да биде овозможено JavaScript.</translation>
 <translation id="1553152622374372421">Зимски спортови</translation>
 <translation id="1553358976309200471">Ажурирај го Chrome</translation>
+<translation id="1554485704925237240">Контролирајте ги читачите со име <ph name="READERNAME" /> и паметните картички што се користат со нив</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1555191101192706055">Напаѓачите на сајтот што се обидовте да го отворите може да ве измамат да инсталирате штетен софтвер што влијае на тоа како прелистувате, на пример, со променување на вашата почетна страница или прикажување дополнителни реклами на сајтовите што ги отворате.</translation>
 <translation id="1559231233244409191">Картон (троен ѕид)</translation>
@@ -906,6 +907,7 @@
 <translation id="2595719060046994702">Со уредов и со сметкава не управува компанија или друга организација.</translation>
 <translation id="2596415276201385844">За воспоставување безбедна врска, вашиот часовник треба да биде правилно поставен. Ова е така затоа што сертификатите кои веб-локациите ги користат за да се идентификуваат важат само определени периоди на време. Бидејќи часовникот на вашиот уред не е точен, Chrome не може да ги потврди овие сертификати.</translation>
 <translation id="2597378329261239068">Овој документ е заштитен со лозинка. Внесете лозинка.</translation>
+<translation id="2605979593348332811">Фонетско име</translation>
 <translation id="2606760465469169465">Автоматска потврда</translation>
 <translation id="2608019759319359258">Кога ќе се блокира некоја тема, нема да се користи за персонализирање реклами</translation>
 <translation id="2610561535971892504">Кликнете за копирање</translation>
@@ -917,6 +919,7 @@
 <translation id="2622754869869445457">Вашата последно отворена картичка</translation>
 <translation id="2625385379895617796">Вашиот часовник е напред</translation>
 <translation id="262745152991669301">Може да прашува за да се поврзува со USB-уреди</translation>
+<translation id="2627847595568876492">Се извлекува текст од PDF…</translation>
 <translation id="2628224721443278970">Најавете се на Microsoft OneDrive</translation>
 <translation id="2634124572758952069">IP-адресата за серверот на <ph name="HOST_NAME" /> не може да се најде.</translation>
 <translation id="2639739919103226564">Статус:</translation>
@@ -1521,6 +1524,7 @@
 <translation id="3711430313228789376">Прелистувачот Chrome се обидува да ги прикаже лозинките</translation>
 <translation id="3711861349027352138">Компјутерски и видеоигри</translation>
 <translation id="3711895659073496551">Суспендирај</translation>
+<translation id="3712004750972384495">Се зачувува снимката од екранот</translation>
 <translation id="3712006010833051684">Плик #10</translation>
 <translation id="3712624925041724820">Исцрпени лиценци</translation>
 <translation id="3713277100229669269">Отсега може да ги видите поволностите на картичката пред да платите</translation>
@@ -1549,6 +1553,7 @@
 <translation id="3744899669254331632">Не може да го посетите <ph name="SITE" /> во моментов бидејќи веб-локацијата испрати измешани акредитиви кои Chromium не може да ги обработи. Грешките и нападите на мрежите се најчесто привремени, па веројатно оваа страница подоцна ќе работи.</translation>
 <translation id="3745599309295009257">Текстот и содржините, како и URL-адресата на страницата на којашто пишувате ќе се испратат до Google, ќе ги рецензираат луѓе и ќе се користат за подобрување на функцијава. Избегнувајте внесување лични податоци (како медицински или финансиски детали) или користење на алаткава на сајтови што содржат приватни или чувствителни податоци.</translation>
 <translation id="3748009735914587286">Метал (Висок сјај)</translation>
+<translation id="3752181611900535304">Дали да се зачува адресата во сметката?</translation>
 <translation id="3752543821772132562">Се игнорира бидејќи не е поставено <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Излези од „Слика во слика“</translation>
 <translation id="3759461132968374835">Немате неодамна пријавени падови. Падовите што настанале кога било исклучено пријавувањето падови нема да се појават тука.</translation>
@@ -1659,6 +1664,7 @@
 <translation id="3962859241508114581">Претходна песна</translation>
 <translation id="3963721102035795474">Режим на читач</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ниту еден}=1{Од 1 сајт }one{Од # сајт }other{Од # сајтови }}</translation>
+<translation id="3965672182149944205">Да се зачува адресата?</translation>
 <translation id="3966044442021752214">Безбедност на производот</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> е блокиран</translation>
@@ -2327,6 +2333,7 @@
 <translation id="5191315092027169558">Со вашиот профил управува <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> сака да преземе повеќе датотеки</translation>
 <translation id="519422657042045905">Прибелешката не е достапна</translation>
+<translation id="5200063972779787617">Зачувајте адреса во сметката</translation>
 <translation id="5201306358585911203">Вметнатата страница во страницава вели</translation>
 <translation id="5205222826937269299">Потребно е име</translation>
 <translation id="5206392433295093945">Спална соба</translation>
@@ -2349,6 +2356,7 @@
 <translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5241048084654737238">Потврда дека податоците за картичката не може да се зачуваат</translation>
 <translation id="5242610955375133957">Сува фолија</translation>
+<translation id="5243004157379865295">Ажурирајте ја адресата</translation>
 <translation id="5244521145258281926">Копче за управување со сметката на Google, активирајте го за да управувате со податоците, приватноста и безбедноста на сметката на Google</translation>
 <translation id="5244732203286792411">Се вчитува…
     Ова може малку да потрае.</translation>
@@ -2846,6 +2854,7 @@
 <translation id="6159554577634054750">Контрола на штетници</translation>
 <translation id="6159908896951210943">Формално</translation>
 <translation id="6160391204859821737">Вклучување функција за приватност за реклами</translation>
+<translation id="6162403104168428984">Да се ажурира адресата?</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6167577165590485365">Последен обид за преземање:</translation>
 <translation id="617256461084925519">Google Chrome се обидува да го потврди вашиот идентитет за да може да ги пополни вашите податоци за плаќање.</translation>
@@ -3080,6 +3089,7 @@
 <translation id="6569060085658103619">Гледате страница со екстензии</translation>
 <translation id="6573200754375280815">Две дупки десно</translation>
 <translation id="6574762126505704998">Пополни</translation>
+<translation id="6575408526598156416">Зачувајте во сметката</translation>
 <translation id="6577792494180292262">Ризичен капитал</translation>
 <translation id="6578434528542148658">Неважечки ID на екстензија.</translation>
 <translation id="6579858392010591435">Празници и сезонски настани</translation>
@@ -3390,6 +3400,7 @@
 <translation id="714064300541049402">Промена на страната 2 на сликата X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
+<translation id="7152230779180489711">Последна посета</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и уште <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Боја на лаванда</translation>
 <translation id="7156870133441232244">Серверот треба да се надгради на TLS 1.2 или понова верзија.</translation>
@@ -4469,6 +4480,7 @@
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да продолжите со патувањето и да ја прегледате релевантната активност во вашата „Историја на Chrome“</translation>
 <translation id="9119042192571987207">Прикачен</translation>
 <translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> сака да го потврди вашиот идентитет</translation>
+<translation id="9120593907434185157">Зачувајте ја адресата</translation>
 <translation id="912327514020027767">Здолништа</translation>
 <translation id="9128870381267983090">Поврзете се на мрежа</translation>
 <translation id="9131119348384879525">Да се снимат доверливи содржини?</translation>

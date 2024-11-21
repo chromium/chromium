@@ -292,7 +292,6 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
 <translation id="1207301487141109411">Impedir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
 <translation id="1209096923317019235">Atribui apps como gerenciadores padrão para as extensões de arquivo especificadas</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
-<translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="1214639335214075459">Ativar decodificação de vídeo por hardware da GPU</translation>
 <translation id="1214942205301731697">Não permitir o uso do modo de desenvolvedor na página de extensões</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
@@ -1053,7 +1052,6 @@ política foi a 121. O suporte foi removido na versão 122.</translation>
       Veja também: <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Observação: esta configuração substituirá a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se ela estiver presente.</translation>
-<translation id="1721304336924950970">Carregar Login WebUI apenas quando necessário.</translation>
 <translation id="172374442286684480">Permitir que todos os sites definam dados locais</translation>
 <translation id="1729169799290004131">Se a política for definida, a porcentagem de brilho da tela será especificada, desativando os recursos do brilho automático. O brilho inicial da tela será ajustado para o valor da política, mas os usuários poderão mudá-lo.
 
@@ -2842,6 +2840,10 @@ Se o valor for definido como <ph name="LONGPRESSONLY_ENUM_VALUE" />, as entidade
           Se você definir esta política, o usuário não poderá alterá-la ou modificá-la.
 
           Se esta política não for definida, o cursor grande estará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="3028201032688933333">Esta política controla se o usuário tem permissão para escolher arquivos diretamente do <ph name="GOOGLE_DRIVE_NAME" /> quando um site contém um formulário para envio de arquivos.
+Se a política for definida como "Mostrar a opção <ph name="GOOGLE_DRIVE_NAME" />." (0) ou for deixada sem definição, o usuário poderá escolher arquivos do <ph name="GOOGLE_DRIVE_NAME" /> no menu de seleção de arquivos.
+Se a política for definida como "Ocultar a opção <ph name="GOOGLE_DRIVE_NAME" />." (1), a opção <ph name="GOOGLE_DRIVE_NAME" /> será ocultada no menu de seleção de arquivos.
+Esta política não impede que os usuários escolham arquivos do <ph name="GOOGLE_DRIVE_NAME" /> de outras maneiras que não sejam a ação "Google Drive" no menu de seleção de arquivos.</translation>
 <translation id="3030000825273123558">Ativa relatórios de métricas</translation>
 <translation id="30300807616984726">Informa os dados de inventário do app para usuários afiliados.
 
@@ -2997,15 +2999,6 @@ Se a política for definida como desativada ou não for definida, o menu de aces
 <translation id="3163167792874598128">Quando a política é ativada ou deixada sem definição, a promoção de avaliação na App Store pode ser mostrada para o usuário, no máximo uma vez por ano.
 Se a política for desativada, a promoção de avaliação na App Store não vai ser mostrada ao usuário.</translation>
 <translation id="3164531087779621747">Modo PostScript de impressão</translation>
-<translation id="3165468162820163252">Esta política controla se a parte WebUI da tela de login é carregada no início ou apenas antes de ela ser mostrada. A política se aplica à tela de login.
-
-      Se ela for ativada, a parte WebUI será carregada apenas antes de ser mostrada. Isso acelera o processo de login.
-
-      Se a política for desativada, a parte WebUI da tela de login sempre será carregada na inicialização (comportamento legado).
-
-      Se a política for deixada sem definição, o comportamento será controlado pelo recurso kEnableLazyLoginWebUILoading.
-
-      É necessário remover a política após o lançamento do kEnableLazyLoginWebUILoading.</translation>
 <translation id="3165808775394012744">Essas políticas estão incluídas aqui para facilitar a remoção delas.</translation>
 <translation id="3166210414652928099">Permite o uso de apps Android de fontes não confiáveis</translation>
 <translation id="316778957754360075">Esta configuração foi descontinuada a partir da versão 29 do <ph name="PRODUCT_NAME" />. O modo recomendado de configurar as coleções de extensões/aplicativos hospedados pela organização é incluir na hospedagem do site os pacotes CRX em ExtensionInstallSources e colocar links de download direto para os pacotes em uma página da Web. É possível criar um iniciador da página da Web usando a política ExtensionInstallForcelist.</translation>
@@ -3304,6 +3297,7 @@ Se esta política for definida como desativada, o recurso de escrita preditiva n
 <translation id="3387999258705169775">Comportamento padrão do ajuste aninhado da função setTimeout().</translation>
 <translation id="3388628790024977864">Não permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="3389088527709746815">Ativar a autenticação gnubby para o host de acesso remoto</translation>
+<translation id="3395744872155955051">Permitir que arquivos sejam escolhidos diretamente no <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="3397883909301547525">Não mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3398051852031115795">Comportamento padrão do sistema (depende do tamanho da tela)</translation>
 <translation id="33993310248354034">Permitir a detecção de entidades de texto simples em páginas da Web.</translation>
@@ -5961,6 +5955,7 @@ Observação: esta política não se aplica a HSTS Upgrades.</translation>
 A definição de uma lista de URLs nesta política tem o mesmo efeito que configurar a flag de linha de comando --unsafely-treat-insecure-origin-as-secure para uma lista dos mesmos URLs separados por vírgulas. A política modificará a flag de linha de comando e UnsafelyTreatInsecureOriginAsSecure, se estiver presente.
 
 Para mais informações sobre contextos seguros, consulte "Secure Contexts" (https://www.w3.org/TR/secure-contexts) (em inglês).</translation>
+<translation id="530111809849214840">Ocultar a opção <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>
 <translation id="5303080953475303561">Se a política for definida, ela controlará a frequência com que a tela de bloqueio solicita a senha para o desbloqueio rápido. Quando a tela de bloqueio aparece, se a última senha digitada tiver sido inserida antes da janela de tempo especificada pelo valor escolhido, o desbloqueio rápido não ficará disponível. Se os usuários continuarem na tela de bloqueio após esse período, uma senha será solicitada na próxima vez que o código errado for digitado ou que eles acessarem a tela de bloqueio, o que ocorrer primeiro.
 
@@ -6312,6 +6307,7 @@ Consulte também https://wiki.samba.org/index.php/Samba_4.6_Features_added/chang
 
       Essa política foi descontinuada. Use <ph name="PROMOTIONS_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467">Mostrar a opção <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="5558394213067608844">Ativar o controlador de diagnóstico e telemetria wilco</translation>
 <translation id="5559079916187891399">Esta política não tem nenhum efeito sobre apps Android.</translation>
 <translation id="5560039246134246593">Adicionar um parâmetro para buscar o termo-semente "Variações" no <ph name="PRODUCT_NAME" />.
@@ -8048,7 +8044,6 @@ Essa política se aplica apenas a novas tentativas de conexão e não invalida a
 
       Deixar esta política sem definição significa que se os certificados que precisam ser divulgados via Transparência dos certificados não o forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.</translation>
 <translation id="6703381779632216549">Ativar a importação do mecanismo de pesquisa padrão na primeira execução</translation>
-<translation id="6704445641918520643">Ativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="6704515759227307131">Esta política está obsoleta e foi substituída pela AdvancedProtectionAllowed.
 
       Ela controla se os usuários inscritos no Programa Proteção Avançada têm permissão para enviar os downloads para o Google para verificação de malware. Se esta política for definida como verdadeira ou não for configurada, um aviso aparecerá para os usuários pedindo que enviem os arquivos ao Google para verificação detalhada. Se o usuário selecionar "Verificar", o download será enviado para o Google. Se esta política for definida como falsa, o aviso não aparecerá e os downloads não serão enviados para o Google.</translation>

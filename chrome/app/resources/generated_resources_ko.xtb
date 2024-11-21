@@ -3484,6 +3484,7 @@
 <translation id="3429174588714165399">이 페이지의 바로가기 만들기</translation>
 <translation id="3429271624041785769">웹 콘텐츠 언어</translation>
 <translation id="3429275422858276529">이 페이지를 북마크에 추가하여 나중에 쉽게 찾으세요.</translation>
+<translation id="3431530007831146102">머리 움직임으로 마우스 커서 제어</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> 확보됨</translation>
 <translation id="3432762828853624962">공유 작업자</translation>
 <translation id="3433507769937235446">두고 가면 잠그기</translation>
@@ -6091,7 +6092,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5279214046729249716">예, 분리하여 유지</translation>
 <translation id="5279600392753459966">모두 차단</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> 사용자 인증 정보 업데이트</translation>
-<translation id="5280335021886535443">|<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정하세요.</translation>
 <translation id="5280426389926346830">바로가기를 만드시겠습니까?</translation>
 <translation id="5281013262333731149"><ph name="OPEN_BROWSER" />에서 열기</translation>
 <translation id="528208740344463258">Android 앱을 다운로드하고 사용하려면 우선 필수 업데이트를 설치해야 합니다. 업데이트 중에는 <ph name="DEVICE_TYPE" /> 기기를 사용할 수 없습니다. 설치가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
@@ -7380,7 +7380,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="622537739776246443">프로필이 삭제됩니다</translation>
 <translation id="6225475702458870625">데이터 연결을 <ph name="PHONE_NAME" />에서 사용할 수 있습니다.</translation>
 <translation id="6226777517901268232">비공개 키 파일(선택사항)</translation>
-<translation id="6227002569366039565">|<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정한 다음 다시 풍선이 가리키는 요소에 포커스를 지정하세요.</translation>
 <translation id="6227280783235722609">확장 프로그램</translation>
 <translation id="622902691730729894">북마크바에서 그룹 고정 해제</translation>
 <translation id="6229062790325126537">ApnMigrator 재설정</translation>
@@ -8783,8 +8782,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7250616558727237648">공유하려는 기기가 응답하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7251635775446614726">관리자의 메시지: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="7252023374029588426">안내가 담긴 튜토리얼 풍선이 여러 개 표시됩니다.
-          |<ph name="ACCELERATOR" />| 키를 눌러 도움말 풍선에 포커스를 지정한 다음 다시 풍선이 가리키는 요소에 포커스를 지정하세요.</translation>
 <translation id="7253521419891527137">자세히 알아보기(&amp;L)</translation>
 <translation id="7254951428499890870">'<ph name="APP_NAME" />'을(를) 진단 모드로 실행하시겠습니까?</translation>
 <translation id="725497546968438223">북마크 폴더 버튼</translation>

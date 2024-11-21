@@ -19,6 +19,7 @@
 <translation id="146407871188825689">A Chromium használata iPaden alapértelmezés szerint</translation>
 <translation id="1471084500615228555">A Chromiumban tárolt böngészési adatok törlése</translation>
 <translation id="1472013873724362412">Fiókja nem működik a Chromium rendszeren. Lépjen kapcsolatba domainrendszergazdájával, vagy használjon normál Google-fiókot a bejelentkezéshez.</translation>
+<translation id="148576268809812097">Jelszavak mentése a Chromiumban</translation>
 <translation id="1501302548410882220">A Chromium mindenhol használható</translation>
 <translation id="1503199973012840174">Az Ön által használt Chromium elavult. A biztonság megőrzése érdekében frissítse.</translation>
 <translation id="1515748263297244785">A Chromium használata iPaden alapértelmezés szerint</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">Jelszavát a rendszer a fiókjába (<ph name="EMAIL" />) menti.</translation>
 <translation id="1811860791247653035">A személyre szabás és az egyéb funkciók használatához vegye fel a Chromiumot a következők közé: <ph name="FEATURE_NAME_1" /> és <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="1838412507805038478">A Chromium ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
+<translation id="1839447949248872139">A linkek megnyitása a Chromiumban alapértelmezés szerint</translation>
 <translation id="1843424232666537147">A Google Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1847960401032164406">Térkép a Chromiumban</translation>

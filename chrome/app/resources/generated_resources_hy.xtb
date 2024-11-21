@@ -3467,6 +3467,7 @@
 <translation id="3429174588714165399">Ստեղծեք այս կայքի դյուրանցումը</translation>
 <translation id="3429271624041785769">Վեբ բովանդակության լեզուներ</translation>
 <translation id="3429275422858276529">Էջանշեք այս կայքէջը՝ ավելի ուշ այն հեշտությամբ գտնելու համար</translation>
+<translation id="3431530007831146102">Մկնիկի նշորդը կառավարեք գլխի շարժումներով</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – ազատվել է <ph name="MEMORY_VALUE" /> տարածք</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Կողպել, եթե մոտ չեք</translation>
@@ -6075,7 +6076,6 @@
 <translation id="5279214046729249716">Այո, առանձին պահել</translation>
 <translation id="5279600392753459966">Արգելափակել բոլորը</translation>
 <translation id="5280064835262749532">Թարմացրեք <ph name="SHARE_PATH" />-ի տվյալները</translation>
-<translation id="5280335021886535443">Սեղմեք |<ph name="ACCELERATOR" />|՝ ֆոկուսն այս ամպիկի վրա տեղափոխելու համար։</translation>
 <translation id="5280426389926346830">Ստեղծե՞լ դյուրանցում</translation>
 <translation id="5281013262333731149">Բացվում է <ph name="OPEN_BROWSER" /> դիտարկիչում</translation>
 <translation id="528208740344463258">Android հավելվածները ներբեռնելու և օգտագործելու համար հարկավոր է տեղադրել թարմացումը: Տեղադրման ժամանակ դուք չեք կարող օգտագործել <ph name="DEVICE_TYPE" /> սարքը։ Թարմացումից հետո <ph name="DEVICE_TYPE" /> սարքը կվերագործարկվի:</translation>
@@ -7360,7 +7360,6 @@
 <translation id="622537739776246443">Պրոֆիլը կհեռացվի</translation>
 <translation id="6225475702458870625">Հասանելի է բջջային ինտերնետ ձեր <ph name="PHONE_NAME" /> սարքից</translation>
 <translation id="6226777517901268232">Գաղտնի բանալու ֆայլը (պարտադիր չէ)</translation>
-<translation id="6227002569366039565">Սեղմեք |<ph name="ACCELERATOR" />|՝ ֆոկուսն այս ամպիկի վրա տեղափոխելու համար, ու ևս մեկ անգամ՝ ֆոկուսը տեղափոխելու այն տարրի վրա, որը նշված է ամպիկի կողմից։</translation>
 <translation id="6227280783235722609">ընդլայնում</translation>
 <translation id="622902691730729894">Ապամրացնել խումբը էջանիշների գոտուց</translation>
 <translation id="6229062790325126537">Վերակայել ApnMigrator-ը</translation>
@@ -8764,8 +8763,6 @@
 <translation id="7250616558727237648">Սարքը չի արձագանքում։ Նորից փորձեք։</translation>
 <translation id="725109152065019550">Ադմինիստրատորն արգելել է արտաքին պահեստի օգտագործումը ձեր հաշվի համար:</translation>
 <translation id="7251635775446614726">Հաղորդագրություն ձեր ադմինիստրատորից․ «<ph name="CUSTOM_MESSAGE" />»։</translation>
-<translation id="7252023374029588426">Ձեզ կցուցադրվի ցուցումներով օգնության ամպիկների շարք։
-          Սեղմեք |<ph name="ACCELERATOR" />|՝ ֆոկուսը որևէ ամպիկի վրա տեղափոխելու համար, ու ևս մեկ անգամ՝ ֆոկուսը տեղափոխելու այն տարրի վրա, որը նշված է ամպիկի կողմից։</translation>
 <translation id="7253521419891527137">&amp;Իմանալ ավելին</translation>
 <translation id="7254951428499890870">Գործարկե՞լ «<ph name="APP_NAME" />» հավելվածն ախտորոշման ռեժիմում:</translation>
 <translation id="725497546968438223">Պանակն էջանշելու կոճակ</translation>

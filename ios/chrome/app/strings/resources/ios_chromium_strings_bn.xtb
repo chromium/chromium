@@ -19,6 +19,7 @@
 <translation id="146407871188825689">ডিফল্ট হিসেবে, iPad-এ Chromium ব্যবহার করুন</translation>
 <translation id="1471084500615228555">Chromium-এ ব্রাউজ করা ডেটা মুছুন</translation>
 <translation id="1472013873724362412">আপনার অ্যাকাউন্ট Chromium-এ কাজ করে না৷ সাইন-ইন করার জন্য আপনার ডোমেন অ্যাডমিনিস্ট্রেটরের সঙ্গে যোগাযোগ করুন বা কোন সাধারণ Google অ্যাকাউন্ট ব্যবহার করুন৷</translation>
+<translation id="148576268809812097">Chromium-এ আপনার পাসওয়ার্ড সেভ করুন</translation>
 <translation id="1501302548410882220">সব জায়গায় Chromium ব্যবহার করুন</translation>
 <translation id="1503199973012840174">আপনার Chromium পুরনো হয়ে গেছে। নিরাপদ থাকতে এটি আপডেট করুন।</translation>
 <translation id="1515748263297244785">iPad-এর জন্য ডিফল্ট হিসেবে Chromium ব্যবহার করুন</translation>
@@ -36,6 +37,7 @@
 <translation id="1722370509450468186">পাসওয়ার্ড আপনার অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="1811860791247653035">পছন্দমতো সুবিধা ও অন্যান্য ফিচার ব্যবহার করতে <ph name="FEATURE_NAME_1" /> ও <ph name="FEATURE_NAME_2" />-এ Chromium যোগ করে নিন</translation>
 <translation id="1838412507805038478"><ph name="ISSUER" /> যে এই ওয়েবসাইটের শংসাপত্র প্রকাশ করেছে Chromium তা যাচাই করেছে।</translation>
+<translation id="1839447949248872139">সাধারণত Chromium-এ লিঙ্ক খুলুন</translation>
 <translation id="1843424232666537147">Google Chrome-এর এমন বৈশিষ্ট্য রয়েছে যা আপনাকে আপনার ইন্টারনেট ডেটা পরিচালনা করতে এবং কিভাবে আপনি ওয়েবপৃষ্ঠাগুলি দ্রুত লোড করতে পারবেন সে বিষয়ে সহায়তা করে।
 <ph name="BEGIN_LINK" />আরো জানুন<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">Chromium-এ Maps</translation>

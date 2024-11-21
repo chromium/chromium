@@ -2313,6 +2313,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2575407791320728464">URL адресът е невалиден. Уверете се, че е форматиран правилно.</translation>
 <translation id="2575441894380764255">Сайтове без разрешение за показване на натрапчиви или подвеждащи реклами</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Това устройство ще бъде запазено за 1 година. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}other{Това устройство ще бъде запазено за {YEARS} години. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}}</translation>
+<translation id="2577127557293415225">Затваряне на двете очи за кратко</translation>
 <translation id="257779572837908839">Настройване като Chromebox за срещи</translation>
 <translation id="2580889980133367162">Винаги да е разрешено на <ph name="HOST" /> да изтегля няколко файла</translation>
 <translation id="258095186877893873">Дълго</translation>
@@ -2784,6 +2785,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2904210161403910217">Паролата ви е променена от последния път, когато сте влезли в профила си</translation>
 <translation id="2904506722835398619">Необходимо е влизане в профила и синхронизиране</translation>
 <translation id="2904845070985032877">Поставяне на анимациите на пауза</translation>
+<translation id="2905556994482999199">Контролирайте своя Chromebook с движения на главата и мимики</translation>
 <translation id="2907619724991574506">URL адреси при стартиране</translation>
 <translation id="2907798539022650680">Свързването с/ъс „<ph name="NAME" />“ не бе успешно: <ph name="DETAILS" />
 Съобщение от сървъра: <ph name="SERVER_MSG" /></translation>
@@ -3476,6 +3478,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3429174588714165399">Създаване на пряк път към тази страница</translation>
 <translation id="3429271624041785769">Езици за уеб съдържанието</translation>
 <translation id="3429275422858276529">Запазете отметка към тази страница, за да я намирате лесно по-късно</translation>
+<translation id="3431530007831146102">Контролиране на курсора на мишката с движения на главата</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> освободена памет</translation>
 <translation id="3432762828853624962">Споделени изпълнители</translation>
 <translation id="3433507769937235446">Заключване при отдалечаване</translation>
@@ -6085,7 +6088,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5279214046729249716">Да, запазване отделно</translation>
 <translation id="5279600392753459966">Блокиране на всички</translation>
 <translation id="5280064835262749532">Актуализирайте идентификационните данни за <ph name="SHARE_PATH" /></translation>
-<translation id="5280335021886535443">Натиснете |<ph name="ACCELERATOR" />|, за да поставите фокуса върху това балонче.</translation>
 <translation id="5280426389926346830">Да се създаде ли пряк път?</translation>
 <translation id="5281013262333731149">Отваря се във: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">За да изтеглите и използвате приложения за Android, трябва първо да инсталирате тази задължителна актуализация. Докато устройството ви <ph name="DEVICE_TYPE" /> се актуализира, няма да можете да го използвате. След като процесът приключи, <ph name="DEVICE_TYPE" /> ще се рестартира.</translation>
@@ -7258,6 +7260,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6143186082490678276">Получаване на помощ</translation>
 <translation id="6143366292569327983">Изберете езика на страницата, от който искате да превеждате</translation>
 <translation id="6144938890088808325">Помогнете ни да подобрим Chromebook</translation>
+<translation id="6145363037359279595">Добре дошли, <ph name="CHILD_NAME" /></translation>
 <translation id="6146409560350811147">Синхронизирането не работи. Опитайте отново да влезете в профила си.</translation>
 <translation id="6147020289383635445">Визуализацията за печат не бе успешна.</translation>
 <translation id="6147253937684562370">За да отключите потребителския профил, влезте с имейл адреса за основния си профил: <ph name="EMAIL" /></translation>
@@ -7374,7 +7377,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="622537739776246443">Потребителският профил ще бъде изтрит</translation>
 <translation id="6225475702458870625">От устройството ви <ph name="PHONE_NAME" /> е налице връзка за пренос на данни</translation>
 <translation id="6226777517901268232">Файл с частен ключ (незадължително)</translation>
-<translation id="6227002569366039565">Натиснете |<ph name="ACCELERATOR" />|, за да поставите фокуса върху това балонче, след което го натиснете отново, за да поставите фокуса върху елемента, към който сочи то.</translation>
 <translation id="6227280783235722609">разширение</translation>
 <translation id="622902691730729894">Освобождаване на групата от лентата на отметките</translation>
 <translation id="6229062790325126537">Нулиране на ApnMigrator</translation>
@@ -8777,8 +8779,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7250616558727237648">Устройството, с което споделяте файла, не отговори. Моля, опитайте отново.</translation>
 <translation id="725109152065019550">За съжаление администраторът ви е деактивирал външното хранилище за профила ви.</translation>
 <translation id="7251635775446614726">Съобщение от администратора ви: „<ph name="CUSTOM_MESSAGE" />“</translation>
-<translation id="7252023374029588426">Ще бъде показана поредица от балончета с инструкции.
-          Натиснете |<ph name="ACCELERATOR" />|, за да поставите фокуса върху балонче, след което го натиснете отново, за да поставите фокуса върху елемента, към който сочи то.</translation>
 <translation id="7253521419891527137">&amp;Научете повече</translation>
 <translation id="7254951428499890870">Наистина ли искате да стартирате <ph name="APP_NAME" /> в режим за диагностика?</translation>
 <translation id="725497546968438223">Бутон за папка с отметки</translation>

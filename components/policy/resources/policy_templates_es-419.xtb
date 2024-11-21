@@ -296,7 +296,6 @@ Si habilitas la política, los usuarios podrán usar el hardware de los disposit
 <translation id="1207301487141109411">Impedir la selección de avatar del usuario desde el sistema de archivos local, la cámara y el perfil de Google</translation>
 <translation id="1209096923317019235">Asignar apps como controladores predeterminados para las extensiones de archivo especificadas</translation>
 <translation id="120937472976628837">Envía información de los ventiladores</translation>
-<translation id="1212233008927724662">Inhabilitar la carga diferida de la WebUI de acceso</translation>
 <translation id="1214639335214075459">Habilitar la decodificación de video acelerada por hardware mediante GPU</translation>
 <translation id="1214942205301731697">No permitir el uso del modo de desarrollador en la página de extensiones</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con intercambios HTTP firmados (SXG)</translation>
@@ -1052,7 +1051,6 @@ política fue la versión 121. Se quitó en la versión 122.</translation>
       Consulta también <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Nota: Esta configuración anulará <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, si se aplica.</translation>
-<translation id="1721304336924950970">Cargar la WebUI de acceso solo cuando sea necesario</translation>
 <translation id="172374442286684480">Permitir a todos los sitios establecer datos locales</translation>
 <translation id="1729169799290004131">Si estableces la política, se especificará el porcentaje de brillo de la pantalla y se desactivarán las funciones de brillo automático. Se ajustará el brillo inicial de la pantalla conforme al valor de la política, pero los usuarios podrán cambiar este valor.
 
@@ -3026,15 +3024,6 @@ Si la inhabilitas o no la estableces, nunca se mostrará el menú de accesibilid
 <translation id="3163167792874598128">Si estableces la política o no la habilitas, es posible que la promoción para calificar en la App Store se muestre al usuario como máximo una vez al año.
 Si inhabilitas la política, no se mostrará al usuario la promoción para calificar en la App Store.</translation>
 <translation id="3164531087779621747">Imprimir con el modo PostScript</translation>
-<translation id="3165468162820163252">Esta política controla si la parte WebUI de la pantalla de acceso cargará al inicio o solo antes de que se muestre. Esta política se aplica a la pantalla de acceso.
-
-      Si la habilitas, la parte WebUI de la IU de acceso cargará solo antes de que se muestre. Esto acelera el acceso.
-
-      Si la inhabilitas, la parte WebUI de la pantalla de acceso siempre cargará al inicio (comportamiento heredado).
-
-      Si no la estableces, la función kEnableLazyLoginWebUILoading controlará el comportamiento.
-
-      Se debe quitar esta política después del lanzamiento completo de kEnableLazyLoginWebUILoading.</translation>
 <translation id="3165808775394012744">Se incluyen estas políticas aquí para que sea más fácil quitarlas.</translation>
 <translation id="3166210414652928099">Permite que el usuario utilice apps para Android de fuentes no confiables</translation>
 <translation id="316778957754360075">Esta opción se eliminó a partir de la versión 29 de <ph name="PRODUCT_NAME" />. La forma recomendada de configurar colecciones de aplicaciones o extensiones alojadas por una organización es incluir el sitio que aloja los paquetes CRX en la política ExtensionInstallSources y colocar vínculos de descarga directa a los paquetes en una página web. Se puede crear un selector para esa página web con la política ExtensionInstallForcelist.</translation>
@@ -8094,7 +8083,6 @@ Esta política se aplica solo a los nuevos intentos de conexión y no anula las 
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> considerará que no son de confianza los certificados que no se divulguen, a pesar de requerir divulgación mediante el Certificado de transparencia.</translation>
 <translation id="6703381779632216549">Habilitar la importación del motor de búsqueda predeterminado en la primera ejecución</translation>
-<translation id="6704445641918520643">Habilitar la carga diferida de la WebUI de acceso</translation>
 <translation id="6704515759227307131">Esta política es obsoleta y se reemplazó por AdvancedProtectionAllowed.
 
       Esta política controla si los usuarios inscritos en el Programa de Protección Avanzada pueden enviar sus descargas a Google para comprobar que no incluyan software malicioso. Si se establece como verdadera o no se establece, se les pedirá a los usuarios inscritos que envíen sus archivos a Google para un análisis en profundidad. Si el usuario selecciona "Analizar", se enviará la descarga a Google. Si se establece como falsa, no se les pedirá a los usuarios que realicen ninguna acción y no se enviarán sus descargas a Google.</translation>
@@ -10274,17 +10262,17 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
           Si no se configura, no se verá afectado el comportamiento de las políticas más específicas.</translation>
 <translation id="8350643689940867542">Inhabilitar la generación de informes con los datos sobre la política</translation>
 <translation id="835283681355955417">Informar datos sobre los periféricos</translation>
-<translation id="8354001669131263433">A partir de M132, se quitará esta política, junto con las APIs de pantalla completa de video prefijadas.
+<translation id="8354001669131263433">A partir de M132, se quitará esta política, junto con las APIs de pantalla completa con prefijo de video.
 
-Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de pantalla completa de video prefijadas (p. ej., Video.webkitEnterFullscreen()) desde JavaScript.
+Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de pantalla completa con prefijo de video (p. ej., Video.webkitEnterFullscreen()) desde JavaScript.
 
-Si estableces la política como <ph name="DISABLED_VALUE_NAME" />, no se usarán en JavaScript las APIs de pantalla completa de video prefijadas y solo se quedarán las APIs de pantalla completa estándar (p. ej., Element.requestFullscreen()).
+Si estableces la política como <ph name="DISABLED_VALUE_NAME" />, no se usarán en JavaScript las APIs de pantalla completa con prefijo de video y solo se conservarán las APIs de pantalla completa estándar (p. ej., Element.requestFullscreen()).
 
-Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" />, se permitirá que la marca de función PrefixedFullscreenVideo habilitada para el tiempo de ejecución determine si las APIs de pantalla completa de video prefijadas están disponibles para los sitios web.
+Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" />, se permitirá que la marca de función PrefixedFullscreenVideo habilitada para el entorno de ejecución determine si las APIs de pantalla completa con prefijo de video estarán disponibles para los sitios web.
 
 Si no estableces la política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
 
-Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de pantalla completa de webkit prefijadas. M131 es la última versión que tendrá esta política.</translation>
+Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de pantalla completa con el prefijo webkit. M131 es la última versión que tendrá esta política.</translation>
 <translation id="8356953698979920095">Si estableces la política con un valor, se usará ese color de forma predeterminada para la retroiluminación del teclado
 
 del dispositivo durante el acceso del usuario.</translation>

@@ -3415,7 +3415,7 @@
 <translation id="3384362484379805487">為節省磁碟空間，語言檔案會由裝置的所有使用者共用。</translation>
 <translation id="3385053436247851142">使用 Microsoft 帳戶登入</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385172418915595177">「定位精確度」為應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，協助尋找無線訊號位置。這些資料不會識別你的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 整體的服務，以滿足使用者的需要。</translation>
+<translation id="3385172418915595177">「定位精確度」為應用程式和服務提供更精確的位置。為此，Google 會定期處理裝置的感應器資訊和無線訊號，以群眾外判的方式提供無線訊號位置。這些資料不會識別你的身分，而會用於改善定位精確度和適地性服務，並按照 Google 和第三方合法權益來改善、提供和維護 Google 整體的服務，以滿足使用者的需要。</translation>
 <translation id="338583716107319301">分隔符號</translation>
 <translation id="3385916046075724800">系統現在會自動儲存分頁群組。</translation>
 <translation id="3387023983419383865">、</translation>
@@ -3479,6 +3479,7 @@
 <translation id="3429174588714165399">建立此頁面的捷徑</translation>
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
+<translation id="3431530007831146102">使用頭部動作控制滑鼠游標</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - 釋出咗 <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">離開時鎖定</translation>
@@ -6079,7 +6080,6 @@
 <translation id="5279214046729249716">是，請保留</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
-<translation id="5280335021886535443">㩒一下 |<ph name="ACCELERATOR" />| 就可以突顯呢個對話氣泡。</translation>
 <translation id="5280426389926346830">要建立捷徑嗎？</translation>
 <translation id="5281013262333731149">在 <ph name="OPEN_BROWSER" /> 中開啟</translation>
 <translation id="528208740344463258">如要下載並使用 Android 應用程式，請先安裝此必要更新。<ph name="DEVICE_TYPE" /> 更新時，您將無法使用裝置。安裝完成後，<ph name="DEVICE_TYPE" /> 將會重新啟動。</translation>
@@ -7364,7 +7364,6 @@
 <translation id="622537739776246443">設定檔將被刪除</translation>
 <translation id="6225475702458870625">可透過 <ph name="PHONE_NAME" /> 使用數據網絡</translation>
 <translation id="6226777517901268232">私密金鑰檔案 (選用)</translation>
-<translation id="6227002569366039565">㩒一下 |<ph name="ACCELERATOR" />| 就可以突顯呢個對話氣泡，再㩒一下就可以突顯說明對話氣泡指向嘅元素。</translation>
 <translation id="6227280783235722609">擴充程式</translation>
 <translation id="622902691730729894">從書籤列取消固定群組</translation>
 <translation id="6229062790325126537">重設 ApnMigrator</translation>
@@ -8767,8 +8766,6 @@
 <translation id="7250616558727237648">您要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="725109152065019550">很抱歉，您的管理員已停用您帳戶中的外部儲存裝置。</translation>
 <translation id="7251635775446614726">管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
-<translation id="7252023374029588426">系統將會顯示一系列有指示嘅教學課程對話氣泡。
-          㩒一下 |<ph name="ACCELERATOR" />| 就可以突顯對話氣泡，再㩒一下就可以突顯說明對話氣泡指向嘅元素。</translation>
 <translation id="7253521419891527137">瞭解詳情(&amp;L)</translation>
 <translation id="7254951428499890870">您確定要在診斷模式中啟動「<ph name="APP_NAME" />」？</translation>
 <translation id="725497546968438223">「書籤資料夾」按鈕</translation>

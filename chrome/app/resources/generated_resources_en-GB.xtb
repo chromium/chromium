@@ -3482,6 +3482,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3429174588714165399">Create a shortcut to this page</translation>
 <translation id="3429271624041785769">Web content languages</translation>
 <translation id="3429275422858276529">Bookmark this page to easily find it later</translation>
+<translation id="3431530007831146102">Use head movements to control the mouse cursor</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> freed up</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lock on leave</translation>
@@ -6090,7 +6091,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5279214046729249716">Yes, keep it separate</translation>
 <translation id="5279600392753459966">Block all</translation>
 <translation id="5280064835262749532">Update credentials for <ph name="SHARE_PATH" /></translation>
-<translation id="5280335021886535443">Press |<ph name="ACCELERATOR" />| to focus this bubble.</translation>
 <translation id="5280426389926346830">Create Shortcut?</translation>
 <translation id="5281013262333731149">Opens in: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">To download and use Android apps, first you need to install this required update. While your <ph name="DEVICE_TYPE" /> is updating, you can’t use it. After installation is complete, your <ph name="DEVICE_TYPE" /> will restart.</translation>
@@ -7379,7 +7379,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="622537739776246443">Profile will be deleted</translation>
 <translation id="6225475702458870625">Data connection available from your <ph name="PHONE_NAME" /></translation>
 <translation id="6226777517901268232">Private key file (optional)</translation>
-<translation id="6227002569366039565">Press |<ph name="ACCELERATOR" />| to focus this bubble, then again to focus the element that it is pointing to.</translation>
 <translation id="6227280783235722609">extension</translation>
 <translation id="622902691730729894">Unpin group from bookmarks bar</translation>
 <translation id="6229062790325126537">Reset ApnMigrator</translation>
@@ -8782,8 +8781,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
 <translation id="725109152065019550">Sorry, your administrator has disabled external storage on your account.</translation>
 <translation id="7251635775446614726">Your administrator says: '<ph name="CUSTOM_MESSAGE" />'</translation>
-<translation id="7252023374029588426">A series of tutorial bubbles with instructions will be displayed.
-          Press |<ph name="ACCELERATOR" />| to focus a bubble, then again to focus the element that it is pointing to.</translation>
 <translation id="7253521419891527137">&amp;Learn More</translation>
 <translation id="7254951428499890870">Are you sure that you want to launch "<ph name="APP_NAME" />" in diagnostic mode?</translation>
 <translation id="725497546968438223">Bookmark folder button</translation>

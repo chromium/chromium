@@ -24,6 +24,7 @@
 <translation id="1371239764779356792">Povolit webu ukládat data do zařízení</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
+<translation id="1396327438254055134">Povolit webu používat optimalizátor V8.</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1448064542941920355">Snížit přiblížení</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web}few{<ph name="SITE_COUNT" /> weby}many{<ph name="SITE_COUNT" /> webu}other{<ph name="SITE_COUNT" /> webů}}</translation>
@@ -44,6 +45,7 @@
 <translation id="1779089405699405702">Dekodér obrázků</translation>
 <translation id="1785415724048343560">Doporučeno pro nejlepší zážitek</translation>
 <translation id="1799920918471566157">Tipy Chrome</translation>
+<translation id="1816835383954230954">Když je tento přepínač zapnutý, běží Chrome rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy. Když je vypnutý, je Chrome pomalejší, ale V8 je odolnější proti útokům.</translation>
 <translation id="1818308510395330587">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit používání rozšířené reality, zapněte také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> fotoaparát.</translation>
 <translation id="1887786770086287077">Přístup k poloze je v tomto zařízení vypnut. Zapnete jej v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Zavěsit</translation>
@@ -159,6 +161,7 @@
 <translation id="3448554387819310837">Když je tato možnost zapnutá, weby mohou žádat o použití kamery. Když je vypnutá, weby kameru používat nemohou.</translation>
 <translation id="3521663503435878242">Weby pod doménou <ph name="DOMAIN" /></translation>
 <translation id="3523447078673133727">Nepovolovat webům sledovat vaše ruce</translation>
+<translation id="3532312529397438268">Weby nemohou používat optimalizátor V8</translation>
 <translation id="3536227077203206203">Tentokrát povolit</translation>
 <translation id="3538390592868664640">Bránit webům ve vytváření 3D mapy okolí a ve sledování polohy kamery</translation>
 <translation id="3544058026430919413">Společnost může definovat skupinu webů, které mohou pomocí souborů cookie sdílet vaši aktivitu ve skupině. Tato možnost je v anonymním režimu vypnutá.</translation>
@@ -240,6 +243,7 @@
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4807122856660838973">Zapnout Bezpečné prohlížení</translation>
 <translation id="4811450222531576619">Informace o zdroji a tématu</translation>
+<translation id="481168145262973879">Weby mohou používat optimalizátor V8</translation>
 <translation id="4816495437032298535">Uložené přiblížení pro weby</translation>
 <translation id="4836046166855586901">Zeptat se, když chce web zjistit, kdy aktivně používáte toto zařízení</translation>
 <translation id="483914009762354899">Zahrnout všechny weby v této doméně</translation>
@@ -405,6 +409,7 @@
 <translation id="6980861169612950611">Vymazat data webu? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Usnadnění</translation>
 <translation id="6992289844737586249">Pokud web bude chtít použít váš mikrofon, zobrazit dotaz (doporučeno)</translation>
+<translation id="6999131147875565462">Chrome běží rychleji a funkce využívající JavaScript by měly fungovat tak, jak byly navrženy</translation>
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
 <translation id="7016516562562142042">Pro aktuální vyhledávač povoleno</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
@@ -559,4 +564,5 @@
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="967624055006145463">Uložená data</translation>
+<translation id="969975166333045662">Zakázat webu používat optimalizátor V8.</translation>
 </translationbundle>

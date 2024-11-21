@@ -285,7 +285,6 @@ Politika, Etkin değerine ayarlanırsa kullanıcıların, <ph name="CHALLENGE_US
 <translation id="1207301487141109411">Yerel dosya sisteminden, kameradan ve Google profilinden kullanıcı avatarı seçimini engelle</translation>
 <translation id="1209096923317019235">Uygulamaları, belirtilen dosya uzantıları için varsayılan işleyiciler olarak atar</translation>
 <translation id="120937472976628837">Pervane bilgilerini raporla</translation>
-<translation id="1212233008927724662">Lazy Login WebUI yüklemeyi devre dışı bırak.</translation>
 <translation id="1214639335214075459">GPU donanımı video kodu çözmeyi etkinleştir</translation>
 <translation id="1214942205301731697">Uzantılar sayfasında geliştirici modunun kullanılmasına izin verme</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
@@ -1006,7 +1005,6 @@ desteklendi. 122 sürümünde ise kaldırıldı.</translation>
       Ayrıca <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> politikasına bakın.
 
       Not: Bu ayar mevcut olması halinde <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> politikasını geçersiz kılar.</translation>
-<translation id="1721304336924950970">Yalnızca gerektiğinde Login WebUI yükle.</translation>
 <translation id="172374442286684480">Tüm sitelerin yerel verileri ayarlamasına izin verme</translation>
 <translation id="1729169799290004131">Politika ayarlandığında otomatik parlaklık özellikleri devre dışı bırakılır ve ekran parlaklığı yüzdesi belirtilir. Başlangıçtaki ekran parlaklığı, politika değerine ayarlanır, ancak kullanıcılar bunu değiştirebilir.
 
@@ -2771,6 +2769,10 @@ Değer <ph name="LONGPRESSONLY_ENUM_VALUE" /> olarak ayarlanırsa öğeler algı
           Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında büyük imleç başlangıçta devre dışı bırakılır, ancak kullanıcılar bunu istedikleri zaman etkinleştirebilirler.</translation>
+<translation id="3028201032688933333">Bu politika, bir web sitesinde dosya gönderilebilen bir form bulunduğunda, kullanıcının doğrudan <ph name="GOOGLE_DRIVE_NAME" /> dosyalarını seçmesine izin verilip verilmeyeceğini kontrol eder.
+Politika "<ph name="GOOGLE_DRIVE_NAME" /> seçeneğini göster." (0) değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcı, dosya seçim menüsündeki <ph name="GOOGLE_DRIVE_NAME" /> dosyalarını seçebilir.
+Politika "<ph name="GOOGLE_DRIVE_NAME" /> seçeneğini gizle." (1) değerine ayarlanırsa dosya seçim menüsündeki <ph name="GOOGLE_DRIVE_NAME" /> seçeneği gizlenir.
+Bu politika, kullanıcıların dosya seçim menüsündeki "Google Drive" işlemi dışında başka yöntemler kullanarak <ph name="GOOGLE_DRIVE_NAME" /> üzerinden dosya seçmelerini engellemez.</translation>
 <translation id="3030000825273123558">Ölçüm raporlamayı etkinleştir</translation>
 <translation id="30300807616984726">Satış ortağı kullanıcılar için uygulama envanteri verilerini raporlar.
 
@@ -2926,15 +2928,6 @@ Bu politika devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa k
 <translation id="3163167792874598128">Politika ayarlanmaz veya Etkin değerine ayarlanırsa App Store puan promosyonu, kullanıcıya en fazla yılda bir kez gösterilebilir.
 Politika, Devre Dışı değerine ayarlanırsa App Store puan promosyonu, kullanıcıya gösterilmez.</translation>
 <translation id="3164531087779621747">Yazdırma PostScript Modu</translation>
-<translation id="3165468162820163252">Bu politika, oturum açma ekranındaki WebUI bölümünün her zaman başlangıçta mı yoksa yalnızca gösterilmeden önce mi yükleneceğini kontrol eder. Bu politika, oturum açma ekranı için geçerlidir.
-
-      Bu politika etkinleştirilirse oturum açma kullanıcı arayüzündeki WebUI bölümü yalnızca gösterilmeden önce yüklenir. Bu da giriş işlemini hızlandırır.
-
-      Bu politika devre dışı bırakılırsa oturum açma ekranındaki WebUI bölümü her zaman başlangıçta yüklenir (eski davranış).
-
-      Politika ayarlanmazsa davranışı kEnableLazyLoginWebUILoading özelliği kontrol eder.
-
-      Bu politika, kEnableLazyLoginWebUILoading tamamen kullanıma sunulduktan sonra kaldırılmalıdır.</translation>
 <translation id="3165808775394012744">Bu politikalar kolay kaldırılabilmeleri için buraya eklenmiştir.</translation>
 <translation id="3166210414652928099">Kullanıcının güvenilmeyen kaynaklardan Android uygulamaları kullanmasına izin ver</translation>
 <translation id="316778957754360075">Bu ayar, <ph name="PRODUCT_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır. Kuruluş tarafından barındırılan uzantı/uygulama koleksiyonları oluşturmanın önerilen yöntemi, CRX paketlerini barındıran siteyi ExtensionInstallSources içine eklemek ve web sayfasına paketler için doğrudan indirme bağlantıları koymaktır. ExtensionInstallForcelist politikası kullanılarak bu web sayfası için bir başlatıcı oluşturulabilir.</translation>
@@ -3235,6 +3228,7 @@ Bu politika, Devre Dışı değerine ayarlanırsa fiziksel klavyede tahmine daya
 <translation id="3387999258705169775">setTimeout() fonksiyonu iç içe yerleştirilmiş zaman aşımı için varsayılan davranış.</translation>
 <translation id="3388628790024977864"><ph name="GOOGLE_DRIVE_NAME" /> ve <ph name="GOOGLE_WORKSPACE_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışına izin verme</translation>
 <translation id="3389088527709746815">Uzaktan erişim ana makinesi için gnubby kimlik doğrulamayı etkinleştir</translation>
+<translation id="3395744872155955051">Dosyaların doğrudan <ph name="GOOGLE_DRIVE_NAME" /> üzerinden seçilmesine izin ver</translation>
 <translation id="3397883909301547525"><ph name="PRODUCT_OS_NAME" /> başlatıcıda uygulama önerileri gösterme</translation>
 <translation id="3398051852031115795">Varsayılan sistem davranışı (ekran boyutuna bağlıdır)</translation>
 <translation id="33993310248354034">Web sayfalarındaki düz metin öğelerinin algılanmasına izin ver.</translation>
@@ -5825,6 +5819,7 @@ Not: Bu politika HSTS yükseltmeleri için geçerli değildir.</translation>
 Bu politikada bir URL listesi ayarlamakla, aynı URL'lerin virgülle ayrılmış bir listesine --unsafely-treat-insecure-origin-as-secure komut satırı işaretini ayarlamak aynı sonucu verir. Bu politika ayarlanırsa komut satırı işaretini ve UnsafelyTreatInsecureOriginAsSecure politikasını geçersiz kılar.
 
 Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına (https://www.w3.org/TR/secure-contexts) bakabilirsiniz.</translation>
+<translation id="530111809849214840"><ph name="GOOGLE_DRIVE_NAME" /> seçeneği gizle.</translation>
 <translation id="530134925949808452">Kullanım kotasının yerel saatle günün hangi saatinde yenileneceği.</translation>
 <translation id="5303080953475303561">Politikanın ayarlanması, hızlı kilit açma için kilit ekranında ne sıklıkta şifre isteneceğini kontrol eder. Kilit ekranı her görüntülendiğinde, son şifre girişi, seçilen değer tarafından belirtilen zaman aralığından önce yapılmışsa hızlı kilit açma kullanılamaz. Kullanıcı bu süreden daha uzun bir zaman kilit ekranında kalırsa yanlış kod girdiğinde veya kilit ekranına tekrar girdiğinde (hangisi önce olursa) şifre sorulur.
 
@@ -6176,6 +6171,7 @@ Ayrıca https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerber
 
       Bu politikanın desteği sonlandırıldı. Lütfen bunun yerine <ph name="PROMOTIONS_ENABLED_POLICY_NAME" /> politikasını kullanın.</translation>
 <translation id="5556607617517096419">Borealis</translation>
+<translation id="5557753512027261467"><ph name="GOOGLE_DRIVE_NAME" /> seçeneğini göster.</translation>
 <translation id="5558394213067608844">Wilco teşhis ve telemetri denetleyicisini etkinleştir</translation>
 <translation id="5559079916187891399">Bu politikanın Android uygulamaları üzerinde hiçbir etkisi yoktur.</translation>
 <translation id="5560039246134246593"><ph name="PRODUCT_NAME" /> ürününde Varyasyon temelini almaya parametre ekle.
@@ -7847,7 +7843,6 @@ Bu politika yalnızca yeni bağlantı denemelerinde geçerli olup mevcut bağlan
 
       Politikanın ayarlanmadan bırakılması, Sertifika Şeffaflığı aracılığıyla açıklama gerektiren sertifikaların açıklanmaması durumunda <ph name="PRODUCT_NAME" /> ürününün bu sertifikalara güvenmeyeceği anlamına gelir.</translation>
 <translation id="6703381779632216549">İlk çalıştırmada varsayılan arama motorunun içe aktarılmasını etkinleştir</translation>
-<translation id="6704445641918520643">Lazy Login WebUI yüklemeyi etkinleştir.</translation>
 <translation id="6704515759227307131">Bu politika artık kullanılmamakta olup yerine AdvancedProtectionAllowed politikası getirilmiştir.
 
       Bu politika, Gelişmiş Koruma programına kayıtlı kullanıcıların indirdikleri dosyaları kötü amaçlı yazılıma karşı taranmak üzere Google'a göndermelerine izin verilip verilmeyeceğini kontrol eder. Bu politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı kullanıcılardan dosyalarını ayrıntılı tarama için Google'a göndermeleri istenir. Kullanıcı "Tara" öğesini seçerse indirdiği dosya Google'a gönderilir. Bu politika False (Yanlış) değerine ayarlanırsa kullanıcılardan istekte bulunulmaz ve indirdikleri dosyalar Google'a gönderilmez.</translation>

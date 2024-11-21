@@ -3480,6 +3480,7 @@
 <translation id="3429174588714165399">ఈ పేజీకి షార్ట్‌కట్‌ను క్రియేట్ చేయండి</translation>
 <translation id="3429271624041785769">వెబ్ కంటెంట్ భాషలు</translation>
 <translation id="3429275422858276529">ఈ పేజీని తర్వాత సులభంగా కనుగొనడానికి దీనిని బుక్‌మార్క్ చేయండి</translation>
+<translation id="3431530007831146102">మౌస్ కర్సర్‌ను కంట్రోల్ చేయడానికి తల కదలికలను ఉపయోగించండి</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> మెమరీ ఖాళీ చేయబడింది</translation>
 <translation id="3432762828853624962">షేర్డ్ వర్కర్స్</translation>
 <translation id="3433507769937235446">వదిలి వెళ్లినప్పుడు లాక్ చేయండి</translation>
@@ -6088,7 +6089,6 @@
 <translation id="5279214046729249716">అవును, దానిని వేరుగా ఉంచండి</translation>
 <translation id="5279600392753459966">అన్నింటినీ నిరోధించు</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> కోసం ఆధారాలు అప్‌డేట్ చేయండి</translation>
-<translation id="5280335021886535443">ఈ బబుల్‌ను ఫోకస్ చేయడానికి |<ph name="ACCELERATOR" />| నొక్కండి.</translation>
 <translation id="5280426389926346830">షార్ట్‌కట్‌ను సృష్టించాలా?</translation>
 <translation id="5281013262333731149">దీనిలో తెరవబడుతుంది: <ph name="OPEN_BROWSER" /></translation>
 <translation id="528208740344463258">Android యాప్‌లను డౌన్‌లోడ్ చేసి, ఉపయోగించడం కోసం, ముందుగా మీరు ఈ అవసరమైన అప్‌డేట్‌ను ఇన్‌స్టాల్ చేయాలి. మీ <ph name="DEVICE_TYPE" /> అప్‌డేట్ అవుతున్న సమయంలో, మీరు దీనిని ఉపయోగించలేరు. ఇన్‌స్టాల్ చేయడం పూర్తయిన తర్వాత, మీ <ph name="DEVICE_TYPE" /> పునఃప్రారంభించబడుతుంది.</translation>
@@ -7376,7 +7376,6 @@
 <translation id="622537739776246443">ప్రొఫైల్ తొలగించబడుతుంది</translation>
 <translation id="6225475702458870625">మీ <ph name="PHONE_NAME" /> నుండి డేటా కనెక్షన్ అందుబాటులో ఉంది</translation>
 <translation id="6226777517901268232">ప్రైవేట్ కీ ఫైల్ (ఐచ్ఛికం)</translation>
-<translation id="6227002569366039565">ఈ బబుల్‌ను ఫోకస్ చేయడానికి, తర్వాత అది సూచిస్తున్న ఎలిమెంట్‌ను ఫోకస్ చేయడానికి |<ph name="ACCELERATOR" />| నొక్కండి.</translation>
 <translation id="6227280783235722609">ఎక్స్‌టెన్షన్</translation>
 <translation id="622902691730729894">బుక్‌మార్క్ బార్ నుండి గ్రూప్ పిన్‌ను తీసివేయండి</translation>
 <translation id="6229062790325126537">ApnMigratorను రీసెట్ చేయండి</translation>
@@ -8779,8 +8778,6 @@
 <translation id="7250616558727237648">మీరు షేర్ చేస్తున్న పరికరం స్పందించడం లేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="725109152065019550">క్షమించండి, మీ నిర్వాహకుడు మీ ఖాతాలో బాహ్య నిల్వను నిలిపివేశారు.</translation>
 <translation id="7251635775446614726">మీ అడ్మినిస్ట్రేటర్ ఇలా అన్నారు: "<ph name="CUSTOM_MESSAGE" />"</translation>
-<translation id="7252023374029588426">సూచనలతో కూడిన ట్యుటోరియల్ బబుల్స్ సిరీస్ ప్రదర్శించబడుతుంది.
-          బబుల్‌ను ఫోకస్ చేయడానికి, తర్వాత అది సూచిస్తున్న ఎలిమెంట్‌ను ఫోకస్ చేయడానికి |<ph name="ACCELERATOR" />| నొక్కండి.</translation>
 <translation id="7253521419891527137">&amp;మరింత తెలుసుకోండి</translation>
 <translation id="7254951428499890870">మీరు ఖచ్చితంగా సమస్య విశ్లేషణ మోడ్‌లో "<ph name="APP_NAME" />"ను ప్రారంభించాలనుకుంటున్నారా?</translation>
 <translation id="725497546968438223">బుక్‌మార్క్ ఫోల్డర్ బటన్</translation>

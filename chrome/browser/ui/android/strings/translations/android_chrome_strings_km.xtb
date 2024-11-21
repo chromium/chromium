@@ -1112,6 +1112,7 @@
 <translation id="6108923351542677676">ការដំឡើងកំពុងដំណើរការ…</translation>
 <translation id="6112702117600201073">កំពុងធ្វើឲ្យទំព័រថ្មីឡើងវិញ</translation>
 <translation id="6122831415929794347">បិទការរុករក​ដោយសុវត្ថិភាពឬ?</translation>
+<translation id="6125202119952209826">ចូលរួម​ក្រុមផ្ទាំង​ជាមួយ <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ព័ត៌មានលម្អិតបន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
 <translation id="6130303040046284160">បង្រួម​ផ្ទាំង</translation>
@@ -1612,6 +1613,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ឧបករណ៍របស់អ្នក<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">បន្ត</translation>
 <translation id="820568752112382238">គេហទំព័រ​ដែលចូលមើល​ញឹកញាប់បំផុត</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{ចូលរួម​ក្រុមផ្ទាំង​ជាមួយ <ph name="OWNER_FIRST_NAME" /> និង <ph name="NUMBER_OF_OTHER_MEMBERS" /> នាក់​ផ្សេងទៀត}other{ចូលរួម​ក្រុមផ្ទាំង​ជាមួយ <ph name="OWNER_FIRST_NAME" /> និង <ph name="NUMBER_OF_OTHER_MEMBERS" /> នាក់​ផ្សេងទៀត}}</translation>
 <translation id="8209050860603202033">បើករូបភាព</translation>
 <translation id="8210770465353466621">អ្នក​នឹងឃើញ​ផ្ទាំង​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="8211101263765532799">ពាក្យ​សម្ងាត់​មួយចំនួន​នឹងឈប់​ដំណើរការ​ក្នុងពេល​ឆាប់ៗនេះ</translation>
