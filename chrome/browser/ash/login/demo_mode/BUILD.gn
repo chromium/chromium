@@ -98,6 +98,7 @@ static_library("demo_mode_login") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/components/system/",
   ]
 }
 

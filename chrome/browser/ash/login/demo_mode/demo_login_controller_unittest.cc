@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/google_api_keys.h"
@@ -73,6 +74,7 @@ class DemoLoginControllerTest : public testing::Test {
 
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
+    system::StatisticsProvider::SetTestProvider(&statistics_provider_);
   }
 
   void TearDown() override {
@@ -122,6 +124,7 @@ class DemoLoginControllerTest : public testing::Test {
   ScopedStubInstallAttributes attributes_;
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+  system::FakeStatisticsProvider statistics_provider_;
 
   // Dependencies for `LoginScreenClientImpl`:
   session_manager::SessionManager session_manager_;

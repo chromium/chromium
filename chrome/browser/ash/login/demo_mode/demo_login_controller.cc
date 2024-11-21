@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -53,8 +54,7 @@ constexpr base::TimeDelta kDemoAccountRequestTimeout = base::Seconds(30);
 
 // Demo account Json key in set up demo account request:
 const char kDeviceIdentifier[] = "device_identifier";
-// Attestation based device identifier.
-const char kDeviceADID[] = "cros_adid";
+const char kDeviceMachineId[] = "serial_number";
 const char kLoginScopeDeviceId[] = "login_scope_device_id";
 const char kObfuscatedGaiaId[] = "obfuscated_gaia_id";
 
@@ -246,16 +246,15 @@ void OnCleanUpDemoAccountError(
              << static_cast<int>(result_code);
 }
 
-std::string GetDeviceADID() {
-  // TODO(crbug.com/372762477): Get device adid form enterprise. Temporary set
-  // as "0000" right now.
-  return "0000";
+std::string_view GetMachineID() {
+  return (system::StatisticsProvider::GetInstance()->GetMachineID())
+      .value_or(std::string_view());
 }
 
 base::Value::Dict GetDeviceIdentifier(
     const std::string& login_scope_device_id) {
   return base::Value::Dict()
-      .Set(kDeviceADID, GetDeviceADID())
+      .Set(kDeviceMachineId, GetMachineID())
       .Set(kLoginScopeDeviceId, login_scope_device_id);
 }
 
