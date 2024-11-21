@@ -30,10 +30,6 @@ class CheckDepsTest(unittest.TestCase):
                      'buildtools/checkdeps/testdata'))
 
     problems = self.deps_checker.results_formatter.GetResults()
-    if skip_tests:
-      self.assertEqual(4, len(problems))
-    else:
-      self.assertEqual(5, len(problems))
 
     def VerifySubstringsInProblems(key_path, substrings_in_sequence):
       """Finds the problem in |problems| that contains |key_path|,
@@ -46,13 +42,20 @@ class CheckDepsTest(unittest.TestCase):
       for problem in problems:
         index = problem.find(key_path)
         if index != -1:
+          if substrings_in_sequence is None:
+            self.fail(
+                f'Expected no problems for {key_path}, but found: {problem}')
+
           for substring in substrings_in_sequence:
             index = problem.find(substring, index + 1)
             self.assertTrue(index != -1, '%s in %s' % (substring, problem))
           found = True
           break
-      if not found:
+      if not found and substrings_in_sequence is not None:
         self.fail('Found no problem for file %s' % key_path)
+
+    def VerifyNoProblems(key_path):
+      VerifySubstringsInProblems(key_path, None)
 
     if ignore_temp_rules:
       VerifySubstringsInProblems('testdata/allowed/test.h',
@@ -77,8 +80,23 @@ class CheckDepsTest(unittest.TestCase):
     VerifySubstringsInProblems('testdata/noparent/test.h',
                                ['allowed/bad.h',
                                 'Because of no rule applying'])
+    VerifySubstringsInProblems('testdata/requires_review_users/usage.cc', [
+        'testdata/requires_review/sub/foo.h"',
+        'requires_review/sub", which is marked'])
+    VerifyNoProblems('requires_review_users/sub/includes_okay/usage.cc')
+    VerifySubstringsInProblems(
+      'requires_review_users/sub/includes_only_sub/usage.cc',
+        [
+          'testdata/requires_review/sub/foo.h"',
+          'requires_review/sub", which is',
+          'testdata/requires_review/sub/inherited/foo.h"',
+          'testdata/requires_review/sub/sub/inherited/bar.h"',
+          'requires_review/sub/sub", which is',
+          ])
 
-    if not skip_tests:
+    if skip_tests:
+      VerifyNoProblems('allowed/not_a_test.cc')
+    else:
       VerifySubstringsInProblems('allowed/not_a_test.cc',
                                  ['-buildtools/checkdeps/testdata/disallowed'])
 
@@ -103,10 +121,10 @@ class CheckDepsTest(unittest.TestCase):
     return self.deps_checker.results_formatter.GetResults()
 
   def testCountViolations(self):
-    self.assertEqual('11', self.CountViolations(False))
+    self.assertEqual('15', self.CountViolations(False))
 
   def testCountViolationsIgnoringTempRules(self):
-    self.assertEqual('12', self.CountViolations(True))
+    self.assertEqual('16', self.CountViolations(True))
 
   def testCountViolationsWithRelativePath(self):
     self.deps_checker.results_formatter = results.CountViolationsFormatter()

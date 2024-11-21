@@ -1,0 +1,4 @@
+include_rules = [
+  "+buildtools/checkdeps/testdata/requires_review",
+  "+buildtools/checkdeps/testdata/requires_review/sub/sub/foo.h",
+]

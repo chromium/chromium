@@ -12,11 +12,12 @@ See README.md for the format of the deps file.
 
 
 import copy
+import functools
 import os.path
 import posixpath
 import subprocess
 
-from rules import Rule, Rules
+import rules
 
 
 # Variable name used in the DEPS file to add or subtract include files from
@@ -79,6 +80,57 @@ def _GitSourceDirectories(base_directory):
   return git_source_directories
 
 
+@functools.lru_cache(maxsize=None)
+def _ParseDepsMemoize(dir_path, under_test, verbose):
+  def FromImpl(*_):
+    pass  # NOP function so "From" doesn't fail.
+
+  def FileImpl(_):
+    pass  # NOP function so "File" doesn't fail.
+
+  class _VarImpl:
+    def __init__(self, local_scope):
+      self._local_scope = local_scope
+
+    def Lookup(self, var_name):
+      """Implements the Var syntax."""
+      try:
+        return self._local_scope['vars'][var_name]
+      except KeyError:
+        raise Exception('Var is not defined: %s' % var_name)
+
+  local_scope = {}
+  global_scope = {
+    'File': FileImpl,
+    'From': FromImpl,
+    'Var': _VarImpl(local_scope).Lookup,
+    'Str': str,
+  }
+
+  # The second conditional here is to disregard the
+  # buildtools/checkdeps/DEPS file while running tests.  This DEPS file
+  # has a skip_child_includes for 'testdata' which is necessary for
+  # running production tests, since there are intentional DEPS
+  # violations under the testdata directory.  On the other hand when
+  # running tests, we absolutely need to verify the contents of that
+  # directory to trigger those intended violations and see that they
+  # are handled correctly.
+  deps_file_path = os.path.join(dir_path, 'DEPS')
+  if os.path.isfile(deps_file_path) and not (
+      under_test and
+      os.path.basename(dir_path) == 'checkdeps'):
+    try:
+      with open(deps_file_path) as file:
+        exec(file.read(), global_scope, local_scope)
+    except Exception as e:
+      print(' Error reading %s: %s' % (deps_file_path, str(e)))
+      raise
+  elif verbose:
+    print('  No deps file found in', dir_path)
+
+  return local_scope
+
+
 class DepsBuilder(object):
   """Parses include_rules from DEPS files."""
 
@@ -101,13 +153,19 @@ class DepsBuilder(object):
     base_directory = (base_directory or
                       os.path.join(os.path.dirname(__file__),
                       os.path.pardir, os.path.pardir))
-    self.base_directory = os.path.abspath(base_directory)  # Local absolute path
+    self.base_directory = os.path.normcase(os.path.abspath(base_directory))
     self.extra_repos = extra_repos
     self.verbose = verbose
     self._under_test = being_tested
     self._ignore_temp_rules = ignore_temp_rules
     self._ignore_specific_rules = ignore_specific_rules
     self._git_source_directories = None
+
+    # Rules instances need a back reference in order to evaluate
+    # new_usages_require_review, but cannot hold a direct one because we
+    # deepcopy them.
+    self._instance_index = len(rules.deps_builders)
+    rules.deps_builders.append(self)
 
     if os.getcwd().startswith('/google/cog/cloud'):
       self.is_git = False
@@ -122,7 +180,8 @@ class DepsBuilder(object):
     # directories, or None for directories that should be skipped.
     # Normalized is: absolute, lowercase, / for separator.
     self.directory_rules = {}
-    self._ApplyDirectoryRulesAndSkipSubdirs(Rules(), self.base_directory)
+    self._ApplyDirectoryRulesAndSkipSubdirs(
+        rules.Rules(self._instance_index), self.base_directory)
 
   def _ApplyRules(self, existing_rules, includes, specific_includes,
                   cur_dir_norm):
@@ -139,7 +198,7 @@ class DepsBuilder(object):
     Returns: A new set of rules combining the existing_rules with the other
              arguments.
     """
-    rules = copy.deepcopy(existing_rules)
+    new_rules = copy.deepcopy(existing_rules)
 
     # First apply the implicit "allow" rule for the current directory.
     base_dir_norm = NormalizePath(self.base_directory)
@@ -152,18 +211,18 @@ class DepsBuilder(object):
 
     # Make the help string a little more meaningful.
     source = relative_dir or 'top level'
-    rules.AddRule('+' + relative_dir,
+    new_rules.AddRule('+' + relative_dir,
                   relative_dir,
                   'Default rule for ' + source)
 
     def ApplyOneRule(rule_str, dependee_regexp=None):
       """Deduces a sensible description for the rule being added, and
-      adds the rule with its description to |rules|.
+      adds the rule with its description to |new_rules|.
 
       If we are ignoring temporary rules, this function does nothing
       for rules beginning with the Rule.TEMP_ALLOW character.
       """
-      if self._ignore_temp_rules and rule_str.startswith(Rule.TEMP_ALLOW):
+      if self._ignore_temp_rules and rule_str.startswith(rules.Rule.TEMP_ALLOW):
         return
 
       rule_block_name = 'include_rules'
@@ -173,7 +232,8 @@ class DepsBuilder(object):
         rule_description = relative_dir + "'s %s" % rule_block_name
       else:
         rule_description = 'the top level %s' % rule_block_name
-      rules.AddRule(rule_str, relative_dir, rule_description, dependee_regexp)
+      new_rules.AddRule(rule_str, relative_dir, rule_description,
+                        dependee_regexp)
 
     # Apply the additional explicit rules.
     for rule_str in includes:
@@ -181,13 +241,16 @@ class DepsBuilder(object):
 
     # Finally, apply the specific rules.
     if self._ignore_specific_rules:
-      return rules
+      return new_rules
 
     for regexp, specific_rules in specific_includes.items():
       for rule_str in specific_rules:
         ApplyOneRule(rule_str, regexp)
 
-    return rules
+    return new_rules
+
+  def _ParseDeps(self, dir_path):
+    return _ParseDepsMemoize(dir_path, self._under_test, self.verbose)
 
   def _ApplyDirectoryRules(self, existing_rules, dir_path_local_abs):
     """Combines rules from the existing rules and the new directory.
@@ -214,61 +277,17 @@ class DepsBuilder(object):
     # Check the DEPS file in this directory.
     if self.verbose:
       print('Applying rules from', dir_path_local_abs)
-    def FromImpl(*_):
-      pass  # NOP function so "From" doesn't fail.
-
-    def FileImpl(_):
-      pass  # NOP function so "File" doesn't fail.
-
-    class _VarImpl:
-      def __init__(self, local_scope):
-        self._local_scope = local_scope
-
-      def Lookup(self, var_name):
-        """Implements the Var syntax."""
-        try:
-          return self._local_scope['vars'][var_name]
-        except KeyError:
-          raise Exception('Var is not defined: %s' % var_name)
-
-    local_scope = {}
-    global_scope = {
-      'File': FileImpl,
-      'From': FromImpl,
-      'Var': _VarImpl(local_scope).Lookup,
-      'Str': str,
-    }
-    deps_file_path = os.path.join(dir_path_local_abs, 'DEPS')
-
-    # The second conditional here is to disregard the
-    # buildtools/checkdeps/DEPS file while running tests.  This DEPS file
-    # has a skip_child_includes for 'testdata' which is necessary for
-    # running production tests, since there are intentional DEPS
-    # violations under the testdata directory.  On the other hand when
-    # running tests, we absolutely need to verify the contents of that
-    # directory to trigger those intended violations and see that they
-    # are handled correctly.
-    if os.path.isfile(deps_file_path) and not (
-        self._under_test and
-        os.path.basename(dir_path_local_abs) == 'checkdeps'):
-      try:
-        with open(deps_file_path) as file:
-          exec(file.read(), global_scope, local_scope)
-      except Exception as e:
-        print(' Error reading %s: %s' % (deps_file_path, str(e)))
-        raise
-    elif self.verbose:
-      print('  No deps file found in', dir_path_local_abs)
+    deps_dict = self._ParseDeps(dir_path_local_abs)
 
     # Even if a DEPS file does not exist we still invoke ApplyRules
     # to apply the implicit "allow" rule for the current directory
-    include_rules = local_scope.get(INCLUDE_RULES_VAR_NAME, [])
-    specific_include_rules = local_scope.get(SPECIFIC_INCLUDE_RULES_VAR_NAME,
+    include_rules = deps_dict.get(INCLUDE_RULES_VAR_NAME, [])
+    specific_include_rules = deps_dict.get(SPECIFIC_INCLUDE_RULES_VAR_NAME,
                                              {})
-    skip_subdirs = local_scope.get(SKIP_SUBDIRS_VAR_NAME, [])
-    noparent = local_scope.get(NOPARENT_VAR_NAME, False)
+    skip_subdirs = deps_dict.get(SKIP_SUBDIRS_VAR_NAME, [])
+    noparent = deps_dict.get(NOPARENT_VAR_NAME, False)
     if noparent:
-      parent_rules = Rules()
+      parent_rules = rules.Rules(self._instance_index)
     else:
       parent_rules = existing_rules
 
@@ -344,6 +363,34 @@ class DepsBuilder(object):
       dirs_to_check.extend(reversed(sub_dirs))
 
       yield (current_dir_rules, file_names)
+
+  def _IterSelfAndParentDirectories(self, dir_name):
+    dir_name = os.path.normcase(os.path.abspath(dir_name))
+    current_dir_name = dir_name
+    yield current_dir_name
+    while current_dir_name != self.base_directory:
+      parent = os.path.dirname(current_dir_name)
+      assert parent != current_dir_name, (
+          f'{dir_name}, {self.base_directory}, {current_dir_name}')
+      current_dir_name = parent
+      yield current_dir_name
+
+  def _DirectoryRequiresReview(self, dir_name):
+    deps_dict = self._ParseDeps(dir_name)
+    return deps_dict.get('new_usages_require_review')
+
+  def FindFirstAncestorThatRequiresReview(self, include_path):
+    if not os.path.isabs(include_path):
+      include_path = os.path.join(self.base_directory, include_path)
+    parent_dir = os.path.dirname(include_path)
+    for current_dir in self._IterSelfAndParentDirectories(parent_dir):
+      requires_review = self._DirectoryRequiresReview(current_dir)
+      if requires_review is not None:
+        if requires_review:
+          return NormalizePath(
+              os.path.relpath(current_dir, self.base_directory))
+        return None
+    return None
 
   def GetDirectoryRules(self, dir_path_local):
     """Returns a Rules object to use for the given directory, or None
