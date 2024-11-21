@@ -12,9 +12,5 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/menu_shadow.imageset/menu_shadow.png",
     "Assets.xcassets/menu_shadow.imageset/menu_shadow@2x.png",
     "Assets.xcassets/menu_shadow.imageset/menu_shadow@3x.png",
-    "Assets.xcassets/module_shadow.imageset/Contents.json",
-    "Assets.xcassets/module_shadow.imageset/module_shadow.png",
-    "Assets.xcassets/module_shadow.imageset/module_shadow@2x.png",
-    "Assets.xcassets/module_shadow.imageset/module_shadow@3x.png",
   ]
 }
