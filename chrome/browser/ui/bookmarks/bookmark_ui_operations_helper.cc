@@ -144,6 +144,14 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
   return DragOperation::kMove;
 }
 
+bool BookmarkUIOperationsHelper::CanPasteFromClipboard() const {
+  if (!target_parent() || target_parent()->IsManaged()) {
+    return false;
+  }
+  return BookmarkNodeData::ClipboardContainsBookmarks() ||
+         GetUrlFromClipboard(/*notify_if_restricted=*/false).is_valid();
+}
+
 void BookmarkUIOperationsHelper::PasteFromClipboard(size_t index) {
   if (!target_parent()) {
     return;

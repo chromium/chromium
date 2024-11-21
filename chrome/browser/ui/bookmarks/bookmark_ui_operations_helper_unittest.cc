@@ -13,9 +13,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,8 +25,14 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/bookmarks/test/mock_bookmark_model_observer.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
@@ -70,11 +78,23 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     profile_builder.AddTestingFactory(
         BookmarkMergedSurfaceServiceFactory::GetInstance(),
         BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        ManagedBookmarkServiceFactory::GetInstance(),
+        ManagedBookmarkServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
+    profile_->GetTestingPrefService()->SetManagedPref(
+        bookmarks::prefs::kManagedBookmarks,
+        base::Value::List().Append(
+            base::Value::Dict()
+                .Set("name", "Google")
+                .Set("url", GURL("http://google.com/").spec())));
+    CHECK(managed_bookmark_service());
+
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     bookmark_merged_surface_service_ =
         BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get());
     model_->LoadEmptyForTest();
+    CHECK(managed_bookmark_service()->managed_node());
   }
 
   ~BookmarkUIOperationsHelperTest() override {
@@ -82,7 +102,12 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
   }
 
   TestingProfile* profile() { return profile_.get(); }
+
   bookmarks::BookmarkModel* model() { return model_; }
+
+  bookmarks::ManagedBookmarkService* managed_bookmark_service() {
+    return ManagedBookmarkServiceFactory::GetForProfile(profile());
+  }
 
   internal::BookmarkUIOperationsHelper* CreateHelper(
       const BookmarkNode* parent) {
@@ -215,7 +240,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
 
   // Now we shouldn't be able to paste from the clipboard.
   EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
-  EXPECT_FALSE(bookmarks::CanPasteFromClipboard(model, new_folder));
+
+  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(new_folder);
+  EXPECT_FALSE(helper->CanPasteFromClipboard());
 
   // Write some valid url to the clipboard.
   {
@@ -223,9 +250,8 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
     clipboard_writer.WriteText(url_text);
   }
   // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, new_folder));
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
 
-  internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(new_folder);
   helper->PasteFromClipboard(0);
   ASSERT_EQ(1u, new_folder->children().size());
 
@@ -255,11 +281,11 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
                              bookmarks::metrics::BookmarkEditSource::kOther,
                              /*is_off_the_record=*/false);
 
-  // Now we should be able to paste from the clipboard.
-  EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, bookmark_bar_node));
-
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(bookmark_bar_node);
+  // Now we should be able to paste from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+
   helper->PasteFromClipboard(1);
   ASSERT_EQ(2u, bookmark_bar_node->children().size());
 
@@ -289,10 +315,10 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
       model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
   EXPECT_EQ(0u, folder->children().size());
 
-  // And make sure we can paste a bookmark from the clipboard.
-  EXPECT_TRUE(bookmarks::CanPasteFromClipboard(model, folder));
-
   internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(folder);
+  // And make sure we can paste a bookmark from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+
   helper->PasteFromClipboard(0);
   ASSERT_EQ(1u, folder->children().size());
 
@@ -306,6 +332,85 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
   EXPECT_TRUE(pasted->GetMetaInfo("someotherkey", &value));
   EXPECT_EQ("someothervalue", value);
 }
+
+TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
+  BookmarkModel* model = this->model();
+  const BookmarkNode* node = model->AddURL(model->other_node(), 0, u"foo bar ",
+                                           GURL("http://www.google.com"));
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
+                             bookmarks::metrics::BookmarkEditSource::kOther,
+                             /*is_off_the_record=*/false);
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->bookmark_bar_node());
+
+  // And make sure we can paste a bookmark from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+
+  // Write some text to the clipboard.
+  {
+    ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteText(u"foo");
+  }
+
+  // Now we shouldn't be able to paste from the clipboard.
+  EXPECT_FALSE(helper->CanPasteFromClipboard());
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
+  BookmarkModel* model = this->model();
+  bookmarks::MockBookmarkModelObserver observer;
+  base::ScopedObservation<BookmarkModel, bookmarks::BookmarkModelObserver>
+      model_observation{&observer};
+  model_observation.Observe(model);
+
+  std::u16string title(u"foo");
+  GURL url("http://foo.com");
+  const BookmarkNode* n1 = model->AddURL(model->other_node(), 0, title, url);
+  const BookmarkNode* n2 = model->AddURL(model->other_node(), 1, title, url);
+
+  EXPECT_CALL(observer, GroupedBookmarkChangesBeginning());
+  EXPECT_CALL(observer, GroupedBookmarkChangesEnded());
+  // Cut the nodes to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
+  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/true,
+                             bookmarks::metrics::BookmarkEditSource::kOther,
+                             /*is_off_the_record=*/false);
+
+  // Make sure the nodes were removed.
+  EXPECT_EQ(0u, model->other_node()->children().size());
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->other_node());
+  // And make sure we can paste from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+}
+
+TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
+  // Load a model with an managed node that is not editable.
+  BookmarkModel* model = this->model();
+  const BookmarkNode* node = model->AddURL(model->other_node(), 0, u"foo bar ",
+                                           GURL("http://www.google.com"));
+
+  // Copy a node to the clipboard.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
+  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
+                             bookmarks::metrics::BookmarkEditSource::kOther,
+                             /*is_off_the_record=*/false);
+
+  internal::BookmarkUIOperationsHelper* helper =
+      this->CreateHelper(model->bookmark_bar_node());
+  // And make sure we can paste a bookmark from the clipboard.
+  EXPECT_TRUE(helper->CanPasteFromClipboard());
+
+  // But it can't be pasted into a non-editable folder.
+  helper = this->CreateHelper(this->managed_bookmark_service()->managed_node());
+  EXPECT_FALSE(helper->CanPasteFromClipboard());
+}
+
 #endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace

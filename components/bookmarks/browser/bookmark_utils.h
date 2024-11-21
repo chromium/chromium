@@ -79,9 +79,6 @@ void CopyToClipboard(
     metrics::BookmarkEditSource source,
     bool is_off_the_record);
 
-// Returns true if the user can copy from the pasteboard.
-bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node);
-
 // Returns a vector containing up to `max_count` of the most recently modified
 // user folders. This never returns an empty vector.
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(

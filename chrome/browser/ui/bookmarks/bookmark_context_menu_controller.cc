@@ -584,13 +584,15 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
              (command_id == IDC_COPY || can_edit);
 
     case IDC_PASTE:
-      // Paste to selection from the Bookmark Bar, to parent_ everywhere else
-      return can_edit &&
-             ((!selection_.empty() &&
-               bookmarks::CanPasteFromClipboard(
-                   bookmark_service_->bookmark_model(), selection_[0])) ||
-              bookmarks::CanPasteFromClipboard(
-                  bookmark_service_->bookmark_model(), parent_));
+      // TODO(crbug.com/369304373): Use
+      // `BookmarkUIOperationsHelperMergedSurfaces` once
+      // `bookmarks::GetParentForNewNodes()` is migrated to return
+      // `BookmarkParentFolder`.
+      const BookmarkNode* paste_target = bookmarks::GetParentForNewNodes(
+          parent_, selection_, /*index=*/nullptr);
+      return can_edit && BookmarkUIOperationsHelperNonMergedSurfaces(
+                             bookmark_service_->bookmark_model(), paste_target)
+                             .CanPasteFromClipboard();
   }
   return true;
 }

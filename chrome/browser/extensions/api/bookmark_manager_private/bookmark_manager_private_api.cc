@@ -415,7 +415,8 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   std::string error;
   if (!CanBeModified(parent_node, &error))
     return Error(error);
-  bool can_paste = bookmarks::CanPasteFromClipboard(model, parent_node);
+  BookmarkUIOperationsHelperNonMergedSurfaces helper(model, parent_node);
+  bool can_paste = helper.CanPasteFromClipboard();
   if (!can_paste)
     return Error("Could not paste from clipboard");
 
@@ -433,8 +434,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
   if (!highest_index)
     highest_index = parent_node->children().size();
 
-  BookmarkUIOperationsHelperNonMergedSurfaces(model, parent_node)
-      .PasteFromClipboard(highest_index);
+  helper.PasteFromClipboard(highest_index);
   return NoArguments();
 }
 
@@ -453,7 +453,9 @@ BookmarkManagerPrivateCanPasteFunction::RunOnReady() {
   const BookmarkNode* parent_node = GetNodeFromString(model, params->parent_id);
   if (!parent_node)
     return Error(bookmarks_errors::kNoParentError);
-  bool can_paste = bookmarks::CanPasteFromClipboard(model, parent_node);
+  bool can_paste =
+      BookmarkUIOperationsHelperNonMergedSurfaces(model, parent_node)
+          .CanPasteFromClipboard();
   return WithArguments(can_paste);
 }
 

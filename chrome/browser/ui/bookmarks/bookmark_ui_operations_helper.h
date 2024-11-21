@@ -47,6 +47,10 @@ class BookmarkUIOperationsHelper {
       bool copy,
       chrome::BookmarkReorderDropTarget target);
 
+  // Returns true if the user can paste from the clipboard a bookmark url/node
+  // into `target_parent()`.
+  bool CanPasteFromClipboard() const;
+
   // Pastes from the clipboard. The new nodes are added to `target_parent()`.
   // The nodes are inserted at `index`.
   void PasteFromClipboard(size_t index);
