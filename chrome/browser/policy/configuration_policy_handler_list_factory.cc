@@ -77,6 +77,7 @@
 #include "components/custom_handlers/pref_names.h"
 #include "components/domain_reliability/domain_reliability_prefs.h"
 #include "components/embedder_support/pref_names.h"
+#include "components/enterprise/browser/data_region/data_region_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_profile_reporting_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_frequency_policy_handler.h"
 #include "components/enterprise/browser/reporting/cloud_reporting_policy_handler.h"
@@ -159,7 +160,6 @@
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
-#include "components/enterprise/browser/data_region/data_region_policy_handler.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -3208,10 +3208,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<MultiScreenCapturePolicyHandler>());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<DataRegionPolicyHandler>(
       key::kChromeDataRegionSetting, prefs::kChromeDataRegionSetting));
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>
       gen_ai_default_policies;

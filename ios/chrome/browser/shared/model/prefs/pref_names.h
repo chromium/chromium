@@ -713,6 +713,13 @@ inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =
 inline constexpr char kProminenceNotificationAlertImpressionCount[] =
     "ios.push_notification.prominence_alert_impressions";
 
+// Integer value controlling the data region to store covered data from Chrome.
+// By default, no preference is selected.
+// - 0: No preference
+// - 1: United States
+// - 2: Europe
+inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

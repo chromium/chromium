@@ -37,5 +37,7 @@ schema:
 future_on:
 - chrome.*
 - chrome_os
+- ios
+- android
 tags: []
 type: int-enum

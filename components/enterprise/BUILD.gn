@@ -64,13 +64,6 @@ static_library("enterprise") {
     ]
   }
 
-  if (!is_ios && !is_android) {
-    sources += [
-      "browser/data_region/data_region_policy_handler.cc",
-      "browser/data_region/data_region_policy_handler.h",
-    ]
-  }
-
   deps = [
     "//base",
     "//build:chromeos_buildflags",

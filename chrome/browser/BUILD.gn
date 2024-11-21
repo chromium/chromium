@@ -2079,6 +2079,7 @@ static_library("browser") {
     "//components/embedder_support/origin_trials",
     "//components/encrypted_messages",
     "//components/enterprise",
+    "//components/enterprise/browser/data_region",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:extensions_workflow_events_proto",

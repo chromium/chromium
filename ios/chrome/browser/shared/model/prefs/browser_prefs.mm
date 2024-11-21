@@ -784,6 +784,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(
       prefs::kProminenceNotificationAlertImpressionCount, 0);
+
+  registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1141,6 +1143,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 11/2024
   registry->RegisterBooleanPref(kEnableDoNotTrackIos, false);
+
+  registry->RegisterIntegerPref(prefs::kChromeDataRegionSetting, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.

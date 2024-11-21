@@ -1,12 +1,7 @@
 [
   {
     "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
-      "android"
+      "ios"
     ],
     "simple_policy_pref_mapping_test": {
       // User cloud policy tests

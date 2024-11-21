@@ -9,6 +9,7 @@
 //ios/chrome/test/data/policy/pref_mapping/AutofillAddressEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillCreditCardEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/BrowserSignin.json
+//ios/chrome/test/data/policy/pref_mapping/ChromeDataRegionSetting.json
 //ios/chrome/test/data/policy/pref_mapping/ChromeVariations.json
 //ios/chrome/test/data/policy/pref_mapping/CloudManagementEnrollmentToken.json
 //ios/chrome/test/data/policy/pref_mapping/CloudPolicyOverridesPlatformPolicy.json
@@ -36,11 +37,11 @@
 //ios/chrome/test/data/policy/pref_mapping/DeletingUndecryptablePasswordsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/DisableSafeBrowsingProceedAnyway.json
 //ios/chrome/test/data/policy/pref_mapping/DownloadManagerSaveToDriveSettings.json
-//ios/chrome/test/data/policy/pref_mapping/FilePickerChooseFromDriveSettings.json
+//ios/chrome/test/data/policy/pref_mapping/DownloadRestrictions.json
 //ios/chrome/test/data/policy/pref_mapping/EditBookmarksEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/EnableExperimentalPolicies.json
 //ios/chrome/test/data/policy/pref_mapping/EnterpriseRealTimeUrlCheckMode.json
-//ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
+//ios/chrome/test/data/policy/pref_mapping/FilePickerChooseFromDriveSettings.json
 //ios/chrome/test/data/policy/pref_mapping/GenAiDefaultSettings.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeoutActions.json
@@ -52,6 +53,7 @@
 //ios/chrome/test/data/policy/pref_mapping/MetricsReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NTPContentSuggestionsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
+//ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ParcelTrackingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/PasswordManagerEnabled.json
@@ -80,4 +82,3 @@
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedAnonymizedDataCollectionEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedMetricsAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/WebAnnotations.json
-//ios/chrome/test/data/policy/pref_mapping/DownloadRestrictions.json

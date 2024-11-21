@@ -1996,14 +1996,12 @@ inline constexpr char kProactiveNudgeDisabledSitesWithTime[] =
     "compose.proactive_nudge_disabled_sites_with_time";
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
 // Integer value controlling the data region to store covered data from Chrome.
 // By default, no preference is selected.
 // - 0: No preference
 // - 1: United States
 // - 2: Europe
 inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Network annotations that are expected to be disabled based on policy values.
 // Stored as a dict with annotation hash codes as keys.
