@@ -359,6 +359,8 @@ DownloadItemView::DownloadItemView(DownloadUIModel::DownloadUIModelPtr model,
   scanning_animation_.SetThrobDuration(base::Milliseconds(2500));
   scanning_animation_.SetTweenType(gfx::Tween::LINEAR);
 
+  UpdateTooltipText();
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
   UpdateAccessibleName();
   // Set the description to the empty string, otherwise the tooltip will be
@@ -464,8 +466,14 @@ void DownloadItemView::OnMouseCaptureLost() {
   }
 }
 
-std::u16string DownloadItemView::GetTooltipText(const gfx::Point& p) const {
-  return has_warning_label(mode_) ? std::u16string() : tooltip_text_;
+void DownloadItemView::UpdateTooltipText() {
+  if (has_warning_label(mode_)) {
+    SetCachedTooltipText(std::u16string());
+    return;
+  }
+
+  const std::u16string new_tooltip_text = model_->GetTooltipText();
+  SetCachedTooltipText(new_tooltip_text);
 }
 
 void DownloadItemView::ShowContextMenuForViewImpl(
@@ -489,12 +497,6 @@ void DownloadItemView::OnDownloadUpdated() {
     shelf_->RemoveDownloadView(this);
     // WARNING: |this| has been deleted!
     return;
-  }
-
-  const std::u16string new_tooltip_text = model_->GetTooltipText();
-  if (new_tooltip_text != tooltip_text_) {
-    tooltip_text_ = new_tooltip_text;
-    TooltipTextChanged();
   }
 
   // OnDownloadUpdated can be called multiple times while the state is complete.
@@ -710,6 +712,7 @@ void DownloadItemView::SetMode(download::DownloadItemMode mode) {
   UpdateLabels();
   UpdateButtons();
   UpdateAnimationForDeepScanningMode();
+  UpdateTooltipText();
 
   // Update the accessible name to contain the status text, filename, and
   // warning message (if any). The name will be presented when the download item
