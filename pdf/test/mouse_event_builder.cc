@@ -20,8 +20,11 @@ MouseEventBuilder::~MouseEventBuilder() = default;
 blink::WebMouseEvent MouseEventBuilder::Build() const {
   CHECK(blink::WebInputEvent::IsMouseEventType(type_));
   int actual_modifiers = modifiers_;
-  if (type_ == blink::WebInputEvent::Type::kMouseDown) {
+  if (type_ == blink::WebInputEvent::Type::kMouseDown ||
+      type_ == blink::WebInputEvent::Type::kMouseMove) {
     switch (button_) {
+      case blink::WebPointerProperties::Button::kNoButton:
+        break;
       case blink::WebPointerProperties::Button::kLeft:
         actual_modifiers |= blink::WebInputEvent::Modifiers::kLeftButtonDown;
         break;
