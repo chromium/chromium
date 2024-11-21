@@ -296,7 +296,7 @@ cr-tabs {
   /* csschecker-disable-line left-right */
 }
 
-#needs-restart.show {
+#needs-restart[show] {
   opacity: 1;
   transform: translate(0);
 }

@@ -121,12 +121,14 @@ export function getHtml(this: AppElement) {
       </div>
 </if>
     </div>
-    <div id="needs-restart">
+    <div id="needs-restart" ?show="${this.needsRestart}"
+        role="${this.getNeedsRestartRole_()}">
       <div class="flex-container">
         <div class="flex restart-notice">$i18n{flagsRestartNotice}</div>
         <div class="flex">
 <if expr="not is_ios">
           <cr-button id="experiment-restart-button" class="action-button"
+              ?disabled="${!this.needsRestart}"
               @click="${this.onRestartButtonClick_}"
               @keydown="${this.onRestartButtonKeydown_}"
               @blur="${this.onRestartButtonBlur_}">
