@@ -68,7 +68,7 @@ bool OffsetByteQueue::Trim(int64_t max_offset) {
 }
 
 void OffsetByteQueue::Sync() {
-  queue_.Peek(&buf_, &size_);
+  queue_.Peek(&buf_.AsEphemeralRawAddr(), &size_);
 }
 
 }  // namespace media
