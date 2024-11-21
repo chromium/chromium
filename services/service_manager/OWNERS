@@ -1,1 +1,4 @@
-rockot@google.com
+# The Service Manager (modulo some bits in public/) essentially remains as an
+# implementation detail of //chromecast. New uses should not be introduced
+# elsewhere in the tree.
+file://chromecast/OWNERS
