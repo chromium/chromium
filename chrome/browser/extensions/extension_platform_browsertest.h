@@ -20,6 +20,10 @@ class WebContents;
 namespace extensions {
 class Extension;
 
+// A cross-platform base class for extensions-related browser tests.
+// `PlatformBrowserTest` inherits from different test suites based on the
+// platform; `ExtensionPlatformBrowserTest` provides additional functionality
+// that is available on all platforms.
 class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
  public:
   using LoadOptions = extensions::browser_test_util::LoadOptions;

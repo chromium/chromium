@@ -40,6 +40,7 @@
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -176,11 +177,10 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
 }  // namespace
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
-    :
+    : ExtensionPlatformBrowserTest(context_type),
 #if BUILDFLAG(IS_CHROMEOS)
       set_chromeos_user_(true),
 #endif
-      context_type_(context_type),
       // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
       // tests that specifically require it.
       current_channel_(version_info::Channel::UNKNOWN),
@@ -269,10 +269,12 @@ const Extension* ExtensionBrowserTest::GetExtensionByPath(
 
 void ExtensionBrowserTest::SetUp() {
   test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
-  InProcessBrowserTest::SetUp();
+  ExtensionPlatformBrowserTest::SetUp();
 }
 
 void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
+  ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
+
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
 

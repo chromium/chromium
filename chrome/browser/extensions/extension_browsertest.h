@@ -17,10 +17,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_creator.h"
@@ -55,7 +55,7 @@ class WindowController;
 
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
-class ExtensionBrowserTest : public InProcessBrowserTest,
+class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
                              public ExtensionRegistryObserver {
  public:
   using ContextType = extensions::browser_test_util::ContextType;
@@ -119,8 +119,11 @@ class ExtensionBrowserTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
+  // These functions intentionally shadow the versions in the base class
+  // ExtensionPlatformBrowserTest. They cannot be made virtual because there
+  // are too many individual tests that define a LoadExtension() function and
+  // shadowing virtual functions is not allowed.
   const Extension* LoadExtension(const base::FilePath& path);
-
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
@@ -326,13 +329,7 @@ class ExtensionBrowserTest : public InProcessBrowserTest,
   bool set_chromeos_user_;
 #endif
 
-  // Set to "chrome/test/data/extensions". Derived classes may override.
-  // TODO(michaelpg): Don't override protected data members.
-  base::FilePath test_data_dir_;
-
   std::unique_ptr<ChromeExtensionTestNotificationObserver> observer_;
-
-  const ContextType context_type_;
 
  private:
   // Temporary directory for testing.

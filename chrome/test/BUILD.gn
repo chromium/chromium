@@ -295,6 +295,8 @@ static_library("test_support") {
       "../browser/extensions/api_test_util.h",
       "../browser/extensions/extension_browser_test_util.cc",
       "../browser/extensions/extension_browser_test_util.h",
+      "../browser/extensions/extension_platform_browsertest.cc",
+      "../browser/extensions/extension_platform_browsertest.h",
     ]
   }
 
@@ -302,8 +304,6 @@ static_library("test_support") {
     sources += [
       "../browser/extensions/extension_platform_apitest.cc",
       "../browser/extensions/extension_platform_apitest.h",
-      "../browser/extensions/extension_platform_browsertest.cc",
-      "../browser/extensions/extension_platform_browsertest.h",
       "../browser/extensions/platform_test_extension_loader.cc",
       "../browser/extensions/platform_test_extension_loader.h",
       "base/android/android_ui_test_utils.cc",
