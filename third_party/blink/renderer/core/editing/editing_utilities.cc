@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -225,7 +224,7 @@ static bool HasEditableLevel(const Node& node, EditableLevel editable_level) {
       }
     }
     if (const ComputedStyle* style =
-            ancestor.GetComputedStyleForElementOrLayoutObject()) {
+            GetComputedStyleForElementOrLayoutObject(ancestor)) {
       switch (style->UsedUserModify()) {
         case EUserModify::kReadOnly:
           return false;
@@ -892,6 +891,18 @@ TextDirection PrimaryDirectionOf(const Node& node) {
   }
 
   return primary_direction;
+}
+
+const ComputedStyle* GetComputedStyleForElementOrLayoutObject(
+    const Node& node) {
+  if (const auto* element = DynamicTo<Element>(node)) {
+    return element->GetComputedStyle();
+  }
+  // Text nodes and Document.
+  if (LayoutObject* layout_object = node.GetLayoutObject()) {
+    return layout_object->Style();
+  }
+  return nullptr;
 }
 
 String StringWithRebalancedWhitespace(const String& string,

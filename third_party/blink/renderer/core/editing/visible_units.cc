@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -1491,8 +1490,7 @@ gfx::Rect FirstRectForRange(const EphemeralRange& range) {
   // e.g.
   //  - RenderViewImplTest.GetCompositionCharacterBoundsTest
   //  - LocalFrameTest.CharacterIndexAtPointWithPinchZoom
-  if (start_position.AnchorNode()
-          ->GetComputedStyleForElementOrLayoutObject()
+  if (GetComputedStyleForElementOrLayoutObject(*start_position.AnchorNode())
           ->IsHorizontalWritingMode()) {
     end_caret_rect.set_width(0);
     start_caret_rect.set_width(0);

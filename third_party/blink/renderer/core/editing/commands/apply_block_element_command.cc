@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/editing/commands/apply_block_element_command.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -269,10 +268,11 @@ static bool IsNewLineAtPosition(const Position& position) {
 static const ComputedStyle* ComputedStyleOfEnclosingTextNode(
     const Position& position) {
   if (!position.IsOffsetInAnchor() || !position.ComputeContainerNode() ||
-      !position.ComputeContainerNode()->IsTextNode())
+      !position.ComputeContainerNode()->IsTextNode()) {
     return nullptr;
-  return position.ComputeContainerNode()
-      ->GetComputedStyleForElementOrLayoutObject();
+  }
+  return GetComputedStyleForElementOrLayoutObject(
+      *position.ComputeContainerNode());
 }
 
 void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
