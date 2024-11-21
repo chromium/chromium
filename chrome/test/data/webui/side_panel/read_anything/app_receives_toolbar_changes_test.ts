@@ -175,13 +175,13 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     test('enabled languages are added', async () => {
-      const firstLanguage = 'English';
+      const firstLanguage = 'en-us';
       await emitLanguageToggle(firstLanguage);
       assertTrue(app.enabledLangs.includes(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
 
-      const secondLanguage = 'French';
+      const secondLanguage = 'fr';
       await emitLanguageToggle(secondLanguage);
       assertTrue(app.enabledLangs.includes(secondLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
@@ -189,7 +189,7 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     test('disabled languages are removed', async () => {
-      const firstLanguage = 'English';
+      const firstLanguage = 'en-us';
       await emitLanguageToggle(firstLanguage);
       assertTrue(app.enabledLangs.includes(firstLanguage));
       assertTrue(chrome.readingMode.getLanguagesEnabledInPref()

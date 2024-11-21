@@ -40,6 +40,39 @@ suite('PrefsTest', () => {
       app.$.toolbar.restoreSettingsFromPrefs = () => {};
     });
 
+    test('removes unavailable languages from prefs', () => {
+      const previouslyAvailableLang = 'pt-pt';
+      chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
+      setVoices(app, speechSynthesis, [
+        createSpeechSynthesisVoice({lang: 'en-us', name: 'Google Elphaba'}),
+      ]);
+
+      app.restoreSettingsFromPrefs();
+
+      assertFalse(app.enabledLangs.includes(previouslyAvailableLang));
+      assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          previouslyAvailableLang));
+    });
+
+    test('adds initially populated languages to prefs', () => {
+      const previouslyAvailableLang = 'pt-pt';
+      const availableLang = 'pt-br';
+      chrome.readingMode.onLanguagePrefChange(previouslyAvailableLang, true);
+      setVoices(app, speechSynthesis, [
+        createSpeechSynthesisVoice(
+            {lang: availableLang, name: 'Google Galinda'}),
+      ]);
+
+      app.restoreSettingsFromPrefs();
+
+      assertFalse(app.enabledLangs.includes(previouslyAvailableLang));
+      assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          previouslyAvailableLang));
+      assertTrue(app.enabledLangs.includes(availableLang));
+      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          availableLang));
+    });
+
     suite('with no initial voices', () => {
       setup(() => {
         chrome.readingMode.baseLanguageForSpeech = 'en';
@@ -121,7 +154,6 @@ suite('PrefsTest', () => {
             // synthesis voice selected.
             app.restoreSettingsFromPrefs();
             assertFalse(!!app.getSpeechSynthesisVoice());
-            assertTrue(app.shouldAttemptLanguageSettingsRestore);
 
             const futureSelectedVoice =
                 createSpeechSynthesisVoice({lang: 'en', name: 'Google Kristi'});
@@ -133,7 +165,6 @@ suite('PrefsTest', () => {
               futureSelectedVoice,
             ]);
             app.onVoicesChanged();
-            assertFalse(app.shouldAttemptLanguageSettingsRestore);
 
             // Once voices are available, settings should be restored.
             let selectedVoice = app.getSpeechSynthesisVoice();
@@ -152,7 +183,6 @@ suite('PrefsTest', () => {
             chrome.readingMode.getStoredVoice = () => 'Google Kristi';
 
             app.onVoicesChanged();
-            assertFalse(app.shouldAttemptLanguageSettingsRestore);
 
             // After onVoicesChanged, the most recently selected voice should
             // be used.
