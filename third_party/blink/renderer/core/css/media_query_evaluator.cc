@@ -1585,38 +1585,39 @@ static bool OverflowingMediaFeatureEval(const MediaQueryExpValue& value,
   if (!value.IsValid()) {
     return media_values.Overflowing();
   }
+
+  constexpr ContainerOverflowingFlags overflowing_start =
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart);
+  constexpr ContainerOverflowingFlags overflowing_end =
+      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+
   switch (value.Id()) {
     case CSSValueID::kNone:
       return !media_values.Overflowing();
     case CSSValueID::kTop:
-      return media_values.OverflowingVertical() &
-             static_cast<ContainerOverflowingFlags>(
-                 ContainerOverflowing::kStart);
+      return media_values.OverflowingVertical() & overflowing_start;
     case CSSValueID::kLeft:
-      return media_values.OverflowingHorizontal() &
-             static_cast<ContainerOverflowingFlags>(
-                 ContainerOverflowing::kStart);
+      return media_values.OverflowingHorizontal() & overflowing_start;
     case CSSValueID::kBottom:
-      return media_values.OverflowingVertical() &
-             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+      return media_values.OverflowingVertical() & overflowing_end;
     case CSSValueID::kRight:
-      return media_values.OverflowingHorizontal() &
-             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+      return media_values.OverflowingHorizontal() & overflowing_end;
     case CSSValueID::kBlockStart:
-      return media_values.OverflowingBlock() &
-             static_cast<ContainerOverflowingFlags>(
-                 ContainerOverflowing::kStart);
-      ;
+      return media_values.OverflowingBlock() & overflowing_start;
     case CSSValueID::kBlockEnd:
-      return media_values.OverflowingBlock() &
-             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+      return media_values.OverflowingBlock() & overflowing_end;
     case CSSValueID::kInlineStart:
-      return media_values.OverflowingInline() &
-             static_cast<ContainerOverflowingFlags>(
-                 ContainerOverflowing::kStart);
+      return media_values.OverflowingInline() & overflowing_start;
     case CSSValueID::kInlineEnd:
-      return media_values.OverflowingInline() &
-             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+      return media_values.OverflowingInline() & overflowing_end;
+    case CSSValueID::kX:
+      return media_values.OverflowingHorizontal() != 0;
+    case CSSValueID::kY:
+      return media_values.OverflowingVertical() != 0;
+    case CSSValueID::kBlock:
+      return media_values.OverflowingBlock() != 0;
+    case CSSValueID::kInline:
+      return media_values.OverflowingInline() != 0;
     default:
       NOTREACHED();
   }

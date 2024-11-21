@@ -220,6 +220,10 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
         case CSSValueID::kBlockEnd:
         case CSSValueID::kInlineStart:
         case CSSValueID::kInlineEnd:
+        case CSSValueID::kBlock:
+        case CSSValueID::kInline:
+        case CSSValueID::kX:
+        case CSSValueID::kY:
           return true;
         default:
           return false;
