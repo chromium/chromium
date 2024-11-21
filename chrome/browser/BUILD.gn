@@ -973,6 +973,8 @@ static_library("browser") {
     "password_manager/credentials_cleaner_runner_factory.h",
     "password_manager/field_info_manager_factory.cc",
     "password_manager/field_info_manager_factory.h",
+    "password_manager/password_change_controller.cc",
+    "password_manager/password_change_controller.h",
     "password_manager/password_change_service_factory.cc",
     "password_manager/password_change_service_factory.h",
     "password_manager/password_manager_settings_service_factory.cc",

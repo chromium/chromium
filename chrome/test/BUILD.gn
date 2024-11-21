@@ -2933,6 +2933,7 @@ if (!is_android) {
       "../browser/page_load_metrics/observers/use_counter_page_load_metrics_observer_browsertest.cc",
       "../browser/page_load_metrics/page_load_metrics_browsertest.cc",
       "../browser/password_manager/credential_manager_browsertest.cc",
+      "../browser/password_manager/password_change_browsertest.cc",
       "../browser/password_manager/password_manager_browsertest.cc",
       "../browser/performance_manager/background_tab_loading_policy_browsertest.cc",
       "../browser/performance_manager/frame_node_impl_browsertest.cc",
