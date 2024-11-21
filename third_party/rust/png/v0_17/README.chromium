@@ -2,7 +2,7 @@ Name: png
 URL: https://crates.io/crates/png
 Version: 0.17.14
 Revision: 347dc5dd3ddee8d2d3ef77a2f03a7d59b6c6fe80
-License: Apache 2.0
+License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/png-0.17.14/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes

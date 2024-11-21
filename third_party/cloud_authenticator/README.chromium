@@ -1,7 +1,7 @@
 Name: Cloud authenticator
 URL: https://cloudenclave.git.corp.google.com/enclave/
 Version: git
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE.txt
 License Android Compatible: yes
 Security Critical: no

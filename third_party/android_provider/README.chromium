@@ -1,7 +1,7 @@
 Name: MediaStoreUtils Android sample.
 URL: https://android.googlesource.com/platform/cts/
 Version: 50f25a19f2a3de940d6ef7eac84b37d1c62f1b5f
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes

@@ -5,7 +5,7 @@ Version: 0.9.1
 Date: 2024-11-06
 Revision: 1281383f320d1a2bf83ac8b2c31a15134a93e843
 SHA-512: 1134af2987d344819357d52e98274047b9a306e12f1025003a1d927806b4ce749e6aef1bd7bc40810a413c52d74f4cb49f6b3fcf4502a9b40dffbc27c62284df
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Shipped: yes
 Security Critical: no
