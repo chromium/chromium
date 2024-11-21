@@ -114,6 +114,7 @@ public class BrandColorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "crbug.com/380043209")
     @Feature({"StatusBar", "Omnibox"})
     public void testBrandColorNoAlpha() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
@@ -168,6 +169,7 @@ public class BrandColorTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
+    @DisabledTest(message = "crbug.com/380043209")
     @Feature({"StatusBar", "Omnibox"})
     public void testNavigatingToNewBrandColor() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
