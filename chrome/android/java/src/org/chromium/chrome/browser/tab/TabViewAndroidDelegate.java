@@ -38,6 +38,9 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
     /** The inset supplier the observer is currently attached to. */
     private ApplicationViewportInsetSupplier mCurrentInsetSupplier;
 
+    private final Callback<ViewportInsets> mInsetObserver =
+            (unused) -> updateVisualViewportBottomInset();
+
     TabViewAndroidDelegate(Tab tab, ContentView containerView) {
         super(containerView);
         mTab = (TabImpl) tab;
@@ -53,25 +56,24 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(mDragAndDropBrowserDelegate);
         }
 
-        Callback<ViewportInsets> insetObserver = (unused) -> updateVisualViewportBottomInset();
         mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetSupplier();
-        mCurrentInsetSupplier.addObserver(insetObserver);
+        mCurrentInsetSupplier.addObserver(mInsetObserver);
 
         mTab.addObserver(
                 new EmptyTabObserver() {
                     @Override
                     public void onActivityAttachmentChanged(
                             Tab tab, @Nullable WindowAndroid window) {
+                        if (mCurrentInsetSupplier != null) {
+                            mCurrentInsetSupplier.removeObserver(mInsetObserver);
+                            mCurrentInsetSupplier = null;
+                        }
                         if (window != null) {
                             mCurrentInsetSupplier =
                                     tab.getWindowAndroid().getApplicationBottomInsetSupplier();
-                            mCurrentInsetSupplier.addObserver(insetObserver);
-                            updateVisualViewportBottomInset();
-                        } else {
-                            mCurrentInsetSupplier.removeObserver(insetObserver);
-                            mCurrentInsetSupplier = null;
-                            updateVisualViewportBottomInset();
+                            mCurrentInsetSupplier.addObserver(mInsetObserver);
                         }
+                        updateVisualViewportBottomInset();
                     }
 
                     @Override
@@ -167,6 +169,10 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         if (mDragAndDropBrowserDelegate != null) {
             getDragAndDropDelegate().setDragAndDropBrowserDelegate(null);
             mDragAndDropBrowserDelegate = null;
+        }
+        if (mCurrentInsetSupplier != null) {
+            mCurrentInsetSupplier.removeObserver(mInsetObserver);
+            mCurrentInsetSupplier = null;
         }
     }
 
