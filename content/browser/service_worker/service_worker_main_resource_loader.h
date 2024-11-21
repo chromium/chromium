@@ -226,6 +226,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void RecordFetchEventHandlerMetrics(
       ServiceWorkerFetchDispatcher::FetchEventResult fetch_result);
 
+  void RecordFindRegistrationTiming(bool is_fallback);
+
   void TransitionToStatus(Status new_status);
 
   // Dispatch preloading request based on the condition and feature enablement

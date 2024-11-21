@@ -643,6 +643,16 @@ void ServiceWorkerMainResourceLoader::CommitResponseBody(
     }
     response_head->initial_service_worker_status =
         initial_service_worker_status_;
+
+    // Update receive_headers_start and receive_headers_end to record
+    // histograms.
+    if (response_head_->load_timing.receive_headers_start.is_null()) {
+      CHECK(!response_head->load_timing.receive_headers_start.is_null());
+      response_head_->load_timing.receive_headers_start =
+          response_head->load_timing.receive_headers_start;
+      response_head_->load_timing.receive_headers_end =
+          response_head->load_timing.receive_headers_end;
+    }
   }
 
   url_loader_client_->OnReceiveResponse(response_head.Clone(),
@@ -971,9 +981,11 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   response_head_->did_service_worker_navigation_preload =
       dispatched_preload_type() == DispatchedPreloadType::kNavigationPreload;
-  response_head_->load_timing.receive_headers_start = base::TimeTicks::Now();
-  response_head_->load_timing.receive_headers_end =
-      response_head_->load_timing.receive_headers_start;
+  if (response_head_->load_timing.receive_headers_start.is_null()) {
+    response_head_->load_timing.receive_headers_start = base::TimeTicks::Now();
+    response_head_->load_timing.receive_headers_end =
+        response_head_->load_timing.receive_headers_start;
+  }
   response_source_ = response->response_source;
   if (ShouldRecordServiceWorkerFetchStart()) {
     response_head_->load_timing.service_worker_fetch_start =
@@ -1226,21 +1238,30 @@ std::string ServiceWorkerMainResourceLoader::GetFrameTreeNodeTypeString() {
   }
 }
 
+void ServiceWorkerMainResourceLoader::RecordFindRegistrationTiming(
+    bool is_fallback) {
+  RecordFindRegistrationToCompletedTrace();
+  RecordFindRegistrationToRequestStartTiming();
+  if (is_fallback) {
+    RecordFindRegistrationToFallbackNetworkTiming();
+  } else {
+    RecordFindRegistrationToCompletedTiming();
+  }
+}
+
 void ServiceWorkerMainResourceLoader::
     RecordTimingMetricsForFetchHandlerHandledCase() {
   if (!IsEligibleForRecordingTimingMetrics()) {
     return;
   }
   CHECK(initial_service_worker_status_);
-  RecordFindRegistrationToCompletedTrace();
-  RecordFindRegistrationToRequestStartTiming();
+  RecordFindRegistrationTiming(/*is_fallback=*/false);
   RecordRequestStartToForwardServiceWorkerTiming();
   RecordForwardServiceWorkerToWorkerReadyTiming();
   RecordWorkerReadyToFetchHandlerStartTiming();
   RecordFetchHandlerStartToFetchHandlerEndTiming();
   RecordFetchHandlerEndToResponseReceivedTiming();
   RecordResponseReceivedToCompletedTiming();
-  RecordFindRegistrationToCompletedTiming();
   RecordRequestStartToCompletedTiming(
       response_head_->load_timing.request_start);
 }
@@ -1251,13 +1272,11 @@ void ServiceWorkerMainResourceLoader::
     return;
   }
   CHECK(initial_service_worker_status_);
-  RecordFindRegistrationToCompletedTrace();
-  RecordFindRegistrationToRequestStartTiming();
+  RecordFindRegistrationTiming(/*is_fallback=*/true);
   RecordRequestStartToForwardServiceWorkerTiming();
   RecordForwardServiceWorkerToWorkerReadyTiming();
   RecordWorkerReadyToFetchHandlerStartTiming();
   RecordFetchHandlerStartToFetchHandlerEndTiming();
-  RecordFindRegistrationToFallbackNetworkTiming();
   RecordStartToFallbackNetworkTiming();
   RecordFetchHandlerEndToFallbackNetworkTiming();
 }
@@ -1269,9 +1288,8 @@ void ServiceWorkerMainResourceLoader::
     return;
   }
   CHECK(initial_service_worker_status_);
-  RecordFindRegistrationToCompletedTrace();
-  RecordFindRegistrationToRequestStartTiming();
-  RecordFindRegistrationToCompletedTiming();
+  RecordFindRegistrationTiming(/*is_fallback=*/false);
+  RecordResponseReceivedToCompletedTiming();
   RecordRequestStartToCompletedTiming(
       race_network_request_url_loader_client_->GetLoadTimingInfo()
           .request_start);
