@@ -227,16 +227,10 @@ void FormEventLoggerBase::OnDestroyed() {
 }
 
 void FormEventLoggerBase::OnFilledByFieldByFieldFilling(SuggestionType type) {
-  CHECK(type == SuggestionType::kAddressFieldByFieldFilling ||
-        type == SuggestionType::kCreditCardFieldByFieldFilling)
+  CHECK(type == SuggestionType::kAddressFieldByFieldFilling)
       << base::to_underlying(type);
-  if (type == SuggestionType::kAddressFieldByFieldFilling) {
-    field_by_field_filled_form_types_.insert(
-        FormTypeNameForLogging::kAddressForm);
-  } else if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
-    field_by_field_filled_form_types_.insert(
-        FormTypeNameForLogging::kCreditCardForm);
-  }
+  field_by_field_filled_form_types_.insert(
+      FormTypeNameForLogging::kAddressForm);
 }
 
 void FormEventLoggerBase::

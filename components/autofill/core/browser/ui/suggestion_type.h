@@ -107,7 +107,7 @@ enum class SuggestionType {
   kInsecureContextPaymentDisabledMessage = 34,
   kScanCreditCard = 35,
   kVirtualCreditCardEntry = 36,
-  kCreditCardFieldByFieldFilling = 37,
+  // kCreditCardFieldByFieldFilling = 37, // DEPRECATED
   kIbanEntry = 38,
   kBnplEntry = 61,
 

@@ -284,7 +284,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kFillFullAddress:
@@ -1897,13 +1896,9 @@ void BrowserAutofillManager::FillOrPreviewField(
   form_filler_->FillOrPreviewField(action_persistence, action_type, field,
                                    autofill_field, value, filling_product,
                                    field_type_used);
-  if (action_persistence == mojom::ActionPersistence::kFill) {
-    if (type == SuggestionType::kAddressFieldByFieldFilling) {
-      metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
-    } else if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
-      metrics_->credit_card_form_event_logger.OnFilledByFieldByFieldFilling(
-          type);
-    }
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      type == SuggestionType::kAddressFieldByFieldFilling) {
+    metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
   }
 }
 

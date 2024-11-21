@@ -115,29 +115,6 @@ using SuggestionPosition = AutofillSuggestionDelegate::SuggestionMetadata;
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
-// Creates a field by field filling suggestion.
-// `guid` is used to set `Suggestion::payload` as
-// `Suggestion::Guid(guid)`. This method also sets the
-// `Suggestion::field_by_field_filling_type_used` to `fbf_type_used`.
-Suggestion CreateFieldByFieldFillingSuggestion(const std::string& guid,
-                                               FieldType fbf_type_used) {
-  auto GetPayload = [](SuggestionType type,
-                       const std::string& guid) -> Suggestion::Payload {
-    if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
-      return Suggestion::Guid(guid);
-    }
-    return Suggestion::AutofillProfilePayload(Suggestion::Guid(guid));
-  };
-  SuggestionType suggestion_type =
-      GroupTypeOfFieldType(fbf_type_used) == FieldTypeGroup::kCreditCard
-          ? SuggestionType::kCreditCardFieldByFieldFilling
-          : SuggestionType::kAddressFieldByFieldFilling;
-  Suggestion suggestion = test::CreateAutofillSuggestion(
-      suggestion_type, u"field by field", GetPayload(suggestion_type, guid));
-  suggestion.field_by_field_filling_type_used = std::optional(fbf_type_used);
-  return suggestion;
-}
-
 template <typename SuggestionsMatcher>
 auto PopupOpenArgsAre(
     SuggestionsMatcher suggestions_matcher,
@@ -1281,100 +1258,6 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
-       FieldByFieldFilling_PreviewCreditCard) {
-  const CreditCard local_card = test::GetCreditCard();
-  pdm().payments_data_manager().AddCreditCard(local_card);
-  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
-      local_card.guid(), CREDIT_CARD_NAME_FULL);
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kPreview,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 suggestion.main_text.value,
-                                 SuggestionType::kCreditCardFieldByFieldFilling,
-                                 std::optional(CREDIT_CARD_NAME_FULL)));
-
-  external_delegate().DidSelectSuggestion(suggestion);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       FieldByFieldFilling_FillCreditCardName) {
-  const CreditCard local_card = test::GetCreditCard();
-  pdm().payments_data_manager().AddCreditCard(local_card);
-  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
-      local_card.guid(), CREDIT_CARD_NAME_FULL);
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
-  EXPECT_CALL(manager(),
-              FillOrPreviewField(mojom::ActionPersistence::kFill,
-                                 mojom::FieldActionType::kReplaceAll,
-                                 HasQueriedFormId(), HasQueriedFieldId(),
-                                 suggestion.main_text.value,
-                                 SuggestionType::kCreditCardFieldByFieldFilling,
-                                 std::optional(CREDIT_CARD_NAME_FULL)));
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 1});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       FieldByFieldFilling_FillCreditCardNumber_FetchingFailed) {
-  const CreditCard server_card = test::GetMaskedServerCard();
-  pdm().payments_data_manager().AddCreditCard(server_card);
-  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
-      server_card.guid(), CREDIT_CARD_NUMBER);
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(
-          [&server_card](
-              const CreditCard* credit_card,
-              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
-            EXPECT_EQ(*credit_card, server_card);
-            std::move(callback).Run(
-                /*result=*/CreditCardFetchResult::kTransientError,
-                /*credit_card=*/nullptr);
-          });
-  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 1});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       FieldByFieldFilling_FillCreditCardNumber_Fetched) {
-  const CreditCard server_card = test::GetMaskedServerCard();
-  pdm().payments_data_manager().AddCreditCard(server_card);
-  Suggestion suggestion = CreateFieldByFieldFillingSuggestion(
-      server_card.guid(), CREDIT_CARD_NUMBER);
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  const CreditCard unlocked_card = test::GetFullServerCard();
-  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(
-          [&server_card, &unlocked_card](
-              const CreditCard* credit_card,
-              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
-            EXPECT_EQ(*credit_card, server_card);
-            std::move(callback).Run(
-                /*result=*/CreditCardFetchResult::kSuccess,
-                /*credit_card=*/&unlocked_card);
-          });
-  EXPECT_CALL(
-      manager(),
-      FillOrPreviewField(
-          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-          HasQueriedFormId(), HasQueriedFieldId(),
-          unlocked_card.GetInfo(CREDIT_CARD_NUMBER, pdm().app_locale()),
-          SuggestionType::kCreditCardFieldByFieldFilling,
-          std::optional(CREDIT_CARD_NUMBER)));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 1});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_CreditCardForm_Preview) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
@@ -1441,67 +1324,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              Property(&FormData::global_id, form.global_id()),
                              form.fields()[0].global_id(), _, _));
-  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       VirtualCreditCard_ManualFallback_FetchingFails) {
-  const CreditCard enrolled_card =
-      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().payments_data_manager().AddCreditCard(enrolled_card);
-  Suggestion suggestion =
-      test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
-                                     /*main_text_value=*/u"Virtual credit card",
-                                     Suggestion::Guid(enrolled_card.guid()));
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(
-          [&enrolled_card](
-              const CreditCard* credit_card,
-              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
-            CreditCard expected_card =
-                CreditCard::CreateVirtualCard(enrolled_card);
-            EXPECT_EQ(*credit_card, expected_card);
-            std::move(callback).Run(
-                /*result=*/CreditCardFetchResult::kTransientError,
-                /*credit_card=*/nullptr);
-          });
-  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
-  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
-
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       VirtualCreditCard_ManualFallback_FetchingSucceeds) {
-  const CreditCard enrolled_card =
-      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
-  pdm().payments_data_manager().AddCreditCard(enrolled_card);
-  Suggestion suggestion =
-      test::CreateAutofillSuggestion(SuggestionType::kVirtualCreditCardEntry,
-                                     /*main_text_value=*/u"Virtual credit card",
-                                     Suggestion::Guid(enrolled_card.guid()));
-  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPayments);
-
-  const CreditCard unlocked_card = test::GetFullServerCard();
-  EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(
-          [&unlocked_card, &enrolled_card](
-              const CreditCard* credit_card,
-              CreditCardAccessManager::OnCreditCardFetchedCallback callback) {
-            CreditCard expected_card =
-                CreditCard::CreateVirtualCard(enrolled_card);
-            EXPECT_EQ(*credit_card, expected_card);
-            std::move(callback).Run(
-                /*result=*/CreditCardFetchResult::kSuccess,
-                /*credit_card=*/&unlocked_card);
-          });
-  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
 
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -2806,8 +2628,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
   IssueOnQuery();
-  Suggestion suggestion =
-      CreateFieldByFieldFillingSuggestion(profile.guid(), NAME_FIRST);
+  Suggestion suggestion = test::CreateAutofillSuggestion(
+      SuggestionType::kAddressFieldByFieldFilling, u"field by field",
+      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
+  suggestion.field_by_field_filling_type_used = NAME_FIRST;
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
   EXPECT_CALL(
@@ -2878,7 +2702,6 @@ const SuggestionType kRemoveSuggestionTestCases[] = {
     SuggestionType::kFillFullEmail,
     SuggestionType::kFillFullPhoneNumber,
     SuggestionType::kAddressFieldByFieldFilling,
-    SuggestionType::kCreditCardFieldByFieldFilling,
     SuggestionType::kCreditCardEntry,
     SuggestionType::kAutocompleteEntry,
     SuggestionType::kPasswordEntry,

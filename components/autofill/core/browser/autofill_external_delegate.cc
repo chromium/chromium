@@ -230,7 +230,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAddressEntry:
     case SuggestionType::kFillFullAddress:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kFillFullName:
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kFillFullEmail:
@@ -698,8 +697,12 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       }
       break;
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
-      PreviewFieldByFieldFillingSuggestion(suggestion);
+      CHECK(suggestion.field_by_field_filling_type_used);
+      if (std::optional<AutofillProfile> profile =
+              GetProfileFromPayload(manager_->client().GetPersonalDataManager(),
+                                    suggestion.payload)) {
+        PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
+      }
       break;
     case SuggestionType::kVirtualCreditCardEntry:
       // If triggered on a non payments form, don't preview the value.
@@ -783,7 +786,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kVirtualCreditCardEntry:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
     case SuggestionType::kSeePromoCodeDetails:
@@ -1018,7 +1020,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillFullEmail:
     case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
       return manager_->RemoveAutofillProfileOrCreditCard(suggestion.payload);
     case SuggestionType::kAutocompleteEntry:
@@ -1125,52 +1126,6 @@ void AutofillExternalDelegate::OnCreditCardScanned(
                                         card, trigger_source);
 }
 
-void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
-    const Suggestion& suggestion) {
-  CHECK(suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
-        suggestion.type == SuggestionType::kCreditCardFieldByFieldFilling);
-  CHECK(suggestion.field_by_field_filling_type_used);
-
-  if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
-    if (std::optional<AutofillProfile> profile = GetProfileFromPayload(
-            manager_->client().GetPersonalDataManager(), suggestion.payload)) {
-      PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
-    }
-    return;
-  }
-
-  if (manager_->client()
-          .GetPersonalDataManager()
-          .payments_data_manager()
-          .GetCreditCardByGUID(
-              suggestion.GetPayload<Suggestion::Guid>().value())) {
-    PreviewCreditCardFieldByFieldFillingSuggestion(suggestion);
-  }
-}
-
-void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
-    const Suggestion& suggestion,
-    const SuggestionMetadata& metadata) {
-  CHECK(suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
-        suggestion.type == SuggestionType::kCreditCardFieldByFieldFilling);
-  CHECK(suggestion.field_by_field_filling_type_used);
-
-  if (suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
-    if (std::optional<AutofillProfile> profile = GetProfileFromPayload(
-            manager_->client().GetPersonalDataManager(), suggestion.payload)) {
-      FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, metadata);
-    }
-    return;
-  }
-  const auto guid = suggestion.GetPayload<Suggestion::Guid>().value();
-  if (const CreditCard* credit_card = manager_->client()
-                                          .GetPersonalDataManager()
-                                          .payments_data_manager()
-                                          .GetCreditCardByGUID(guid)) {
-    FillCreditCardFieldByFieldFillingSuggestion(*credit_card, suggestion);
-  }
-}
-
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion) {
@@ -1203,61 +1158,6 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
         profile, query_form_.global_id(), query_field_.global_id(),
         TriggerSourceFromSuggestionTriggerSource(trigger_source_));
   }
-}
-
-void AutofillExternalDelegate::PreviewCreditCardFieldByFieldFillingSuggestion(
-    const Suggestion& suggestion) {
-  manager_->FillOrPreviewField(
-      mojom::ActionPersistence::kPreview, mojom::FieldActionType::kReplaceAll,
-      query_form_, query_field_, suggestion.main_text.value, suggestion.type,
-      suggestion.field_by_field_filling_type_used);
-}
-
-void AutofillExternalDelegate::FillCreditCardFieldByFieldFillingSuggestion(
-    const CreditCard& credit_card,
-    const Suggestion& suggestion) {
-  if (*suggestion.field_by_field_filling_type_used == CREDIT_CARD_NUMBER) {
-    manager_->GetCreditCardAccessManager().FetchCreditCard(
-        &credit_card,
-        base::BindOnce(&AutofillExternalDelegate::OnCreditCardFetched,
-                       GetWeakPtr()));
-    return;
-  }
-  manager_->FillOrPreviewField(
-      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      query_form_, query_field_, suggestion.main_text.value, suggestion.type,
-      suggestion.field_by_field_filling_type_used);
-}
-
-void AutofillExternalDelegate::OnCreditCardFetched(
-    CreditCardFetchResult result,
-    const CreditCard* credit_card) {
-  if (result != CreditCardFetchResult::kSuccess) {
-    return;
-  }
-  // In the failure case, `credit_card` can be `nullptr`, but in the success
-  // case it is non-null.
-  CHECK(credit_card);
-
-  manager_->OnCreditCardFetchedSuccessfully(*credit_card);
-  manager_->FillOrPreviewField(
-      mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
-      query_form_, query_field_,
-      credit_card->GetInfo(CREDIT_CARD_NUMBER,
-                           manager_->client().GetAppLocale()),
-      SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NUMBER);
-}
-
-void AutofillExternalDelegate::OnVirtualCreditCardFetched(
-    CreditCardFetchResult result,
-    const CreditCard* credit_card) {
-  if (result != CreditCardFetchResult::kSuccess) {
-    return;
-  }
-  // In the failure case, `credit_card` can be `nullptr`, but in the success
-  // case it is non-null.
-  CHECK(credit_card);
-  manager_->OnCreditCardFetchedSuccessfully(*credit_card);
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(
@@ -1447,7 +1347,13 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kAddressFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, metadata);
+      CHECK(suggestion.field_by_field_filling_type_used);
+      if (std::optional<AutofillProfile> profile =
+              GetProfileFromPayload(manager_->client().GetPersonalDataManager(),
+                                    suggestion.payload)) {
+        FillAddressFieldByFieldFillingSuggestion(*profile, suggestion,
+                                                 metadata);
+      }
       break;
     case SuggestionType::kDevtoolsTestAddressEntry: {
       const std::optional<AutofillProfile> profile = GetTestAddressByGUID(
@@ -1501,32 +1407,13 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kVirtualCreditCardEntry:
-      if (IsPaymentsManualFallbackOnNonPaymentsField()) {
-        if (const CreditCard* credit_card =
-                manager_->client()
-                    .GetPersonalDataManager()
-                    .payments_data_manager()
-                    .GetCreditCardByGUID(
-                        suggestion.GetPayload<Suggestion::Guid>().value())) {
-          CreditCard virtual_card = CreditCard::CreateVirtualCard(*credit_card);
-          manager_->GetCreditCardAccessManager().FetchCreditCard(
-              &virtual_card,
-              base::BindOnce(
-                  &AutofillExternalDelegate::OnVirtualCreditCardFetched,
-                  GetWeakPtr()));
-        }
-      } else {
-        // There can be multiple virtual credit cards that all rely on
-        // SuggestionType::kVirtualCreditCardEntry as a `type`.
-        // In this case, the payload contains the backend id, which is a GUID
-        // that identifies the actually chosen credit card.
-        FillAutofillFormData(
-            suggestion.type, suggestion.payload, metadata, /*is_preview=*/false,
-            TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      }
-      break;
-    case SuggestionType::kCreditCardFieldByFieldFilling:
-      FillFieldByFieldFillingSuggestion(suggestion, metadata);
+      // There can be multiple virtual credit cards that all rely on
+      // SuggestionType::kVirtualCreditCardEntry as a `type`.
+      // In this case, the payload contains the backend id, which is a GUID
+      // that identifies the actually chosen credit card.
+      FillAutofillFormData(
+          suggestion.type, suggestion.payload, metadata, /*is_preview=*/false,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kIbanEntry:
       // User chooses an IBAN suggestion and if it is a local IBAN, full IBAN

@@ -451,7 +451,6 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kCreditCardFieldByFieldFilling:
     case SuggestionType::kComposeProactiveNudge:
     case SuggestionType::kDevtoolsTestAddresses:
     case SuggestionType::kFillFullAddress:

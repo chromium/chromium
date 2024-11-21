@@ -84,8 +84,6 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kScanCreditCard";
     case SuggestionType::kVirtualCreditCardEntry:
       return "kVirtualCreditCardEntry";
-    case SuggestionType::kCreditCardFieldByFieldFilling:
-      return "kCreditCardFieldByFieldFilling";
     case SuggestionType::kIbanEntry:
       return "kIbanEntry";
     case SuggestionType::kBnplEntry:

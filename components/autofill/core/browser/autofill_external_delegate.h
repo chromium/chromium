@@ -211,22 +211,9 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
                             bool is_preview,
                             AutofillTriggerSource trigger_source);
 
-  // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
-  // previewed and previews the corresponding field-by-field filling suggestion.
-  void PreviewFieldByFieldFillingSuggestion(const Suggestion& suggestion);
-
-  // Determines the correct data type (`AutofillProfile` or `CreditCard`) to be
-  // filled and fills the corresponding field-by-field filling suggestion.
-  void FillFieldByFieldFillingSuggestion(const Suggestion& suggestion,
-                                         const SuggestionMetadata& metadata);
-
   // Previews the value from `profile` specified in the `suggestion`.
   void PreviewAddressFieldByFieldFillingSuggestion(
       const AutofillProfile& profile,
-      const Suggestion& suggestion);
-
-  // Previews the main text from the `suggestion`.
-  void PreviewCreditCardFieldByFieldFillingSuggestion(
       const Suggestion& suggestion);
 
   // Fills the value from `profile` specified in the `suggestion`. Emits
@@ -237,25 +224,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
       const Suggestion& suggestion,
       const SuggestionMetadata& metadata);
 
-  // Uses the `credit_card` to optionally fetch the credit card number depending
-  // on the `suggestion.field_by_field_filling_type_used`. Fills the fetched
-  // credit card number or the `suggestion::main_text`.
-  void FillCreditCardFieldByFieldFillingSuggestion(
-      const CreditCard& credit_card,
-      const Suggestion& suggestion);
-
   // Fills `values_to_fill` into the fields of `query_form_`.
   void FillPredictionImprovements(const Suggestion& suggestion);
-
-  // Triggered when the user closes the authentication flow needed to access
-  // the number and cvc of the `credit_card`.
-  void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card);
-
-  // Triggered when the user completes the authentication flow needed to access
-  // virtual credit card details.
-  void OnVirtualCreditCardFetched(CreditCardFetchResult result,
-                                  const CreditCard* credit_card);
 
   // Handle applying any Autofill option listings to the Autofill popup.
   // This function should only get called when there is at least one
