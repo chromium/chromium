@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_PUBLIC_TAB_DIALOG_MANAGER_H_
 #define CHROME_BROWSER_UI_TABS_PUBLIC_TAB_DIALOG_MANAGER_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/callback_list.h"
@@ -18,6 +19,7 @@
 
 namespace views {
 class Widget;
+class DialogDelegate;
 }  // namespace views
 
 namespace tabs {
@@ -30,7 +32,28 @@ class TabDialogManager : public content::WebContentsObserver {
   TabDialogManager& operator=(const TabDialogManager&) = delete;
   ~TabDialogManager() override;
 
+  // Create a dialog widget from the given DialogDelegate suitable for showing
+  // as scoped to a tab.
+  std::unique_ptr<views::Widget> CreateTabScopedDialog(
+      views::DialogDelegate* delegate);
+  // Shows a widget scoped to the associated `tab_interface_`. Only one
+  // tab-scoped dialog widget may be shown at a time. Interrogate
+  // TabInterface::CanShowModalUI() to determine whether it is safe to call this
+  // function. The dialog is centered above the hosting view as obtained via
+  // TabInterface::GetBrowserWindowInterface() and will be shown/hidden along
+  // with the tab. Currently, the returned widget's ownership model is still
+  // dependent on ownership within the DialogDelegate. If the call-site
+  // ownership hasn't been migrated to CLIENT_OWNS_WIDGET or
+  // WIDGET_OWNS_NATIVE_WIDGET, do not hold on to the Widget as a unique_ptr.
+  // TODO(kylixrd):
+  //   (1) Call-sites expect to own the Widget using CLIENT_OWNS_WIDGET and be
+  //       updated accordingly.
   void ShowDialogAndBlockTabInteraction(views::Widget* dialog);
+  // Combines the above two functions into a single invocation. This is the most
+  // commonly used version. Only use the other APIs if the caller must do
+  // something unique to the Widget before showing it.
+  std::unique_ptr<views::Widget> CreateShowDialogAndBlockTabInteraction(
+      views::DialogDelegate* delegate);
 
   void CloseDialog();
 

@@ -220,19 +220,6 @@ tabs::TabFeatures* TabModel::GetTabFeatures() {
   return tab_features_.get();
 }
 
-std::unique_ptr<views::Widget> TabModel::CreateAndShowTabScopedWidget(
-    views::WidgetDelegate* delegate) {
-  DCHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType());
-  views::Widget* host =
-      GetBrowserWindowInterface()->TopContainer()->GetWidget();
-  CHECK(host);
-  auto widget = base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
-      delegate, nullptr, host->GetNativeView()));
-  GetTabFeatures()->tab_dialog_manager()->ShowDialogAndBlockTabInteraction(
-      widget.get());
-  return widget;
-}
-
 bool TabModel::IsPinned() const {
   return pinned_;
 }

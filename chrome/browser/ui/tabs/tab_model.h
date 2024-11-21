@@ -17,12 +17,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 class TabStripModel;
-
-namespace views {
-class WidgetDelegate;
-class Widget;
-}  // namespace views
-
 namespace tabs {
 
 class TabCollection;
@@ -137,8 +131,6 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
-  std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
-      views::WidgetDelegate* delegate) override;
   bool IsPinned() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
   void Close() override;

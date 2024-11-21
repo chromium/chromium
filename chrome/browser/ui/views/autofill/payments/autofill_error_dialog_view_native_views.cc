@@ -6,6 +6,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -110,7 +112,10 @@ base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
       new AutofillErrorDialogViewNativeViews(controller);
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
-  tab_interface->CreateAndShowTabScopedWidget(dialog_view).release();
+  tab_interface->GetTabFeatures()
+      ->tab_dialog_manager()
+      ->CreateShowDialogAndBlockTabInteraction(dialog_view)
+      .release();
   return dialog_view->GetWeakPtr();
 }
 

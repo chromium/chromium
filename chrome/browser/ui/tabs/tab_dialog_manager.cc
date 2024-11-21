@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -21,6 +22,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace constrained_window {
 extern const void* kConstrainedWindowWidgetIdentifier;
@@ -97,6 +99,16 @@ TabDialogManager::TabDialogManager(TabInterface* tab_interface)
 
 TabDialogManager::~TabDialogManager() = default;
 
+std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
+    views::DialogDelegate* delegate) {
+  DCHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType());
+  views::Widget* host =
+      tab_interface_->GetBrowserWindowInterface()->TopContainer()->GetWidget();
+  CHECK(host);
+  return base::WrapUnique(views::DialogDelegate::CreateDialogWidget(
+      delegate, nullptr, host->GetNativeView()));
+}
+
 void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
   CHECK(tab_interface_->CanShowModalUI());
   widget_ = widget->GetWeakPtr();
@@ -114,6 +126,13 @@ void TabDialogManager::ShowDialogAndBlockTabInteraction(views::Widget* widget) {
   }
 }
 
+std::unique_ptr<views::Widget>
+TabDialogManager::CreateShowDialogAndBlockTabInteraction(
+    views::DialogDelegate* delegate) {
+  auto widget = CreateTabScopedDialog(delegate);
+  ShowDialogAndBlockTabInteraction(widget.get());
+  return widget;
+}
 void TabDialogManager::CloseDialog() {
   if (widget_) {
     scoped_ignore_input_events_.reset();
@@ -157,13 +176,13 @@ void TabDialogManager::TabDidEnterForeground(TabInterface* tab_interface) {
                                   ->TopContainer()
                                   ->GetWidget(),
                               widget_->GetRootView()->GetPreferredSize({}));
-    widget_->Show();
+    widget_->SetVisible(true);
   }
 }
 
 void TabDialogManager::TabWillEnterBackground(TabInterface* tab_interface) {
   if (widget_) {
-    widget_->Hide();
+    widget_->SetVisible(false);
   }
 }
 

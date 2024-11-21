@@ -767,6 +767,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // activated.
   void ShowInactive();
 
+  // Unlike Show/Hide above, this function is idempotent. Calling
+  // SetVisible(true) when IsVisible() == true is a no-op.
+  void SetVisible(bool visible);
+
   // Activates the widget, assuming it already exists and is visible.
   void Activate();
 
@@ -1270,7 +1274,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void SetY(int y);
   void SetWidth(int width);
   void SetHeight(int height);
-  void SetVisible(bool visible);
 
   // ui::ColorProviderSource:
   ui::ColorProviderKey GetColorProviderKey() const override;

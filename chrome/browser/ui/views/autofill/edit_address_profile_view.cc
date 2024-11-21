@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_view.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -38,7 +40,10 @@ AutofillBubbleBase* ShowEditAddressProfileDialogView(
   dialog->ShowForWebContents(web_contents);
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::GetFromContents(web_contents);
-  tab_interface->CreateAndShowTabScopedWidget(dialog).release();
+  tab_interface->GetTabFeatures()
+      ->tab_dialog_manager()
+      ->CreateShowDialogAndBlockTabInteraction(dialog)
+      .release();
   dialog->RequestFocus();
   return dialog;
 }
