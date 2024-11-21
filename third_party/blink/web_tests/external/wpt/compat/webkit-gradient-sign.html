@@ -7,4 +7,8 @@
 test(() => {
     assert_true(CSS.supports("background-image", "-webkit-gradient(linear, left top, left bottom, color-stop(calc(0.5 + 0.001 * sign(1em - 1px)), blue))"));
 });
+
+test(() => {
+    assert_true(CSS.supports("background-image", "-webkit-gradient(linear, left top, left bottom, color-stop(calc(50% + 0.001% * sign(1em - 1px)), blue))"));
+});
 </script>
