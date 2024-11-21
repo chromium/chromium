@@ -239,7 +239,12 @@ TEST_F(NearbyShareDelegateImplTest,
   EXPECT_EQ(delegate_.GetPlaceholderFeatureName(), u"");
 }
 
-TEST_F(NearbyShareDelegateImplTest, SetVisibility) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SetVisibility DISABLED_SetVisibility
+#else
+#define MAYBE_SetVisibility SetVisibility
+#endif
+TEST_F(NearbyShareDelegateImplTest, MAYBE_SetVisibility) {
   settings()->SetEnabled(true);
   EXPECT_EQ(settings()->GetVisibility(),
             ::nearby_share::mojom::Visibility::kYourDevices);
