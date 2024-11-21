@@ -73,7 +73,9 @@ BirchModel::BirchModel()
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }
   if (features::IsCoralFeatureEnabled()) {
-    coral_provider_ = std::make_unique<BirchCoralProvider>(this);
+    auto coral_provider = std::make_unique<BirchCoralProvider>();
+    coral_provider->AddObserver(this);
+    coral_provider_ = std::move(coral_provider);
   }
   Shell::Get()->session_controller()->AddObserver(this);
   SimpleGeolocationProvider::GetInstance()->AddObserver(this);
@@ -539,16 +541,12 @@ void BirchModel::RemoveItem(BirchItem* item) {
       birch_client_->RemoveFileItemFromLauncher(file_item->file_path());
     }
   }
+
+  // Coral items must be filtered in `BirchCoralProvider`.
   if (item->GetType() == BirchItemType::kCoral) {
     BirchCoralProvider::Get()->RemoveGroup(
         static_cast<BirchCoralItem*>(item)->group_id());
   }
-}
-
-void BirchModel::OnCoralGroupRemoved(const base::Token& group_id) {
-  std::erase_if(coral_data_.items, [&group_id](auto& item) {
-    return static_cast<BirchCoralItem>(item).group_id() == group_id;
-  });
 }
 
 void BirchModel::SetLostMediaDataChangedCallback(
@@ -601,6 +599,12 @@ void BirchModel::OnGeolocationPermissionChanged(bool enabled) {
     weather_data_.items.clear();
     weather_data_.is_fresh = false;
   }
+}
+
+void BirchModel::OnCoralGroupRemoved(const base::Token& group_id) {
+  std::erase_if(coral_data_.items, [&group_id](auto& item) {
+    return static_cast<BirchCoralItem>(item).group_id() == group_id;
+  });
 }
 
 BirchDataProvider* BirchModel::GetWeatherProviderForTest() {

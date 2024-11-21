@@ -27,6 +27,7 @@
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -215,6 +216,33 @@ TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
   EXPECT_TRUE(base::Contains(desks[1]->windows(), window2.get()));
   EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
                                                                 window2.get()));
+}
+
+// Tests that clicking on a in-session chip will stay in Overview and remove the
+// chip.
+TEST_F(CoralControllerTest, RemoveInSessionChipAfterClicking) {
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+
+  // We are on the only desk before launching the group.
+  auto* desks_controller = DesksController::Get();
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 1);
+  ASSERT_EQ(desks_controller->GetActiveDeskIndex(), 0);
+
+  ClickFirstCoralButton();
+
+  // Check that we still in Overview.
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+
+  // Check that we are on the newly created desk now.
+  ASSERT_EQ(desks_controller->GetNumberOfDesks(), 2);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+  ASSERT_EQ(desks_controller->active_desk()->type(), Desk::Type::kCoral);
+
+  // Check that the chip is removed.
+  EXPECT_EQ(
+      OverviewGridTestApi(Shell::GetPrimaryRootWindow()).GetBirchChips().size(),
+      0u);
 }
 
 class CoralSavedGroupTest : public CoralControllerTest {

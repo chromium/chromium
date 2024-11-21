@@ -135,6 +135,12 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
         Shell::Get()->toast_manager()->Show(std::move(toast));
         return;
       }
+
+      // Note that we should cache the active root window before launching the
+      // group. Otherwise, `birch_chip_button` will be removed.
+      aura::Window* active_root =
+          birch_chip_button->GetWidget()->GetNativeWindow()->GetRootWindow();
+
       coral::mojom::GroupPtr group =
           BirchCoralProvider::Get()->ExtractGroupById(group_id_);
       Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
@@ -143,9 +149,7 @@ void BirchCoralItem::LaunchGroup(BirchChipButtonBase* birch_chip_button) {
       auto* overview_controller = Shell::Get()->overview_controller();
       CHECK(overview_controller->InOverviewSession());
       overview_controller->overview_session()
-          ->GetGridWithRootWindow(birch_chip_button->GetWidget()
-                                      ->GetNativeWindow()
-                                      ->GetRootWindow())
+          ->GetGridWithRootWindow(active_root)
           ->desks_bar_view()
           ->NudgeDeskName(DesksController::Get()->GetActiveDeskIndex());
       break;

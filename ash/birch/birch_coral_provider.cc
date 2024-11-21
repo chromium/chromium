@@ -26,7 +26,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/informed_restore_controller.h"
 #include "base/command_line.h"
@@ -217,8 +216,34 @@ bool ShouldShowResponse(CoralResponse* response) {
 
 }  // namespace
 
-BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
-    : birch_model_(birch_model) {
+////////////////////////////////////////////////////////////////////////////////
+// BirchCoralProvider::Observer:
+BirchCoralProvider::Observer::Observer() {
+  if (auto* coral_provider = BirchCoralProvider::Get()) {
+    coral_provider->AddObserver(this);
+  }
+}
+
+BirchCoralProvider::Observer::~Observer() {
+  if (auto* coral_provider = BirchCoralProvider::Get()) {
+    coral_provider->RemoveObserver(this);
+  }
+  CHECK(!IsInObserverList());
+}
+
+void BirchCoralProvider::Observer::OnCoralGroupRemoved(
+    const base::Token& group_id) {}
+
+void BirchCoralProvider::Observer::OnCoralEntityRemoved(
+    const base::Token& group_id,
+    std::string_view identifier) {}
+
+void BirchCoralProvider::Observer::OnCoralGroupTitleUpdated(
+    const base::Token& group_id) {}
+
+////////////////////////////////////////////////////////////////////////////////
+// BirchCoralProvider:
+BirchCoralProvider::BirchCoralProvider() {
   g_instance = this;
   Shell* shell = Shell::Get();
   shell->tab_cluster_ui_controller()->AddObserver(this);
@@ -292,6 +317,7 @@ coral::mojom::GroupPtr BirchCoralProvider::ExtractGroupById(
   CHECK(iter != groups.end());
   auto group = std::move(*iter);
   groups.erase(iter);
+  observers_.Notify(&Observer::OnCoralGroupRemoved, group->id);
   return group;
 }
 
@@ -327,6 +353,14 @@ mojo::PendingRemote<coral::mojom::TitleObserver>
 BirchCoralProvider::BindRemote() {
   receiver_.reset();
   return receiver_.BindNewPipeAndPassRemote();
+}
+
+void BirchCoralProvider::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BirchCoralProvider::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void BirchCoralProvider::RequestBirchDataFetch() {
@@ -397,9 +431,7 @@ void BirchCoralProvider::TitleUpdated(const base::Token& id,
   for (coral::mojom::GroupPtr& group : response_->groups()) {
     if (group->id == id) {
       group->title = title;
-      if (auto* bar_controller = BirchBarController::Get()) {
-        bar_controller->OnCoralGroupUpdated(group->id);
-      }
+      observers_.Notify(&Observer::OnCoralGroupTitleUpdated, group->id);
       return;
     }
   }
@@ -735,21 +767,14 @@ void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {
     if (entity_iter != group->entities.end()) {
       group->entities.erase(entity_iter);
       if (group->entities.empty()) {
-        // TODO(zxdan|sammiequon): Consider making coral provider observers.
-        if (auto* birch_bar_controller = BirchBarController::Get()) {
-          birch_bar_controller->OnCoralGroupRemoved(group->id);
-        }
-
-        if (auto* birch_model = Shell::Get()->birch_model()) {
-          birch_model->OnCoralGroupRemoved(group->id);
-        }
+        const base::Token group_id = group->id;
         group_iter = groups.erase(group_iter);
+        observers_.Notify(&Observer::OnCoralGroupRemoved, group_id);
         continue;
       }
-      if (auto* birch_bar_controller = BirchBarController::Get()) {
-        birch_bar_controller->OnCoralEntityRemoved(group->id,
-                                                   entity_identifier);
-      }
+
+      observers_.Notify(&Observer::OnCoralEntityRemoved, group->id,
+                        entity_identifier);
     }
     group_iter++;
   }

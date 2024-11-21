@@ -22,7 +22,6 @@
 
 namespace ash {
 
-class BirchModel;
 class CoralItemRemover;
 
 class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
@@ -32,7 +31,20 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
                                       public aura::WindowObserver,
                                       public OverviewObserver {
  public:
-  explicit BirchCoralProvider(BirchModel* birch_model);
+  class Observer : public base::CheckedObserver {
+   public:
+    Observer();
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+    ~Observer() override;
+
+    virtual void OnCoralGroupRemoved(const base::Token& group_id);
+    virtual void OnCoralEntityRemoved(const base::Token& group_id,
+                                      std::string_view identifier);
+    virtual void OnCoralGroupTitleUpdated(const base::Token& group_id);
+  };
+
+  BirchCoralProvider();
   BirchCoralProvider(const BirchCoralProvider&) = delete;
   BirchCoralProvider& operator=(const BirchCoralProvider&) = delete;
   ~BirchCoralProvider() override;
@@ -58,6 +70,9 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   void OnPostLoginClusterRestored();
 
   mojo::PendingRemote<coral::mojom::TitleObserver> BindRemote();
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // BirchDataProvider:
   void RequestBirchDataFetch() override;
@@ -138,8 +153,6 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
   // current in-session `response_`.
   void RemoveEntity(std::string_view entity_identifier);
 
-  const raw_ptr<BirchModel> birch_model_;
-
   // The request sent to the coral backend.
   CoralRequest request_;
 
@@ -165,6 +178,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   base::ScopedObservation<OverviewController, OverviewObserver>
       overview_observation_{this};
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<BirchCoralProvider> weak_ptr_factory_{this};
 };
