@@ -5,6 +5,9 @@
 #include <algorithm>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_mock_time_message_loop_task_runner.h"
+#include "base/time/time.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_sync_util.h"
@@ -19,6 +22,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -53,6 +57,13 @@ class ExtensionInstalledBubbleViewsSignInBrowserTest
     return *added_widgets.begin();
   }
 
+  scoped_refptr<const extensions::Extension> LoadPackedExtension(
+      const std::string& path) {
+    extensions::ChromeTestExtensionLoader extension_loader(profile());
+    extension_loader.set_pack_extension(true);
+    return extension_loader.LoadExtension(test_data_dir_.AppendASCII(path));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -69,19 +80,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsSignInBrowserTest,
                                  NavigateParams::IGNORE_AND_NAVIGATE);
 
   // Load a syncable extension.
-  extensions::ChromeTestExtensionLoader extension_loader(profile());
-  extension_loader.set_pack_extension(true);
-  scoped_refptr<const extensions::Extension> extension =
-      extension_loader.LoadExtension(
-          test_data_dir_.AppendASCII("simple_with_file"));
+  auto extension = LoadPackedExtension("simple_with_file");
   ASSERT_TRUE(extension);
 
   views::Widget* bubble_view_widget = ShowBubble(extension);
   ASSERT_TRUE(bubble_view_widget);
 
-  ExtensionInstalledBubbleView* view_delegate =
-      static_cast<ExtensionInstalledBubbleView*>(
-          bubble_view_widget->widget_delegate());
+  auto* view_delegate = static_cast<ExtensionInstalledBubbleView*>(
+      bubble_view_widget->widget_delegate());
   ASSERT_TRUE(view_delegate);
 
   // The sign in promo should be shown for a syncable extension.
@@ -107,51 +113,99 @@ class ExtensionInstalledBubbleViewsExplicitSignInBrowserTest
         {});
   }
 
+ protected:
+  extensions::AccountExtensionTracker* account_extension_tracker() {
+    return extensions::AccountExtensionTracker::Get(profile());
+  }
+
+  extensions::AccountExtensionTracker::AccountExtensionType
+  GetAccountExtensionType(const extensions::ExtensionId& id) {
+    return account_extension_tracker()->GetAccountExtensionType(id);
+  }
+
+  signin::IdentityManager* identity_manager() {
+    return IdentityManagerFactory::GetForProfile(profile());
+  }
+
+  // Initiates a sign in flow from the bubble promo shown for the provided
+  // `extension`.
+  void InitiateSignInFromExtensionPromo(
+      scoped_refptr<const extensions::Extension> extension) {
+    views::Widget* bubble_view_widget = ShowBubble(extension);
+    ASSERT_TRUE(bubble_view_widget);
+
+    auto* view_delegate = static_cast<ExtensionInstalledBubbleView*>(
+        bubble_view_widget->widget_delegate());
+    ASSERT_TRUE(view_delegate);
+
+    // The sign in promo should be shown for a syncable extension.
+    EXPECT_TRUE(view_delegate->model()->show_sign_in_promo());
+
+    // Initiate a sign in from the promo.
+    view_delegate->SignInForTesting(AccountInfo());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Test that users can perform an explicit sign in through the extension
+// installed promo in transport mode.
 IN_PROC_BROWSER_TEST_F(ExtensionInstalledBubbleViewsExplicitSignInBrowserTest,
                        BubbleExplicitSignin) {
-  // Load a syncable extension.
-  extensions::ChromeTestExtensionLoader extension_loader(profile());
-  extension_loader.set_pack_extension(true);
-  scoped_refptr<const extensions::Extension> extension =
-      extension_loader.LoadExtension(
-          test_data_dir_.AppendASCII("simple_with_file"));
-  ASSERT_TRUE(extension);
+  // Load three extensions.
+  auto old_extension = LoadPackedExtension("simple_with_file");
+  ASSERT_TRUE(old_extension);
 
-  views::Widget* bubble_view_widget = ShowBubble(extension);
-  ASSERT_TRUE(bubble_view_widget);
+  auto old_extension_2 = LoadPackedExtension("simple_with_host");
+  ASSERT_TRUE(old_extension_2);
 
-  ExtensionInstalledBubbleView* view_delegate =
-      static_cast<ExtensionInstalledBubbleView*>(
-          bubble_view_widget->widget_delegate());
-  ASSERT_TRUE(view_delegate);
+  auto new_extension = LoadPackedExtension("simple_with_icon");
+  ASSERT_TRUE(new_extension);
 
-  // The sign in promo should be shown for a syncable extension.
-  EXPECT_TRUE(view_delegate->model()->show_sign_in_promo());
+  // Override the single thread task runner for the remainder of this test so
+  // that the clock can be advanced manually. This is done after installing the
+  // extensions since ScopedMockTimeMessageLoopTaskRunner does not work with any
+  // RunLoops.
+  base::ScopedMockTimeMessageLoopTaskRunner mock_time_task_runner;
 
-  // Simulate a sign in to the web. This makes it so that the user can be
-  // signed in directly from the promo.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
+  // Initiate a sign in for the old extensions.
+  InitiateSignInFromExtensionPromo(old_extension);
+  InitiateSignInFromExtensionPromo(old_extension_2);
 
-  AccountInfo account_info = signin::MakeAccountAvailable(
-      identity_manager,
-      signin::AccountAvailabilityOptionsBuilder()
-          .WithAccessPoint(signin_metrics::AccessPoint::
-                               ACCESS_POINT_EXTENSION_INSTALL_BUBBLE)
-          .Build("test@gmail.com"));
+  // Advance the clock past the maximum delay to simulate the user not
+  // completing the sign in flow in time.
+  mock_time_task_runner->FastForwardBy(
+      extensions::AccountExtensionTracker::kMaxSigninFromExtensionBubbleDelay *
+      2);
 
-  view_delegate->SignInForTesting(account_info);
+  // After some time has passed, initiate a sign in for the `new_extension`.
+  InitiateSignInFromExtensionPromo(new_extension);
+
+  // Simulate a sign in to the web to finish what was initiated above.
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@gmail.com", signin::ConsentLevel::kSignin);
 
   // Check that the user is now signed in for the browser in transport mode and
   // syncing for extensions is enabled.
   EXPECT_TRUE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   EXPECT_FALSE(
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 
   EXPECT_TRUE(extensions::sync_util::IsSyncingExtensionsEnabled(profile()));
+
+  // Due to the long delay, the old extensions should not be promoted to an
+  // account extension after sign in finishes.
+  EXPECT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(old_extension->id()));
+  EXPECT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(old_extension_2->id()));
+
+  // Since the clock has not advanced in this test since `new_extension` was
+  // installed, it should be promoted to an account extension after sign in\
+  // finishes.
+  EXPECT_EQ(extensions::AccountExtensionTracker::AccountExtensionType::
+                kAccountInstalledSignedIn,
+            GetAccountExtensionType(new_extension->id()));
 }
