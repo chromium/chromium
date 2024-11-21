@@ -4460,6 +4460,18 @@ ci.thin_tester(
             "linux-jammy",
             "x86-64",
         ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
