@@ -2212,10 +2212,10 @@ enum class ToolbarKind {
 #pragma mark - ContextualPanelEntrypointIPHCommands
 
 - (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
-            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+            (ContextualPanelItemConfiguration*)config
                                             anchorPoint:(CGPoint)anchorPoint
                                         isBottomOmnibox:(BOOL)isBottomOmnibox {
-  ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config.get());
+  ContextualPanelItemConfiguration& config_ref = CHECK_DEREF(config);
 
   feature_engagement::Tracker* engagementTracker =
       feature_engagement::TrackerFactory::GetForProfile(
@@ -2226,13 +2226,15 @@ enum class ToolbarKind {
   }
 
   __weak __typeof(self) weakSelf = self;
-  CallbackWithIPHDismissalReasonType dismissalCallback =
-      ^(IPHDismissalReasonType IPHDismissalReasonType,
-        feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config
-                                                   dismissalReason:
-                                                       IPHDismissalReasonType];
-      };
+  base::WeakPtr<ContextualPanelItemConfiguration> config_weak_ptr =
+      config_ref.weak_ptr_factory.GetWeakPtr();
+  CallbackWithIPHDismissalReasonType dismissalCallback = ^(
+      IPHDismissalReasonType IPHDismissalReasonType,
+      feature_engagement::Tracker::SnoozeAction snoozeAction) {
+    [weakSelf contextualPanelEntrypointIPHDidDismissWithConfig:config_weak_ptr
+                                               dismissalReason:
+                                                   IPHDismissalReasonType];
+  };
 
   UIImage* image =
       [UIImage imageNamed:base::SysUTF8ToNSString(config_ref.iph_image_name)];

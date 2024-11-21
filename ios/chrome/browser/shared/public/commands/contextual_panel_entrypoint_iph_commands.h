@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_CONTEXTUAL_PANEL_ENTRYPOINT_IPH_COMMANDS_H_
 
 #import "base/feature_list.h"
-#import "base/memory/weak_ptr.h"
 
 struct ContextualPanelItemConfiguration;
 
@@ -15,7 +14,7 @@ struct ContextualPanelItemConfiguration;
 
 // Tries to show the Contextual Panel entrypoint's IPH, and returns the result.
 - (BOOL)maybeShowContextualPanelEntrypointIPHWithConfig:
-            (base::WeakPtr<ContextualPanelItemConfiguration>)config
+            (ContextualPanelItemConfiguration*)config
                                             anchorPoint:(CGPoint)anchorPoint
                                         isBottomOmnibox:(BOOL)isBottomOmnibox;
 

@@ -159,8 +159,8 @@
     [_contextualSheetHandler openContextualSheet];
   }
 
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      contextualPanelTabHelper->GetFirstCachedConfig();
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
   if (!config || config->iph_entrypoint_used_event_name.empty()) {
     return;
   }
@@ -180,7 +180,7 @@
                      item_configurations {
   [self activeTabHasNewData:item_configurations.empty()
                                 ? nullptr
-                                : item_configurations[0]];
+                                : item_configurations[0].get()];
 }
 
 - (void)contextualPanelTabHelperDestroyed:(ContextualPanelTabHelper*)tabHelper {
@@ -242,7 +242,8 @@
   if (!contextualPanelTabHelper) {
     return;
   }
-  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()];
+  [self activeTabHasNewData:contextualPanelTabHelper->GetFirstCachedConfig()
+                                .get()];
 }
 
 #pragma mark - InfobarBadgeTabHelperObserving
@@ -287,8 +288,7 @@
 
 // Updates the entrypoint state whenever the active tab changes or new data is
 // provided.
-- (void)activeTabHasNewData:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+- (void)activeTabHasNewData:(ContextualPanelItemConfiguration*)config {
   [self resetTimersAndUIStateAnimated:NO];
 
   if (!config) {
@@ -338,8 +338,8 @@
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      contextualPanelTabHelper->GetFirstCachedConfig();
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
 
   if (![self canShowLargeEntrypointWithConfig:config] ||
       ![self.delegate canShowLargeContextualPanelEntrypoint:self]) {
@@ -392,8 +392,8 @@
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(
           _webStateList->GetActiveWebState());
-  base::WeakPtr<ContextualPanelItemConfiguration> config =
-      contextualPanelTabHelper->GetFirstCachedConfig();
+  ContextualPanelItemConfiguration* config =
+      contextualPanelTabHelper->GetFirstCachedConfig().get();
 
   // Show the large entrypoint instead if the IPH can't be shown.
   if (!config || ![self canShowEntrypointIPHWithConfig:config]) {
@@ -452,10 +452,8 @@
 // it was shown successfully. Also passes the current config's entrypoint FET
 // feature, which controls whether the IPH can be shown.
 - (BOOL)attemptShowingEntrypointIPHWithText:(NSString*)text
-                                     config:
-                                         (base::WeakPtr<
-                                             ContextualPanelItemConfiguration>)
-                                             config {
+                                     config:(ContextualPanelItemConfiguration*)
+                                                config {
   BOOL isBottomOmnibox = [self.delegate isBottomOmniboxActive];
 
   CGPoint anchorPoint =
@@ -475,13 +473,13 @@
 }
 
 - (BOOL)canShowLargeEntrypointWithConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+    (ContextualPanelItemConfiguration*)config {
   return [self canShowLoudEntrypointMoment] && config &&
          config->CanShowLargeEntrypoint();
 }
 
 - (BOOL)canShowEntrypointIPHWithConfig:
-    (base::WeakPtr<ContextualPanelItemConfiguration>)config {
+    (ContextualPanelItemConfiguration*)config {
   return [self canShowLoudEntrypointMoment] && config &&
          config->CanShowEntrypointIPH() &&
          _engagementTracker->WouldTriggerHelpUI(*config->iph_feature);
