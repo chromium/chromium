@@ -311,6 +311,13 @@ void FloatingSsoService::OnCookiesLoaded(const net::CookieList& cookies) {
 
 bool FloatingSsoService::ShouldSyncCookie(
     const net::CanonicalCookie& cookie) const {
+  // We only sync cookies from HTTP headers because:
+  // 1) this should be enough to transfer auth-related cookies
+  // 2) JavaScript and/or extensions might update cookies much more frequently
+  // and we want to limit the number of Sync requests
+  if (cookie.SourceType() != net::CookieSourceType::kHTTP) {
+    return false;
+  }
   // Filter out session cookies (except when Floating Workspace is enabled).
   if (!cookie.IsPersistent() &&
       !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
