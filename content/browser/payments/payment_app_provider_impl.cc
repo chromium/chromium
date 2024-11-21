@@ -203,14 +203,14 @@ void PaymentAppProviderImpl::InstallAndInvokePaymentApp(
                      std::move(callback)));
 }
 
-void PaymentAppProviderImpl::UpdatePaymentAppIcon(
+void PaymentAppProviderImpl::UpdatePaymentAppMetadata(
     int64_t registration_id,
     const std::string& instrument_key,
     const std::string& name,
     const std::string& string_encoded_icon,
     const std::string& method_name,
     const SupportedDelegations& supported_delegations,
-    PaymentAppProvider::UpdatePaymentAppIconCallback callback) {
+    PaymentAppProvider::UpdatePaymentAppMetadataCallback callback) {
   StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
       payment_request_web_contents_->GetBrowserContext()
           ->GetDefaultStoragePartition());
