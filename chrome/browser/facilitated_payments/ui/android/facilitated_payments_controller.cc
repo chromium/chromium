@@ -95,7 +95,9 @@ void FacilitatedPaymentsController::OnUiEvent(JNIEnv* env, jint event) {
     case payments::facilitated::UiEvent::kNewScreenShown:
       break;
   }
-  ui_event_listener_.Run(ui_event);
+  if (ui_event_listener_) {
+    ui_event_listener_.Run(ui_event);
+  }
 }
 
 // TODO: crbug.com/375089558 - Deprecate once Java side is able to call
