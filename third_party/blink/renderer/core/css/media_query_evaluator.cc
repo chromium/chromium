@@ -1574,6 +1574,8 @@ static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
       return media_values.SnappedBlock();
     case CSSValueID::kInline:
       return media_values.SnappedInline();
+    case CSSValueID::kBoth:
+      return media_values.SnappedX() && media_values.SnappedY();
     default:
       NOTREACHED();
   }

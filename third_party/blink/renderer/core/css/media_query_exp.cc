@@ -201,6 +201,7 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
         case CSSValueID::kInline:
         case CSSValueID::kX:
         case CSSValueID::kY:
+        case CSSValueID::kBoth:
           return true;
         default:
           return false;
