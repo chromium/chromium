@@ -1,0 +1,9 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_grid_ui_constants") {
+  sources = [ "tab_grid_constants.h" ]
+  deps =
+      [ "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants" ]
+}
