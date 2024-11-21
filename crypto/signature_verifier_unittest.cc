@@ -205,9 +205,9 @@ TEST(SignatureVerifierTest, BasicTest) {
                                   signature, public_key_info));
   auto tbs_certificate_span = base::make_span(tbs_certificate);
 
-  verifier.VerifyUpdate(tbs_certificate_span.first(256u));
-  verifier.VerifyUpdate(tbs_certificate_span.subspan(256, 256));
-  verifier.VerifyUpdate(tbs_certificate_span.subspan(512));
+  verifier.VerifyUpdate(tbs_certificate_span.first<256>());
+  verifier.VerifyUpdate(tbs_certificate_span.subspan<256, 256>());
+  verifier.VerifyUpdate(tbs_certificate_span.subspan<512>());
   EXPECT_TRUE(verifier.VerifyFinal());
 
   // Test 3: verify the signature with incorrect data.

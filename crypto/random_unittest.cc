@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,12 +16,9 @@
 // Ensures we don't have all trivial data, i.e. that the data is indeed random.
 // Currently, that means the bytes cannot be all the same (e.g. all zeros).
 bool IsTrivial(base::span<const uint8_t> bytes) {
-  for (size_t i = 0u; i < bytes.size(); i++) {
-    if (bytes[i] != bytes[0]) {
-      return false;
-    }
-  }
-  return true;
+  const uint8_t first_byte = bytes.front();
+  return std::ranges::all_of(bytes,
+                             [=](uint8_t byte) { return byte == first_byte; });
 }
 
 TEST(RandBytes, RandBytes) {

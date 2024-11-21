@@ -108,7 +108,7 @@ bool HMAC::VerifyTruncated(base::span<const uint8_t> data,
     return false;
 
   std::array<uint8_t, EVP_MAX_MD_SIZE> computed_buffer;
-  auto computed_digest = base::span(computed_buffer).subspan(0, digest.size());
+  auto computed_digest = base::span(computed_buffer).first(digest.size());
   if (!Sign(data, computed_digest)) {
     return false;
   }
