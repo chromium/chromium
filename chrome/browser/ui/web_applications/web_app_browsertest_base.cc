@@ -73,7 +73,8 @@ WebAppProvider& WebAppBrowserTestBase::provider() {
 }
 
 Profile* WebAppBrowserTestBase::profile() {
-  return browser()->profile();
+  CHECK(browser_profile_);
+  return browser_profile_.get();
 }
 
 webapps::AppId WebAppBrowserTestBase::InstallPWA(const GURL& start_url) {
@@ -265,6 +266,11 @@ void WebAppBrowserTestBase::SetUpCommandLine(
   // Browser will both run and display insecure content.
   command_line->AppendSwitch(switches::kAllowRunningInsecureContent);
   cert_verifier_.SetUpCommandLine(command_line);
+}
+
+void WebAppBrowserTestBase::PreRunTestOnMainThread() {
+  WebAppBrowserTestBaseParent::PreRunTestOnMainThread();
+  browser_profile_ = browser()->profile()->GetWeakPtr();
 }
 
 void WebAppBrowserTestBase::SetUpOnMainThread() {
