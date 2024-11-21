@@ -1235,6 +1235,12 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "elevated_tracing_service_unittests",
+    args = [
+        # The test ServiceTest.Rapid reuse may fail with a timeout after 120s.
+        # It emits diagnostics that may help diagnose the underlying cause when
+        # it does so, so give it 125s before killing it.
+        "--ui-test-action-max-timeout=125000",
+    ],
 )
 
 targets.tests.gtest_test(

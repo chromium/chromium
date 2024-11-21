@@ -169,6 +169,9 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
+        "args": [
+          "--ui-test-action-max-timeout=125000"
+        ],
         "name": "elevated_tracing_service_unittests",
         "test": "elevated_tracing_service_unittests",
         "test_id_prefix": "ninja://chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests/"
