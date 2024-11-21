@@ -125,7 +125,8 @@
     var events = this.findEvents(name, ph, condition);
     if (events.length)
       return events[0];
-    throw new Error("Couldn't find event " + name + " / " + ph + "\n\n in " + JSON.stringify(this._devtoolsEvents, null, 2));
+    this._testRunner.log("Couldn't find event " + name + " / " + ph + ".");
+    return null;
   }
 
   filterEvents(callback) {

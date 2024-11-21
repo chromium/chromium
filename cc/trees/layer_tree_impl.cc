@@ -1845,8 +1845,10 @@ void LayerTreeImpl::DidBecomeActive() {
 
   for (const auto& swap_promise : swap_promise_list_)
     swap_promise->DidActivate();
-  devtools_instrumentation::DidActivateLayerTree(host_impl_->id(),
-                                                 source_frame_number_);
+  if (!host_impl_->GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::DidActivateLayerTree(host_impl_->id(),
+                                                   source_frame_number_);
+  }
 }
 
 bool LayerTreeImpl::RequiresHighResToDraw() const {

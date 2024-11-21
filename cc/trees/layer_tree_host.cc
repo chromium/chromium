@@ -351,8 +351,10 @@ void LayerTreeHost::QueueSwapPromise(
 void LayerTreeHost::WillBeginMainFrame() {
   DCHECK(IsMainThread());
   inside_main_frame_ = true;
-  devtools_instrumentation::WillBeginMainThreadFrame(GetId(),
-                                                     SourceFrameNumber());
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::WillBeginMainThreadFrame(GetId(),
+                                                       SourceFrameNumber());
+  }
   client_->WillBeginMainFrame();
 }
 

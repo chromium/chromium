@@ -2847,8 +2847,10 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   }
   active_tree_->ResetAllChangeTracking();
 
-  devtools_instrumentation::DidDrawFrame(
-      id_, frame->begin_frame_ack.frame_id.sequence_number);
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::DidDrawFrame(
+        id_, frame->begin_frame_ack.frame_id.sequence_number);
+  }
   benchmark_instrumentation::IssueImplThreadRenderingStatsEvent(
       rendering_stats_instrumentation_->TakeImplThreadRenderingStats());
 
@@ -3294,8 +3296,10 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   total_frame_counter_.OnBeginFrame(args);
   compositor_frame_reporting_controller_->SetNeedsRasterPropertiesAnimated(
       paint_worklet_tracker_.HasInputPropertiesAnimatedOnImpl());
-  devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
-                                          args.frame_id.sequence_number);
+  if (!GetSettings().is_layer_tree_for_ui) {
+    devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
+                                            args.frame_id.sequence_number);
+  }
 
   // When there is a |target_local_surface_id_|, we do not wish to begin
   // producing Impl Frames for an older viz::LocalSurfaceId, as it will never
