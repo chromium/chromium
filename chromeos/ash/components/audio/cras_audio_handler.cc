@@ -703,6 +703,12 @@ void CrasAudioHandler::RefreshVoiceIsolationPreferredEffect() {
       GetVoiceIsolationPreferredEffect());
 }
 
+void CrasAudioHandler::RecordVoiceIsolationPreferredEffectChange(
+    audio_config::mojom::AudioEffectType preferred_effect) {
+  base::UmaHistogramEnumeration(
+      kVoiceIsolationPreferredEffectChangeHistogramName, preferred_effect);
+}
+
 bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(
     uint64_t device_id) {
   if (!noise_cancellation_supported()) {

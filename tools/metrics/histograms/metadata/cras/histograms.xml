@@ -1176,6 +1176,17 @@ This collects each top-level device metric type. For example,
   <summary>Records the source of enabling/disabling voice isolation.</summary>
 </histogram>
 
+<histogram name="Cras.VoiceIsolationPreferredEffectChange"
+    enum="CrasAudioEffectType" expires_after="2025-11-18">
+  <owner>hunghsienchen@chromium.org</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <summary>
+    Records the voice isolation preferred effect change from the audio setting
+    page. Currently the options provided to the users are only Style Transfer
+    and Beamforming.
+  </summary>
+</histogram>
+
 <histogram name="Cras.WakeDelay" units="ms" expires_after="2025-03-21">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>

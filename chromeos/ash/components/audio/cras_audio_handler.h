@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_pref_observer.h"
 #include "chromeos/ash/components/audio/audio_selection_notification_handler.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-shared.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -174,6 +175,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "Cras.NoiseCancellationEnabledSource";
   static constexpr char kVoiceIsolationEnabledChangeSourceHistogramName[] =
       "Cras.VoiceIsolationEnabledChangeSource";
+  static constexpr char kVoiceIsolationPreferredEffectChangeHistogramName[] =
+      "Cras.VoiceIsolationPreferredEffectChange";
   static constexpr char kSpatialAudioHistogramName[] = "Cras.SpatialAudio";
 
   class AudioObserver {
@@ -470,6 +473,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Refreshes the preferred effect mode of voice isolation.
   void RefreshVoiceIsolationPreferredEffect();
+
+  // Records the voice isolation preferred effect to Histograms.
+  void RecordVoiceIsolationPreferredEffectChange(
+      audio_config::mojom::AudioEffectType preferred_effect);
 
   // Returns noise cancellation supported if:
   // - Overall board/device supports noise cancellation

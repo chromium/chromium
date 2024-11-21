@@ -1802,6 +1802,30 @@ TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationPreferredEffect) {
   EXPECT_EQ(fake_cras_audio_client()->GetVoiceIsolationUIPreferredEffect(), 0u);
 }
 
+TEST_P(CrasAudioHandlerTest, RecordVoiceIsolationPreferredEffectChange) {
+  SetUpCrasAudioHandlerWithVoiceIsolationState(false);
+  const audio_config::mojom::AudioEffectType kEffects[] = {
+      audio_config::mojom::AudioEffectType::kStyleTransfer,
+      audio_config::mojom::AudioEffectType::kBeamforming};
+  const int kExpectedCount = 3;
+
+  // Tests if every invocation of RecordVoiceIsolationPreferredEffectChange()
+  // really records the preferred effect to the histogram.
+  for (auto effect : kEffects) {
+    histogram_tester_.ExpectBucketCount(
+        CrasAudioHandler::kVoiceIsolationPreferredEffectChangeHistogramName,
+        effect,
+        /*expected_count=*/0);
+    for (int j = 0; j < kExpectedCount; j++) {
+      cras_audio_handler_->RecordVoiceIsolationPreferredEffectChange(effect);
+    }
+    histogram_tester_.ExpectBucketCount(
+        CrasAudioHandler::kVoiceIsolationPreferredEffectChangeHistogramName,
+        effect,
+        /*expected_count=*/kExpectedCount);
+  }
+}
+
 TEST_P(CrasAudioHandlerTest, HfpMicSrRefreshPrefEnabledNoHfpMicSr) {
   AudioNodeList audio_nodes = GenerateAudioNodeList({});
   // Set up initial audio devices, only with bluetooth mic.

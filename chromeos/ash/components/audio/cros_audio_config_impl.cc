@@ -413,6 +413,11 @@ void CrosAudioConfigImpl::RefreshVoiceIsolationState() {
 
 void CrosAudioConfigImpl::RefreshVoiceIsolationPreferredEffect() {
   CrasAudioHandler::Get()->RefreshVoiceIsolationPreferredEffect();
+
+  uint32_t preferred_effect =
+      CrasAudioHandler::Get()->GetVoiceIsolationPreferredEffect();
+  CrasAudioHandler::Get()->RecordVoiceIsolationPreferredEffectChange(
+      static_cast<audio_config::mojom::AudioEffectType>(preferred_effect));
 }
 
 void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
