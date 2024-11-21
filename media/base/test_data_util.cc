@@ -149,16 +149,13 @@ const FileToMimeTypeMap& GetFileToMimeTypeMap() {
       {"bear-vp8a.webm", kWebMVp8Video},
       {"bear-vp9-blockgroup.webm", kWebMVp9Video},
       {"bear-vp9.webm", kWebMVp9Video},
-      {"color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4",
+      {"color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc.mp4",
        kMp4DolbyVisionProfile5},
-      {"color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-"
-       "2sec.mp4",
+      {"color_pattern_24_dvhe_05_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4",
        kMp4DolbyVisionProfile5},
-      {"color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
-       "cenc.mp4",
+      {"color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc.mp4",
        kMp4DolbyVisionProfile8x},
-      {"color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
-       "cenc-clearlead-2sec.mp4",
+      {"color_pattern_24_dvhe_081_1920x1080-3sec-frag-cenc-clearlead-2sec.mp4",
        kMp4DolbyVisionProfile8x},
       {"frame_size_change-av_enc-v.webm", kWebMVorbisAudioVp8Video},
       {"icy_sfx.mp3", kMp3Audio},
