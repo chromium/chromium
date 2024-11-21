@@ -13,6 +13,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_paths.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -32,12 +33,24 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NotificationDisplayServiceTester::EnsureFactoryBuilt();
 }
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+bool IsMV3AllowedContextType(ContextType context_type) {
+  return context_type == ContextType::kServiceWorker ||
+         context_type == ContextType::kFromManifest ||
+         context_type == ContextType::kNone;
+}
+#endif
+
 }  // namespace
 
 ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
     : context_type_(context_type) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // Android only allows certain context types.
+  EXPECT_TRUE(IsMV3AllowedContextType(context_type));
+#endif
 }
 
 ExtensionPlatformBrowserTest::~ExtensionPlatformBrowserTest() = default;
