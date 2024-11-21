@@ -781,6 +781,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.AtRegistration.DiskSpaceWhenNotEnoughAvailable"
+    units="GB" expires_after="2025-04-13">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>holte@chromium.org</owner>
+  <summary>
+    Records the number of GB of free disk space if it is determined that there
+    is insufficient disk space to install the on-device model at registration.
+    Recorded when the on-device model installer is registered near startup and
+    only if the device failed the disk space check.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria.{Event}.{Criteria}"
     enum="Boolean" expires_after="2025-04-13">
   <owner>harringtond@chromium.org</owner>

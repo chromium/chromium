@@ -126,6 +126,11 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       true, 1);
+  // Device has disk space. Histogram should not log.
+  histograms_.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+      0);
 }
 
 TEST_F(OnDeviceModelComponentTest, AlreadyInstalledFlow) {
@@ -215,6 +220,10 @@ TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.All",
       false, 1);
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+      19, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {

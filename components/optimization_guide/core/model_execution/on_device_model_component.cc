@@ -264,6 +264,13 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
                           base::Time::Now());
   }
 
+  if (!criteria.disk_space_available) {
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+        "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+        disk_space_free_bytes / (1024 * 1024 * 1024));
+  }
+
   bool was_allowed = is_model_allowed_;
   is_model_allowed_ = criteria.is_model_allowed();
   if (state_ && was_allowed != is_model_allowed_) {
