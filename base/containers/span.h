@@ -110,6 +110,12 @@
 //   std::vector<const int*>        =>  span<const int*>
 //   const std::vector<const int*>  =>  span<const int* const>
 //
+// Spans with smart pointer types for internal storage (raw_ptr<T>).
+// --------------------------------------------------------------------------
+//
+// See base/memory/raw_span.h. Note that base::raw_span<T> should be used for
+// class members only, with ordinary base::span<T> used otherwise.
+//
 // Differences from the C++ standard
 // ---------------------------------
 //
@@ -137,6 +143,7 @@
 //
 // Other differences:
 // - Using StrictNumeric<size_t> instead of size_t where possible.
+// - Allowing internal pointer types other than T*.
 //
 // Additions beyond the C++ standard draft
 // - as_chars() function.
@@ -154,6 +161,7 @@
 // - split_at() method.
 // - to_fixed_extent() method.
 // - get_at() method.
+// - span(span&&) move-constructor (helps with non-trivial InternalPtrType).
 // - operator=(span&&) move-assignment (helps with non-trivial InternalPtrType).
 // - operator==() comparator function.
 // - operator<=>() comparator function.
@@ -395,6 +403,7 @@ class GSL_POINTER span {
       : UNSAFE_BUFFERS(span(il.begin(), il.size())) {}
 
   constexpr span(const span& other) noexcept = default;
+  constexpr span(span&& other) noexcept = default;
   template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
     requires((OtherN == dynamic_extent || N == OtherN) &&
              internal::LegalDataConversion<OtherT, T>)
@@ -993,6 +1002,7 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
       : UNSAFE_BUFFERS(span(il.begin(), il.size())) {}
 
   constexpr span(const span& other) noexcept = default;
+  constexpr span(span&& other) noexcept = default;
   template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
     requires(internal::LegalDataConversion<OtherT, T>)
   // NOLINTNEXTLINE(google-explicit-constructor)
