@@ -121,6 +121,10 @@ void LogInitiatePaymentAttempt();
 // Log the result and latency for the InitiatePayment backend endpoint.
 void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration);
 
+// Log the attempt to send the call to the InitiatePurchaseAction backend
+// endpoint.
+void LogInitiatePurchaseActionAttempt();
+
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client).
 // TODO(crbug.com/379723883): Move the `PurchaseActionResult` and have this

@@ -144,6 +144,17 @@ TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResultAndLatency) {
   }
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionAttempt) {
+  base::HistogramTester histogram_tester;
+
+  LogInitiatePurchaseActionAttempt();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest,
      LogInitiatePurchaseActionResultAndLatency) {
   for (const std::string& result : {"Succeeded", "Failed", "Abandoned"}) {

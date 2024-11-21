@@ -825,6 +825,27 @@ TEST_F(FacilitatedPaymentsManagerTest,
   }
 }
 
+// Test that when an InitiatePurchaseAction request is sent, the attempt is
+// logged.
+TEST_F(FacilitatedPaymentsManagerTest, LogInitiatePurchaseActionAttempt) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(*client_, GetCoreAccountInfo)
+      .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
+  auto response_details =
+      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
+  response_details->action_token_ =
+      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  manager_->OnInitiatePaymentResponseReceived(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePurchaseAction.Attempt",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 // Test that when an InitiatePurchaseAction response is received, the result and
 // latency of the invoke purchase action is logged.
 TEST_F(FacilitatedPaymentsManagerTest,
