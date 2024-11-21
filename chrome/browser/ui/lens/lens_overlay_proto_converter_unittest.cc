@@ -220,12 +220,12 @@ inline const TranslationTextStruct kTestUnicodeTranslationText = {
 };
 
 inline const TranslationTextStruct kTestUnicodeTranslationTextMutliline = {
-    .translation_text = "美丽世界我在这里。",
+    .translation_text = "美丽世界。我在这里",
     .source_language = "fr",
     .target_language = "zh",
     .lines = {{
                   .start_index = 0,
-                  .end_index = 4,
+                  .end_index = 5,
                   .background_color = 100,
                   .background_image_bytes = "background",
                   .background_image_height = 10,
@@ -245,12 +245,12 @@ inline const TranslationTextStruct kTestUnicodeTranslationTextMutliline = {
                                 .start_index = 2,
                                 .end_index = 4,
                                 .expected_translation = "世界",
-                                .expected_separator = "",
+                                .expected_separator = "。",
 
                             }},
               },
               {
-                  .start_index = 4,
+                  .start_index = 5,
                   .end_index = 9,
                   .background_color = 200,
                   .background_image_bytes = "bytes",
@@ -261,17 +261,17 @@ inline const TranslationTextStruct kTestUnicodeTranslationTextMutliline = {
                   .text_color = 300,
                   .text_mask_bytes = "mask-text",
                   .words = {{
-                                .start_index = 4,
-                                .end_index = 6,
+                                .start_index = 5,
+                                .end_index = 7,
                                 .expected_translation = "我在",
                                 .expected_separator = "",
 
                             },
                             {
-                                .start_index = 6,
-                                .end_index = 8,
+                                .start_index = 7,
+                                .end_index = 9,
                                 .expected_translation = "这里",
-                                .expected_separator = "。",
+                                .expected_separator = "",
 
                             }},
               }},
