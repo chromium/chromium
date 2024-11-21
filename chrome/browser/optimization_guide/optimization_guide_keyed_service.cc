@@ -419,10 +419,6 @@ void OptimizationGuideKeyedService::Initialize() {
               model_quality_logs_uploader_service_
                   ? model_quality_logs_uploader_service_->GetWeakPtr()
                   : nullptr);
-      if (on_device_component_manager_) {
-        on_device_component_manager_->AddObserver(
-            model_execution_manager_.get());
-      }
 
       RecordModelExecutionFeatureSyntheticFieldTrial(
           optimization_guide::UserVisibleFeatureKey::kHistorySearch,

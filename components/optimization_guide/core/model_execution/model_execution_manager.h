@@ -114,6 +114,9 @@ class ModelExecutionManager
   base::WeakPtr<ModelQualityLogsUploaderService>
       model_quality_uploader_service_;
 
+  base::WeakPtr<OnDeviceModelComponentStateManager>
+      on_device_component_state_manager_;
+
   // Owned by OptimizationGuideKeyedService and outlives `this`.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
