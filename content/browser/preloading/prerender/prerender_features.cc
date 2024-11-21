@@ -56,6 +56,10 @@ const base::FeatureParam<Prerender2FallbackPrefetchReusablePolicy>
         Prerender2FallbackPrefetchReusablePolicy::kNotUse,
         &kPrerender2FallbackPrefetchReusablePolicyOptions};
 
+const base::FeatureParam<size_t> kPrerender2FallbackBodySizeLimit{
+    &kPrerender2FallbackPrefetchSpecRules, "kPrerender2FallbackBodySizeLimit",
+    65536};
+
 const base::FeatureParam<int>
     kPrerender2NoVarySearchWaitForHeadersTimeoutEagerPrerender{
         &blink::features::kPrerender2NoVarySearch,

@@ -39,6 +39,9 @@ CONTENT_EXPORT extern const base::FeatureParam<
     Prerender2FallbackPrefetchReusablePolicy>
     kPrerender2FallbackPrefetchReusablePolicy;
 
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kPrerender2FallbackBodySizeLimit;
+
 // A field trial param that controls the timeout for waiting on headers
 // during navigation for the prerender URL matched by No-Vary-Search hint before
 // falling back to the default navigation path.
