@@ -2903,12 +2903,12 @@
   {
     "name": "enable-enterprise-profile-badging-for-avatar",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name": "enable-enterprise-profile-badging-for-menu",
     "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name": "enable-enterprise-profile-required-interstitial",
