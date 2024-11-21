@@ -440,7 +440,7 @@ void TabStripRegionView::Layout(PassKey) {
 }
 
 bool TabStripRegionView::CanDrop(const OSExchangeData& data) {
-  return TabDragController::IsSystemDragAndDropSessionRunning() &&
+  return TabDragController::IsSystemDnDSessionRunning() &&
          data.HasCustomFormat(
              ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
 }
@@ -454,16 +454,16 @@ bool TabStripRegionView::GetDropFormats(
 }
 
 void TabStripRegionView::OnDragEntered(const ui::DropTargetEvent& event) {
-  CHECK(TabDragController::IsSystemDragAndDropSessionRunning());
-  TabDragController::OnSystemDragAndDropUpdated(event);
+  CHECK(TabDragController::IsSystemDnDSessionRunning());
+  TabDragController::OnSystemDnDUpdated(event);
 }
 
 int TabStripRegionView::OnDragUpdated(const ui::DropTargetEvent& event) {
   // This can be false because we can still receive drag events after
   // TabDragController is destroyed due to the asynchronous nature of the
   // platform DnD.
-  if (TabDragController::IsSystemDragAndDropSessionRunning()) {
-    TabDragController::OnSystemDragAndDropUpdated(event);
+  if (TabDragController::IsSystemDnDSessionRunning()) {
+    TabDragController::OnSystemDnDUpdated(event);
     return ui::DragDropTypes::DRAG_MOVE;
   }
   return ui::DragDropTypes::DRAG_NONE;
@@ -471,8 +471,8 @@ int TabStripRegionView::OnDragUpdated(const ui::DropTargetEvent& event) {
 
 void TabStripRegionView::OnDragExited() {
   // See comment in OnDragUpdated().
-  if (TabDragController::IsSystemDragAndDropSessionRunning()) {
-    TabDragController::OnSystemDragAndDropExited();
+  if (TabDragController::IsSystemDnDSessionRunning()) {
+    TabDragController::OnSystemDnDExited();
   }
 }
 

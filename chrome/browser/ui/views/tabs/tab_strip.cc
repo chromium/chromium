@@ -199,8 +199,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     // a different tab strip owns `TabDragController`. `EndDrag()` exits early
     // if `drag_controller_` is null, so we use this dedicated method to notify
     // `TabDragController`.
-    if (TabDragController::IsSystemDragAndDropSessionRunning()) {
-      TabDragController::OnSystemDragAndDropEnded();
+    if (TabDragController::IsSystemDnDSessionRunning()) {
+      TabDragController::OnSystemDnDEnded();
     } else {
       EndDrag(END_DRAG_COMPLETE);
     }

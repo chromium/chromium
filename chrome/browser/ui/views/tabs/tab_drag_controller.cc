@@ -253,8 +253,8 @@ class EventTracker : public ui::EventObserver {
       }
     } else {
       CHECK(event.type() == ui::EventType::kMouseReleased);
-      if (TabDragController::IsSystemDragAndDropSessionRunning()) {
-        TabDragController::OnSystemDragAndDropEnded();
+      if (TabDragController::IsSystemDnDSessionRunning()) {
+        TabDragController::OnSystemDnDEnded();
       }
     }
   }
@@ -564,15 +564,14 @@ bool TabDragController::IsActive() {
 }
 
 // static
-bool TabDragController::IsSystemDragAndDropSessionRunning() {
+bool TabDragController::IsSystemDnDSessionRunning() {
   return g_tab_drag_controller &&
          g_tab_drag_controller->system_drag_and_drop_session_running_;
 }
 
 // static
-void TabDragController::OnSystemDragAndDropUpdated(
-    const ui::DropTargetEvent& event) {
-  CHECK(IsSystemDragAndDropSessionRunning());
+void TabDragController::OnSystemDnDUpdated(const ui::DropTargetEvent& event) {
+  CHECK(IsSystemDnDSessionRunning());
   VLOG(2) << __func__ << " event=" << event.ToString();
   // It is important to use the event's root location instead of its location.
   // The latter may have been transformed to be relative to a child window, e.g.
@@ -582,8 +581,8 @@ void TabDragController::OnSystemDragAndDropUpdated(
 }
 
 // static
-void TabDragController::OnSystemDragAndDropExited() {
-  CHECK(IsSystemDragAndDropSessionRunning());
+void TabDragController::OnSystemDnDExited() {
+  CHECK(IsSystemDnDSessionRunning());
   VLOG(1) << __func__;
   // Call Drag() with a location that is definitely out of the tab strip.
   g_tab_drag_controller->Drag(
@@ -592,8 +591,8 @@ void TabDragController::OnSystemDragAndDropExited() {
 }
 
 // static
-void TabDragController::OnSystemDragAndDropEnded() {
-  CHECK(IsSystemDragAndDropSessionRunning());
+void TabDragController::OnSystemDnDEnded() {
+  CHECK(IsSystemDnDSessionRunning());
   VLOG(1) << __func__;
   // Set this to prevent us from cancelling the drag again. The platform might
   // not have finished processing the drag end, and requesting to cancel the
@@ -615,9 +614,9 @@ void TabDragController::TabWasAdded() {
   // results in a confusing state if the user attempts to reattach. We could
   // allow this and update ourselves during the add, but this comes up
   // infrequently enough that it's not worth the complexity.
-  // Note: When we're in the kDraggingUsingSystemDragAndDrop state, this method
-  // being called means a tab was added to the source window of the drag. We
-  // don't need to cancel the drag in that case.
+  // Note: When we're in the kDraggingUsingSystemDnD state, this method being
+  // called means a tab was added to the source window of the drag. We don't
+  // need to cancel the drag in that case.
   if (current_state_ == DragState::kDraggingWindow && !is_mutating_) {
     EndDrag(END_DRAG_COMPLETE);
   }
@@ -768,7 +767,7 @@ void TabDragController::EndDrag(EndDragReason reason) {
 
   // We always lose capture when hiding |attached_context_|, just ignore it.
   if (reason == END_DRAG_CAPTURE_LOST &&
-      current_state_ == DragState::kDraggingUsingSystemDragAndDrop) {
+      current_state_ == DragState::kDraggingUsingSystemDnD) {
     return;
   }
 
@@ -1055,7 +1054,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     return DRAG_BROWSER_RESULT_STOP;
   }
 
-  if (current_state_ == DragState::kDraggingUsingSystemDragAndDrop) {
+  if (current_state_ == DragState::kDraggingUsingSystemDnD) {
     current_state_ = DragState::kDraggingTabs;
     // Hide the drag image while attached.
     UpdateSystemDnDDragImage(attached_context_, {});
@@ -1095,7 +1094,7 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
     const gfx::Point& point_in_screen) {
   CHECK(IsWindowDragUsingSystemDragDropAllowed());
   CHECK(ui::ResourceBundle::HasSharedInstance());
-  current_state_ = DragState::kDraggingUsingSystemDragAndDrop;
+  current_state_ = DragState::kDraggingUsingSystemDnD;
 
   if (system_drag_and_drop_session_running_) {
     // Show the drag image again.
@@ -1160,7 +1159,7 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
   // If we're still alive and haven't updated our state yet, this means the drag
   // session ended while we were dragging all of the only window's tabs. We need
   // to end the drag session ourselves.
-  if (ref && current_state_ == DragState::kDraggingUsingSystemDragAndDrop) {
+  if (ref && current_state_ == DragState::kDraggingUsingSystemDnD) {
     VLOG(1) << __func__ << " Ending drag";
     EndDrag(END_DRAG_COMPLETE);
   }
@@ -1173,7 +1172,7 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
 }
 
 void TabDragController::HideAttachedContext() {
-  CHECK_EQ(current_state_, DragState::kDraggingUsingSystemDragAndDrop);
+  CHECK_EQ(current_state_, DragState::kDraggingUsingSystemDnD);
   CHECK(GetAttachedBrowserWidget()->IsVisible());
 
   // See the comment in StartSystemDnDSessionIfNecessary() where we start the
@@ -1820,7 +1819,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
       if (type == CANCELED) {
         RevertDrag();
       } else {
-        if (previous_state == DragState::kDraggingUsingSystemDragAndDrop) {
+        if (previous_state == DragState::kDraggingUsingSystemDnD) {
 // `views::CancelShellDrag()` is only available on Aura, and on all non-Aura
 // platforms `IsMoveLoopSupported()` returns true anyways.
 #if defined(USE_AURA)
@@ -2396,9 +2395,6 @@ Browser* TabDragController::CreateBrowserForDrag(
     const gfx::Point& point_in_screen,
     gfx::Vector2d* drag_offset,
     std::vector<gfx::Rect>* drag_bounds) {
-  // TODO(crbug.com/40238145): `AttachTabsToNewBrowserOnDrop()` does almost the
-  // same as this method. Factor out the common parts into a separate method.
-
   source->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(

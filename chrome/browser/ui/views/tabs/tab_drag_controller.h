@@ -128,8 +128,8 @@ class TabDragController : public views::WidgetObserver,
   // - Drag
   // - EndDrag (this always end the drag)
   //
-  // The static methods OnSystemDragAndDropUpdated and OnSystemDragAndDropExited
-  // may also end the drag.
+  // The static methods OnSystemDnDUpdated and OnSystemDnDExited may also end
+  // the drag.
   //
   // There are also many private methods that may end the drag but don't return
   // a Liveness, and there is at least one case where the wrong Liveness might
@@ -172,12 +172,12 @@ class TabDragController : public views::WidgetObserver,
 
   // Returns true if a regular drag and drop session is running as a fallback
   // instead of a move loop.
-  static bool IsSystemDragAndDropSessionRunning();
+  static bool IsSystemDnDSessionRunning();
 
   // Called by TabStrip / TabStripRegionView to inform TabDragController.
-  static void OnSystemDragAndDropUpdated(const ui::DropTargetEvent& event);
-  static void OnSystemDragAndDropExited();
-  static void OnSystemDragAndDropEnded();
+  static void OnSystemDnDUpdated(const ui::DropTargetEvent& event);
+  static void OnSystemDnDExited();
+  static void OnSystemDnDEnded();
 
   // Returns the pointer of |source_context_|.
   static TabDragContext* GetSourceContext();
@@ -239,7 +239,7 @@ class TabDragController : public views::WidgetObserver,
   //   Also, the callback must be set before the system DnD session starts.
   //   As that session keeps running until the end of the tab dragging session,
   //   this means that this method has no effect after entering the
-  //   kDraggingUsingSystemDragAndDrop state for the first time.
+  //   kDraggingUsingSystemDnD state for the first time.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
   TabStripScrollSession* GetTabStripScrollSessionForTesting() {
@@ -271,7 +271,7 @@ class TabDragController : public views::WidgetObserver,
     // moved to a new browser, but it stays hidden until the drag ends. On
     // platforms where this state is used, the kDraggingWindow and
     // kWaitingToDragTabs states are not used.
-    kDraggingUsingSystemDragAndDrop,
+    kDraggingUsingSystemDnD,
     // The session has already attached to the target tabstrip, but must wait
     // for the nested move loop to exit to transition to kDraggingTabs. Used on
     // platforms where `can_release_capture_` is false.
@@ -655,8 +655,8 @@ class TabDragController : public views::WidgetObserver,
   std::optional<tab_groups::TabGroupId> CalculateGroupForDraggedTabs(
       int to_index);
 
-  // Helper method for OnSystemDragAndDropExited() to calculate a y-coordinate
-  // that is out of the bounds of |attached_context_|, keeping
+  // Helper method for OnSystemDnDExited() to calculate a y-coordinate that is
+  // out of the bounds of |attached_context_|, keeping
   // |kVerticalDetachMagnetism| in mind.
   int GetOutOfBoundsYCoordinate() const;
 
@@ -828,12 +828,11 @@ class TabDragController : public views::WidgetObserver,
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;
 
-  // Used by StartSystemDragAndDropSessionIfNecessary() and
-  // IsSystemDragAndDropSessionRunning().
+  // Used by StartSystemDnDSessionIfNecessary() and IsSystemDnDSessionRunning().
   // This cannot be deduced from |current_state_|, because the system drag
   // session keeps running even when |current_state_| changes back to
   // |kDraggingTabs|, and we must not start a new system drag session the next
-  // time StartSystemDragAndDropSessionIfNecessary() is called.
+  // time StartSystemDnDSessionIfNecessary() is called.
   bool system_drag_and_drop_session_running_ = false;
 
   // Returns true if in the process of reverting the drag and the last tab in
