@@ -853,6 +853,22 @@ void TabSearchPageHandler::SetTabOrganizationModelStrategy(
   page_->TabOrganizationModelStrategyUpdated(std::move(strategy));
 }
 
+void TabSearchPageHandler::SetTabOrganizationUserInstruction(
+    const std::string& user_instruction) {
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    Browser* browser = chrome::FindLastActive();
+    if (!browser) {
+      return;
+    }
+    TabOrganizationSession* session =
+        organization_service_->GetSessionForBrowser(browser);
+    if (!session) {
+      return;
+    }
+    session->SetUserInstruction(user_instruction);
+  }
+}
+
 void TabSearchPageHandler::SetUserFeedback(
     int32_t session_id,
     int32_t organization_id,

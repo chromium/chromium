@@ -312,6 +312,10 @@ BASE_FEATURE(kTabOrganizationModelStrategy,
              "TabOrganizationModelStrategy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabOrganizationUserInstruction,
+             "TabOrganizationUserInstruction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
              "TabOrganizationEnableNudgeForEnterprise",
              base::FEATURE_DISABLED_BY_DEFAULT);

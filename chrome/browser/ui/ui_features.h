@@ -198,6 +198,8 @@ BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
 
 BASE_DECLARE_FEATURE(kTabOrganizationEnableNudgeForEnterprise);
 
+BASE_DECLARE_FEATURE(kTabOrganizationUserInstruction);
+
 // Duration of inactivity after which a tab is considered stale for declutter.
 extern const base::FeatureParam<base::TimeDelta>
     kTabstripDeclutterStaleThresholdDuration;

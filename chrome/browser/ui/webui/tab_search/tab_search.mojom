@@ -343,6 +343,9 @@ interface PageHandler {
   // Store the tab organization model strategy supplied by the user.
   SetTabOrganizationModelStrategy(TabOrganizationModelStrategy strategy);
 
+  // Store the user instruction for tab organization model.
+  SetTabOrganizationUserInstruction(string user_instruction);
+
   // Store the user feedback supplied by the user.
   SetUserFeedback(int32 session_id,
                   int32 organization_id,

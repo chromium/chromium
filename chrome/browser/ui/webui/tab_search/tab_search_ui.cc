@@ -196,6 +196,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddBoolean(
       "tabOrganizationModelStrategyEnabled",
       base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));
+  source->AddBoolean(
+      "TabOrganizationUserInstructionEnabled",
+      base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction));
 
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
   source->AddBoolean(

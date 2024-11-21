@@ -117,6 +117,8 @@ class TabSearchPageHandler
   void OpenHelpPage() override;
   void SetTabOrganizationModelStrategy(
       tab_search::mojom::TabOrganizationModelStrategy strategy) override;
+  void SetTabOrganizationUserInstruction(
+      const std::string& user_instruction) override;
   void SetUserFeedback(int32_t session_id,
                        int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;

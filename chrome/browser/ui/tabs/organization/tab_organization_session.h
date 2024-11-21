@@ -78,6 +78,8 @@ class TabOrganizationSession : public TabOrganization::Observer {
     feedback_ = feedback;
   }
 
+  void SetUserInstruction(const std::string& user_instruction);
+
   void AddObserver(Observer* new_observer);
   void RemoveObserver(Observer* new_observer);
 

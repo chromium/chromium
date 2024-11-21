@@ -77,6 +77,8 @@ export interface TabSearchApiProxy {
 
   setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy): void;
 
+  setTabOrganizationUserInstruction(user_instruction: string): void;
+
   setUserFeedback(
       sessionId: number, organizationId: number, feedback: UserFeedback): void;
 
@@ -218,6 +220,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy) {
     this.handler.setTabOrganizationModelStrategy(strategy);
+  }
+
+  setTabOrganizationUserInstruction(userInstruction: string) {
+    this.handler.setTabOrganizationUserInstruction(userInstruction);
   }
 
   setUserFeedback(

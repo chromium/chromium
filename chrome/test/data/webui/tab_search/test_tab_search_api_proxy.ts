@@ -43,6 +43,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'triggerSignIn',
       'openHelpPage',
       'setTabOrganizationModelStrategy',
+      'setTabOrganizationUserInstruction',
       'setUserFeedback',
       'notifyOrganizationUiReadyToShow',
       'notifySearchUiReadyToShow',
@@ -171,6 +172,10 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
 
   setTabOrganizationModelStrategy(strategy: TabOrganizationModelStrategy) {
     this.methodCalled('setTabOrganizationModelStrategy', [strategy]);
+  }
+
+  setTabOrganizationUserInstruction(userInstruction: string) {
+    this.methodCalled('setTabOrganizationUserInstruction', [userInstruction]);
   }
 
   setUserFeedback(feedback: UserFeedback) {

@@ -40,6 +40,7 @@ export class AutoTabGroupsNotStartedElement extends
       modelStrategy: {type: Number},
       signedIn_: {type: Boolean},
       tabOrganizationModelStrategyEnabled_: {type: Boolean},
+      tabOrganizationUserInstructionEnabled_: {type: Boolean},
     };
   }
 
@@ -49,6 +50,8 @@ export class AutoTabGroupsNotStartedElement extends
 
   protected tabOrganizationModelStrategyEnabled_: boolean =
       loadTimeData.getBoolean('tabOrganizationModelStrategyEnabled');
+  protected tabOrganizationUserInstructionEnabled_: boolean =
+      loadTimeData.getBoolean('TabOrganizationUserInstructionEnabled');
   private signedIn_: boolean = false;
   private syncBrowserProxy_: TabSearchSyncBrowserProxy =
       TabSearchSyncBrowserProxyImpl.getInstance();
@@ -125,6 +128,11 @@ export class AutoTabGroupsNotStartedElement extends
     if (Number(modelStrategy) !== Number(this.modelStrategy)) {
       this.fire('model-strategy-change', {value: modelStrategy});
     }
+  }
+
+  protected onUserInstructionInputChange_(e: KeyboardEvent) {
+    const value = (e.target as HTMLInputElement).value;
+    this.fire('user-instruction-input-change', {value: value});
   }
 }
 

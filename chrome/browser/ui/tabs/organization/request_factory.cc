@@ -211,6 +211,13 @@ void PerformTabOrganizationExecution(
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    if (request->user_instruction().has_value()) {
+      tab_organization_request.set_user_command(
+          request->user_instruction().value());
+    }
+  }
+
   tab_organization_request.set_allow_reorganizing_existing_groups(
       base::FeatureList::IsEnabled(features::kTabReorganization));
 
