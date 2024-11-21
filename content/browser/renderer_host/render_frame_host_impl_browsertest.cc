@@ -734,7 +734,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(web_ui_page, web_contents()->GetLastCommittedURL());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Tests that a gesture is required in a frame before it can request a
@@ -776,7 +775,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Tests that requesting a before unload confirm dialog on a non-active
@@ -800,7 +798,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Test for crbug.com/80401.  Canceling a beforeunload dialog should reset
@@ -836,7 +833,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_GE(dialog_manager.url_invalidate_count(), 1);
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // A separate class needed to test with Origin Trial tokens.
@@ -1493,7 +1489,6 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
 
   void TearDownOnMainThread() override {
     web_contents()->SetDelegate(nullptr);
-    web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
     RenderFrameHostImplBrowserTest::TearDownOnMainThread();
   }
 
@@ -3496,7 +3491,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_FALSE(dialog_manager.proceed());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -3543,7 +3537,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   dialog_manager.Run(true, std::u16string());
 
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

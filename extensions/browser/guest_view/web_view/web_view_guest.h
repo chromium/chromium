@@ -221,6 +221,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;

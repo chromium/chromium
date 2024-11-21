@@ -825,7 +825,6 @@ BeforeUnloadBlockingDelegate::~BeforeUnloadBlockingDelegate() {
     std::move(callback_).Run(true, std::u16string());
 
   web_contents_->SetDelegate(nullptr);
-  web_contents_->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 void BeforeUnloadBlockingDelegate::Wait() {

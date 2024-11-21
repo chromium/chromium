@@ -1374,6 +1374,11 @@ std::optional<content::PermissionResult> WebViewGuest::OverridePermissionResult(
   return std::nullopt;
 }
 
+content::JavaScriptDialogManager*
+WebViewGuest::GuestGetJavascriptDialogManager() {
+  return &javascript_dialog_helper_;
+}
+
 content::JavaScriptDialogManager* WebViewGuest::GetJavaScriptDialogManager(
     WebContents* source) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));

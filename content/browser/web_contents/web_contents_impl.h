@@ -134,7 +134,6 @@ class BeforeUnloadBlockingDelegate;  // content_browser_test_utils_internal.h
 class BrowserPluginEmbedder;
 class BrowserPluginGuest;
 class FindRequestManager;
-class JavaScriptDialogManager;
 class MediaSession;
 class MediaWebContentsObserver;
 class NFCHost;
@@ -1955,9 +1954,6 @@ class CONTENT_EXPORT WebContentsImpl
   // |delegate_|.
   void OnPreferredSizeChanged(const gfx::Size& old_size);
 
-  void SetJavaScriptDialogManagerForTesting(
-      JavaScriptDialogManager* dialog_manager);
-
   // Returns the FindRequestManager, which may be found in an outer WebContents.
   FindRequestManager* GetFindRequestManager();
 
@@ -2122,6 +2118,10 @@ class CONTENT_EXPORT WebContentsImpl
   // Creates a new ForwardingAudioStreamFactory.
   std::unique_ptr<ForwardingAudioStreamFactory> CreateAudioStreamFactory();
 
+  // Cancel any pending dialogs created from the delegate's
+  // JavascriptDialogManager.
+  void CancelDialogManagerDialogs(bool reset_state);
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2279,9 +2279,8 @@ class CONTENT_EXPORT WebContentsImpl
   base::flat_map<uint64_t, WebInputEventAuditCallback>
       web_input_event_audit_callbacks_;
 
-  // Pointer to the JavaScript dialog manager, lazily assigned. Used because the
-  // delegate of this WebContentsImpl is nulled before its destructor is called.
-  raw_ptr<JavaScriptDialogManager, DanglingUntriaged> dialog_manager_;
+  // Whether a dialog has been created since the last cancel of dialogs.
+  bool created_dialog_since_last_cancel_ = false;
 
   // Set to true when there is an active JavaScript dialog showing.
   bool is_showing_javascript_dialog_ = false;

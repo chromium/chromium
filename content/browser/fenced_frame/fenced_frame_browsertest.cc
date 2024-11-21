@@ -4283,7 +4283,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
   // Clean up test dialog manager.
   web_contents()->SetDelegate(nullptr);
-  web_contents()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // An observer class that asserts the page transition always is

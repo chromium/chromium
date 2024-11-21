@@ -1261,7 +1261,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       upload_position_(0),
       is_resume_pending_(false),
       notify_disconnection_(false),
-      dialog_manager_(nullptr),
       is_showing_before_unload_dialog_(false),
       last_active_time_ticks_(base::TimeTicks::Now()),
       last_active_time_(base::Time::Now()),
@@ -1387,9 +1386,7 @@ WebContentsImpl::~WebContentsImpl() {
   created_widgets_.clear();
 
   // Clear out any JavaScript state.
-  if (dialog_manager_) {
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
-  }
+  CancelDialogManagerDialogs(/*reset_state=*/true);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   color_chooser_holder_.reset();
@@ -1967,9 +1964,7 @@ RenderViewHostImpl* WebContentsImpl::GetRenderViewHost() {
 void WebContentsImpl::CancelActiveAndPendingDialogs() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::CancelActiveAndPendingDialogs");
-  if (dialog_manager_) {
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/false);
-  }
+  CancelDialogManagerDialogs(/*reset_state=*/false);
   if (browser_plugin_embedder_) {
     browser_plugin_embedder_->CancelGuestDialogs();
   }
@@ -7223,10 +7218,9 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
   // has_user_gesture, which might get filtered out when navigating from
   // proxies. If so, we can remove tracking of
   // `last_committed_common_params_has_user_gesture` entirely.
-  if (render_frame_host->last_committed_common_params_has_user_gesture() &&
-      dialog_manager_) {
+  if (render_frame_host->last_committed_common_params_has_user_gesture()) {
     DCHECK(is_active);
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
+    CancelDialogManagerDialogs(/*reset_state=*/true);
   }
 }
 
@@ -8262,7 +8256,7 @@ void WebContentsImpl::RunJavaScriptDialog(
     JavaScriptDialogCallback response_callback) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::RunJavaScriptDialog",
                         "render_frame_host", render_frame_host);
-  DCHECK(render_frame_host->GetPage().IsPrimary());
+  DCHECK(render_frame_host->IsActive());
 
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
@@ -8287,8 +8281,17 @@ void WebContentsImpl::RunJavaScriptDialog(
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
 
-  if (delegate_) {
-    dialog_manager_ = delegate_->GetJavaScriptDialogManager(this);
+  bool should_suppress = false;
+  JavaScriptDialogManager* dialog_manager = nullptr;
+  // Give guest a first crack at the dialog.
+  if (GuestPageHolderImpl* guest_holder =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    if (auto* guest_delegate = guest_holder->delegate()) {
+      dialog_manager = guest_delegate->GuestGetJavascriptDialogManager();
+    }
+  } else if (delegate_) {
+    dialog_manager = delegate_->GetJavaScriptDialogManager(this);
+    should_suppress = delegate_->ShouldSuppressDialogs(this);
   }
 
   // While a JS message dialog is showing, defer commits in this WebContents.
@@ -8296,8 +8299,7 @@ void WebContentsImpl::RunJavaScriptDialog(
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
   // Suppress JavaScript dialogs when requested.
-  bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
-  bool has_non_devtools_handlers = delegate_ && dialog_manager_;
+  bool has_non_devtools_handlers = delegate_ && dialog_manager;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   bool suppress_this_message = should_suppress || !has_handlers;
 
@@ -8346,8 +8348,9 @@ void WebContentsImpl::RunJavaScriptDialog(
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
   }
 
-  if (dialog_manager_) {
-    dialog_manager_->RunJavaScriptDialog(
+  if (dialog_manager) {
+    created_dialog_since_last_cancel_ = true;
+    dialog_manager->RunJavaScriptDialog(
         this, render_frame_host, dialog_type, normalized_message,
         default_prompt,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false),
@@ -8374,7 +8377,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::RunBeforeUnloadConfirm",
                         "render_frame_host", render_frame_host, "is_reload",
                         is_reload);
-  DCHECK(render_frame_host->GetPage().IsPrimary());
+  DCHECK(render_frame_host->IsActive());
 
   // Ensure that if showing a dialog is the first thing that a page does, that
   // the contents of the previous page aren't shown behind it. This is required
@@ -8399,8 +8402,17 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   std::vector<protocol::PageHandler*> page_handlers =
       protocol::PageHandler::EnabledForWebContents(this);
 
-  if (delegate_) {
-    dialog_manager_ = delegate_->GetJavaScriptDialogManager(this);
+  JavaScriptDialogManager* dialog_manager = nullptr;
+  bool should_suppress = false;
+  // Give guest a first crack at the dialog.
+  if (GuestPageHolderImpl* guest_holder =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    if (auto* guest_delegate = guest_holder->delegate()) {
+      dialog_manager = guest_delegate->GuestGetJavascriptDialogManager();
+    }
+  } else if (delegate_) {
+    dialog_manager = delegate_->GetJavaScriptDialogManager(this);
+    should_suppress = delegate_->ShouldSuppressDialogs(this);
   }
 
   // While a JS beforeunload dialog is showing, defer commits in this
@@ -8408,8 +8420,7 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
   javascript_dialog_dismiss_notifier_ =
       std::make_unique<JavaScriptDialogDismissNotifier>();
 
-  bool should_suppress = delegate_ && delegate_->ShouldSuppressDialogs(this);
-  bool has_non_devtools_handlers = delegate_ && dialog_manager_;
+  bool has_non_devtools_handlers = delegate_ && dialog_manager;
   bool has_handlers = page_handlers.size() || has_non_devtools_handlers;
   if (should_suppress || !has_handlers) {
     std::move(callback).Run(false, true, std::u16string());
@@ -8428,8 +8439,9 @@ void WebContentsImpl::RunBeforeUnloadConfirm(
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
   }
 
-  if (dialog_manager_) {
-    dialog_manager_->RunBeforeUnloadDialog(
+  if (dialog_manager) {
+    created_dialog_since_last_cancel_ = true;
+    dialog_manager->RunBeforeUnloadDialog(
         this, render_frame_host, is_reload,
         base::BindOnce(&CloseDialogCallbackWrapper::Run, wrapper, false));
 #if BUILDFLAG(IS_ANDROID)
@@ -9612,6 +9624,26 @@ void WebContentsImpl::BeforeUnloadFiredFromRenderManager(
   // Note: |this| might be deleted at this point.
 }
 
+void WebContentsImpl::CancelDialogManagerDialogs(bool reset_state) {
+  if (!created_dialog_since_last_cancel_) {
+    return;
+  }
+  // We only reset `created_dialog_since_last_cancel_` if reset_state
+  // is true.
+  if (reset_state) {
+    created_dialog_since_last_cancel_ = false;
+  }
+  if (!delegate_) {
+    return;
+  }
+  JavaScriptDialogManager* dialog_manager =
+      delegate_->GetJavaScriptDialogManager(this);
+  if (!dialog_manager) {
+    return;
+  }
+  dialog_manager->CancelDialogs(this, reset_state);
+}
+
 void WebContentsImpl::CancelModalDialogsForRenderManager() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::CancelModalDialogsForRenderManager");
@@ -9623,9 +9655,7 @@ void WebContentsImpl::CancelModalDialogsForRenderManager() {
   // Note that we don't bother telling |browser_plugin_embedder_| because the
   // cross-process navigation will either destroy the browser plugins or not
   // require their dialogs to close.
-  if (dialog_manager_) {
-    dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
-  }
+  CancelDialogManagerDialogs(/*reset_state=*/true);
 }
 
 void WebContentsImpl::NotifySwappedFromRenderManager(
@@ -9903,7 +9933,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
   // The user confirms and closes a dialog even after the page has navigated
   // away and got into BackForwardCache.
-  DCHECK(!rfh || rfh->GetPage().IsPrimary() || rfh->IsInBackForwardCache());
+  DCHECK(!rfh || rfh->IsActive() || rfh->IsInBackForwardCache());
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDialogClosed",
                         "render_frame_host", rfh);
   last_dialog_suppressed_ = dialog_was_suppressed;
@@ -10816,13 +10846,6 @@ void WebContentsImpl::UpdateOverridingUserAgent() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::UpdateOverridingUserAgent");
   NotifyPreferencesChanged();
-}
-
-void WebContentsImpl::SetJavaScriptDialogManagerForTesting(
-    JavaScriptDialogManager* dialog_manager) {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::SetJavaScriptDialogManagerForTesting");
-  dialog_manager_ = dialog_manager;
 }
 
 void WebContentsImpl::ShowInsecureLocalhostWarningIfNeeded(PageImpl& page) {

@@ -666,6 +666,11 @@ void GuestViewBase::GuestDidStopLoading() {
   GuestViewDidStopLoading();
 }
 
+content::JavaScriptDialogManager*
+GuestViewBase::GuestGetJavascriptDialogManager() {
+  return nullptr;
+}
+
 void GuestViewBase::DidStopLoading() {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // The load state of the embedder does not affect the load state of the

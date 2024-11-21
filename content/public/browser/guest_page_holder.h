@@ -16,6 +16,7 @@ namespace content {
 
 struct ContextMenuParams;
 class NavigationController;
+class JavaScriptDialogManager;
 class SiteInstance;
 class WebContents;
 
@@ -42,6 +43,10 @@ class GuestPageHolder : public base::SupportsUserData {
     // Returns true if the context menu operation was handled by the delegate.
     virtual bool GuestHandleContextMenu(RenderFrameHost& render_frame_host,
                                         const ContextMenuParams& params) = 0;
+
+    // Returns a pointer to a service to manage JavaScript dialogs. May return
+    // nullptr in which case dialogs aren't shown.
+    virtual JavaScriptDialogManager* GuestGetJavascriptDialogManager() = 0;
 
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific

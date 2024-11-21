@@ -6375,13 +6375,9 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
     JavaScriptDialogType dialog_type,
     bool disable_third_party_subframe_suppresion,
     JavaScriptDialogCallback ipc_response_callback) {
-  // Don't show the dialog if it's triggered on a non-active or non-primary
-  // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
-  // or is a non-primary MPArch page (Fenced Frame, in BFCache, etc.)..
-  // TODO(crbug.com/40202462): Have to check fenced frames explicitly
-  // since they are not yet implemented with MPArch. Once the transition from
-  // shadow DOM to MPArch is complete, remove the last part of the condition.
-  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame()) {
+  // Don't show the dialog if it's triggered on a non-active RenderFrameHost
+  // or is contained in a Fenced Frame.
+  if (!IsActive() || IsNestedWithinFencedFrame()) {
     std::move(ipc_response_callback).Run(/*success=*/false, std::u16string());
     return;
   }
@@ -6404,13 +6400,9 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::OnRunBeforeUnloadConfirm",
                "render_frame_host", this);
 
-  // Don't show the dialog if it's triggered on a non-active or non-primary
-  // RenderFrameHost. This happens when the RenderFrameHost is pending deletion,
-  // or is a non-primary MPArch page (Fenced Frame, in BFCache, etc.)..
-  // TODO(crbug.com/40202462): Have to check fenced frames explicitly
-  // since they are not yet implemented with MPArch. Once the transition from
-  // shadow DOM to MPArch is complete, remove the last part of the condition.
-  if (!IsActive() || !GetPage().IsPrimary() || IsNestedWithinFencedFrame()) {
+  // Don't show the dialog if it's triggered on a non-active RenderFrameHost
+  // or is contained in a Fenced Frame.
+  if (!IsActive() || IsNestedWithinFencedFrame()) {
     std::move(ipc_response_callback).Run(/*success=*/false);
     return;
   }

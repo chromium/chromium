@@ -12667,7 +12667,6 @@ IN_PROC_BROWSER_TEST_F(
 
   // Clean up test dialog manager.
   web_contents_impl()->SetDelegate(nullptr);
-  web_contents_impl()->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 // Tests that NavigationHandle::GetNavigatingFrameType() returns the correct

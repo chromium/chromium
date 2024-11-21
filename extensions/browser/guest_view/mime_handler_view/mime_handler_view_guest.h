@@ -151,6 +151,7 @@ class MimeHandlerViewGuest
   // GuestpageHolder::Delegate implementation.
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
+  content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() final;
 
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(

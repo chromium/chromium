@@ -2699,7 +2699,8 @@ TEST_F(WebContentsImplTest,
 
 namespace {
 
-class TestJavaScriptDialogManager : public JavaScriptDialogManager {
+class TestJavaScriptDialogManager : public JavaScriptDialogManager,
+                                    public WebContentsDelegate {
  public:
   TestJavaScriptDialogManager() = default;
 
@@ -2710,6 +2711,13 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager {
   ~TestJavaScriptDialogManager() override = default;
 
   size_t reset_count() { return reset_count_; }
+
+  // WebContentsDelegate
+
+  JavaScriptDialogManager* GetJavaScriptDialogManager(
+      WebContents* source) override {
+    return this;
+  }
 
   // JavaScriptDialogManager
 
@@ -2750,12 +2758,13 @@ TEST_F(WebContentsImplTest, ResetJavaScriptDialogOnUserNavigate) {
   const GURL kUrl("http://www.google.com");
   const GURL kUrl2("http://www.google.com/sub");
   TestJavaScriptDialogManager dialog_manager;
-  contents()->SetJavaScriptDialogManagerForTesting(&dialog_manager);
-
+  contents()->SetDelegate(&dialog_manager);
+  contents()->created_dialog_since_last_cancel_ = true;
   // A user-initiated navigation.
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kUrl);
   EXPECT_EQ(1u, dialog_manager.reset_count());
 
+  contents()->created_dialog_since_last_cancel_ = true;
   // An automatic navigation.
   auto navigation =
       NavigationSimulator::CreateRendererInitiated(kUrl2, main_test_rfh());
@@ -2771,7 +2780,7 @@ TEST_F(WebContentsImplTest, ResetJavaScriptDialogOnUserNavigate) {
     EXPECT_EQ(1u, dialog_manager.reset_count());
   }
 
-  contents()->SetJavaScriptDialogManagerForTesting(nullptr);
+  contents()->SetDelegate(nullptr);
 }
 
 TEST_F(WebContentsImplTest, StartingSandboxFlags) {

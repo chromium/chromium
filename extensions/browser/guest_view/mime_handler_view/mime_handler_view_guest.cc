@@ -330,10 +330,20 @@ bool MimeHandlerViewGuest::PreHandleGestureEvent(
 }
 
 content::JavaScriptDialogManager*
+MimeHandlerViewGuest::GuestGetJavascriptDialogManager() {
+  if (content::GuestPageHolder::Delegate* guest =
+          guest_view::GuestViewBase::FromRenderFrameHost(GetEmbedderFrame())) {
+    return guest->GuestGetJavascriptDialogManager();
+  }
+  auto* delegate = owner_web_contents()->GetDelegate();
+  return delegate ? delegate->GetJavaScriptDialogManager(owner_web_contents())
+                  : nullptr;
+}
+
+content::JavaScriptDialogManager*
 MimeHandlerViewGuest::GetJavaScriptDialogManager(
     WebContents* source) {
   CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
-
   // WebContentsDelegates often service multiple WebContentses, and use the
   // WebContents* parameter to tell which WebContents made the request. If we
   // pass in our own pointer to the delegate call, the delegate will be asked,

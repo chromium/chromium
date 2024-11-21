@@ -1934,7 +1934,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogNotifications) {
 
   EXPECT_THAT(*notification.FindString("userInput"), Eq("hi!"));
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogInterop) {
@@ -1954,7 +1953,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogInterop) {
   dialog_manager.Handle();
   WaitForNotification("Page.javascriptDialogClosed", true);
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithOpenedDialog) {
@@ -1985,7 +1983,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithOpenedDialog) {
   SendCommandSync("Runtime.evaluate", std::move(params));
 
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithNoDialogManager) {
@@ -2037,7 +2034,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BeforeUnloadDialog) {
   SendCommandAsync("Page.handleJavaScriptDialog", std::move(params));
   WaitForNotification("Page.javascriptDialogClosed", true);
   wc->SetDelegate(nullptr);
-  wc->SetJavaScriptDialogManagerForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserCreateAndCloseTarget) {

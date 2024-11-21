@@ -4452,42 +4452,30 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoPermission) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestAlertDialog) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testAlertDialog", "web_view/dialog", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, TestConfirmDialog) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testConfirmDialog", "web_view/dialog", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestConfirmDialogCancel) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testConfirmDialogCancel", "web_view/dialog", NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestConfirmDialogDefaultCancel) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testConfirmDialogDefaultCancel",
              "web_view/dialog",
              NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestConfirmDialogDefaultGCCancel) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testConfirmDialogDefaultGCCancel",
              "web_view/dialog",
              NO_TEST_SERVER);
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Dialog_TestPromptDialog) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testPromptDialog", "web_view/dialog", NO_TEST_SERVER);
 }
 
