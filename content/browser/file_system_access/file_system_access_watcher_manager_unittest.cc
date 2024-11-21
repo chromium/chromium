@@ -966,9 +966,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
-// TODO(crbug.com/41490258): Failing on Windows. Re-enable this test.
 TEST_F(FileSystemAccessWatcherManagerTest,
-       DISABLED_WatchLocalDirectoryNonRecursivelyDoesNotSeeRecursiveChanges) {
+       WatchLocalDirectoryNonRecursivelyDoesNotSeeRecursiveChanges) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
   auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
