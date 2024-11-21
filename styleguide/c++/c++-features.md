@@ -33,7 +33,7 @@ The current status of existing standards and Abseil features is:
 *   **C++17:** _Default allowed; see banned features below_
 *   **C++20:** _Initially supported November 13, 2023; see allowed/banned/TBD
     features below_
-*   **C++23:** _Not yet officially standardized_
+*   **C++23:** _Not yet supported_
 *   **Abseil:** _Default allowed; see banned/TBD features below. The following
     dates represent the start of the two-year TBD periods for certain parts of
     Abseil:_
