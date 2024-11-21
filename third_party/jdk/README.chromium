@@ -26,8 +26,9 @@ This Package is Auto-Rolled:
    https://skia-autoroll.corp.goog/r/jdk-chromium
 
 To roll to a new JDK major version:
+ * File a bug under "Build > Android" to tag the roll commit with.
+   * File a bug blocked on the first one under "Infra > Codesearch" to ask the team to verify Codesearch does not break from the roll.
  * Test locally that builds (with Errorprone enabled) work.
- * Get confirmation from chops-source-team@google.com that Kythe supports the new version.
  * Pause the auto-roller (via the web UI)
  * Change the package in 3pp/fetch.py
  * Wait for the 3pp packager to create a new package
