@@ -15,8 +15,8 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
-#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
 
 namespace gfx {
@@ -47,7 +47,7 @@ struct DecomposedTransform;
 //   in the method comments.
 // - On assignment, the new matrix will keep the choice of the rhs matrix.
 //
-class GEOMETRY_SKIA_EXPORT Transform {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
  public:
   constexpr Transform() : axis_2d_() {}
 

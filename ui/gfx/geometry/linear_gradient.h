@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_skia_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -28,7 +28,7 @@ class Transform;
 // gradient.AddStep(30, 255);
 // gradient.AddStep(70, 255);
 // gradient.AddStep(80, 0);
-class GEOMETRY_SKIA_EXPORT LinearGradient {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) LinearGradient {
  public:
   struct Step {
     // Fraction that defines a position in diagonal, from 0 to 1.
