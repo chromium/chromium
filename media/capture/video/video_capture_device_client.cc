@@ -27,6 +27,7 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
@@ -197,6 +198,23 @@ FourccAndFlip GetFourccAndFlipFromPixelFormat(
     default:
       NOTREACHED();
   }
+}
+
+uint32_t GetFakeBackgroundBlurTogglePeriodMillis() {
+  static std::optional<uint32_t> toggle_period;
+  if (toggle_period) {
+    return *toggle_period;
+  }
+  toggle_period.emplace(0);
+
+  auto toggle_period_string =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
+          switches::kFakeBackgroundBlurTogglePeriod);
+
+  if (!toggle_period_string.empty()) {
+    base::StringToUint(toggle_period_string, &toggle_period.value());
+  }
+  return *toggle_period;
 }
 
 }  // anonymous namespace
@@ -929,6 +947,12 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
   metadata.frame_rate = format.frame_rate;
   metadata.reference_time = reference_time;
   metadata.capture_begin_time = capture_begin_timestamp;
+
+  if (auto fake_toggle_period = GetFakeBackgroundBlurTogglePeriodMillis()) {
+    metadata.background_blur = media::EffectInfo{
+        .enabled = timestamp.InMilliseconds() % fake_toggle_period >=
+                   fake_toggle_period / 2};
+  }
 
   mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
       timestamp, metadata, format.pixel_format, format.frame_size, visible_rect,

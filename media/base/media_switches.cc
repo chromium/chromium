@@ -114,6 +114,13 @@ const char kAudioCapturerWithEchoCancellation[] =
     "audio-capturer-with-echo-cancellation";
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+// Inserts fake background blur state into `VideoFrameMetadata`. The value
+// represents the period in milliseconds. eg. Setting it to 1000ms, will cause
+// the blur state to cycle between reporting ENABLED for 500ms and DISABLED for
+// 500ms.
+const char kFakeBackgroundBlurTogglePeriod[] =
+    "fake-background-blur-toggle-period";
+
 #if BUILDFLAG(USE_CRAS)
 // Use CRAS, the ChromeOS audio server.
 const char kUseCras[] = "use-cras";

@@ -63,6 +63,8 @@ MEDIA_EXPORT extern const char kMinVideoDecoderOutputBufferSize[];
 MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 #endif
 
+MEDIA_EXPORT extern const char kFakeBackgroundBlurTogglePeriod[];
+
 #if BUILDFLAG(USE_CRAS)
 MEDIA_EXPORT extern const char kUseCras[];
 MEDIA_EXPORT extern const char kSystemAecEnabled[];
