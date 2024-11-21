@@ -531,6 +531,21 @@ base::span<const SearchConcept> GetA11yFaceGazeSearchConcepts() {
   return tags;
 }
 
+base::span<const SearchConcept> GetA11yDisableTouchpadSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>(
+      {{IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD,
+        mojom::kCursorAndTouchpadSubpagePath,
+        mojom::SearchResultIcon::kTouchpad,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kDisableTouchpad},
+        {
+            IDS_OS_SETTINGS_TAG_A11Y_DISABLE_TOUCHPAD_ALT1,
+            SearchConcept::kAltTagEnd,
+        }}});
+  return tags;
+}
+
 base::span<const SearchConcept> GetA11yFilterKeysSearchConcepts() {
   static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_A11Y_BOUNCE_KEYS,
@@ -1866,6 +1881,7 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kFaceGaze,
       mojom::Setting::kBounceKeys,
       mojom::Setting::kSlowKeys,
+      mojom::Setting::kDisableTouchpad,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);
@@ -1999,6 +2015,10 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsAccessibilityFilterKeysEnabled()) {
     updater.AddSearchTags(GetA11yFilterKeysSearchConcepts());
+  }
+
+  if (IsAccessibilityDisableTouchpadEnabled()) {
+    updater.AddSearchTags(GetA11yDisableTouchpadSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {

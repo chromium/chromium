@@ -301,12 +301,13 @@ export class SettingsCursorAndTouchpadPageElement extends
         type: Object,
         value: () => new Set<Setting>([
           Setting.kAutoClickWhenCursorStops,
-          Setting.kMouseKeysEnabled,
-          Setting.kLargeCursor,
-          Setting.kHighlightCursorWhileMoving,
-          Setting.kTabletNavigationButtons,
+          Setting.kDisableTouchpad,
           Setting.kEnableCursorColor,
+          Setting.kHighlightCursorWhileMoving,
+          Setting.kLargeCursor,
+          Setting.kMouseKeysEnabled,
           Setting.kOverscrollEnabled,
+          Setting.kTabletNavigationButtons,
         ]),
       },
 

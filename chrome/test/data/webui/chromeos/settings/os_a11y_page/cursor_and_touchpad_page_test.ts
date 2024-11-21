@@ -85,11 +85,18 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     return page.shadowRoot!.querySelector<CrLinkRowElement>('#faceGazePageRow');
   }
 
-  async function getDisableInternalTouchpadSelectElement() {
+  function getDisableInternalTouchpadDropdown() {
     const disableInternalTouchpadDropdown =
         page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
             '#disableInternalTouchpadDropdown');
     assert(disableInternalTouchpadDropdown);
+
+    return disableInternalTouchpadDropdown;
+  }
+
+  async function getDisableInternalTouchpadSelectElement() {
+    const disableInternalTouchpadDropdown =
+        getDisableInternalTouchpadDropdown();
     await waitAfterNextRender(disableInternalTouchpadDropdown);
     const disableInternalTouchpadSelectElement =
         disableInternalTouchpadDropdown.shadowRoot!.querySelector('select');
@@ -803,6 +810,22 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           assertFalse(isVisible(
               page.shadowRoot!.querySelector('#reEnableTouchpadLabel')));
         });
+
+    test('Disable touchpad dropdown is deep linkable', async () => {
+      await initPage();
+      const params = new URLSearchParams();
+      const settingId = settingMojom.Setting.kDisableTouchpad.toString();
+      params.append('settingId', settingId);
+      Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD, params);
+      flush();
+
+      const dropdown = getDisableInternalTouchpadDropdown();
+      await waitAfterNextRender(dropdown);
+      assertEquals(
+          dropdown, page.shadowRoot!.activeElement,
+          `Disable touchpad dropdown should be focused for settingId=${
+              settingId}.`);
+    });
   } else {
     test('disable internal touchpad feature disabled', async () => {
       await initPage();
