@@ -12,6 +12,8 @@
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_url_parameters.h"
+#include "content/browser/cookie_insight_list/cookie_insight_list.h"
+#include "content/browser/cookie_insight_list/cookie_insight_list_handler.h"
 #include "content/browser/devtools/browser_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_issue_storage.h"
@@ -1903,6 +1905,34 @@ BuildCookieDeprecationMetadataIssue(
   return issue;
 }
 
+std::unique_ptr<protocol::Audits::CookieIssueInsight> BuildCookieIssueInsight(
+    std::string_view cookie_domain,
+    const net::CookieInclusionStatus& status) {
+  std::optional<CookieInsightList::CookieIssueInsight> insight =
+      CookieInsightListHandler::GetInstance().GetInsight(cookie_domain, status);
+  if (!insight.has_value()) {
+    return nullptr;
+  }
+
+  switch (insight->type) {
+    case CookieInsightList::InsightType::kGitHubResource:
+      return protocol::Audits::CookieIssueInsight::Create()
+          .SetType(protocol::Audits::InsightTypeEnum::GitHubResource)
+          .SetTableEntryUrl(insight->domain_info.entry_url)
+          .Build();
+    case CookieInsightList::InsightType::kGracePeriod:
+      return protocol::Audits::CookieIssueInsight::Create()
+          .SetType(protocol::Audits::InsightTypeEnum::GracePeriod)
+          .Build();
+    case CookieInsightList::InsightType::kHeuristics:
+      return protocol::Audits::CookieIssueInsight::Create()
+          .SetType(protocol::Audits::InsightTypeEnum::Heuristics)
+          .Build();
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 void ReportCookieIssue(
@@ -1949,6 +1979,9 @@ void ReportCookieIssue(
                                .SetDomain(cookie.Domain())
                                .Build();
     cookie_issue_details->SetCookie(std::move(affected_cookie));
+
+    cookie_issue_details->SetInsight(BuildCookieIssueInsight(
+        cookie.DomainWithoutDot(), excluded_cookie->access_result.status));
   } else {
     CHECK(excluded_cookie->cookie_or_line->is_cookie_string());
     cookie_issue_details->SetRawCookieLine(
