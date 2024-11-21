@@ -33,7 +33,9 @@ class OSSettingsLockScreenBrowserTestBase
   static constexpr char kPinStubSalt[] = "pin-salt";
 
   explicit OSSettingsLockScreenBrowserTestBase(
-      ash::AshAuthFactor auth_factor_type);
+      ash::AshAuthFactor auth_factor_type,
+      LoggedInUserMixin::LogInType login_type =
+          LoggedInUserMixin::LogInType::kConsumer);
   ~OSSettingsLockScreenBrowserTestBase() override;
 
   void SetUpOnMainThread() override;

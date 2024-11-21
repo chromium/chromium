@@ -88,12 +88,16 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
     return await retryUntilSome(() => this.setLocalPasswordDialog());
   }
 
-  private removeButton(): HTMLElement|null {
+  private getRemoveMenuItems(): NodeListOf<HTMLButtonElement> {
+    return this.shadowRoot().querySelectorAll('#moreMenu button');
+  }
+
+  private removeButton(): HTMLButtonElement {
     // The remove button is the only button in #moreMenu.
-    const buttons = this.shadowRoot().querySelectorAll('#moreMenu button');
+    const buttons = this.getRemoveMenuItems();
     assertTrue(buttons.length <= 1);
     const button = buttons[0];
-    assertTrue(button instanceof HTMLElement);
+    assertTrue(button instanceof HTMLButtonElement);
     return button;
   }
 
@@ -114,5 +118,10 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
   async assertHasPassword(hasPassword: boolean): Promise<void> {
     await assertAsync(() => this.hasPassword() === hasPassword);
     await assertForDuration(() => this.hasPassword() === hasPassword);
+  }
+
+  async assertCanRemovePassword(canRemove: boolean): Promise<void> {
+    const buttons = this.getRemoveMenuItems();
+    assertTrue(canRemove === (buttons.length > 0));
   }
 }
