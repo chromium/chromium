@@ -191,13 +191,13 @@ TEST_F(GifTenorApiFetcherTest, FetchCategories) {
                                          future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
+  response_ = EndpointResponse{.error_type = FetchErrorType::kNetError};
   gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
                                          future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeCategoriesResponse;
-  response_.http_status_code = net::HTTP_OK;
+  response_ = EndpointResponse{.response = kFakeCategoriesResponse,
+                               .http_status_code = net::HTTP_OK};
   gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
                                          future.GetCallback());
   EXPECT_THAT(future.Take(), ValueIs(ElementsAre("#awesome", "#jk")));
@@ -211,13 +211,13 @@ TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
                                            future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
+  response_ = EndpointResponse{.error_type = FetchErrorType::kNetError};
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeGifsResponse;
-  response_.http_status_code = net::HTTP_OK;
+  response_ = EndpointResponse{.response = kFakeGifsResponse,
+                               .http_status_code = net::HTTP_OK};
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
   EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
@@ -231,13 +231,13 @@ TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
                                         std::nullopt, future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
+  response_ = EndpointResponse{.error_type = FetchErrorType::kNetError};
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeGifsResponse;
-  response_.http_status_code = net::HTTP_OK;
+  response_ = EndpointResponse{.response = kFakeGifsResponse,
+                               .http_status_code = net::HTTP_OK};
   gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, "",
                                            future.GetCallback());
   EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
@@ -251,13 +251,13 @@ TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
       url_loader_factory_, std::vector<std::string>(), future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
-  response_.error_type = std::make_optional(FetchErrorType::kNetError);
+  response_ = EndpointResponse{.error_type = FetchErrorType::kNetError};
   gif_tenor_api_fetcher_.FetchGifsByIds(
       url_loader_factory_, std::vector<std::string>(), future.GetCallback());
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
-  response_.response = kFakeGifsResponse;
-  response_.http_status_code = net::HTTP_OK;
+  response_ = EndpointResponse{.response = kFakeGifsResponse,
+                               .http_status_code = net::HTTP_OK};
   gif_tenor_api_fetcher_.FetchGifsByIds(
       url_loader_factory_, std::vector<std::string>(), future.GetCallback());
   EXPECT_THAT(future.Take(), ValueIs(IsFakeGifs()));
