@@ -5316,6 +5316,23 @@ TEST_F(PasswordAutofillAgentTest, JSFieldModificationUnrelatedField) {
   EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
 }
 
+// Test that password manager is not notified about JS inputs in fields that are
+// no longer text inputs.
+TEST_F(PasswordAutofillAgentTest, JSFieldModificationNonTextInput) {
+  ASSERT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+  fill_data_.wait_for_username = true;
+  SimulateOnFillPasswordForm(fill_data_);
+
+  // Simulate JS changing the field type to hide the field from the user.
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('username').type = 'hidden';)");
+
+  ExecuteJavaScriptForTests(
+      R"(document.getElementById('username').value = 'js-set-whatever';)");
+  fake_driver_.Flush();
+  EXPECT_EQ(fake_driver_.called_inform_about_user_input_count(), 0);
+}
+
 // Tests that the metric for the number of times form fill data is stored
 // for a form is recorded correctly.
 TEST_F(PasswordAutofillAgentTest, TimesReceivedFillDataForFormMetric) {
