@@ -45,7 +45,17 @@ public abstract class Flag {
     }
 
     /**
+     * Returns the feature map of the feature flag.
+     *
+     * <p>It is unnecessary to use in production code; this is for internal testing of flags.
+     */
+    public FeatureMap getFeatureMapForTesting() {
+        return mFeatureMap;
+    }
+
+    /**
      * Checks if a feature flag is enabled.
+     *
      * @return whether the feature should be considered enabled.
      */
     public abstract boolean isEnabled();

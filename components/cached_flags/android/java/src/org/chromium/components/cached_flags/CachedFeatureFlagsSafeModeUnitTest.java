@@ -30,6 +30,7 @@ import org.chromium.base.test.util.BaseFlagTestRule;
 import org.chromium.components.cached_flags.CachedFlagsSafeMode.Behavior;
 
 import java.util.Arrays;
+import java.util.List;
 
 /** Unit Tests for {@link CachedFlagsSafeMode}, the Safe Mode mechanism for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -461,7 +462,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
                 .thenReturn(DOUBLE_PARAM_NATIVE_1);
         when(mFeatureMap.getFieldTrialParamByFeature(OK_FEATURE, STRING_PARAM_NAME))
                 .thenReturn(STRING_PARAM_NATIVE_1);
-        CachedFlagUtils.cacheNativeFlags(Arrays.asList(mCrashyFeature, mOkFeature));
+        CachedFlagUtils.cacheNativeFlags(List.of(Arrays.asList(mCrashyFeature, mOkFeature)));
         CachedFlagUtils.cacheFieldTrialParameters(
                 Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
 
@@ -693,7 +694,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         when(mFeatureMap.getFieldTrialParamByFeature(OK_FEATURE, STRING_PARAM_NAME))
                 .thenReturn(stringParamValue);
 
-        CachedFlagUtils.cacheNativeFlags(Arrays.asList(mCrashyFeature, mOkFeature));
+        CachedFlagUtils.cacheNativeFlags(List.of(Arrays.asList(mCrashyFeature, mOkFeature)));
         CachedFlagUtils.cacheFieldTrialParameters(
                 Arrays.asList(mBoolParam, mIntParam, mDoubleParam, mStringParam));
 

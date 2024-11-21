@@ -58,6 +58,13 @@ import java.util.List;
 /** Caches the flags that Chrome might require before native is loaded in a later next run. */
 public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
+    static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_FULL_BROWSER =
+            List.of(
+                    ChromeFeatureList.sFlagsCachedFullBrowser,
+                    OmniboxFeatures.getFieldTrialsToCache(),
+                    ModalDialogFeatureMap.sCachedFlags);
+    static final List<List<CachedFlag>> LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER =
+            List.of(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
 
     private boolean mIsFinishedCachingNativeFlags;
 
@@ -85,10 +92,7 @@ public class ChromeCachedFlags {
         if (mIsFinishedCachingNativeFlags) return;
         FirstRunUtils.cacheFirstRunPrefs();
 
-        CachedFlagUtils.cacheNativeFlags(
-                ChromeFeatureList.sFlagsCachedFullBrowser,
-                OmniboxFeatures.getFieldTrialsToCache(),
-                ModalDialogFeatureMap.sCachedFlags);
+        CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_FULL_BROWSER);
         cacheAdditionalNativeFlags();
 
         List<CachedFieldTrialParameter<?>> fieldTrialParamsToCache =
@@ -197,7 +201,7 @@ public class ChromeCachedFlags {
      */
     public void cacheMinimalBrowserFlags() {
         cacheMinimalBrowserFlagsTimeFromNativeTime();
-        CachedFlagUtils.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
+        CachedFlagUtils.cacheNativeFlags(LISTS_OF_CACHED_FLAGS_MINIMAL_BROWSER);
         CachedFlagUtils.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
 
