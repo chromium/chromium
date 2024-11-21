@@ -3686,10 +3686,15 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     // The document root is never a live region root.
     cached_live_region_root_ = nullptr;
   } else {
-    DCHECK(parent_);
+    DUMP_WILL_BE_CHECK(!IsMissingParent()) << this;
     // Is a live region root if this or an ancestor is a live region.
-    cached_live_region_root_ =
-        IsLiveRegionRoot() ? this : parent_->LiveRegionRoot();
+    if (IsLiveRegionRoot()) {
+      cached_live_region_root_ = this;
+    } else {
+      // TODO(accessibility) Remove null parent check after above missing parent
+      // check stops occurring.
+      cached_live_region_root_ = parent_ ? parent_->LiveRegionRoot() : nullptr;
+    }
   }
   if (cached_live_region_root_ != previous_live_region_root) {
     is_changing_inherited_values = true;
