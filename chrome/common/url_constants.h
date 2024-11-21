@@ -615,15 +615,11 @@ inline constexpr char16_t kWhoIsMyAdministratorHelpURL[] =
 inline constexpr char16_t kCwsEnhancedSafeBrowsingLearnMoreURL[] =
     u"https://support.google.com/chrome?p=cws_enhanced_safe_browsing";
 
-// The URL path to Google's Privacy Policy page.
-inline constexpr char kPrivacyPolicyURL[] =
-    "https://policies.google.com/privacy";
-
-// The URL path to Google's Embedded Privacy Policy page.
+// The URL path to online privacy policy.
 inline constexpr char kPrivacyPolicyOnlineURLPath[] =
     "https://policies.google.com/privacy/embedded";
 
-// The URL path to Google's Embedded Privacy Policy page - Dark Mode.
+// The URL path to online privacy policy dark mode.
 inline constexpr char kPrivacyPolicyOnlineDarkModeURLPath[] =
     "https://policies.google.com/privacy/embedded?color_scheme=dark";
 
