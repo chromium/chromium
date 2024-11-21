@@ -759,11 +759,6 @@ BASE_FEATURE(kEphemeralNetworkPoliciesEnabledPolicy,
              "EphemeralNetworkPoliciesEnabledPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Device End Of Lifetime warning notifications.
-BASE_FEATURE(kEolWarningNotifications,
-             "EolWarningNotifications",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Device End Of Lifetime incentive notifications.
 BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
 
