@@ -2005,6 +2005,9 @@ if (!is_robolectric && enable_java_templates) {
 
       if (is_cronet_build) {
         defines += [ "_IS_CRONET_BUILD" ]
+        defines += [ "_LOGTAG_PREFIX=cn_" ]
+      } else {
+        defines += [ "_LOGTAG_PREFIX=cr_" ]
       }
       if (is_desktop_android) {
         defines += [ "_IS_DESKTOP_ANDROID" ]

@@ -116,4 +116,6 @@ public class BuildConfig {
 #else
     public static boolean DISABLE_STRICT_MODE_CONTEXT;
 #endif
+
+    public static final String LOGTAG_PREFIX = QUOTE(_LOGTAG_PREFIX);
 }

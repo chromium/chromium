@@ -62,7 +62,7 @@ public class Log {
     public static String normalizeTag(String tag) {
         // @AlwaysInline makes sense because this method is almost always called with a string
         // literal as a parameter, so inlining causes the .concat() to happen at build-time.
-        return "cr_" + tag;
+        return BuildConfig.LOGTAG_PREFIX + tag;
     }
 
     /**
