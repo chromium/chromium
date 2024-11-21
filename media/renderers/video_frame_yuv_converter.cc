@@ -128,9 +128,14 @@ void ConvertYuvVideoFrameToRgbSharedImage(
 
   // For pure software pixel upload path with video frame that does not have
   // textures.
-  auto [src_shared_image, _] = shared_image_cache->GetSharedImage(
+  auto [src_shared_image, status] = shared_image_cache->GetSharedImage(
       video_frame, raster_context_provider, src_usage);
   CHECK(src_shared_image);
+  if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
+    // Since the video frame id matches, no need to upload pixels or copy shared
+    // image again.
+    return;
+  }
 
   const viz::SharedImageFormat si_format = src_shared_image->format();
   constexpr SkAlphaType kPlaneAlphaType = kUnpremul_SkAlphaType;
