@@ -260,6 +260,30 @@ def Bisect(browser_type, url, extra_browser_args, variations_file, output_dir):
   else:
     runs = [variations_file]
 
+  # Verify that the issue not be reproduced without variations.
+  while True:
+    exit_status, stdout, stderr = _RunVariations(
+        browser_path=browser_path, url=url,
+        extra_browser_args=extra_browser_args,
+        variations_args=[])
+    answer = _AskCanReproduce(exit_status, stdout, stderr)
+    if answer == 'y':
+      raise Exception(
+          'The issue was reproduced without any variation flags set. Consider'
+          ' using tools/bisect-builds.py instead.\n'
+          'You might want to try the following command (substitute M100 for a'
+          ' good revision):\n'
+          'python3 tools/bisect-builds.py -g M100 --verify-range --'
+          ' --disable-field-trial-config\n'
+          'See https://www.chromium.org/developers/bisect-builds-py/ for more'
+          ' details.'
+      )
+    elif answer == 'n':
+      # We are expected to not reproduce the issue without variation flags.
+      break
+    else:
+      assert answer == 'r'
+
   while runs:
     run = runs[0]
     print('Run Chrome with variations file', run)
