@@ -213,10 +213,10 @@ static_library("browser") {
     "form_forest.cc",
     "form_forest.h",
     "form_forest_util_inl.h",
-    "form_import/address_profile_save_manager.cc",
-    "form_import/address_profile_save_manager.h",
-    "form_import/autofill_profile_import_process.cc",
-    "form_import/autofill_profile_import_process.h",
+    "form_import/addresses/address_profile_save_manager.cc",
+    "form_import/addresses/address_profile_save_manager.h",
+    "form_import/addresses/autofill_profile_import_process.cc",
+    "form_import/addresses/autofill_profile_import_process.h",
     "form_import/form_data_importer.cc",
     "form_import/form_data_importer.h",
     "form_import/form_data_importer_utils.cc",
@@ -638,8 +638,8 @@ static_library("browser") {
 
   if (is_ios) {
     sources += [
-      "form_import/autofill_save_update_address_profile_delegate_ios.cc",
-      "form_import/autofill_save_update_address_profile_delegate_ios.h",
+      "form_import/addresses/autofill_save_update_address_profile_delegate_ios.cc",
+      "form_import/addresses/autofill_save_update_address_profile_delegate_ios.h",
     ]
   }
 
@@ -1165,8 +1165,8 @@ source_set("unit_tests") {
     "form_autofill_history_unittest.cc",
     "form_filler_unittest.cc",
     "form_forest_unittest.cc",
-    "form_import/address_profile_save_manager_unittest.cc",
-    "form_import/autofill_profile_import_process_unittest.cc",
+    "form_import/addresses/address_profile_save_manager_unittest.cc",
+    "form_import/addresses/autofill_profile_import_process_unittest.cc",
     "form_import/form_data_importer_unittest.cc",
     "form_import/form_data_importer_utils_unittest.cc",
     "form_parsing/address_field_parser_ng_unittest.cc",
@@ -1306,7 +1306,7 @@ source_set("unit_tests") {
   ]
 
   if (is_ios) {
-    sources += [ "form_import/autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
+    sources += [ "form_import/addresses/autofill_save_update_address_profile_delegate_ios_unittest.cc" ]
   }
 
   if (is_android) {

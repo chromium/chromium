@@ -8,7 +8,7 @@
 
 #import "base/notreached.h"
 #import "build/build_config.h"
-#import "components/autofill/core/browser/form_import/autofill_save_update_address_profile_delegate_ios.h"
+#import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_delegate.h"

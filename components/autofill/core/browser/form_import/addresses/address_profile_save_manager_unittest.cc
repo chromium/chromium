@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_import/address_profile_save_manager.h"
+#include "components/autofill/core/browser/form_import/addresses/address_profile_save_manager.h"
 
 #include <string_view>
 
@@ -13,7 +13,7 @@
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
-#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"

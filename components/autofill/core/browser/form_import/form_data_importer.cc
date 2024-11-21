@@ -39,7 +39,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/form_import/address_profile_save_manager.h"
+#include "components/autofill/core/browser/form_import/addresses/address_profile_save_manager.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"

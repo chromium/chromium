@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_import/autofill_save_update_address_profile_delegate_ios.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 
 #include <utility>
 

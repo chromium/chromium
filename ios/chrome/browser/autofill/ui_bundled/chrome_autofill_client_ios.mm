@@ -20,7 +20,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#import "components/autofill/core/browser/form_import/autofill_save_update_address_profile_delegate_ios.h"
+#import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"

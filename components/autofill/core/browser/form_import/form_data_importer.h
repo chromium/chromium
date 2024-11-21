@@ -17,7 +17,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/history/core/browser/history_service_observer.h"

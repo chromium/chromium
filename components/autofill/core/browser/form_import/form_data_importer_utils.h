@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
-#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/logging/log_buffer.h"

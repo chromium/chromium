@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESS_PROFILE_SAVE_MANAGER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESS_PROFILE_SAVE_MANAGER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_PROFILE_SAVE_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_PROFILE_SAVE_MANAGER_H_
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/form_import/autofill_profile_import_process.h"
+#include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 
 namespace autofill {
 
@@ -89,4 +89,4 @@ class AddressProfileSaveManager {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESS_PROFILE_SAVE_MANAGER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_PROFILE_SAVE_MANAGER_H_

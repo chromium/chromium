@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/form_import/autofill_save_update_address_profile_delegate_ios.h"
+#import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/autofill_address_profile/infobar_edit_address_profile_modal_consumer.h"
