@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -273,6 +274,17 @@ bool ValidateClipPathValue(const Element* element,
 
     // Don't try to composite animations where we can't extract a shape or path
     if (computed_value && CanExtractShapeOrPath(computed_value)) {
+      const auto* list = DynamicTo<CSSValueList>(computed_value);
+
+      // TODO(crbug.com/379052285): We do not currently support anything other
+      // than kBorderBox. Any other value will result in bad interpolation. This
+      // should be resolved in future.
+      if (list->length() == 2 &&
+          (DynamicTo<CSSIdentifierValue>(list->Item(1))
+               ->ConvertTo<GeometryBox>() != GeometryBox::kBorderBox)) {
+        return false;
+      }
+
       return true;
     }
 
