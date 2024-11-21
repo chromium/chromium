@@ -198,9 +198,9 @@ suite('PrefsTest', () => {
 
       setup(() => {
         createAndSetVoices(app, speechSynthesis, [
-          {lang: langs[0]},
-          {lang: langs[1]},
-          {lang: langs[2]},
+          {lang: langs[0], name: 'Google Frodo'},
+          {lang: langs[1], name: 'Google Merry'},
+          {lang: langs[2], name: 'Google Pippin'},
         ]);
       });
 

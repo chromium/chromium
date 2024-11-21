@@ -124,11 +124,19 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
               map[voice.lang].push(voice);
               return map;
             }, {} as {[language: string]: SpeechSynthesisVoice[]});
+    // Only keep system voices that exactly match Google TTS supported locales,
+    // or for languages for which there are no Google TTS supported locales.
     const systemVoices =
-        Object.values(languageToNonGoogleVoices).map((voices) => {
-          const defaultVoice = voices.find(voice => voice.default);
-          return defaultVoice || voices[0];
-        });
+        Object.values(languageToNonGoogleVoices)
+            .map((voices) => {
+              const defaultVoice = voices.find(voice => voice.default);
+              return defaultVoice || voices[0];
+            })
+            .filter(
+                systemVoice => AVAILABLE_GOOGLE_TTS_LOCALES.has(
+                                   systemVoice.lang.toLowerCase()) ||
+                    convertLangOrLocaleToExactVoicePackLocale(
+                        systemVoice.lang.toLowerCase()) === undefined);
 
     // Keep all Google voices and one system voice per language.
     availableVoices = availableVoices.filter(
