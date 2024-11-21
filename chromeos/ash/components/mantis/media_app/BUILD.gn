@@ -11,8 +11,8 @@ component("media_app") {
   sources = [
     "mantis_media_app_untrusted_processor.cc",
     "mantis_media_app_untrusted_processor.h",
-    "mantis_media_app_untrusted_service.cc",
-    "mantis_media_app_untrusted_service.h",
+    "mantis_untrusted_processor_manager.cc",
+    "mantis_untrusted_processor_manager.h",
   ]
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_untrusted",
@@ -25,10 +25,7 @@ component("media_app") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "mantis_media_app_untrusted_processor_unittest.cc",
-    "mantis_media_app_untrusted_service_unittest.cc",
-  ]
+  sources = [ "mantis_media_app_untrusted_processor_unittest.cc" ]
   deps = [
     ":media_app",
     "//base",

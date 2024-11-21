@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -23,16 +24,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
     MantisMediaAppUntrustedProcessor
     : public media_app_ui::mojom::MantisMediaAppUntrustedProcessor {
  public:
-  explicit MantisMediaAppUntrustedProcessor(
-      mojo::PendingReceiver<
-          media_app_ui::mojom::MantisMediaAppUntrustedProcessor> receiver);
+  MantisMediaAppUntrustedProcessor();
   MantisMediaAppUntrustedProcessor(const MantisMediaAppUntrustedProcessor&) =
       delete;
   MantisMediaAppUntrustedProcessor& operator=(
       const MantisMediaAppUntrustedProcessor&) = delete;
   ~MantisMediaAppUntrustedProcessor() override;
 
-  mojo::PendingReceiver<mantis::mojom::MantisProcessor> GetReceiver();
+  mojo::PendingReceiver<mantis::mojom::MantisProcessor>
+  BindNewPipeAndPassReceiver();
+  mojo::PendingRemote<media_app_ui::mojom::MantisMediaAppUntrustedProcessor>
+  BindNewPipeAndPassRemote();
 
   // Implements `media_app_ui::mojom::MantisMediaAppUntrustedProcessor`:
   void SegmentImage(const std::vector<uint8_t>& image,

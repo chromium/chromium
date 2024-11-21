@@ -6,20 +6,25 @@
 
 #include <utility>
 
+#include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {
 
-MantisMediaAppUntrustedProcessor::MantisMediaAppUntrustedProcessor(
-    mojo::PendingReceiver<media_app_ui::mojom::MantisMediaAppUntrustedProcessor>
-        receiver)
-    : receiver_(this, std::move(receiver)) {}
+MantisMediaAppUntrustedProcessor::MantisMediaAppUntrustedProcessor()
+    : receiver_(this) {}
 
 MantisMediaAppUntrustedProcessor::~MantisMediaAppUntrustedProcessor() = default;
 
 mojo::PendingReceiver<mantis::mojom::MantisProcessor>
-MantisMediaAppUntrustedProcessor::GetReceiver() {
+MantisMediaAppUntrustedProcessor::BindNewPipeAndPassReceiver() {
   return processor_.BindNewPipeAndPassReceiver();
+}
+
+mojo::PendingRemote<media_app_ui::mojom::MantisMediaAppUntrustedProcessor>
+MantisMediaAppUntrustedProcessor::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
 }
 
 void MantisMediaAppUntrustedProcessor::SegmentImage(

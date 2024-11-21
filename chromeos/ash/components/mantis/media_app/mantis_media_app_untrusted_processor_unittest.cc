@@ -93,8 +93,7 @@ class MockMojoMantisProcessor : public mantis::mojom::MantisProcessor {
 class UntrustedProcessorTest : public testing::Test {
  public:
   UntrustedProcessorTest()
-      : processor_(mojo::NullReceiver()),
-        mojo_mantis_processor_(processor_.GetReceiver()) {}
+      : mojo_mantis_processor_(processor_.BindNewPipeAndPassReceiver()) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;

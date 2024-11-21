@@ -24,7 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/ash/components/mantis/media_app/mantis_media_app_untrusted_service.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_processor_manager.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -302,8 +302,7 @@ void MediaAppGuestUI::CreateMahiUntrustedService(
 }
 
 void MediaAppGuestUI::CreateMantisUntrustedService(
-    mojo::PendingReceiver<media_app_ui::mojom::MantisMediaAppUntrustedService>
-        receiver) {
+    CreateMantisUntrustedServiceCallback callback) {
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantis)) {
     untrusted_service_factory_.ReportBadMessage(
         "Trying to bind interface when flag is not enabled.");
@@ -311,8 +310,11 @@ void MediaAppGuestUI::CreateMantisUntrustedService(
   }
 
   // Mantis does not live in //chrome, no need to use delegate.
-  mantis_untrusted_service_ =
-      std::make_unique<MantisMediaAppUntrustedService>(std::move(receiver));
+  if (mantis_untrusted_processor_manager_ == nullptr) {
+    mantis_untrusted_processor_manager_ =
+        std::make_unique<MantisUntrustedProcessorManager>();
+  }
+  mantis_untrusted_processor_manager_->Create(std::move(callback));
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {
