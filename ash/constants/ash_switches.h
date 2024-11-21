@@ -143,7 +143,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableGaiaServices[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDisableHIDDetectionOnOOBEForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kDisableLacrosKeepAliveForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableLoginAnimations[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableMachineCertRequest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)

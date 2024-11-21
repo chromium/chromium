@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/crosapi/browser_action_queue.h"
 #include "chrome/browser/ash/crosapi/browser_manager_feature.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
-#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
@@ -50,22 +49,6 @@ namespace component_updater {
 class ComponentManagerAsh;
 }  // namespace component_updater
 
-namespace apps {
-class AppServiceProxyAsh;
-class StandaloneBrowserExtensionApps;
-}  // namespace apps
-
-namespace ash {
-class ApkWebAppService;
-namespace login {
-class SecurityTokenSessionController;
-}
-}  // namespace ash
-
-namespace drive {
-class DriveIntegrationService;
-}
-
 namespace policy {
 class CloudPolicyCore;
 }
@@ -79,7 +62,6 @@ class Crosapi;
 
 class BrowserAction;
 class BrowserLoader;
-class PersistentForcedExtensionKeepAlive;
 class TestMojoConnectionManager;
 
 using ash::standalone_browser::LacrosSelection;
@@ -190,9 +172,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Lacros via BrowserLoader::Unload, which also deletes the user data
   // directory.
   virtual void InitializeAndStartIfNeeded();
-
-  // Returns true if keep-alive is enabled.
-  bool IsKeepAliveEnabled() const;
 
   using GetBrowserInformationCallback =
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)>;
@@ -306,33 +285,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest,
                            NewWindowReloadsWhenUpdateAvailable);
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, OnLacrosUserDataDirRemoved);
-  friend class apps::StandaloneBrowserExtensionApps;
-  friend class BrowserManagerScopedKeepAlive;
-  // App service require the lacros-chrome to keep alive for web apps to:
-  // 1. Have lacros-chrome running before user open the browser so we can
-  //    have web apps info showing on the app list, shelf, etc..
-  // 2. Able to interact with web apps (e.g. uninstall) at any time.
-  // 3. Have notifications.
-  // TODO(crbug.com/40167449): This is a short term solution to integrate
-  // web apps in Lacros. Need to decouple the App Platform systems from
-  // needing lacros-chrome running all the time.
-  friend class apps::AppServiceProxyAsh;
-  // TODO(crbug.com/40220252): ApkWebAppService does not yet support app
-  // installation when lacros-chrome starts at arbitrary points of time, so it
-  // needs to be kept alive.
-  friend class ash::ApkWebAppService;
-  // In LacrosOnly mode, certificate provider and smart card connector
-  // extensions will be running in Lacros, but policy implementation stays in
-  // Ash. Thus, session controller needs to keep Lacros alive to keep track of
-  // smart card status.
-  friend class ash::login::SecurityTokenSessionController;
-  // Registers a KeepAlive if there is a force-installed extension that should
-  // always be running.
-  friend class PersistentForcedExtensionKeepAlive;
-  friend class PersistentForcedExtensionKeepAliveTest;
-  // DriveFS requires Lacros to be alive so it can connect to the Docs Offline
-  // extension. This allows Files App to make Docs files available offline.
-  friend class drive::DriveIntegrationService;
 
   // Processes the action depending on the current state.
   // Ignoring a few exceptional cases, the logic is as follows:
@@ -349,12 +301,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void RecordLacrosLaunchMode();
   // Sets `lacros_mode_` and `lacros_mode_and_source_`.
   void SetLacrosLaunchMode();
-
-  using Feature = BrowserManagerFeature;
-
-  // Ash features that want Lacros to stay running in the background must be
-  // marked as friends of this class so that lacros owners can audit usage.
-  std::unique_ptr<BrowserManagerScopedKeepAlive> KeepAlive(Feature feature);
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
@@ -386,16 +332,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnFetchAttempt(policy::CloudPolicyRefreshScheduler* scheduler) override;
   void OnRefreshSchedulerDestruction(
       policy::CloudPolicyRefreshScheduler* scheduler) override;
-
-  // Methods for features to register and de-register for needing to keep Lacros
-  // alive.
-  void StartKeepAlive(Feature feature);
-  void StopKeepAlive(Feature feature);
-
-  // Notifies browser to update its keep-alive status.
-  // Disabling keep-alive here may shut down the browser in background.
-  // (i.e., if there's no browser window opened, it may be shut down).
-  void UpdateKeepAliveInBrowserIfNecessary(bool enabled);
 
   // Shared implementation of OpenUrl and SwitchToTab.
   void OpenUrlImpl(
@@ -441,9 +377,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
-
-  // The features that are currently registered to keep Lacros alive.
-  std::set<Feature> keep_alive_features_;
 
   // The queue of actions to be performed when Lacros becomes ready.
   BrowserActionQueue pending_actions_;

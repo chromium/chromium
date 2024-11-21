@@ -101,7 +101,6 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void GetHistograms(GetHistogramsCallback callback) override {}
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
   void NotifyPolicyFetchAttempt() override {}
-  void UpdateKeepAlive(bool enabled) override {}
   void OpenForFullRestore(bool skip_crash_restore) override {}
   void OpenProfileManager() override {}
   void UpdateComponentPolicy(

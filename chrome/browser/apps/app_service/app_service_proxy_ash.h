@@ -26,7 +26,6 @@
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
-#include "chrome/browser/ash/crosapi/browser_manager_scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"

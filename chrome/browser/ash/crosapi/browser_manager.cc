@@ -132,11 +132,6 @@ constexpr base::TimeDelta kDailyLaunchModeTimeDelta = base::Minutes(30);
 // Pointer to the global instance of BrowserManager.
 BrowserManager* g_instance = nullptr;
 
-bool IsKeepAliveDisabledForTesting() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kDisableLacrosKeepAliveForTesting);
-}
-
 bool RemoveLacrosUserDataDir() {
   const base::FilePath lacros_data_dir = browser_util::GetUserDataDir();
 
@@ -341,10 +336,6 @@ void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
 }
 
 void BrowserManager::Shutdown() {
-  // Lacros KeepAlive should be disabled once Shutdown() has been signalled.
-  // Further calls to `UpdateKeepAliveInBrowserIfNecessary()` will no-op after
-  // `shutdown_requested_` has been set.
-  UpdateKeepAliveInBrowserIfNecessary(false);
   shutdown_requested_ = true;
   pending_actions_.Clear();
 }
@@ -358,13 +349,6 @@ void BrowserManager::SetState(State state) {
   for (auto& observer : observers_) {
     observer.OnStateChanged();
   }
-}
-
-std::unique_ptr<BrowserManagerScopedKeepAlive> BrowserManager::KeepAlive(
-    Feature feature) {
-  // Using new explicitly because BrowserManagerScopedKeepAlive's
-  // constructor is private.
-  return base::WrapUnique(new BrowserManagerScopedKeepAlive(this, feature));
 }
 
 BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
@@ -543,48 +527,6 @@ void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
     browser_service_->service->UpdateDeviceAccountPolicy(
         std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
   }
-}
-
-void BrowserManager::StartKeepAlive(Feature feature) {
-  DCHECK(browser_util::IsLacrosEnabled());
-
-  if (IsKeepAliveDisabledForTesting()) {
-    return;
-  }
-
-  auto insertion = keep_alive_features_.insert(feature);
-  // Features should never be double registered.
-  // TODO(b/278643115): Replace if-statement with a (D)CHECK once browser tests
-  // no longer use multiple user managers.
-  if (!insertion.second) {
-    CHECK_IS_TEST();
-  }
-
-  // If this is first KeepAlive instance, update the keep-alive in the browser.
-  if (keep_alive_features_.size() == 1) {
-    UpdateKeepAliveInBrowserIfNecessary(true);
-  }
-}
-
-void BrowserManager::StopKeepAlive(Feature feature) {
-  keep_alive_features_.erase(feature);
-  if (!IsKeepAliveEnabled()) {
-    UpdateKeepAliveInBrowserIfNecessary(false);
-  }
-}
-
-bool BrowserManager::IsKeepAliveEnabled() const {
-  return !keep_alive_features_.empty();
-}
-
-void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
-  if (shutdown_requested_ || !browser_service_.has_value()) {
-    // Shutdown has started or the browser is not running now. Just give up.
-    return;
-  }
-  CHECK_GE(browser_service_->interface_version,
-           crosapi::mojom::BrowserService::kUpdateKeepAliveMinVersion);
-  browser_service_->service->UpdateKeepAlive(enabled);
 }
 
 void BrowserManager::SetLacrosLaunchMode() {

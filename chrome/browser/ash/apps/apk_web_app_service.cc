@@ -203,12 +203,6 @@ ApkWebAppService::ApkWebAppService(Profile* profile, Delegate* test_delegate)
   }
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    // null in unit tests
-    if (auto* browser_manager = crosapi::BrowserManager::Get()) {
-      keep_alive_ = browser_manager->KeepAlive(
-          crosapi::BrowserManager::Feature::kApkWebAppService);
-    }
-
     crosapi::WebAppServiceAsh* web_app_service_ash =
         crosapi::CrosapiManager::Get()->crosapi_ash()->web_app_service_ash();
     web_app_service_observer_.Observe(web_app_service_ash);

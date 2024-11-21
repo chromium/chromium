@@ -214,13 +214,7 @@ interface BrowserService {
   [MinVersion=66]
   NotifyPolicyFetchAttempt@17();
 
-  // Updates keep-alive instance to maintain the browser lifetime.
-  // Note: there is always timing issue. If the browser is in the process of
-  // termination, this may not work. To fully implement keep-alive, ash-chrome
-  // may need to relaunch Lacros soon after the termination.
-  // Introduced in M97.
-  [MinVersion=14]
-  UpdateKeepAlive@12(bool enabled);
+  // UpdateKeepAlive@12 was removed.
 
   // Opens lacros with a full restore (all previously open windows from the
   // previous lacros session). This must be called before a browser has been
