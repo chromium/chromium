@@ -1097,6 +1097,18 @@ TEST_P(PDFiumEngineTest, DrawTextSelectionsBigtableMicro) {
       *engine, /*page_index=*/0, "bigtable_micro_selection.png");
 }
 
+TEST_P(PDFiumEngineTest, GetPageText) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  static constexpr char16_t kExpectedPageText[] = u"Hello, world!\r\nGoodbye, world!";
+
+  EXPECT_EQ(kExpectedPageText, engine->GetPageText(/*page_index=*/0));
+  EXPECT_EQ(kExpectedPageText, engine->GetPageText(/*page_index=*/1));
+}
+
 TEST_P(PDFiumEngineTest, LinkNavigates) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =

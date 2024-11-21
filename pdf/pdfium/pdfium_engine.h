@@ -222,6 +222,10 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void SetDocumentLayout(DocumentLayout::PageSpread page_spread);
   void DisplayAnnotations(bool display);
 
+  // Returns the text contained on the given page. The caller is responsible for
+  // passing a valid `page_index`.
+  std::u16string GetPageText(int page_index);
+
   // Applies the document layout options proposed by a call to
   // PDFiumEngineClient::ProposeDocumentLayout(), returning the overall size of
   // the new effective layout.
