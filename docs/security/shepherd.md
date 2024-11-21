@@ -88,6 +88,7 @@ during your shepherding shift:
 * [Reference for questions related to security fix merge process](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/merge_request.md#Security-merge-triage)
   for answering questions (you do not need to approve merges).
 * [Shepherding Handoff Log](https://goto.google.com/chrome-security-shepherd-handoff)
+* [GPU for dummies](https://goto.google.com/gpu-for-dummies)
 
 ### Every New Incoming Security Bug
 
