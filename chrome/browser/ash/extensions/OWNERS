@@ -2,9 +2,8 @@ file://chrome/browser/chromeos/extensions/OWNERS
 
 per-file default_app*=tsergeant@chromium.org
 
-# DeviceLocalAccount reviewers. emaxx@ is primary, others are backup.
-per-file device_local_account*=emaxx@chromium.org
-per-file device_local_account*=poromov@chromium.org
+# DeviceLocalAccount reviewers.
+per-file device_local_account*=file://chromeos/ash/components/policy/OWNERS
 
 # input method related reviewers.
 per-file input_method*=file://chrome/browser/ash/input_method/OWNERS

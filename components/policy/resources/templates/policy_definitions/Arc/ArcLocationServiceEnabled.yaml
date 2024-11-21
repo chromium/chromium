@@ -8,7 +8,6 @@ features:
   per_profile: false
 owners:
 - file://components/policy/OWNERS
-- emaxx@chromium.org
 schema:
   type: boolean
 supported_on:

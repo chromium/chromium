@@ -21,7 +21,6 @@ items:
   name: lock
   value: LOCK
 owners:
-- fabiansommer@chromium.org, emaxx@chromium.org
 - fabiansommer@chromium.org
 schema:
   enum:

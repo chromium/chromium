@@ -14,7 +14,6 @@ items:
   value: false
 owners:
 - mslus@chromium.org
-- emaxx@chromium.org
 schema:
   type: boolean
 supported_on:

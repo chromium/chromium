@@ -12,7 +12,6 @@ features:
   dynamic_refresh: true
 owners:
 - file://components/policy/OWNERS
-- emaxx@chromium.org
 schema:
   type: integer
 supported_on:
