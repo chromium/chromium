@@ -375,9 +375,12 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/creator/android:java",
       "//chrome/browser/data_sharing:factory_java",
+      "//chrome/browser/data_sharing:instant_message_delegate_factory_java",
+
+      # TODO(ssid): Decouple dependency on internal library.
+      "//chrome/browser/data_sharing:internal_library_java",
       "//chrome/browser/data_sharing:invitation_dialog_java",
       "//chrome/browser/data_sharing:java",
-      "//chrome/browser/data_sharing:messages_java",
       "//chrome/browser/data_sharing:shared_image_tiles_java",
       "//chrome/browser/data_sharing:tab_group_ui_java",
       "//chrome/browser/dependency_injection:java",
