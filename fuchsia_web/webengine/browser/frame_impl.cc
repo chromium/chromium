@@ -37,6 +37,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/message_port_provider.h"
@@ -347,6 +348,7 @@ class AudioStreamBrokerFactory final
   std::unique_ptr<content::AudioStreamBroker> CreateAudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
+      content::GlobalRenderFrameHostId main_frame_id,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,
@@ -362,8 +364,9 @@ class AudioStreamBrokerFactory final
           GetEffectFlagsForRenderUsage(output_usage_.value()));
     }
     return base_factory_->CreateAudioOutputStreamBroker(
-        render_process_id, render_frame_id, stream_id, output_device_id,
-        params_with_effects, group_id, std::move(deleter), std::move(client));
+        render_process_id, render_frame_id, main_frame_id, stream_id,
+        output_device_id, params_with_effects, group_id, std::move(deleter),
+        std::move(client));
   }
 
  private:

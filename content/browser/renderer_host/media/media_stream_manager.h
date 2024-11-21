@@ -72,6 +72,7 @@ class AudioServiceListener;
 class FakeMediaStreamUIProxy;
 class MediaStreamUIProxy;
 class PermissionControllerImpl;
+class PreferredAudioOutputDeviceManager;
 class VideoCaptureManager;
 class VideoCaptureProvider;
 
@@ -188,6 +189,9 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Used to access AudioSystem.
   media::AudioSystem* audio_system();
+
+  // Used to access PreferredAudioOutputDeviceManager.
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager();
 
   // AddVideoCaptureObserver() and RemoveAllVideoCaptureObservers() must be
   // called after InitializeDeviceManagersOnIOThread() and before
@@ -361,6 +365,11 @@ class CONTENT_EXPORT MediaStreamManager
   // is allowed to access |origin|.
   static bool IsOriginAllowed(int render_process_id, const url::Origin& origin);
 
+  // Returns internal single instance of PreferredAudioOutputDeviceManager
+  // object instance. The client should not take ownership of the returned
+  // object.
+  static PreferredAudioOutputDeviceManager* GetPreferredOutputManagerInstance();
+
   // Set whether the capturing is secure for the capturing session with given
   // |session_id|, |render_process_id|, and the MediaStreamType |type|.
   // Must be called on the IO thread.
@@ -391,6 +400,9 @@ class CONTENT_EXPORT MediaStreamManager
   void SetCapturedSurfaceControllerFactoryForTesting(
       CapturedSurfaceControllerFactoryCallback factory);
 #endif
+
+  void SetPreferredAudioOutputDeviceManagerForTesting(
+      std::unique_ptr<PreferredAudioOutputDeviceManager> manager);
 
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
@@ -808,6 +820,8 @@ class CONTENT_EXPORT MediaStreamManager
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
 
+  std::unique_ptr<PreferredAudioOutputDeviceManager>
+      preferred_audio_output_device_manager_;
   // All non-closed request. Must be accessed on IO thread.
   DeviceRequests requests_;
 

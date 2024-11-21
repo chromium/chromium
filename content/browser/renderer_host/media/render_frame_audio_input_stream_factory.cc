@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -161,6 +162,7 @@ class RenderFrameAudioInputStreamFactory::Core final
   const raw_ptr<MediaStreamManager> media_stream_manager_;
   const int process_id_;
   const int frame_id_;
+  const GlobalRenderFrameHostId main_frame_id_;
 
   mojo::Receiver<RendererAudioInputStreamFactory> receiver_{this};
   // Always null-check this weak pointer before dereferencing it.
@@ -197,7 +199,8 @@ RenderFrameAudioInputStreamFactory::Core::Core(
     RenderFrameHost* render_frame_host)
     : media_stream_manager_(media_stream_manager),
       process_id_(render_frame_host->GetProcess()->GetID()),
-      frame_id_(render_frame_host->GetRoutingID()) {
+      frame_id_(render_frame_host->GetRoutingID()),
+      main_frame_id_(render_frame_host->GetMainFrame()->GetGlobalId()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ForwardingAudioStreamFactory::Core* tmp_factory =
@@ -336,8 +339,19 @@ void RenderFrameAudioInputStreamFactory::Core::
   if (!forwarding_factory_ || !access_granted)
     return;
 
-  if (media::AudioDeviceDescription::IsDefaultDevice(output_device_id) ||
-      media::AudioDeviceDescription::IsCommunicationsDevice(output_device_id)) {
+  if (media::AudioDeviceDescription::IsDefaultDevice(output_device_id)) {
+    std::string override_device_id;
+    if (MediaStreamManager::GetPreferredOutputManagerInstance()) {
+      override_device_id =
+          MediaStreamManager::GetPreferredOutputManagerInstance()
+              ->GetPreferredSinkId(main_frame_id_);
+    }
+
+    forwarding_factory_->AssociateInputAndOutputForAec(
+        input_stream_id,
+        override_device_id.empty() ? output_device_id : override_device_id);
+  } else if (media::AudioDeviceDescription::IsCommunicationsDevice(
+                 output_device_id)) {
     forwarding_factory_->AssociateInputAndOutputForAec(input_stream_id,
                                                        output_device_id);
   } else {

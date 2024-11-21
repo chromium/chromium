@@ -13,9 +13,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/browser_main_loop.h"
 #include "content/browser/media/audible_metrics.h"
 #include "content/browser/media/media_devices_util.h"
+#include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -35,6 +38,20 @@ namespace {
 AudibleMetrics* GetAudibleMetrics() {
   static AudibleMetrics* metrics = new AudibleMetrics();
   return metrics;
+}
+
+PreferredAudioOutputDeviceManager* GetPreferredAudioOutputDeviceManager() {
+  if (!content::BrowserMainLoop::GetInstance()) {
+    return nullptr;
+  }
+
+  if (!content::BrowserMainLoop::GetInstance()->media_stream_manager()) {
+    return nullptr;
+  }
+
+  return content::BrowserMainLoop::GetInstance()
+      ->media_stream_manager()
+      ->preferred_audio_output_device_manager();
 }
 
 }  // anonymous namespace
@@ -231,9 +248,44 @@ void MediaWebContentsObserver::RenderFrameDeleted(
     fullscreen_player_.reset();
   }
 
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager =
+      GetPreferredAudioOutputDeviceManager();
+  if (preferred_audio_output_device_manager) {
+    preferred_audio_output_device_manager->UnregisterMainFrameOnUIThread(
+        render_frame_host);
+  }
+
   // Cancel any pending callbacks for players from this frame.
   use_after_free_checker_.check();
   per_frame_factory_.erase(render_frame_host);
+}
+
+void MediaWebContentsObserver::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager =
+      GetPreferredAudioOutputDeviceManager();
+
+  // Invalidates the render frame host by refresh.
+  if (preferred_audio_output_device_manager) {
+    preferred_audio_output_device_manager->UnregisterMainFrameOnUIThread(
+        RenderFrameHost::FromID(
+            navigation_handle->GetPreviousRenderFrameHostId()));
+  }
+}
+
+void MediaWebContentsObserver::RenderFrameHostChanged(
+    RenderFrameHost* old_host,
+    RenderFrameHost* new_host) {
+  PreferredAudioOutputDeviceManager* preferred_audio_output_device_manager =
+      GetPreferredAudioOutputDeviceManager();
+  if (old_host && preferred_audio_output_device_manager) {
+    preferred_audio_output_device_manager->UnregisterMainFrameOnUIThread(
+        old_host);
+  }
 }
 
 void MediaWebContentsObserver::MaybeUpdateAudibleState() {
