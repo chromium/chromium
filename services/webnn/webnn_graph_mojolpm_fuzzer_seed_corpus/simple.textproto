@@ -1,3 +1,4 @@
+seed_for_input_data: 883947058
 actions {
   device: 1
   create_graph {

@@ -25,4 +25,5 @@ message Action {
 // Testcase is the top-level message type interpreted by the fuzzer.
 message Testcase {
   repeated Action actions = 1;
+  required uint32 seed_for_input_data = 2;
 }
