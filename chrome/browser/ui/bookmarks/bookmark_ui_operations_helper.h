@@ -34,11 +34,12 @@ class BookmarkUIOperationsHelper {
  public:
   virtual ~BookmarkUIOperationsHelper();
 
-  // Drops the bookmark nodes that are in |data| onto |parent_node| at
-  // |index|.
-  // |copy| indicates the source operation: if true then the bookmarks in
-  // |data| are copied, otherwise they are moved if they belong to the same
-  // |profile|. Returns the drop type used.
+  // Drops the bookmark nodes that are in `data` onto `target_parent()` at
+  // `index`.
+  // `copy` indicates the source operation: if true then the bookmarks in
+  // `data` are copied, otherwise they are moved if they belong to the same
+  // profile.
+  // Returns the drop type used.
   ui::mojom::DragOperation DropBookmarks(
       Profile* profile,
       const bookmarks::BookmarkNodeData& data,
@@ -47,18 +48,25 @@ class BookmarkUIOperationsHelper {
       chrome::BookmarkReorderDropTarget target);
 
  protected:
+  // Represents the target parent node for the operation.
+  // For non-merged surfaces, it's a bookmark node.
+  // For merged surfaces, it's either a bookmark node or a permanent folder.
+  class TargetParent {
+   public:
+    virtual ~TargetParent();
+    virtual bool IsManaged() const = 0;
+    virtual bool IsPermanentNode() const = 0;
+    virtual bool IsDirectChild(const bookmarks::BookmarkNode* node) const = 0;
+    virtual bookmarks::BookmarkNode::Type GetType() const = 0;
+  };
+
   virtual bookmarks::BookmarkModel* model() = 0;
   virtual void CopyBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                                     size_t index_to_add_at) = 0;
   virtual void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                                     const base::FilePath& profile_path,
                                     size_t index_to_add_at) = 0;
-
-  virtual bool IsParentManaged() const = 0;
-  virtual bool IsParentPermanentNode() const = 0;
-  virtual bool IsParentDirectChild(
-      const bookmarks::BookmarkNode* node) const = 0;
-  virtual bookmarks::BookmarkNode::Type GetParentType() const = 0;
+  virtual const TargetParent* target_parent() const = 0;
 };
 
 }  // namespace internal
@@ -84,7 +92,7 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
 
   ~BookmarkUIOperationsHelperNonMergedSurfaces() override;
 
-  // Pastes from the clipboard. The new nodes are added to `parent`.
+  // Pastes from the clipboard. The new nodes are added to `target_parent()`.
   // The nodes are inserted at `index`.
   void PasteFromClipboard(size_t index);
 
@@ -95,15 +103,37 @@ class BookmarkUIOperationsHelperNonMergedSurfaces
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
                             size_t index_to_add_at) override;
-
-  bool IsParentManaged() const override;
-  bool IsParentPermanentNode() const override;
-  bool IsParentDirectChild(const bookmarks::BookmarkNode* node) const override;
-  bookmarks::BookmarkNode::Type GetParentType() const override;
+  const internal::BookmarkUIOperationsHelper::TargetParent* target_parent()
+      const override;
 
  private:
+  class TargetParent
+      : public internal::BookmarkUIOperationsHelper::TargetParent {
+   public:
+    static std::unique_ptr<TargetParent> CreateTargetParent(
+        bookmarks::BookmarkModel* model,
+        const bookmarks::BookmarkNode* parent);
+
+    TargetParent(const bookmarks::BookmarkNode* parent, bool is_managed);
+    ~TargetParent() override;
+
+    const bookmarks::BookmarkNode* parent_node() const;
+
+    // internal::BookmarkUIOperationsHelper::TargetParent
+    bool IsManaged() const override;
+    bool IsPermanentNode() const override;
+    bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
+    bookmarks::BookmarkNode::Type GetType() const override;
+
+   private:
+    const raw_ptr<const bookmarks::BookmarkNode> parent_;
+    const bool is_managed_;
+  };
+
+  const bookmarks::BookmarkNode* parent_node() const;
+
   const raw_ptr<bookmarks::BookmarkModel> model_;
-  const raw_ptr<const bookmarks::BookmarkNode> parent_;
+  const std::unique_ptr<TargetParent> target_parent_;
 };
 
 // Helper class for UI operations e.g. Drop, Copy, Paste bookmarks.
@@ -130,15 +160,37 @@ class BookmarkUIOperationsHelperMergedSurfaces
   void MoveBookmarkNodeData(const bookmarks::BookmarkNodeData& data,
                             const base::FilePath& profile_path,
                             size_t index_to_add_at) override;
-
-  bool IsParentManaged() const override;
-  bool IsParentPermanentNode() const override;
-  bool IsParentDirectChild(const bookmarks::BookmarkNode* node) const override;
-  bookmarks::BookmarkNode::Type GetParentType() const override;
+  const internal::BookmarkUIOperationsHelper::TargetParent* target_parent()
+      const override;
 
  private:
+  class TargetParent
+      : public internal::BookmarkUIOperationsHelper::TargetParent {
+   public:
+    static std::unique_ptr<TargetParent> CreateTargetParent(
+        BookmarkMergedSurfaceService* merged_surface_service,
+        const BookmarkParentFolder* parent);
+
+    TargetParent(const BookmarkParentFolder* parent, bool is_managed);
+    ~TargetParent() override;
+
+    const BookmarkParentFolder* parent_folder() const;
+
+    // internal::BookmarkUIOperationsHelper::TargetParent
+    bool IsManaged() const override;
+    bool IsPermanentNode() const override;
+    bool IsDirectChild(const bookmarks::BookmarkNode* node) const override;
+    bookmarks::BookmarkNode::Type GetType() const override;
+
+   private:
+    const raw_ptr<const BookmarkParentFolder> parent_;
+    bool is_managed_;
+  };
+
+  const BookmarkParentFolder* parent_folder() const;
+
   const raw_ptr<BookmarkMergedSurfaceService> merged_surface_service_;
-  const raw_ptr<const BookmarkParentFolder> parent_;
+  const std::unique_ptr<TargetParent> target_parent_;
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_UI_OPERATIONS_HELPER_H_
