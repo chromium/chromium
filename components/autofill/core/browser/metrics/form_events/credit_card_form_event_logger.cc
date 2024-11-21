@@ -468,11 +468,6 @@ void CreditCardFormEventLogger::OnDidUndoAutofill() {
   base::RecordAction(base::UserMetricsAction("Autofill_UndoPaymentsAutofill"));
 }
 
-void CreditCardFormEventLogger::OnMetadataLoggingContextReceived(
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context) {
-  metadata_logging_context_ = std::move(metadata_logging_context);
-}
-
 void CreditCardFormEventLogger::Log(FormEvent event,
                                     const FormStructure& form) {
   FormEventLoggerBase::Log(event, form);

@@ -101,7 +101,7 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
 }
 
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    base::span<const CreditCard> cards) {
+    const std::vector<CreditCard>& cards) {
   constexpr auto kLoggedNetworks =
       base::MakeFixedFlatSet<std::string_view>({kMasterCard, kVisaCard});
   CardMetadataLoggingContext metadata_logging_context;

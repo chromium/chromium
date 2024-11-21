@@ -52,10 +52,8 @@ enum class CardMetadataLoggingEvent {
 
 using HasBeenLogged = base::StrongAlias<class HasBeenLoggedTag, bool>;
 
-// Struct that groups metadata-related information together for some
-// set of credit cards. Used for metrics logging whether metadata is
-// available and/or shown with credit card suggestions, including
-// product descriptions, card art images, and card benefits.
+// Struct that groups metadata-related information together for some set of
+// credit cards. Used for metrics logging.
 struct CardMetadataLoggingContext {
   CardMetadataLoggingContext();
   CardMetadataLoggingContext(const CardMetadataLoggingContext&);
@@ -122,7 +120,7 @@ std::string_view GetCardIssuerIdOrNetworkSuffix(
 
 // Get the CardMetadataLoggingContext for the given credit cards.
 CardMetadataLoggingContext GetMetadataLoggingContext(
-    base::span<const CreditCard> cards);
+    const std::vector<CreditCard>& cards);
 
 // Log the suggestion event regarding card metadata. `has_been_logged` indicates
 // whether the event has already been logged since last page load.

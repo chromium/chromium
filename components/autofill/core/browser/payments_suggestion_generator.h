@@ -31,10 +31,6 @@ class CreditCard;
 class FormFieldData;
 class Iban;
 
-namespace autofill_metrics {
-class CreditCardFormEventLogger;
-}
-
 // Describes the suggestions returned by
 // `GetCreditCardOrCvcFieldSuggestions()`.
 struct CreditCardSuggestionSummary {
@@ -102,13 +98,10 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     FieldType trigger_field_type);
 
 // Generates touch-to-fill suggestions for all available credit cards to be
-// used in the bottom sheet. Benefits information, containing instrument IDs and
-// issuer IDs, will be added to the `metadata_logging_context` and assigned to
-// the `credit_card_form_event_logger`.
+// used in the bottom sheet.
 std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     base::span<const CreditCard> credit_cards,
-    const AutofillClient& client,
-    autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger);
+    const AutofillClient& client);
 
 // Generates a footer suggestion "Manage payment methods..." menu item which
 // will redirect to Chrome payment settings page. `with_gpay_logo` is used to

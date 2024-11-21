@@ -412,10 +412,6 @@ class BrowserAutofillManager : public AutofillManager {
   // Caches the credit card data for server and virtual credit cards.
   void OnCreditCardFetchedSuccessfully(const CreditCard& credit_card);
 
-  autofill_metrics::CreditCardFormEventLogger& GetCreditCardFormEventLogger() {
-    return metrics_->credit_card_form_event_logger;
-  }
-
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.
