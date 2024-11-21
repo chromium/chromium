@@ -4,13 +4,16 @@
 
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 
-#include <sstream>
+#include <string>
 #include <utility>
 #include <variant>
 
+#include "base/containers/extend.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
@@ -75,7 +78,7 @@ InteractiveFeaturePromoTestApi::WaitForFeatureEngagementReady() {
                    [browser]() { return browser->data; }),
       WaitForState(kFeatureEngagementInitializedState, true),
       StopObservingState(kFeatureEngagementInitializedState));
-  AddDescription(steps, "WaitForFeatureEngagementReady() - %s");
+  AddDescriptionPrefix(steps, "WaitForFeatureEngagementReady()");
   return steps;
 }
 
@@ -175,20 +178,16 @@ InteractiveFeaturePromoTestApi::MaybeShowPromo(
   // If success is expected, add steps to wait for the bubble to be shown and
   // verify that the correct promo is showing.
   if (is_web_bubble) {
-    steps = Steps(std::move(steps), CheckPromoIsActive(iph_feature));
+    steps.push_back(CheckPromoIsActive(iph_feature));
   } else if (expected_result) {
-    steps = Steps(std::move(steps), WaitForPromo(iph_feature));
+    base::Extend(steps, WaitForPromo(iph_feature));
   }
 
-  std::ostringstream desc;
-  desc << "MaybeShowPromo(" << iph_feature.name << ", ";
-  if (is_web_bubble) {
-    desc << "WebUI Help Bubble";
-  } else {
-    desc << expected_result;
-  }
-  desc << ") - %s";
-  AddDescription(steps, desc.str());
+  AddDescriptionPrefix(
+      steps, base::StrCat({"MaybeShowPromo( ", iph_feature.name, ", ",
+                           is_web_bubble ? std::string("WebUI Help Bubble")
+                                         : base::ToString(expected_result),
+                           " )"}));
   return steps;
 }
 
@@ -199,9 +198,8 @@ InteractiveFeaturePromoTestApi::WaitForPromo(const base::Feature& iph_feature) {
                 user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
             CheckPromoIsActive(iph_feature));
 
-  std::ostringstream desc;
-  desc << "WaitForPromo(" << iph_feature.name << ") - %s";
-  AddDescription(steps, desc.str());
+  AddDescriptionPrefix(
+      steps, base::StrCat({"WaitForPromo( ", iph_feature.name, " )"}));
   return steps;
 }
 
@@ -244,16 +242,13 @@ InteractiveFeaturePromoTestApi::AbortPromo(const base::Feature& iph_feature,
       },
       expected_result));
   if (expected_result) {
-    steps = Steps(
-        std::move(steps),
-        WaitForHide(
-            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+    steps.push_back(WaitForHide(
+        user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
   }
 
-  std::ostringstream desc;
-  desc << "AbortPromo(" << iph_feature.name << ", " << expected_result
-       << ") - %s";
-  AddDescription(steps, desc.str());
+  AddDescriptionPrefix(steps,
+                       base::StrCat({"AbortPromo( ", iph_feature.name, ", ",
+                                     base::ToString(expected_result), " )"}));
   return steps;
 }
 
@@ -263,7 +258,7 @@ InteractiveFeaturePromoTestApi::PressClosePromoButton() {
       PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-  AddDescription(steps, "PressClosePromoButton() - %s");
+  AddDescriptionPrefix(steps, "PressClosePromoButton()");
   return steps;
 }
 
@@ -273,7 +268,7 @@ InteractiveFeaturePromoTestApi::PressDefaultPromoButton() {
       PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-  AddDescription(steps, "PressDefaultPromoButton() - %s");
+  AddDescriptionPrefix(steps, "PressDefaultPromoButton()");
   return steps;
 }
 
@@ -284,6 +279,6 @@ InteractiveFeaturePromoTestApi::PressNonDefaultPromoButton() {
           user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-  AddDescription(steps, "PressNonDefaultPromoButton() - %s");
+  AddDescriptionPrefix(steps, "PressNonDefaultPromoButton()");
   return steps;
 }

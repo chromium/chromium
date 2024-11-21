@@ -389,7 +389,7 @@ class AutofillAiBrowserBaseTest : public InteractiveBrowserTest {
                                            Args&&... args) {
     MultiStep result;
     (AddStep(result, std::forward<Args>(args)), ...);
-    AddDescription(result, base::StrCat({name, "( %s )"}));
+    AddDescriptionPrefix(result, name);
     return result;
   }
 

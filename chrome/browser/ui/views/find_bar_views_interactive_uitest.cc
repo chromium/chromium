@@ -222,7 +222,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
     auto result =
         Steps(Do([this]() { browser()->GetFindBarController()->Show(); }),
               WaitForShow(FindBarView::kElementId));
-    AddDescription(result, "ShowFindBar( %s )");
+    AddDescriptionPrefix(result, "ShowFindBar()");
     return result;
   }
 
@@ -233,7 +233,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
                               find_in_page::ResultAction::kKeep);
                         }),
                         WaitForHide(FindBarView::kElementId));
-    AddDescription(result, "HideFindBar( %s )");
+    AddDescriptionPrefix(result, "HideFindBar()");
     return result;
   }
 
@@ -272,7 +272,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
             }),
         WaitForState(views::test::kCurrentFocusedViewId,
                      std::forward<M>(matcher)));
-    AddDescription(result, "CheckHasFocus( %s )");
+    AddDescriptionPrefix(result, "CheckHasFocus()");
     return result;
   }
 
@@ -282,7 +282,7 @@ class FindBarViewsUiTest : public InteractiveBrowserTest {
     auto result =
         Steps(WithView(view, [](views::View* view) { view->RequestFocus(); }),
               WaitForState(views::test::kCurrentFocusedViewId, view));
-    AddDescription(result, "Focus( %s )");
+    AddDescriptionPrefix(result, "Focus()");
     return result;
   }
 

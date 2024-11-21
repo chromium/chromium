@@ -58,7 +58,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
                                                                   group_id);
         }),
         WaitForPromo(feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature));
-    AddDescription(steps, "SaveAndCloseGroup( %s )");
+    AddDescriptionPrefix(steps, "SaveAndCloseGroup()");
     return steps;
   }
 

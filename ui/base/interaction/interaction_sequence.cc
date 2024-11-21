@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/containers/map_util.h"
-#include "base/notreached.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
+
+#include "ui/base/interaction/interaction_sequence.h"
 
 #include <list>
 #include <memory>
@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
@@ -25,15 +26,15 @@
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/observer_list_internal.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/interaction_sequence.h"
 
 namespace ui {
 
@@ -449,10 +450,9 @@ InteractionSequence::StepBuilder::SetDescription(std::string_view description) {
 }
 
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::FormatDescription(
-    std::string_view format_string) {
-  step_->description = base::StringPrintfNonConstexpr(
-      format_string.data(), step_->description.c_str());
+InteractionSequence::StepBuilder::AddDescriptionPrefix(
+    std::string_view prefix) {
+  step_->description = base::StrCat({prefix, ": ", step_->description});
   return *this;
 }
 

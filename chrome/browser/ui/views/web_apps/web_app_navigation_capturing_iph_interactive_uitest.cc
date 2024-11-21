@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -140,7 +141,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                     ->GetElementContext();
               }),
               InAnyContext(WaitForShow(kAppPageId)));
-    AddDescription(steps, base::StringPrintf("OpenApp( %s, %%s )", app_id));
+    AddDescriptionPrefix(steps, base::StrCat({"OpenApp( ", app_id, " )"}));
     return steps;
   }
 
@@ -155,10 +156,8 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                     "queue was flushed."),
         WaitForState(kLatestDomMessage,
                      testing::HasSubstr("FinishedNavigating")));
-    AddDescription(
-        steps,
-        "Waiting for PleaseFlushLaunchQueue and FinishedNavigating messages, "
-        "flushing launch queues and notifying pages of completion in between.");
+    AddDescriptionPrefix(steps,
+                         "WaitForLaunchQueuesFlushedAndNavigationComplete()");
     return steps;
   }
 
@@ -168,7 +167,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                        ObserveState(kLatestDomMessage, kStartPageId),
                        NavigateWebContents(kStartPageId, GetStartUrl()),
                        WaitForLaunchQueuesFlushedAndNavigationComplete());
-    AddDescription(steps, "OpenStartPage( %s )");
+    AddDescriptionPrefix(steps, "OpenStartPage()");
     return steps;
   }
 
@@ -188,7 +187,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
         InSameContext(
             Steps(ObserveState(kLatestDomMessage, kStartPageId),
                   WaitForLaunchQueuesFlushedAndNavigationComplete())));
-    AddDescription(steps, "OpenAppStartPage( %s )");
+    AddDescriptionPrefix(steps, "OpenAppStartPage()");
     return steps;
   }
 
@@ -223,7 +222,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
               InSameContext(CheckViewProperty(
                   kBrowserViewElementId, &BrowserView::browser,
                   testing::Ne(expect_new_browser ? browser() : nullptr))));
-    AddDescription(steps, "TriggerAppLaunch( %s )");
+    AddDescriptionPrefix(steps, "TriggerAppLaunch()");
     return steps;
   }
 

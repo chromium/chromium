@@ -1173,40 +1173,42 @@ class ConditionalTutorialTest : public ui::test::InteractiveTestT<TutorialTest>,
     const int id = expected_strings.size() == 1U
                        ? expected_strings.begin()->second
                        : expected_strings[GetParam()];
-    return Steps(
-        std::move(CheckElement(
-                      test::TestHelpBubble::kElementId,
-                      [](ui::TrackedElement* el) {
-                        return el->AsA<test::TestHelpBubbleElement>()
-                            ->bubble()
-                            ->params()
-                            .body_text;
-                      },
-                      l10n_util::GetStringUTF16(id))
-                      .FormatDescription("%s - Body text must match.")),
-        std::move(CheckElement(
-                      test::TestHelpBubble::kElementId,
-                      [](ui::TrackedElement* el) {
-                        return el->AsA<test::TestHelpBubbleElement>()
-                            ->bubble()
-                            ->params()
-                            .buttons.empty();
-                      },
-                      progress.has_value())
-                      .FormatDescription(
-                          "%s - Only final bubble should have buttons.")),
-        std::move(
-            CheckElement(
-                test::TestHelpBubble::kElementId,
-                [](ui::TrackedElement* el) {
-                  return el->AsA<test::TestHelpBubbleElement>()
-                      ->bubble()
-                      ->params()
-                      .progress;
-                },
-                progress)
-                .SetMustRemainVisible(false)
-                .FormatDescription("%s - Progress indicators should match.")));
+    auto steps =
+        Steps(CheckElement(
+                  test::TestHelpBubble::kElementId,
+                  [](ui::TrackedElement* el) {
+                    return el->AsA<test::TestHelpBubbleElement>()
+                        ->bubble()
+                        ->params()
+                        .body_text;
+                  },
+                  l10n_util::GetStringUTF16(id)),
+              CheckElement(
+                  test::TestHelpBubble::kElementId,
+                  [](ui::TrackedElement* el) {
+                    return el->AsA<test::TestHelpBubbleElement>()
+                        ->bubble()
+                        ->params()
+                        .buttons.empty();
+                  },
+                  progress.has_value()),
+              std::move(CheckElement(
+                            test::TestHelpBubble::kElementId,
+                            [](ui::TrackedElement* el) {
+                              return el->AsA<test::TestHelpBubbleElement>()
+                                  ->bubble()
+                                  ->params()
+                                  .progress;
+                            },
+                            progress)
+                            .SetMustRemainVisible(false)));
+    const std::string progress_str =
+        progress.has_value()
+            ? base::StringPrintf("{%d, %d}", progress->first, progress->second)
+            : std::string("<null>");
+    AddDescriptionPrefix(steps, base::StringPrintf("VerifyHelpBubble( %d, %s )",
+                                                   id, progress_str.c_str()));
+    return steps;
   }
 
   TutorialRegistry tutorial_registry_;

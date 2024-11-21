@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -789,8 +790,6 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
       scoped_refptr<base::RefCountedData<base::CallbackListSubscription>>;
   RefCountedSubscription subscription =
       base::MakeRefCounted<RefCountedSubscription::element_type>();
-  const std::string format_string = base::StringPrintf(
-      "WaitForProperty( %%s, \"%s\" )", event_type.GetName().c_str());
 
   // The first step will check the property, and either immediately send the
   // event or install the observer that will send the event when the state
@@ -823,16 +822,17 @@ InteractiveViewsTestApi::WaitForViewPropertyCallback(
       subscription, property, add_listener, event_type,
       testing::Matcher<R>(std::forward<M>(matcher)));
 
-  return Steps(std::move(AfterShow(view, std::move(observe_property))
-                             .SetMustRemainVisible(true)
-                             .FormatDescription(format_string)),
-               std::move(AfterEvent(view, event_type, [subscription]() {
-                           // Need to reference subscription by value so that it
-                           // is not discarded until this step runs or the
-                           // sequence fails.
-                           subscription->data =
-                               base::CallbackListSubscription();
-                         }).FormatDescription(format_string)));
+  auto steps = Steps(std::move(AfterShow(view, std::move(observe_property))
+                                   .SetMustRemainVisible(true)),
+                     AfterEvent(view, event_type, [subscription]() {
+                       // Need to reference subscription by value so that it is
+                       // not discarded until this step runs or the sequence
+                       // fails.
+                       subscription->data = base::CallbackListSubscription();
+                     }));
+  AddDescriptionPrefix(
+      steps, base::StrCat({"WaitForProperty( ", event_type.GetName(), ", )"}));
+  return steps;
 }
 
 // Waits for a property named `Property` to have a value that matches `matcher`

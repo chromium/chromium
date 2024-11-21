@@ -187,7 +187,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
                     kTestTutorialId, browser()->window()->GetElementContext());
               }),
               WaitForStateChange(page_id, help_bubble_shown));
-    AddDescription(steps, "StartTutorial( %s )");
+    AddDescriptionPrefix(steps, "StartTutorial()");
     return steps;
   }
 
@@ -203,7 +203,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
                          service->CancelTutorialIfRunning(kTestTutorialId);
                        }),
                        WaitForStateChange(page_id, help_bubble_hidden));
-    AddDescription(steps, "CancelTutorial( %s )");
+    AddDescriptionPrefix(steps, "CancelTutorial()");
     return steps;
   }
 
