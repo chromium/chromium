@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabSwitcherDelegate;
 import org.chromium.chrome.browser.data_sharing.InstantMessageDelegateFactory;
@@ -439,6 +438,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         dataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
                         this::getBottomSheetController,
                         mShareDelegateSupplier,
                         mWindowAndroid,
@@ -767,7 +767,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             PageInfoSharingControllerImpl.getInstance().initialize();
         }
 
-        new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
+        new OneShotCallback<>(mProfileSupplier, this::maybeInitMessageDelegateOnProfile);
     }
 
     @Override
@@ -1234,14 +1234,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         edgeToEdgeStateProvider);
     }
 
-    private void initCollaborationDelegatesOnProfile(Profile profile) {
+    private void maybeInitMessageDelegateOnProfile(Profile profile) {
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
         @NonNull ServiceStatus serviceStatus = collaborationService.getServiceStatus();
         if (!serviceStatus.isAllowedToJoin()) return;
-
-        mDataSharingTabManager.initWithProfile(
-                profile, DataSharingServiceFactory.getForProfile(profile));
 
         TabModelUtils.onInitializedTabModelSelector(mTabModelSelectorSupplier)
                 .runSyncOrOnAvailable(

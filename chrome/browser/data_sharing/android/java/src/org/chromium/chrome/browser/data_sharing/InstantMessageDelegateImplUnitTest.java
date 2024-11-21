@@ -140,7 +140,7 @@ public class InstantMessageDelegateImplUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
-        mDelegate = new InstantMessageDelegateImpl(mProfile, mDataSharingService);
+        mDelegate = new InstantMessageDelegateImpl(mProfile);
         mDelegate.attachWindow(
                 mWindowAndroid,
                 mTabGroupModelFilter,

@@ -32,7 +32,6 @@ import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.InstantMessageDelegate;
-import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingUIDelegate;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
@@ -78,19 +77,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     private final DataSharingUIDelegate mDataSharingUiDelegate;
 
     /**
-     * TODO(ssid): Pass in the necessary dependencies rather than profile and fetching the services
-     * to avoid depending on the factory.
-     *
      * @param profile The current profile to get dependencies with.
-     * @param dataSharingService Data sharing service for the profile.
      */
-    /* package */ InstantMessageDelegateImpl(
-            Profile profile, DataSharingService dataSharingService) {
+    /* package */ InstantMessageDelegateImpl(Profile profile) {
         profile = profile.getOriginalProfile();
         MessagingBackendService messagingBackendService =
                 MessagingBackendServiceFactory.getForProfile(profile);
         messagingBackendService.setInstantMessageDelegate(this);
-        mDataSharingUiDelegate = dataSharingService.getUiDelegate();
+        mDataSharingUiDelegate = DataSharingServiceFactory.getForProfile(profile).getUiDelegate();
     }
 
     /**

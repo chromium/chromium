@@ -144,6 +144,7 @@ public class DataSharingTabManagerUnitTest {
     private DataSharingTabManager mDataSharingTabManager;
     private SavedTabGroup mSavedTabGroup;
     private Activity mActivity;
+    private ObservableSupplier<Profile> mProfileSupplier;
     private Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private SyncedGroupTestHelper mSyncedGroupTestHelper;
@@ -154,6 +155,7 @@ public class DataSharingTabManagerUnitTest {
 
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        mProfileSupplier = new ObservableSupplierImpl<>(mProfile);
         mBottomSheetControllerSupplier = new ObservableSupplierImpl<>(mBottomSheetController);
         mShareDelegateSupplier = new ObservableSupplierImpl<>(mShareDelegate);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
@@ -161,13 +163,12 @@ public class DataSharingTabManagerUnitTest {
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mDataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
                         mBottomSheetControllerSupplier,
                         mShareDelegateSupplier,
                         mWindowAndroid,
                         ApplicationProvider.getApplicationContext().getResources(),
                         mTabGroupUiActionHandlerSupplier);
-
-        mDataSharingTabManager.initWithProfile(mProfile, mDataSharingService);
 
         mSyncedGroupTestHelper = new SyncedGroupTestHelper(mTabGroupSyncService);
         mSavedTabGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
@@ -209,9 +210,11 @@ public class DataSharingTabManagerUnitTest {
 
     @Test
     public void testNoProfile() {
+        mProfileSupplier = new ObservableSupplierImpl<>();
         mDataSharingTabManager =
                 new DataSharingTabManager(
                         mDataSharingTabSwitcherDelegate,
+                        mProfileSupplier,
                         mBottomSheetControllerSupplier,
                         mShareDelegateSupplier,
                         mWindowAndroid,
