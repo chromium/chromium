@@ -445,6 +445,7 @@ public class ConditionWaiter {
         for (ConditionWait conditionStatus : conditionStatuses) {
             String conditionDescription = conditionStatus.mCondition.getDescription();
 
+            String marker = "  ";
             String originString = "";
             switch (conditionStatus.mOrigin) {
                 case ConditionOrigin.ENTER:
@@ -468,12 +469,14 @@ public class ConditionWaiter {
                     verdictString = "[OK* ]";
                 } else {
                     verdictString = "[ERR*]";
+                    marker = "->";
                 }
             } else {
                 if (conditionStatus.isFulfilled()) {
                     verdictString = "[OK  ]";
                 } else {
                     verdictString = "[FAIL]";
+                    marker = "->";
                 }
             }
 
@@ -501,7 +504,8 @@ public class ConditionWaiter {
             }
 
             detailsString
-                    .append("    [")
+                    .append(marker)
+                    .append("  [")
                     .append(i)
                     .append("] ")
                     .append(originString)
