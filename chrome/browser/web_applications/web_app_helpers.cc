@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/webapps/common/web_app_id.h"
@@ -149,8 +148,7 @@ bool IsValidWebAppUrl(const GURL& app_url) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Stop allowing apps to be extension urls when the shortcuts are separated -
   // they can be extension urls instead.
-  allow_extension_apps =
-      !base::FeatureList::IsEnabled(features::kShortcutsNotApps);
+  allow_extension_apps = false;
 #endif
 
   // TODO(crbug.com/40793595): Remove chrome-extension scheme.

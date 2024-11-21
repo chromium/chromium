@@ -58,8 +58,7 @@ chromium-metrics-reviews@google.com.
     creates a shortcut using the 3-dot-menu -&gt; &quot;Save and Share&quot;
     -&gt; &quot;Create Shortcut&quot; functionality. If this metric shows that
     users have a large number of files here, then a new design or some other
-    mitigation may be required. This requires the kShortcutsNotApps feature to
-    be enabled.
+    mitigation may be required.
   </summary>
 </histogram>
 

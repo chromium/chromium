@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/web_app_helpers.h"
 
-#include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -60,17 +59,17 @@ TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
 }
 
 TEST(WebAppHelpers, IsValidWebAppUrl) {
-  // TODO(crbug.com/40793595): Remove chrome-extension scheme.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(IsValidWebAppUrl(
-      GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
-#else
-  // With ShortcutsNotApps enabled, chrome-extension:// URLs can only be
-  // shortcuts rather than web apps.
-  EXPECT_NE(IsValidWebAppUrl(
+  // TODO(crbug.com/40793595): Remove chrome-extension scheme from being
+  // installed as PWAs on ChromeOS.
+  bool is_chrome_extension_valid_web_app = true;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // chrome-extension:// URLs can no longer be PWAs, but they can be shortcuts.
+  is_chrome_extension_valid_web_app = false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  EXPECT_EQ(IsValidWebAppUrl(
                 GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")),
-            base::FeatureList::IsEnabled(features::kShortcutsNotApps));
-#endif  // BUILDFLAG(IS_CHROMEOS)
+            is_chrome_extension_valid_web_app);
 
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://chromium.org")));
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://www.chromium.org")));

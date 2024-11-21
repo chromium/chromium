@@ -42,7 +42,7 @@ namespace shortcuts {
 namespace {
 
 // Shows the `Create Shortcut` dialog to create fire and forget entities on the
-// desktop of the OS. This API works only if kShortcutsNotApps is enabled.
+// desktop of the OS.
 // Triggered from the three-dot menu on Chrome, Save & Share > Create Shortcut.
 // Callers of the API should pass a |CreateShortcutDialogCallback| so that the
 // user action on the dialog or the title in the dialog's text field can be

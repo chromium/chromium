@@ -5419,11 +5419,6 @@ const char kWebAppUniversalInstallName[] = "Web App Universal Install";
 const char kWebAppUniversalInstallDescription[] =
     "Allows any site to be installable on Windows, Mac, and Linux.";
 
-const char kShortcutsNotAppsName[] = "Shortcuts not Apps";
-const char kShortcutsNotAppsDescription[] =
-    "Changes the 'create shortcut' 3-dot menu option to put a fire-and-forget "
-    "link on the desktop, instead of an app.";
-
 #if !BUILDFLAG(IS_ANDROID)
 const char kTranslateOpenSettingsName[] = "Translate Open Settings";
 const char kTranslateOpenSettingsDescription[] =

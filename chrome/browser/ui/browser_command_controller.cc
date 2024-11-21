@@ -789,12 +789,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_CREATE_SHORTCUT:
       base::RecordAction(base::UserMetricsAction("CreateShortcut"));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-        chrome::CreateDesktopShortcutForActiveWebContents(browser_);
-      } else {
-        web_app::CreateWebAppFromCurrentWebContents(
-            browser_, web_app::WebAppInstallFlow::kCreateShortcut);
-      }
+      chrome::CreateDesktopShortcutForActiveWebContents(browser_);
 #else
       web_app::CreateWebAppFromCurrentWebContents(
           browser_, web_app::WebAppInstallFlow::kCreateShortcut);
@@ -1627,13 +1622,8 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   command_updater_.UpdateCommandEnabled(IDC_INSTALL_PWA, can_create_web_app);
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
     command_updater_.UpdateCommandEnabled(
         IDC_CREATE_SHORTCUT, shortcuts::CanCreateDesktopShortcut(browser_));
-  } else {
-    command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
-                                          can_create_web_app);
-  }
 #else
   command_updater_.UpdateCommandEnabled(IDC_CREATE_SHORTCUT,
                                         can_create_web_app);

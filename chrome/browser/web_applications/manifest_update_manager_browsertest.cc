@@ -4455,17 +4455,12 @@ class ManifestUpdateManagerAppIdentityBrowserTest
       features::kPwaUpdateDialogForIcon};
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
 // This test verifies that shortcut apps with custom name overrides don't try to
-// update the name back to the manifest app name.
+// update the name back to the manifest app name. Shortcut apps only exist on
+// ChromeOS at the moment.
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
                        CheckShortcutAppDoesntPromptForUpdates) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(features::kShortcutsNotApps)) {
-    GTEST_SKIP()
-        << "Shortcuts are not web apps when ShortcutsNotApps is enabled.";
-  }
-#endif
-
   constexpr char kAppName[] = "Test app";
   constexpr char kOverrideName[] = "Override name";
 
@@ -4523,6 +4518,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
             GetProvider().registrar_unsafe().GetAppShortName(app_id));
   EXPECT_EQ(SK_ColorRED, ReadAppIconPixel(app_id, /*size=*/256));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test that showing the AppIdentity update confirmation and allowing the update
 // sends the right signal back.

@@ -3129,9 +3129,6 @@ extern const char kWebAppSyncGeneratedIconUpdateFixDescription[];
 extern const char kWebAppUniversalInstallName[];
 extern const char kWebAppUniversalInstallDescription[];
 
-extern const char kShortcutsNotAppsName[];
-extern const char kShortcutsNotAppsDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];

@@ -55,10 +55,6 @@
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/common/chrome_features.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 namespace {
 
 std::string LoadExtension(Profile* profile, const base::FilePath& path) {
@@ -73,15 +69,12 @@ std::string LoadExtension(Profile* profile, const base::FilePath& path) {
 
 namespace web_app {
 
-// TODO(crbug.com/344912771): Remove once ShortcutsNotApps launches to 100%
-// Stable.
+// This test currently only works on ChromeOS, and will be removed once the
+// behavior of shortcuts on ChromeOS is made similar to Windows, Mac and Linux
+// platforms.
 class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
  public:
-  CreateShortcutBrowserTest() {
-#if !BUILDFLAG(IS_CHROMEOS)
-    scoped_feature_list_.InitAndDisableFeature(features::kShortcutsNotApps);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-  }
+  CreateShortcutBrowserTest() = default;
   webapps::AppId InstallShortcutAppForCurrentUrl(bool open_as_window = false) {
     SetAutoAcceptWebAppDialogForTesting(true, open_as_window);
     WebAppTestInstallObserver observer(profile());
