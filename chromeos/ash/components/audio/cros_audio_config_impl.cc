@@ -407,6 +407,8 @@ CrosAudioConfigImpl::GetVoiceIsolationUIAppearance() const {
 
 void CrosAudioConfigImpl::RefreshVoiceIsolationState() {
   CrasAudioHandler::Get()->RefreshVoiceIsolationState();
+  CrasAudioHandler::Get()->RecordVoiceIsolationEnabledChangeSource(
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
 }
 
 void CrosAudioConfigImpl::RefreshVoiceIsolationPreferredEffect() {

@@ -688,6 +688,12 @@ void CrasAudioHandler::RefreshVoiceIsolationState() {
   CrasAudioClient::Get()->SetVoiceIsolationUIEnabled(GetVoiceIsolationState());
 }
 
+void CrasAudioHandler::RecordVoiceIsolationEnabledChangeSource(
+    AudioSettingsChangeSource source) {
+  base::UmaHistogramEnumeration(kVoiceIsolationEnabledChangeSourceHistogramName,
+                                source);
+}
+
 uint32_t CrasAudioHandler::GetVoiceIsolationPreferredEffect() const {
   return audio_pref_handler_->GetVoiceIsolationPreferredEffect();
 }

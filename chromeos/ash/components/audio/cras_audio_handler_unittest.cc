@@ -1747,6 +1747,30 @@ TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationState) {
   EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
 }
 
+TEST_P(CrasAudioHandlerTest, RecordVoiceIsolationEnabledChangeSource) {
+  SetUpCrasAudioHandlerWithVoiceIsolationState(false);
+  const int kMaxValue =
+      static_cast<int>(CrasAudioHandler::AudioSettingsChangeSource::kMaxValue);
+  const int kExpectedCount = 3;
+
+  // Tests if every invocation of RecordVoiceIsolationEnabledChangeSource()
+  // really records the source to the histogram.
+  for (int i = 0; i <= kMaxValue; i++) {
+    auto source = static_cast<CrasAudioHandler::AudioSettingsChangeSource>(i);
+    histogram_tester_.ExpectBucketCount(
+        CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+        source,
+        /*expected_count=*/0);
+    for (int j = 0; j < kExpectedCount; j++) {
+      cras_audio_handler_->RecordVoiceIsolationEnabledChangeSource(source);
+    }
+    histogram_tester_.ExpectBucketCount(
+        CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+        source,
+        /*expected_count=*/kExpectedCount);
+  }
+}
+
 TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationPreferredEffect) {
   SetUpCrasAudioHandlerWithVoiceIsolationState(false);
 

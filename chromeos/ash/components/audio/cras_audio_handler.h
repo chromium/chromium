@@ -172,6 +172,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
       "Cras.OutputVolumeMutedSource";
   static constexpr char kNoiseCancellationEnabledSourceHistogramName[] =
       "Cras.NoiseCancellationEnabledSource";
+  static constexpr char kVoiceIsolationEnabledChangeSourceHistogramName[] =
+      "Cras.VoiceIsolationEnabledChangeSource";
   static constexpr char kSpatialAudioHistogramName[] = "Cras.SpatialAudio";
 
   class AudioObserver {
@@ -458,6 +460,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Refreshes the input device voice isolation state in CrasAudioClient.
   void RefreshVoiceIsolationState();
+
+  // Records the source of the voice isolation state change to Histograms.
+  void RecordVoiceIsolationEnabledChangeSource(
+      AudioSettingsChangeSource source);
 
   // Gets the pref state of input voice isolation preferred effect mode.
   uint32_t GetVoiceIsolationPreferredEffect() const;

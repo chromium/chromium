@@ -1169,6 +1169,13 @@ This collects each top-level device metric type. For example,
   <token key="Device" variants="CrasTopLevelDeviceBreakdown"/>
 </histogram>
 
+<histogram name="Cras.VoiceIsolationEnabledChangeSource"
+    enum="AudioSettingsChangeSource" expires_after="2025-11-18">
+  <owner>hunghsienchen@chromium.org</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <summary>Records the source of enabling/disabling voice isolation.</summary>
+</histogram>
+
 <histogram name="Cras.WakeDelay" units="ms" expires_after="2025-03-21">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>

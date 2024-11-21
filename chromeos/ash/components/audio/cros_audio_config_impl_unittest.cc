@@ -352,11 +352,6 @@ class CrosAudioConfigImplTest : public testing::Test {
     return cras_audio_handler_->GetVoiceIsolationState();
   }
 
-  void RefreshVoiceIsolationState() {
-    cras_audio_handler_->RefreshVoiceIsolationState();
-    base::RunLoop().RunUntilIdle();
-  }
-
   uint32_t GetVoiceIsolationPreferredEffectPref() {
     return audio_pref_handler_->GetVoiceIsolationPreferredEffect();
   }
@@ -786,12 +781,18 @@ TEST_F(CrosAudioConfigImplTest, SetVoiceIsolationState) {
   // By default voice isolation is disabled and not supported in this test.
   ASSERT_FALSE(GetVoiceIsolationStatePref());
   ASSERT_FALSE(GetVoiceIsolationState());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 0);
 
   // Simulate trying to set voice isolation.
   SetVoiceIsolationStatePref(/*enabled=*/true);
   SimulateRefreshVoiceIsolationState();
   ASSERT_TRUE(GetVoiceIsolationStatePref());
   ASSERT_TRUE(GetVoiceIsolationState());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 1);
 
   // Change active node does not change voice isolation state.
   SetActiveInputNodes({kUsbMicId});
@@ -802,6 +803,9 @@ TEST_F(CrosAudioConfigImplTest, SetVoiceIsolationState) {
   SimulateRefreshVoiceIsolationState();
   ASSERT_FALSE(GetVoiceIsolationStatePref());
   ASSERT_FALSE(GetVoiceIsolationState());
+  histogram_tester_.ExpectBucketCount(
+      CrasAudioHandler::kVoiceIsolationEnabledChangeSourceHistogramName,
+      CrasAudioHandler::AudioSettingsChangeSource::kOsSettings, 2);
 }
 
 TEST_F(CrosAudioConfigImplTest, RefreshVoiceIsolationPreferredEffect) {
