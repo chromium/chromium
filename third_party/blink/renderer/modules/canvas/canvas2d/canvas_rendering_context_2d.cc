@@ -40,6 +40,7 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -157,6 +158,13 @@ gpu::ContextSupport* GetContextSupport() {
       ->ContextProvider()
       ->ContextSupport();
 }
+
+// Serves as killswitch for changing CanCreateCanvasResourceProvider() to
+// create resource provider internally rather than Canvas2DLayerBridge.
+// TODO(crbug.com/40280152): Eliminate post safe-rollout.
+BASE_FEATURE(kAdjustCanCreateCanvas2dResourceProvider,
+             "AdjustCanCreateCanvas2dResourceProvider",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -728,7 +736,11 @@ int CanvasRenderingContext2D::Height() const {
 }
 
 bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() const {
-  return canvas()->GetOrCreateCanvas2DLayerBridge();
+  if (base::FeatureList::IsEnabled(kAdjustCanCreateCanvas2dResourceProvider)) {
+    return canvas()->GetOrCreateResourceProviderWithCurrentRasterModeHint();
+  } else {
+    return canvas()->GetOrCreateCanvas2DLayerBridge();
+  }
 }
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
