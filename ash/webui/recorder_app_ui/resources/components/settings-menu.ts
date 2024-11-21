@@ -173,8 +173,6 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly shouldShowLanguagePicker =
     this.platformHandler.isMultipleLanguageAvailable();
 
-  private readonly downloadPerfCollected = signal(false);
-
   private readonly transcriptionLanguageExpanded = signal(false);
 
   private readonly transcriptionConsentDialog =
@@ -182,17 +180,6 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
-
-  override updated(): void {
-    if (this.summaryDownloadRequested.value &&
-        !this.downloadPerfCollected.value &&
-        this.platformHandler.summaryModelLoader.state.value.kind ===
-          'installed') {
-      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
-      this.platformHandler.perfLogger.finish('summaryModelDownload');
-      this.downloadPerfCollected.value = true;
-    }
-  }
 
   show(): void {
     this.dialog.value?.show();

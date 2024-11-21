@@ -27,6 +27,10 @@ export class PerfLogger {
     });
   }
 
+  hasPerfEvent(eventType: EventType): boolean {
+    return this.perfEventMap.has(eventType);
+  }
+
   finish(eventType: EventType): void {
     const eventValue = this.perfEventMap.get(eventType);
     if (eventValue === undefined) {

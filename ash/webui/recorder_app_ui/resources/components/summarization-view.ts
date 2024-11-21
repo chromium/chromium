@@ -186,8 +186,6 @@ export class SummarizationView extends ReactiveLitElement {
 
   private readonly downloadRequested = signal(false);
 
-  private readonly downloadPerfCollected = signal(false);
-
   get summaryContainerForTest(): HTMLDivElement {
     return assertExists(this.summaryContainer.value);
   }
@@ -206,12 +204,6 @@ export class SummarizationView extends ReactiveLitElement {
     if (settings.value.summaryEnabled === SummaryEnableState.ENABLED &&
         summaryState.value.kind === 'installing') {
       this.downloadRequested.value = true;
-    } else if (this.downloadRequested.value &&
-               !this.downloadPerfCollected.value &&
-               summaryState.value.kind === 'installed') {
-      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
-      this.platformHandler.perfLogger.finish('summaryModelDownload');
-      this.downloadPerfCollected.value = true;
     }
   }
 
