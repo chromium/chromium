@@ -1983,6 +1983,12 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
   if (widget == capture_toast_controller_.capture_toast_widget())
     return !!capture_toast_controller_.current_toast_type();
 
+  // If `widget` is the `feedback_button_widget_` and it should be hidden, then
+  // return false.
+  if (ShouldHideFeedbackWidget(widget)) {
+    return false;
+  }
+
   // If widget is the capture label widget, we will show it only if it doesn't
   // intersect with the settings widget.
   return !(capture_label_widget_ && capture_mode_settings_widget_ &&
