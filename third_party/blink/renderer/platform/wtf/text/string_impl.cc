@@ -1160,14 +1160,12 @@ bool StringImpl::StartsWith(const StringView& prefix) const {
   if (prefix.length() > length())
     return false;
   if (Is8Bit()) {
-    if (prefix.Is8Bit())
-      return Equal(Characters8(), prefix.Span8());
-    return Equal(Characters8(), prefix.Span16());
+    auto span = Span8().first(prefix.length());
+    return prefix.Is8Bit() ? span == prefix.Span8() : span == prefix.Span16();
   }
-  if (prefix.Is8Bit())
-    return Equal(Characters16(), prefix.Span8());
-  return Equal(Characters16(), prefix.Span16());
-}
+  auto span = Span16().first(prefix.length());
+  return prefix.Is8Bit() ? span == prefix.Span8() : span == prefix.Span16();
+  }
 
 bool StringImpl::StartsWithIgnoringCase(const StringView& prefix) const {
   if (prefix.length() > length())
@@ -1231,15 +1229,12 @@ bool StringImpl::EndsWith(UChar character) const {
 bool StringImpl::EndsWith(const StringView& suffix) const {
   if (suffix.length() > length())
     return false;
-  wtf_size_t start_offset = length() - suffix.length();
   if (Is8Bit()) {
-    if (suffix.Is8Bit())
-      return Equal(Characters8() + start_offset, suffix.Span8());
-    return Equal(Characters8() + start_offset, suffix.Span16());
+    auto span = Span8().last(suffix.length());
+    return suffix.Is8Bit() ? span == suffix.Span8() : span == suffix.Span16();
   }
-  if (suffix.Is8Bit())
-    return Equal(Characters16() + start_offset, suffix.Span8());
-  return Equal(Characters16() + start_offset, suffix.Span16());
+  auto span = Span16().last(suffix.length());
+  return suffix.Is8Bit() ? span == suffix.Span8() : span == suffix.Span16();
 }
 
 bool StringImpl::EndsWithIgnoringCase(const StringView& suffix) const {
