@@ -12,10 +12,10 @@
 
 @property(nonatomic, readonly) NSArray<NSData*>* allowedCredentials;
 
-@property(nonatomic, readonly) BOOL isRequestingPasskey;
+@property(nonatomic, readonly) NSString* relyingPartyIdentifier;
 
 - (instancetype)initWithAllowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                       isRequestingPasskey:(BOOL)isRequestingPasskey;
+                    relyingPartyIdentifier:(NSString*)relyingPartyIdentifier;
 
 @end
 

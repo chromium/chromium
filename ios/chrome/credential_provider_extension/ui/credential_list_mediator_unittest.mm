@@ -92,16 +92,16 @@ NSArray<ASCredentialServiceIdentifier*>* ServiceIdentifierWithName(
   return [NSArray arrayWithObject:serviceIdentifier];
 }
 
-id<CredentialListUIHandler> UIHandlerWithCredentialId(NSData* credentialId) {
-  if (credentialId != nil) {
+id<CredentialListUIHandler> UIHandlerWithCredential(id<Credential> credential) {
+  if (credential.credentialId != nil) {
     NSArray<NSData*>* allowedCredentials =
-        [NSArray arrayWithObject:credentialId];
+        [NSArray arrayWithObject:credential.credentialId];
     return [[MockCredentialListUIHandler alloc]
         initWithAllowedCredentials:allowedCredentials
-               isRequestingPasskey:YES];
+            relyingPartyIdentifier:credential.rpId];
   } else {
     return [[MockCredentialListUIHandler alloc] initWithAllowedCredentials:nil
-                                                       isRequestingPasskey:NO];
+                                                    relyingPartyIdentifier:nil];
   }
 }
 
@@ -126,7 +126,7 @@ TEST_F(CredentialListMediatorTest, FetchPasswordCredential) {
 
   ArchivableCredential* credential = TestPasswordCredential();
 
-  id<CredentialListUIHandler> UIHandler = UIHandlerWithCredentialId(nil);
+  id<CredentialListUIHandler> UIHandler = UIHandlerWithCredential(nil);
 
   NSArray<id<Credential>>* credentials = [NSArray arrayWithObject:credential];
   id<CredentialStore> credentialStore =
@@ -171,8 +171,7 @@ TEST_F(CredentialListMediatorTest, FetchPasskeyCredential) {
 
     ArchivableCredential* credential = TestPasskeyCredential();
 
-    id<CredentialListUIHandler> UIHandler =
-        UIHandlerWithCredentialId(credential.credentialId);
+    id<CredentialListUIHandler> UIHandler = UIHandlerWithCredential(credential);
 
     NSArray<id<Credential>>* credentials = [NSArray arrayWithObject:credential];
     id<CredentialStore> credentialStore =
@@ -212,7 +211,7 @@ TEST_F(CredentialListMediatorTest, FetchPasskeyCredential) {
 
 // Tests that fetching all credentials works properly.
 TEST_F(CredentialListMediatorTest, FetchAllCredentials) {
-  id<CredentialListUIHandler> UIHandler = UIHandlerWithCredentialId(nil);
+  id<CredentialListUIHandler> UIHandler = UIHandlerWithCredential(nil);
 
   NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
   [credentials addObject:TestPasswordCredential()];
@@ -233,7 +232,7 @@ TEST_F(CredentialListMediatorTest, FetchAllCredentials) {
   EXPECT_FALSE(allCredentials[0].isPasskey);
 
   if (@available(iOS 17.0, *)) {
-    UIHandler = UIHandlerWithCredentialId(credentials[1].credentialId);
+    UIHandler = UIHandlerWithCredential(credentials[1]);
     credentialListMediator =
         [[CredentialListMediator alloc] initWithConsumer:nil
                                                UIHandler:UIHandler
@@ -253,7 +252,7 @@ TEST_F(CredentialListMediatorTest, FilterPasskeyCredentials) {
     ArchivableCredential* credential2 = TestPasskeyCredential2();
 
     id<CredentialListUIHandler> UIHandler =
-        UIHandlerWithCredentialId(credential2.credentialId);
+        UIHandlerWithCredential(credential2);
 
     NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
     [credentials addObject:credential];
