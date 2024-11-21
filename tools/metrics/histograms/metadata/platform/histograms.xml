@@ -389,6 +389,97 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Platform.CoralService.TitleGenerationEngine.CacheDifferenceRatio"
+    units="%" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The minimum difference ratio of each group returned from the clustering
+    engine, compared with all groups in the title cache. When this ratio is
+    lower than a threshold, the cache will be hit and the title will be reused,
+    and this metrics can help us understand what is the most suitable value of
+    that ratio. This is recorded when title generation engine is processing each
+    entity in a Group request and checks whether it is similar enough to any
+    groups in the title cache (reported regardless of cache hit or not).
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.TitleGenerationEngine.CacheHit"
+    enum="BooleanCacheHit" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether the title cache is hit for each item in the Group request to the
+    coral service. This is recorded when title generation engine is processing
+    each entity in a Group request and checks whether it is present in the title
+    cache.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.TitleGenerationEngine.GenerationResult"
+    enum="CoralTitleGenerationResult" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The success or failure result of each title generation. This is recorded
+    exactly once when title generation engine is processing each group returned
+    from the clustering engine.
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.TitleGenerationEngine.InputTokenSize"
+    units="tokens" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The length of each model inference prompt formed by the title generation
+    engine, in tokens (the unit of text representation in our on device models).
+    This is reported for each group returned from the clustering engine, that is
+    processed in the model inference step.
+  </summary>
+</histogram>
+
+<histogram
+    name="Platform.CoralService.TitleGenerationEngine.LengthInCharacters"
+    units="characters" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The length of each generated title from title generation engine, in
+    characters (bytes). This is reported whenever title generation engine
+    generates a new title for a group successfully (empty title is treated as
+    failure and won't be reported).
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.TitleGenerationEngine.LengthInWords"
+    units="words" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    The length of each generated title from title generation engine, in English
+    words. This is defined by &quot;number of white spaces + 1&quot; in the
+    title, which is a good enough estimation for English words. This is not
+    useful for many other languages, and should be reported with some extra
+    logic after we support languages other than English. Currently, this is
+    reported whenever title generation engine generates a new title for a group
+    successfully (empty title is treated as failure and won't be reported).
+  </summary>
+</histogram>
+
+<histogram name="Platform.CoralService.TitleGenerationEngine.ModelLoaded"
+    enum="BooleanLoaded" expires_after="2025-11-19">
+  <owner>hcyang@google.com</owner>
+  <owner>cros-odml-foundations-eng@google.com</owner>
+  <summary>
+    Whether the title generation model is already loaded when coral service
+    receives a Group request. This is recorded when title generation engine is
+    processing a Group request and reaches the step that it needs to check
+    whether the model is already loded.
+  </summary>
+</histogram>
+
 <histogram name="Platform.CrashCollector.AddWeightResult"
     enum="CrosCrashCollectorAddWeightResult" expires_after="2025-03-09">
   <owner>iby@chromium.org</owner>

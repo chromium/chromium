@@ -177,6 +177,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Clustering Error"/>
 </enum>
 
+<enum name="CoralTitleGenerationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Empty Model Output"/>
+</enum>
+
 <enum name="Cr50BoardIdFlags">
   <int value="-1" label="Unprogrammed (0xffffffff)"/>
   <int value="16" label="test pre-pvt (0x10)"/>
