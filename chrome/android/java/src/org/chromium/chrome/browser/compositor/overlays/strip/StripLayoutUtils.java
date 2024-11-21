@@ -210,6 +210,14 @@ public class StripLayoutUtils {
         array[newIndex] = elem;
     }
 
+    static <T> boolean arrayContains(T[] array, T desiredElem) {
+        for (int i = 0; i < array.length; i++) {
+            final T elem = array[i];
+            if (elem == desiredElem) return true;
+        }
+        return false;
+    }
+
     // Other methods.
 
     static void performHapticFeedback(View view) {

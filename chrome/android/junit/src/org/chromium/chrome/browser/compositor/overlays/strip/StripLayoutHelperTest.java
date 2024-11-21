@@ -146,6 +146,7 @@ public class StripLayoutHelperTest {
     @Mock private PrefService mPrefService;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private TabCreator mTabCreator;
     @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
 
     private Activity mActivity;
@@ -153,7 +154,7 @@ public class StripLayoutHelperTest {
 
     // TODO(crbug.com/369736293): Verify usages and remove duplicate implementations of
     // `TestTabModel` for tab model.
-    private TestTabModel mModel = new TestTabModel();
+    private TestTabModel mModel = spy(new TestTabModel());
     private StripLayoutHelper mStripLayoutHelper;
     private boolean mIncognito;
     private static final String[] TEST_TAB_TITLES = {"Tab 1", "Tab 2", "Tab 3", "", null};
@@ -208,6 +209,7 @@ public class StripLayoutHelperTest {
         CompositorAnimationHandler mHandler =
                 new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
         when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
+        when(mModel.getProfile()).thenReturn(mProfile);
     }
 
     @After
@@ -1824,7 +1826,7 @@ public class StripLayoutHelperTest {
         // Set up tabModel and menu coordinator.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
         tabModel.setActive(true);
         mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
                 mTabGroupContextMenuCoordinator);
@@ -2163,7 +2165,6 @@ public class StripLayoutHelperTest {
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         StripLayoutTab thirdTab = tabs[2];
-        StripLayoutTab fourthTab = tabs[3];
 
         // Start reorder on third tab. Drag right to trigger swap with fourth tab.
         // 100 > tabWidth * flipThreshold = (190-24) * 0.53 = 88
@@ -2172,9 +2173,8 @@ public class StripLayoutHelperTest {
         float startX = mStripLayoutHelper.getLastReorderXForTesting();
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
-        // Assert the tabs swapped.
-        assertEquals("Third and fourth tabs should have swapped.", thirdTab, tabs[3]);
-        assertEquals("Third and fourth tabs should have swapped.", fourthTab, tabs[2]);
+        // Verify the TabModel was updated.
+        verify(mModel).moveTab(thirdTab.getTabId(), 4);
     }
 
     @Test
@@ -2265,7 +2265,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId));
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
     }
 
     @Test
@@ -2295,7 +2296,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was moved past the collapsed group and is now the second tab.
-        assertEquals("Dragged tab should now be second tab.", draggedTab, views[1]);
+        verify(mModel).moveTab(mStripLayoutHelper.getInteractingTabForTesting().getTabId(), 1);
     }
 
     @Test
@@ -2333,7 +2334,8 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId));
+        verify(mTabGroupModelFilter)
+                .mergeTabsToGroup(eq(thirdTab.getTabId()), eq(oldSecondTabId), eq(true));
     }
 
     @Test
@@ -2671,7 +2673,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.drag(TIMESTAMP, startX + dragDistance, 0f, dragDistance);
 
         // Verify interacting tab was merged into group.
-        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId));
+        verify(mTabGroupModelFilter).mergeTabsToGroup(eq(firstTabId), eq(secondTabId), eq(true));
     }
 
     @Test
@@ -3233,7 +3235,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify that the real and placeholder strip tabs were generated in the correct indices.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3258,7 +3260,7 @@ public class StripLayoutHelperTest {
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
         mStripLayoutHelper = createStripLayoutHelper(false, false);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify that there are no placeholders yet.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3295,7 +3297,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(expectedActiveTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Mark that a tab was restored.
         int expectedRestoredTabId = 1;
@@ -3336,7 +3338,7 @@ public class StripLayoutHelperTest {
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify there are placeholders.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3408,7 +3410,7 @@ public class StripLayoutHelperTest {
         // Mock a tab model and set it in the StripLayoutHelper.
         MockTabModel tabModel = new MockTabModel(mProfile, null);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
         assertEquals("Offset should be 0.", 0, mStripLayoutHelper.getScrollOffset(), EPSILON);
 
         // Set size.
@@ -3431,7 +3433,7 @@ public class StripLayoutHelperTest {
         tabModel.addTab(expectedCreatedTabId);
         tabModel.setIndex(0, TabSelectionType.FROM_NEW);
         tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(tabModel, mTabCreator, false);
 
         // Verify that the fifth (tab created from "intent") is real.
         StripLayoutTab[] stripTabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
@@ -3496,7 +3498,7 @@ public class StripLayoutHelperTest {
             }
         }
         mModel.setIndex(tabIndex);
-        mStripLayoutHelper.setTabModel(mModel, null, true);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, true);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
         mStripLayoutHelper.tabSelected(0, tabIndex, 0);
@@ -4294,12 +4296,10 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
 
         // Click to collapse the first tab group.
-        TabCreator tabCreator = mock(TabCreator.class);
-        mStripLayoutHelper.setTabModel(spy(mModel), tabCreator, true);
         mStripLayoutHelper.collapseTabGroupForTesting((StripLayoutGroupTitle) views[0], true);
 
         // Verify: Ntp opened since there is no expanded tab on strip.
-        verify(tabCreator).launchNtp();
+        verify(mTabCreator).launchNtp();
     }
 
     @Test
@@ -4420,9 +4420,7 @@ public class StripLayoutHelperTest {
         // Prepare iph and required objects.
         TabGroupSyncIphController controller = mock(TabGroupSyncIphController.class);
         mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
-        TestTabModel tabModel = spy(mModel);
-        when(tabModel.getProfile()).thenReturn(mProfile);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        mStripLayoutHelper.setTabModel(mModel, mTabCreator, false);
         mStripLayoutHelper.setLastSyncedGroupIdForTesting(tabs[tabs.length - 1].getTabId());
         mStripLayoutHelper.setTabGroupSyncIphControllerForTesting(controller);
 
