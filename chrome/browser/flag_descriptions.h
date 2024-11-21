@@ -1353,9 +1353,6 @@ extern const char kJourneysDescription[];
 extern const char kJourneysShowAllClustersName[];
 extern const char kJourneysShowAllClustersDescription[];
 
-extern const char kJourneysZeroStateFilteringName[];
-extern const char kJourneysZeroStateFilteringDescription[];
-
 extern const char kJumpStartOmniboxName[];
 extern const char kJumpStartOmniboxDescription[];
 

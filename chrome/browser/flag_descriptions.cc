@@ -2387,12 +2387,6 @@ const char kJourneysShowAllClustersName[] =
 const char kJourneysShowAllClustersDescription[] =
     "Enables all Journeys clusters to be shown on prominent UI surfaces";
 
-const char kJourneysZeroStateFilteringName[] =
-    "History Journeys Zero-State Filtering";
-const char kJourneysZeroStateFilteringDescription[] =
-    "Enables filtering of clusters in the zero state of the History Journeys "
-    "WebUI.";
-
 const char kJumpStartOmniboxName[] = "Jump-start Omnibox";
 const char kJumpStartOmniboxDescription[] =
     "Modifies cold- and warm start-up "
