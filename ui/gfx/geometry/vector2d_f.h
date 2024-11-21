@@ -13,14 +13,14 @@
 #include <iosfwd>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 
 namespace perfetto {
 class TracedValue;
 }
 namespace gfx {
 
-class GEOMETRY_EXPORT Vector2dF {
+class COMPONENT_EXPORT(GEOMETRY) Vector2dF {
  public:
   constexpr Vector2dF() : x_(0), y_(0) {}
   constexpr Vector2dF(float x, float y) : x_(x), y_(y) {}
@@ -116,16 +116,17 @@ inline Vector2dF operator-(const Vector2dF& lhs, const Vector2dF& rhs) {
 }
 
 // Return the cross product of two vectors, i.e. the determinant.
-GEOMETRY_EXPORT double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs);
+COMPONENT_EXPORT(GEOMETRY)
+double CrossProduct(const Vector2dF& lhs, const Vector2dF& rhs);
 
 // Return the dot product of two vectors.
-GEOMETRY_EXPORT double DotProduct(const Vector2dF& lhs, const Vector2dF& rhs);
+COMPONENT_EXPORT(GEOMETRY)
+double DotProduct(const Vector2dF& lhs, const Vector2dF& rhs);
 
 // Return a vector that is |v| scaled by the given scale factors along each
 // axis.
-GEOMETRY_EXPORT Vector2dF ScaleVector2d(const Vector2dF& v,
-                                        float x_scale,
-                                        float y_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale);
 
 // Return a vector that is |v| scaled by the given scale factor.
 inline Vector2dF ScaleVector2d(const Vector2dF& v, float scale) {
@@ -143,4 +144,4 @@ void PrintTo(const Vector2dF& vector, ::std::ostream* os);
 
 }  // namespace gfx
 
-#endif // UI_GFX_GEOMETRY_VECTOR2D_F_H_
+#endif  // UI_GFX_GEOMETRY_VECTOR2D_F_H_

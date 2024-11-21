@@ -16,7 +16,6 @@ component("geometry") {
     "dip_util.cc",
     "dip_util.h",
     "double4.h",
-    "geometry_export.h",
     "insets.cc",
     "insets.h",
     "insets_conversions.cc",
@@ -72,7 +71,7 @@ component("geometry") {
     "vector3d_f.h",
   ]
 
-  defines = [ "GEOMETRY_IMPLEMENTATION" ]
+  defines = [ "IS_GEOMETRY_IMPL" ]
 
   deps = [ "//base" ]
 

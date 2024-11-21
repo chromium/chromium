@@ -13,12 +13,12 @@
 #include <iosfwd>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 
-class GEOMETRY_EXPORT Vector3dF {
+class COMPONENT_EXPORT(GEOMETRY) Vector3dF {
  public:
   constexpr Vector3dF() : x_(0), y_(0), z_(0) {}
   constexpr Vector3dF(float x, float y, float z) : x_(x), y_(y), z_(z) {}
@@ -120,14 +120,16 @@ inline Vector3dF CrossProduct(const Vector3dF& lhs, const Vector3dF& rhs) {
 }
 
 // Return the dot product of two vectors.
-GEOMETRY_EXPORT float DotProduct(const Vector3dF& lhs, const Vector3dF& rhs);
+COMPONENT_EXPORT(GEOMETRY)
+float DotProduct(const Vector3dF& lhs, const Vector3dF& rhs);
 
 // Return a vector that is |v| scaled by the given scale factors along each
 // axis.
-GEOMETRY_EXPORT Vector3dF ScaleVector3d(const Vector3dF& v,
-                                        float x_scale,
-                                        float y_scale,
-                                        float z_scale);
+COMPONENT_EXPORT(GEOMETRY)
+Vector3dF ScaleVector3d(const Vector3dF& v,
+                        float x_scale,
+                        float y_scale,
+                        float z_scale);
 
 // Return a vector that is |v| scaled by the components of |s|
 inline Vector3dF ScaleVector3d(const Vector3dF& v, const Vector3dF& s) {
@@ -140,15 +142,16 @@ inline Vector3dF ScaleVector3d(const Vector3dF& v, float scale) {
 }
 
 // Returns the angle between |base| and |other| in degrees.
-GEOMETRY_EXPORT float AngleBetweenVectorsInDegrees(const gfx::Vector3dF& base,
-                                                   const gfx::Vector3dF& other);
+COMPONENT_EXPORT(GEOMETRY)
+float AngleBetweenVectorsInDegrees(const gfx::Vector3dF& base,
+                                   const gfx::Vector3dF& other);
 
 // Returns the clockwise angle between |base| and |other| where |normal| is the
 // normal of the virtual surface to measure clockwise according to.
-GEOMETRY_EXPORT float ClockwiseAngleBetweenVectorsInDegrees(
-    const gfx::Vector3dF& base,
-    const gfx::Vector3dF& other,
-    const gfx::Vector3dF& normal);
+COMPONENT_EXPORT(GEOMETRY)
+float ClockwiseAngleBetweenVectorsInDegrees(const gfx::Vector3dF& base,
+                                            const gfx::Vector3dF& other,
+                                            const gfx::Vector3dF& normal);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit
@@ -157,4 +160,4 @@ void PrintTo(const Vector3dF& vector, ::std::ostream* os);
 
 }  // namespace gfx
 
-#endif // UI_GFX_GEOMETRY_VECTOR3D_F_H_
+#endif  // UI_GFX_GEOMETRY_VECTOR3D_F_H_
