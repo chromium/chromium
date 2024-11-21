@@ -36,29 +36,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="has discount"/>
 </enum>
 
-<enum name="CartDiscountConsentStatus">
-  <summary>ChromeCart discount consent status.</summary>
-  <int value="0" label="Accepted"/>
-  <int value="1" label="Declined"/>
-  <int value="2" label="Ignored"/>
-  <int value="3" label="No show"/>
-  <int value="4" label="Never shown"/>
-</enum>
-
-<enum name="CartDiscountConsentVariation">
-  <summary>Discount consent variation.</summary>
-  <int value="0" label="Default"/>
-  <int value="1" label="StringChange"/>
-  <int value="2" label="Inline"/>
-  <int value="3" label="Dialog"/>
-</enum>
-
-<enum name="CartDiscountDataType">
-  <summary>Discount related data associated with the cart module.</summary>
-  <int value="0" label="cart_discount_info"/>
-  <int value="1" label="cart_discount_link"/>
-</enum>
-
 <enum name="FailToShowHomeSurfaceReason">
   <int value="0" label="Fail to create a NTP Tab"/>
   <int value="1" label="Fail to find a NTP Tab"/>
@@ -395,7 +372,7 @@ chromium-metrics-reviews@google.com.
     casting the output of base::PersistentHash(module_id) to
     base::HistogramBase::Sample.
   </summary>
-  <int value="-1996945391" label="chrome_cart"/>
+  <int value="-1996945391" label="chrome_cart (deprecated)"/>
   <int value="-1985729288" label="recipe_tasks (deprecated)"/>
   <int value="-1870686922" label="drive"/>
   <int value="-1810591528" label="shopping_tasks"/>

@@ -7003,6 +7003,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.AddToCart">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when the user adds a product to cart.</description>
@@ -7656,6 +7657,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.Purchase">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when the user makes the purchase.</description>
@@ -7686,12 +7688,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.VisitCart">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when the user visits the cart page.</description>
 </action>
 
 <action name="Commerce.VisitCheckout">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>Triggered when ther user visits the checkout page.</description>
@@ -27588,6 +27592,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.AcceptDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27598,6 +27603,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.DisableDiscount">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27607,6 +27613,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.DismissDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27618,6 +27625,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.DismissLastCartHidesModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27628,6 +27636,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.EnableDiscount">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27637,6 +27646,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.HideModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27647,6 +27657,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.LeftScrollClick">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27657,6 +27668,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RejectDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27667,6 +27679,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RemoveModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27677,6 +27690,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RestoreLastCartRestoresModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27687,6 +27701,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.RightScrollClick">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27697,6 +27712,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.ShowInterestInDiscountConsent">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>meiliang@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27706,6 +27722,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.UndoHideModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -27715,6 +27732,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Carts.UndoRemoveModule">
+  <obsolete>Deprecated due to feature removal in 11/2024.</obsolete>
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
