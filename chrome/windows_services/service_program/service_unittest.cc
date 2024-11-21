@@ -29,7 +29,6 @@
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -228,14 +227,6 @@ TEST_F(ServiceTest, TwoRequests) {
 // some are handled in a separate instance of the service. This is a regression
 // test against https://crbug.com/375097840.
 TEST_F(ServiceTest, RapidReuse) {
-  // A call to the service may fail with CO_E_SERVER_EXEC_FAILURE after a 120s
-  // timeout. Extend the default run loop timeout so that the test doesn't exit
-  // prematurely in this case. The test timeout should also be extended at
-  // runtime with something like --ui-test-action-max-timeout=250000 on the
-  // command line.
-  base::test::ScopedRunLoopTimeout run_loop_timeout(FROM_HERE,
-                                                    base::Minutes(5));
-
   // Calculate the average time to start the service, get an answer from it, and
   // for it to terminate over five runs. Ignore the first run, as it is expected
   // to be slower.
