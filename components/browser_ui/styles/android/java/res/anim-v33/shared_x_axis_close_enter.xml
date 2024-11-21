@@ -8,7 +8,9 @@ This is a variation of GM3's Forward/backward transition, with changes
 on the durations.
 https://m3.material.io/styles/motion/transitions/transition-patterns
 -->
-<set xmlns:android="http://schemas.android.com/apk/res/android">
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="false"
+    android:showBackdrop="true">
     <alpha android:fromAlpha="0.0"
             android:toAlpha="1.0"
             android:interpolator="@interpolator/m3_sys_motion_easing_standard_decelerate"
@@ -17,7 +19,7 @@ https://m3.material.io/styles/motion/transitions/transition-patterns
             android:fillAfter="true"
             android:startOffset="@integer/shared_x_axis_exit_duration"
             android:duration="@integer/shared_x_axis_enter_transition_duration" />
-    <translate android:fromXDelta="25%"
+    <translate android:fromXDelta="-25%"
             android:toXDelta="0"
             android:fillEnabled="true"
             android:fillBefore="true"

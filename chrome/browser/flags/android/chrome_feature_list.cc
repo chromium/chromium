@@ -253,6 +253,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeWebOptIn,
+    &kEnableXAxisActivityTransition,
     &kExperimentsForAgsa,
     &kFocusOmniboxInIncognitoTabIntents,
     &kForceBrowserControlsUponExitingFullscreen,
@@ -740,6 +741,10 @@ BASE_FEATURE(kEdgeToEdgeEverywhere,
 BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableXAxisActivityTransition,
+             "EnableXAxisActivityTransition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",

@@ -317,6 +317,7 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_WEB_OPT_IN = "EdgeToEdgeWebOptIn";
     public static final String EDUCATIONAL_TIP_MODULE = "EducationalTipModule";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
+    public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
     public static final String ESB_AI_STRING_UPDATE = "EsbAiStringUpdate";
     public static final String FEED_CONTAINMENT = "FeedContainment";
     public static final String FEED_FOLLOW_UI_UPDATE = "FeedFollowUiUpdate";
@@ -643,6 +644,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDUCATIONAL_TIP_MODULE, false);
     public static final CachedFlag sEnableDiscountInfoApi =
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false);
+    public static final CachedFlag sEnableXAxisActivityTransition =
+            newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, true);
     public static final CachedFlag sEsbAiStringUpdate = newCachedFlag(ESB_AI_STRING_UPDATE, false);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
@@ -781,6 +784,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeWebOptIn,
                     sEducationalTipModule,
                     sEnableDiscountInfoApi,
+                    sEnableXAxisActivityTransition,
                     sEsbAiStringUpdate,
                     sForceListTabSwitcher,
                     sForceTranslucentNotificationTrampoline,

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static android.app.Activity.OVERRIDE_TRANSITION_CLOSE;
+import static android.app.Activity.OVERRIDE_TRANSITION_OPEN;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
@@ -13,6 +15,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -195,6 +198,21 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         if (EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             initializeSystemBarColors();
+        }
+
+        if (VERSION.SDK_INT >= VERSION_CODES.UPSIDE_DOWN_CAKE
+                && ChromeFeatureList.sEnableXAxisActivityTransition.isEnabled()) {
+            overrideActivityTransition(
+                    OVERRIDE_TRANSITION_OPEN,
+                    R.anim.shared_x_axis_open_enter,
+                    R.anim.shared_x_axis_open_exit,
+                    SemanticColorUtils.getDefaultBgColor(this));
+
+            overrideActivityTransition(
+                    OVERRIDE_TRANSITION_CLOSE,
+                    R.anim.shared_x_axis_close_enter,
+                    R.anim.shared_x_axis_close_exit,
+                    SemanticColorUtils.getDefaultBgColor(this));
         }
     }
 
