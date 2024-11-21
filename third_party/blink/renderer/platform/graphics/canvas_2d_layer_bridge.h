@@ -50,8 +50,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
  private:
   CanvasHibernationHandler hibernation_handler_;
-
-  base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };
 
 }  // namespace blink
