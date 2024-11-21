@@ -388,6 +388,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
 
+  // Helper to Get Serial number for Attestation and KeyMint.
+  // Calls GetSerialNumber() internally.
+  std::string GetSerialNumberForKeyMint();
+
   // Stops mini-ARC instance. This should only be called before login.
   void StopMiniArcIfNecessary();
 
