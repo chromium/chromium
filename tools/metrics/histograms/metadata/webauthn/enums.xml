@@ -200,6 +200,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Decryption Of Server Response Failed"/>
   <int value="6" label="Failed To Parse Server Response"/>
   <int value="7" label="Other Error"/>
+  <int value="8" label="WebSocket Error"/>
 </enum>
 
 <enum name="WebAuthenticationFidoTransport">
