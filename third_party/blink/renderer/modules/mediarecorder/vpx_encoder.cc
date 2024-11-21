@@ -156,6 +156,9 @@ void VpxEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
                frame->stride(VideoFrame::Plane::kV), duration, force_keyframe,
                &output_data, /*is_alpha=*/false, VPX_IMG_FMT_I420);
 
+      if (!output_data) {
+        break;
+      }
       bool alpha_force_keyframe = output_data->is_key_frame();
       DoEncode(alpha_encoder_.get(), frame_size,
                frame->data(VideoFrame::Plane::kA),
