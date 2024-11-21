@@ -405,6 +405,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
@@ -902,7 +903,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   GalleryWatchManager::EnsureFactoryBuilt();
 #endif
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(features::kGlic)) {
+  if (GlicEnabling::IsEnabledByFlags()) {
     GlicKeyedServiceFactory::GetInstance();
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)

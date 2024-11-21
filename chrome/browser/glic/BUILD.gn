@@ -30,3 +30,14 @@ source_set("impl") {
     "//chrome/browser/ui:browser_navigator_params_headers",
   ]
 }
+
+source_set("enabling") {
+  sources = [
+    "glic_enabling.cc",
+    "glic_enabling.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common:chrome_features",
+  ]
+}

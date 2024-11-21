@@ -6905,8 +6905,6 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
-      "//chrome/browser/glic",
-      "//chrome/browser/glic:impl",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
 
@@ -8402,9 +8400,10 @@ static_library("browser") {
   }
 
   if (enable_glic) {
-    sources += [
-      "glic/glic_enabling.cc",
-      "glic/glic_enabling.h",
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic:enabling",
+      "//chrome/browser/glic:impl",
     ]
   }
 
