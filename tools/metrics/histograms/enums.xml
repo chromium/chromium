@@ -10657,7 +10657,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4974" label="UsedDeviceScaleAdjustment"/>
   <int value="4975" label="DisableThirdPartyStoragePartitioning2"/>
   <int value="4976" label="LinkRelPayment"/>
-  <int value="4977" label="V8GPUAdapter_RequestAdapterInfo_Method"/>
+  <int value="4977" label="OBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method"/>
   <int value="4978" label="OBSOLETE_V8ModelGenericSession_Destroy_Method"/>
   <int value="4979" label="OBSOLETE_V8AITextSession_Execute_Method"/>
   <int value="4980" label="OBSOLETE_V8AITextSession_ExecuteStreaming_Method"/>

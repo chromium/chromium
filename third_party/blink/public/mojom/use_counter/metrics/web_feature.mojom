@@ -4348,7 +4348,7 @@ enum WebFeature {
   kUsedDeviceScaleAdjustment = 4974,
   kDisableThirdPartyStoragePartitioning2 = 4975,
   kLinkRelPayment = 4976,
-  kV8GPUAdapter_RequestAdapterInfo_Method = 4977,
+  kOBSOLETE_V8GPUAdapter_RequestAdapterInfo_Method = 4977,
   kOBSOLETE_V8ModelGenericSession_Destroy_Method = 4978,
   kOBSOLETE_V8AITextSession_Execute_Method = 4979,
   kOBSOLETE_V8AITextSession_ExecuteStreaming_Method = 4980,

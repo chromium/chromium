@@ -594,15 +594,6 @@
       chrome_status_feature: 5579556305502208,
     },
     {
-      name: "V8GPUAdapter_RequestAdapterInfo_Method",
-      message: "The GPUAdapter `requestAdapterInfo()` method is deprecated, instead use the GPUAdapter `info` attribute.",
-      translation_note: "This warning occurs when the website attempts to invoke the deprecated GPUAdapter `requestAdapterInfo()` method.",
-      web_features: [
-        "kV8GPUAdapter_RequestAdapterInfo_Method",
-      ],
-      chrome_status_feature: 5140787340509184,
-    },
-    {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",
       message: "Extensions should opt into cross-origin isolation to continue using `SharedArrayBuffer`. See https://developer.chrome.com/docs/extensions/mv3/cross-origin-isolation/.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. The placeholder is always the noun 'SharedArrayBuffer' which refers to a JavaScript construct. 'Extensions' refers to Chrome extensions. The warning is shown when Chrome Extensions attempt to use 'SharedArrayBuffer's under insecure circumstances.",

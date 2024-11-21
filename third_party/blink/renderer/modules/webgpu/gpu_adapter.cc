@@ -400,11 +400,6 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
   return promise;
 }
 
-ScriptPromise<GPUAdapterInfo> GPUAdapter::requestAdapterInfo(
-    ScriptState* script_state) {
-  return ToResolvedPromise<GPUAdapterInfo>(script_state, info_);
-}
-
 void GPUAdapter::Trace(Visitor* visitor) const {
   visitor->Trace(gpu_);
   visitor->Trace(features_);

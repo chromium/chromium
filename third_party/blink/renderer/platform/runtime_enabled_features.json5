@@ -1385,13 +1385,6 @@
       origin_trial_allows_third_party: true,
       origin_trial_type: "deprecation",
     },
-    {
-      // Remove this feature when the removal of the GPUAdapter
-      // requestAdapterInfo method has been stable long enough.
-      // See https://crbug.com/335383516
-      name: "DeprecatedRequestAdapterInfo",
-    },
-
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.

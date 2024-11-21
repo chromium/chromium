@@ -51,8 +51,6 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   ScriptPromise<GPUDevice> requestDevice(ScriptState* script_state,
                                          GPUDeviceDescriptor* descriptor);
 
-  ScriptPromise<GPUAdapterInfo> requestAdapterInfo(ScriptState* script_state);
-
   // Console warnings should generally be attributed to a GPUDevice, but in
   // cases where there is no device warnings can be surfaced here. It's expected
   // that very few warning will need to be shown for a given adapter, and as a
