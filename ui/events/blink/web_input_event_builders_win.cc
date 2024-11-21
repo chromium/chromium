@@ -316,32 +316,23 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   }
 
   if (result.delta_units != ui::ScrollGranularity::kScrollByPage) {
-    if (features::IsPercentBasedScrollingEnabled()) {
-      // If percent-based scrolling is enabled, the scroll_delta represents
-      // the percentage amount (out of 1, i.e. 1 == 100%) the targeted scroller
-      // should scroll. This percentage will be resolved against the size of
-      // the scroller in the renderer process.
-      scroll_delta *= kScrollPercentPerLineOrChar;
-      result.delta_units = ui::ScrollGranularity::kScrollByPercentage;
-    } else {
-      // Convert wheel delta amount to a number of pixels to scroll.
-      //
-      // How many pixels should we scroll per line?  Gecko uses the height of
-      // the current line, which means scroll distance changes as you go through
-      // the page or go to different pages.  IE 8 is ~60 px/line, although the
-      // value seems to vary slightly by page and zoom level.  Also, IE defaults
-      // to smooth scrolling while Firefox doesn't, so it can get away with
-      // somewhat larger scroll values without feeling as jerky.  Here we use
-      // 100 px per three lines (the default scroll amount is three lines per
-      // wheel tick). Even though we have smooth scrolling, we don't make this
-      // as large as IE because subjectively IE feels like it scrolls farther
-      // than you want while reading articles.
-      static const float kScrollbarPixelsPerLine = 100.0f / 3.0f;
+    // Convert wheel delta amount to a number of pixels to scroll.
+    //
+    // How many pixels should we scroll per line?  Gecko uses the height of
+    // the current line, which means scroll distance changes as you go through
+    // the page or go to different pages.  IE 8 is ~60 px/line, although the
+    // value seems to vary slightly by page and zoom level.  Also, IE defaults
+    // to smooth scrolling while Firefox doesn't, so it can get away with
+    // somewhat larger scroll values without feeling as jerky.  Here we use
+    // 100 px per three lines (the default scroll amount is three lines per
+    // wheel tick). Even though we have smooth scrolling, we don't make this
+    // as large as IE because subjectively IE feels like it scrolls farther
+    // than you want while reading articles.
+    static const float kScrollbarPixelsPerLine = 100.0f / 3.0f;
 
-      // TODO(pkasting): Should probably have a different multiplier for
-      // horizontal scrolls here.
-      scroll_delta *= kScrollbarPixelsPerLine;
-    }
+    // TODO(pkasting): Should probably have a different multiplier for
+    // horizontal scrolls here.
+    scroll_delta *= kScrollbarPixelsPerLine;
   }
 
   // Set scroll amount based on above calculations.  WebKit expects positive

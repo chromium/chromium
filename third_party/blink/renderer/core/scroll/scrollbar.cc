@@ -271,15 +271,12 @@ ScrollDirectionPhysical Scrollbar::PressedPartScrollDirectionPhysical() {
 }
 
 ui::ScrollGranularity Scrollbar::PressedPartScrollGranularity() {
-  if (pressed_part_ == kBackButtonStartPart ||
-      pressed_part_ == kBackButtonEndPart ||
-      pressed_part_ == kForwardButtonStartPart ||
-      pressed_part_ == kForwardButtonEndPart) {
-    return RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-               ? ui::ScrollGranularity::kScrollByPercentage
-               : ui::ScrollGranularity::kScrollByLine;
-  }
-  return ui::ScrollGranularity::kScrollByPage;
+  return (pressed_part_ == kBackButtonStartPart ||
+          pressed_part_ == kBackButtonEndPart ||
+          pressed_part_ == kForwardButtonStartPart ||
+          pressed_part_ == kForwardButtonEndPart)
+             ? ui::ScrollGranularity::kScrollByLine
+             : ui::ScrollGranularity::kScrollByPage;
 }
 
 void Scrollbar::MoveThumb(int pos, bool dragging_document) {

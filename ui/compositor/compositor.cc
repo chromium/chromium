@@ -218,10 +218,6 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.wait_for_all_pipeline_stages_before_draw =
       command_line->HasSwitch(switches::kRunAllCompositorStagesBeforeDraw);
 
-  if (features::IsPercentBasedScrollingEnabled()) {
-    settings.percent_based_scrolling = true;
-  }
-
   settings.enable_compositing_based_throttling =
       enable_compositing_based_throttling;
 

@@ -7,10 +7,8 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "cc/input/scroll_utils.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/input/synthetic_gesture.h"
@@ -29,8 +27,6 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/native_theme/native_theme_features.h"
 
 namespace {
 
@@ -135,18 +131,7 @@ namespace content {
 // a mouse wheel scroll on an overflow:scroll element, main frame and subframe.
 class ScrollBehaviorBrowserTest : public ContentBrowserTest {
  public:
-  explicit ScrollBehaviorBrowserTest(
-      const std::optional<bool> enable_percent_based_scrolling = std::nullopt) {
-    if (enable_percent_based_scrolling.has_value() &&
-        *enable_percent_based_scrolling) {
-      scoped_feature_list.InitAndEnableFeature(
-          features::kWindowsScrollingPersonality);
-    } else {
-      scoped_feature_list.InitAndDisableFeature(
-          features::kWindowsScrollingPersonality);
-    }
-  }
-
+  ScrollBehaviorBrowserTest() = default;
   ScrollBehaviorBrowserTest(const ScrollBehaviorBrowserTest&) = delete;
   ScrollBehaviorBrowserTest& operator=(const ScrollBehaviorBrowserTest&) =
       delete;
@@ -198,18 +183,6 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest {
     observer.WaitForHitTestData();
   }
 
-  gfx::SizeF GetViewportSize() {
-    return gfx::SizeF(
-        EvalJs(shell(), "window.visualViewport.width").ExtractDouble(),
-        EvalJs(shell(), "window.visualViewport.height").ExtractDouble());
-  }
-
-  gfx::SizeF GetContainerSize(const std::string& container_expr) {
-    return gfx::SizeF(
-        EvalJs(shell(), container_expr + ".clientWidth").ExtractDouble(),
-        EvalJs(shell(), container_expr + ".clientHeight").ExtractDouble());
-  }
-
   WebContentsImpl* web_contents() const {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
@@ -220,7 +193,6 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest {
   void SimulateScroll(content::mojom::GestureSourceType gesture_source_type,
                       int scroll_delta_x,
                       int scroll_delta_y,
-                      const std::string& container_expr,
                       bool blocking = true) {
     auto scroll_update_watcher = std::make_unique<InputMsgWatcher>(
         GetWidgetHost(), blink::WebInputEvent::Type::kGestureScrollEnd);
@@ -233,17 +205,8 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest {
     params.gesture_source_type = gesture_source_type;
     params.anchor = gfx::PointF(50, 50);
     params.speed_in_pixels_s = kSpeedInstant;
-    if (features::IsPercentBasedScrollingEnabled()) {
-      params.distances.push_back(
-          cc::ScrollUtils::ResolvePixelScrollToPercentageForTesting(
-              gfx::Vector2dF(-scroll_delta_x, -scroll_delta_y),
-              GetContainerSize(container_expr), GetViewportSize()));
-      params.granularity = ui::ScrollGranularity::kScrollByPercentage;
-    } else {
-      params.distances.push_back(
-          gfx::Vector2d(-scroll_delta_x, -scroll_delta_y));
-      params.granularity = ui::ScrollGranularity::kScrollByPixel;
-    }
+    params.distances.push_back(gfx::Vector2d(-scroll_delta_x, -scroll_delta_y));
+    params.granularity = ui::ScrollGranularity::kScrollByPixel;
     run_loop_ = std::make_unique<base::RunLoop>();
 
     auto gesture = std::make_unique<SyntheticSmoothScrollGesture>(params);
@@ -312,18 +275,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest {
     return scroll_top;
   }
 
-  void RunTestInstantScriptScrollAdjustsSmoothWheelScroll();
-  void RunTestSmoothWheelScrollCompletesWithScriptedMirror();
-
-  base::test::ScopedFeatureList scoped_feature_list;
   std::unique_ptr<base::RunLoop> run_loop_;
-};
-
-class ScrollBehaviorBrowserTestWithPercentBasedScrolling
-    : public ScrollBehaviorBrowserTest {
- public:
-  ScrollBehaviorBrowserTestWithPercentBasedScrolling()
-      : ScrollBehaviorBrowserTest(std::optional<bool>(true)) {}
 };
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
@@ -352,61 +304,25 @@ IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
   ValueHoldsAt(scroll_top_script, 0);
 }
 
-// Disabled for flakiness on Mac (crbug.com/1462985).
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_InstantScriptScrollAdjustsSmoothWheelScroll \
-  DISABLED_InstantScriptScrollAdjustsSmoothWheelScroll
-#else
-#define MAYBE_InstantScriptScrollAdjustsSmoothWheelScroll \
-  InstantScriptScrollAdjustsSmoothWheelScroll
-#endif
-IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTestWithPercentBasedScrolling,
-                       MAYBE_InstantScriptScrollAdjustsSmoothWheelScroll) {
-  RunTestInstantScriptScrollAdjustsSmoothWheelScroll();
-}
-
-IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
-                       InstantScriptScrollAdjustsSmoothWheelScroll) {
-  RunTestInstantScriptScrollAdjustsSmoothWheelScroll();
-}
-
 // This tests that a in-progress smooth wheel scroll on a scrollable element is
 // adjusted (without cancellation) when interrupted by an instant script scroll.
-void ScrollBehaviorBrowserTest::
-    RunTestInstantScriptScrollAdjustsSmoothWheelScroll() {
+IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
+                       InstantScriptScrollAdjustsSmoothWheelScroll) {
   LoadURL(kOverflowScrollDataURL);
   SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, 100,
-                 "element",
                  /* blocking */ false);
   WaitForScrollToStart("element.scrollTop");
   EXPECT_TRUE(ExecJs(shell()->web_contents(), "element.scrollBy(0, -5);"));
   AssertScrollEndedAtPosition("element.scrollTop", 95, 1);
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SmoothWheelScrollCompletesWithScriptedMirror \
-  DISABLED_SmoothWheelScrollCompletesWithScriptedMirror
-#else
-#define MAYBE_SmoothWheelScrollCompletesWithScriptedMirror \
-  SmoothWheelScrollCompletesWithScriptedMirror
-#endif
-IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTestWithPercentBasedScrolling,
-                       MAYBE_SmoothWheelScrollCompletesWithScriptedMirror) {
-  RunTestSmoothWheelScrollCompletesWithScriptedMirror();
-}
-
-IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
-                       SmoothWheelScrollCompletesWithScriptedMirror) {
-  RunTestSmoothWheelScrollCompletesWithScriptedMirror();
-}
-
 // This tests that a smooth wheel scroll is not interrupted when script syncs
 // a separate scroller in the onscroll handler. (This was the root cause of
 // crbug.com/1248388 affecting CodeMirror as described in crbug.com/1264266.)
-void ScrollBehaviorBrowserTest::
-    RunTestSmoothWheelScrollCompletesWithScriptedMirror() {
+IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
+                       SmoothWheelScrollCompletesWithScriptedMirror) {
   LoadURL(kMirroredScrollersDataURL);
-  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, 200, "s1",
+  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, 200,
                  /* blocking */ false);
   WaitForScrollToStart("s1.scrollTop");
   AssertScrollEndedAtPosition("s1.scrollTop", 200, 1);
@@ -457,8 +373,7 @@ IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
   ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a touch scroll, the in-progress smooth scrolls stop.
-  SimulateScroll(content::mojom::GestureSourceType::kTouchInput, 0, -100,
-                 "element");
+  SimulateScroll(content::mojom::GestureSourceType::kTouchInput, 0, -100);
 
   // The touch scroll should cause scroll to 0 and cancel the animation, so
   // make sure the value stays at 0.
@@ -485,8 +400,7 @@ IN_PROC_BROWSER_TEST_F(ScrollBehaviorBrowserTest,
   ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a wheel scroll, the in-progress smooth scrolls stop.
-  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, -30,
-                 "element");
+  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, -30);
 
   // Smooth scrolling is disabled for wheel scroll on Mac.
   // https://crbug.com/574283.

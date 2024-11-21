@@ -17721,69 +17721,6 @@ TEST_F(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
   EXPECT_FALSE(did_prepare_tiles_);
 }
 
-// Verify that the device scale factor is not used to rescale scrollbar deltas
-// in percent-based scrolling.
-TEST_P(LayerTreeHostImplTest, PercentBasedScrollbarDeltasDSF3) {
-  LayerTreeSettings settings = DefaultSettings();
-  settings.percent_based_scrolling = true;
-  settings.use_painted_device_scale_factor = true;
-  CreateHostImpl(settings, CreateLayerTreeFrameSink());
-
-  const gfx::Size viewport_size = gfx::Size(800, 800);
-  SetupViewportLayersOuterScrolls(viewport_size, viewport_size);
-
-  LayerImpl* content_layer = AddContentLayer();
-  LayerImpl* scroll_layer = AddScrollableLayer(
-      content_layer, gfx::Size(185, 500), gfx::Size(185, 3800));
-
-  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
-      host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
-  SetupScrollbarLayer(scroll_layer, scrollbar);
-
-  scrollbar->SetBounds(gfx::Size(15, 500));
-
-  scrollbar->SetThumbThickness(15);
-  scrollbar->SetThumbLength(50);
-  scrollbar->SetTrackRect(gfx::Rect(0, 15, 15, 485));
-
-  scrollbar->SetBackButtonRect(gfx::Rect(gfx::Point(0, 0), gfx::Size(15, 15)));
-  scrollbar->SetForwardButtonRect(
-      gfx::Rect(gfx::Point(0, 485), gfx::Size(15, 15)));
-  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(185, 0));
-
-  DrawFrame();
-
-  TestInputHandlerClient input_handler_client;
-  GetInputHandler().BindToClient(&input_handler_client);
-
-  // Test scrolling with device scale factor = 3.
-  const float expected_delta = kPercentDeltaForDirectionalScroll * 500;
-
-  host_impl_->active_tree()->set_painted_device_scale_factor(3);
-
-  InputHandlerPointerResult scroll_result =
-      GetInputHandler().MouseDown(gfx::PointF(190, 490), false);
-  GetInputHandler().MouseUp(gfx::PointF(190, 490));
-
-  EXPECT_EQ(scroll_result.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
-
-  // Test with DSF = 1. As the scrollable layers aren't rescaled by the DSF,
-  // neither the scroll offset, the same result for DSF = 3 is expected.
-  host_impl_->active_tree()->set_painted_device_scale_factor(1);
-
-  InputHandlerPointerResult scroll_with_dsf_1 =
-      GetInputHandler().MouseDown(gfx::PointF(190, 490), false);
-  GetInputHandler().MouseUp(gfx::PointF(190, 490));
-
-  EXPECT_EQ(scroll_with_dsf_1.scroll_delta.y(), expected_delta);
-  EXPECT_FALSE(GetScrollNode(scroll_layer)->main_thread_repaint_reasons);
-
-  // Tear down the LayerTreeHostImpl before the InputHandlerClient.
-  host_impl_->ReleaseLayerTreeFrameSink();
-  host_impl_ = nullptr;
-}
-
 // Verify that page based scrolling resolves to the correct amount of scroll
 // delta.
 TEST_P(LayerTreeHostImplTest, PageBasedScroll) {

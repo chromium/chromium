@@ -466,28 +466,6 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
       webkit_event.delta_x / MouseWheelEvent::kWheelDelta;
   webkit_event.wheel_ticks_y =
       webkit_event.delta_y / MouseWheelEvent::kWheelDelta;
-
-  // Set deltas to be percent based if percent based scrolling is enabled.
-  // If percent based scrolling is enabled on Windows, percent based
-  // mousewheel events are built in the Windows web input event builder.
-  // Percent based scrolling is not supported on Mac because the current
-  // roadmap for scroll personality work is reserved for Windows and Linux.
-  // Page based scrolling isn't specified in terms of pixels so we don't convert
-  // deltas to a percentage here - it's resolved into percent, then pixels,
-  // in the renderer.
-  // TODO(yshalivskyy) Currently, for page based scrolling we always scroll
-  // by one page dismissing delta_y/delta_x values. https://crbug.com/1196092
-  if (features::IsPercentBasedScrollingEnabled() &&
-      webkit_event.delta_units != ui::ScrollGranularity::kScrollByPage &&
-      webkit_event.delta_units !=
-          ui::ScrollGranularity::kScrollByPrecisePixel) {
-    webkit_event.delta_units = ui::ScrollGranularity::kScrollByPercentage;
-    webkit_event.delta_y *=
-        (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);
-    webkit_event.delta_x *=
-        (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);
-  }
-
   webkit_event.tilt_x = event.pointer_details().tilt_x;
   webkit_event.tilt_y = event.pointer_details().tilt_y;
   webkit_event.force = event.pointer_details().force;

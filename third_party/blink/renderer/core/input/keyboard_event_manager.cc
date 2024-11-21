@@ -106,37 +106,25 @@ bool MapKeyCodeForScroll(int key_code,
     case VKEY_LEFT:
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollLeftIgnoringWritingMode;
-      *scroll_granularity =
-          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ui::ScrollGranularity::kScrollByPercentage
-              : ui::ScrollGranularity::kScrollByLine;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_RIGHT:
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode;
-      *scroll_granularity =
-          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ui::ScrollGranularity::kScrollByPercentage
-              : ui::ScrollGranularity::kScrollByLine;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_UP:
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
-      *scroll_granularity =
-          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ui::ScrollGranularity::kScrollByPercentage
-              : ui::ScrollGranularity::kScrollByLine;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_DOWN:
       *scroll_direction =
           mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
-      *scroll_granularity =
-          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
-              ? ui::ScrollGranularity::kScrollByPercentage
-              : ui::ScrollGranularity::kScrollByLine;
+      *scroll_granularity = ui::ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_HOME:
