@@ -61,6 +61,9 @@ bool RequiredNoticePriorityHandle::operator!() const {
 void RequiredNoticePriorityHandle::SetShown() {
   CHECK(static_cast<bool>(this));
   shown_ = true;
+  if (controller_) {
+    controller_->OnNoticeShown(notice_id_);
+  }
 }
 
 void RequiredNoticePriorityHandle::Release() {
@@ -139,6 +142,18 @@ void ProductMessagingController::QueueRequiredNotice(
 void ProductMessagingController::UnqueueRequiredNotice(
     RequiredNoticeId notice_id) {
   pending_notices_.erase(notice_id);
+}
+
+base::CallbackListSubscription
+ProductMessagingController::AddRequiredNoticePriorityHandleGrantedCallback(
+    StatusUpdateCallback callback) {
+  return handle_granted_callbacks_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+ProductMessagingController::AddRequiredNoticeShownCallback(
+    StatusUpdateCallback callback) {
+  return notice_shown_callbacks_.Add(std::move(callback));
 }
 
 void ProductMessagingController::ReleaseHandle(RequiredNoticeId notice_id,
@@ -238,10 +253,17 @@ void ProductMessagingController::MaybeShowNextRequiredNoticeImpl() {
   current_notice_ = to_show;
   std::move(cb).Run(
       RequiredNoticePriorityHandle(to_show, weak_ptr_factory_.GetWeakPtr()));
+  handle_granted_callbacks_.Notify(to_show);
 }
 
 void ProductMessagingController::OnNewSession() {
   storage_service_->ResetProductMessagingData();
+}
+
+void ProductMessagingController::OnNoticeShown(RequiredNoticeId notice_id) {
+  if (notice_id == current_notice_) {
+    notice_shown_callbacks_.Notify(notice_id);
+  }
 }
 
 std::string ProductMessagingController::DumpData() const {
