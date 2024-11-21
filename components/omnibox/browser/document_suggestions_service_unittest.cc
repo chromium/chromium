@@ -15,7 +15,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -79,13 +81,11 @@ class DocumentSuggestionsServiceTest : public testing::Test {
   std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
 };
 
-TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
+TEST_F(DocumentSuggestionsServiceTest, EnsureVariationHeaders) {
+  network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
-      base::BindLambdaForTesting([](const network::ResourceRequest& request) {
-        EXPECT_TRUE(variations::HasVariationsHeader(request));
-        std::string variation = variations::VariationsIdsProvider::GetInstance()
-                                    ->GetVariationsString();
-        EXPECT_EQ(variation, " " + base::NumberToString(kVariationID) + " ");
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        resource_request = request;
       }));
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
@@ -94,15 +94,18 @@ TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
       base::BindOnce(OnURLLoadComplete));
 
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(variations::HasVariationsHeader(resource_request));
+  std::string variation =
+      variations::VariationsIdsProvider::GetInstance()->GetVariationsString();
+  EXPECT_EQ(variation, " " + base::NumberToString(kVariationID) + " ");
 }
 
 TEST_F(DocumentSuggestionsServiceTest, EnsureCookies) {
+  network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
-      base::BindLambdaForTesting([](const network::ResourceRequest& request) {
-        EXPECT_TRUE(
-            request.site_for_cookies.IsEquivalent(net::SiteForCookies::FromUrl(
-                GURL("https://cloudsearch.googleapis.com"))))
-            << request.site_for_cookies.ToDebugString();
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        resource_request = request;
       }));
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
@@ -111,6 +114,32 @@ TEST_F(DocumentSuggestionsServiceTest, EnsureCookies) {
       base::BindOnce(OnURLLoadComplete));
 
   base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(GURL("https://cloudsearch.googleapis.com"))))
+      << resource_request.site_for_cookies.ToDebugString();
+}
+
+TEST_F(DocumentSuggestionsServiceTest, EnsureIsSubjectToEnterprisePolicies) {
+  EXPECT_EQ(signin::Tribool::kUnknown,
+            document_suggestions_service_
+                ->account_is_subject_to_enterprise_policies());
+
+  auto account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      "bar@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_enterprise_policies(true);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+
+  EXPECT_EQ(signin::Tribool::kTrue,
+            document_suggestions_service_
+                ->account_is_subject_to_enterprise_policies());
+
+  mutator.set_is_subject_to_enterprise_policies(false);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+  EXPECT_EQ(signin::Tribool::kFalse,
+            document_suggestions_service_
+                ->account_is_subject_to_enterprise_policies());
 }
 
 }  // namespace
