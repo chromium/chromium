@@ -1467,8 +1467,10 @@ crbug.com/1045672 fast/forms/select/listbox-tap.html [ Failure ]
 crbug.com/354069716 external/wpt/ai/language_detection/detect-en.tentative.window.html [ Failure Timeout ]
 crbug.com/354069716 external/wpt/ai/language_detection/detector.https.tentative.window.html [ Failure Timeout ]
 
-# Failing on Linux MSAN
-crbug.com/379199004 [ Linux ] external/wpt/ai/translator/translator_translate.tentative.window.html [ Failure Pass ]
+# Failing on Win ARM
+crbug.com/379233932 [ Win11-arm64 ] external/wpt/ai/translator/* [ Skip Timeout ]
+# Failing on Intel Mac11
+crbug.com/379233396 [ Mac11 ] external/wpt/ai/translator/* [ Failure ]
 
 ### sheriff 2019-07-16
 
@@ -2705,9 +2707,6 @@ crbug.com/379776582 [ Mac14 ] external/wpt/webrtc-encoded-transform/script-chang
 crbug.com/379776582 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedAudioFrame-serviceworker-failure.https.html [ Timeout ]
 crbug.com/379779783 [ Mac15 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 crbug.com/379768246 [ Mac15 ] external/wpt/webrtc-stats/rtp-stats-creation.html [ Timeout ]
-crbug.com/379773063 [ Win11-arm64 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.window.html [ Skip Timeout ]
-crbug.com/379758208 [ Mac11 ] external/wpt/ai/translator/ai_translator_translate.tentative.https.window.html [ Failure ]
-crbug.com/379758208 [ Linux ] external/wpt/ai/translator/ai_translator_translate.tentative.https.window.html [ Failure ]
 crbug.com/379779806 [ Mac14 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.worker.html [ Timeout ]
 crbug.com/379779806 [ Mac15 ] external/wpt/webcodecs/videoFrame-createImageBitmap.https.any.worker.html [ Timeout ]
 crbug.com/379776575 [ Mac14 ] external/wpt/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Timeout ]
@@ -2745,8 +2744,6 @@ crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporti
 crbug.com/379008013 [ Win11 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-mi_error.tentative.html [ Crash Timeout ]
 crbug.com/379008013 [ Mac15-arm64 ] external/wpt/webrtc-extensions/RTCRtpCorruptionDetection-headerExtensionControl.html [ Timeout ]
 crbug.com/379008013 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpCorruptionDetection-headerExtensionControl.html [ Timeout ]
-crbug.com/378634715 [ Win11-arm64 ] external/wpt/ai/translator/translator_translate.tentative.window.html [ Skip Timeout ]
-crbug.com/378634715 [ Mac11 ] external/wpt/ai/translator/translator_translate.tentative.window.html [ Failure Timeout ]
 crbug.com/378634716 [ Win10.20h2 ] external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/navigatorcookies-cookieenabled-true.html [ Crash Timeout ]
 crbug.com/378891977 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Timeout ]
 crbug.com/377942353 [ Win10.20h2 ] external/wpt/secure-payment-confirmation/authentication-cross-origin.sub.https.html [ Crash Timeout ]
