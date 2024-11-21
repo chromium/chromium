@@ -71,6 +71,21 @@
             ]
         }
     ],
+    "AccessibilityDeprecateTypeAnnounce": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityDeprecateTypeAnnounce"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityIncludeLongClickAction": [
         {
             "platforms": [

@@ -1335,6 +1335,12 @@ BASE_FEATURE(kWebPermissionsApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, TYPE_ANNOUNCE events will no longer be sent for live regions in
+// the web contents.
+BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
+             "AccessibilityDeprecateTypeAnnounce",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, includes the ACTION_LONG_CLICK action to all relevant nodes in
 // the web contents accessibility tree.
 BASE_FEATURE(kAccessibilityIncludeLongClickAction,

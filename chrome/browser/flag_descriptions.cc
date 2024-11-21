@@ -4191,6 +4191,12 @@ const char kRewriterAPIForGeminiNanoDescription[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
+const char kAccessibilityDeprecateTypeAnnounceName[] =
+    "Accessibility Deprecate TYPE_ANNOUNCE";
+const char kAccessibilityDeprecateTypeAnnounceDescription[] =
+    "When enabled, TYPE_ANNOUNCE events will no longer be sent for live "
+    "regions in the web contents.";
+
 const char kAccessibilityIncludeLongClickActionName[] =
     "Accessibility Include Long Click Action";
 const char kAccessibilityIncludeLongClickActionDescription[] =

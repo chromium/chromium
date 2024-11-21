@@ -12,6 +12,9 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
+    public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
+            "AccessibilityDeprecateTypeAnnounce";
+
     public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
             "AccessibilityIncludeLongClickAction";
 

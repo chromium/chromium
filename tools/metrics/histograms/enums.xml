@@ -16094,6 +16094,7 @@ from previous Chrome versions.
   <int value="-1690359116" label="ShortcutCustomizationJelly:enabled"/>
   <int value="-1689444567"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:disabled"/>
+  <int value="-1689416978" label="AccessibilityDeprecateTypeAnnounce:enabled"/>
   <int value="-1689041503" label="MigrateSyncingUserToSignedIn:enabled"/>
   <int value="-1688631209"
       label="AutofillEnableRankingFormulaAddressProfiles:enabled"/>
@@ -23611,6 +23612,7 @@ from previous Chrome versions.
       label="SuppressClipboardSuggestionAfterFirstUsed:enabled"/>
   <int value="1333354155" label="FluentScrollbar:disabled"/>
   <int value="1333847867" label="NoScriptPreviews:enabled"/>
+  <int value="1335052342" label="AccessibilityDeprecateTypeAnnounce:disabled"/>
   <int value="1335454908" label="ShoppingCollection:enabled"/>
   <int value="1338356182" label="AutofillAssistantChromeEntry:disabled"/>
   <int value="1338510325" label="lacros-selection"/>

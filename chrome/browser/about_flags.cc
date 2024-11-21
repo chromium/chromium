@@ -5820,6 +5820,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ForceDarkVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-accessibility-deprecate-type-announce",
+     flag_descriptions::kAccessibilityDeprecateTypeAnnounceName,
+     flag_descriptions::kAccessibilityDeprecateTypeAnnounceDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityDeprecateTypeAnnounce)},
     {"enable-accessibility-include-long-click-action",
      flag_descriptions::kAccessibilityIncludeLongClickActionName,
      flag_descriptions::kAccessibilityIncludeLongClickActionDescription,

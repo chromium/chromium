@@ -2420,6 +2420,8 @@ extern const char kRewriterAPIForGeminiNanoDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
+extern const char kAccessibilityDeprecateTypeAnnounceName[];
+extern const char kAccessibilityDeprecateTypeAnnounceDescription[];
 extern const char kAccessibilityIncludeLongClickActionName[];
 extern const char kAccessibilityIncludeLongClickActionDescription[];
 extern const char kAccessibilityPageZoomEnhancementsName[];
