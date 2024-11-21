@@ -398,12 +398,6 @@ class WebAppRegistrar {
   int GetUrlInAppScopeScore(const std::string& url_spec,
                             const webapps::AppId& app_id) const;
 
-  // Returns true if there is an app that is not locally installed that has
-  // a scope which is a prefix of |url|.
-  // TODO(crbug.com/340952100): Remove & replace callers with
-  // `FindBestAppWithUrlInScope`.
-  bool IsNonLocallyInstalledAppWithUrlInScope(const GURL& url) const;
-
   // Returns whether the app is a shortcut app (as opposed to a PWA).
   // TODO(crbug.com/341316725): Remove shortcut apps.
   bool IsShortcutApp(const webapps::AppId& app_id) const;

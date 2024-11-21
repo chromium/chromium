@@ -483,13 +483,6 @@ int WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,
   return score;
 }
 
-bool WebAppRegistrar::IsNonLocallyInstalledAppWithUrlInScope(
-    const GURL& url) const {
-  return FindBestAppWithUrlInScope(
-             url, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE})
-      .has_value();
-}
-
 bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
   if (!GetAppById(app_id)) {
     return false;
