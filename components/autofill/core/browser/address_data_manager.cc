@@ -159,13 +159,14 @@ void AddressDataManager::OnWebDataServiceRequestDone(
     std::unique_ptr<WDTypedResult> result) {
   CHECK_EQ(handle, pending_profile_query_);
   pending_profile_query_ = 0;
-  if (result) {
-    CHECK_EQ(result->GetType(), AUTOFILL_PROFILES_RESULT);
-    std::vector<AutofillProfile> profiles_from_db =
-        static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
-            ->GetValue();
-    profiles_ = std::move(profiles_from_db);
+  if (!result) {
+    return;
   }
+  CHECK_EQ(result->GetType(), AUTOFILL_PROFILES_RESULT);
+  std::vector<AutofillProfile> profiles_from_db =
+      static_cast<WDResult<std::vector<AutofillProfile>>*>(result.get())
+          ->GetValue();
+  profiles_ = std::move(profiles_from_db);
 
   if (!has_initial_load_finished_) {
     has_initial_load_finished_ = true;
