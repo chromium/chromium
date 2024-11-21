@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SNACKBAR_SNACKBAR_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_UI_SNACKBAR_SNACKBAR_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_SNACKBAR_UI_BUNDLED_SNACKBAR_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_SNACKBAR_UI_BUNDLED_SNACKBAR_COORDINATOR_H_
 
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/ui/snackbar/snackbar_coordinator_delegate.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator_delegate.h"
 
 // Coordinator that handles commands to show snackbars.
 @interface SnackbarCoordinator : ChromeCoordinator
@@ -25,4 +25,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SNACKBAR_SNACKBAR_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_SNACKBAR_UI_BUNDLED_SNACKBAR_COORDINATOR_H_

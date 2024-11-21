@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
