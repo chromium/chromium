@@ -266,10 +266,6 @@ template <typename T>
 inline constexpr size_t kComputedExtent =
     kComputedExtentImpl<std::remove_cvref_t<T>>;
 
-template <class T, class U, size_t N, size_t M>
-  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
-           std::equality_comparable_with<T, U>)
-constexpr bool span_eq(span<T, N> l, span<U, M> r);
 template <class T, size_t N>
 constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 
@@ -834,18 +830,21 @@ class GSL_POINTER span {
   friend constexpr bool operator==(span lhs, span rhs)
     requires(std::is_const_v<T> && std::equality_comparable<T>)
   {
-    return internal::span_eq(span<const T, N>(lhs), span<const T, N>(rhs));
+    return std::ranges::equal(span<const T>(lhs), span<const T>(rhs));
   }
   friend constexpr bool operator==(span lhs, span<const T, N> rhs)
     requires(!std::is_const_v<T> && std::equality_comparable<const T>)
   {
-    return internal::span_eq(span<const T, N>(lhs), span<const T, N>(rhs));
+    return std::ranges::equal(span<const element_type>(lhs), rhs);
   }
-  template <class U, size_t M>
-    requires((N == M || M == dynamic_extent) &&
-             std::equality_comparable_with<const T, const U>)
-  friend constexpr bool operator==(span lhs, span<U, M> rhs) {
-    return internal::span_eq(span<const T, N>(lhs), span<const U, M>(rhs));
+  template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
+    requires((OtherN == dynamic_extent || N == OtherN) &&
+             std::equality_comparable_with<const T, const OtherT>)
+  friend constexpr bool operator==(
+      span lhs,
+      span<OtherT, OtherN, OtherInternalPtrType> rhs) {
+    return std::ranges::equal(span<const T>(lhs),
+                              span<const OtherT, OtherN>(rhs));
   }
 
   // Compares two spans for ordering by comparing the objects pointed to by the
@@ -1364,17 +1363,20 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   friend constexpr bool operator==(span lhs, span rhs)
     requires(std::is_const_v<T> && std::equality_comparable<T>)
   {
-    return internal::span_eq(span<const T>(lhs), span<const T>(rhs));
+    return std::ranges::equal(span<const T>(lhs), span<const T>(rhs));
   }
   friend constexpr bool operator==(span lhs, span<const T> rhs)
     requires(!std::is_const_v<T> && std::equality_comparable<const T>)
   {
-    return internal::span_eq(span<const T>(lhs), span<const T>(rhs));
+    return std::ranges::equal(span<const T>(lhs), rhs);
   }
-  template <class U, size_t M>
-    requires(std::equality_comparable_with<const T, const U>)
-  friend constexpr bool operator==(span lhs, span<U, M> rhs) {
-    return internal::span_eq(span<const T>(lhs), span<const U, M>(rhs));
+  template <typename OtherT, size_t OtherN, typename OtherInternalPtrType>
+    requires(std::equality_comparable_with<const T, const OtherT>)
+  friend constexpr bool operator==(
+      span lhs,
+      span<OtherT, OtherN, OtherInternalPtrType> rhs) {
+    return std::ranges::equal(span<const T>(lhs),
+                              span<const OtherT, OtherN>(rhs));
   }
 
   // Compares two spans for ordering by comparing the objects pointed to by the
@@ -1729,14 +1731,6 @@ constexpr span<uint8_t, N * sizeof(T)> as_writable_byte_span(
 }
 
 namespace internal {
-
-// Template helper for implementing operator==.
-template <class T, class U, size_t N, size_t M>
-  requires((N == M || N == dynamic_extent || M == dynamic_extent) &&
-           std::equality_comparable_with<T, U>)
-constexpr bool span_eq(span<T, N> l, span<U, M> r) {
-  return l.size() == r.size() && std::equal(l.begin(), l.end(), r.begin());
-}
 
 template <class T>
 concept SpanConvertsToStringView = requires {
