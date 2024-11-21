@@ -15,6 +15,7 @@ import android.animation.AnimatorSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
@@ -331,33 +332,25 @@ public class ReorderDelegate {
                                     mEffectiveTabWidth)
                             + trailingMargin;
 
-            if (animationList != null) {
-                animationList.add(
-                        CompositorAnimator.ofFloatProperty(
-                                mAnimationHost.getAnimationHandler(),
-                                groupTitle,
-                                StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
-                                startWidth,
-                                endWidth,
-                                ANIM_TAB_SLIDE_OUT_MS));
-            } else {
-                groupTitle.setBottomIndicatorWidth(endWidth);
-            }
-        }
-
-        // Set new trailing margin.
-        if (animationList != null) {
             animationList.add(
                     CompositorAnimator.ofFloatProperty(
                             mAnimationHost.getAnimationHandler(),
-                            tab,
-                            StripLayoutTab.TRAILING_MARGIN,
-                            tab.getTrailingMargin(),
-                            trailingMargin,
+                            groupTitle,
+                            StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                            startWidth,
+                            endWidth,
                             ANIM_TAB_SLIDE_OUT_MS));
-        } else {
-            tab.setTrailingMargin(trailingMargin);
         }
+
+        // Set new trailing margin.
+        animationList.add(
+                CompositorAnimator.ofFloatProperty(
+                        mAnimationHost.getAnimationHandler(),
+                        tab,
+                        StripLayoutTab.TRAILING_MARGIN,
+                        tab.getTrailingMargin(),
+                        trailingMargin,
+                        ANIM_TAB_SLIDE_OUT_MS));
 
         return true;
     }
@@ -643,6 +636,7 @@ public class ReorderDelegate {
                         throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
     }
 
+    @VisibleForTesting
     void updateTabAttachState(
             StripLayoutTab tab, boolean attached, @NonNull ArrayList<Animator> animationList) {
         float startValue =
