@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_DISK_CACHE_SIMPLE_SIMPLE_TEST_UTIL_H_
 #define NET_DISK_CACHE_SIMPLE_SIMPLE_TEST_UTIL_H_
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -41,7 +37,7 @@ class ImmutableArray {
   }
 
  private:
-  T data_[size];
+  std::array<T, size> data_;
 };
 
 // Creates a corrupt file to be used in tests.
