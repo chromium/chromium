@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/prediction_improvements_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/autofill_ai_field_parser.h"
 
 #include <memory>
 
@@ -11,38 +11,37 @@
 
 namespace autofill {
 
-class PredictionImprovementsFieldParserTest : public FormFieldParserTestBase,
-                                              public testing::Test {
+class AutofillAiFieldParserTest : public FormFieldParserTestBase,
+                                  public testing::Test {
  public:
-  PredictionImprovementsFieldParserTest() = default;
-  PredictionImprovementsFieldParserTest(
-      const PredictionImprovementsFieldParserTest&) = delete;
-  PredictionImprovementsFieldParserTest& operator=(
-      const PredictionImprovementsFieldParserTest&) = delete;
+  AutofillAiFieldParserTest() = default;
+  AutofillAiFieldParserTest(const AutofillAiFieldParserTest&) = delete;
+  AutofillAiFieldParserTest& operator=(const AutofillAiFieldParserTest&) =
+      delete;
 
  protected:
   std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                          AutofillScanner* scanner) override {
-    return PredictionImprovementsFieldParser::Parse(context, scanner);
+    return AutofillAiFieldParser::Parse(context, scanner);
   }
 };
 
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-TEST_F(PredictionImprovementsFieldParserTest, Parse) {
+TEST_F(AutofillAiFieldParserTest, Parse) {
   AddTextFormFieldData("document#", "document#", IMPROVED_PREDICTION);
 
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode(""),
                     LanguageCode(""), PatternFile::kAutofillAi);
 }
 
-TEST_F(PredictionImprovementsFieldParserTest, ParseNonSearchTerm) {
+TEST_F(AutofillAiFieldParserTest, ParseNonSearchTerm) {
   AddTextFormFieldData("poss", "poss", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::kNotParsed, GeoIpCountryCode(""),
                     LanguageCode(""), PatternFile::kAutofillAi);
 }
 #else
-TEST_F(PredictionImprovementsFieldParserTest, Parse) {
+TEST_F(AutofillAiFieldParserTest, Parse) {
   AddTextFormFieldData("document#", "document#", IMPROVED_PREDICTION);
 
   ClassifyAndVerify(ParseResult::kNotParsed, GeoIpCountryCode(""),

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/form_parsing/prediction_improvements_field_parser.h"
+#include "components/autofill/core/browser/form_parsing/autofill_ai_field_parser.h"
 
 #include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -13,7 +13,7 @@
 namespace autofill {
 
 // static
-std::unique_ptr<FormFieldParser> PredictionImprovementsFieldParser::Parse(
+std::unique_ptr<FormFieldParser> AutofillAiFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
@@ -25,18 +25,16 @@ std::unique_ptr<FormFieldParser> PredictionImprovementsFieldParser::Parse(
       "PREDICTION_IMPROVEMENTS", std::nullopt, context.pattern_file);
   if (ParseField(context, scanner, patterns, &match,
                  "PREDICTION_IMPROVEMENTS")) {
-    return std::make_unique<PredictionImprovementsFieldParser>(
-        std::move(*match));
+    return std::make_unique<AutofillAiFieldParser>(std::move(*match));
   }
 #endif
   return nullptr;
 }
 
-PredictionImprovementsFieldParser::PredictionImprovementsFieldParser(
-    FieldAndMatchInfo match)
+AutofillAiFieldParser::AutofillAiFieldParser(FieldAndMatchInfo match)
     : match_(std::move(match)) {}
 
-void PredictionImprovementsFieldParser::AddClassifications(
+void AutofillAiFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
   AddClassification(match_, IMPROVED_PREDICTION, kBaseImprovedPredictionsScore,
                     field_candidates);
