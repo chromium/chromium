@@ -225,11 +225,6 @@ BASE_FEATURE_ENUM_PARAM(TrustTokenOriginTrialSpec,
 // https://tools.ietf.org/html/draft-davidben-http-client-hint-reliability-02#section-4.3
 BASE_FEATURE(kAcceptCHFrame, "AcceptCHFrame", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable
-BASE_FEATURE(kGetCookiesStringUma,
-             "GetCookiesStringUma",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace {
 
 // The default Mojo ring buffer size, used to send the content body.

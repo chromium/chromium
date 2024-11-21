@@ -3,3 +3,9 @@ include_rules = [
   "+components/cbor",
   "+components/url_matcher",
 ]
+
+specific_include_rules = {
+  "attribution_manager_impl_unittest.cc": [
+    "+services/network/network_service.h",
+  ]
+}

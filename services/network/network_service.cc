@@ -479,9 +479,7 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
       std::make_unique<SCTAuditingCache>(kMaxSCTAuditingCacheEntries);
 #endif
 
-  if (base::FeatureList::IsEnabled(features::kGetCookiesStringUma)) {
-    metrics_updater_ = std::make_unique<RestrictedCookieManagerMetrics>();
-  }
+  metrics_updater_ = std::make_unique<RestrictedCookieManagerMetrics>();
 }
 
 NetworkService::~NetworkService() {
@@ -1101,6 +1099,10 @@ NetworkService::GetDefaultURLLoaderNetworkServiceObserver() {
     return default_url_loader_network_service_observer_.get();
   }
   return nullptr;
+}
+
+void NetworkService::ResetMetricsUpdaterForTesting() {
+  metrics_updater_.reset();
 }
 
 // static

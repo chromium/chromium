@@ -78,6 +78,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
@@ -86,7 +87,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/schemeful_site.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/network_service.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -283,14 +284,15 @@ class AttributionManagerImplTest : public testing::Test {
         browser_context_(std::make_unique<TestBrowserContext>()),
         mock_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {
-    // This UMA records a sample every 30s via a periodic task which
-    // interacts poorly with TaskEnvironment::FastForward using day long
-    // delays (we need to run the uma update every 30s for that
-    // interval)
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{network::features::kGetCookiesStringUma,
-                               kAttributionReportDeliveryThirdRetryAttempt});
+    scoped_feature_list_.InitAndDisableFeature(
+        kAttributionReportDeliveryThirdRetryAttempt);
+
+    GetNetworkService();
+    // Wait for the Network Service to initialize on the IO thread.
+    RunAllPendingInMessageLoop(content::BrowserThread::IO);
+    // Disable metrics updater to avoid test timeouts.
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->ResetMetricsUpdaterForTesting();
   }
 
   void SetUp() override {
@@ -1983,14 +1985,9 @@ class AttributionManagerImplTestThirdRetryFeature
     : public AttributionManagerImplTest {
  public:
   AttributionManagerImplTestThirdRetryFeature() {
-    // This UMA records a sample every 30s via a periodic task which
-    // interacts poorly with TaskEnvironment::FastForward using day long
-    // delays (we need to run the uma update every 30s for that
-    // interval)
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kAttributionReportDeliveryThirdRetryAttempt},
-        /*disabled_features=*/{network::features::kGetCookiesStringUma});
+    scoped_feature_list_.InitAndEnableFeature(
+        kAttributionReportDeliveryThirdRetryAttempt);
   }
 };
 
