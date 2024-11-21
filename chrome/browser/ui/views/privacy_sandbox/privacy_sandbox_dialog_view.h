@@ -32,6 +32,7 @@ class PrivacySandboxDialogView : public views::View {
   void Close();
 
  private:
+  friend class PrivacySandboxQueueTestHelper;
   void ResizeNativeView(int height);
   void ShowNativeView();
   void OpenPrivacySandboxSettings();

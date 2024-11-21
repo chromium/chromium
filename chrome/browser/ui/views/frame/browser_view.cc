@@ -47,6 +47,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -947,6 +949,17 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   // Not all browsers do feature promos. Conditionally create one (or don't) for
   // this browser window.
   feature_promo_controller_ = CreateUserEducationResources(this);
+
+// Startup notices are queued here. Order of notices shown is defined by
+// show_after_ and blocked_by_ lists passed to QueueRequiredNotice() calls to
+// the product_messaging_controller. These calls usually live within individual
+// services. Queue is kicked off a frame or two later.
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* privacy_sandbox_service =
+          PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
+    privacy_sandbox_service->MaybeQueueNotice();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   browser_->tab_strip_model()->AddObserver(this);
   immersive_mode_controller_ = chrome::CreateImmersiveModeController(this);

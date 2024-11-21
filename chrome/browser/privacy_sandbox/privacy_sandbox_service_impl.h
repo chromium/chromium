@@ -25,8 +25,11 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_education/common/product_messaging_controller.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
+
+DECLARE_REQUIRED_NOTICE_IDENTIFIER(kPrivacySandboxNotice);
 
 class Browser;
 class PrefService;
@@ -74,6 +77,12 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   void PromptOpenedForBrowser(Browser* browser, views::Widget* widget) override;
   void PromptClosedForBrowser(Browser* browser) override;
   bool IsPromptOpenForBrowser(Browser* browser) override;
+  void HoldQueueHandle(user_education::RequiredNoticePriorityHandle
+                           messaging_priority_handle) override;
+  bool IsNoticeQueued() override;
+  void MaybeUnqueueNotice() override;
+  void MaybeQueueNotice() override;
+  bool IsHoldingHandle() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
   void EmitPrivacySandboxAccountPromptStartupMetrics() override;
@@ -357,6 +366,8 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
   raw_ptr<first_party_sets::FirstPartySetsPolicyService>
       first_party_sets_policy_service_;
+  raw_ptr<user_education::ProductMessagingController>
+      product_messaging_controller_;
   raw_ptr<PrivacySandboxCountries> privacy_sandbox_countries_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -367,11 +378,16 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
 
   PrefChangeRegistrar user_prefs_registrar_;
 
+  user_education::RequiredNoticePriorityHandle notice_handle_;
+
 #if !BUILDFLAG(IS_ANDROID)
   // A map of Browser windows which have an open Privacy Sandbox prompt,
   // to the Widget for that prompt.
   std::map<Browser*, raw_ptr<views::Widget, CtnExperimental>>
       browsers_to_open_prompts_;
+
+  // Returns instance of product messaging controller.
+  user_education::ProductMessagingController* GetProductMessagingController();
 #endif
 
   // Fake implementation for current and blocked topics.

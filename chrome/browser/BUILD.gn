@@ -8530,6 +8530,7 @@ static_library("browser_public_dependencies") {
     "//components/sync_device_info",
     "//components/system_cpu:system_cpu",
     "//components/url_deduplication",
+    "//components/user_education/common:common",
     "//components/webapps/browser",
     "//content/public/browser",
     "//ipc",
