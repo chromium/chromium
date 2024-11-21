@@ -47,10 +47,10 @@ double SHA1EntropyProvider::GetEntropyForTrial(
 }
 
 NormalizedMurmurHashEntropyProvider::NormalizedMurmurHashEntropyProvider(
-    ValueInRange entropy_value)
-    : entropy_value_(entropy_value) {
-  DCHECK_LT(entropy_value.value, entropy_value.range);
-  DCHECK_LE(entropy_value.range, std::numeric_limits<uint16_t>::max());
+    ValueInRange entropy_source)
+    : entropy_source_(entropy_source) {
+  DCHECK_LT(entropy_source.value, entropy_source.range);
+  DCHECK_LE(entropy_source.range, std::numeric_limits<uint16_t>::max());
 }
 
 NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() =
@@ -65,19 +65,19 @@ double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
         trial_name.length());
   }
   uint32_t x = internal::VariationsMurmurHash::Hash16(randomization_seed,
-                                                      entropy_value_.value);
+                                                      entropy_source_.value);
   int x_ordinal = 0;
-  for (uint32_t i = 0; i < entropy_value_.range; i++) {
+  for (uint32_t i = 0; i < entropy_source_.range; i++) {
     uint32_t y = internal::VariationsMurmurHash::Hash16(randomization_seed, i);
     x_ordinal += (y < x);
   }
 
   DCHECK_GE(x_ordinal, 0);
-  // There must have been at least one iteration where |x| == |y|, because
-  // |i| == |entropy_value_|, and |x_ordinal| was not incremented in that
-  // iteration, so |x_ordinal| < |entropy_domain_|.
-  DCHECK_LT(static_cast<uint32_t>(x_ordinal), entropy_value_.range);
-  return static_cast<double>(x_ordinal) / entropy_value_.range;
+  // There must have been at least one iteration where `x` == `y`, because
+  // `i` == `entropy_source_`, and `x_ordinal` was not incremented in that
+  // iteration, so `x_ordinal` < `entropy_domain_`.
+  DCHECK_LT(static_cast<uint32_t>(x_ordinal), entropy_source_.range);
+  return static_cast<double>(x_ordinal) / entropy_source_.range;
 }
 
 SessionEntropyProvider::~SessionEntropyProvider() = default;
@@ -88,17 +88,17 @@ double SessionEntropyProvider::GetEntropyForTrial(
   return base::RandDouble();
 }
 
-EntropyProviders::EntropyProviders(std::string_view high_entropy_value,
-                                   ValueInRange low_entropy_value,
-                                   std::string_view limited_entropy_value,
+EntropyProviders::EntropyProviders(std::string_view high_entropy_source,
+                                   ValueInRange low_entropy_source,
+                                   std::string_view limited_entropy_source,
                                    bool enable_benchmarking)
-    : low_entropy_(low_entropy_value),
+    : low_entropy_(low_entropy_source),
       benchmarking_enabled_(enable_benchmarking) {
-  if (!high_entropy_value.empty()) {
-    high_entropy_.emplace(high_entropy_value);
+  if (!high_entropy_source.empty()) {
+    high_entropy_.emplace(high_entropy_source);
   }
-  if (!limited_entropy_value.empty()) {
-    limited_entropy_.emplace(limited_entropy_value);
+  if (!limited_entropy_source.empty()) {
+    limited_entropy_.emplace(limited_entropy_source);
   }
 }
 
