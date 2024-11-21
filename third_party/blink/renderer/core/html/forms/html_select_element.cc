@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
@@ -65,6 +66,7 @@
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_no_script_element.h"
+#include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
@@ -77,9 +79,11 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -107,6 +111,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
     init->setSubtree(true);
+    // TODO(ansollan): Observe attributes as well to detect changes in tabindex.
     observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
     // Traverse descendants that have been added to the select so far.
     TraverseDescendants();
@@ -123,25 +128,18 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
         auto* added_nodes = record->addedNodes();
         for (unsigned i = 0; i < added_nodes->length(); ++i) {
           auto* descendant = added_nodes->item(i);
-          if (!descendant ||
-              (descendant->IsTextNode() &&
-               descendant->textContent().ContainsOnlyWhitespaceOrEmpty())) {
+          DCHECK(descendant);
+          if (IsWhitespaceOrEmpty(*descendant)) {
             continue;
           }
-          if (auto* descendant_element = DynamicTo<Element>(descendant)) {
 #if DCHECK_IS_ON()
-            if (!descendant_element->parentElement()) {
-              // If the descendant doesn't have a parent element, verify that
-              // the target is `HTMLSelectedContentElement`.
-              auto* target_element = DynamicTo<Element>(record->target());
-              DCHECK(target_element);
-              auto* target_html_element =
-                  DynamicTo<HTMLElement>(target_element);
-              DCHECK(IsA<HTMLSelectedContentElement>(*target_html_element));
-            }
-#endif
-            AddWarningToElement(descendant_element);
+          if (!descendant->parentNode()) {
+            // If the descendant doesn't have a parent node, verify that the
+            // target is `HTMLSelectedContentElement`.
+            DCHECK(IsA<HTMLSelectedContentElement>(*record->target()));
           }
+#endif
+          AddWarningToNode(*descendant);
         }
       }
     }
@@ -157,17 +155,18 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
 
  private:
   void TraverseDescendants() {
-    for (Element* current_element = ElementTraversal::FirstWithin(*select_);
-         current_element;
-         current_element = ElementTraversal::Next(*current_element, select_)) {
-      AddWarningToElement(current_element);
+    for (Node* descendant = NodeTraversal::FirstWithin(*select_); descendant;
+         descendant = NodeTraversal::Next(*descendant, select_)) {
+      if (!IsWhitespaceOrEmpty(*descendant)) {
+        AddWarningToNode(*descendant);
+      }
     }
   }
 
-  void AddWarningToElement(Element* element) {
-    if (element && !IsDescendantAllowed(element)) {
+  void AddWarningToNode(Node& node) {
+    if (!IsDescendantAllowed(node)) {
       // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
-      element->AddConsoleMessage(
+      node.AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRecommendation,
           mojom::blink::ConsoleMessageLevel::kError,
           "A descendant of a <select> does not follow the content "
@@ -175,44 +174,148 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     }
   }
 
-  bool IsDescendantAllowed(const Element* element) {
-    DCHECK(element);
-    auto* descendant_html_element = DynamicTo<HTMLElement>(*element);
-    if (!descendant_html_element) {
-      return false;
+  bool IsDescendantAllowed(const Node& descendant) {
+    // Get the parent of the descendant.
+    const Node* parent = descendant.parentNode();
+    // If the node has no parent, assume it is being appended to a
+    // `HTMLSelectedContentElement`.
+    if (!parent) {
+      return IsAllowedDescendantOfOption(descendant);
     }
-    // Get the parent of the element.
-    Element* parent_element = element->parentElement();
-    if (!parent_element) {
-      // Assume descendant is being appended to a `HTMLSelectedContentElement`.
-      // TODO(ansollan): Add content model checks for <selectedcontent>
-      // descendants.
-      return !descendant_html_element->IsInteractiveContent();
+    if (!IsA<HTMLElement>(*parent)) {
+      return parent->IsSVGElement();
     }
-    auto* ancestor_html_element = DynamicTo<HTMLElement>(*parent_element);
-    if (!ancestor_html_element) {
-      return false;
+    if (IsA<HTMLSelectElement>(*parent)) {
+      return IsAllowedDescendantOfSelect(descendant);
     }
+    if (IsA<HTMLOptGroupElement>(*parent)) {
+      return IsAllowedDescendantOfOptgroup(descendant);
+    }
+    if (IsA<HTMLOptionElement>(*parent) ||
+        IsA<HTMLSelectedContentElement>(*parent) ||
+        (IsAllowedPhrasingContent(*parent) && !IsA<HTMLSpanElement>(*parent))) {
+      return IsAllowedDescendantOfOption(descendant);
+    }
+    if (IsA<HTMLDivElement>(*parent) || IsA<HTMLSpanElement>(*parent)) {
+      return TraverseAncestorsAndCheckDescendant(descendant);
+    }
+    if (IsA<HTMLNoScriptElement>(*parent) || IsA<HTMLScriptElement>(*parent) ||
+        IsA<HTMLTemplateElement>(*parent)) {
+      if (descendant.IsTextNode()) {
+        return true;
+      }
+      return TraverseAncestorsAndCheckDescendant(descendant);
+    }
+    if (IsA<HTMLButtonElement>(*parent)) {
+      return IsA<HTMLSelectedContentElement>(descendant) ||
+             IsAllowedDescendantOfOption(descendant);
+    }
+    return IsA<HTMLLegendElement>(*parent) &&
+           IsAllowedPhrasingContent(descendant);
+  }
 
-    if (IsA<HTMLSelectElement>(*ancestor_html_element)) {
-      return IsA<HTMLButtonElement>(*descendant_html_element) ||
-             IsA<HTMLOptionElement>(*descendant_html_element) ||
-             IsA<HTMLOptGroupElement>(*descendant_html_element) ||
-             IsA<HTMLHRElement>(*descendant_html_element) ||
-             IsA<HTMLDivElement>(*descendant_html_element) ||
-             IsA<HTMLNoScriptElement>(*descendant_html_element) ||
-             IsA<HTMLScriptElement>(*descendant_html_element) ||
-             IsA<HTMLTemplateElement>(*descendant_html_element);
+  bool IsAllowedDescendantOfSelect(const Node& descendant) {
+    // <button> has to be the first child of <select>.
+    return (IsA<HTMLButtonElement>(descendant) &&
+            !ElementTraversal::PreviousSibling(descendant)) ||
+           IsA<HTMLOptionElement>(descendant) ||
+           IsA<HTMLOptGroupElement>(descendant) ||
+           IsA<HTMLHRElement>(descendant) || IsA<HTMLDivElement>(descendant) ||
+           IsA<HTMLSpanElement>(descendant) ||
+           IsA<HTMLNoScriptElement>(descendant) ||
+           IsA<HTMLScriptElement>(descendant) ||
+           IsA<HTMLTemplateElement>(descendant);
+  }
+
+  bool IsAllowedDescendantOfOptgroup(const Node& descendant) {
+    // <legend> has to be the first child of <select>.
+    return (IsA<HTMLLegendElement>(descendant) &&
+            !ElementTraversal::PreviousSibling(descendant)) ||
+           IsA<HTMLOptionElement>(descendant) ||
+           IsA<HTMLDivElement>(descendant) ||
+           IsA<HTMLSpanElement>(descendant) ||
+           IsA<HTMLNoScriptElement>(descendant) ||
+           IsA<HTMLScriptElement>(descendant) ||
+           IsA<HTMLTemplateElement>(descendant);
+  }
+
+  bool IsAllowedDescendantOfOption(const Node& descendant) {
+    // TODO(ansollan): Descendants of <option> should not have the tabindex
+    // attribute specified and contenteditable should be false.
+    return IsA<HTMLDivElement>(descendant) ||
+           IsAllowedPhrasingContent(descendant);
+  }
+
+  bool TraverseAncestorsAndCheckDescendant(const Node& descendant) {
+    // As we've already checked the descendant's parent, we can directly look at
+    // the grandparent.
+    for (const Node* ancestor = descendant.parentNode()->parentNode(); ancestor;
+         ancestor = ancestor->parentNode()) {
+      if (IsA<HTMLOptionElement>(*ancestor)) {
+        return IsAllowedDescendantOfOption(descendant);
+      }
+      if (IsA<HTMLOptGroupElement>(*ancestor)) {
+        return IsAllowedDescendantOfOptgroup(descendant);
+      }
+      if (IsA<HTMLSelectElement>(*ancestor)) {
+        return IsAllowedDescendantOfSelect(descendant);
+      }
     }
-    // TODO(ansollan): Add content model checks for <option>, <optgroup>, <div>,
-    // <svg>, and phrasing content descendants.
-    if (IsA<HTMLOptGroupElement>(*ancestor_html_element) ||
-        IsA<HTMLOptionElement>(*ancestor_html_element) ||
-        IsA<HTMLDivElement>(*ancestor_html_element) ||
-        IsA<HTMLNoScriptElement>(*ancestor_html_element) ||
-        IsA<HTMLScriptElement>(*ancestor_html_element) ||
-        IsA<HTMLTemplateElement>(*ancestor_html_element)) {
-      return !descendant_html_element->IsInteractiveContent();
+    return false;
+  }
+
+  bool IsWhitespaceOrEmpty(const Node& node) {
+    return node.IsTextNode() &&
+           node.textContent().ContainsOnlyWhitespaceOrEmpty();
+  }
+
+  // Phrasing content that isn't Interactive content. <datalist>, <object>
+  // elements are excluded as well.
+  bool IsAllowedPhrasingContent(const Node& node) {
+    DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, phrasing_content_names,
+                        ({
+                            html_names::kATag,        html_names::kAbbrTag,
+                            html_names::kAreaTag,     html_names::kAudioTag,
+                            html_names::kBTag,        html_names::kBdiTag,
+                            html_names::kBdoTag,      html_names::kBrTag,
+                            html_names::kButtonTag,   html_names::kCanvasTag,
+                            html_names::kCiteTag,     html_names::kCodeTag,
+                            html_names::kDataTag,     html_names::kDatalistTag,
+                            html_names::kDelTag,      html_names::kDfnTag,
+                            html_names::kEmTag,       html_names::kEmbedTag,
+                            html_names::kITag,        html_names::kIFrameTag,
+                            html_names::kImgTag,      html_names::kInputTag,
+                            html_names::kInsTag,      html_names::kKbdTag,
+                            html_names::kLabelTag,    html_names::kLinkTag,
+                            html_names::kMapTag,      html_names::kMarkTag,
+                            mathml_names::kMathTag,   html_names::kMetaTag,
+                            html_names::kMeterTag,    html_names::kNoscriptTag,
+                            html_names::kObjectTag,   html_names::kOutputTag,
+                            html_names::kPictureTag,  html_names::kProgressTag,
+                            html_names::kQTag,        html_names::kRubyTag,
+                            html_names::kSTag,        html_names::kSampTag,
+                            html_names::kScriptTag,   html_names::kSelectTag,
+                            html_names::kSlotTag,     html_names::kSmallTag,
+                            html_names::kSpanTag,     html_names::kStrongTag,
+                            html_names::kSubTag,      html_names::kSupTag,
+                            svg_names::kSVGTag,       html_names::kTemplateTag,
+                            html_names::kTextareaTag, html_names::kTimeTag,
+                            html_names::kUTag,        html_names::kVarTag,
+                            html_names::kVideoTag,    html_names::kWbrTag,
+                        }));
+    if (node.IsTextNode()) {
+      return true;
+    }
+    if (IsA<HTMLDataListElement>(node) || IsA<HTMLObjectElement>(node)) {
+      return false;
+    }
+    if (const auto* element = DynamicTo<Element>(node)) {
+      if (phrasing_content_names.Contains(element->TagQName())) {
+        if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+          return !html_element->IsInteractiveContent();
+        }
+        return element->IsSVGElement();
+      }
     }
     return false;
   }
