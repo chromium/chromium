@@ -327,11 +327,6 @@ BASE_FEATURE(kWebAssemblyInliningCallIndirect,
              "WebAssemblyInliningCallIndirect",
              kFeatureDefaultStateControlledByV8);
 
-// Enable WebAssembly code flushing.
-BASE_FEATURE(kWebAssemblyLiftoffCodeFlushing,
-             ("WebAssemblyLiftoffCodeFlushing"),
-             kFeatureDefaultStateControlledByV8);
-
 // Enable support for multiple memories according to the multi-memory proposal:
 // https://github.com/WebAssembly/multi-memory. See
 // https://chromestatus.com/feature/5106389887746048.

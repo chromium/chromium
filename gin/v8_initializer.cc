@@ -515,8 +515,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kWebAssemblyInliningCallIndirect,
                          "--wasm-inlining-call-indirect",
                          "--no-wasm-inlining-call-indirect");
-  SetV8FlagsIfOverridden(features::kWebAssemblyLiftoffCodeFlushing,
-                         "--flush-liftoff-code", "--no-flush-liftoff-code");
   SetV8FlagsIfOverridden(features::kWebAssemblyMultipleMemories,
                          "--experimental-wasm-multi-memory",
                          "--no-experimental-wasm-multi-memory");
