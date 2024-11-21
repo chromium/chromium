@@ -1,16 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] overflow scroll, scrollbar-gutter auto
-  assert_greater_than: content height expected a number greater than 200 but got 200
-[FAIL] overflow auto, scrollbar-gutter stable
-  assert_greater_than: content height expected a number greater than 200 but got 200
-[FAIL] overflow scroll, scrollbar-gutter stable
-  assert_greater_than: content height expected a number greater than 200 but got 200
-[FAIL] overflow hidden, scrollbar-gutter stable
-  assert_greater_than: content height expected a number greater than 200 but got 200
-[FAIL] overflow auto, scrollbar-gutter stable both-edges
-  assert_greater_than: content height expected a number greater than 200 but got 200
-[FAIL] overflow scroll, scrollbar-gutter stable both-edges
-  assert_greater_than: content height expected a number greater than 200 but got 200
-[FAIL] overflow hidden, scrollbar-gutter stable both-edges
-  assert_greater_than: content height expected a number greater than 200 but got 200
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.
