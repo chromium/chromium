@@ -169,8 +169,8 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   base::TimeTicks deadline = frame_time_ticks + interval;
 
   BitmapEncoder encoder;
-  if (screenshot.has_value()) {
-    ScreenshotParams& params = screenshot.value();
+  if (screenshot) {
+    ScreenshotParams& params = *screenshot;
     auto encoder_or_response =
         GetEncoder(params.GetFormat(ScreenshotParams::FormatEnum::Png),
                    params.GetQuality(kDefaultScreenshotQuality),
