@@ -904,9 +904,8 @@ TEST_P(AutofillAiManagerImportFormTest,
   test_api(*eligible_form_structure)
       .PushField()
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      .set_heuristic_type(
-          autofill::HeuristicSource::kPredictionImprovementRegexes,
-          autofill::IMPROVED_PREDICTION);
+      .set_heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes,
+                          autofill::IMPROVED_PREDICTION);
 #else
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
@@ -964,9 +963,8 @@ TEST_F(AutofillAiManagerTest, FormNotImportedWhenPrefDisabled) {
   test_api(*eligible_form_structure)
       .PushField()
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-      .set_heuristic_type(
-          autofill::HeuristicSource::kPredictionImprovementRegexes,
-          autofill::IMPROVED_PREDICTION);
+      .set_heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes,
+                          autofill::IMPROVED_PREDICTION);
 #else
       .set_heuristic_type(autofill::GetActiveHeuristicSource(),
                           autofill::IMPROVED_PREDICTION);
@@ -1202,7 +1200,7 @@ class IsFormAndFieldEligibleAutofillAiTest : public BaseAutofillAiManagerTest {
         test_api(*form).PushField();
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kPredictionImprovementRegexes,
+        autofill::HeuristicSource::kAutofillAiRegexes,
         autofill::IMPROVED_PREDICTION);
 #else
     prediction_improvement_field.set_heuristic_type(

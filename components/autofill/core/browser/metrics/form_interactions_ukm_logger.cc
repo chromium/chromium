@@ -373,9 +373,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
         case HeuristicSource::kExperimentalRegexes:
           heuristic_experimental_type = event->field_type;
           break;
-        case HeuristicSource::kPredictionImprovementRegexes:
-          // Prediction improvements are currently ignored for Autofill based
-          // UKM logging.
+        case HeuristicSource::kAutofillAiRegexes:
+          // AutofillAi is currently ignored for Autofill based UKM logging.
           break;
 #endif
         case HeuristicSource::kAutofillMachineLearning:

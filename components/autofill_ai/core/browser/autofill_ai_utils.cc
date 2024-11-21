@@ -47,8 +47,7 @@ bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field) {
   }
 
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (field.heuristic_type(
-          autofill::HeuristicSource::kPredictionImprovementRegexes) ==
+  if (field.heuristic_type(autofill::HeuristicSource::kAutofillAiRegexes) ==
       autofill::IMPROVED_PREDICTION) {
     return true;
   }

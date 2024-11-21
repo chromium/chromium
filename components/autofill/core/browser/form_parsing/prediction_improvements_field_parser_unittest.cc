@@ -32,14 +32,14 @@ TEST_F(PredictionImprovementsFieldParserTest, Parse) {
   AddTextFormFieldData("document#", "document#", IMPROVED_PREDICTION);
 
   ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode(""),
-                    LanguageCode(""), PatternFile::kPredictionImprovements);
+                    LanguageCode(""), PatternFile::kAutofillAi);
 }
 
 TEST_F(PredictionImprovementsFieldParserTest, ParseNonSearchTerm) {
   AddTextFormFieldData("poss", "poss", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::kNotParsed, GeoIpCountryCode(""),
-                    LanguageCode(""), PatternFile::kPredictionImprovements);
+                    LanguageCode(""), PatternFile::kAutofillAi);
 }
 #else
 TEST_F(PredictionImprovementsFieldParserTest, Parse) {

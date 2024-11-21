@@ -17,7 +17,7 @@ std::unique_ptr<FormFieldParser> PredictionImprovementsFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (context.pattern_file != PatternFile::kPredictionImprovements) {
+  if (context.pattern_file != PatternFile::kAutofillAi) {
     NOTREACHED();
   }
   std::optional<FieldAndMatchInfo> match;

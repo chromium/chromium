@@ -46,7 +46,7 @@ action("regex_patterns_inl_h") {
   if (use_internal_autofill_patterns) {
     sources += [
       "form_parsing/internal_resources/0_default_regex_patterns.json",
-      "form_parsing/internal_resources/1_improved_predictions.json",
+      "form_parsing/internal_resources/1_autofill_ai.json",
     ]
   } else {
     sources += [ "form_parsing/resources/legacy_regex_patterns.json" ]

@@ -273,7 +273,7 @@ class AutofillAiFunnelMetricsTest
         test_api(*form).PushField();
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
     prediction_improvement_field.set_heuristic_type(
-        autofill::HeuristicSource::kPredictionImprovementRegexes,
+        autofill::HeuristicSource::kAutofillAiRegexes,
         autofill::IMPROVED_PREDICTION);
 #else
     prediction_improvement_field.set_heuristic_type(

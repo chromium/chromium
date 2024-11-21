@@ -161,8 +161,8 @@ void FormFieldParser::ParseFormFields(
       RemoveCheckableFields(fields);
 
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  // Prediction improvements are parsed using their own exclusive pattern file.
-  if (context.pattern_file == PatternFile::kPredictionImprovements) {
+  // AutofillAi is parsed using their own exclusive pattern file.
+  if (context.pattern_file == PatternFile::kAutofillAi) {
     ParseFormFieldsPass(PredictionImprovementsFieldParser::Parse, context,
                         processed_fields, field_candidates);
     return;

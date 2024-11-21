@@ -37,7 +37,7 @@ base::span<const MatchPatternRef> GetMatchPatterns(
 #else
     case PatternFile::kDefault:
       return it->second[0];
-    case PatternFile::kPredictionImprovements:
+    case PatternFile::kAutofillAi:
       return it->second[1];
 #endif
   }
