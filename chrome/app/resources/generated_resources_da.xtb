@@ -2795,6 +2795,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2904210161403910217">Din adgangskode er blevet ændret, siden sidste gang du loggede ind</translation>
 <translation id="2904506722835398619">Login og synkronisering er påkrævet</translation>
 <translation id="2904845070985032877">Sæt animationer på pause</translation>
+<translation id="2905556994482999199">Brug hovedbevægelser og ansigtsudtryk til at styre din Chromebook</translation>
 <translation id="2907619724991574506">Startwebadresser</translation>
 <translation id="2907798539022650680">Der kunne ikke oprettes forbindelse til "<ph name="NAME" />": <ph name="DETAILS" />
     Servermeddelelse: <ph name="SERVER_MSG" /></translation>
@@ -5559,6 +5560,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4882919381756638075">Websites bruger normalt din mikrofon til kommunikationsformål såsom videochat</translation>
 <translation id="4883436287898674711">Alle websites på <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Jobliste</translation>
+<translation id="4884937942297374058">Forbedret beskyttelse er deaktiveret</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Denne udvidelse har ingen yderligere adgang til websites</translation>
 <translation id="4887424188275796356">Åbn med standardvisningsprogram</translation>
@@ -6368,6 +6370,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5473099001878321374">Hvis du fortsætter, accepterer du, at denne enhed også kan downloade og installere opdateringer og apps automatisk fra Google, dit barns mobilselskab og producenten af enheden, eventuelt ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden skal være på mindst ét tegn}one{Pinkoden skal være på mindst # tegn}other{Pinkoden skal være på mindst # tegn}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).</translation>
+<translation id="5476957746413745956">Juster hastigheden separat for hver retning</translation>
 <translation id="5477089831058413614">Konfigurer <ph name="DEVICE_TYPE" />-hotspot</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481682542063333508">Tilbyd hjælp til at skrive</translation>

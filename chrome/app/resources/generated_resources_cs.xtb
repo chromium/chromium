@@ -2783,6 +2783,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2904210161403910217">Vaše heslo se od posledního přihlášení změnilo</translation>
 <translation id="2904506722835398619">Je potřeba přihlášení a synchronizace</translation>
 <translation id="2904845070985032877">Pozastavit animace</translation>
+<translation id="2905556994482999199">Ovládat Chromebook pohyby hlavy a výrazy obličeje</translation>
 <translation id="2907619724991574506">Adresy URL po spuštění</translation>
 <translation id="2907798539022650680">Připojení k položce <ph name="NAME" /> se nezdařilo: <ph name="DETAILS" />
 Zpráva serveru: <ph name="SERVER_MSG" /></translation>
@@ -3473,6 +3474,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3429174588714165399">Vytvoření zástupce této stránky</translation>
 <translation id="3429271624041785769">Jazyky webového obsahu</translation>
 <translation id="3429275422858276529">Přidejte si tuto stránku do záložek, abyste ji později snáze našli</translation>
+<translation id="3431530007831146102">Ovládat kurzor myši pohyby hlavy</translation>
 <translation id="3431715928297727378">Uvolněno <ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Při opuštění zamknout</translation>
@@ -5543,6 +5545,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4882919381756638075">Weby obvykle používají mikrofon ke komunikačním funkcím, jako je videohovor</translation>
 <translation id="4883436287898674711">Všechny weby <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Správce úloh</translation>
+<translation id="4884937942297374058">Vylepšená ochrana je vypnutá</translation>
 <translation id="4884987973312178454">6×</translation>
 <translation id="4885692421645694729">Toto rozšíření nemá přístup k žádným dalším webům</translation>
 <translation id="4887424188275796356">Otevřít pomocí systémového prohlížeče</translation>
@@ -6351,6 +6354,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5473099001878321374">Pokračováním vyjadřujete souhlas s tím, že toto zařízení může také automaticky stahovat a instalovat aktualizace a aplikace od společnosti Google, operátora a výrobce zařízení a v případě potřeby k tomu smí používat mobilní datové připojení. Některé z těchto aplikací mohou nabízet nákupy v aplikaci.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN musí obsahovat nejméně 1 znak}few{PIN musí obsahovat nejméně # znaky}many{PIN musí obsahovat nejméně # znaku}other{PIN musí obsahovat nejméně # znaků}}</translation>
 <translation id="5474859849784484111">Doména <ph name="MANAGER" /> vyžaduje, abyste se připojili k síti Wi-Fi a stáhli aktualizaci. Případně ji můžete stáhnout přes měřené připojení (mohou být účtovány poplatky).</translation>
+<translation id="5476957746413745956">Upravit rychlost samostatně pro každý směr</translation>
 <translation id="5477089831058413614">Konfigurace hotspotu zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Zákaz stahovat automaticky několik souborů</translation>
 <translation id="5481682542063333508">Nabízet pomoc při psaní</translation>

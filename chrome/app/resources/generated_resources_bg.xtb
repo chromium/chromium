@@ -2790,6 +2790,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2904210161403910217">Паролата ви е променена от последния път, когато сте влезли в профила си</translation>
 <translation id="2904506722835398619">Необходимо е влизане в профила и синхронизиране</translation>
 <translation id="2904845070985032877">Поставяне на анимациите на пауза</translation>
+<translation id="2905556994482999199">Контролирайте своя Chromebook с движения на главата и мимики</translation>
 <translation id="2907619724991574506">URL адреси при стартиране</translation>
 <translation id="2907798539022650680">Свързването с/ъс „<ph name="NAME" />“ не бе успешно: <ph name="DETAILS" />
 Съобщение от сървъра: <ph name="SERVER_MSG" /></translation>
@@ -3482,6 +3483,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3429174588714165399">Създаване на пряк път към тази страница</translation>
 <translation id="3429271624041785769">Езици за уеб съдържанието</translation>
 <translation id="3429275422858276529">Запазете отметка към тази страница, за да я намирате лесно по-късно</translation>
+<translation id="3431530007831146102">Контролиране на курсора на мишката с движения на главата</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> освободена памет</translation>
 <translation id="3432762828853624962">Споделени изпълнители</translation>
 <translation id="3433507769937235446">Заключване при отдалечаване</translation>

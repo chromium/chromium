@@ -2793,6 +2793,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2904210161403910217">Jelszava megváltozott a legutóbbi bejelentkezése óta</translation>
 <translation id="2904506722835398619">Bejelentkezés és szinkronizálás szükséges</translation>
 <translation id="2904845070985032877">Animációk szüneteltetése</translation>
+<translation id="2905556994482999199">Fejmozgások és arckifejezések használatával is vezérelheti a Chromebookot</translation>
 <translation id="2907619724991574506">Kezdési URL-ek</translation>
 <translation id="2907798539022650680">Nem sikerült a csatlakozás a következőhöz: „<ph name="NAME" />” – <ph name="DETAILS" />
     Szerverüzenet: <ph name="SERVER_MSG" /></translation>
@@ -3485,6 +3486,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3429174588714165399">Parancsikon létrehozása ehhez az oldalhoz</translation>
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
+<translation id="3431530007831146102">Az kurzor vezérlése fejmozgatással</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> felszabadítva</translation>
 <translation id="3432762828853624962">Shared workers</translation>
 <translation id="3433507769937235446">Zárolás távozáskor</translation>
@@ -5556,6 +5558,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4882919381756638075">A webhelyek általában kommunikációs szolgáltatások (például videocsevegés) biztosítása érdekében férnek hozzá a mikrofonhoz</translation>
 <translation id="4883436287898674711">Minden <ph name="WEBSITE_1" /> webhelyen</translation>
 <translation id="48838266408104654">&amp;Feladatkezelő</translation>
+<translation id="4884937942297374058">A Speciális védelem ki van kapcsolva</translation>
 <translation id="4884987973312178454">6×</translation>
 <translation id="4885692421645694729">A bővítmény nem rendelkezik további webhelyhozzáféréssel</translation>
 <translation id="4887424188275796356">Megnyitás a rendszer megtekintőjével</translation>
@@ -6365,6 +6368,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5473099001878321374">Ha továbblép, azzal elfogadja, hogy az eszköz automatikusan letölthet és telepíthet frissítéseket és alkalmazásokat a Google-tól, gyermeke szolgáltatójától és az eszköz gyártójától, akár mobiladat-kapcsolaton keresztül is. Egyes alkalmazások alkalmazáson belüli vásárlásokat kínálhatnak.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{A PIN-kódnak legalább egy karakterből kell állnia}other{A PIN-kódnak legalább # karakterből kell állnia}}</translation>
 <translation id="5474859849784484111">A(z) <ph name="MANAGER" /> megköveteli, hogy eszközével most Wi-Fi-hálózathoz csatlakozzon, és letöltse a szükséges frissítést. A letöltés forgalomkorlátos kapcsolaton is végrehajtható (ez esetben a szolgáltató díjat számíthat fel).</translation>
+<translation id="5476957746413745956">Különböző sebesség beállítása az egyes irányokhoz</translation>
 <translation id="5477089831058413614">A(z) <ph name="DEVICE_TYPE" /> hotspotjának konfigurálása</translation>
 <translation id="5481273127572794904">Nem tölthetnek le automatikusan egyszerre több fájlt</translation>
 <translation id="5481682542063333508">Íráshoz való segítség felajánlása</translation>

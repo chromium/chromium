@@ -10274,17 +10274,17 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
           Si no se configura, no se verá afectado el comportamiento de las políticas más específicas.</translation>
 <translation id="8350643689940867542">Inhabilitar la generación de informes con los datos sobre la política</translation>
 <translation id="835283681355955417">Informar datos sobre los periféricos</translation>
-<translation id="8354001669131263433">A partir de M132, se quitará esta política, junto con las APIs de pantalla completa de video prefijadas.
+<translation id="8354001669131263433">A partir de M132, se quitará esta política, junto con las APIs de pantalla completa con prefijo de video.
 
-Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de pantalla completa de video prefijadas (p. ej., Video.webkitEnterFullscreen()) desde JavaScript.
+Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de pantalla completa con prefijo de video (p. ej., Video.webkitEnterFullscreen()) desde JavaScript.
 
-Si estableces la política como <ph name="DISABLED_VALUE_NAME" />, no se usarán en JavaScript las APIs de pantalla completa de video prefijadas y solo se quedarán las APIs de pantalla completa estándar (p. ej., Element.requestFullscreen()).
+Si estableces la política como <ph name="DISABLED_VALUE_NAME" />, no se usarán en JavaScript las APIs de pantalla completa con prefijo de video y solo se conservarán las APIs de pantalla completa estándar (p. ej., Element.requestFullscreen()).
 
-Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" />, se permitirá que la marca de función PrefixedFullscreenVideo habilitada para el tiempo de ejecución determine si las APIs de pantalla completa de video prefijadas están disponibles para los sitios web.
+Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" />, se permitirá que la marca de función PrefixedFullscreenVideo habilitada para el entorno de ejecución determine si las APIs de pantalla completa con prefijo de video estarán disponibles para los sitios web.
 
 Si no estableces la política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
 
-Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de pantalla completa de webkit prefijadas. M131 es la última versión que tendrá esta política.</translation>
+Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de pantalla completa con el prefijo webkit. M131 es la última versión que tendrá esta política.</translation>
 <translation id="8356953698979920095">Si estableces la política con un valor, se usará ese color de forma predeterminada para la retroiluminación del teclado
 
 del dispositivo durante el acceso del usuario.</translation>

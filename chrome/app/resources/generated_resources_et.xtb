@@ -2785,6 +2785,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2904210161403910217">Teie parool on alates viimasest sisselogimisest muutunud</translation>
 <translation id="2904506722835398619">Vajalik on sisselogimine ja sünkroonimine</translation>
 <translation id="2904845070985032877">Peata animatsioonid</translation>
+<translation id="2905556994482999199">Kasutage oma Chromebooki juhtimiseks pealiigutusi ja näoilmeid</translation>
 <translation id="2907619724991574506">Käivitus-URL-id</translation>
 <translation id="2907798539022650680">Võrguga „<ph name="NAME" />” ühenduse loomine ebaõnnestus: <ph name="DETAILS" />
         Serveri teade: <ph name="SERVER_MSG" /></translation>
@@ -5549,6 +5550,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4882919381756638075">Saidid kasutavad teie mikrofoni tavaliselt suhtlusfunktsioonide jaoks, näiteks videovestluseks</translation>
 <translation id="4883436287898674711">Kõik domeeni <ph name="WEBSITE_1" /> saidid</translation>
 <translation id="48838266408104654">Tegumihal&amp;dur</translation>
+<translation id="4884937942297374058">Täiustatud kaitse on välja lülitatud</translation>
 <translation id="4884987973312178454">6-kordne</translation>
 <translation id="4885692421645694729">Sellel laiendusel ei ole lisajuurdepääsu saidile</translation>
 <translation id="4887424188275796356">Ava süsteemivaaturiga</translation>
@@ -6358,6 +6360,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5473099001878321374">Jätkamisel nõustute, et see seade võib Google'i, teie lapse operaatori ja seadme tootja värskendusi ning rakendusi automaatselt alla laadida ja installida, kasutades selleks võib-olla teie mobiilset andmesidet. Mõned rakendused võivad pakkuda rakendusesiseseid oste.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN-kood peab koosnema vähemalt ühest tähemärgist}other{PIN-kood peab koosnema vähemalt # tähemärgist}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> nõuab, et looksite kohe WiFi-ühenduse ja laadiksite alla värskenduse. Võite allalaadimiseks kasutada ka mahupõhist ühendust (rakenduda võivad tasud).</translation>
+<translation id="5476957746413745956">Kiiruse kohandamine iga suuna puhul eraldi</translation>
 <translation id="5477089831058413614">Seadme <ph name="DEVICE_TYPE" /> kuumkoha seadistamine</translation>
 <translation id="5481273127572794904">Pole lubatud automaatselt mitut faili alla laadida</translation>
 <translation id="5481682542063333508">Paku kirjutamisel abi</translation>

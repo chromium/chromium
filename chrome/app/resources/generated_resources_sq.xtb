@@ -2779,6 +2779,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2904210161403910217">Fjalëkalimi yt është ndryshuar që prej herës së fundit kur je identifikuar</translation>
 <translation id="2904506722835398619">Nevojitet identifikimi dhe sinkronizimi</translation>
 <translation id="2904845070985032877">Vendos në pauzë animacionet</translation>
+<translation id="2905556994482999199">Përdor lëvizjet e kokës dhe shprehjet e fytyrës për të kontrolluar Chromebook</translation>
 <translation id="2907619724991574506">URL-të e fillimit</translation>
 <translation id="2907798539022650680">Dështoi lidhja me "<ph name="NAME" />": <ph name="DETAILS" />
     Mesazhi i serverit: <ph name="SERVER_MSG" /></translation>
@@ -5540,6 +5541,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4882919381756638075">Sajtet përdorin zakonisht mikrofonin për veçoritë e komunikimit si biseda me video</translation>
 <translation id="4883436287898674711">Të gjitha sajtet <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Menaxheri i detyrave</translation>
+<translation id="4884937942297374058">"Mbrojtja e përmirësuar" është joaktive</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Kjo shtesë nuk ka qasje shtesë në sajt</translation>
 <translation id="4887424188275796356">Hap me "Shikuesin e sistemit"</translation>
@@ -6348,6 +6350,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5473099001878321374">Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe të instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori celular i fëmijës dhe nga prodhuesi i kësaj pajisjeje, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Kodi PIN duhet të ketë të paktën një karakter}other{Kodi PIN duhet të ketë të paktën # karaktere}}</translation>
 <translation id="5474859849784484111"><ph name="MANAGER" /> kërkon që të lidhesh me Wi-Fi tani dhe të shkarkosh një përditësim. Ndryshe, shkarko nga një lidhje me matje (mund të zbatohen tarifa).</translation>
+<translation id="5476957746413745956">Rregullo shpejtësinë veçmas për çdo drejtim</translation>
 <translation id="5477089831058413614">Konfiguro zonën e qasjes për internet për <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Nuk lejohen të shkarkojnë automatikisht shumë skedarë</translation>
 <translation id="5481682542063333508">Ofro ndihmë për të shkruarit</translation>

@@ -2797,6 +2797,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2904210161403910217">Geslo se je spremenilo, odkar ste se nazadnje prijavili</translation>
 <translation id="2904506722835398619">Potrebna je prijava in sinhronizacija</translation>
 <translation id="2904845070985032877">Začasno zaustavi animacije</translation>
+<translation id="2905556994482999199">Upravljajte Chromebook s premiki glave in obraznimi potezami</translation>
 <translation id="2907619724991574506">Zagonski URL-ji</translation>
 <translation id="2907798539022650680">Povezava s/z »<ph name="NAME" />« ni bila mogoča: <ph name="DETAILS" />
     Sporočilo strežnika: <ph name="SERVER_MSG" /></translation>
@@ -3424,7 +3425,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="338323348408199233">Blokiraj promet brez omrežja VPN</translation>
 <translation id="3384362484379805487">Jezikovne datoteke so zaradi varčevanja s prostorom na disku skupne za vse uporabnike.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" /> %</translation>
-<translation id="3385172418915595177">Natančnost zaznavanja lokacije zagotavlja natančnejšo lokacijo za aplikacije in storitve. Google to naredi tako, da redno obdeluje podatke o tipalih naprav in brezžične signale iz naprave ter tako množično zbere lokacije brezžičnih signalov. Ti se uporabljajo brez osebne prepoznave, in sicer za namene izboljšanja natančnosti zaznavanja lokacije in storitev na podlagi lokacije ter za namene splošnega izboljšanja, zagotavljanja in vzdrževanja Googlovih storitev glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.</translation>
+<translation id="3385172418915595177">Natančnost zaznavanja lokacije zagotavlja natančnejšo lokacijo za aplikacije in storitve. Google to naredi tako, da redno obdeluje podatke o tipalih naprav in brezžične signale iz naprave ter tako množično zbere lokacije brezžičnih signalov. Ti se uporabljajo brez vaše osebne prepoznave, in sicer za namene izboljšanja natančnosti zaznavanja lokacije in storitev na podlagi lokacije ter za namene splošnega izboljšanja, zagotavljanja in vzdrževanja Googlovih storitev glede na zakonite interese Googla in tretjih oseb za izpolnjevanje potreb uporabnikov.</translation>
 <translation id="338583716107319301">Ločilo</translation>
 <translation id="3385916046075724800">Skupine zavihkov se zdaj samodejno shranjujejo.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3489,6 +3490,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3429174588714165399">Ustvarjanje bližnjice do te strani</translation>
 <translation id="3429271624041785769">Jeziki za spletno vsebino</translation>
 <translation id="3429275422858276529">Dodajte to stran med zaznamke, da jo boste pozneje hitreje našli</translation>
+<translation id="3431530007831146102">Upravljanje kazalca miške s premikanjem glave</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – sproščeno <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Zaklepanje ob oddaljitvi</translation>
@@ -5561,6 +5563,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4882919381756638075">Spletna mesta običajno uporabljajo mikrofon za komunikacijske funkcije, kot je videoklepet.</translation>
 <translation id="4883436287898674711">Vsa spletna mesta <ph name="WEBSITE_1" /></translation>
 <translation id="48838266408104654">&amp;Upravitelj opravil</translation>
+<translation id="4884937942297374058">Izboljšana zaščita je izklopljena</translation>
 <translation id="4884987973312178454">6 x</translation>
 <translation id="4885692421645694729">Ta razširitev nima dodatnega dostopa do spletnih mest.</translation>
 <translation id="4887424188275796356">Odpri s sistemskim pregledovalnikom</translation>
@@ -6370,6 +6373,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5473099001878321374">Če nadaljujete, se strinjate, da lahko ta naprava tudi samodejno prenaša in namešča posodobitve in aplikacije Googla, operaterja in proizvajalca te otrokove naprave – morda s prenosom podatkov v mobilnih omrežjih. Nekatere od teh aplikacij morda ponujajo nakupe v aplikaciji.</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Koda PIN mora vsebovati najmanj en znak}one{Koda PIN mora vsebovati najmanj # znak}two{Koda PIN mora vsebovati najmanj # znaka}few{Koda PIN mora vsebovati najmanj # znake}other{Koda PIN mora vsebovati najmanj # znakov}}</translation>
 <translation id="5474859849784484111">Domena <ph name="MANAGER" /> zahteva, da se povežete z omrežjem Wi-Fi in prenesete posodobitev. Prenesete jo lahko tudi prek povezave z omejenim prenosom podatkov (prenos podatkov se morda zaračuna).</translation>
+<translation id="5476957746413745956">Prilagodite hitrost posebej za vsako smer</translation>
 <translation id="5477089831058413614">Konfiguriranje dostopne točke naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481273127572794904">Ni dovoljeno samodejno prenesti več datotek</translation>
 <translation id="5481682542063333508">Ponudi pomoč pri pisanju</translation>
