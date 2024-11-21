@@ -1731,13 +1731,6 @@ TEST_P(PNGTests, cicp) {
   ASSERT_TRUE(transform);  // Guaranteed by `HasEmbeddedColorProfile`.
   const skcms_ICCProfile* png_profile = transform->SrcProfile();
   ASSERT_TRUE(png_profile);
-
-  // TODO(https://crbug.com/376758571): Add support for cICP chunks.
-  if (skia::IsRustyPngEnabled()) {
-    EXPECT_FALSE(
-        skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
-    GTEST_SKIP() << "SkPngRustCodec doesn't yet support cICP chunks";
-  }
   EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
 }
 
