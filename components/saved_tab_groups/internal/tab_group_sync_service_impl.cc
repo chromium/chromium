@@ -107,6 +107,32 @@ void OnCanApplyOptimizationCompleted(
   std::move(callback).Run(std::move(url_restriction));
 }
 
+bool IsUrlSyncable(
+    const GURL& url,
+    const GURL& previous_url,
+    bool is_shared_tab_group,
+    const std::optional<proto::UrlRestriction>& url_restriction) {
+  if (!url_restriction.has_value()) {
+    return true;
+  }
+
+  if (is_shared_tab_group && !url_restriction->block_for_share()) {
+    return true;
+  }
+
+  if (!is_shared_tab_group && !url_restriction->block_for_sync()) {
+    return true;
+  }
+
+  // Block the URL if only differs from the current one in fragment.
+  if (url_restriction->block_if_similar_to_last_synced_url() &&
+      url.GetWithoutRef() == previous_url.GetWithoutRef()) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
@@ -368,22 +394,15 @@ void TabGroupSyncServiceImpl::NavigateTab(const LocalTabGroupID& group_id,
     return;
   }
 
-  // Update attributions for the tab first.
-  UpdateAttributions(group_id, tab_id);
+  if (IsUrlRestrictionEnabled()) {
+    GetURLRestriction(
+        url, base::BindOnce(&TabGroupSyncServiceImpl::NavigateTabInternal,
+                            weak_ptr_factory_.GetWeakPtr(), group_id, tab_id,
+                            url, title, tab->url()));
+    return;
+  }
 
-  // Use the builder to create the updated tab.
-  bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();
-
-  SavedTabGroupTab updated_tab(*tab);
-  updated_tab.SetURL(url);
-  updated_tab.SetTitle(title);
-  UpdateTabTitleIfNeeded(*group, updated_tab, opt_guide_,
-                         stats::TitleSanitizationType::kNavigateTab);
-
-  model_->UpdateLastUserInteractionTimeLocally(group_id);
-  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
-                           /*notify_observers=*/will_update_url);
-  LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
+  NavigateTabInternal(group_id, tab_id, url, title, tab->url(), std::nullopt);
 }
 
 void TabGroupSyncServiceImpl::UpdateTabProperties(
@@ -1217,6 +1236,54 @@ bool TabGroupSyncServiceImpl::TransitionSavedToSharedTabGroupIfNeeded(
   }
 
   return true;
+}
+
+void TabGroupSyncServiceImpl::NavigateTabInternal(
+    const LocalTabGroupID& group_id,
+    const LocalTabID& tab_id,
+    const GURL& url,
+    const std::u16string& title,
+    const GURL& previous_tab_url,
+    const std::optional<proto::UrlRestriction>& url_restriction) {
+  VLOG(2) << __func__;
+  auto* group = model_->Get(group_id);
+  if (!group) {
+    DVLOG(1) << __func__ << " Called for a group that doesn't exist";
+    return;
+  }
+
+  const auto* tab = group->GetTab(tab_id);
+  if (!tab) {
+    DVLOG(1) << __func__ << " Called for a tab that doesn't exist";
+    return;
+  }
+
+  // The URL has changed after the URL restriction task is posted, early return.
+  if (tab->url() != previous_tab_url) {
+    return;
+  }
+
+  if (!IsUrlSyncable(url, previous_tab_url, group->is_shared_tab_group(),
+                     url_restriction)) {
+    return;
+  }
+
+  // Update attributions for the tab first.
+  UpdateAttributions(group_id, tab_id);
+
+  // Use the builder to create the updated tab.
+  bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();
+
+  SavedTabGroupTab updated_tab(*tab);
+  updated_tab.SetURL(url);
+  updated_tab.SetTitle(title);
+  UpdateTabTitleIfNeeded(*group, updated_tab, opt_guide_,
+                         stats::TitleSanitizationType::kNavigateTab);
+
+  model_->UpdateLastUserInteractionTimeLocally(group_id);
+  model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
+                           /*notify_observers=*/will_update_url);
+  LogEvent(TabGroupEvent::kTabNavigated, group_id, tab_id);
 }
 
 }  // namespace tab_groups

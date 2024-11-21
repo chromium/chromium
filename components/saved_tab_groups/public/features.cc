@@ -93,6 +93,11 @@ BASE_FEATURE(kEnableTabTitleSanitization,
              "EnableTabTitleSanitization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables checking for URLs before syncing them to remote devices.
+BASE_FEATURE(kEnableUrlRestriction,
+             "EnableUrlRestriction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
@@ -131,6 +136,10 @@ bool ShouldForceRemoveClosedTabGroupsOnStartup() {
 
 bool IsTabTitleSanitizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableTabTitleSanitization);
+}
+
+bool IsUrlRestrictionEnabled() {
+  return base::FeatureList::IsEnabled(kEnableUrlRestriction);
 }
 
 }  // namespace tab_groups

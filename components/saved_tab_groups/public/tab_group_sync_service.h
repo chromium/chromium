@@ -256,7 +256,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   CreateScopedLocalObserverPauser() = 0;
 
   using UrlRestrictionCallback =
-      base::OnceCallback<void(std::optional<proto::UrlRestriction>)>;
+      base::OnceCallback<void(const std::optional<proto::UrlRestriction>&)>;
   // Get the restrictions on a given URL.
   virtual void GetURLRestriction(const GURL& url,
                                  UrlRestrictionCallback callback) = 0;

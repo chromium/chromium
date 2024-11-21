@@ -795,6 +795,167 @@ TEST_F(TabGroupSyncServiceTest, NavigateTabIgnoresSameUrl) {
   WaitForPostedTasks();
 }
 
+TEST_F(TabGroupSyncServiceTest, NavigateTabWithEmptyUrlRestriction) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  optimization_guide::OptimizationMetadata metadata;
+
+  // Update tab and verify observers.
+  std::u16string new_title = u"tab title";
+  GURL new_url = GURL("http://www.example.com");
+
+  // False was returned by optimization guide.
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  new_url, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       new_url, new_title);
+  WaitForPostedTasks();
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(new_title, tab->title());
+  EXPECT_EQ(new_url, tab->url());
+  VerifyCacheGuids(*group, tab, kTestCacheGuid, kTestCacheGuid, kTestCacheGuid,
+                   kTestCacheGuid);
+}
+
+TEST_F(TabGroupSyncServiceTest, NavigateTabNotBlockedByUrlRestriction) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  optimization_guide::OptimizationMetadata metadata;
+  std::u16string title_1 = u"tab title";
+  GURL url_1 = GURL("http://www.example.com#1");
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_1, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_1, title_1);
+  WaitForPostedTasks();
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_1, tab->title());
+  EXPECT_EQ(url_1, tab->url());
+
+  proto::UrlRestriction url_restriction;
+  url_restriction.set_block_for_sync(true);
+  url_restriction.set_block_for_share(true);
+  url_restriction.set_block_if_similar_to_last_synced_url(true);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(url_restriction));
+
+  // Update tab and verify observers.
+  std::u16string title_2 = u"tab title";
+  GURL url_2 = GURL("http://www.foo.com");
+
+  // True was returned by optimization guide.
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_2, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(metadata)));
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_2, title_2);
+  WaitForPostedTasks();
+
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_2, tab->title());
+  EXPECT_EQ(url_2, tab->url());
+}
+
+TEST_F(TabGroupSyncServiceTest, NavigateTabBlockedDueToSimilarUrl) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableUrlRestriction}, {});
+  optimization_guide::OptimizationMetadata metadata;
+  std::u16string title_1 = u"tab title";
+  GURL url_1 = GURL("http://www.example.com#1");
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_1, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kFalse,
+          ByRef(metadata)));
+
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_1, title_1);
+  WaitForPostedTasks();
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  SavedTabGroupTab* tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_1, tab->title());
+  EXPECT_EQ(url_1, tab->url());
+
+  proto::UrlRestriction url_restriction;
+  url_restriction.set_block_for_sync(true);
+  url_restriction.set_block_for_share(true);
+  url_restriction.set_block_if_similar_to_last_synced_url(true);
+  metadata.set_any_metadata(optimization_guide::AnyWrapProto(url_restriction));
+
+  // Update tab and verify observers.
+  std::u16string title_2 = u"tab title 2";
+  GURL url_2 = GURL("http://www.example.com#2");
+
+  // True was returned by optimization guide.
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  url_2, optimization_guide::proto::SAVED_TAB_GROUP,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          optimization_guide::OptimizationGuideDecision::kTrue,
+          ByRef(metadata)));
+
+  EXPECT_CALL(*observer_, OnTabGroupUpdated(UuidEq(group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       url_2, title_2);
+  WaitForPostedTasks();
+
+  group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
+  EXPECT_TRUE(group.has_value());
+
+  // Verify updated tab.
+  tab = group->GetTab(local_tab_id_1_);
+  EXPECT_TRUE(tab);
+  EXPECT_EQ(title_1, tab->title());
+  EXPECT_EQ(url_1, tab->url());
+}
+
 TEST_F(TabGroupSyncServiceTest, MoveTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();
@@ -1181,10 +1342,10 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          ASSERT_FALSE(restriction);
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    ASSERT_FALSE(restriction);
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1200,10 +1361,10 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          ASSERT_FALSE(restriction);
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    ASSERT_FALSE(restriction);
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1219,10 +1380,10 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          ASSERT_FALSE(restriction);
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    ASSERT_FALSE(restriction);
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -1243,12 +1404,12 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
             ByRef(metadata)));
     base::RunLoop run_loop;
     tab_group_sync_service_->GetURLRestriction(
-        test_url,
-        base::BindOnce([](std::optional<proto::UrlRestriction> restriction) {
-          EXPECT_TRUE(restriction);
-          EXPECT_TRUE(restriction->block_for_sync());
-          EXPECT_TRUE(restriction->block_for_share());
-        }).Then(run_loop.QuitClosure()));
+        test_url, base::BindOnce([](const std::optional<proto::UrlRestriction>&
+                                        restriction) {
+                    EXPECT_TRUE(restriction);
+                    EXPECT_TRUE(restriction->block_for_sync());
+                    EXPECT_TRUE(restriction->block_for_share());
+                  }).Then(run_loop.QuitClosure()));
     run_loop.Run();
   }
 }

@@ -243,6 +243,15 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   bool TransitionSavedToSharedTabGroupIfNeeded(
       const SavedTabGroup& shared_group);
 
+  // Helper method called by NavigateTab() when UrlRestriction is retrieved.
+  void NavigateTabInternal(
+      const LocalTabGroupID& group_id,
+      const LocalTabID& tab_id,
+      const GURL& url,
+      const std::u16string& title,
+      const GURL& previous_tab_url,
+      const std::optional<proto::UrlRestriction>& url_restriction);
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 
