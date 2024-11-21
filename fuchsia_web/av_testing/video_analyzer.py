@@ -19,11 +19,7 @@ def from_original_video(recorded: str, original: str) -> object:
     """ Analyzes the |recorded| video file by using the |original| as the
         reference, and returns the results as an json object. """
     BINARY = '/usr/local/cipd/local_analyzer/local_video_analyzer.par'
-    if not os.path.isfile(BINARY):
-        logging.warning(
-            '%s is not found, no video analysis result would be ' +
-            'generated.', BINARY)
-        return {}
+    assert os.path.isfile(BINARY)
     subprocess.run([
         BINARY, '--gid=', '--uid=', f'--ref_video_file={original}',
         f'--test_video_file={recorded}', f'--output_folder={LOG_DIR}'

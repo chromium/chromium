@@ -15,7 +15,6 @@ import shutil
 import subprocess
 import sys
 import time
-import urllib.request
 
 from contextlib import AbstractContextManager
 from pathlib import Path
@@ -33,7 +32,6 @@ import version
 from browser_runner import BrowserRunner
 from chrome_driver_wrapper import ChromeDriverWrapper
 from common import get_build_info, get_ffx_isolate_dir, get_free_local_port
-from compatible_utils import running_unattended
 from isolate_daemon import IsolateDaemon
 from run_webpage_test import WebpageTestRunner, capture_devtools_addr
 
@@ -89,12 +87,11 @@ def parameters_of(file: str) -> camera.Parameters:
 
 def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
                         host: str) -> None:
-    if running_unattended():
-        param = f'file={file}'
-    else:
-        param = 'local'
+    driver.get(f'http://{host}:{HTTP_SERVER_PORT}/video.html?file={file}')
     camera_params = parameters_of(file)
-    driver.get(f'http://{host}:{HTTP_SERVER_PORT}/video.html?{param}')
+    original_video = os.path.join(server.VIDEO_DIR, file)
+    # Ensure the original video won't be overwritten.
+    assert camera_params.video_file != original_video
     with StartProcess(camera.start, [camera_params], False):
         video = driver.find_element_by_id('video')
         video.click()
@@ -107,14 +104,6 @@ def run_video_perf_test(file: str, driver: ChromeDriverWrapper,
         while not driver.execute_script('return arguments[0].ended;', video):
             time.sleep(1)
     logging.warning('Video %s finished', file)
-
-    # Download the original video file for local comparison.
-    original_video = os.path.join(TEMP_DIR, file)
-    assert camera_params.video_file != original_video
-    # The http address should match the one in video.html.
-    urllib.request.urlretrieve(
-        f'http://172.31.186.18/test_site/mediaFiles/videostack/{file}',
-        original_video)
 
     results = video_analyzer.from_original_video(camera_params.video_file,
                                                  original_video)
@@ -140,12 +129,11 @@ def run_test(proc: subprocess.Popen) -> None:
     # Replace the last byte to 1, by default it's the ip address of the host
     # machine being accessible on the device.
     host = '.'.join(device.split('.')[:-1] + ['1'])
-    if running_unattended():
-        proxy_host = os.environ.get('GCS_PROXY_HOST')
-        if proxy_host:
-            # This is a hacky way to get the ip address of the host machine
-            # being accessible on the device.
-            host = proxy_host + '0'
+    proxy_host = os.environ.get('GCS_PROXY_HOST')
+    if proxy_host:
+        # This is a hacky way to get the ip address of the host machine
+        # being accessible on the device by the fuchsia managed docker image.
+        host = proxy_host + '0'
     with ChromeDriverWrapper((device, port)) as driver:
         for file in ['720p24fpsVP9_gangnam_sync.webm']:
             run_video_perf_test(file, driver, host)
@@ -178,15 +166,14 @@ if __name__ == '__main__':
     if 'FUCHSIA_NODENAME' not in os.environ:
         os.environ['FUCHSIA_NODENAME'] = Path(
             '/home/swarming/target-id').read_text().strip()
-    if running_unattended():
-        # The version is not available without explicitly sending in the
-        # command line flags.
-        logging.warning('Chrome version %s %s', version.chrome_version_str(),
-                        version.git_revision())
-        build_info = get_build_info()
-        logging.warning('Fuchsia build info %s', build_info)
-        monitors.tag(version.chrome_version_str(), build_info.version,
-                     version.chrome_version_str() + '/' + build_info.version)
+    # The version is not available without explicitly sending in the
+    # command line flags.
+    logging.warning('Chrome version %s %s', version.chrome_version_str(),
+                    version.git_revision())
+    build_info = get_build_info()
+    logging.warning('Fuchsia build info %s', build_info)
+    monitors.tag(version.chrome_version_str(), build_info.version,
+                 version.chrome_version_str() + '/' + build_info.version)
     # Setting a temporary isolate daemon dir and share it with the webpage
     # runner.
     with StartProcess(server.start, [HTTP_SERVER_PORT], True), \
