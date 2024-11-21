@@ -20,11 +20,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -444,7 +439,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
 }
 
 static const char* ViewportErrorMessageTemplate(ViewportErrorCode error_code) {
-  static const char* const kErrors[] = {
+  static constexpr auto kErrors = std::to_array<const char*>({
       "The key \"%replacement1\" is not recognized and ignored.",
       "The value \"%replacement1\" for key \"%replacement2\" is invalid, and "
       "has been ignored.",
@@ -454,8 +449,7 @@ static const char* ViewportErrorMessageTemplate(ViewportErrorCode error_code) {
       "been clamped.",
       "The key \"target-densitydpi\" is not supported.",
       "The value \"%replacement1\" for key \"viewport-fit\" is not supported.",
-  };
-
+  });
   return kErrors[error_code];
 }
 
