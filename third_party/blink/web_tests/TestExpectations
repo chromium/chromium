@@ -8645,3 +8645,5 @@ crbug.com/379664772 [ Linux ] virtual/sanitizer-api/external/wpt/sanitizer-api/s
 
 # Gardener 2024-11-21
 crbug.com/380323589 [ Win ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass ]
+crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Failure Pass ]
+crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Failure Pass ]
