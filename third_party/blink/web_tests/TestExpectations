@@ -7281,7 +7281,6 @@ crbug.com/1352545 external/wpt/html/cross-origin-opener-policy/coop-sandbox-cuts
 crbug.com/1501090 [ Linux ] external/wpt/preload/preload-strict-dynamic.sub.html [ Failure Pass ]
 
 # Gardener 2023-11-23
-crbug.com/1504651 [ Linux ] external/wpt/touch-events/single-touch.html [ Failure Pass ]
 crbug.com/1495671 [ Win ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
 
 # Gardener 2023-11-24
