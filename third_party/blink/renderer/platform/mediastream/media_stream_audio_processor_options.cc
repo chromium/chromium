@@ -10,6 +10,7 @@ void AudioProcessingProperties::DisableDefaultProperties() {
   echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
   auto_gain_control = false;
   noise_suppression = false;
+  goog_highpass_filter = false;
   voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
 }
 
@@ -32,6 +33,7 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
   return disable_hw_noise_suppression == other.disable_hw_noise_suppression &&
          auto_gain_control == other.auto_gain_control &&
          noise_suppression == other.noise_suppression &&
+         goog_highpass_filter == other.goog_highpass_filter &&
          voice_isolation == other.voice_isolation;
 }
 
@@ -51,6 +53,7 @@ AudioProcessingProperties::ToAudioProcessingSettings(
   out.automatic_gain_control =
       auto_gain_control && !system_gain_control_activated;
 
+  out.high_pass_filter = goog_highpass_filter;
   out.multi_channel_capture_processing = multi_channel_capture_processing;
   return out;
 }
