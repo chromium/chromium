@@ -21,7 +21,7 @@ import {getTemplate} from './toolbar.html.js';
 
 export class SettingsToolbarElement extends PolymerElement {
   static get is() {
-    return 'settings-toolbar';
+    return 'settings-toolbar' as const;
   }
 
   static get template() {
@@ -79,16 +79,15 @@ export class SettingsToolbarElement extends PolymerElement {
   }
 
   private onMenuClick_(): void {
-    const event =
-      new CustomEvent('settings-toolbar-menu-tap',
-                      {bubbles: true, composed: true});
+    const event = new CustomEvent(
+        'settings-toolbar-menu-tap', {bubbles: true, composed: true});
     this.dispatchEvent(event);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-toolbar': SettingsToolbarElement;
+    [SettingsToolbarElement.is]: SettingsToolbarElement;
   }
 }
 

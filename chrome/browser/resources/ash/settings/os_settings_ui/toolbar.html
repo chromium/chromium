@@ -9,18 +9,11 @@
   }
 
   h1 {
+    color: var(--cros-sys-primary);
     flex: 1;
-    font-size: 123%;
-    font-weight: 500;
-    letter-spacing: .25px;
-    line-height: normal;
+    font: var(--cros-title-1-font);
     margin-inline-start: 8px;
     padding-inline-end: 12px;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) h1 {
-    color: var(--cros-sys-primary);
-    font: var(--cros-title-1-font);
   }
 
   #leftContent {
@@ -51,10 +44,6 @@
     display: flex;
     flex: 1 1 0;
     justify-content: center;
-  }
-
-  #rightSpacer {
-    padding-inline-end: 8px;
   }
 
   :host([narrow]) #centeredContent {
@@ -104,29 +93,11 @@
   }
 
   :host(:not([narrow])) #leftContent {
-    flex: 1 1 0;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host(:not([narrow]))
-      #leftContent {
-    flex-grow: 0;
+    flex: 0 1 0;
   }
 
   :host(:not([narrow])) #centeredContent {
     flex-basis: var(--settings-main-basis);
-  }
-
-  :host([narrow][showing-search_]) #rightContent {
-    display: none;
-  }
-
-  :host(:not([narrow])) #rightContent {
-    flex: 1 1 0;
-    text-align: end;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled) #rightContent {
-    display: none;
   }
 </style>
 <iron-media-query query="(max-width: 780px)"
@@ -149,10 +120,4 @@
   <os-settings-search-box id="searchBox" narrow="[[narrow]]"
       showing-search="{{showingSearch_}}">
   </os-settings-search-box>
-</div>
-
-<div id="rightContent">
-  <div id="rightSpacer">
-    <slot></slot>
-  </div>
 </div>
