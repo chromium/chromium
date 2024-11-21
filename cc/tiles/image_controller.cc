@@ -281,9 +281,17 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
       /*need_unref=*/false,
       /*is_at_raster_decode=*/false,
       /*can_do_hardware_accelerated_decode=*/false);
-  if (is_image_lazy)
+  if (is_image_lazy) {
+    if (!cache_) {
+      // This should only happen in tests
+      worker_state_->origin_task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), id, ImageDecodeResult::FAILURE));
+      return id;
+    }
     result = cache_->GetOutOfRasterDecodeTaskForImageAndRef(
         image_cache_client_id_, draw_image);
+  }
   // If we don't need to unref this, we don't actually have a task.
   DCHECK(result.need_unref || !result.task);
 

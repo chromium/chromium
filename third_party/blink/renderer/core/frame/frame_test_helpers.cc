@@ -1009,6 +1009,15 @@ void TestWebFrameWidget::DispatchThroughCcInputHandler(
   FlushInputHandlerTasks();
 }
 
+void TestWebFrameWidget::RequestDecode(
+    const cc::PaintImage&,
+    base::OnceCallback<void(bool)> callback) {
+  // TODO(paint-dev): probably this should `std::move(callback).Run(true)`, but
+  // that could cause deep recursion into
+  // ResourceFetcher::MaybeStartSpeculativeImageDecode(). Currently, nothing
+  // depends on the callback actually running, so we just drop it.
+}
+
 display::ScreenInfo TestWebFrameWidget::GetInitialScreenInfo() {
   return initial_screen_info_;
 }

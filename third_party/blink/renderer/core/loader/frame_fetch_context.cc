@@ -875,24 +875,27 @@ void FrameFetchContext::UpgradeResourceRequestForLoader(
   AddReducedAcceptLanguageIfNecessary(request);
 }
 
-void FrameFetchContext::StartSpeculativeImageDecode(
+bool FrameFetchContext::StartSpeculativeImageDecode(
     Resource* resource,
     base::OnceClosure callback) {
   CHECK(resource->GetType() == ResourceType::kImage);
   if (!document_ || !document_->GetFrame()) {
-    std::move(callback).Run();
-    return;
+    return false;
   }
   ImageResource* image_resource = To<ImageResource>(resource);
   Image* image = image_resource->GetContent()->GetImage();
   if (IsA<SVGImage>(image)) {
-    std::move(callback).Run();
-    return;
+    return false;
   }
-  document_->GetFrame()->GetChromeClient().RequestDecode(
-      document_->GetFrame(), image->PaintImageForCurrentFrame(),
-      WTF::BindOnce([](base::OnceClosure cb, bool) { std::move(cb).Run(); },
-                    std::move(callback)));
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  if (paint_image) {
+    document_->GetFrame()->GetChromeClient().RequestDecode(
+        document_->GetFrame(), paint_image,
+        WTF::BindOnce([](base::OnceClosure cb, bool) { std::move(cb).Run(); },
+                      std::move(callback)));
+    return true;
+  }
+  return false;
 }
 
 bool FrameFetchContext::IsPrerendering() const {
