@@ -62,6 +62,8 @@ TabAndroid* TestTabModel::GetTabAt(int index) const {
 
 void TestTabModel::SetActiveIndex(int index) {}
 
+void TestTabModel::ForceCloseAllTabs() {}
+
 void TestTabModel::CloseTabAt(int index) {}
 
 void TestTabModel::AddObserver(TabModelObserver* observer) {

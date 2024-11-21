@@ -184,6 +184,7 @@ class TestTabModel : public TabModel {
   }
   TabAndroid* GetTabAt(int index) const override { return nullptr; }
   void SetActiveIndex(int index) override {}
+  void ForceCloseAllTabs() override {}
   void CloseTabAt(int index) override {}
   void CreateTab(TabAndroid* parent,
                  content::WebContents* web_contents,

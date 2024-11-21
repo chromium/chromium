@@ -888,14 +888,26 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    protected void forceCloseAllTabs() {
+        // Tests need to use forceCloseTabs here. If a native test has left a shared tab group open
+        // the protections of TabRemover#closeTabs will kick in and when trying to close all tabs
+        // and we won't actually close all tabs.
+        getTabRemover().forceCloseTabs(TabClosureParams.closeAllTabs().build());
+        commitAllTabClosures();
+    }
+
+    @Override
     protected boolean closeTabAt(int index) {
         @Nullable Tab tab = getTabAt(index);
         if (tab == null) return false;
 
-        // TODO(crbug.com/345854441): Make this use TabRemover. Doing so without changing the native
-        // test harness for android browsertests breaks some sync tests that create, but do not
-        // delete shared tab groups, by creating an infinite loop.
-        closeTabs(TabClosureParams.closeTab(tab).allowUndo(false).build());
+        // This behavior is safe for existing native callers (devtools, and a few niche features).
+        // If this is ever to be used more regularly from native the ability to specify
+        // `allowDialog` should be exposed.
+        getTabRemover()
+                .closeTabs(
+                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
         return true;
     }
 

@@ -187,6 +187,7 @@ class TabModel {
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const = 0;
 
   virtual void SetActiveIndex(int index) = 0;
+  virtual void ForceCloseAllTabs() = 0;
   virtual void CloseTabAt(int index) = 0;
 
   // Used for restoring tabs from synced foreign sessions.

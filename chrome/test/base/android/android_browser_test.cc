@@ -32,13 +32,14 @@ void AndroidBrowserTest::SetUpDefaultCommandLine(
       command_line, /*open_about_blank_on_launch=*/true);
 }
 
-void AndroidBrowserTest::PreRunTestOnMainThread() {
-}
+void AndroidBrowserTest::PreRunTestOnMainThread() {}
 
 void AndroidBrowserTest::PostRunTestOnMainThread() {
   for (TabModel* model : TabModelList::models()) {
-    while (model->GetTabCount())
-      model->CloseTabAt(0);
+    if (model->GetTabCount()) {
+      model->ForceCloseAllTabs();
+    }
+    ASSERT_EQ(0, model->GetTabCount());
   }
 
   // Run any shutdown events from closing tabs.
