@@ -142,6 +142,7 @@ import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
@@ -212,6 +213,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final ManualFillingComponentSupplier mManualFillingComponentSupplier;
     private final @NonNull DataSharingTabManager mDataSharingTabManager;
     private final Supplier<Boolean> mCanAnimateBrowserControls;
+    private final EdgeToEdgeManager mEdgeToEdgeManager;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
 
     // Activity tab observer that updates the current tab used by various UI components.
@@ -305,8 +307,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      *     used.
      * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent} for
      *     interacting with non-popup filling UI.
-     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
-     *     draw edge-to-edge.
+     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     public TabbedRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -356,7 +357,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
             @Nullable View baseChromeLayout,
             @NonNull ManualFillingComponentSupplier manualFillingComponentSupplier,
-            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
+            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -398,7 +399,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 savedInstanceState,
                 overviewColorSupplier,
                 baseChromeLayout,
-                edgeToEdgeStateProvider);
+                edgeToEdgeManager);
         mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mSendToBackground = sendToBackground;
@@ -444,7 +445,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity.getResources(),
                         mTabGroupUiActionHandlerSupplier);
 
-        initAppHeaderCoordinator(savedInstanceState, edgeToEdgeStateProvider);
+        mEdgeToEdgeManager = edgeToEdgeManager;
+        initAppHeaderCoordinator(
+                savedInstanceState, mEdgeToEdgeManager.getEdgeToEdgeStateProvider());
     }
 
     @Override
@@ -570,7 +573,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mManualFillingComponentSupplier
                                 .get()
                                 .getAccessorySheetVisualStateProvider(),
-                        mInsetObserver);
+                        mInsetObserver,
+                        mEdgeToEdgeManager);
     }
 
     @Override

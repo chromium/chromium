@@ -14,7 +14,7 @@ import org.chromium.ui.util.TokenHolder;
 public class EdgeToEdgeManager {
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
-    private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private final @NonNull EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
 
     /**
      * Creates an EdgeToEdgeManager for managing central edge-to-edge functionality.

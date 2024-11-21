@@ -324,7 +324,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         () -> getCustomTabMinimizationManagerHolder().getMinimizationManager(),
                         () -> getCustomTabFeatureOverridesManager(),
                         getBaseChromeLayout(),
-                        getEdgeToEdgeStateProvider());
+                        getEdgeToEdgeManager());
         return mBaseCustomTabRootUiCoordinator;
     }
 

@@ -564,6 +564,11 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return mEdgeToEdgeStateProvider;
     }
 
+    /** Returns the {@link EdgeToEdgeManager} for access to core edge-to-edge logic. */
+    protected EdgeToEdgeManager getEdgeToEdgeManager() {
+        return mEdgeToEdgeManager;
+    }
+
     /** Returns the {@link InsetObserver} for observing changes to the system insets. */
     protected InsetObserver getInsetObserver() {
         assert mInsetObserver != null

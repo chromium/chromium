@@ -99,12 +99,8 @@ class EdgeToEdgeBottomChinMediator
         mBottomControlsStacker.addLayer(this);
         mFullscreenManager.addObserver(this);
 
-        // Initialize model with appropriate values.
-        mModel.set(Y_OFFSET, 0);
-        mModel.set(COLOR, mNavigationBarColorProvider.getNavigationBarColor());
-        mLatestLayerVisibility = getLayerVisibility();
-
         // Call observer methods to trigger initial value.
+        mLatestLayerVisibility = getLayerVisibility();
         onToEdgeChange(
                 mEdgeToEdgeController.getBottomInsetPx(),
                 mEdgeToEdgeController.isDrawingToEdge(),

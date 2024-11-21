@@ -77,7 +77,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
@@ -149,7 +149,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
-    @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
 
@@ -215,7 +215,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mMinimizeDelegateSupplier,
                         mFeatureOverridesManagerSupplier,
                         mBaseChromeLayout,
-                        mEdgeToEdgeStateProvider) {
+                        mEdgeToEdgeManager) {
 
                     @Nullable
                     @Override

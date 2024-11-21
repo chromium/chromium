@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.ui.InsetObserver;
 
@@ -71,6 +72,7 @@ public class TabbedSystemUiCoordinator {
      *     AccessorySheetVisualStateProvider} to watch for visual changes to the keyboard accessory
      *     sheet.
      * @param insetObserver An {@link InsetObserver} to listen for changes to the window insets.
+     * @param edgeToEdgeManager Manages core edge-to-edge state and logic.
      */
     public TabbedSystemUiCoordinator(
             Window window,
@@ -87,7 +89,8 @@ public class TabbedSystemUiCoordinator {
             @NonNull
                     ObservableSupplier<AccessorySheetVisualStateProvider>
                             accessorySheetVisualStateSupplier,
-            InsetObserver insetObserver) {
+            InsetObserver insetObserver,
+            @NonNull EdgeToEdgeManager edgeToEdgeManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -104,7 +107,8 @@ public class TabbedSystemUiCoordinator {
                             bottomSheetController,
                             omniboxSuggestionsVisualState,
                             accessorySheetVisualStateSupplier,
-                            insetObserver);
+                            insetObserver,
+                            edgeToEdgeManager);
         }
     }
 

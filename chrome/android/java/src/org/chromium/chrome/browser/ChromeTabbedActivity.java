@@ -2198,7 +2198,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getHubOverviewColorSupplier(),
                 getBaseChromeLayout(),
                 mManualFillingComponentSupplier,
-                getEdgeToEdgeStateProvider());
+                getEdgeToEdgeManager());
     }
 
     @Override

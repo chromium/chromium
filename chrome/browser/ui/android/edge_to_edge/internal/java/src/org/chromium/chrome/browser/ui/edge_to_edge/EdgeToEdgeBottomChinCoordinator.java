@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -77,12 +78,12 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
         mLayoutManager = layoutManager;
         mSceneLayer = sceneLayer;
 
-        int initNavBarColor = navigationBarColorProvider.getNavigationBarColor();
         PropertyModel model =
                 new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS)
                         .with(EdgeToEdgeBottomChinProperties.CAN_SHOW, false)
-                        .with(EdgeToEdgeBottomChinProperties.COLOR, initNavBarColor)
-                        .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, initNavBarColor)
+                        .with(EdgeToEdgeBottomChinProperties.COLOR, Color.TRANSPARENT)
+                        .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, Color.TRANSPARENT)
+                        .with(EdgeToEdgeBottomChinProperties.Y_OFFSET, 0)
                         .build();
         PropertyModelChangeProcessor.create(
                 model,
