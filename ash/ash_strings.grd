@@ -2758,6 +2758,15 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION" desc="The extra accessible description of saved desk grid item">
         Press Ctrl+W to delete
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_LABEL" translateable="false" desc="The label visible above template items in the saved desk library.">
+        Templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_LABEL" translateable="false" desc="The label visible above the save and recall items in the saved desk library.">
+        Saved for later
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_CORAL_GRID_LABEL" translateable="false" desc="The label visible above the coral saved group items in the saved desk library.">
+        Saved Groups
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The new desk button's accessible name">
