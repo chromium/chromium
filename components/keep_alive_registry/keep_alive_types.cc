@@ -46,6 +46,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "DEVTOOLS_WINDOW";
     case KeepAliveOrigin::NATIVE_MESSAGING_HOST_ERROR_REPORT:
       return out << "NATIVE_MESSAGING_HOST_ERROR_REPORT";
+    case KeepAliveOrigin::GLIC_LAUNCHER:
+      return out << "GLIC_LAUNCHER";
     case KeepAliveOrigin::NOTIFICATION:
       return out << "NOTIFICATION";
     case KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT:

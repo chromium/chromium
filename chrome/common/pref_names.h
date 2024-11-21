@@ -3258,6 +3258,10 @@ inline constexpr char kFeatureNotificationsEnabled[] =
 
 inline constexpr char kInternalOnlyUisEnabled[] = "internal_only_uis_enabled";
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+inline constexpr char kGlicLauncherEnabled[] = "glic.launcher_enabled";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

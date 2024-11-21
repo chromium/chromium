@@ -6249,6 +6249,7 @@ static_library("browser") {
     ]
 
     deps += [
+      "//chrome/browser/glic/launcher",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/updater:browser_sources",

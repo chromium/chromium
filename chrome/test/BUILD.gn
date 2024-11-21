@@ -2441,6 +2441,10 @@ if (!is_android) {
       "//v8",
     ]
 
+    if (is_win || is_mac) {
+      deps += [ "//chrome/browser/glic/launcher:browser_tests" ]
+    }
+
     allow_circular_includes_from =
         [ "//chrome/browser/optimization_guide:browser_tests" ]
 

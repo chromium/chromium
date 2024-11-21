@@ -310,6 +310,10 @@ source_set("impl") {
   if (is_mac) {
     deps += [ "//chrome/browser/web_applications" ]
   }
+
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/glic/launcher" ]
+  }
 }
 
 # There are users of this util such as //c/b/ash/app_restore. If it's part of
