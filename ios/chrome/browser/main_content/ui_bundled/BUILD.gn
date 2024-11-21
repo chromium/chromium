@@ -1,0 +1,20 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "main_content_ui.h",
+    "main_content_ui_state.h",
+  ]
+
+  public_deps = [ "//ios/chrome/browser/ui/main_content:main_content_ui" ]
+}
+
+source_set("ui_broadcasting_util") {
+  sources = [ "main_content_ui_broadcasting_util.h" ]
+
+  public_deps = [
+    "//ios/chrome/browser/ui/main_content:main_content_ui_broadcasting_util",
+  ]
+}
