@@ -354,16 +354,11 @@ void FetchGifsByIdsResponseHandler(
 
 }  // namespace
 
-GifTenorApiFetcher::GifTenorApiFetcher()
-    : endpoint_fetcher_creator_{base::BindRepeating(&CreateEndpointFetcher)} {}
-
-GifTenorApiFetcher::GifTenorApiFetcher(
-    EndpointFetcherCreator endpoint_fetcher_creator)
-    : endpoint_fetcher_creator_{endpoint_fetcher_creator} {}
-
+GifTenorApiFetcher::GifTenorApiFetcher() = default;
 GifTenorApiFetcher::~GifTenorApiFetcher() = default;
 
 void GifTenorApiFetcher::FetchCategories(
+    std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     GetCategoriesCallback callback) {
   constexpr char kCategoriesApi[] = "/v2/categories";
@@ -402,11 +397,12 @@ void GifTenorApiFetcher::FetchCategories(
       }
   )");
 
-  auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      std::move(url_loader_factory),
-      net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kCategoriesApi),
-                                kClientKeyName, kClientKeyValue),
-      kTrafficAnnotation);
+  auto endpoint_fetcher =
+      endpoint_fetcher_creator.value_or(&CreateEndpointFetcher)(
+          std::move(url_loader_factory),
+          net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kCategoriesApi),
+                                    kClientKeyName, kClientKeyValue),
+          kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&FetchCategoriesResponseHandler, std::move(callback),
@@ -415,6 +411,7 @@ void GifTenorApiFetcher::FetchCategories(
 }
 
 void GifTenorApiFetcher::FetchFeaturedGifs(
+    std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::optional<std::string>& pos,
     TenorGifsApiCallback callback) {
@@ -456,9 +453,9 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
       }
   )");
 
-  auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      std::move(url_loader_factory), GetUrl(kFeaturedApi, pos),
-      kTrafficAnnotation);
+  auto endpoint_fetcher = endpoint_fetcher_creator.value_or(
+      &CreateEndpointFetcher)(std::move(url_loader_factory),
+                              GetUrl(kFeaturedApi, pos), kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&TenorGifsApiResponseHandler, std::move(callback),
@@ -467,6 +464,7 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
 }
 
 void GifTenorApiFetcher::FetchGifSearch(
+    std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& query,
     const std::optional<std::string>& pos,
@@ -478,8 +476,9 @@ void GifTenorApiFetcher::FetchGifSearch(
     url = net::AppendQueryParameter(url, "limit", base::NumberToString(*limit));
   }
 
-  auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      std::move(url_loader_factory), url, kSearchTrafficAnnotation);
+  auto endpoint_fetcher =
+      endpoint_fetcher_creator.value_or(&CreateEndpointFetcher)(
+          std::move(url_loader_factory), url, kSearchTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&TenorGifsApiResponseHandler, std::move(callback),
@@ -488,6 +487,7 @@ void GifTenorApiFetcher::FetchGifSearch(
 }
 
 std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
+    std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::string_view query,
     const std::optional<std::string>& pos,
@@ -500,8 +500,8 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
   }
 
   std::unique_ptr<EndpointFetcher> endpoint_fetcher =
-      endpoint_fetcher_creator_.Run(std::move(url_loader_factory), url,
-                                    kSearchTrafficAnnotation);
+      endpoint_fetcher_creator.value_or(&CreateEndpointFetcher)(
+          std::move(url_loader_factory), url, kSearchTrafficAnnotation);
   CHECK_DEREF(endpoint_fetcher.get())
       .PerformRequest(
           base::BindOnce(&TenorGifsApiResponseHandler, std::move(callback),
@@ -511,6 +511,7 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
 }
 
 void GifTenorApiFetcher::FetchGifsByIds(
+    std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::vector<std::string>& ids,
     GetGifsByIdsCallback callback) {
@@ -551,13 +552,14 @@ void GifTenorApiFetcher::FetchGifsByIds(
       }
   )");
 
-  auto endpoint_fetcher = endpoint_fetcher_creator_.Run(
-      std::move(url_loader_factory),
-      net::AppendQueryParameter(
-          net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kPostsApi),
-                                    kClientKeyName, kClientKeyValue),
-          "ids", base::JoinString(ids, ",")),
-      kTrafficAnnotation);
+  auto endpoint_fetcher =
+      endpoint_fetcher_creator.value_or(&CreateEndpointFetcher)(
+          std::move(url_loader_factory),
+          net::AppendQueryParameter(
+              net::AppendQueryParameter(GURL(kTenorBaseUrl).Resolve(kPostsApi),
+                                        kClientKeyName, kClientKeyValue),
+              "ids", base::JoinString(ids, ",")),
+          kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
       base::BindOnce(&FetchGifsByIdsResponseHandler, std::move(callback),

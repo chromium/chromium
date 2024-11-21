@@ -337,7 +337,7 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
 
 void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
   gif_tenor_api_fetcher_.FetchCategories(
-      url_loader_factory_,
+      /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_,
       base::BindOnce(
           [](GetCategoriesCallback callback,
              base::expected<std::vector<std::string>, GifTenorApiFetcher::Error>
@@ -356,7 +356,7 @@ void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
 void EmojiPageHandler::GetFeaturedGifs(const std::optional<std::string>& pos,
                                        GetFeaturedGifsCallback callback) {
   gif_tenor_api_fetcher_.FetchFeaturedGifs(
-      url_loader_factory_, pos,
+      /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_, pos,
       base::BindOnce(
           [](GetFeaturedGifsCallback callback,
              base::expected<tenor::mojom::PaginatedGifResponsesPtr,
@@ -378,7 +378,8 @@ void EmojiPageHandler::SearchGifs(const std::string& query,
                                   const std::optional<std::string>& pos,
                                   SearchGifsCallback callback) {
   gif_tenor_api_fetcher_.FetchGifSearch(
-      url_loader_factory_, query, pos,
+      /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_, query,
+      pos,
       /*limit=*/std::nullopt,
       base::BindOnce(
           [](SearchGifsCallback callback,
@@ -400,7 +401,7 @@ void EmojiPageHandler::SearchGifs(const std::string& query,
 void EmojiPageHandler::GetGifsByIds(const std::vector<std::string>& ids,
                                     GetGifsByIdsCallback callback) {
   gif_tenor_api_fetcher_.FetchGifsByIds(
-      url_loader_factory_, ids,
+      /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_, ids,
       base::BindOnce(
           [](GetGifsByIdsCallback callback,
              base::expected<std::vector<tenor::mojom::GifResponsePtr>,
