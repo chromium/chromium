@@ -1150,7 +1150,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_BUTTON_DOWNLOADING));
     } else {
       result.auto_fetch_allowed = true;
-      result.strings.Set("attemptAutoFetch", "true");
       result.strings.SetByDottedPath(
           "savePageLater.savePageMsg",
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_SAVE_PAGE_BUTTON));

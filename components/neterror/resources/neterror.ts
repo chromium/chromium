@@ -5,33 +5,37 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {HIDDEN_CLASS} from './constants.js';
 import {Runner} from './dino_game/offline.js';
 
-/**
- * @typedef {{
- *   downloadButtonClick: function(),
- *   reloadButtonClick: function(string),
- *   detailsButtonClick: function(),
- *   diagnoseErrorsButtonClick: function(),
- *   portalSigninButtonClick: function(),
- *   trackEasterEgg: function(),
- *   updateEasterEggHighScore: function(number),
- *   resetEasterEggHighScore: function(),
- *   launchOfflineItem: function(string, string),
- *   savePageForLater: function(),
- *   cancelSavePage: function(),
- *   listVisibilityChange: function(boolean),
- * }}
- */
-// eslint-disable-next-line no-var
-var errorPageController;
+declare global {
+  interface Window {
+    errorPageController?: ErrorPageController;
+    loadTimeDataRaw: LoadTimeDataRaw;
+  }
+}
+
+interface ErrorPageController {
+  downloadButtonClick(): void;
+  reloadButtonClick(url?: string): void;
+  detailsButtonClick(): void;
+  diagnoseErrorsButtonClick(): void;
+  portalSigninButtonClick(): void;
+  launchDownloadsPage(): void;
+  launchOfflineItem(id: string, namespace: string): void;
+  savePageForLater(): void;
+  cancelSavePage(): void;
+  listVisibilityChanged(visible: boolean): void;
+}
 
 // Decodes a UTF16 string that is encoded as base64.
-function decodeUTF16Base64ToString(encoded_text) {
-  const data = atob(encoded_text);
+function decodeUTF16Base64ToString(encodedText: string): string {
+  const data = atob(encodedText);
   let result = '';
   for (let i = 0; i < data.length; i += 2) {
     result +=
@@ -40,21 +44,25 @@ function decodeUTF16Base64ToString(encoded_text) {
   return result;
 }
 
+interface WithDetailsText {
+  detailsText: string;
+  hideDetailsText: string;
+}
+
 function toggleHelpBox() {
-  const helpBoxOuter = document.getElementById('details');
+  const helpBoxOuter = getRequiredElement('details');
   helpBoxOuter.classList.toggle(HIDDEN_CLASS);
-  const detailsButton = document.getElementById('details-button');
+  const detailsButton =
+      getRequiredElement<HTMLElement&WithDetailsText>('details-button');
   if (helpBoxOuter.classList.contains(HIDDEN_CLASS)) {
-    /** @suppress {missingProperties} */
     detailsButton.innerText = detailsButton.detailsText;
   } else {
-    /** @suppress {missingProperties} */
     detailsButton.innerText = detailsButton.hideDetailsText;
   }
 
   // Details appears over the main content on small screens.
   if (mobileNav) {
-    document.getElementById('main-content').classList.toggle(HIDDEN_CLASS);
+    getRequiredElement('main-content').classList.toggle(HIDDEN_CLASS);
     const runnerContainer = document.querySelector('.runner-container');
     if (runnerContainer) {
       runnerContainer.classList.toggle(HIDDEN_CLASS);
@@ -78,23 +86,24 @@ function portalSignin() {
 // easier to support platforms that load the error page via different
 // mechanisms (Currently just iOS).
 let isSubFrame = false;
-if (window.top.location !== window.location) {
+if (window.top!.location !== window.location) {
   document.documentElement.setAttribute('subframe', '');
   isSubFrame = true;
 }
 
 // Re-renders the error page using |strings| as the dictionary of values.
 // Used by NetErrorTabHelper to update DNS error pages with probe results.
-function updateForDnsProbe(strings) {
+function updateForDnsProbe(strings: any) {
   const context = new JsEvalContext(strings);
   jstProcess(context, document.body);
   onDocumentLoadOrUpdate();
 }
 
 // Adds an icon class to the list and removes classes previously set.
-function updateIconClass(newClass) {
+function updateIconClass(newClass: string) {
   const frameSelector = isSubFrame ? '#sub-frame-error' : '#main-frame-error';
   const iconEl = document.querySelector(frameSelector + ' .icon');
+  assert(iconEl);
 
   if (iconEl.classList.contains(newClass)) {
     return;
@@ -105,7 +114,7 @@ function updateIconClass(newClass) {
 
 // Implements button clicks.  This function is needed during the transition
 // between implementing these in trunk chromium and implementing them in iOS.
-function reloadButtonClick(url) {
+function reloadButtonClick(url: string) {
   if (window.errorPageController) {
     // <if expr="is_ios">
     window.errorPageController.reloadButtonClick(url);
@@ -115,21 +124,25 @@ function reloadButtonClick(url) {
     window.errorPageController.reloadButtonClick();
     // </if>
   } else {
-    window.location = url;
+    window.location.href = url;
   }
+}
+
+interface WithDisabledText {
+  disabledText: string;
 }
 
 function downloadButtonClick() {
   if (window.errorPageController) {
     window.errorPageController.downloadButtonClick();
-    const downloadButton = document.getElementById('download-button');
+    const downloadButton =
+        getRequiredElement<HTMLButtonElement&WithDisabledText>(
+            'download-button');
     downloadButton.disabled = true;
-    /** @suppress {missingProperties} */
     downloadButton.textContent = downloadButton.disabledText;
 
-    document.getElementById('download-link-wrapper')
-        .classList.add(HIDDEN_CLASS);
-    document.getElementById('download-link-clicked-wrapper')
+    getRequiredElement('download-link-wrapper').classList.add(HIDDEN_CLASS);
+    getRequiredElement('download-link-clicked-wrapper')
         .classList.remove(HIDDEN_CLASS);
   }
 }
@@ -147,20 +160,22 @@ let primaryControlOnLeft = true;
 primaryControlOnLeft = false;
 // </if>
 
-function setAutoFetchState(scheduled, can_schedule) {
-  document.getElementById('cancel-save-page-button')
+function setAutoFetchState(scheduled: boolean, canSchedule: boolean) {
+  getRequiredElement('cancel-save-page-button')
       .classList.toggle(HIDDEN_CLASS, !scheduled);
-  document.getElementById('save-page-for-later-button')
-      .classList.toggle(HIDDEN_CLASS, scheduled || !can_schedule);
+  getRequiredElement('save-page-for-later-button')
+      .classList.toggle(HIDDEN_CLASS, scheduled || !canSchedule);
 }
 
 function savePageLaterClick() {
+  assert(window.errorPageController);
   window.errorPageController.savePageForLater();
   // savePageForLater will eventually trigger a call to setAutoFetchState() when
   // it completes.
 }
 
 function cancelSavePageClick() {
+  assert(window.errorPageController);
   window.errorPageController.cancelSavePage();
   // setAutoFetchState is not called in response to cancelSavePage(), so do it
   // now.
@@ -168,19 +183,21 @@ function cancelSavePageClick() {
 }
 
 function toggleErrorInformationPopup() {
-  document.getElementById('error-information-popup-container')
+  getRequiredElement('error-information-popup-container')
       .classList.toggle(HIDDEN_CLASS);
 }
 
-function launchOfflineItem(itemID, name_space) {
-  window.errorPageController.launchOfflineItem(itemID, name_space);
+function launchOfflineItem(itemID: string, nameSpace: string) {
+  assert(window.errorPageController);
+  window.errorPageController.launchOfflineItem(itemID, nameSpace);
 }
 
 function launchDownloadsPage() {
+  assert(window.errorPageController);
   window.errorPageController.launchDownloadsPage();
 }
 
-function getIconForSuggestedItem(item) {
+function getIconForSuggestedItem(item: AvailableOfflineContent): string {
   // Note: |item.content_type| contains the enum values from
   // chrome::mojom::AvailableContentType.
   switch (item.content_type) {
@@ -195,7 +212,8 @@ function getIconForSuggestedItem(item) {
   return 'image-file';
 }
 
-function getSuggestedContentDiv(item, index) {
+function getSuggestedContentDiv(
+    item: AvailableOfflineContent, index: number): string {
   // Note: See AvailableContentToValue in available_offline_content_helper.cc
   // for the data contained in an |item|.
   // TODO(carlosk): Present |snippet_base64| when that content becomes
@@ -253,53 +271,46 @@ function getSuggestedContentDiv(item, index) {
   </div>`;
 }
 
-/**
- * @typedef {{
- *   ID: string,
- *   name_space: string,
- *   title_base64: string,
- *   snippet_base64: string,
- *   date_modified: string,
- *   attribution_base64: string,
- *   thumbnail_data_uri: string,
- *   favicon_data_uri: string,
- *   content_type: number,
- * }}
- */
-let AvailableOfflineContent;
+interface AvailableOfflineContent {
+  ID: string;
+  name_space: string;
+  title_base64: string;
+  snippet_base64: string;
+  date_modified: string;
+  attribution_base64: string;
+  thumbnail_data_uri: string;
+  favicon_data_uri: string;
+  content_type: number;
+}
 
 // Populates a list of suggested offline content.
 // Note: For security reasons all content downloaded from the web is considered
 // unsafe and must be securely handled to be presented on the dino page. Images
 // have already been safely re-encoded but textual content -- like title and
 // attribution -- must be properly handled here.
-// @param {boolean} isShown
-// @param {Array<AvailableOfflineContent>} suggestions
-function offlineContentAvailable(isShown, suggestions) {
+function offlineContentAvailable(
+    isShown: boolean, suggestions?: AvailableOfflineContent[]) {
   if (!suggestions || !loadTimeData.valueExists('offlineContentList')) {
     return;
   }
 
-  const suggestionsHTML = [];
-  for (let index = 0; index < suggestions.length; index++) {
-    suggestionsHTML.push(getSuggestedContentDiv(suggestions[index], index));
-  }
+  const suggestionsHTML = suggestions.map((suggestion, index) => {
+    return getSuggestedContentDiv(suggestion, index);
+  });
 
-  document.getElementById('offline-content-suggestions').innerHTML =
+  getRequiredElement('offline-content-suggestions').innerHTML =
       suggestionsHTML.join('\n');
 
   // Sets textual web content using |textContent| to make sure it's handled as
   // plain text.
-  for (let index = 0; index < suggestions.length; index++) {
-    document.getElementById(`offline-content-suggestion-title-${index}`)
-        .textContent =
-        decodeUTF16Base64ToString(suggestions[index].title_base64);
-    document.getElementById(`offline-content-suggestion-attribution-${index}`)
-        .textContent =
-        decodeUTF16Base64ToString(suggestions[index].attribution_base64);
-  }
+  suggestions.forEach((suggestion, index) => {
+    getRequiredElement(`offline-content-suggestion-title-${index}`)
+        .textContent = decodeUTF16Base64ToString(suggestion.title_base64);
+    getRequiredElement(`offline-content-suggestion-attribution-${index}`)
+        .textContent = decodeUTF16Base64ToString(suggestion.attribution_base64);
+  });
 
-  const contentListElement = document.getElementById('offline-content-list');
+  const contentListElement = getRequiredElement('offline-content-list');
   if (document.dir === 'rtl') {
     contentListElement.classList.add('is-rtl');
   }
@@ -310,12 +321,12 @@ function offlineContentAvailable(isShown, suggestions) {
   }
 }
 
-function toggleOfflineContentListVisibility(updatePref) {
+function toggleOfflineContentListVisibility(updatePref: boolean) {
   if (!loadTimeData.valueExists('offlineContentList')) {
     return;
   }
 
-  const contentListElement = document.getElementById('offline-content-list');
+  const contentListElement = getRequiredElement('offline-content-list');
   const isVisible = !contentListElement.classList.toggle('list-hidden');
 
   if (updatePref && window.errorPageController) {
@@ -327,40 +338,38 @@ function toggleOfflineContentListVisibility(updatePref) {
 function onDocumentLoadOrUpdate() {
   const downloadButtonVisible = loadTimeData.valueExists('downloadButton') &&
       loadTimeData.getValue('downloadButton').msg;
-  const detailsButton = document.getElementById('details-button');
+  const detailsButton = getRequiredElement('details-button');
 
   // If offline content suggestions will be visible, the usual buttons will not
   // be presented.
   const offlineContentVisible =
       loadTimeData.valueExists('suggestedOfflineContentPresentation');
   if (offlineContentVisible) {
-    document.querySelector('.nav-wrapper').classList.add(HIDDEN_CLASS);
+    const wrapper = document.querySelector('.nav-wrapper');
+    assert(wrapper);
+    wrapper.classList.add(HIDDEN_CLASS);
     detailsButton.classList.add(HIDDEN_CLASS);
 
-    document.getElementById('download-link').hidden = !downloadButtonVisible;
-    document.getElementById('download-links-wrapper')
-        .classList.remove(HIDDEN_CLASS);
-    document.getElementById('error-information-popup-container')
+    getRequiredElement('download-link').hidden = !downloadButtonVisible;
+    getRequiredElement('download-links-wrapper').classList.remove(HIDDEN_CLASS);
+    getRequiredElement('error-information-popup-container')
         .classList.add('use-popup-container', HIDDEN_CLASS);
-    document.getElementById('error-information-button')
+    getRequiredElement('error-information-button')
         .classList.remove(HIDDEN_CLASS);
   }
-
-  const attemptAutoFetch = loadTimeData.valueExists('attemptAutoFetch') &&
-      loadTimeData.getValue('attemptAutoFetch');
 
   const reloadButtonVisible = loadTimeData.valueExists('reloadButton') &&
       loadTimeData.getValue('reloadButton').msg;
 
-  const reloadButton = document.getElementById('reload-button');
-  const downloadButton = document.getElementById('download-button');
+  const reloadButton = getRequiredElement('reload-button');
+  const downloadButton = getRequiredElement('download-button');
   if (reloadButton.style.display === 'none' &&
       downloadButton.style.display === 'none') {
     detailsButton.classList.add('singular');
   }
 
   // Show or hide control buttons.
-  const controlButtonDiv = document.getElementById('control-buttons');
+  const controlButtonDiv = getRequiredElement('control-buttons');
   controlButtonDiv.hidden =
       offlineContentVisible || !(reloadButtonVisible || downloadButtonVisible);
 
@@ -381,7 +390,7 @@ function onDocumentLoad() {
   jstProcess(new JsEvalContext(window.loadTimeDataRaw), document.body);
 
   // Sets up the proper button layout for the current platform.
-  const buttonsDiv = document.getElementById('buttons');
+  const buttonsDiv = getRequiredElement('buttons');
   if (primaryControlOnLeft) {
     buttonsDiv.classList.add('suggested-left');
   } else {
@@ -403,6 +412,8 @@ Object.assign(window, {
   diagnoseErrors,
   downloadButtonClick,
   launchDownloadsPage,
+  launchOfflineItem,
+  offlineContentAvailable,
   portalSignin,
   reloadButtonClick,
   savePageLaterClick,
