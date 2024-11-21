@@ -37,9 +37,6 @@ class UserManagerTest;
 
 namespace user_manager {
 
-// Feature that removes legacy supervised users.
-BASE_DECLARE_FEATURE(kRemoveLegacySupervisedUsersOnStartup);
-
 // Feature that removes deprecated ARC kiosk users.
 USER_MANAGER_EXPORT
 BASE_DECLARE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup);

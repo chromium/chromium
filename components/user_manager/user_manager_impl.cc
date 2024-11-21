@@ -124,10 +124,6 @@ bool IsDeviceLocalAccountChanged(
 // static
 const char UserManagerImpl::kLegacySupervisedUsersHistogramName[] =
     "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
-// static
-BASE_FEATURE(kRemoveLegacySupervisedUsersOnStartup,
-             "RemoveLegacySupervisedUsersOnStartup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 const char UserManagerImpl::kDeprecatedArcKioskUsersHistogramName[] =
@@ -1866,18 +1862,13 @@ void UserManagerImpl::DeleteUser(User* user) {
 // devices in the wild, remove this.
 void UserManagerImpl::RemoveLegacySupervisedUser(const AccountId& account_id) {
   DCHECK(IsDeprecatedSupervisedAccountId(account_id));
-  if (base::FeatureList::IsEnabled(kRemoveLegacySupervisedUsersOnStartup)) {
-    // Since we skip adding legacy supervised users to the users list,
-    // FindUser(account_id) returns nullptr and CanUserBeRemoved() returns
-    // false. This is why we call RemoveUserInternal() directly instead of
-    // RemoveUser().
-    RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN);
-    base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
-                                  LegacySupervisedUserStatus::kLSUDeleted);
-  } else {
-    base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
-                                  LegacySupervisedUserStatus::kLSUHidden);
-  }
+  // Since we skip adding legacy supervised users to the users list,
+  // FindUser(account_id) returns nullptr and CanUserBeRemoved() returns
+  // false. This is why we call RemoveUserInternal() directly instead of
+  // RemoveUser().
+  RemoveUserInternal(account_id, UserRemovalReason::UNKNOWN);
+  base::UmaHistogramEnumeration(kLegacySupervisedUsersHistogramName,
+                                LegacySupervisedUserStatus::kLSUDeleted);
 }
 
 bool UserManagerImpl::IsDeprecatedArcKioskAccountId(
