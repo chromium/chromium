@@ -32,6 +32,7 @@ source_set("model") {
     "//ui/base",
   ]
   public_deps = [
+    ":configuration_factory",
     ":detent_state_header",
     ":overflow_menu_factory",
     "//base",
@@ -55,6 +56,26 @@ source_set("overflow_menu_factory") {
     "//url",
   ]
   public_deps = [ ":detent_state_header" ]
+}
+
+source_set("configuration_factory") {
+  sources = [
+    "lens_overlay_configuration_factory.h",
+    "lens_overlay_configuration_factory.mm",
+  ]
+  deps = [
+    ":entrypoint",
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
+    "//ui/base",
+    "//url",
+  ]
 }
 
 source_set("detents_manager") {

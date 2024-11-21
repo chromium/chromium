@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
@@ -38,7 +39,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -53,8 +53,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -72,16 +70,6 @@
 #import "url/gurl.h"
 
 namespace {
-
-LensEntrypoint LensEntrypointFromOverlayEntrypoint(
-    LensOverlayEntrypoint overlayEntrypoint) {
-  switch (overlayEntrypoint) {
-    case LensOverlayEntrypoint::kLocationBar:
-      return LensEntrypoint::LensOverlayLocationBar;
-    case LensOverlayEntrypoint::kOverflowMenu:
-      return LensEntrypoint::LensOverlayOverflowMenu;
-  }
-}
 
 const CGFloat kSelectionOffsetPadding = 100.0f;
 
@@ -165,6 +153,9 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
   /// Factory for the  actions in the overflow menu.
   LensOverlayOverflowMenuFactory* _overflowMenuFactory;
+
+  /// Configuration factory.
+  LensOverlayConfigurationFactory* _lensConfigurationFactory;
 }
 
 #pragma mark - public
@@ -211,8 +202,10 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   if (_selectionViewController) {
     return;
   }
-  LensConfiguration* config =
-      [self createLensConfigurationForEntrypoint:entrypoint];
+
+  LensConfiguration* config = [_lensConfigurationFactory
+      configurationForEntrypoint:entrypoint
+                         profile:self.browser->GetProfile()];
   NSArray<UIAction*>* additionalMenuItems = @[
     [_overflowMenuFactory openUserActivityAction],
     [_overflowMenuFactory learnMoreAction],
@@ -307,6 +300,8 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
   _overflowMenuFactory =
       [[LensOverlayOverflowMenuFactory alloc] initWithBrowser:self.browser];
+
+  _lensConfigurationFactory = [[LensOverlayConfigurationFactory alloc] init];
 
   // The instance that creates the Lens UI designates itself as the command
   // handler for the associated tab.
@@ -759,29 +754,6 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   [_containerViewController presentViewController:alert
                                          animated:YES
                                        completion:nil];
-}
-
-// Lens needs to have visibility into the user's identity and whether the search
-// should be incognito or not.
-- (LensConfiguration*)createLensConfigurationForEntrypoint:
-    (LensOverlayEntrypoint)entrypoint {
-  Browser* browser = self.browser;
-  LensConfiguration* configuration = [[LensConfiguration alloc] init];
-  BOOL isIncognito = browser->GetProfile()->IsOffTheRecord();
-  configuration.isIncognito = isIncognito;
-  configuration.singleSignOnService =
-      GetApplicationContext()->GetSingleSignOnService();
-  configuration.entrypoint = LensEntrypointFromOverlayEntrypoint(entrypoint);
-
-  if (!isIncognito) {
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
-    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
-        ::signin::ConsentLevel::kSignin);
-    configuration.identity = identity;
-  }
-  configuration.localState = GetApplicationContext()->GetLocalState();
-  return configuration;
 }
 
 - (BOOL)shouldShowConsentFlow {

@@ -82,8 +82,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/symbols:buildflags",
     "//ios/chrome/browser/shared/ui/util:omnibox_util",
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
-    "//ios/chrome/browser/signin/model:authentication_service",
-    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/device_orientation",
