@@ -140,7 +140,7 @@ struct Input {
 [Stable]
 struct InputOptions {
   // Deprecated, use input instead.
-  string text;
+  string deprecated_text;
 
   // The maximum number of tokens that should be processed. If not set, will
   // process all tokens from this input.

@@ -136,8 +136,10 @@
     value="{{temperature_}}">
   </cr-input>
 </div>
-<cr-input id="textInput" disabled="[[!canExecute_(currentResponse_, model_)]]"
-    label="Input" placeholder="What is 2+2?" on-change="onExecute_"
+<cr-textarea id="textInput" disabled="[[!canExecute_(currentResponse_, model_)]]"
+    label="Input"
+    placeholder="Place control tokens {$SYSTEM, $MODEL, $USER, $END} on their own lines, in between lines of text."
+    on-change="onExecute_"
     value="{{text_}}">
   <cr-button slot="suffix"
       disabled="[[!canExecute_(currentResponse_, model_)]]"
@@ -149,7 +151,7 @@
       on-click="onCancelClick_">
     Cancel
   </cr-button>
-</cr-input>
+</cr-textarea>
 
 <div class="session" hidden="[[!currentResponse_]]">
   <div class="text">[[currentResponse_.text]]</div>

@@ -137,7 +137,6 @@ void SessionAccessor::ExecuteInternal(
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ChromeMLExecuteOptions options{
-      .prompt = input->text.c_str(),
       .max_tokens = input->max_tokens.value_or(0),
       .token_offset = input->token_offset.value_or(0),
       .max_output_tokens = input->max_output_tokens.value_or(0),

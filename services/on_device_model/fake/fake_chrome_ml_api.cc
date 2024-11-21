@@ -141,17 +141,18 @@ bool SessionExecuteModel(ChromeMLSession session,
                          const ChromeMLExecuteOptions* options,
                          ChromeMLCancel cancel) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
-  std::string text = options->prompt;
+  std::string text;
+  for (size_t i = 0; i < options->input_size; i++) {
+    // SAFETY: `options->input_size` describes how big `options->input` is.
+    text += UNSAFE_BUFFERS(PieceToString(options->input[i]));
+  }
   if (options->token_offset) {
     text.erase(text.begin(), text.begin() + options->token_offset);
   }
   if (options->max_tokens && options->max_tokens < text.size()) {
     text.resize(options->max_tokens);
   }
-  for (size_t i = 0; i < options->input_size; i++) {
-    // SAFETY: `options->input_size` describes how big `options->input` is.
-    text += UNSAFE_BUFFERS(PieceToString(options->input[i]));
-  }
+
   if (!text.empty()) {
     instance->context_.push_back(text);
   }

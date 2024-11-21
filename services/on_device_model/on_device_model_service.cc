@@ -258,6 +258,12 @@ class ModelWrapper final : public mojom::OnDeviceModel {
 void SessionWrapper::AddContext(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::ContextClient> client) {
+  if (!input->deprecated_text.empty()) {
+    mojo::ReportBadMessage(
+        "Deprecated input field `deprecated_text` was non-empty.");
+    return;
+  }
+
   if (!model_) {
     return;
   }
@@ -285,6 +291,12 @@ void SessionWrapper::AddContext(
 void SessionWrapper::Execute(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
+  if (!input->deprecated_text.empty()) {
+    mojo::ReportBadMessage(
+        "Deprecated input field `deprecated_text` was non-empty.");
+    return;
+  }
+
   if (!model_) {
     return;
   }
