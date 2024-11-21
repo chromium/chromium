@@ -300,6 +300,7 @@ enum WebDXFeature {
   kAtomicsWaitAsync = 242,
   kLocaleInfoObsoletedGetters = 243,
   kLocaleInfoFunctions = 244,
+  kViewTransitionClass = 245,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

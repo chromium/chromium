@@ -400,6 +400,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kViewTimelineName,
            WebDXFeature::kScrollDrivenAnimations},
           {CSSSampleId::kInterpolateSize, WebDXFeature::kInterpolateSize},
+          {CSSSampleId::kViewTransitionClass,
+           WebDXFeature::kViewTransitionClass},
       }};
 
   return *kMap;

@@ -34046,6 +34046,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="242" label="AtomicsWaitAsync"/>
   <int value="243" label="LocaleInfoObsoletedGetters"/>
   <int value="244" label="LocaleInfoFunctions"/>
+  <int value="245" label="ViewTransitionClass"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
