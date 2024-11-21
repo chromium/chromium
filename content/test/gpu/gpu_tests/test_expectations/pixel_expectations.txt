@@ -485,6 +485,9 @@ crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vu
 # Flaky hang on Mac AMD GL ASAN
 crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
+# One particular Linux Bot consistently failures
+crbug.com/331488870 [ linux intel-0x9bc5 angle-opengl passthrough ] Pixel_Canvas2DBlitText [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
