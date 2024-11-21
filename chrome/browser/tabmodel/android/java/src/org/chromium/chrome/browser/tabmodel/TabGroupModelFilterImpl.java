@@ -248,7 +248,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         tab.setTabGroupId(tabGroupId);
 
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
-        if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(/* shouldShow= */ true)) {
+        if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
             notify = false;
         }
 
@@ -369,8 +369,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
                     // If this is a new tab group creation that will show a dialog, do not trigger a
                     // snackbar.
-                    if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                            /* shouldShow= */ true)) {
+                    if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog()) {
                         continue;
                     }
                 }
@@ -509,8 +508,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             // snackbar.
             boolean skipSnackbarForCreation =
                     willMergingCreateNewGroup
-                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-                                    /* shouldShow= */ true);
+                            && !TabGroupFeatureUtils.shouldSkipGroupCreationDialog();
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,

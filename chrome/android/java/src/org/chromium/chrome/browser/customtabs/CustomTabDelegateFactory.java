@@ -486,8 +486,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 mEphemeralTabCoordinatorSupplier,
                 CallbackUtils.emptyRunnable(),
                 () -> mSnackbarManager.get(),
-                () -> mBottomSheetController.get(),
-                mModalDialogManagerSupplier);
+                () -> mBottomSheetController.get());
     }
 
     @Override

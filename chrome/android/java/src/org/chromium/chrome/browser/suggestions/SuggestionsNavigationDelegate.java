@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -58,9 +57,8 @@ public class SuggestionsNavigationDelegate extends NativePageNavigationDelegateI
             Profile profile,
             NativePageHost host,
             TabModelSelector tabModelSelector,
-            TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Tab tab) {
-        super(activity, profile, host, tabModelSelector, tabGroupCreationDialogManager, tab);
+        super(activity, profile, host, tabModelSelector, tab);
     }
 
     /**
