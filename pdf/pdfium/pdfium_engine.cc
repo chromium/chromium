@@ -2248,24 +2248,6 @@ void PDFiumEngine::DisplayAnnotations(bool display) {
   InvalidateAllPages();
 }
 
-std::u16string PDFiumEngine::GetAllText(uint32_t size_limit) {
-  std::u16string all_pages_text;
-
-  for (auto& page : pages_) {
-    // Add the current page's text to the output.
-    auto range = PDFiumRange::AllTextOnPage(page.get());
-    all_pages_text.append(range.GetText());
-
-    // Truncate and exit early if over the size limit.
-    if (all_pages_text.size() > size_limit) {
-      all_pages_text.resize(size_limit);
-      break;
-    }
-  }
-
-  return all_pages_text;
-}
-
 void PDFiumEngine::InvalidateAllPages() {
   CancelPaints();
   StopFind();

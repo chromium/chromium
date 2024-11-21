@@ -222,11 +222,6 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   void SetDocumentLayout(DocumentLayout::PageSpread page_spread);
   void DisplayAnnotations(bool display);
 
-  // Returns the text contained in the PDF. If the size of the text is larger
-  // than `size_limit`, the remaining text will be truncated, and a string with
-  // the first `size_limit` characters will be returned.
-  std::u16string GetAllText(uint32_t size_limit);
-
   // Applies the document layout options proposed by a call to
   // PDFiumEngineClient::ProposeDocumentLayout(), returning the overall size of
   // the new effective layout.
