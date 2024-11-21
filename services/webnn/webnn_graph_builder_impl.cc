@@ -756,21 +756,31 @@ bool OperationValidationContext::ValidateBatchNormalization(
   }
   const auto& scale_operand_id = batch_normalization.scale_operand_id;
   if (scale_operand_id) {
-    if (!id_to_operand_map_->contains(scale_operand_id.value()) ||
-        !processed_operands_.contains(scale_operand_id.value())) {
+    if (!processed_operands_.contains(scale_operand_id.value())) {
       // The scale operand is invalid.
       return false;
     }
     NoteDependency(scale_operand_id.value(), operation_id);
+
+    auto* scale = GetMojoOperand(scale_operand_id.value());
+    if (!scale || scale == output) {
+      // The scale operand is invalid.
+      return false;
+    }
   }
   const auto& bias_operand_id = batch_normalization.bias_operand_id;
   if (bias_operand_id) {
-    if (!id_to_operand_map_->contains(bias_operand_id.value()) ||
-        !processed_operands_.contains(bias_operand_id.value())) {
+    if (!processed_operands_.contains(bias_operand_id.value())) {
       // The bias operand is invalid.
       return false;
     }
     NoteDependency(bias_operand_id.value(), operation_id);
+
+    auto* bias = GetMojoOperand(bias_operand_id.value());
+    if (!bias || bias == output) {
+      // The bias operand is invalid.
+      return false;
+    }
   }
 
   const auto validated_output = ValidateBatchNormalizationAndInferOutput(
@@ -902,13 +912,12 @@ bool OperationValidationContext::ValidateConv2d(const mojom::Conv2d& conv2d,
     }
     NoteDependency(bias_operand_id.value(), operation_id);
 
-    const auto bias_operand_iterator =
-        id_to_operand_map_->find(bias_operand_id.value());
-    if (bias_operand_iterator == id_to_operand_map_->end()) {
+    auto* bias = GetMojoOperand(bias_operand_id.value());
+    if (!bias || bias == output) {
       // Invalid bias operand.
       return false;
     }
-    bias_operand = bias_operand_iterator->second->descriptor;
+    bias_operand = bias->descriptor;
   }
   RETURN_IF_FALSE(processed_operands_.insert(conv2d.output_operand_id).second);
 
@@ -1354,12 +1363,17 @@ bool OperationValidationContext::ValidateGemm(const mojom::Gemm& gemm,
   }
   auto& c_operand_id = gemm.c_operand_id;
   if (c_operand_id) {
-    if (!id_to_operand_map_->contains(c_operand_id.value()) ||
-        !processed_operands_.contains(c_operand_id.value())) {
+    if (!processed_operands_.contains(c_operand_id.value())) {
       // The third operand is invalid.
       return false;
     }
     NoteDependency(c_operand_id.value(), operation_id);
+
+    auto* c = GetMojoOperand(c_operand_id.value());
+    if (!c || c == output) {
+      // The third operand is invalid.
+      return false;
+    }
   }
 
   auto validated_output = ValidateGemmAndInferOutput(
@@ -1695,13 +1709,12 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
   for (uint64_t output_operand_id : lstm.output_operand_ids) {
     if (output_operand_id == lstm.input_operand_id ||
         output_operand_id == lstm.weight_operand_id ||
-        output_operand_id == lstm.recurrent_weight_operand_id) {
-      return false;
-    }
-    if ((initial_hidden_state_operand_id.has_value() &&
-         initial_hidden_state_operand_id.value() == output_operand_id) ||
-        (initial_cell_state_operand_id.has_value() &&
-         initial_cell_state_operand_id.value() == output_operand_id)) {
+        output_operand_id == lstm.recurrent_weight_operand_id ||
+        output_operand_id == lstm.bias_operand_id ||
+        output_operand_id == lstm.recurrent_bias_operand_id ||
+        output_operand_id == lstm.peephole_weight_operand_id ||
+        output_operand_id == lstm.initial_hidden_state_operand_id ||
+        output_operand_id == lstm.initial_cell_state_operand_id) {
       return false;
     }
     RETURN_IF_FALSE(processed_operands_.insert(output_operand_id).second);
@@ -1790,7 +1803,10 @@ bool OperationValidationContext::ValidateLstmCell(
         output_operand_id == lstm_cell.weight_operand_id ||
         output_operand_id == lstm_cell.recurrent_weight_operand_id ||
         output_operand_id == lstm_cell.hidden_state_operand_id ||
-        output_operand_id == lstm_cell.cell_state_operand_id) {
+        output_operand_id == lstm_cell.cell_state_operand_id ||
+        output_operand_id == lstm_cell.bias_operand_id ||
+        output_operand_id == lstm_cell.recurrent_bias_operand_id ||
+        output_operand_id == lstm_cell.peephole_weight_operand_id) {
       return false;
     }
     RETURN_IF_FALSE(processed_operands_.insert(output_operand_id).second);
