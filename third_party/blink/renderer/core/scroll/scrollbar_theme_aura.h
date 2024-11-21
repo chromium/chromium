@@ -82,7 +82,11 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
   SkColor4f ThumbColor(const Scrollbar&) const override;
   bool UsesNinePatchTrackAndButtonsResource() const override;
   gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&) const override;
+  gfx::Rect NinePatchTrackAndButtonsAperture(const Scrollbar&,
+                                             float scale) const override;
   gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&) const override;
+  gfx::Size NinePatchTrackAndButtonsCanvasSize(const Scrollbar&,
+                                               float scale) const override;
 
   // During a thumb drag, if the pointer moves outside a certain threshold in
   // the non-scrolling direction, the scroller is expected to "snap back" to the

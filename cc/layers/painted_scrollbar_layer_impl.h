@@ -107,7 +107,7 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void AppendNinePatchScaledTrackAndButtons(
       viz::CompositorRenderPass* render_pass,
       viz::SharedQuadState* shared_quad_state,
-      gfx::Rect& track_and_buttons_quad_rect);
+      const gfx::Rect& track_and_buttons_quad_rect);
   // Expand the scrollbar thumb's hit testable rect to be able to capture the
   // thumb across the entire width of the track rect.
   gfx::Rect ExpandSolidColorThumb(gfx::Rect thumb_rect) const;
