@@ -97,8 +97,7 @@ class CC_EXPORT DroppedFrameCounter {
   void ReportFramesOnEveryFrameForUI();
 
   void OnBeginFrame(const viz::BeginFrameArgs& args);
-  virtual void OnEndFrame(const viz::BeginFrameArgs& args,
-                          const FrameInfo& frame_info);
+  void OnEndFrame(const viz::BeginFrameArgs& args, const FrameInfo& frame_info);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
   void OnFcpReceived();
 
