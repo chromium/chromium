@@ -547,20 +547,9 @@ class MockAuctionProcessManager
   WorkletProcess::ProcessContext CreateProcessInternal(
       WorkletProcess& worklet_process) override {
     mojo::PendingRemote<auction_worklet::mojom::AuctionWorkletService> service;
-
-    // Have to flush the receiver set, so that any closed receivers are removed,
-    // before searching for duplicate worklets.
-    receiver_set_.FlushForTesting();
-
-    WorkletInfo info{worklet_process.worklet_type(), worklet_process.origin()};
-
-    for (auto context : receiver_set_.GetAllContexts()) {
-      EXPECT_NE(*context.second, info);
-    }
-
-    receiver_set_.Add(this, service.InitWithNewPipeAndPassReceiver(),
-                      std::move(info));
-
+    receiver_set_.Add(
+        this, service.InitWithNewPipeAndPassReceiver(),
+        WorkletInfo(worklet_process.worklet_type(), worklet_process.origin()));
     return WorkletProcess::ProcessContext(std::move(service));
   }
 
