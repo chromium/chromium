@@ -14,6 +14,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
+import {SettingsPath} from './constants.js';
 import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
 import {GestureTimer} from './gesture_timer.js';
@@ -32,22 +33,28 @@ interface DetectMacrosResult {
   displayText: string;
 }
 
+/** The default confidence threshold for facial gestures. */
+const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
+
 /** Handles converting facial gestures to Macros. */
 export class GestureHandler {
+  // References to core classes.
+  private bubbleController_: BubbleController;
+  private gestureTimer_: GestureTimer;
+  private mouseController_: MouseController;
+
+  // Other variables, such as state and callbacks.
   private gesturesToKeyCombos_: Map<FacialGesture, KeyCombination> = new Map();
   private gestureToMacroName_: Map<FacialGesture, MacroName> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
-  private mouseController_: MouseController;
-  private bubbleController_: BubbleController;
-  private gestureTimer_: GestureTimer;
-  private toggleInfoListener_: (enabled: boolean) => void;
-  // The most recently detected gestures. We track this to know when a gesture
-  // has ended.
-  private previousGestures_: FacialGesture[] = [];
+  private isDictationActive_: () => boolean;
   private macrosToCompleteLater_:
       Map<FacialGesture, {macro: Macro, displayText: string}> = new Map();
   private paused_ = false;
-  private isDictationActive_: () => boolean;
+  // The most recently detected gestures. We track this to know when a gesture
+  // has ended.
+  private previousGestures_: FacialGesture[] = [];
+  private toggleInfoListener_: (enabled: boolean) => void;
 
   constructor(
       mouseController: MouseController, bubbleController: BubbleController,
@@ -283,8 +290,7 @@ export class GestureHandler {
         return new KeyPressMacro(name, {key: KeyCode.SNAPSHOT});
       case MacroName.OPEN_FACEGAZE_SETTINGS:
         return new CustomCallbackMacro(MacroName.OPEN_FACEGAZE_SETTINGS, () => {
-          chrome.accessibilityPrivate.openSettingsSubpage(
-              GestureHandler.SETTINGS_PATH);
+          chrome.accessibilityPrivate.openSettingsSubpage(SettingsPath);
         });
       case MacroName.TOGGLE_FACEGAZE:
         return new CustomCallbackMacro(
@@ -382,8 +388,7 @@ export class GestureHandler {
       // opened the settings subpage yet.
       if (!this.gestureToConfidence_.has(gesture as FacialGesture)) {
         this.gestureToConfidence_.set(
-            gesture as FacialGesture,
-            GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
+            gesture as FacialGesture, DEFAULT_CONFIDENCE_THRESHOLD);
       }
     }
 
@@ -471,12 +476,6 @@ export class GestureHandler {
 
     return result;
   }
-}
-
-export namespace GestureHandler {
-  /** The default confidence threshold for facial gestures. */
-  export const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
-  export const SETTINGS_PATH = 'manageAccessibility/faceGaze';
 }
 
 TestImportManager.exportForTesting(GestureHandler);

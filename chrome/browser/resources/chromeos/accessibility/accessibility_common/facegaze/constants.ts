@@ -4,6 +4,8 @@
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+export const SettingsPath = 'manageAccessibility/faceGaze';
+
 /** Keep in sync with with values at ash_pref_names.h. */
 export enum PrefNames {
   ACCELERATOR_DIALOG_HAS_BEEN_ACCEPTED =

@@ -6,28 +6,29 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {BubbleController} from './bubble_controller.js';
+import {PrefNames, SettingsPath} from './constants.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
-import {PrefNames} from './pref_names.js';
 import {FaceLandmarkerResultWithLatency, WebCamFaceLandmarker} from './web_cam_face_landmarker.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
-const SETTINGS_PAGE_ROUTE = 'manageAccessibility/faceGaze';
-
 /** Main class for FaceGaze. */
 export class FaceGaze {
-  private mouseController_: MouseController;
-  private gestureHandler_: GestureHandler;
-  private onInitCallbackForTest_: (() => void)|undefined;
-  private initialized_ = false;
-  private cursorControlEnabled_ = false;
-  private actionsEnabled_ = false;
-  private prefsListener_: (prefs: PrefObject[]) => void;
-  private metricsUtils_: MetricsUtils;
-  private webCamFaceLandmarker_: WebCamFaceLandmarker;
+  // References to core classes.
   private bubbleController_: BubbleController;
+  private gestureHandler_: GestureHandler;
+  private metricsUtils_: MetricsUtils;
+  private mouseController_: MouseController;
+  private webCamFaceLandmarker_: WebCamFaceLandmarker;
+
+  // Other variables, such as state and callbacks.
+  private actionsEnabled_ = false;
+  private cursorControlEnabled_ = false;
+  private initialized_ = false;
+  private onInitCallbackForTest_: (() => void)|undefined;
+  private prefsListener_: (prefs: PrefObject[]) => void;
 
   constructor(isDictationActive: () => boolean) {
     this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
@@ -118,7 +119,7 @@ export class FaceGaze {
     }
 
     // If the dialog was accepted, then initialize FaceGaze.
-    chrome.accessibilityPrivate.openSettingsSubpage(SETTINGS_PAGE_ROUTE);
+    chrome.accessibilityPrivate.openSettingsSubpage(SettingsPath);
 
     this.bubbleController_.updateBubble('');
     this.webCamFaceLandmarker_.init();
