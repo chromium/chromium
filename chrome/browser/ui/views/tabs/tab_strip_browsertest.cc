@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -976,16 +977,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
-#if BUILDFLAG(IS_MAC)
-// See https://crbug.com/379243862
-#define MAYBE_TabGroupHeaderAccessibleProperties \
-  DISABLED_TabGroupHeaderAccessibleProperties
-#else
-#define MAYBE_TabGroupHeaderAccessibleProperties \
-  TabGroupHeaderAccessibleProperties
-#endif
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
-                       MAYBE_TabGroupHeaderAccessibleProperties) {
+                       TabGroupHeaderAccessibleProperties) {
   browser()->set_update_ui_immediately_for_testing();
   AppendTab();
   AppendTab();
@@ -1076,11 +1069,13 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   group_header = tab_strip()->group_header(group);
   data = ui::AXNodeData();
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(
-      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
-                                 u"\"New Tab Title For Test\" and 2 other tabs",
-                                 collapsed_state));
+  std::u16string group_header_contents = base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE,
+                                       2),
+      std::vector<std::u16string>{u"New Tab Title For Test"}, nullptr);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                       group_header_contents, collapsed_state));
 
   // Other than first tab in a group, if any tab's title is updated, it should
   // not update the accessible name.
@@ -1092,11 +1087,13 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   EXPECT_EQ(web_contents->GetTitle(), new_title);
   data = ui::AXNodeData();
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(
-      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
-                                 u"\"New Tab Title For Test\" and 2 other tabs",
-                                 collapsed_state));
+  group_header_contents = base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE,
+                                       2),
+      std::vector<std::u16string>{u"New Tab Title For Test"}, nullptr);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                       group_header_contents, collapsed_state));
 
   // Validate accessible name update with tab move.
   gfx::Range initial_tabs_in_group(3, 6);
@@ -1108,11 +1105,14 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   data = ui::AXNodeData();
   group_header->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(
-      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      l10n_util::GetStringFUTF16(
-          IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
-          u"\"New Tab Title For Test 2\" and 1 other tab", collapsed_state));
+  group_header_contents = base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_PLACEHOLDER_GROUP_TITLE,
+                                       1),
+      std::vector<std::u16string>{u"New Tab Title For Test 2"}, nullptr);
+
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                       group_header_contents, collapsed_state));
 }
 
 IN_PROC_BROWSER_TEST_F(
