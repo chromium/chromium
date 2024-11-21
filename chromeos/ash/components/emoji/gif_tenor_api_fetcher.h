@@ -18,7 +18,6 @@
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
-struct EndpointResponse;
 class EndpointFetcher;
 class GURL;
 
@@ -88,21 +87,7 @@ class GifTenorApiFetcher {
       GetGifsByIdsCallback callback);
 
  private:
-  void FetchCategoriesResponseHandler(
-      GetCategoriesCallback callback,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> response);
-  void TenorGifsApiResponseHandler(
-      TenorGifsApiCallback callback,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> response);
-  void FetchGifsByIdsResponseHandler(
-      GetGifsByIdsCallback callback,
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> response);
-
   const EndpointFetcherCreator endpoint_fetcher_creator_;
-  base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -312,6 +312,46 @@ GifTenorApiFetcher::Error GetError(std::unique_ptr<EndpointResponse> response) {
              : GifTenorApiFetcher::Error::kHttpError;
 }
 
+void FetchCategoriesResponseHandler(
+    GifTenorApiFetcher::GetCategoriesCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+    std::unique_ptr<EndpointResponse> response) {
+  if (response->http_status_code == net::HTTP_OK) {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        response->response,
+        base::BindOnce(ParseCategoriesResponse).Then(std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
+}
+
+// `endpoint_fetcher` may be null.
+void TenorGifsApiResponseHandler(
+    GifTenorApiFetcher::TenorGifsApiCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+    std::unique_ptr<EndpointResponse> response) {
+  if (response->http_status_code == net::HTTP_OK) {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        response->response,
+        base::BindOnce(ParsePaginatedGifsResponse).Then(std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
+}
+
+void FetchGifsByIdsResponseHandler(
+    GifTenorApiFetcher::GetGifsByIdsCallback callback,
+    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+    std::unique_ptr<EndpointResponse> response) {
+  if (response->http_status_code == net::HTTP_OK) {
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        response->response,
+        base::BindOnce(ParseGifsResponse).Then(std::move(callback)));
+    return;
+  }
+  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
+}
+
 }  // namespace
 
 GifTenorApiFetcher::GifTenorApiFetcher()
@@ -369,8 +409,7 @@ void GifTenorApiFetcher::FetchCategories(
       kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
-      base::BindOnce(&GifTenorApiFetcher::FetchCategoriesResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      base::BindOnce(&FetchCategoriesResponseHandler, std::move(callback),
                      std::move(endpoint_fetcher)),
       nullptr);
 }
@@ -422,8 +461,7 @@ void GifTenorApiFetcher::FetchFeaturedGifs(
       kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
-      base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      base::BindOnce(&TenorGifsApiResponseHandler, std::move(callback),
                      std::move(endpoint_fetcher)),
       nullptr);
 }
@@ -444,8 +482,7 @@ void GifTenorApiFetcher::FetchGifSearch(
       std::move(url_loader_factory), url, kSearchTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
-      base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      base::BindOnce(&TenorGifsApiResponseHandler, std::move(callback),
                      std::move(endpoint_fetcher)),
       nullptr);
 }
@@ -467,8 +504,7 @@ std::unique_ptr<EndpointFetcher> GifTenorApiFetcher::FetchGifSearchCancellable(
                                     kSearchTrafficAnnotation);
   CHECK_DEREF(endpoint_fetcher.get())
       .PerformRequest(
-          base::BindOnce(&GifTenorApiFetcher::TenorGifsApiResponseHandler,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          base::BindOnce(&TenorGifsApiResponseHandler, std::move(callback),
                          /*endpoint_fetcher=*/nullptr),
           nullptr);
   return endpoint_fetcher;
@@ -524,50 +560,9 @@ void GifTenorApiFetcher::FetchGifsByIds(
       kTrafficAnnotation);
   auto* const endpoint_fetcher_ptr = endpoint_fetcher.get();
   endpoint_fetcher_ptr->PerformRequest(
-      base::BindOnce(&GifTenorApiFetcher::FetchGifsByIdsResponseHandler,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      base::BindOnce(&FetchGifsByIdsResponseHandler, std::move(callback),
                      std::move(endpoint_fetcher)),
       nullptr);
-}
-
-void GifTenorApiFetcher::FetchCategoriesResponseHandler(
-    GetCategoriesCallback callback,
-    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-    std::unique_ptr<EndpointResponse> response) {
-  if (response->http_status_code == net::HTTP_OK) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        response->response,
-        base::BindOnce(ParseCategoriesResponse).Then(std::move(callback)));
-    return;
-  }
-  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
-}
-
-// `endpoint_fetcher` may be null.
-void GifTenorApiFetcher::TenorGifsApiResponseHandler(
-    TenorGifsApiCallback callback,
-    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-    std::unique_ptr<EndpointResponse> response) {
-  if (response->http_status_code == net::HTTP_OK) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        response->response,
-        base::BindOnce(ParsePaginatedGifsResponse).Then(std::move(callback)));
-    return;
-  }
-  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
-}
-
-void GifTenorApiFetcher::FetchGifsByIdsResponseHandler(
-    GetGifsByIdsCallback callback,
-    std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-    std::unique_ptr<EndpointResponse> response) {
-  if (response->http_status_code == net::HTTP_OK) {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        response->response,
-        base::BindOnce(ParseGifsResponse).Then(std::move(callback)));
-    return;
-  }
-  std::move(callback).Run(base::unexpected(GetError(std::move(response))));
 }
 
 }  // namespace ash
