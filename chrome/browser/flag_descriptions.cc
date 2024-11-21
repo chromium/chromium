@@ -2382,11 +2382,6 @@ const char kJavascriptHarmonyShippingDescription[] =
 const char kJourneysName[] = "History Journeys";
 const char kJourneysDescription[] = "Enables the History Journeys UI.";
 
-const char kJourneysShowAllClustersName[] =
-    "History Journeys Show All Clusters";
-const char kJourneysShowAllClustersDescription[] =
-    "Enables all Journeys clusters to be shown on prominent UI surfaces";
-
 const char kJumpStartOmniboxName[] = "Jump-start Omnibox";
 const char kJumpStartOmniboxDescription[] =
     "Modifies cold- and warm start-up "

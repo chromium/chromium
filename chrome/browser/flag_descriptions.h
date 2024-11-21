@@ -1350,9 +1350,6 @@ extern const char kJavascriptHarmonyShippingDescription[];
 extern const char kJourneysName[];
 extern const char kJourneysDescription[];
 
-extern const char kJourneysShowAllClustersName[];
-extern const char kJourneysShowAllClustersDescription[];
-
 extern const char kJumpStartOmniboxName[];
 extern const char kJumpStartOmniboxDescription[];
 

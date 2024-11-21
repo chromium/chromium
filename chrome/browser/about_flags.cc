@@ -6680,13 +6680,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kJourneysVariations,
                                     "HistoryJourneys")},
 
-    {"history-journeys-show-all-clusters",
-     flag_descriptions::kJourneysShowAllClustersName,
-     flag_descriptions::kJourneysShowAllClustersDescription,
-     kOsDesktop | kOsAndroid,
-     SINGLE_VALUE_TYPE(history_clusters::switches::
-                           kShouldShowAllClustersOnProminentUiSurfaces)},
-
     {"extract-related-searches-from-prefetched-zps-response",
      flag_descriptions::kExtractRelatedSearchesFromPrefetchedZPSResponseName,
      flag_descriptions::
