@@ -31,6 +31,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/language/core/browser/pref_names.h"
@@ -250,7 +251,7 @@ void QuickInsertSearchController::StartGifSearch(
     std::u16string_view query,
     SearchGifsCallback callback) {
   // This will cancel the previous in-flight request if there is one.
-  current_gif_fetcher_ = gif_tenor_api_fetcher_.FetchGifSearchCancellable(
+  current_gif_fetcher_ = GifTenorApiFetcher::FetchGifSearchCancellable(
       /*endpoint_fetcher_creator=*/std::nullopt, std::move(url_loader_factory),
       base::UTF16ToUTF8(query), std::nullopt, kMaxGifsToSearch,
       base::BindOnce(&QuickInsertSearchController::OnGifSearchResponse,

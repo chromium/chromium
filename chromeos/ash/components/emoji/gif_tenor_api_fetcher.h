@@ -54,20 +54,20 @@ class GifTenorApiFetcher {
   ~GifTenorApiFetcher();
 
   // Fetch tenor API Categories endpoint
-  void FetchCategories(
+  static void FetchCategories(
       std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       GetCategoriesCallback callback);
 
   // Fetch tenor API Featured endpoint
-  void FetchFeaturedGifs(
+  static void FetchFeaturedGifs(
       std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::optional<std::string>& pos,
       TenorGifsApiCallback callback);
 
   // Fetch tenor API Search endpoint
-  void FetchGifSearch(
+  static void FetchGifSearch(
       std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& query,
@@ -77,7 +77,7 @@ class GifTenorApiFetcher {
 
   // Fetch tenor API Search endpoint. Returns the `EndpointFetcher` used for the
   // request, which will cancel the network request once it is deleted.
-  std::unique_ptr<EndpointFetcher> FetchGifSearchCancellable(
+  static std::unique_ptr<EndpointFetcher> FetchGifSearchCancellable(
       std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string_view query,
@@ -86,7 +86,7 @@ class GifTenorApiFetcher {
       TenorGifsApiCallback callback);
 
   // Fetch tenor API Posts endpoint
-  void FetchGifsByIds(
+  static void FetchGifsByIds(
       std::optional<EndpointFetcherCreator> endpoint_fetcher_creator,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::vector<std::string>& ids,

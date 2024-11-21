@@ -103,7 +103,6 @@ class ASH_EXPORT QuickInsertSearchController {
   std::unique_ptr<QuickInsertSearchAggregator> aggregator_;
   std::unique_ptr<QuickInsertSearchRequest> search_request_;
 
-  ash::GifTenorApiFetcher gif_tenor_api_fetcher_;
   std::optional<std::u16string> current_gif_search_query_;
   std::unique_ptr<EndpointFetcher> current_gif_fetcher_;
 

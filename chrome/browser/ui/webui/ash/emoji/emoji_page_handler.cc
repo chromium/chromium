@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/emoji/emoji_search.h"
+#include "chromeos/ash/components/emoji/gif_tenor_api_fetcher.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/storage_partition.h"
@@ -336,7 +337,7 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
 }
 
 void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
-  gif_tenor_api_fetcher_.FetchCategories(
+  GifTenorApiFetcher::FetchCategories(
       /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_,
       base::BindOnce(
           [](GetCategoriesCallback callback,
@@ -355,7 +356,7 @@ void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
 
 void EmojiPageHandler::GetFeaturedGifs(const std::optional<std::string>& pos,
                                        GetFeaturedGifsCallback callback) {
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(
+  GifTenorApiFetcher::FetchFeaturedGifs(
       /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_, pos,
       base::BindOnce(
           [](GetFeaturedGifsCallback callback,
@@ -377,7 +378,7 @@ void EmojiPageHandler::GetFeaturedGifs(const std::optional<std::string>& pos,
 void EmojiPageHandler::SearchGifs(const std::string& query,
                                   const std::optional<std::string>& pos,
                                   SearchGifsCallback callback) {
-  gif_tenor_api_fetcher_.FetchGifSearch(
+  GifTenorApiFetcher::FetchGifSearch(
       /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_, query,
       pos,
       /*limit=*/std::nullopt,
@@ -400,7 +401,7 @@ void EmojiPageHandler::SearchGifs(const std::string& query,
 
 void EmojiPageHandler::GetGifsByIds(const std::vector<std::string>& ids,
                                     GetGifsByIdsCallback callback) {
-  gif_tenor_api_fetcher_.FetchGifsByIds(
+  GifTenorApiFetcher::FetchGifsByIds(
       /*endpoint_fetcher_creator=*/std::nullopt, url_loader_factory_, ids,
       base::BindOnce(
           [](GetGifsByIdsCallback callback,
