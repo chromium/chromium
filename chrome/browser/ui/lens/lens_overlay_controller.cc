@@ -2039,11 +2039,17 @@ void LensOverlayController::OnOmniboxFocusChanged(
 
 void LensOverlayController::OnFindEmptyText(
     content::WebContents* web_contents) {
+  if(state_ == State::kLivePageAndResults)  {
+    return;
+  }
   CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
 }
 
 void LensOverlayController::OnFindResultAvailable(
     content::WebContents* web_contents) {
+    if(state_ == State::kLivePageAndResults)  {
+    return;
+  }
   CloseUIAsync(lens::LensOverlayDismissalSource::kFindInPageInvoked);
 }
 
