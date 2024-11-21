@@ -4217,6 +4217,26 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Some other item selected"/>
 </enum>
 
+<enum name="AutofillScanCreditCardResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1"
+      label="Credit card was scanned to fill the form and the form was
+             submitted without any additional edits by the user"/>
+  <int value="2"
+      label="Credit card was scanned to fill the form and the form was
+             submitted with edits by the user to fields that were NOT filled
+             by the scanner"/>
+  <int value="3"
+      label="Credit card was scanned to fill the form and the form was
+             submitted with edits by the user to fields filled by the scanner"/>
+  <int value="4"
+      label="Credit card was scanned to fill the form and but the form was
+             not submitted and instead the user closed the form"/>
+  <int value="5" label="Credit card scanner was started but cancelled"/>
+  <int value="6"
+      label="Credit card scanner option was shown to the user but not used"/>
+</enum>
+
 <enum name="AutofillServerCardUnmaskResult">
   <int value="0" label="Unknown result"/>
   <int value="1" label="Local cache hit"/>

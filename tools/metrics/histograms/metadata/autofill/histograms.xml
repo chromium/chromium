@@ -4201,6 +4201,19 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.PaymentMethodsSettingsPage.ScanCardResult"
+    enum="AutofillScanCreditCardResult" expires_after="2025-06-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-team@google.com</owner>
+  <summary>
+    Logs how (or if) the credit card scanner is used by the user in the payment
+    methods settings page. Recorded when a user hits the save button to save a
+    new credit card through the Chrome payment methods settings page and there
+    is a credit card scanner shown to the user on the payments methods settings
+    page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.PaymentsDataManager.LocalCardAdded" enum="Boolean"
     expires_after="2025-02-01">
   <owner>npnavarro@google.com</owner>
