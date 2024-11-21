@@ -8,23 +8,12 @@
 #define BASE_STL_UTIL_H_
 
 #include <algorithm>
-#include <forward_list>
 #include <iterator>
-#include <type_traits>
 
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
 
 namespace base {
-
-namespace internal {
-
-template <typename Iter>
-constexpr bool IsRandomAccessIter =
-    std::is_same_v<typename std::iterator_traits<Iter>::iterator_category,
-                   std::random_access_iterator_tag>;
-
-}  // namespace internal
 
 // Returns a const reference to the underlying container of a container adapter.
 // Works for std::priority_queue, std::queue, and std::stack.
@@ -95,22 +84,21 @@ template <class Collection>
 class IsNotIn {
  public:
   explicit IsNotIn(const Collection& collection)
-      : i_(collection.begin()), end_(collection.end()) {}
+      : it_(collection.begin()), end_(collection.end()) {}
 
   bool operator()(const typename Collection::value_type& x) {
-    while (i_ != end_ && *i_ < x)
-      ++i_;
-    if (i_ == end_)
-      return true;
-    if (*i_ == x) {
-      ++i_;
-      return false;
+    while (it_ != end_ && *it_ < x) {
+      ++it_;
     }
-    return true;
+    if (it_ == end_ || *it_ != x) {
+      return true;
+    }
+    ++it_;
+    return false;
   }
 
  private:
-  typename Collection::const_iterator i_;
+  typename Collection::const_iterator it_;
   const typename Collection::const_iterator end_;
 };
 
