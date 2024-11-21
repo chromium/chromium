@@ -231,6 +231,12 @@
       base_feature: "none",
     },
     {
+      name: "AccessibilityCustomElementRoleNone",
+      public: true,
+      status: "test",
+      base_feature: "none",
+    },
+    {
       name: "AccessibilityExposeDisplayNone",
       status: "test",
     },

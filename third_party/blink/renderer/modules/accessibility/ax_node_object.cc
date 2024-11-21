@@ -931,12 +931,28 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     return kIncludeObject;
   }
 
-  // Using the title or accessibility description (so we
-  // check if there's some kind of accessible name for the element)
-  // to decide an element's visibility is not as definitive as
-  // previous checks, so this should remain as one of the last.
-  if (ElementHasAnyAriaAttribute() ||
-      !GetElement()->FastGetAttribute(kTitleAttr).empty()) {
+  // Interesting ARIA properties are enough to cause objects to be included,
+  // unless the computed role is none. Note that global ARIA properties usually
+  // undo role=none (exception has been made for custom roles).
+  // See https://w3c.github.io/aria/#conflict_resolution_presentation_none
+  // for more details.
+  if (ElementHasAnyAriaAttribute()) {
+    if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+      // role="none" is now expected to be on some custom elements, where it
+      // will remove the custom element from the ax tree, in order to avoid
+      // duplicate semantics when they are copied to descendant elements inside
+      // the custom element's dom.
+      if (RoleValue() != ax::mojom::blink::Role::kNone ||
+          !GetElement()->IsCustomElement()) {
+        return kIncludeObject;
+      }
+    } else {
+      return kIncludeObject;
+    }
+  }
+
+  // Using a title for a name or description causes an object to be included.
+  if (!GetElement()->FastGetAttribute(kTitleAttr).empty()) {
     return kIncludeObject;
   }
 

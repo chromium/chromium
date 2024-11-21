@@ -819,6 +819,8 @@ data/accessibility/aria/aria-generic-expected-uia-win.txt
 data/accessibility/aria/aria-generic-expected-win.txt
 data/accessibility/aria/aria-generic.html
 data/accessibility/aria/aria-global-expected-blink.txt
+data/accessibility/aria/aria-global-on-custom-element-expected-blink.txt
+data/accessibility/aria/aria-global-on-custom-element.html
 data/accessibility/aria/aria-global.html
 data/accessibility/aria/aria-grid-aria-selected-expected-uia-win.txt
 data/accessibility/aria/aria-grid-aria-selected.html

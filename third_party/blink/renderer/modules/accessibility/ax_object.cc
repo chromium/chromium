@@ -5737,13 +5737,23 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
                              Element::UpdateBehavior::kNoneForAccessibility) !=
                              FocusableState::kNotFocusable) ||
         ElementHasAnyAriaAttribute(true /* does_undo_role_presentation */)) {
-      // Must be exposed with a role if focusable or has a global ARIA property
-      // that is allowed in this context. See
-      // https://w3c.github.io/aria/#presentation for more information about the
-      // conditions upon which elements with role="none"/"presentation" must be
-      // included in the tree. Return Role::kUnknown, so that the native HTML
-      // role is used instead.
-      return ax::mojom::blink::Role::kUnknown;
+      // Must be exposed with a role if focusable or has a global ARIA
+      // property that is allowed in this context. See
+      // https://w3c.github.io/aria/#presentation for more information about
+      // the conditions upon which elements with role="none"/"presentation"
+      // must be included in the tree. Return Role::kUnknown, so that the
+      // native HTML role is used instead.
+      if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+        if (!GetElement()->IsCustomElement()) {
+          // Custom elements that have ARIA
+          // attributes are allowed to use role="none" to hide themselves,
+          // because it's assumed they will copy the ARIA attributes into inner
+          // elements. See https://github.com/w3c/aria/issues/2303.
+          return ax::mojom::blink::Role::kUnknown;
+        }
+      } else {
+        return ax::mojom::blink::Role::kUnknown;
+      }
     }
   }
 
@@ -8408,6 +8418,16 @@ String AXObject::ToString(bool verbose) const {
     if (!cached_values_only) {
       ax::mojom::blink::NameFrom name_from;
       String name = ComputedName(&name_from);
+      ax::mojom::blink::DescriptionFrom desc_from;
+      AXObjectVector desc_objects;
+      String desc = Description(name_from, desc_from, &desc_objects);
+      if (!desc.empty()) {
+        std::ostringstream desc_from_str;
+        desc_from_str << desc_from;
+        string_builder = string_builder +
+                         " descFrom=" + String(desc_from_str.str()) +
+                         " desc=" + desc;
+      }
       std::ostringstream name_from_str;
       name_from_str << name_from;
       if (!name.empty()) {
