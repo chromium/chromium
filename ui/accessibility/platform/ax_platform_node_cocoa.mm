@@ -724,7 +724,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::Role::kListBox:
       return NSAccessibilityListRole;
     case ax::mojom::Role::kListBoxOption:
-      return NSAccessibilityStaticTextRole;
+      // Short term solution that allows children until Mac gets a more
+      // appropriate role for options than AXStaticText, which can result
+      // truncation or incorrect announcements of the option text when there are
+      // children.
+      return NSAccessibilityMenuItemRole;
     case ax::mojom::Role::kListGrid:
       return NSAccessibilityTableRole;
     case ax::mojom::Role::kListMarker:
