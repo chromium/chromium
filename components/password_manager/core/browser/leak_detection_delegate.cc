@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory_impl.h"
 #include "components/password_manager/core/browser/leak_detection_delegate_helper.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -151,9 +152,13 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
     }
   }
 
+  HasChangePasswordUrl has_change_url(
+      client_->GetPasswordChangeService() &&
+      client_->GetPasswordChangeService()->IsPasswordChangeSupported(url));
+
   CredentialLeakType leak_type =
       CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
-                     is_reused, is_syncing);
+                     is_reused, is_syncing, has_change_url);
   client_->NotifyUserCredentialsWereLeaked(
       LeakedPasswordDetails(leak_type, std::move(url), std::move(username),
                             std::move(password), in_account_store));

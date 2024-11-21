@@ -54,7 +54,8 @@ bool LeakedPasswordDetails::operator==(
 
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
-                                  IsSyncing is_syncing) {
+                                  IsSyncing is_syncing,
+                                  HasChangePasswordUrl has_change_password) {
   CredentialLeakType leak_type = 0;
   if (is_saved) {
     leak_type |= kPasswordSaved;
@@ -64,6 +65,9 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
   }
   if (is_syncing) {
     leak_type |= kPasswordSynced;
+  }
+  if (has_change_password) {
+    leak_type |= kHasChangePasswordUrl;
   }
   return leak_type;
 }
@@ -78,6 +82,10 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type) {
 
 bool IsPasswordSynced(CredentialLeakType leak_type) {
   return leak_type & CredentialLeakFlags::kPasswordSynced;
+}
+
+bool IsPasswordChangeSupported(CredentialLeakType leak_type) {
+  return leak_type & CredentialLeakFlags::kHasChangePasswordUrl;
 }
 
 // Formats the `origin` to a human-friendly url string.
