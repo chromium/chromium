@@ -721,7 +721,7 @@ TEST(VideoFrame,
   EXPECT_EQ(release_sync_token, called_sync_token);
 }
 
-TEST(VideoFrame, IsValidConfig_OddCodedSize) {
+TEST(VideoFrame, IsValidConfigOddCodedSize) {
   // Odd sizes are valid for all formats. Odd formats may be internally rounded
   // in VideoFrame::CreateFrame because VideoFrame owns the allocation and can
   // pad the requested coded_size to ensure the UV sample boundaries line up
@@ -739,7 +739,7 @@ TEST(VideoFrame, IsValidConfig_OddCodedSize) {
       gfx::Rect(odd_size), odd_size));
 }
 
-TEST(VideoFrame, CreateFrame_OddWidth) {
+TEST(VideoFrame, CreateFrameOddWidth) {
   // Odd sizes are non-standard for YUV formats that subsample the UV, but they
   // do exist in the wild and should be gracefully handled by VideoFrame in
   // situations where VideoFrame allocates the YUV memory. See discussion in
@@ -765,7 +765,7 @@ TEST(VideoFrame, CreateFrame_OddWidth) {
   EXPECT_EQ(677, frame->coded_size().width());
 }
 
-TEST(VideoFrame, AllocationSize_OddSize) {
+TEST(VideoFrame, AllocationSizeOddSize) {
   const gfx::Size size(3, 5);
 
   for (unsigned int i = 1u; i <= PIXEL_FORMAT_MAX; ++i) {

@@ -228,11 +228,11 @@ class MojoRendererTest : public ::testing::Test {
   mojo::SelfOwnedReceiverRef<mojom::Renderer> renderer_receiver_;
 };
 
-TEST_F(MojoRendererTest, Initialize_Success) {
+TEST_F(MojoRendererTest, InitializeSuccess) {
   Initialize();
 }
 
-TEST_F(MojoRendererTest, Initialize_Failure) {
+TEST_F(MojoRendererTest, InitializeFailure) {
   CreateAudioStream();
   // Mojo Renderer only expects a boolean result, which will be translated
   // to PIPELINE_OK or PIPELINE_ERROR_INITIALIZATION_FAILED.
@@ -241,27 +241,27 @@ TEST_F(MojoRendererTest, Initialize_Failure) {
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(MojoRendererTest, Initialize_BeforeConnectionError) {
+TEST_F(MojoRendererTest, InitializeBeforeConnectionError) {
   CreateAudioStream();
   EXPECT_CALL(*mock_renderer_, OnInitialize(_, _, _))
       .WillOnce(InvokeWithoutArgs(this, &MojoRendererTest::ConnectionError));
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(MojoRendererTest, Initialize_AfterConnectionError) {
+TEST_F(MojoRendererTest, InitializeAfterConnectionError) {
   ConnectionError();
   CreateAudioStream();
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(MojoRendererTest, Flush_Success) {
+TEST_F(MojoRendererTest, FlushSuccess) {
   Initialize();
 
   EXPECT_CALL(*mock_renderer_, OnFlush(_)).WillOnce(RunOnceClosure<0>());
   Flush();
 }
 
-TEST_F(MojoRendererTest, Flush_ConnectionError) {
+TEST_F(MojoRendererTest, FlushConnectionError) {
   Initialize();
 
   // Upon connection error, OnError() should be called once and only once.
@@ -273,7 +273,7 @@ TEST_F(MojoRendererTest, Flush_ConnectionError) {
   Flush();
 }
 
-TEST_F(MojoRendererTest, Flush_AfterConnectionError) {
+TEST_F(MojoRendererTest, FlushAfterConnectionError) {
   Initialize();
 
   // Upon connection error, OnError() should be called once and only once.
@@ -285,7 +285,7 @@ TEST_F(MojoRendererTest, Flush_AfterConnectionError) {
   Flush();
 }
 
-TEST_F(MojoRendererTest, SetCdm_Success) {
+TEST_F(MojoRendererTest, SetCdmSuccess) {
   Initialize();
   CreateCdm();
   EXPECT_CALL(*mock_renderer_, OnSetCdm(_, _))
@@ -293,7 +293,7 @@ TEST_F(MojoRendererTest, SetCdm_Success) {
   SetCdmAndExpect(true);
 }
 
-TEST_F(MojoRendererTest, SetCdm_Failure) {
+TEST_F(MojoRendererTest, SetCdmFailure) {
   Initialize();
   CreateCdm();
   EXPECT_CALL(*mock_renderer_, OnSetCdm(_, _))
@@ -301,18 +301,18 @@ TEST_F(MojoRendererTest, SetCdm_Failure) {
   SetCdmAndExpect(false);
 }
 
-TEST_F(MojoRendererTest, SetCdm_InvalidCdmId) {
+TEST_F(MojoRendererTest, SetCdmInvalidCdmId) {
   Initialize();
   SetCdmAndExpect(false);
 }
 
-TEST_F(MojoRendererTest, SetCdm_NonExistCdmId) {
+TEST_F(MojoRendererTest, SetCdmNonExistCdmId) {
   Initialize();
   cdm_context_.set_cdm_id(base::UnguessableToken::Create());
   SetCdmAndExpect(false);
 }
 
-TEST_F(MojoRendererTest, SetCdm_ReleasedCdmId) {
+TEST_F(MojoRendererTest, SetCdmReleasedCdmId) {
   // The CdmContext set on |mock_renderer_|.
   CdmContext* mock_renderer_cdm_context = nullptr;
 
@@ -336,14 +336,14 @@ TEST_F(MojoRendererTest, SetCdm_ReleasedCdmId) {
   EXPECT_TRUE(mock_renderer_cdm_context->GetDecryptor());
 }
 
-TEST_F(MojoRendererTest, SetCdm_BeforeInitialize) {
+TEST_F(MojoRendererTest, SetCdmBeforeInitialize) {
   CreateCdm();
   EXPECT_CALL(*mock_renderer_, OnSetCdm(_, _))
       .WillOnce(RunOnceCallback<1>(true));
   SetCdmAndExpect(true);
 }
 
-TEST_F(MojoRendererTest, SetCdm_AfterInitializeAndConnectionError) {
+TEST_F(MojoRendererTest, SetCdmAfterInitializeAndConnectionError) {
   CreateCdm();
   Initialize();
   EXPECT_CALL(renderer_client_,
@@ -353,7 +353,7 @@ TEST_F(MojoRendererTest, SetCdm_AfterInitializeAndConnectionError) {
   SetCdmAndExpect(false);
 }
 
-TEST_F(MojoRendererTest, SetCdm_AfterConnectionErrorAndBeforeInitialize) {
+TEST_F(MojoRendererTest, SetCdmAfterConnectionErrorAndBeforeInitialize) {
   CreateCdm();
   // Initialize() is not called so RendererClient::OnError() is not expected.
   ConnectionError();
@@ -361,7 +361,7 @@ TEST_F(MojoRendererTest, SetCdm_AfterConnectionErrorAndBeforeInitialize) {
   InitializeAndExpect(PIPELINE_ERROR_INITIALIZATION_FAILED);
 }
 
-TEST_F(MojoRendererTest, SetCdm_BeforeInitializeAndConnectionError) {
+TEST_F(MojoRendererTest, SetCdmBeforeInitializeAndConnectionError) {
   CreateCdm();
   EXPECT_CALL(*mock_renderer_, OnSetCdm(_, _))
       .WillOnce(RunOnceCallback<1>(true));
@@ -444,7 +444,7 @@ TEST_F(MojoRendererTest, OnEnded) {
 
 // TODO(xhwang): Add tests for all RendererClient methods.
 
-TEST_F(MojoRendererTest, Destroy_PendingInitialize) {
+TEST_F(MojoRendererTest, DestroyPendingInitialize) {
   CreateAudioStream();
   EXPECT_CALL(*mock_renderer_, OnInitialize(_, _, _))
       .WillRepeatedly(
@@ -457,7 +457,7 @@ TEST_F(MojoRendererTest, Destroy_PendingInitialize) {
   Destroy();
 }
 
-TEST_F(MojoRendererTest, Destroy_PendingFlush) {
+TEST_F(MojoRendererTest, DestroyPendingFlush) {
   EXPECT_CALL(*mock_renderer_, OnSetCdm(_, _))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(true));
   EXPECT_CALL(*this, OnCdmAttached(false));
@@ -467,7 +467,7 @@ TEST_F(MojoRendererTest, Destroy_PendingFlush) {
   Destroy();
 }
 
-TEST_F(MojoRendererTest, Destroy_PendingSetCdm) {
+TEST_F(MojoRendererTest, DestroyPendingSetCdm) {
   Initialize();
 
   EXPECT_CALL(*mock_renderer_, OnFlush(_)).WillRepeatedly(RunOnceClosure<0>());

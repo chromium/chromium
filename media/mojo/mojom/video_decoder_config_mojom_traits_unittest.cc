@@ -25,7 +25,7 @@ static const gfx::Size kNaturalSize(320, 240);
 
 }  // namespace
 
-TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Normal) {
+TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfigNormal) {
   const uint8_t kExtraData[] = "config extra data";
   const std::vector<uint8_t> kExtraDataVector(
       &kExtraData[0], &kExtraData[0] + std::size(kExtraData));
@@ -57,7 +57,7 @@ TEST(VideoDecoderConfigStructTraitsTest,
   EXPECT_TRUE(output.Matches(input));
 }
 
-TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfig_Encrypted) {
+TEST(VideoDecoderConfigStructTraitsTest, ConvertVideoDecoderConfigEncrypted) {
   VideoDecoderConfig input(VideoCodec::kVP8, VP8PROFILE_ANY,
                            VideoDecoderConfig::AlphaMode::kIsOpaque,
                            VideoColorSpace(), kNoTransformation, kCodedSize,

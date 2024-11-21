@@ -73,7 +73,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeBasics) {
 #endif
 }
 
-TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9TransferFunctions) {
+TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeVP9TransferFunctions) {
   size_t num_found = 0;
   // TODO(hubbe): Verify support for HDR codecs when color management enabled.
   const std::set<VideoColorSpace::TransferID> kSupportedTransfers = {
@@ -110,7 +110,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9TransferFunctions) {
   EXPECT_EQ(kSupportedTransfers.size(), num_found);
 }
 
-TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Primaries) {
+TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeVP9Primaries) {
   size_t num_found = 0;
   // TODO(hubbe): Verify support for HDR codecs when color management enabled.
   const std::set<VideoColorSpace::PrimaryID> kSupportedPrimaries = {
@@ -142,7 +142,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Primaries) {
   EXPECT_EQ(kSupportedPrimaries.size(), num_found);
 }
 
-TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Matrix) {
+TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeVP9Matrix) {
   size_t num_found = 0;
   // TODO(hubbe): Verify support for HDR codecs when color management enabled.
   const std::set<VideoColorSpace::MatrixID> kSupportedMatrix = {
@@ -173,7 +173,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Matrix) {
   EXPECT_EQ(kSupportedMatrix.size(), num_found);
 }
 
-TEST(SupportedTypesTest, IsDecoderSupportedVideoType_VP9Profiles) {
+TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeVP9Profiles) {
   // Default to common 709.
   const VideoColorSpace kColorSpace = VideoColorSpace::REC709();
 
@@ -261,7 +261,7 @@ TEST(SupportedTypesTest,
                                             is_spatial_rendering}));
 }
 
-TEST(SupportedTypesTest, XHE_AACSupported) {
+TEST(SupportedTypesTest, XHEAACSupported) {
   AudioType aac{AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false};
   EXPECT_EQ(false, IsDecoderSupportedAudioType(aac));
 
@@ -338,7 +338,7 @@ TEST(SupportedTypesTest, IsDecoderSupportedVideoTypeWithHdrMetadataBasics) {
        gfx::HdrMetadataType::kSmpteSt2094_40}));
 }
 
-TEST(SupportedTypesTest, IsEncoderSupportedVideoType_H264Profiles) {
+TEST(SupportedTypesTest, IsEncoderSupportedVideoTypeH264Profiles) {
   const bool is_h264_supported =
       BUILDFLAG(ENABLE_OPENH264) && BUILDFLAG(USE_PROPRIETARY_CODECS);
 
@@ -358,17 +358,17 @@ TEST(SupportedTypesTest, IsEncoderSupportedVideoType_H264Profiles) {
       {VideoCodec::kH264, H264PROFILE_HIGH422PROFILE}));
 }
 
-TEST(SupportedTypesTest, IsEncoderSupportedVideoType_VP8Profiles) {
+TEST(SupportedTypesTest, IsEncoderSupportedVideoTypeVP8Profiles) {
   EXPECT_EQ(IsEncoderSupportedVideoType({VideoCodec::kVP8, VP8PROFILE_ANY}),
             BUILDFLAG(ENABLE_LIBVPX));
 }
 
-TEST(SupportedTypesTest, IsEncoderSupportedVideoType_HEVCProfiles) {
+TEST(SupportedTypesTest, IsEncoderSupportedVideoTypeHEVCProfiles) {
   EXPECT_FALSE(
       IsEncoderSupportedVideoType({VideoCodec::kHEVC, HEVCPROFILE_MAIN}));
 }
 
-TEST(SupportedTypesTest, IsEncoderSupportedVideoType_VP9Profiles) {
+TEST(SupportedTypesTest, IsEncoderSupportedVideoTypeVP9Profiles) {
   EXPECT_EQ(
       IsEncoderSupportedVideoType({VideoCodec::kVP9, VP9PROFILE_PROFILE0}),
       BUILDFLAG(ENABLE_LIBVPX));
@@ -388,7 +388,7 @@ TEST(SupportedTypesTest, IsEncoderSupportedVideoType_VP9Profiles) {
 #endif
 }
 
-TEST(SupportedTypesTest, IsEncoderSupportedVideoType_AV1Profiles) {
+TEST(SupportedTypesTest, IsEncoderSupportedVideoTypeAV1Profiles) {
   EXPECT_EQ(
       IsEncoderSupportedVideoType({VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN}),
       BUILDFLAG(ENABLE_LIBAOM));

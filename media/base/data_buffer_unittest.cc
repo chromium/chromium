@@ -20,7 +20,7 @@
 
 namespace media {
 
-TEST(DataBufferTest, Constructor_ZeroSize) {
+TEST(DataBufferTest, ConstructorZeroSize) {
   // Zero-sized buffers are valid. In practice they aren't used very much but it
   // eliminates clients from worrying about null data pointers.
   scoped_refptr<DataBuffer> buffer = new DataBuffer(0);
@@ -30,7 +30,7 @@ TEST(DataBufferTest, Constructor_ZeroSize) {
   EXPECT_FALSE(buffer->end_of_stream());
 }
 
-TEST(DataBufferTest, Constructor_NonZeroSize) {
+TEST(DataBufferTest, ConstructorNonZeroSize) {
   // Buffer size should be set.
   scoped_refptr<DataBuffer> buffer = new DataBuffer(10);
   EXPECT_TRUE(buffer->data());
@@ -39,7 +39,7 @@ TEST(DataBufferTest, Constructor_NonZeroSize) {
   EXPECT_FALSE(buffer->end_of_stream());
 }
 
-TEST(DataBufferTest, Constructor_ScopedArray) {
+TEST(DataBufferTest, ConstructorScopedArray) {
   // Data should be passed and both data and buffer size should be set.
   const int kSize = 8;
   auto data = base::HeapArray<uint8_t>::Uninit(kSize);

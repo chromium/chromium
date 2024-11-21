@@ -507,7 +507,7 @@ TEST_F(H264VaapiVideoEncoderDelegateTest, ChangeBitrateModeFails) {
       new_allocation, VideoEncodeAccelerator::kDefaultFramerate));
 }
 
-TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrate_Initialize) {
+TEST_F(H264VaapiVideoEncoderDelegateTest, VariableBitrateInitialize) {
   auto vea_config = DefaultVEAConfig();
   const uint32_t bitrate_bps = vea_config.bitrate.target_bps();
   vea_config.bitrate = Bitrate::VariableBitrate(bitrate_bps, 2u * bitrate_bps);

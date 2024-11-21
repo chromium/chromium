@@ -294,7 +294,7 @@ TEST(MimeUtilTest, ParseVideoCodecString) {
 
 // Basic smoke test for API. More exhaustive codec string testing found in
 // media_canplaytype_browsertest.cc.
-TEST(MimeUtilTest, ParseVideoCodecString_NoMimeType) {
+TEST(MimeUtilTest, ParseVideoCodecStringNoMimeType) {
   // Invalid to give empty codec without a mime type.
   EXPECT_FALSE(ParseVideoCodecString("", ""));
 
@@ -399,7 +399,7 @@ TEST(MimeUtilTest, ParseAudioCodecString) {
                                      &out_codec));
 }
 
-TEST(MimeUtilTest, ParseAudioCodecString_NoMimeType) {
+TEST(MimeUtilTest, ParseAudioCodecStringNoMimeType) {
   bool out_is_ambiguous;
   AudioCodec out_codec;
 
@@ -443,7 +443,7 @@ TEST(MimeUtilTest, ParseAudioCodecString_NoMimeType) {
 
 // MP3 is a weird case where we allow either the mime type, codec string, or
 // both, and there are several valid codec strings.
-TEST(MimeUtilTest, ParseAudioCodecString_Mp3) {
+TEST(MimeUtilTest, ParseAudioCodecStringMp3) {
   bool out_is_ambiguous;
   AudioCodec out_codec;
 
@@ -474,7 +474,7 @@ TEST(MimeUtilTest, ParseAudioCodecString_Mp3) {
 
 // These codecs really only have one profile. Ensure that |out_profile| is
 // correctly mapped.
-TEST(MimeUtilTest, ParseVideoCodecString_SimpleCodecsHaveProfiles) {
+TEST(MimeUtilTest, ParseVideoCodecStringSimpleCodecsHaveProfiles) {
   // Valid VP8 string.
   {
     auto result = ParseVideoCodecString("video/webm", "vp8");

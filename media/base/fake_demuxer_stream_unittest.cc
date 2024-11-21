@@ -198,57 +198,57 @@ class FakeDemuxerStreamTest : public testing::Test {
   int num_buffers_received_;
 };
 
-TEST_F(FakeDemuxerStreamTest, Read_OneConfig) {
+TEST_F(FakeDemuxerStreamTest, ReadOneConfig) {
   TestRead(1, 5, false);
 }
 
-TEST_F(FakeDemuxerStreamTest, Read_MultipleConfigs) {
+TEST_F(FakeDemuxerStreamTest, ReadMultipleConfigs) {
   TestRead(3, 5, false);
 }
 
-TEST_F(FakeDemuxerStreamTest, Read_OneBufferPerConfig) {
+TEST_F(FakeDemuxerStreamTest, ReadOneBufferPerConfig) {
   TestRead(3, 1, false);
 }
 
-TEST_F(FakeDemuxerStreamTest, Read_Encrypted) {
+TEST_F(FakeDemuxerStreamTest, ReadEncrypted) {
   TestRead(6, 3, true);
 }
 
-TEST_F(FakeDemuxerStreamTest, HoldRead_Normal) {
+TEST_F(FakeDemuxerStreamTest, HoldReadNormal) {
   EnterNormalReadState();
   stream_->HoldNextRead();
   ReadAndExpect(PENDING);
   SatisfyReadAndExpect(OK);
 }
 
-TEST_F(FakeDemuxerStreamTest, HoldRead_BeforeConfigChanged) {
+TEST_F(FakeDemuxerStreamTest, HoldReadBeforeConfigChanged) {
   EnterNormalReadState();
   stream_->HoldNextConfigChangeRead();
   ReadUntilPending();
   SatisfyReadAndExpect(CONFIG_CHANGED);
 }
 
-TEST_F(FakeDemuxerStreamTest, HoldRead_BeforeEOS) {
+TEST_F(FakeDemuxerStreamTest, HoldReadBeforeEOS) {
   EnterBeforeEOSState();
   stream_->HoldNextRead();
   ReadAndExpect(PENDING);
   SatisfyReadAndExpect(EOS);
 }
 
-TEST_F(FakeDemuxerStreamTest, Reset_Normal) {
+TEST_F(FakeDemuxerStreamTest, ResetNormal) {
   EnterNormalReadState();
   Reset();
   ReadAndExpect(OK);
 }
 
-TEST_F(FakeDemuxerStreamTest, Reset_AfterHoldRead) {
+TEST_F(FakeDemuxerStreamTest, ResetAfterHoldRead) {
   EnterNormalReadState();
   stream_->HoldNextRead();
   Reset();
   ReadAndExpect(OK);
 }
 
-TEST_F(FakeDemuxerStreamTest, Reset_DuringPendingRead) {
+TEST_F(FakeDemuxerStreamTest, ResetDuringPendingRead) {
   EnterNormalReadState();
   stream_->HoldNextRead();
   ReadAndExpect(PENDING);
@@ -256,7 +256,7 @@ TEST_F(FakeDemuxerStreamTest, Reset_DuringPendingRead) {
   ReadAndExpect(OK);
 }
 
-TEST_F(FakeDemuxerStreamTest, Reset_BeforeConfigChanged) {
+TEST_F(FakeDemuxerStreamTest, ResetBeforeConfigChanged) {
   EnterNormalReadState();
   stream_->HoldNextConfigChangeRead();
   ReadUntilPending();
@@ -264,7 +264,7 @@ TEST_F(FakeDemuxerStreamTest, Reset_BeforeConfigChanged) {
   ReadAndExpect(CONFIG_CHANGED);
 }
 
-TEST_F(FakeDemuxerStreamTest, Reset_BeforeEOS) {
+TEST_F(FakeDemuxerStreamTest, ResetBeforeEOS) {
   EnterBeforeEOSState();
   stream_->HoldNextRead();
   ReadAndExpect(PENDING);
@@ -272,20 +272,20 @@ TEST_F(FakeDemuxerStreamTest, Reset_BeforeEOS) {
   ReadAndExpect(EOS);
 }
 
-TEST_F(FakeDemuxerStreamTest, Error_Normal) {
+TEST_F(FakeDemuxerStreamTest, ErrorNormal) {
   EnterNormalReadState();
   Error();
   ReadAndExpect(OK);
 }
 
-TEST_F(FakeDemuxerStreamTest, Error_AfterHoldRead) {
+TEST_F(FakeDemuxerStreamTest, ErrorAfterHoldRead) {
   EnterNormalReadState();
   stream_->HoldNextRead();
   Error();
   ReadAndExpect(OK);
 }
 
-TEST_F(FakeDemuxerStreamTest, Error_BeforeConfigChanged) {
+TEST_F(FakeDemuxerStreamTest, ErrorBeforeConfigChanged) {
   EnterNormalReadState();
   stream_->HoldNextConfigChangeRead();
   ReadUntilPending();
@@ -293,7 +293,7 @@ TEST_F(FakeDemuxerStreamTest, Error_BeforeConfigChanged) {
   ReadAndExpect(CONFIG_CHANGED);
 }
 
-TEST_F(FakeDemuxerStreamTest, Error_BeforeEOS) {
+TEST_F(FakeDemuxerStreamTest, ErrorBeforeEOS) {
   EnterBeforeEOSState();
   stream_->HoldNextRead();
   ReadAndExpect(PENDING);
@@ -310,28 +310,28 @@ TEST_F(FakeDemuxerStreamTest, NoConfigChanges) {
   ReadAndExpect(EOS);
 }
 
-TEST_F(FakeDemuxerStreamTest, SeekToStart_Normal) {
+TEST_F(FakeDemuxerStreamTest, SeekToStartNormal) {
   EnterNormalReadState();
   stream_->SeekToStart();
   num_buffers_received_ = 0;
   ReadAllBuffers(kNumConfigs, kNumBuffersInOneConfig);
 }
 
-TEST_F(FakeDemuxerStreamTest, SeekToStart_BeforeEOS) {
+TEST_F(FakeDemuxerStreamTest, SeekToStartBeforeEOS) {
   EnterBeforeEOSState();
   stream_->SeekToStart();
   num_buffers_received_ = 0;
   ReadAllBuffers(1, kNumBuffersInOneConfig);
 }
 
-TEST_F(FakeDemuxerStreamTest, SeekToStart_AfterEOS) {
+TEST_F(FakeDemuxerStreamTest, SeekToStartAfterEOS) {
   TestRead(3, 5, false);
   stream_->SeekToStart();
   num_buffers_received_ = 0;
   ReadAllBuffers(3, 5);
 }
 
-TEST_F(FakeDemuxerStreamTest, DemuxerStream_GetTypeName) {
+TEST_F(FakeDemuxerStreamTest, DemuxerStreamGetTypeName) {
   EXPECT_TRUE(DemuxerStream::GetTypeName(DemuxerStream::Type::AUDIO) ==
               std::string("audio"));
   EXPECT_TRUE(DemuxerStream::GetTypeName(DemuxerStream::Type::VIDEO) ==
@@ -340,7 +340,7 @@ TEST_F(FakeDemuxerStreamTest, DemuxerStream_GetTypeName) {
               std::string("unknown"));
 }
 
-TEST_F(FakeDemuxerStreamTest, DemuxerStream_GetStatusName) {
+TEST_F(FakeDemuxerStreamTest, DemuxerStreamGetStatusName) {
   EXPECT_TRUE(DemuxerStream::GetStatusName(DemuxerStream::Status::kOk) ==
               std::string("okay"));
   EXPECT_TRUE(DemuxerStream::GetStatusName(DemuxerStream::Status::kAborted) ==
@@ -352,7 +352,7 @@ TEST_F(FakeDemuxerStreamTest, DemuxerStream_GetStatusName) {
               std::string("error"));
 }
 
-TEST_F(FakeDemuxerStreamTest, DemuxerStream_GetLivenessName) {
+TEST_F(FakeDemuxerStreamTest, DemuxerStreamGetLivenessName) {
   EXPECT_TRUE(GetStreamLivenessName(StreamLiveness::kUnknown) ==
               std::string("unknown"));
   EXPECT_TRUE(GetStreamLivenessName(StreamLiveness::kRecorded) ==

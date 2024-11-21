@@ -19,7 +19,7 @@ static void CopyVar(int var1, int* var2) {
   *var2 = var1;
 }
 
-TEST(CallbackHolderTest, SetAfterHold_Closure) {
+TEST(CallbackHolderTest, SetAfterHoldClosure) {
   CallbackHolder<base::OnceClosure> cb;
   EXPECT_TRUE(cb.IsNull());
 
@@ -38,7 +38,7 @@ TEST(CallbackHolderTest, SetAfterHold_Closure) {
   EXPECT_TRUE(closure_called);
 }
 
-TEST(CallbackHolderTest, HoldAfterSet_Closure) {
+TEST(CallbackHolderTest, HoldAfterSetClosure) {
   CallbackHolder<base::OnceClosure> cb;
   EXPECT_TRUE(cb.IsNull());
 
@@ -56,7 +56,7 @@ TEST(CallbackHolderTest, HoldAfterSet_Closure) {
   EXPECT_TRUE(closure_called);
 }
 
-TEST(CallbackHolderTest, NotHold_Closure) {
+TEST(CallbackHolderTest, NotHoldClosure) {
   CallbackHolder<base::OnceClosure> cb;
   EXPECT_TRUE(cb.IsNull());
 
@@ -69,7 +69,7 @@ TEST(CallbackHolderTest, NotHold_Closure) {
   EXPECT_TRUE(closure_called);
 }
 
-TEST(CallbackHolderTest, SetAfterHold_Callback) {
+TEST(CallbackHolderTest, SetAfterHoldCallback) {
   CallbackHolder<base::OnceCallback<void(int, int*)>> cb;
   EXPECT_TRUE(cb.IsNull());
 
@@ -89,7 +89,7 @@ TEST(CallbackHolderTest, SetAfterHold_Callback) {
   EXPECT_EQ(var1, var2);
 }
 
-TEST(CallbackHolderTest, HoldAfterSet_Callback) {
+TEST(CallbackHolderTest, HoldAfterSetCallback) {
   CallbackHolder<base::OnceCallback<void(int, int*)>> cb;
   EXPECT_TRUE(cb.IsNull());
 
@@ -109,7 +109,7 @@ TEST(CallbackHolderTest, HoldAfterSet_Callback) {
   EXPECT_EQ(var1, var2);
 }
 
-TEST(CallbackHolderTest, NotHold_Callback) {
+TEST(CallbackHolderTest, NotHoldCallback) {
   CallbackHolder<base::OnceCallback<void(int, int*)>> cb;
   EXPECT_TRUE(cb.IsNull());
 

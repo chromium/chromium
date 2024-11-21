@@ -696,7 +696,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest,
   EXPECT_EQ(output_count_after_change, 1);
 }
 
-TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptions_ChangeFrameSize) {
+TEST_F(VideoEncodeAcceleratorAdapterTest, ChangeOptionsChangeFrameSize) {
   VideoEncoder::Options options;
   auto first_frame_size = gfx::Size(640, 480);
   auto second_frame_size = gfx::Size(1280, 720);

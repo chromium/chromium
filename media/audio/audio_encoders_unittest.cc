@@ -773,7 +773,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
 }
 
 // Tests we can configure the AudioOpusEncoder's bitrate mode.
-TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
+TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecodeBitrateMode) {
   constexpr AudioEncoder::BitrateMode kTestOpusBitrateMode[] = {
       AudioEncoder::BitrateMode::kConstant,
       AudioEncoder::BitrateMode::kVariable};
@@ -824,7 +824,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
 }
 
 // Tests we can configure the AudioOpusEncoder's extra options.
-TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
+TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecodeOpusOptions) {
   // TODO(crbug.com/40243924): Test an OpusOptions::frame_duration which forces
   // repacketization.
   constexpr media::AudioEncoder::OpusOptions kTestOpusOptions[] = {

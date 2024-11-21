@@ -139,7 +139,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
             CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
-TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoReset) {
   scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
   scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
   H264SPS sps;
@@ -183,7 +183,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
             CMSampleBufferGetFormatDescription(sample1.get()));
 }
 
-TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwoConfigChange) {
   scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
   scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
   H264SPS sps;

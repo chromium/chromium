@@ -60,7 +60,7 @@ class MojoVideoEncoderMetricsProviderServiceTest
   base::TestMessageLoop message_loop_;
 };
 
-TEST_F(MojoVideoEncoderMetricsProviderServiceTest, Create_NoUKMReport) {
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest, CreateNoUKMReport) {
   auto [test_recorder, provider] = Create(kTestURL);
   provider.reset();
   base::RunLoop().RunUntilIdle();

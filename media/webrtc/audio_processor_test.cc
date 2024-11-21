@@ -519,7 +519,7 @@ class AudioProcessorPlayoutTest : public AudioProcessorTest {
   AudioProcessor audio_processor_;
 };
 
-TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_ForwardsDataToWebrtcApm) {
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutDataForwardsDataToWebrtcApm) {
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(/*channels=*/2, /*frames=*/480);
   data_bus->Zero();
@@ -529,7 +529,7 @@ TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_ForwardsDataToWebrtcApm) {
   audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
 }
 
-TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_BuffersPlayout) {
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutDataBuffersPlayout) {
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 4 / 1000);
   data_bus->Zero();
@@ -544,7 +544,7 @@ TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_BuffersPlayout) {
   audio_processor_.OnPlayoutData(*data_bus, 48000, base::Milliseconds(10));
 }
 
-TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_HandlesVariableInputSize) {
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutDataHandlesVariableInputSize) {
   std::unique_ptr<media::AudioBus> long_data_bus =
       media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 25 / 1000);
   long_data_bus->Zero();
@@ -560,7 +560,7 @@ TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_HandlesVariableInputSize) {
                                  base::Milliseconds(10));
 }
 
-TEST_F(AudioProcessorPlayoutTest, OnPlayoutData_HandlesSampleRateChange) {
+TEST_F(AudioProcessorPlayoutTest, OnPlayoutDataHandlesSampleRateChange) {
   std::unique_ptr<media::AudioBus> high_rate_data_bus =
       media::AudioBus::Create(/*channels=*/2, /*frames=*/48000 * 12 / 1000);
   high_rate_data_bus->Zero();

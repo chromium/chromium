@@ -1450,7 +1450,7 @@ TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo) {
   EXPECT_TRUE(it->descriptor.control_support().zoom);
 }
 
-TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfo_IncludeIRCameras) {
+TEST_P(VideoCaptureDeviceFactoryMFWinTest, GetDevicesInfoIncludeIRCameras) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIncludeIRCamerasInDeviceEnumeration);
 

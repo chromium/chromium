@@ -679,7 +679,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOgg) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOgg_4ch_ChannelMapping2) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOgg4chChannelMapping2) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-opus-4ch-channelmapping2.ogg", kWebAudio));
 
   Play();
@@ -687,7 +687,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOgg_4ch_ChannelMapping2) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOgg_11ch_ChannelMapping2) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackOpusOgg11chChannelMapping2) {
   ASSERT_EQ(PIPELINE_OK,
             Start("bear-opus-11ch-channelmapping2.ogg", kWebAudio));
 
@@ -1055,7 +1055,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusMp4TrimmingHashed) {
   // EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusWebmTrimmingHashed) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackOpusWebmTrimmingHashed) {
   TestMediaSource source("opus-trimming-test.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithMediaSource(&source, kHashed, nullptr));
@@ -1084,7 +1084,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusWebmTrimmingHashed) {
   EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackOpusMp4TrimmingHashed) {
   TestMediaSource source("opus-trimming-test.mp4", kAppendWholeFile);
 
   // TODO(dalecurtis): The test clip currently does not have the edit list
@@ -1124,7 +1124,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusMp4TrimmingHashed) {
   EXPECT_AUDIO_HASH(kOpusEndTrimmingHash_3);
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackOpusWebmHashed_MonoOutput) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackOpusWebmHashedMonoOutput) {
   ASSERT_EQ(PIPELINE_OK,
             Start("bunny-opus-intensity-stereo.webm", kHashed | kMonoOutput));
 
@@ -1198,7 +1198,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackOpusMp4PrerollExceedsCodecDelay) {
   // EXPECT_AUDIO_HASH(kOpusSmallCodecDelayHash_2);
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackOpusPrerollExceedsCodecDelay) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackOpusPrerollExceedsCodecDelay) {
   TestMediaSource source("bear-opus.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithMediaSource(&source, kHashed, nullptr));
@@ -1321,7 +1321,7 @@ TEST_F(PipelineIntegrationTest, FlacPlaybackHashed) {
   EXPECT_AUDIO_HASH(kSfxLosslessHash);
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlayback) {
   TestMediaSource source("bear-320x240.webm", 219229);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1340,7 +1340,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_EosBeforeDemuxerOpened) {
+TEST_F(PipelineIntegrationTest, MSEEosBeforeDemuxerOpened) {
   // After appending only a partial initialization segment, marking end of
   // stream should let the test complete with error indicating failure to open
   // demuxer. Here we append only the first 10 bytes of a test WebM, definitely
@@ -1352,7 +1352,7 @@ TEST_F(PipelineIntegrationTest, MSE_EosBeforeDemuxerOpened) {
       StartPipelineWithMediaSource(&source, kExpectDemuxerFailure, nullptr));
 }
 
-TEST_F(PipelineIntegrationTest, MSE_CorruptedFirstMediaSegment) {
+TEST_F(PipelineIntegrationTest, MSECorruptedFirstMediaSegment) {
   // After successful initialization segment append completing demuxer opening,
   // immediately append a corrupted media segment to trigger parse error while
   // pipeline is still completing renderer setup.
@@ -1364,7 +1364,7 @@ TEST_F(PipelineIntegrationTest, MSE_CorruptedFirstMediaSegment) {
             StartPipelineWithMediaSource(&source));
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_Live) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackLive) {
   TestMediaSource source("bear-320x240-live.webm", 219221);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1421,7 +1421,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_AV1_10bit_WebM) {
 
 #endif
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VP9_WebM) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackVP9WebM) {
   TestMediaSource source("bear-vp9.webm", 67504);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1438,7 +1438,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VP9_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VP9_BlockGroup_WebM) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackVP9BlockGroupWebM) {
   TestMediaSource source("bear-vp9-blockgroup.webm", 67871);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1455,7 +1455,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VP9_BlockGroup_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VP8A_WebM) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackVP8AWebM) {
   TestMediaSource source("bear-vp8a.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1500,7 +1500,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_AV1_WebM) {
 }
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
-TEST_F(PipelineIntegrationTest, MSE_ConfigChange_WebM) {
+TEST_F(PipelineIntegrationTest, MSEConfigChangeWebM) {
   TestMediaSource source("bear-320x240-16x9-aspect.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
 
@@ -1526,7 +1526,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_AudioConfigChange_WebM) {
+TEST_F(PipelineIntegrationTest, MSEAudioConfigChangeWebM) {
   TestMediaSource source("bear-320x240-audio-only.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
 
@@ -1559,7 +1559,7 @@ TEST_F(PipelineIntegrationTest, MSE_AudioConfigChange_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_RemoveUpdatesBufferedRanges) {
+TEST_F(PipelineIntegrationTest, MSERemoveUpdatesBufferedRanges) {
   TestMediaSource source("bear-320x240.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
 
@@ -1587,7 +1587,7 @@ TEST_F(PipelineIntegrationTest, MSE_RemoveUpdatesBufferedRanges) {
 // evicted data should be reflected in the change of media::Pipeline buffered
 // ranges (returned by GetBufferedTimeRanges). At that point the buffered ranges
 // will no longer start at 0.
-TEST_F(PipelineIntegrationTest, MSE_FillUpBuffer) {
+TEST_F(PipelineIntegrationTest, MSEFillUpBuffer) {
   const char* input_filename = "bear-320x240.webm";
   TestMediaSource source(input_filename, kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
@@ -1616,7 +1616,7 @@ TEST_F(PipelineIntegrationTest, MSE_FillUpBuffer) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_GCWithDisabledVideoStream) {
+TEST_F(PipelineIntegrationTest, MSEGCWithDisabledVideoStream) {
   const char* input_filename = "bear-320x240.webm";
   TestMediaSource source(input_filename, kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
@@ -1646,7 +1646,7 @@ TEST_F(PipelineIntegrationTest, MSE_GCWithDisabledVideoStream) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_ConfigChange_Encrypted_WebM) {
+TEST_F(PipelineIntegrationTest, MSEConfigChangeEncryptedWebM) {
   TestMediaSource source("bear-320x240-16x9-aspect-av_enc-av.webm",
                          kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
@@ -1676,7 +1676,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_Encrypted_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_ConfigChange_ClearThenEncrypted_WebM) {
+TEST_F(PipelineIntegrationTest, MSEConfigChangeClearThenEncryptedWebM) {
   TestMediaSource source("bear-320x240-16x9-aspect.webm", kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
   EXPECT_EQ(PIPELINE_OK,
@@ -1707,7 +1707,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_ClearThenEncrypted_WebM) {
 
 // Config change from encrypted to clear is allowed by the demuxer, and is
 // supported by the Renderer.
-TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_WebM) {
+TEST_F(PipelineIntegrationTest, MSEConfigChangeEncryptedThenClearWebM) {
   TestMediaSource source("bear-320x240-16x9-aspect-av_enc-av.webm",
                          kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
@@ -1809,7 +1809,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_AV1_10bit_MP4) {
 }
 #endif
 
-TEST_F(PipelineIntegrationTest, MSE_FlacInMp4_Hashed) {
+TEST_F(PipelineIntegrationTest, MSEFlacInMp4Hashed) {
   TestMediaSource source("sfx-flac_frag.mp4", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithMediaSource(&source, kHashed, nullptr));
@@ -1825,7 +1825,7 @@ TEST_F(PipelineIntegrationTest, MSE_FlacInMp4_Hashed) {
   EXPECT_AUDIO_HASH(kSfxLosslessHash);
 }
 
-TEST_F(PipelineIntegrationTest, MSE_fLaCInMp4_Hashed) {
+TEST_F(PipelineIntegrationTest, MSEFLaCInMp4Hashed) {
   TestMediaSource source("sfx-flac_frag.mp4", "audio/mp4; codecs=\"fLaC\"",
                          kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK,
@@ -1842,7 +1842,7 @@ TEST_F(PipelineIntegrationTest, MSE_fLaCInMp4_Hashed) {
   EXPECT_AUDIO_HASH(kSfxLosslessHash);
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_MP3) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackHashedMP3) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx.mp3", kHashed));
 
   Play();
@@ -1853,7 +1853,7 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_MP3) {
   EXPECT_AUDIO_HASH("1.30,2.72,4.56,5.08,3.74,2.03,");
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackHashed_FlacInMp4) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackHashedFlacInMp4) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx-flac.mp4", kHashed));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -1893,7 +1893,7 @@ class Mp3FastSeekIntegrationTest
     : public PipelineIntegrationTest,
       public testing::WithParamInterface<Mp3FastSeekParams> {};
 
-TEST_P(Mp3FastSeekIntegrationTest, FastSeekAccuracy_MP3) {
+TEST_P(Mp3FastSeekIntegrationTest, FastSeekAccuracyMP3) {
   Mp3FastSeekParams config = GetParam();
   ASSERT_EQ(PIPELINE_OK, Start(config.filename, kHashed));
 
@@ -1948,7 +1948,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(Mp3FastSeekParams("bear-audio-10s-VBR-no-TOC.mp3",
                                         "-0.22,0.80,1.19,0.73,-0.31,-1.12,")));
 
-TEST_F(PipelineIntegrationTest, MSE_MP3) {
+TEST_F(PipelineIntegrationTest, MSEMP3) {
   TestMediaSource source("sfx.mp3", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithMediaSource(&source, kHashed, nullptr));
@@ -1966,7 +1966,7 @@ TEST_F(PipelineIntegrationTest, MSE_MP3) {
   EXPECT_AUDIO_HASH("1.01,2.71,4.18,4.32,3.04,1.12,");
 }
 
-TEST_F(PipelineIntegrationTest, MSE_MP3_TimestampOffset) {
+TEST_F(PipelineIntegrationTest, MSEMP3TimestampOffset) {
   TestMediaSource source("sfx.mp3", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   EXPECT_EQ(313, source.last_timestamp_offset().InMilliseconds());
@@ -1991,7 +1991,7 @@ TEST_F(PipelineIntegrationTest, MSE_MP3_TimestampOffset) {
   EXPECT_EQ(613, pipeline_->GetBufferedTimeRanges().end(0).InMilliseconds());
 }
 
-TEST_F(PipelineIntegrationTest, MSE_MP3_Icecast) {
+TEST_F(PipelineIntegrationTest, MSEMP3Icecast) {
   TestMediaSource source("icy_sfx.mp3", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -2335,13 +2335,13 @@ TEST_F(PipelineIntegrationTest, MidStreamConfigChangesFail) {
   ASSERT_EQ(PIPELINE_ERROR_DECODE, Start("midstream_config_change.mp3"));
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlayback_16x9AspectRatio) {
+TEST_F(PipelineIntegrationTest, BasicPlayback16x9AspectRatio) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240-16x9-aspect.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_WebM) {
+TEST_F(PipelineIntegrationTest, MSEEncryptedPlaybackWebM) {
   TestMediaSource source("bear-320x240-av_enc-av.webm", 219816);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
   EXPECT_EQ(PIPELINE_OK,
@@ -2357,7 +2357,7 @@ TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_ClearStart_WebM) {
+TEST_F(PipelineIntegrationTest, MSEEncryptedPlaybackClearStartWebM) {
   TestMediaSource source("bear-320x240-av_enc-av_clear-1s.webm",
                          kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
@@ -2374,7 +2374,7 @@ TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_ClearStart_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_NoEncryptedFrames_WebM) {
+TEST_F(PipelineIntegrationTest, MSEEncryptedPlaybackNoEncryptedFramesWebM) {
   TestMediaSource source("bear-320x240-av_enc-av_clear-all.webm",
                          kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new NoResponseApp());
@@ -2391,7 +2391,7 @@ TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_NoEncryptedFrames_WebM) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_MP4_VP9_CENC_VideoOnly) {
+TEST_F(PipelineIntegrationTest, MSEEncryptedPlaybackMP4VP9CENCVideoOnly) {
   TestMediaSource source("bear-320x240-v_frag-vp9-cenc.mp4", kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
   EXPECT_EQ(PIPELINE_OK,
@@ -2406,7 +2406,7 @@ TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_MP4_VP9_CENC_VideoOnly) {
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VideoOnly_MP4_VP9) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackVideoOnlyMP4VP9) {
   TestMediaSource source("bear-320x240-v_frag-vp9.mp4", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -2781,14 +2781,14 @@ TEST_F(PipelineIntegrationTest, SuspendWhilePlaying) {
 }
 
 // Verify audio decoder & renderer can handle aborted demuxer reads.
-TEST_F(PipelineIntegrationTest, MSE_ChunkDemuxerAbortRead_AudioOnly) {
+TEST_F(PipelineIntegrationTest, MSEChunkDemuxerAbortReadAudioOnly) {
   ASSERT_TRUE(TestSeekDuringRead("bear-320x240-audio-only.webm", 16384,
                                  base::Milliseconds(464),
                                  base::Milliseconds(617), 0x10CA, 19730));
 }
 
 // Verify video decoder & renderer can handle aborted demuxer reads.
-TEST_F(PipelineIntegrationTest, MSE_ChunkDemuxerAbortRead_VideoOnly) {
+TEST_F(PipelineIntegrationTest, MSEChunkDemuxerAbortReadVideoOnly) {
   ASSERT_TRUE(TestSeekDuringRead("bear-320x240-video-only.webm", 32768,
                                  base::Milliseconds(167),
                                  base::Milliseconds(1668), 0x1C896, 65536));
@@ -2813,7 +2813,7 @@ TEST_F(PipelineIntegrationTest,
 }
 
 // Verify that VP9 video in WebM containers can be played back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VideoOnly_VP9_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVideoOnlyVP9WebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2829,14 +2829,14 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_VideoOnly_AV1_WebM) {
 
 // Verify that VP9 video and Opus audio in the same WebM container can be played
 // back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VP9_Opus_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVP9OpusWebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9-opus.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
 // Verify that VP8 video with alpha channel can be played back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VP8A_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVP8AWebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp8a.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2844,7 +2844,7 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_VP8A_WebM) {
 }
 
 // Verify that VP8A video with odd width/height can be played back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VP8A_Odd_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVP8AOddWebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp8a-odd-dimensions.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2852,14 +2852,14 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_VP8A_Odd_WebM) {
 }
 
 // Verify that VP9 video with odd width/height can be played back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VP9_Odd_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVP9OddWebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9-odd-dimensions.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
 // Verify that VP9 video with alpha channel can be played back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVP9AWebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9a.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2867,7 +2867,7 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_WebM) {
 }
 
 // Verify that VP9A video with odd width/height can be played back.
-TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_Odd_WebM) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackVP9AOddWebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9a-odd-dimensions.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2875,7 +2875,7 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_Odd_WebM) {
 }
 
 // Verify that VP9 video with 4:4:4 subsampling can be played back.
-TEST_F(PipelineIntegrationTest, P444_VP9_WebM) {
+TEST_F(PipelineIntegrationTest, P444VP9WebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240-P444.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2884,7 +2884,7 @@ TEST_F(PipelineIntegrationTest, P444_VP9_WebM) {
 
 // Verify that frames of VP9 video in the BT.709 color space have the YV12HD
 // format.
-TEST_F(PipelineIntegrationTest, BT709_VP9_WebM) {
+TEST_F(PipelineIntegrationTest, BT709VP9WebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-vp9-bt709.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2892,14 +2892,14 @@ TEST_F(PipelineIntegrationTest, BT709_VP9_WebM) {
   EXPECT_EQ(last_video_frame_color_space_, gfx::ColorSpace::CreateREC709());
 }
 
-TEST_F(PipelineIntegrationTest, HD_VP9_WebM) {
+TEST_F(PipelineIntegrationTest, HDVP9WebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-1280x720.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
 // Verify that videos with an odd frame size playback successfully.
-TEST_F(PipelineIntegrationTest, BasicPlayback_OddVideoSize) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackOddVideoSize) {
   ASSERT_EQ(PIPELINE_OK, Start("butterfly-853x480.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2907,7 +2907,7 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_OddVideoSize) {
 
 // Verify that OPUS audio in a webm which reports a 44.1kHz sample rate plays
 // correctly at 48kHz
-TEST_F(PipelineIntegrationTest, BasicPlayback_Opus441kHz) {
+TEST_F(PipelineIntegrationTest, BasicPlaybackOpus441kHz) {
   ASSERT_EQ(PIPELINE_OK, Start("sfx-opus-441.webm"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
@@ -2918,7 +2918,7 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_Opus441kHz) {
 }
 
 // Same as above but using MediaSource.
-TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_Opus441kHz) {
+TEST_F(PipelineIntegrationTest, MSEBasicPlaybackOpus441kHz) {
   TestMediaSource source("sfx-opus-441.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();

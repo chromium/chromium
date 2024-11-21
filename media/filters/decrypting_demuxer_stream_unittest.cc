@@ -314,11 +314,11 @@ class DecryptingDemuxerStreamTest : public testing::Test {
   scoped_refptr<DecoderBuffer> decrypted_buffer_;
 };
 
-TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalAudio) {
+TEST_F(DecryptingDemuxerStreamTest, InitializeNormalAudio) {
   Initialize();
 }
 
-TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
+TEST_F(DecryptingDemuxerStreamTest, InitializeNormalVideo) {
   SetCdmType(CDM_WITH_DECRYPTOR);
   EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).WillOnce([&](auto cb) {
     event_cb_ = cb;
@@ -343,7 +343,7 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_NormalVideo) {
   ASSERT_EQ(input_config.extra_data(), output_config.extra_data());
 }
 
-TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
+TEST_F(DecryptingDemuxerStreamTest, InitializeCdmWithoutDecryptor) {
   SetCdmType(CDM_WITHOUT_DECRYPTOR);
   AudioDecoderConfig input_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
                                   CHANNEL_LAYOUT_STEREO, 44100,
@@ -354,24 +354,24 @@ TEST_F(DecryptingDemuxerStreamTest, Initialize_CdmWithoutDecryptor) {
 }
 
 // Test normal read case where the buffer is encrypted.
-TEST_F(DecryptingDemuxerStreamTest, Read_Normal) {
+TEST_F(DecryptingDemuxerStreamTest, ReadNormal) {
   Initialize();
   EnterNormalReadingState();
 }
 
 // Test normal read case where the buffer is clear.
-TEST_F(DecryptingDemuxerStreamTest, Read_ClearBufferInEncryptedStream) {
+TEST_F(DecryptingDemuxerStreamTest, ReadClearBufferInEncryptedStream) {
   Initialize();
   EnterClearReadingState(true);
 }
 
-TEST_F(DecryptingDemuxerStreamTest, Read_ClearBufferInClearStream) {
+TEST_F(DecryptingDemuxerStreamTest, ReadClearBufferInClearStream) {
   Initialize();
   EnterClearReadingState(false);
 }
 
 // Test the case where the decryptor returns error during read.
-TEST_F(DecryptingDemuxerStreamTest, Read_DecryptError) {
+TEST_F(DecryptingDemuxerStreamTest, ReadDecryptError) {
   Initialize();
 
   EXPECT_CALL(*input_audio_stream_, OnRead(_))
@@ -384,7 +384,7 @@ TEST_F(DecryptingDemuxerStreamTest, Read_DecryptError) {
 }
 
 // Test the case where the decryptor errors for mismatched subsamples
-TEST_F(DecryptingDemuxerStreamTest, Read_MismatchedSubsampleError) {
+TEST_F(DecryptingDemuxerStreamTest, ReadMismatchedSubsampleError) {
   Initialize();
 
   encrypted_buffer_ = CreateMismatchedBufferForTest();
@@ -400,7 +400,7 @@ TEST_F(DecryptingDemuxerStreamTest, Read_MismatchedSubsampleError) {
 }
 
 // Test the case where the decryptor returns kNeedMoreData during read.
-TEST_F(DecryptingDemuxerStreamTest, Read_DecryptNeedMoreData) {
+TEST_F(DecryptingDemuxerStreamTest, ReadDecryptNeedMoreData) {
   Initialize();
 
   EXPECT_CALL(*input_audio_stream_, OnRead(_))
@@ -413,7 +413,7 @@ TEST_F(DecryptingDemuxerStreamTest, Read_DecryptNeedMoreData) {
 }
 
 // Test the case where the input is an end-of-stream buffer.
-TEST_F(DecryptingDemuxerStreamTest, Read_EndOfStream) {
+TEST_F(DecryptingDemuxerStreamTest, ReadEndOfStream) {
   Initialize();
   EnterNormalReadingState();
 
@@ -427,7 +427,7 @@ TEST_F(DecryptingDemuxerStreamTest, Read_EndOfStream) {
 
 // Test the case where the a key is added when the decryptor is in
 // kWaitingForKey state.
-TEST_F(DecryptingDemuxerStreamTest, KeyAdded_DuringWaitingForKey) {
+TEST_F(DecryptingDemuxerStreamTest, KeyAddedDuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
@@ -445,7 +445,7 @@ TEST_F(DecryptingDemuxerStreamTest, KeyAdded_DuringWaitingForKey) {
 
 // Test the case where the a key is added when the decryptor is in
 // kPendingDecrypt state.
-TEST_F(DecryptingDemuxerStreamTest, KeyAdded_DuringPendingDecrypt) {
+TEST_F(DecryptingDemuxerStreamTest, KeyAddedDuringPendingDecrypt) {
   Initialize();
   EnterPendingDecryptState();
 
@@ -465,20 +465,20 @@ TEST_F(DecryptingDemuxerStreamTest, KeyAdded_DuringPendingDecrypt) {
 }
 
 // Test resetting in kIdle state but has not returned any buffer.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringIdleAfterInitialization) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringIdleAfterInitialization) {
   Initialize();
   Reset();
 }
 
 // Test resetting in kIdle state after having returned one buffer.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringIdleAfterReadOneBuffer) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringIdleAfterReadOneBuffer) {
   Initialize();
   EnterNormalReadingState();
   Reset();
 }
 
 // Test resetting in kPendingDemuxerRead state.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringPendingDemuxerRead) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringPendingDemuxerRead) {
   Initialize();
   EnterPendingReadState();
 
@@ -490,7 +490,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringPendingDemuxerRead) {
 }
 
 // Test resetting in kPendingDecrypt state.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringPendingDecrypt) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringPendingDecrypt) {
   Initialize();
   EnterPendingDecryptState();
 
@@ -500,7 +500,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringPendingDecrypt) {
 }
 
 // Test resetting in kWaitingForKey state.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringWaitingForKey) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
@@ -510,7 +510,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringWaitingForKey) {
 }
 
 // Test resetting after reset.
-TEST_F(DecryptingDemuxerStreamTest, Reset_AfterReset) {
+TEST_F(DecryptingDemuxerStreamTest, ResetAfterReset) {
   Initialize();
   EnterNormalReadingState();
   Reset();
@@ -518,7 +518,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_AfterReset) {
 }
 
 // Test aborted read on the demuxer stream.
-TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_Aborted) {
+TEST_F(DecryptingDemuxerStreamTest, DemuxerReadAborted) {
   Initialize();
 
   // ReturnBuffer() with null triggers aborted demuxer read.
@@ -529,7 +529,7 @@ TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_Aborted) {
 }
 
 // Test resetting when waiting for an aborted read.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringAbortedDemuxerRead) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringAbortedDemuxerRead) {
   Initialize();
   EnterPendingReadState();
 
@@ -542,7 +542,7 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringAbortedDemuxerRead) {
 }
 
 // Test config change on the input demuxer stream.
-TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
+TEST_F(DecryptingDemuxerStreamTest, DemuxerReadConfigChanged) {
   Initialize(2, 2);
 
   AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
@@ -558,7 +558,7 @@ TEST_F(DecryptingDemuxerStreamTest, DemuxerRead_ConfigChanged) {
 }
 
 // Test resetting when waiting for a config changed read.
-TEST_F(DecryptingDemuxerStreamTest, Reset_DuringConfigChangedDemuxerRead) {
+TEST_F(DecryptingDemuxerStreamTest, ResetDuringConfigChangedDemuxerRead) {
   Initialize(2, 2);
   EnterPendingReadState();
 
@@ -574,18 +574,18 @@ TEST_F(DecryptingDemuxerStreamTest, Reset_DuringConfigChangedDemuxerRead) {
 // happens in DecryptingDemuxerStreamTest's dtor.
 
 // Test destruction in kIdle state but has not returned any buffer.
-TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringIdleAfterInitialization) {
+TEST_F(DecryptingDemuxerStreamTest, DestroyDuringIdleAfterInitialization) {
   Initialize();
 }
 
 // Test destruction in kIdle state after having returned one buffer.
-TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringIdleAfterReadOneBuffer) {
+TEST_F(DecryptingDemuxerStreamTest, DestroyDuringIdleAfterReadOneBuffer) {
   Initialize();
   EnterNormalReadingState();
 }
 
 // Test destruction in kPendingDemuxerRead state.
-TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringPendingDemuxerRead) {
+TEST_F(DecryptingDemuxerStreamTest, DestroyDuringPendingDemuxerRead) {
   Initialize();
   EnterPendingReadState();
 
@@ -593,7 +593,7 @@ TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringPendingDemuxerRead) {
 }
 
 // Test destruction in kPendingDecrypt state.
-TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringPendingDecrypt) {
+TEST_F(DecryptingDemuxerStreamTest, DestroyDuringPendingDecrypt) {
   Initialize();
   EnterPendingDecryptState();
 
@@ -601,7 +601,7 @@ TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringPendingDecrypt) {
 }
 
 // Test destruction in kWaitingForKey state.
-TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringWaitingForKey) {
+TEST_F(DecryptingDemuxerStreamTest, DestroyDuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
@@ -609,7 +609,7 @@ TEST_F(DecryptingDemuxerStreamTest, Destroy_DuringWaitingForKey) {
 }
 
 // Test destruction after reset.
-TEST_F(DecryptingDemuxerStreamTest, Destroy_AfterReset) {
+TEST_F(DecryptingDemuxerStreamTest, DestroyAfterReset) {
   Initialize();
   EnterNormalReadingState();
   Reset();

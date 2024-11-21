@@ -639,7 +639,7 @@ TEST_F(VideoRendererImplTest, FlushCallbackNoLock) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, DecodeError_Playing) {
+TEST_F(VideoRendererImplTest, DecodeErrorPlaying) {
   Initialize();
   QueueFrames("0 10 20 30");
   EXPECT_CALL(mock_cb_, FrameReceived(_)).Times(testing::AtLeast(1));
@@ -665,7 +665,7 @@ TEST_F(VideoRendererImplTest, DecodeError_Playing) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, DecodeError_DuringStartPlayingFrom) {
+TEST_F(VideoRendererImplTest, DecodeErrorDuringStartPlayingFrom) {
   Initialize();
   QueueFrames("error");
   EXPECT_CALL(mock_cb_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)));
@@ -674,7 +674,7 @@ TEST_F(VideoRendererImplTest, DecodeError_DuringStartPlayingFrom) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_Exact) {
+TEST_F(VideoRendererImplTest, StartPlayingFromExact) {
   Initialize();
   QueueFrames("50 60 70 80 90");
 
@@ -687,7 +687,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_Exact) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_RightBefore) {
+TEST_F(VideoRendererImplTest, StartPlayingFromRightBefore) {
   Initialize();
   QueueFrames("50 60 70 80 90");
 
@@ -701,7 +701,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_RightBefore) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_RightAfter) {
+TEST_F(VideoRendererImplTest, StartPlayingFromRightAfter) {
   Initialize();
   QueueFrames("50 60 70 80 90");
 
@@ -715,7 +715,7 @@ TEST_F(VideoRendererImplTest, StartPlayingFrom_RightAfter) {
   Destroy();
 }
 
-TEST_F(VideoRendererImplTest, StartPlayingFrom_LowDelay) {
+TEST_F(VideoRendererImplTest, StartPlayingFromLowDelay) {
   // In low-delay mode only one frame is required to finish preroll. But frames
   // prior to the start time will not be used.
   InitializeWithLowDelay(true);
@@ -1535,14 +1535,14 @@ class VideoRendererLatencyHintTest : public VideoRendererImplTest {
 };
 
 // Test default HaveEnough transition when no latency hint is set.
-TEST_F(VideoRendererLatencyHintTest, HaveEnough_NoLatencyHint) {
+TEST_F(VideoRendererLatencyHintTest, HaveEnoughNoLatencyHint) {
   Initialize();
   VerifyDefaultRebufferingBehavior(0);
   Destroy();
 }
 
 // Test early HaveEnough transition when low latency hint is set.
-TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
+TEST_F(VideoRendererLatencyHintTest, HaveEnoughLowLatencyHint) {
   Initialize();
 
   // Set latencyHint to bare minimum.
@@ -1587,7 +1587,7 @@ TEST_F(VideoRendererLatencyHintTest, HaveEnough_LowLatencyHint) {
 }
 
 // Test late HaveEnough transition when high latency hint is set.
-TEST_F(VideoRendererLatencyHintTest, HaveEnough_HighLatencyHint) {
+TEST_F(VideoRendererLatencyHintTest, HaveEnoughHighLatencyHint) {
   // We must provide a |buffer_duration_| for the latencyHint to take effect
   // immediately. The VideoRendererAlgorithm will eventually provide a PTS-delta
   // duration, but not until after we've started rendering.

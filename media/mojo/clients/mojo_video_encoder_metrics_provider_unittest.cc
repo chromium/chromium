@@ -162,7 +162,7 @@ TEST_F(MojoVideoEncoderMetricsProviderTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(MojoVideoEncoderMetricsProviderTest, CreateAndSetError_NoCall) {
+TEST_F(MojoVideoEncoderMetricsProviderTest, CreateAndSetErrorNoCall) {
   InSequence s;
   const media::EncoderStatus kErrorStatus(
       media::EncoderStatus::Codes::kEncoderFailedEncode, "Encoder failed");

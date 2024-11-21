@@ -47,7 +47,7 @@ AudioDataS16ConverterTest::AudioDataS16ConverterTest() {
   converter_ = std::make_unique<AudioDataS16Converter>();
 }
 
-TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_MONO) {
+TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16MONO) {
   // Set up original audio bus.
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(1, kTestVectorSize);
   audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(kTestVectorContents,
@@ -63,7 +63,7 @@ TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_MONO) {
   }
 }
 
-TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_STEREO) {
+TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16STEREO) {
   // Set up original audio bus.
   std::unique_ptr<AudioBus> audio_bus = AudioBus::Create(2, kTestVectorSize);
   audio_bus->FromInterleaved<SignedInt16SampleTypeTraits>(kTestVectorContents,

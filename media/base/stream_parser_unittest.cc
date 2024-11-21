@@ -195,26 +195,26 @@ class StreamParserTest : public testing::Test {
   BufferQueue merged_buffers_;
 };
 
-TEST_F(StreamParserTest, MergeBufferQueues_AllEmpty) {
+TEST_F(StreamParserTest, MergeBufferQueuesAllEmpty) {
   std::string expected = "";
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_SingleAudioBuffer) {
+TEST_F(StreamParserTest, MergeBufferQueuesSingleAudioBuffer) {
   std::string expected = "A0:100";
   int audio_timestamps[] = { 100, kEnd };
   GenerateAudioBuffers(audio_timestamps);
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_SingleVideoBuffer) {
+TEST_F(StreamParserTest, MergeBufferQueuesSingleVideoBuffer) {
   std::string expected = "V1:100";
   int video_timestamps[] = { 100, kEnd };
   GenerateVideoBuffers(video_timestamps);
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_OverlappingAudioVideo) {
+TEST_F(StreamParserTest, MergeBufferQueuesOverlappingAudioVideo) {
   std::string expected = "A0:100 V1:101 V1:102 A0:103 A0:104 V1:105";
   int audio_timestamps[] = { 100, 103, 104, kEnd };
   GenerateAudioBuffers(audio_timestamps);
@@ -223,7 +223,7 @@ TEST_F(StreamParserTest, MergeBufferQueues_OverlappingAudioVideo) {
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_NonDecreasingNoCrossMediaDuplicate) {
+TEST_F(StreamParserTest, MergeBufferQueuesNonDecreasingNoCrossMediaDuplicate) {
   std::string expected = "A0:100 A0:100 A0:100 V1:101 V1:101 V1:101 A0:102 "
                          "V1:103 V1:103";
   int audio_timestamps[] = { 100, 100, 100, 102, kEnd };
@@ -233,7 +233,7 @@ TEST_F(StreamParserTest, MergeBufferQueues_NonDecreasingNoCrossMediaDuplicate) {
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_CrossStreamDuplicates) {
+TEST_F(StreamParserTest, MergeBufferQueuesCrossStreamDuplicates) {
   // Interface keeps the choice undefined of which stream's buffer wins the
   // selection when timestamps are tied. Verify at least the right number of
   // each kind of buffer results, and that buffers are in nondecreasing order.
@@ -245,13 +245,13 @@ TEST_F(StreamParserTest, MergeBufferQueues_CrossStreamDuplicates) {
   VerifyMergeSuccess(expected, false);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_InvalidDecreasingSingleStream) {
+TEST_F(StreamParserTest, MergeBufferQueuesInvalidDecreasingSingleStream) {
   int audio_timestamps[] = { 101, 102, 100, 103, kEnd };
   GenerateAudioBuffers(audio_timestamps);
   VerifyMergeFailure();
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_InvalidDecreasingMultipleStreams) {
+TEST_F(StreamParserTest, MergeBufferQueuesInvalidDecreasingMultipleStreams) {
   int audio_timestamps[] = { 101, 102, 100, 103, kEnd };
   GenerateAudioBuffers(audio_timestamps);
   int video_timestamps[] = { 104, 100, kEnd };
@@ -259,7 +259,7 @@ TEST_F(StreamParserTest, MergeBufferQueues_InvalidDecreasingMultipleStreams) {
   VerifyMergeFailure();
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_ValidAppendToExistingMerge) {
+TEST_F(StreamParserTest, MergeBufferQueuesValidAppendToExistingMerge) {
   std::string expected = "A0:100 V1:101 V1:103 A0:105 V1:106";
   int audio_timestamps[] = { 100, 105, kEnd };
   GenerateAudioBuffers(audio_timestamps);
@@ -279,7 +279,7 @@ TEST_F(StreamParserTest, MergeBufferQueues_ValidAppendToExistingMerge) {
   VerifyMergeSuccess(expected, true);
 }
 
-TEST_F(StreamParserTest, MergeBufferQueues_InvalidAppendToExistingMerge) {
+TEST_F(StreamParserTest, MergeBufferQueuesInvalidAppendToExistingMerge) {
   std::string expected = "A0:100 V1:101 V1:103 A0:105 V1:106 V1:107";
   int audio_timestamps[] = { 100, 105, kEnd };
   GenerateAudioBuffers(audio_timestamps);

@@ -105,7 +105,7 @@ TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-TEST_F(MediaFoundationRendererIntegrationTest, BasicPlayback_MediaSource) {
+TEST_F(MediaFoundationRendererIntegrationTest, BasicPlaybackMediaSource) {
   // TODO(crbug.com/40194343): This test is very flaky on win10-20h2.
   if (base::win::OSInfo::GetInstance()->version() >=
       base::win::Version::WIN10_20H2) {

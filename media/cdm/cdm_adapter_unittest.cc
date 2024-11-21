@@ -505,7 +505,7 @@ TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO) {
 }
 
 // CreateFileIO() will always fail if |allow_persistent_state| is false.
-TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO_PersistentStateNotAllowed) {
+TEST_P(CdmAdapterTestWithMockCdm, CreateFileIOPersistentStateNotAllowed) {
   CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
 
@@ -517,7 +517,7 @@ TEST_P(CdmAdapterTestWithMockCdm, CreateFileIO_PersistentStateNotAllowed) {
 }
 
 // RequestStorageId() with version 0 (latest) is supported.
-TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_0) {
+TEST_P(CdmAdapterTestWithMockCdm, RequestStorageIdVersion0) {
   CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
@@ -530,7 +530,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_0) {
 }
 
 // RequestStorageId() with version 1 is supported.
-TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_1) {
+TEST_P(CdmAdapterTestWithMockCdm, RequestStorageIdVersion1) {
   CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
@@ -543,7 +543,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_1) {
 }
 
 // RequestStorageId() with version 2 is not supported.
-TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_2) {
+TEST_P(CdmAdapterTestWithMockCdm, RequestStorageIdVersion2) {
   CdmConfig cdm_config = GetCdmConfig();
   cdm_config.allow_persistent_state = true;
   InitializeWithCdmConfig(cdm_config);
@@ -554,7 +554,7 @@ TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_Version_2) {
 }
 
 // RequestStorageId() will always fail if |allow_persistent_state| is false.
-TEST_P(CdmAdapterTestWithMockCdm, RequestStorageId_PersistentStateNotAllowed) {
+TEST_P(CdmAdapterTestWithMockCdm, RequestStorageIdPersistentStateNotAllowed) {
   CdmConfig cdm_config = GetCdmConfig();
   InitializeWithCdmConfig(cdm_config);
 

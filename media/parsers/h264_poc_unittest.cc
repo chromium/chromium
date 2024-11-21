@@ -93,7 +93,7 @@ TEST_F(H264POCTest, PicOrderCntType0) {
   ASSERT_EQ(9, *poc_);
 }
 
-TEST_F(H264POCTest, PicOrderCntType0_WithMMCO5) {
+TEST_F(H264POCTest, PicOrderCntType0WithMMCO5) {
   sps_.pic_order_cnt_type = 0;
   sps_.log2_max_pic_order_cnt_lsb_minus4 = 0;  // 16
 
@@ -187,7 +187,7 @@ TEST_F(H264POCTest, PicOrderCntType1) {
   ASSERT_EQ(24, *poc_);
 }
 
-TEST_F(H264POCTest, PicOrderCntType1_WithMMCO5) {
+TEST_F(H264POCTest, PicOrderCntType1WithMMCO5) {
   sps_.pic_order_cnt_type = 1;
   sps_.log2_max_frame_num_minus4 = 0;  // 16
   sps_.num_ref_frames_in_pic_order_cnt_cycle = 2;
@@ -224,7 +224,7 @@ TEST_F(H264POCTest, PicOrderCntType1_WithMMCO5) {
 }
 
 // |frame_num| values may be duplicated by non-reference frames.
-TEST_F(H264POCTest, PicOrderCntType1_DupFrameNum) {
+TEST_F(H264POCTest, PicOrderCntType1DupFrameNum) {
   sps_.pic_order_cnt_type = 1;
   sps_.log2_max_frame_num_minus4 = 0;  // 16
   sps_.num_ref_frames_in_pic_order_cnt_cycle = 2;
@@ -297,7 +297,7 @@ TEST_F(H264POCTest, PicOrderCntType2) {
   ASSERT_EQ(32, *poc_);
 }
 
-TEST_F(H264POCTest, PicOrderCntType2_WithMMCO5) {
+TEST_F(H264POCTest, PicOrderCntType2WithMMCO5) {
   sps_.pic_order_cnt_type = 2;
 
   // Initial IDR with POC 0.

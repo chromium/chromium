@@ -93,15 +93,15 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
  private:
   friend class AlsaPcmOutputStreamTest;
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest,
-                           AutoSelectDevice_DeviceSelect);
+                           AutoSelectDeviceDeviceSelect);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest,
-                           AutoSelectDevice_FallbackDevices);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, AutoSelectDevice_HintFail);
+                           AutoSelectDeviceFallbackDevices);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, AutoSelectDeviceHintFail);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_Negative);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_StopStream);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_Underrun);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacket_FullBuffer);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketNegative);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketStopStream);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketUnderrun);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, BufferPacketFullBuffer);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, ConstructedState);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, LatencyFloor);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, OpenClose);
@@ -109,12 +109,12 @@ class MEDIA_EXPORT AlsaPcmOutputStream : public AudioOutputStream {
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, PcmSetParamsFailed);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, ScheduleNextWrite);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest,
-                           ScheduleNextWrite_StopStream);
+                           ScheduleNextWriteStopStream);
   FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, StartStop);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_FinishedPacket);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_NormalPacket);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_StopStream);
-  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacket_WriteFails);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketFinishedPacket);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketNormalPacket);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketStopStream);
+  FRIEND_TEST_ALL_PREFIXES(AlsaPcmOutputStreamTest, WritePacketWriteFails);
 
   // Flags indicating the state of the stream.
   enum InternalState {

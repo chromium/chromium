@@ -335,7 +335,7 @@ TEST_F(PipelineControllerTest, DecoderStateLost) {
 }
 
 // Makes sure OnDecoderStateLost() does not trigger a seek during pending seek.
-TEST_F(PipelineControllerTest, DecoderStateLost_DuringPendingSeek) {
+TEST_F(PipelineControllerTest, DecoderStateLostDuringPendingSeek) {
   Complete(StartPipeline());
 
   // Create a pending seek.
@@ -365,7 +365,7 @@ TEST_F(PipelineControllerTest, SuspendResumeTime) {
   EXPECT_EQ(seek_time, last_resume_time_);
 }
 
-TEST_F(PipelineControllerTest, SuspendResumeTime_WithStreamingData) {
+TEST_F(PipelineControllerTest, SuspendResumeTimeWithStreamingData) {
   Complete(StartPipeline_WithStreamingData());
   Complete(SuspendPipeline());
 

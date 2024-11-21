@@ -194,29 +194,29 @@ class Dav1dVideoDecoderTest : public testing::Test {
   OutputFrames output_frames_;
 };
 
-TEST_F(Dav1dVideoDecoderTest, Initialize_Normal) {
+TEST_F(Dav1dVideoDecoderTest, InitializeNormal) {
   Initialize();
 }
 
-TEST_F(Dav1dVideoDecoderTest, Reinitialize_Normal) {
+TEST_F(Dav1dVideoDecoderTest, ReinitializeNormal) {
   Initialize();
   Reinitialize();
 }
 
-TEST_F(Dav1dVideoDecoderTest, Reinitialize_AfterDecodeFrame) {
+TEST_F(Dav1dVideoDecoderTest, ReinitializeAfterDecodeFrame) {
   Initialize();
   ExpectDecodingState();
   Reinitialize();
 }
 
-TEST_F(Dav1dVideoDecoderTest, Reinitialize_AfterReset) {
+TEST_F(Dav1dVideoDecoderTest, ReinitializeAfterReset) {
   Initialize();
   ExpectDecodingState();
   Reset();
   Reinitialize();
 }
 
-TEST_F(Dav1dVideoDecoderTest, DecodeFrame_Normal) {
+TEST_F(Dav1dVideoDecoderTest, DecodeFrameNormal) {
   Initialize();
 
   // Simulate decoding a single frame.
@@ -228,7 +228,7 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_Normal) {
   EXPECT_EQ("589dc641b7742ffe7a2b0d4c16aa3e86", GetVideoFrameHash(*frame));
 }
 
-TEST_F(Dav1dVideoDecoderTest, DecodeFrame_8bitMono) {
+TEST_F(Dav1dVideoDecoderTest, DecodeFrame8bitMono) {
   Initialize();
   EXPECT_TRUE(
       DecodeSingleFrame(ReadTestDataFile("av1-monochrome-I-frame-320x240-8bpp"))
@@ -242,7 +242,7 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_8bitMono) {
   EXPECT_EQ("eeba03dcc9c22c4632bf74b481db36b2", GetVideoFrameHash(*frame));
 }
 
-TEST_F(Dav1dVideoDecoderTest, DecodeFrame_10bitMono) {
+TEST_F(Dav1dVideoDecoderTest, DecodeFrame10bitMono) {
   Initialize();
   EXPECT_TRUE(DecodeSingleFrame(
                   ReadTestDataFile("av1-monochrome-I-frame-320x240-10bpp"))
@@ -256,7 +256,7 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_10bitMono) {
   EXPECT_EQ("026c1fed9e161f09d816ac7278458a80", GetVideoFrameHash(*frame));
 }
 
-TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
+TEST_F(Dav1dVideoDecoderTest, DecodeFrame12bitMono) {
   Initialize();
   EXPECT_TRUE(DecodeSingleFrame(
                   ReadTestDataFile("av1-monochrome-I-frame-320x240-12bpp"))
@@ -272,32 +272,32 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_12bitMono) {
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
-TEST_F(Dav1dVideoDecoderTest, DecodeFrame_LargerWidth) {
+TEST_F(Dav1dVideoDecoderTest, DecodeFrameLargerWidth) {
   DecodeIFrameThenTestFile("av1-I-frame-1280x720", gfx::Size(1280, 720));
 }
 
 // Decode a VP9 frame which should trigger a decoder error.
-TEST_F(Dav1dVideoDecoderTest, DecodeFrame_Error) {
+TEST_F(Dav1dVideoDecoderTest, DecodeFrameError) {
   Initialize();
   EXPECT_FALSE(
       DecodeSingleFrame(ReadTestDataFile("vp9-I-frame-320x240")).is_ok());
 }
 
 // Test resetting when decoder has initialized but not decoded.
-TEST_F(Dav1dVideoDecoderTest, Reset_Initialized) {
+TEST_F(Dav1dVideoDecoderTest, ResetInitialized) {
   Initialize();
   Reset();
 }
 
 // Test resetting when decoder has decoded single frame.
-TEST_F(Dav1dVideoDecoderTest, Reset_Decoding) {
+TEST_F(Dav1dVideoDecoderTest, ResetDecoding) {
   Initialize();
   ExpectDecodingState();
   Reset();
 }
 
 // Test resetting when decoder has hit end of stream.
-TEST_F(Dav1dVideoDecoderTest, Reset_EndOfStream) {
+TEST_F(Dav1dVideoDecoderTest, ResetEndOfStream) {
   Initialize();
   ExpectDecodingState();
   ExpectEndOfStreamState();
@@ -305,20 +305,20 @@ TEST_F(Dav1dVideoDecoderTest, Reset_EndOfStream) {
 }
 
 // Test destruction when decoder has initialized but not decoded.
-TEST_F(Dav1dVideoDecoderTest, Destroy_Initialized) {
+TEST_F(Dav1dVideoDecoderTest, DestroyInitialized) {
   Initialize();
   Destroy();
 }
 
 // Test destruction when decoder has decoded single frame.
-TEST_F(Dav1dVideoDecoderTest, Destroy_Decoding) {
+TEST_F(Dav1dVideoDecoderTest, DestroyDecoding) {
   Initialize();
   ExpectDecodingState();
   Destroy();
 }
 
 // Test destruction when decoder has hit end of stream.
-TEST_F(Dav1dVideoDecoderTest, Destroy_EndOfStream) {
+TEST_F(Dav1dVideoDecoderTest, DestroyEndOfStream) {
   Initialize();
   ExpectDecodingState();
   ExpectEndOfStreamState();

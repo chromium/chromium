@@ -115,7 +115,7 @@ TEST_F(AnimatedContentSamplerTest, ElectsNoneFromTwoDamageRectsOfSameArea) {
   EXPECT_EQ(gfx::Rect(), ElectMajorityDamageRect());
 }
 
-TEST_F(AnimatedContentSamplerTest, ElectsLargerOfTwoDamageRects_1) {
+TEST_F(AnimatedContentSamplerTest, ElectsLargerOfTwoDamageRects1) {
   const gfx::Rect one_rect(0, 0, 1, 1);
   const gfx::Rect another_rect(0, 0, 2, 2);
   ObserveDamageRect(one_rect);
@@ -123,7 +123,7 @@ TEST_F(AnimatedContentSamplerTest, ElectsLargerOfTwoDamageRects_1) {
   EXPECT_EQ(another_rect, ElectMajorityDamageRect());
 }
 
-TEST_F(AnimatedContentSamplerTest, ElectsLargerOfTwoDamageRects_2) {
+TEST_F(AnimatedContentSamplerTest, ElectsLargerOfTwoDamageRects2) {
   const gfx::Rect one_rect(0, 0, 2, 2);
   const gfx::Rect another_rect(0, 0, 1, 1);
   ObserveDamageRect(one_rect);

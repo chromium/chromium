@@ -139,7 +139,7 @@ TEST_F(WebMStreamParserTest, VerifyMediaTrackMetadata) {
   EXPECT_EQ(audio_track.language().value(), "und");
 }
 
-TEST_F(WebMStreamParserTest, VerifyDetectedTrack_AudioOnly) {
+TEST_F(WebMStreamParserTest, VerifyDetectedTrackAudioOnly) {
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimatedAny())
       .Times(testing::AnyNumber());
   StreamParser::InitParameters params(kInfiniteDuration);
@@ -150,7 +150,7 @@ TEST_F(WebMStreamParserTest, VerifyDetectedTrack_AudioOnly) {
   EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Type::kAudio);
 }
 
-TEST_F(WebMStreamParserTest, VerifyDetectedTrack_VideoOnly) {
+TEST_F(WebMStreamParserTest, VerifyDetectedTrackVideoOnly) {
   StreamParser::InitParameters params(kInfiniteDuration);
   params.detected_audio_track_count = 0;
   params.detected_video_track_count = 1;
@@ -159,7 +159,7 @@ TEST_F(WebMStreamParserTest, VerifyDetectedTrack_VideoOnly) {
   EXPECT_EQ(media_tracks_->tracks()[0]->type(), MediaTrack::Type::kVideo);
 }
 
-TEST_F(WebMStreamParserTest, VerifyDetectedTracks_AVText) {
+TEST_F(WebMStreamParserTest, VerifyDetectedTracksAVText) {
   EXPECT_MEDIA_LOG(WebMSimpleBlockDurationEstimatedAny())
       .Times(testing::AnyNumber());
   StreamParser::InitParameters params(kInfiniteDuration);
