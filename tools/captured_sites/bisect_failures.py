@@ -123,7 +123,9 @@ def _GetBotName(short_name):
 
 
 def _GetTerminalSiteFailures(buildbucket_id):
-  """Retrieves non-passing (CRASH/TIMEOUT/FAIL) test failures from a build.
+  """Retrieves non-passing (CRASH/TIMEOUT/FAIL) test failures from the relevant
+  *_captured_sites_interactive_tests test suite of the given build. Filters out
+  failures from any other suite(s).
 
     Args:
         buildbucket_id: A build with which to interrogate failures.
@@ -138,8 +140,17 @@ def _GetTerminalSiteFailures(buildbucket_id):
   site_statuses = {}
   for result in all_results['testResults']:
     test_id = result['testId']
-    siteName = test_id[test_id.rfind('All.') + 4:]
-    site_statuses[siteName] = result['status']
+    # Check to ensure that the failure is from a captured sites test suite.
+    variant_test_suite = result.get('variant', {}).get('def',
+                                                       {}).get('test_suite')
+    if not variant_test_suite:
+      print(f'Ill-formed results for {test_id}, will skip unexpectedly.')
+      continue
+    if not variant_test_suite.endswith('_captured_sites_interactive_tests'):
+      continue
+
+    site_name = test_id[test_id.rfind('All.') + 4:]
+    site_statuses[site_name] = result['status']
   site_final_failures = [k for k, v in site_statuses.items() if v != 'PASS']
   return set(site_final_failures)
 
