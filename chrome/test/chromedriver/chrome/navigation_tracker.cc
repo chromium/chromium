@@ -218,9 +218,17 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
       return Status(kOk);
     }
 
-    if (*doc_url != "about:blank" && *base_url == "about:blank") {
-      *is_pending = true;
-      *loading_state_ = kLoading;
+    if (*base_url == "about:blank") {
+      // Special case for pages like "about:blank?test"
+      // These are created by the browser therefore the aforementioned heuristic
+      // does not apply to them.
+      if (doc_url->starts_with("about:blank")) {
+        *is_pending = false;
+        *loading_state_ = kNotLoading;
+      } else {
+        *is_pending = true;
+        *loading_state_ = kLoading;
+      }
       return Status(kOk);
     }
 

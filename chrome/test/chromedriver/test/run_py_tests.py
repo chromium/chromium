@@ -2852,6 +2852,18 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load('about:blank')
     self._driver.ExecuteScript('debugger;')
 
+  def testDoesntHangOnAboutBlankPlus(self):
+    # Navigation to about:blank in the parent tab affects the baseURL of the
+    # child window.
+    self._driver.Load('about:blank')
+    old_windows = self._driver.GetWindowHandles()
+    self._driver.ExecuteScript('window.open("about:blank?test")')
+    new_window = self.WaitForNewWindow(self._driver, old_windows)
+    self._driver.SwitchToWindow(new_window)
+    # Peek any command.
+    # Verify that it does not hang while waiting for a navigation.
+    self.assertEqual(1, self._driver.ExecuteScript('return 1'))
+
   def testChromeDriverSendLargeData(self):
     script = 'return "0".repeat(10e6);'
     lots_of_data = self._driver.ExecuteScript(script)
