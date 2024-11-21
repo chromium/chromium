@@ -114,6 +114,7 @@ public class PdfCoordinator {
             // There should be only one success callback for each pdf. Add this confidence check to
             // be consistent with the error callback.
             if (!mIsLoadDocumentSuccess) {
+                PdfUtils.recordPdfLoadTimeFirstPaired(duration);
                 PdfUtils.recordPdfLoadResultDetail(PdfLoadResult.SUCCESS);
             }
             mIsLoadDocumentSuccess = true;
