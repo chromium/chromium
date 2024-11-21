@@ -944,14 +944,20 @@ ALWAYS_INLINE static wtf_size_t FindInternal(
   }
 
   wtf_size_t i = 0;
-  // keep looping until we match
+  // Keep looping until we match.
+  //
+  // We don't use base::span methods for better performance.
+  const SearchCharacterType* search_data = search.data();
   while (search_hash != match_hash ||
-         search.subspan(i, match_length) != match) {
+         !std::equal(match.begin(), match.end(), search_data)) {
     if (i == delta)
       return kNotFound;
-    search_hash += search[i + match_length];
-    search_hash -= search[i];
+    // SAFETY: This function ensures `search_data[match_length]` and
+    // `search_data[0]` are safe.
+    search_hash += UNSAFE_BUFFERS(search_data[match_length]);
+    search_hash -= UNSAFE_BUFFERS(search_data[0]);
     ++i;
+    UNSAFE_BUFFERS(++search_data);
   }
   return index + i;
 }
@@ -1133,14 +1139,21 @@ ALWAYS_INLINE static wtf_size_t ReverseFindInternal(
     match_hash += match[i];
   }
 
-  // keep looping until we match
+  // Keep looping until we match.
+  //
+  // We don't use base::span methods for better performance.
+  // SAFETY: This function ensures `search.data() + delta` and
+  // `search.data() + delta + match_length` are safe.
+  const SearchCharacterType* search_data =
+      UNSAFE_BUFFERS(search.data() + delta);
   while (search_hash != match_hash ||
-         search.subspan(delta, match_length) != match) {
+         !std::equal(match.begin(), match.end(), search_data)) {
     if (!delta)
       return kNotFound;
     --delta;
-    search_hash -= search[delta + match_length];
-    search_hash += search[delta];
+    UNSAFE_BUFFERS(--search_data);
+    search_hash -= UNSAFE_BUFFERS(search_data[match_length]);
+    search_hash += UNSAFE_BUFFERS(search_data[0]);
   }
   return delta;
 }
