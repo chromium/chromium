@@ -29,6 +29,14 @@ import {
 
 // </if>
 
+function assertMarginsSettingsResetToDefault(settings: Settings) {
+  assertEquals(settings.margins.value, MarginsType.DEFAULT);
+  assertFalse('marginTop' in settings.customMargins.value);
+  assertFalse('marginRight' in settings.customMargins.value);
+  assertFalse('marginBottom' in settings.customMargins.value);
+  assertFalse('marginLeft' in settings.customMargins.value);
+}
+
 suite('ModelTest', function() {
   let model: PrintPreviewModelElement;
 
@@ -735,7 +743,6 @@ suite('ModelTest', function() {
    * Tests that setStickySettings() stores custom margins as integers.
    */
   test('CustomMarginsAreInts', function() {
-    // Sets to true, but doesn't mark as controlled by a policy.
     model.setStickySettings(JSON.stringify({
       version: 2,
       customMargins: {
@@ -756,6 +763,57 @@ suite('ModelTest', function() {
     assertEquals(model.settings.customMargins.value.marginRight, 200);
     assertEquals(model.settings.customMargins.value.marginBottom, 333);
     assertEquals(model.settings.customMargins.value.marginLeft, 400);
+  });
+
+  /**
+   * Tests that if setStickySettings() stored the margins type as custom, but
+   * have no customMargins, then fall back to the default margins type.
+   */
+  test('CustomMarginsAreNotEmpty', function() {
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      marginsType: MarginsType.CUSTOM,
+    }));
+    model.applyStickySettings();
+    assertMarginsSettingsResetToDefault(model.settings);
+  });
+
+  /**
+   * Tests that if setStickySettings() stored negative custom margins, then fall
+   * back to the default margins type.
+   */
+  test('CustomMarginsAreNotNegative', function() {
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      customMargins: {
+        marginTop: 100,
+        marginRight: 200,
+        marginBottom: -333,
+        marginLeft: 400,
+      },
+      marginsType: MarginsType.CUSTOM,
+    }));
+    model.applyStickySettings();
+    assertMarginsSettingsResetToDefault(model.settings);
+  });
+
+  /**
+   * Tests that if setStickySettings() stored custom margins as strings, then
+   * fall back to the default margins type.
+   */
+  test('CustomMarginsAreNotStrings', function() {
+    model.setStickySettings(JSON.stringify({
+      version: 2,
+      customMargins: {
+        marginTop: 100,
+        marginRight: 200,
+        marginBottom: 333,
+        marginLeft: 'bad',
+      },
+      marginsType: MarginsType.CUSTOM,
+    }));
+    model.applyStickySettings();
+    assertMarginsSettingsResetToDefault(model.settings);
   });
 
   // <if expr="is_chromeos">
