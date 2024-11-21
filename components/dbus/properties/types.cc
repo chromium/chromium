@@ -4,10 +4,88 @@
 
 #include "components/dbus/properties/types.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "dbus/message.h"
+
+namespace {
+
+bool PopContainer(dbus::MessageReader* reader,
+                  dbus::MessageReader* element_reader) {
+  switch (reader->GetDataType()) {
+    case dbus::Message::DataType::ARRAY:
+      return reader->PopArray(element_reader);
+    case dbus::Message::DataType::STRUCT:
+      return reader->PopStruct(element_reader);
+    case dbus::Message::DataType::DICT_ENTRY:
+      return reader->PopDictEntry(element_reader);
+    default:
+      NOTREACHED();
+  }
+}
+
+template <typename T>
+std::unique_ptr<DbusType> CreateDbusType(dbus::MessageReader* reader) {
+  auto value = std::make_unique<T>();
+  if (!value->Read(reader)) {
+    return nullptr;
+  }
+  return value;
+}
+
+std::unique_ptr<DbusType> CreateDynamicDbusType(dbus::MessageReader* reader) {
+  switch (reader->GetDataType()) {
+    case dbus::Message::DataType::BYTE:
+      return CreateDbusType<DbusByte>(reader);
+    case dbus::Message::DataType::BOOL:
+      return CreateDbusType<DbusBoolean>(reader);
+    case dbus::Message::DataType::INT16:
+      return CreateDbusType<DbusInt16>(reader);
+    case dbus::Message::DataType::UINT16:
+      return CreateDbusType<DbusUint16>(reader);
+    case dbus::Message::DataType::INT32:
+      return CreateDbusType<DbusInt32>(reader);
+    case dbus::Message::DataType::UINT32:
+      return CreateDbusType<DbusUint32>(reader);
+    case dbus::Message::DataType::INT64:
+      return CreateDbusType<DbusInt64>(reader);
+    case dbus::Message::DataType::UINT64:
+      return CreateDbusType<DbusUint64>(reader);
+    case dbus::Message::DataType::DOUBLE:
+      return CreateDbusType<DbusDouble>(reader);
+    case dbus::Message::DataType::STRING:
+      return CreateDbusType<DbusString>(reader);
+    case dbus::Message::DataType::OBJECT_PATH:
+      return CreateDbusType<DbusObjectPath>(reader);
+    case dbus::Message::DataType::UNIX_FD:
+      return CreateDbusType<DbusUnixFd>(reader);
+    case dbus::Message::DataType::VARIANT:
+      return CreateDbusType<DbusVariant>(reader);
+    case dbus::Message::DataType::ARRAY:
+      // Special case for byte arrays to avoid creating a bunch of virtual
+      // objects for each byte of binary data.
+      if (reader->GetDataSignature() == "ay") {
+        return CreateDbusType<DbusByteArray>(reader);
+      }
+      // Special case for string-variant dictionaries.
+      if (reader->GetDataSignature() == "a{sv}") {
+        return CreateDbusType<DbusDictionary>(reader);
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    case dbus::Message::DataType::STRUCT:
+    case dbus::Message::DataType::DICT_ENTRY:
+      // For templated types (array, struct dict entry), an untyped container is
+      // required.
+      return CreateDbusType<detail::UntypedDbusContainer>(reader);
+    case dbus::Message::DataType::INVALID_DATA:
+      return nullptr;
+  }
+}
+
+}  // namespace
 
 DbusType::~DbusType() = default;
 
@@ -56,6 +134,23 @@ void UntypedDbusContainer::Write(dbus::MessageWriter* writer) const {
   NOTREACHED();
 }
 
+bool UntypedDbusContainer::Read(dbus::MessageReader* reader) {
+  dbus::MessageReader element_reader(nullptr);
+  signature_ = reader->GetDataSignature();
+  if (!PopContainer(reader, &element_reader)) {
+    return false;
+  }
+  value_.clear();
+  while (element_reader.HasMoreData()) {
+    std::unique_ptr<DbusType> element = CreateDynamicDbusType(&element_reader);
+    if (!element) {
+      return false;
+    }
+    value_.push_back(std::move(element));
+  }
+  return true;
+}
+
 std::string UntypedDbusContainer::GetSignatureDynamic() const {
   return signature_;
 }
@@ -95,6 +190,10 @@ DbusUnixFd::~DbusUnixFd() = default;
 void DbusUnixFd::Write(dbus::MessageWriter* writer) const {
   // The fd will be duplicated.
   writer->AppendFileDescriptor(value_.get());
+}
+
+bool DbusUnixFd::Read(dbus::MessageReader* reader) {
+  return reader->PopFileDescriptor(&value_);
 }
 
 std::string DbusUnixFd::GetSignatureDynamic() const {
@@ -149,6 +248,15 @@ void DbusVariant::Write(dbus::MessageWriter* writer) const {
   writer->CloseContainer(&variant_writer);
 }
 
+bool DbusVariant::Read(dbus::MessageReader* reader) {
+  dbus::MessageReader variant_reader(nullptr);
+  if (!reader->PopVariant(&variant_reader)) {
+    return false;
+  }
+  value_ = CreateDynamicDbusType(&variant_reader);
+  return value_ != nullptr;
+}
+
 // static
 std::string DbusVariant::GetSignature() {
   return "v";
@@ -169,6 +277,19 @@ bool DbusByteArray::IsEqual(const DbusType& other_type) const {
 
 void DbusByteArray::Write(dbus::MessageWriter* writer) const {
   writer->AppendArrayOfBytes(*value_);
+}
+
+bool DbusByteArray::Read(dbus::MessageReader* reader) {
+  const uint8_t* bytes = nullptr;
+  size_t length = 0;
+  if (!reader->PopArrayOfBytes(&bytes, &length)) {
+    return false;
+  }
+  // SAFETY: the span adapts the pointer-length return value of
+  // PopArrayOfBytes() without any pointer arithmetic.
+  auto data = UNSAFE_BUFFERS(base::span(bytes, length));
+  value_ = base::MakeRefCounted<base::RefCountedBytes>(data);
+  return true;
 }
 
 // static
@@ -205,6 +326,29 @@ void DbusDictionary::Write(dbus::MessageWriter* writer) const {
     array_writer.CloseContainer(&dict_entry_writer);
   }
   writer->CloseContainer(&array_writer);
+}
+
+bool DbusDictionary::Read(dbus::MessageReader* reader) {
+  dbus::MessageReader array_reader(nullptr);
+  if (!reader->PopArray(&array_reader)) {
+    return false;
+  }
+  while (array_reader.HasMoreData()) {
+    dbus::MessageReader dict_entry_reader(nullptr);
+    if (!array_reader.PopDictEntry(&dict_entry_reader)) {
+      return false;
+    }
+    std::string key;
+    if (!dict_entry_reader.PopString(&key)) {
+      return false;
+    }
+    DbusVariant value;
+    if (!value.Read(&dict_entry_reader)) {
+      return false;
+    }
+    value_[key] = std::move(value);
+  }
+  return true;
 }
 
 // static

@@ -35,6 +35,9 @@ class COMPONENT_EXPORT(DBUS) DbusType {
   // Serializes this object to `writer`.
   virtual void Write(dbus::MessageWriter* writer) const = 0;
 
+  // Deserializes this object from `reader`.
+  virtual bool Read(dbus::MessageReader* reader) = 0;
+
   // Both a virtual and a static version of GetSignature() are necessary.
   // The virtual version is needed by DbusVariant which needs to know the
   // signature at runtime since you could eg. have an array of variants of
@@ -105,6 +108,7 @@ class UntypedDbusContainer final : public DbusType {
 
   // DbusType:
   void Write(dbus::MessageWriter* writer) const override;
+  bool Read(dbus::MessageReader* reader) override;
   std::string GetSignatureDynamic() const override;
   bool IsUntyped() const override;
 
@@ -139,6 +143,10 @@ class COMPONENT_EXPORT(DBUS) DbusPrimitiveType final
   // DbusType:
   void Write(dbus::MessageWriter* writer) const override {
     std::invoke(WriteFn, writer, value_);
+  }
+
+  bool Read(dbus::MessageReader* reader) override {
+    return std::invoke(ReadFn, reader, &value_);
   }
 
   static std::string GetSignature() { return std::string(1, Signature); }
@@ -198,6 +206,7 @@ class COMPONENT_EXPORT(DBUS) DbusUnixFd final : public DbusType {
 
   // DbusType:
   void Write(dbus::MessageWriter* writer) const override;
+  bool Read(dbus::MessageReader* reader) override;
   std::string GetSignatureDynamic() const override;
   bool IsUntyped() const override;
 
@@ -246,6 +255,7 @@ class COMPONENT_EXPORT(DBUS) DbusVariant final
   // DbusType:
   bool IsEqual(const DbusType& other_type) const override;
   void Write(dbus::MessageWriter* writer) const override;
+  bool Read(dbus::MessageReader* reader) override;
 
   static std::string GetSignature();
 
@@ -285,6 +295,21 @@ class COMPONENT_EXPORT(DBUS) DbusArray final
       t.Write(&array_writer);
     }
     writer->CloseContainer(&array_writer);
+  }
+
+  bool Read(dbus::MessageReader* reader) override {
+    dbus::MessageReader array_reader(nullptr);
+    if (!reader->PopArray(&array_reader)) {
+      return false;
+    }
+    while (array_reader.HasMoreData()) {
+      T t;
+      if (!t.Read(&array_reader)) {
+        return false;
+      }
+      value_.push_back(std::move(t));
+    }
+    return true;
   }
 
   void MoveImpl(DbusType&& object) override {
@@ -330,6 +355,7 @@ class COMPONENT_EXPORT(DBUS) DbusByteArray final
   // DbusType:
   bool IsEqual(const DbusType& other_type) const override;
   void Write(dbus::MessageWriter* writer) const override;
+  bool Read(dbus::MessageReader* reader) override;
 
   static std::string GetSignature();
 
@@ -357,6 +383,20 @@ class COMPONENT_EXPORT(DBUS) DbusStruct final
         [&struct_writer](auto&&... args) { (args.Write(&struct_writer), ...); },
         value_);
     writer->CloseContainer(&struct_writer);
+  }
+
+  bool Read(dbus::MessageReader* reader) override {
+    dbus::MessageReader struct_reader(nullptr);
+    if (!reader->PopStruct(&struct_reader)) {
+      return false;
+    }
+    bool success = true;
+    std::apply(
+        [&struct_reader, &success](auto&&... args) {
+          ((success = success && args.Read(&struct_reader)), ...);
+        },
+        value_);
+    return success;
   }
 
   void MoveImpl(DbusType&& object) override {
@@ -412,6 +452,20 @@ class COMPONENT_EXPORT(DBUS) DbusDictEntry final
     writer->CloseContainer(&dict_entry_writer);
   }
 
+  bool Read(dbus::MessageReader* reader) override {
+    dbus::MessageReader dict_entry_reader(nullptr);
+    if (!reader->PopDictEntry(&dict_entry_reader)) {
+      return false;
+    }
+    if (!value_.first.Read(&dict_entry_reader)) {
+      return false;
+    }
+    if (!value_.second.Read(&dict_entry_reader)) {
+      return false;
+    }
+    return true;
+  }
+
   void MoveImpl(DbusType&& object) override {
     // The type signature has already been verified.
     if (!object.IsUntyped()) {
@@ -462,6 +516,7 @@ class COMPONENT_EXPORT(DBUS) DbusDictionary final
 
   // DbusType:
   void Write(dbus::MessageWriter* writer) const override;
+  bool Read(dbus::MessageReader* reader) override;
 
   static std::string GetSignature();
 
