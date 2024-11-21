@@ -51,6 +51,9 @@ TEST_F(AwFileSystemAccessPermissionContextTest, BlockedPaths) {
   base::ScopedPathOverride app_data_override(base::DIR_ANDROID_APP_DATA,
                                              app_data_dir, true, true);
 
+  // Relative paths should be not allowed.
+  EXPECT_TRUE(IsBlocked(base::FilePath("relative-path")));
+
   // The android app data directory, and paths inside should not be allowed.
   EXPECT_TRUE(IsBlocked(app_data_dir));
   EXPECT_TRUE(IsBlocked(app_data_dir.AppendASCII("foo")));
@@ -61,6 +64,12 @@ TEST_F(AwFileSystemAccessPermissionContextTest, BlockedPaths) {
   // The android cache directory, and paths inside should not be allowed.
   EXPECT_TRUE(IsBlocked(cache_dir));
   EXPECT_TRUE(IsBlocked(cache_dir.AppendASCII("foo")));
+
+  // Other paths including content-URIs are not blocked.
+  EXPECT_FALSE(IsBlocked(base::FilePath("content://authority/path")));
+  EXPECT_FALSE(IsBlocked(base::FilePath("/absolute-path")));
+  EXPECT_FALSE(
+      IsBlocked(temp_dir.GetPath().AppendASCII("not-app-data-or-cache")));
 }
 
 }  // namespace android_webview
