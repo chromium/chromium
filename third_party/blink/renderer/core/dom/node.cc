@@ -757,8 +757,11 @@ Node* Node::moveBefore(Node* new_child,
   // `Node::DidNotifySubtreeInsertionsToDocument()`), and no script is permitted
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
-      // "If either parent or node are not connected, then..."
-      isConnected() && new_child->isConnected() &&
+      // "If any of the following conditions are true"
+      // " - parent is connected and node is not connected; or"
+      // " - parent is not connected and node is connected,"
+      // "then..."
+      isConnected() == new_child->isConnected() &&
       // "If parent’s shadow-including root is not the same as node’s
       // shadow-including root, then..."
       GetDocument() == new_child->GetDocument() &&
