@@ -3988,59 +3988,6 @@ inline constexpr char kSecurityTokenSessionNotificationScheduledDomain[] =
     "security_token_session_notification_scheduled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID)
-// Boolean pref indicating whether user has hidden the cart module on NTP.
-inline constexpr char kCartModuleHidden[] = "cart_module_hidden";
-// An integer that keeps track of how many times welcome surface has shown in
-// cart module.
-inline constexpr char kCartModuleWelcomeSurfaceShownTimes[] =
-    "cart_module_welcome_surface_shown_times";
-// Boolean pref indicating whether user has reacted to the consent for
-// rule-based discount in cart module.
-inline constexpr char kCartDiscountAcknowledged[] =
-    "cart_discount_acknowledged";
-// Boolean pref indicating whether user has enabled rule-based discount in cart
-// module.
-inline constexpr char kCartDiscountEnabled[] = "cart_discount_enabled";
-// Map pref recording the discounts used by users.
-inline constexpr char kCartUsedDiscounts[] = "cart_used_discounts";
-// A time pref indicating the timestamp of when last cart discount fetch
-// happened.
-inline constexpr char kCartDiscountLastFetchedTime[] =
-    "cart_discount_last_fetched_time";
-// Boolean pref indicating whether the consent for discount has ever shown or
-// not.
-inline constexpr char kCartDiscountConsentShown[] =
-    "cart_discount_consent_shown";
-// Integer pref indicating in which variation the user has made their decision,
-// accept or reject the consent.
-inline constexpr char kDiscountConsentDecisionMadeIn[] =
-    "discount_consent_decision_made_in";
-// Integer pref indicating in which variation the user has dismissed the
-// consent. Only the Inline and Dialog variation applies.
-inline constexpr char kDiscountConsentDismissedIn[] =
-    "discount_consent_dismissed_in";
-// A time pref indicating the timestamp of when user last explicitly dismissed
-// the discount consent.
-inline constexpr char kDiscountConsentLastDimissedTime[] =
-    "discount_consent_last_dimissed_time";
-// Integer pref indicating the last consent was shown in which variation.
-inline constexpr char kDiscountConsentLastShownInVariation[] =
-    "discount_consent_last_shown_in";
-// An integer pref that keeps track of how many times user has explicitly
-// dismissed the disount consent.
-inline constexpr char kDiscountConsentPastDismissedCount[] =
-    "discount_consent_dismissed_count";
-// Boolean pref indicating whether the user has shown interest in the consent,
-// e.g. if the use has clicked the 'continue' button.
-inline constexpr char kDiscountConsentShowInterest[] =
-    "discount_consent_show_interest";
-// Integer pref indicating in which variation the user has shown interest to the
-// consent, they has clicked the 'continue' button.
-inline constexpr char kDiscountConsentShowInterestIn[] =
-    "discount_consent_show_interest_in";
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // Boolean pref controlling whether immersive AR sessions are enabled
 // in WebXR Device API.

@@ -1126,6 +1126,35 @@ constexpr char kPrefixedVideoFullscreenApiAvailability[] =
 constexpr char kOnDeviceModelTimeoutCount[] =
     "optimization_guide.on_device.timeout_count";
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 11/2024
+inline constexpr char kCartModuleHidden[] = "cart_module_hidden";
+inline constexpr char kCartModuleWelcomeSurfaceShownTimes[] =
+    "cart_module_welcome_surface_shown_times";
+inline constexpr char kCartDiscountAcknowledged[] =
+    "cart_discount_acknowledged";
+inline constexpr char kCartDiscountEnabled[] = "cart_discount_enabled";
+inline constexpr char kCartUsedDiscounts[] = "cart_used_discounts";
+inline constexpr char kCartDiscountLastFetchedTime[] =
+    "cart_discount_last_fetched_time";
+inline constexpr char kCartDiscountConsentShown[] =
+    "cart_discount_consent_shown";
+inline constexpr char kDiscountConsentDecisionMadeIn[] =
+    "discount_consent_decision_made_in";
+inline constexpr char kDiscountConsentDismissedIn[] =
+    "discount_consent_dismissed_in";
+inline constexpr char kDiscountConsentLastDimissedTime[] =
+    "discount_consent_last_dimissed_time";
+inline constexpr char kDiscountConsentLastShownInVariation[] =
+    "discount_consent_last_shown_in";
+inline constexpr char kDiscountConsentPastDismissedCount[] =
+    "discount_consent_dismissed_count";
+inline constexpr char kDiscountConsentShowInterest[] =
+    "discount_consent_show_interest";
+inline constexpr char kDiscountConsentShowInterestIn[] =
+    "discount_consent_show_interest_in";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1586,6 +1615,24 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 11/2024
   registry->RegisterStringPref(kPrefixedVideoFullscreenApiAvailability, "");
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kCartModuleHidden, false);
+  registry->RegisterIntegerPref(kCartModuleWelcomeSurfaceShownTimes, 0);
+  registry->RegisterBooleanPref(kCartDiscountAcknowledged, false);
+  registry->RegisterBooleanPref(kCartDiscountEnabled, false);
+  registry->RegisterDictionaryPref(kCartUsedDiscounts);
+  registry->RegisterTimePref(kCartDiscountLastFetchedTime, base::Time());
+  registry->RegisterBooleanPref(kCartDiscountConsentShown, false);
+  registry->RegisterTimePref(kDiscountConsentLastDimissedTime, base::Time());
+  registry->RegisterIntegerPref(kDiscountConsentPastDismissedCount, 0);
+  registry->RegisterIntegerPref(kDiscountConsentDecisionMadeIn, 0);
+  registry->RegisterIntegerPref(kDiscountConsentDismissedIn, 0);
+  registry->RegisterIntegerPref(kDiscountConsentLastShownInVariation, 0);
+  registry->RegisterBooleanPref(kDiscountConsentShowInterest, false);
+  registry->RegisterIntegerPref(kDiscountConsentShowInterestIn, 0);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2928,6 +2975,24 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 11/2024
   profile_prefs->ClearPref(kPrefixedVideoFullscreenApiAvailability);
+
+// Added 11/2024
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kCartModuleHidden);
+  profile_prefs->ClearPref(kCartModuleWelcomeSurfaceShownTimes);
+  profile_prefs->ClearPref(kCartDiscountAcknowledged);
+  profile_prefs->ClearPref(kCartDiscountEnabled);
+  profile_prefs->ClearPref(kCartUsedDiscounts);
+  profile_prefs->ClearPref(kCartDiscountLastFetchedTime);
+  profile_prefs->ClearPref(kCartDiscountConsentShown);
+  profile_prefs->ClearPref(kDiscountConsentDecisionMadeIn);
+  profile_prefs->ClearPref(kDiscountConsentDismissedIn);
+  profile_prefs->ClearPref(kDiscountConsentLastDimissedTime);
+  profile_prefs->ClearPref(kDiscountConsentLastShownInVariation);
+  profile_prefs->ClearPref(kDiscountConsentPastDismissedCount);
+  profile_prefs->ClearPref(kDiscountConsentShowInterest);
+  profile_prefs->ClearPref(kDiscountConsentShowInterestIn);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
