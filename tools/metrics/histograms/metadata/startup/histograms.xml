@@ -813,7 +813,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Startup.ColdStartFromMain" units="ms"
     expires_after="2025-03-26">
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     The duration of all initializations from the call to main to UI ready to
@@ -840,7 +840,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.ConsecutiveDidFinishLaunchingWithoutLaunch"
     units="count" expires_after="2024-09-18">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The number of time [UIApplicationDelegate
     application:didFinishLaynching] was called but no scene was activated.
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
     expires_after="2025-05-30">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The number of time +load was called but no scene was activated.
     Recorded when first scene is becomes active.
@@ -1260,7 +1260,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.TimeFromMainToDidFinishLaunchingCall" units="ms"
     expires_after="2025-03-26">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The duration between the call to main and the call to
     [UIApplicationDelegate didFinishLaunching:]. Recorded when first scene is
@@ -1271,7 +1271,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.TimeFromMainToSceneConnection" units="ms"
     expires_after="2025-03-26">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <summary>
     [IOS] The duration between the call to main and the call to the first scene
     connection. Recorded when first scene is becomes active.

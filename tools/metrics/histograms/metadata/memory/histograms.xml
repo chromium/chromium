@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
   <owner>erikchen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
   <summary>
     This metric is only recorded on iOS. This measures the sum of
@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Browser.MemoryFootprint.Active" units="MB"
     expires_after="2025-05-11">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but only recorded when UIApplication.sharedApplication.applicationState is
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Browser.MemoryFootprint.Active.Over200MBWatermark"
     enum="BooleanGreaterOrEqualThan200MB" expires_after="2025-02-05">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This metric is only recorded on iOS when
     UIApplication.sharedApplication.applicationState is
@@ -212,7 +212,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Browser.MemoryFootprint.Background" units="MB"
     expires_after="2025-04-28">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but only recorded when UIApplication.sharedApplication.applicationState is
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Browser.MemoryFootprint.Inactive" units="MB"
     expires_after="2025-03-30">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but only recorded when UIApplication.sharedApplication.applicationState is
@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
     expires_after="2025-05-11">
-  <owner>ajuma@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     Investigation into crbug.com/1102494 shows that OverscrollActionsController
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Memory.Browser.MemoryFootprint.OnBackground" units="MiB"
     expires_after="2025-04-06">
   <owner>justincohen@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     This metric is only recorded on iOS. Same as Memory.Browser.MemoryFootprint
     but recorded right after the app transitions into background. According to

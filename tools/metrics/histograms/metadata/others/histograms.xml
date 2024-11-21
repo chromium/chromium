@@ -7411,8 +7411,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PLT.iOS.BrowserInitiatedPageLoadTime2" units="ms"
     expires_after="2025-05-11">
-  <owner>djean@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Page load time for Browser-initiated navigations.
 
@@ -7457,8 +7457,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PLT.iOS.RendererInitiatedPageLoadTime2" units="ms"
     expires_after="2025-05-11">
-  <owner>djean@chromium.org</owner>
-  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     Page load time for Renderer-initiated navigations.
 
@@ -10269,8 +10269,8 @@ regressions. -->
 
 <histogram name="WebController.CertVerificationErrorsCacheHit"
     enum="BooleanCacheHit" expires_after="2025-02-12">
-  <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
   <summary>
     [iOS] Report cache hit/miss for WKWebView cert verification.
     CRWWKNavigationHandler has a cache of pending cert verification results to
