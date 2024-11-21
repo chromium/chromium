@@ -4,6 +4,8 @@
 
 package org.chromium.net.urlconnection;
 
+import org.chromium.base.metrics.ScopedSysTraceEvent;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
@@ -91,46 +93,52 @@ class MessageLoop implements Executor {
      * @param timeoutMilli Timeout, in milliseconds, or 0 for no timeout.
      */
     public void loop(int timeoutMilli) throws IOException {
-        assert calledOnValidThread();
-        // Use System.nanoTime() which is monotonically increasing.
-        long startNano = System.nanoTime();
-        long timeoutNano = TimeUnit.NANOSECONDS.convert(timeoutMilli, TimeUnit.MILLISECONDS);
-        if (mLoopFailed) {
-            if (mPriorInterruptedIOException != null) {
-                throw mPriorInterruptedIOException;
-            } else {
-                throw mPriorRuntimeException;
-            }
-        }
-        if (mLoopRunning) {
-            throw new IllegalStateException("Cannot run loop when it is already running.");
-        }
-        mLoopRunning = true;
-        while (mLoopRunning) {
-            try {
-                if (timeoutMilli == 0) {
-                    take(false, 0).run();
+        try (var traceEvent = ScopedSysTraceEvent.scoped("Cronet MessageLoop#loop")) {
+            assert calledOnValidThread();
+            // Use System.nanoTime() which is monotonically increasing.
+            long startNano = System.nanoTime();
+            long timeoutNano = TimeUnit.NANOSECONDS.convert(timeoutMilli, TimeUnit.MILLISECONDS);
+            if (mLoopFailed) {
+                if (mPriorInterruptedIOException != null) {
+                    throw mPriorInterruptedIOException;
                 } else {
-                    take(true, timeoutNano - System.nanoTime() + startNano).run();
+                    throw mPriorRuntimeException;
                 }
-            } catch (InterruptedIOException e) {
-                mLoopRunning = false;
-                mLoopFailed = true;
-                mPriorInterruptedIOException = e;
-                throw e;
-            } catch (RuntimeException e) {
-                mLoopRunning = false;
-                mLoopFailed = true;
-                mPriorRuntimeException = e;
-                throw e;
+            }
+            if (mLoopRunning) {
+                throw new IllegalStateException("Cannot run loop when it is already running.");
+            }
+            mLoopRunning = true;
+            while (mLoopRunning) {
+                try {
+                    Runnable runnable;
+                    if (timeoutMilli == 0) {
+                        runnable = take(false, 0);
+                    } else {
+                        runnable = take(true, timeoutNano - System.nanoTime() + startNano);
+                    }
+                    try (var taskTraceEvent =
+                            ScopedSysTraceEvent.scoped("Cronet MessageLoop#loop running task")) {
+                        runnable.run();
+                    }
+                } catch (InterruptedIOException e) {
+                    mLoopRunning = false;
+                    mLoopFailed = true;
+                    mPriorInterruptedIOException = e;
+                    throw e;
+                } catch (RuntimeException e) {
+                    mLoopRunning = false;
+                    mLoopFailed = true;
+                    mPriorRuntimeException = e;
+                    throw e;
+                }
             }
         }
     }
 
     /**
-     * This causes {@link #loop()} to stop executing messages after the current
-     * message being executed.  Should only be called from the currently
-     * executing message.
+     * This causes {@link #loop()} to stop executing messages after the current message being
+     * executed. Should only be called from the currently executing message.
      */
     public void quit() {
         assert calledOnValidThread();
