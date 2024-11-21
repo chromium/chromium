@@ -25,5 +25,5 @@ dictionary GPUCanvasConfiguration {
     sequence<GPUTextureFormat> viewFormats = [];
     PredefinedColorSpace colorSpace = "srgb";
     GPUCanvasAlphaMode alphaMode = "opaque";
-    [RuntimeEnabled=WebGPUHDR] GPUCanvasToneMapping toneMapping = {};
+    GPUCanvasToneMapping toneMapping = {};
 };
