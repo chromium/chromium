@@ -1441,9 +1441,8 @@ void SimpleURLLoaderImpl::AttachStringForUploadInternal(
   resource_request_->request_body = new ResourceRequestBody();
 
   if (upload_data.length() <= kMaxUploadStringSizeToCopy) {
-    int copy_length = base::checked_cast<int>(upload_data.length());
-    resource_request_->request_body->AppendBytes(upload_data.data(),
-                                                 copy_length);
+    resource_request_->request_body->AppendCopyOfBytes(
+        base::as_byte_span(upload_data));
   } else {
     // Don't attach the upload body here.  A new pipe will need to be created
     // each time the request is tried.
@@ -1469,9 +1468,8 @@ void SimpleURLLoaderImpl::AttachStringForUploadInternal(
   resource_request_->request_body = new ResourceRequestBody();
 
   if (upload_data.length() <= kMaxUploadStringSizeToCopy) {
-    int copy_length = base::checked_cast<int>(upload_data.length());
-    resource_request_->request_body->AppendBytes(upload_data.data(),
-                                                 copy_length);
+    resource_request_->request_body->AppendCopyOfBytes(
+        base::as_byte_span(upload_data));
   } else {
     // Don't attach the upload body here.  A new pipe will need to be created
     // each time the request is tried.

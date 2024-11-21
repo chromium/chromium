@@ -2992,7 +2992,7 @@ TEST_F(URLLoaderTest, UploadBytes) {
   const std::string kRequestBody = "Request Body";
 
   scoped_refptr<ResourceRequestBody> request_body(new ResourceRequestBody());
-  request_body->AppendBytes(kRequestBody.c_str(), kRequestBody.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(kRequestBody));
   set_request_body(std::move(request_body));
 
   std::string response_body;
