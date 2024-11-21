@@ -4274,6 +4274,10 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   histogram_tester.ExpectBucketCount(
       "Lens.Overlay.ByDocumentType.Pdf.PageCount", /*sample*/ 1,
       /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf."
+      "TimeFromNavigationToFirstInteraction",
+      /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4777,6 +4781,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByContentType.Html.DocumentSize",
       /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web."
+      "TimeFromNavigationToFirstInteraction",
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Lens.Overlay.ByDocumentType.Pdf.PageCount",
                                     /*expected_count=*/0);
 }
