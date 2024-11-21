@@ -647,43 +647,47 @@ scoped_refptr<StringImpl> StringImpl::StripWhiteSpace(
 
 template <typename CharType>
 ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
-    const CharType* characters,
+    base::span<const CharType> characters,
     CharacterMatchFunctionPtr find_match) {
-  const CharType* from = characters;
-  const CharType* fromend = from + length_;
-
   // Assume the common case will not remove any characters
-  while (from != fromend && !find_match(*from))
-    ++from;
-  if (from == fromend)
+  size_t i = 0;
+  while (i < characters.size() && !find_match(characters[i])) {
+    ++i;
+  }
+  if (i == characters.size()) {
     return this;
+  }
 
-  StringBuffer<CharType> data(length_);
-  CharType* to = data.Characters();
-  wtf_size_t outc = static_cast<wtf_size_t>(from - characters);
+  StringBuffer<CharType> data(characters.size());
+  auto to = data.Span();
+  size_t outc = i;
 
-  if (outc)
-    memcpy(to, characters, outc * sizeof(CharType));
+  if (outc) {
+    to.copy_prefix_from(characters.first(outc));
+  }
 
   while (true) {
-    while (from != fromend && find_match(*from))
-      ++from;
-    while (from != fromend && !find_match(*from))
-      to[outc++] = *from++;
-    if (from == fromend)
+    while (i < characters.size() && find_match(characters[i])) {
+      ++i;
+    }
+    while (i < characters.size() && !find_match(characters[i])) {
+      to[outc++] = characters[i];
+      ++i;
+    }
+    if (i == characters.size()) {
       break;
+    }
   }
 
   data.Shrink(outc);
-
   return data.Release();
 }
 
 scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     CharacterMatchFunctionPtr find_match) {
   if (Is8Bit())
-    return RemoveCharacters(Characters8(), find_match);
-  return RemoveCharacters(Characters16(), find_match);
+    return RemoveCharacters(Span8(), find_match);
+  return RemoveCharacters(Span16(), find_match);
 }
 
 scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,

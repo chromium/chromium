@@ -412,7 +412,7 @@ class WTF_EXPORT StringImpl {
   scoped_refptr<StringImpl> RemoveCharacters(CharacterMatchFunctionPtr);
   template <typename CharType>
   ALWAYS_INLINE scoped_refptr<StringImpl> RemoveCharacters(
-      const CharType* characters,
+      base::span<const CharType> characters,
       CharacterMatchFunctionPtr);
 
   // Remove characters between [start, start+lengthToRemove). The range is
