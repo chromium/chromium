@@ -1757,7 +1757,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/cpu_features.git' + '@' + '936b9ab5515dead115606559502e3864958f7f6e',
 
   'src/third_party/cpuinfo/src':
-    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + '8df44962d437a0477f07ba6b8843d0b6a48646a4',
+    Var('chromium_git') + '/external/github.com/pytorch/cpuinfo.git' + '@' + 'cebb0933058d7f181c979afd50601dc311e1bf8c',
 
   'src/third_party/crc32c/src':
     Var('chromium_git') + '/external/github.com/google/crc32c.git' + '@' + 'd3d60ac6e0f16780bcfcc825385e1d338801a558',
@@ -1787,7 +1787,7 @@ deps = {
     Var('chromium_git') + '/chromium/dom-distiller/dist.git' + '@' + '199de96b345ada7c6e7e6ba3d2fa7a6911b8767d',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'b396a6fbb2e173f52edb3360485dedf3389ef830',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + 'e7c799b7c984f9b8bea27967bb04a97c52e62582',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '045f146fca682a836e01cd265171312bfb300e06',
@@ -2659,7 +2659,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'd1d33679661a34f03a806af2b813f699db3004f9',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'e297edd2ae50e5a14fca7663d1c75b072b6dc80f',
 
   'src/tools/page_cycler/acid3':
     Var('chromium_git') + '/chromium/deps/acid3.git' + '@' + 'a926d0a32e02c4c03ae95bb798e6c780e0e184ba',
