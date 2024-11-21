@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h",
   "+ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h",
-  "+ios/chrome/browser/ui/reading_list",
+  "+ios/chrome/browser/reading_list/ui_bundled",
   "+ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h",
   "+ios/chrome/browser/ui/whats_new/whats_new_util.h",
   "+ios/chrome/browser/presenters/ui_bundled",
