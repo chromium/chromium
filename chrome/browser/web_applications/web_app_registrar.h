@@ -188,12 +188,6 @@ class WebAppRegistrar {
       const GURL& scope,
       std::initializer_list<proto::InstallState> allowed_states) const;
 
-  // Returns whether the app with |app_id| is currently listed in the registry.
-  // ie. we have data for web app manifest and icons, and this |app_id| can be
-  // used in other registrar methods.
-  // TODO(crbug.com/340952100): Remove & replace callers with `IsInstallState`.
-  bool IsInstalled(const webapps::AppId& app_id) const;
-
   // Returns whether the app is currently being uninstalled. This will be true
   // after uninstall has begun but before the OS integration hooks for uninstall
   // have completed. It will return false after uninstallation has completed.

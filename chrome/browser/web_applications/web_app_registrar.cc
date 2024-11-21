@@ -929,13 +929,6 @@ bool WebAppRegistrar::DoesScopeContainAnyApp(
   return false;
 }
 
-bool WebAppRegistrar::IsInstalled(const webapps::AppId& app_id) const {
-  return IsInstallState(
-      app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-               proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
-}
-
 bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->is_uninstalling();
