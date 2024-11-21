@@ -21,9 +21,9 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 import websockets
-from test_helpers import (execute_command, get_tree, goto_url,
+from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
                           merge_dicts_recursively, read_JSON_message,
-                          wait_for_event, wait_for_events)
+                          send_JSON_command, wait_for_event, wait_for_events)
 
 from tools.http_proxy_server import HttpProxyServer
 from tools.local_http_server import LocalHttpServer
@@ -323,10 +323,31 @@ def read_sorted_messages(websocket):
 @pytest.fixture
 def assert_no_more_messages(websocket):
     """Assert that there are no more messages on the websocket."""
-    async def assert_no_more_messages(timeout: float | None):
-        with pytest.raises(asyncio.TimeoutError):
-            await asyncio.wait_for(read_JSON_message(websocket),
-                                   timeout=timeout)
+    async def assert_no_more_messages():
+        """ Walk through all the browsing contexts and evaluate an async script"""
+        command_id = await send_JSON_command(websocket, {
+            'method': 'browsingContext.getTree',
+            'params': {}
+        })
+        message = await read_JSON_message(websocket)
+        if message != AnyExtending({'type': 'success', 'id': command_id}):
+            raise Exception(f"Unexpected message {message}")
+
+        for context in message['result']['contexts']:
+            command_id = await send_JSON_command(
+                websocket, {
+                    "method": "script.evaluate",
+                    "params": {
+                        "expression": "Promise.resolve()",
+                        "target": {
+                            "context": context['context']
+                        },
+                        "awaitPromise": True,
+                    }
+                })
+            message = await read_JSON_message(websocket)
+            if message != AnyExtending({'type': 'success', 'id': command_id}):
+                raise Exception(f"Unexpected message {message}")
 
     return assert_no_more_messages
 
