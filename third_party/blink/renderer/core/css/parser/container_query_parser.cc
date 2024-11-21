@@ -114,8 +114,8 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
             feature == media_feature_names::kStuckMediaFeature) ||
            (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled() &&
             feature == media_feature_names::kSnappedMediaFeature) ||
-           (RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled() &&
-            feature == media_feature_names::kOverflowingMediaFeature);
+           (RuntimeEnabledFeatures::CSSScrollableContainerQueriesEnabled() &&
+            feature == media_feature_names::kScrollableMediaFeature);
   }
   bool IsAllowedWithoutValue(const AtomicString& feature,
                              const ExecutionContext*) const override {

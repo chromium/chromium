@@ -1581,45 +1581,45 @@ static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
-static bool OverflowingMediaFeatureEval(const MediaQueryExpValue& value,
-                                        MediaQueryOperator op,
-                                        const MediaValues& media_values) {
+static bool ScrollableMediaFeatureEval(const MediaQueryExpValue& value,
+                                       MediaQueryOperator op,
+                                       const MediaValues& media_values) {
   if (!value.IsValid()) {
-    return media_values.Overflowing();
+    return media_values.Scrollable();
   }
 
-  constexpr ContainerOverflowingFlags overflowing_start =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kStart);
-  constexpr ContainerOverflowingFlags overflowing_end =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+  constexpr ContainerScrollableFlags scrollable_start =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kStart);
+  constexpr ContainerScrollableFlags scrollable_end =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kEnd);
 
   switch (value.Id()) {
     case CSSValueID::kNone:
-      return !media_values.Overflowing();
+      return !media_values.Scrollable();
     case CSSValueID::kTop:
-      return media_values.OverflowingVertical() & overflowing_start;
+      return media_values.ScrollableVertical() & scrollable_start;
     case CSSValueID::kLeft:
-      return media_values.OverflowingHorizontal() & overflowing_start;
+      return media_values.ScrollableHorizontal() & scrollable_start;
     case CSSValueID::kBottom:
-      return media_values.OverflowingVertical() & overflowing_end;
+      return media_values.ScrollableVertical() & scrollable_end;
     case CSSValueID::kRight:
-      return media_values.OverflowingHorizontal() & overflowing_end;
+      return media_values.ScrollableHorizontal() & scrollable_end;
     case CSSValueID::kBlockStart:
-      return media_values.OverflowingBlock() & overflowing_start;
+      return media_values.ScrollableBlock() & scrollable_start;
     case CSSValueID::kBlockEnd:
-      return media_values.OverflowingBlock() & overflowing_end;
+      return media_values.ScrollableBlock() & scrollable_end;
     case CSSValueID::kInlineStart:
-      return media_values.OverflowingInline() & overflowing_start;
+      return media_values.ScrollableInline() & scrollable_start;
     case CSSValueID::kInlineEnd:
-      return media_values.OverflowingInline() & overflowing_end;
+      return media_values.ScrollableInline() & scrollable_end;
     case CSSValueID::kX:
-      return media_values.OverflowingHorizontal() != 0;
+      return media_values.ScrollableHorizontal() != 0;
     case CSSValueID::kY:
-      return media_values.OverflowingVertical() != 0;
+      return media_values.ScrollableVertical() != 0;
     case CSSValueID::kBlock:
-      return media_values.OverflowingBlock() != 0;
+      return media_values.ScrollableBlock() != 0;
     case CSSValueID::kInline:
-      return media_values.OverflowingInline() != 0;
+      return media_values.ScrollableInline() != 0;
     default:
       NOTREACHED();
   }

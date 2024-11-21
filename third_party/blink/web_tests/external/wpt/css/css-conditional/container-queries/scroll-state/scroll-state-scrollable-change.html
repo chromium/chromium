@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(overflowing) changed after scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#overflowing">
+<title>@container: scroll-state(scrollable) changed after scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrollable">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -18,10 +18,10 @@
   #target {
     --top: no;
     --bottom: no;
-    @container scroll-state(overflowing: top) {
+    @container scroll-state(scrollable: top) {
       --top: yes;
     }
-    @container scroll-state(overflowing: bottom) {
+    @container scroll-state(scrollable: bottom) {
       --bottom: yes;
     }
   }
@@ -39,7 +39,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "yes");
     assert_equals(scroller.scrollTop, 0);
-  }, "Check that scroll-state(overflowing) matches bottom before scroll");
+  }, "Check that scroll-state(scrollable) matches bottom before scroll");
 
   promise_test(async t => {
     scroller.scrollTop = 200;
@@ -47,7 +47,7 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--top"), "yes");
     assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "yes");
     assert_equals(scroller.scrollTop, 200);
-  }, "Check that scroll-state(overflowing) matches both top and bottom in a middle position");
+  }, "Check that scroll-state(scrollable) matches both top and bottom in a middle position");
 
   promise_test(async t => {
     scroller.scrollTop = 400;
@@ -55,6 +55,6 @@
     assert_equals(getComputedStyle(target).getPropertyValue("--top"), "yes");
     assert_equals(getComputedStyle(target).getPropertyValue("--bottom"), "no");
     assert_equals(scroller.scrollTop, 400);
-  }, "Check that scroll-state(overflowing) matches both top when scrolled to the end");
+  }, "Check that scroll-state(scrollable) matches both top when scrolled to the end");
 
 </script>

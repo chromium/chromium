@@ -1131,10 +1131,6 @@
       status: "experimental",
     },
     {
-      name: "CSSOverflowContainerQueries",
-      status: "experimental",
-    },
-    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },
@@ -1247,6 +1243,10 @@
       status: "experimental",
     },
     {
+      name: "CSSScrollableContainerQueries",
+      status: "experimental",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#scrollsnapchange
       name: "CSSScrollSnapChangeEvent",
       status: "stable",
@@ -1276,7 +1276,7 @@
       // Flag for supporting scroll-state() and container-type: scroll-state
       // Implied by supporting at least one of the scroll-state query features.
       name: "CSSScrollStateContainerQueries",
-      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries", "CSSOverflowContainerQueries"],
+      implied_by: ["CSSStickyContainerQueries", "CSSSnapContainerQueries", "CSSScrollableContainerQueries"],
     },
     {
       name: "CSSSelectorFragmentAnchor",

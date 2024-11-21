@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(overflowing) matching for initial rendering</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#overflowing">
+<title>@container: scroll-state(scrollable) matching for initial rendering</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrollable">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -30,13 +30,13 @@
     --bottom: no;
     --none: no;
   }
-  @container scroll-state(overflowing: top) {
+  @container scroll-state(scrollable: top) {
     span { --top: yes; }
   }
-  @container scroll-state(overflowing: bottom) {
+  @container scroll-state(scrollable: bottom) {
     span { --bottom: yes; }
   }
-  @container scroll-state(overflowing: none) {
+  @container scroll-state(scrollable: none) {
     span { --none: yes; }
   }
 </style>
@@ -72,48 +72,48 @@
     assert_equals(getComputedStyle(t1).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t1).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(t1).getPropertyValue("--none"), "yes");
-  }, "overflow:visible, no overflowing content - no matches");
+  }, "overflow:visible, no scrollable content - no matches");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t2).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t2).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(t2).getPropertyValue("--none"), "yes");
-  }, "overflow:auto, no overflowing content - no matches");
+  }, "overflow:auto, no scrollable content - no matches");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t3).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t3).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(t3).getPropertyValue("--none"), "yes");
-  }, "overflow:scroll, no overflowing content - no matches");
+  }, "overflow:scroll, no scrollable content - no matches");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t4).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t4).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(t4).getPropertyValue("--none"), "yes");
-  }, "overflow:clip, no overflowing content - no matches");
+  }, "overflow:clip, no scrollable content - no matches");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t5).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t5).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(t5).getPropertyValue("--none"), "yes");
-  }, "overflow:visible, overflowing content - no matches");
+  }, "overflow:visible, scrollable content - no matches");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t6).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t6).getPropertyValue("--bottom"), "yes");
     assert_equals(getComputedStyle(t6).getPropertyValue("--none"), "no");
-  }, "overflow:auto, overflowing content - matches overflowing:bottom");
+  }, "overflow:auto, scrollable content - matches scrollable:bottom");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t7).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t7).getPropertyValue("--bottom"), "yes");
     assert_equals(getComputedStyle(t7).getPropertyValue("--none"), "no");
-  }, "overflow:scroll, overflowing content - matches overflowing:bottom");
+  }, "overflow:scroll, scrollable content - matches scrollable:bottom");
 
   promise_test(async t => {
     assert_equals(getComputedStyle(t8).getPropertyValue("--top"), "no");
     assert_equals(getComputedStyle(t8).getPropertyValue("--bottom"), "no");
     assert_equals(getComputedStyle(t8).getPropertyValue("--none"), "yes");
-  }, "overflow:clip, overflowing content - no matches");
+  }, "overflow:clip, scrollable content - no matches");
 
 </script>

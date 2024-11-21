@@ -21,8 +21,8 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
                               ContainerStuckPhysical stuck_horizontal,
                               ContainerStuckPhysical stuck_vertical,
                               ContainerSnappedFlags snapped,
-                              ContainerOverflowingFlags overflowing_horizontal,
-                              ContainerOverflowingFlags overflowing_vertical);
+                              ContainerScrollableFlags scrollable_horizontal,
+                              ContainerScrollableFlags scrollable_vertical);
 
   // Returns std::nullopt if queries on the relevant axis is not
   // supported.
@@ -61,14 +61,14 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   ContainerStuckLogical StuckInline() const override;
   ContainerStuckLogical StuckBlock() const override;
   ContainerSnappedFlags SnappedFlags() const override { return snapped_; }
-  ContainerOverflowingFlags OverflowingHorizontal() const override {
-    return overflowing_horizontal_;
+  ContainerScrollableFlags ScrollableHorizontal() const override {
+    return scrollable_horizontal_;
   }
-  ContainerOverflowingFlags OverflowingVertical() const override {
-    return overflowing_vertical_;
+  ContainerScrollableFlags ScrollableVertical() const override {
+    return scrollable_vertical_;
   }
-  ContainerOverflowingFlags OverflowingInline() const override;
-  ContainerOverflowingFlags OverflowingBlock() const override;
+  ContainerScrollableFlags ScrollableInline() const override;
+  ContainerScrollableFlags ScrollableBlock() const override;
 
  private:
   // The current computed style for the container.
@@ -89,11 +89,11 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   ContainerSnappedFlags snapped_ =
       static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   // Whether a scroll-state container has horizontally scrollable overflow.
-  ContainerOverflowingFlags overflowing_horizontal_ =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerScrollableFlags scrollable_horizontal_ =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   // Whether a scroll-state container has vertically scrollable overflow.
-  ContainerOverflowingFlags overflowing_vertical_ =
-      static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kNone);
+  ContainerScrollableFlags scrollable_vertical_ =
+      static_cast<ContainerScrollableFlags>(ContainerScrollable::kNone);
   // Container font sizes for resolving relative lengths.
   CSSToLengthConversionData::FontSizes font_sizes_;
   // LineHeightSize of the container element.

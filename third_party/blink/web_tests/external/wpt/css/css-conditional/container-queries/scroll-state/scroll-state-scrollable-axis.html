@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(overflowing) axis matching</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#overflowing">
+<title>@container: scroll-state(scrollable) axis matching</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrollable">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -31,16 +31,16 @@
     --x: no;
     --y: no;
   }
-  @container scroll-state(overflowing: inline) {
+  @container scroll-state(scrollable: inline) {
     span { --inline: yes; }
   }
-  @container scroll-state(overflowing: block) {
+  @container scroll-state(scrollable: block) {
     span { --block: yes; }
   }
-  @container scroll-state(overflowing: x) {
+  @container scroll-state(scrollable: x) {
     span { --x: yes; }
   }
-  @container scroll-state(overflowing: y) {
+  @container scroll-state(scrollable: y) {
     span { --y: yes; }
   }
 </style>

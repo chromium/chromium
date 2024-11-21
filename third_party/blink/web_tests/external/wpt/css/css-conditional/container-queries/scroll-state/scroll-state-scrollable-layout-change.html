@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(overflowing) layout change</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#overflowing">
+<title>@container: scroll-state(scrollable) layout change</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrollable">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -15,9 +15,9 @@
   #target {
     width: 200px;
     height: 200px;
-    --overflowing: no;
-    @container scroll-state(overflowing) {
-      --overflowing: yes;
+    --scrollable: no;
+    @container scroll-state(scrollable) {
+      --scrollable: yes;
     }
   }
   #target.small {
@@ -33,19 +33,19 @@
 
   promise_test(async t => {
     await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--overflowing"), "yes");
-  }, "Check scroll-state(overflowing) initially matching");
+    assert_equals(getComputedStyle(target).getPropertyValue("--scrollable"), "yes");
+  }, "Check scroll-state(scrollable) initially matching");
 
   promise_test(async t => {
     t.add_cleanup(async () => target.className = "");
     target.className = "small";
     await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--overflowing"), "no",
-                  "#target not overflowing #scroller");
+    assert_equals(getComputedStyle(target).getPropertyValue("--scrollable"), "no",
+                  "#target not scrollable #scroller");
     target.className = "";
     await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--overflowing"), "yes",
-                  "#target overflowing #scroller again");
-  }, "Check scroll-state(overflowing) not matching after layout change no longer causing overflow");
+    assert_equals(getComputedStyle(target).getPropertyValue("--scrollable"), "yes",
+                  "#target scrollable #scroller again");
+  }, "Check scroll-state(scrollable) not matching after layout change no longer causing overflow");
 
 </script>

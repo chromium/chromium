@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(overflowing) for pseudo element</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#overflowing">
+<title>@container: scroll-state(scrollable) for pseudo element</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#scrollable">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
@@ -25,7 +25,7 @@
     height: 200%;
     --before: no;
     --after: no;
-    @container scroll-state(overflowing) {
+    @container scroll-state(scrollable) {
       &::before {
         --before: yes;
         content: " ";
@@ -55,6 +55,6 @@
     await waitForAnimationFrames(2);
     assert_equals(getComputedStyle(target, "::before").getPropertyValue("--before"), "yes");
     assert_equals(getComputedStyle(target, "::after").getPropertyValue("--after"), "yes");
-  }, "::before/::after matching after content starts overflowing #scroller");
+  }, "::before/::after matching after content starts scrollable #scroller");
 
 </script>
