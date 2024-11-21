@@ -48,6 +48,9 @@ class PDFDocumentHelper
       content::RenderFrameHost* rfh,
       std::unique_ptr<PDFDocumentHelperClient> client);
 
+  static PDFDocumentHelper* MaybeGetForWebContents(
+      content::WebContents* contents);
+
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(
       content::RenderWidgetHost* widget_host) override;

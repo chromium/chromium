@@ -31,6 +31,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "pdf/buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -44,7 +45,18 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF)
+// GN doesn't understand buildflags, erroring on Android builds
+#include "components/pdf/browser/pdf_document_helper.h"  // nogncheck
+#include "components/pdf/common/constants.h"             // nogncheck
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 namespace {
+
+#if BUILDFLAG(ENABLE_PDF)
+constexpr size_t kBytesPerMegabyte = 1'000'000;
+constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Fills an AiData proto with information from GetInnerText. If no result,
 // returns an empty AiDAta.
@@ -120,6 +132,61 @@ void RequestAxTreeSnapshotForModelPrototyping(
       /*timeout=*/{},
       content::WebContents::AXTreeSnapshotPolicy::kSameOriginDirectDescendants);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// Returns the PDFHelper associated with the given web contents. Returns nullptr
+// if one does not exist.
+pdf::PDFDocumentHelper* MaybeGetFullPagePdfHelper(
+    content::WebContents* contents) {
+  // MIME type associated with `contents` must be `application/pdf` for a
+  // full-page PDF.
+  if (contents->GetContentsMimeType() != pdf::kPDFMimeType) {
+    return nullptr;
+  }
+
+  return pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+}
+
+void OnRequestPdfBytesForModelPrototyping(
+    AiDataKeyedService::AiDataCallback continue_callback,
+    pdf::mojom::PdfListener::GetPdfBytesStatus status,
+    const std::vector<uint8_t>& bytes,
+    uint32_t page_count) {
+  TRACE_EVENT0("browser", "OnRequestPdfBytesForModelPrototyping");
+
+  auto data = std::make_optional<AiDataKeyedService::BrowserData>();
+  if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess ||
+      bytes.empty()) {
+    std::move(continue_callback).Run(std::move(data));
+    return;
+  }
+
+  data->mutable_page_context()->set_pdf_data(base::Base64Encode(bytes));
+  std::move(continue_callback).Run(std::move(data));
+}
+
+void RequestPdfBytesForModelPrototyping(
+    content::WebContents* web_contents,
+    AiDataKeyedService::AiDataCallback continue_callback) {
+  TRACE_EVENT0("browser", "RequestPdfBytesForModelPrototyping");
+  DCHECK(web_contents);
+
+  pdf::PDFDocumentHelper* pdf_helper = MaybeGetFullPagePdfHelper(web_contents);
+  if (!pdf_helper) {
+    std::move(continue_callback)
+        .Run(std::make_optional<AiDataKeyedService::BrowserData>());
+    return;
+  }
+
+  pdf_helper->GetPdfBytes(
+      kPdfUploadLimitBytes,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&OnRequestPdfBytesForModelPrototyping,
+                         std::move(continue_callback)),
+          pdf::mojom::PdfListener::GetPdfBytesStatus::kFailed,
+          std::vector<uint8_t>(), 0));
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // Once all callbacks are run, merges the AiDatas and returns the filled AiData.
 // If any did not complete, returns an empty AiData.
@@ -337,6 +404,9 @@ void GetModelPrototypingAiData(int tabs_for_inner_text,
 #if !BUILDFLAG(IS_ANDROID)
   GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents, concurrent);
 #endif
+#if BUILDFLAG(ENABLE_PDF)
+  RequestPdfBytesForModelPrototyping(web_contents, concurrent.CreateCallback());
+#endif  // BUILDFLAG(ENABLE_PDF)
   GetSiteEngagementScoresForModelPrototyping(web_contents->GetBrowserContext(),
                                              concurrent.CreateCallback());
   std::move(concurrent)
