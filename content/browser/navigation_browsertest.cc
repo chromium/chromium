@@ -11,7 +11,8 @@
 
 #include <memory>
 #include <optional>
-#include <variant>
+#include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -5206,27 +5207,23 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
   }
 
   void VerifySingleImageSubresourceLoad(RenderFrameHost* target,
-                                        const std::string& target_document) {
+                                        std::string_view target_document) {
     // Use a random, GUID-based hostname, to avoid hitting the network cache.
     GURL image_url = embedded_test_server()->GetURL(
         base::Uuid::GenerateRandomV4().AsLowercaseString() + ".com",
         "/blank.jpg");
-    static constexpr char kScriptTemplate[] = R"(
-        new Promise(resolve => {
-            let img = document.createElement('img');
-            img.src = $1;  // `$1` is replaced with the value of `image_url`.
-            img.addEventListener('load', () => {
-                resolve('allowed');
-            });
-            img.addEventListener('error', err => {
-                resolve(`error: ${err}`);
-            });
-
-            // `%%s` is replaced with the value of `target_document`.
-            %s.body.appendChild(img);
-        }); )";
-    std::string script = base::StringPrintfNonConstexpr(
-        JsReplace(kScriptTemplate, image_url).c_str(), target_document.c_str());
+    const std::string script = base::StrCat({
+        R"(new Promise(resolve => {
+               let img = document.createElement('img'); )",
+        JsReplace("img.src = $1;", image_url),
+        R"(    img.addEventListener('load', () => {
+                   resolve('allowed');
+               });
+               img.addEventListener('error', err => {
+                   resolve(`error: ${err}`);
+               }); )",
+        target_document, R"(.body.appendChild(img);
+           }); )"});
     EXPECT_EQ("allowed", EvalJs(target, script));
   }
 
