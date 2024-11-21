@@ -239,17 +239,27 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         initialize(delegate);
     }
 
-    // Protected to allow downstream to override.
-    protected WebViewChromiumAwInit createAwInit() {
+    // Separate method to allow downstream to override when needed.
+    WebViewChromiumAwInit createAwInit() {
         try (ScopedSysTraceEvent e2 =
                 ScopedSysTraceEvent.scoped("WebViewChromiumFactoryProvider.createAwInit")) {
             return new WebViewChromiumAwInit(this);
         }
     }
 
-    // Protected to allow downstream to override.
-    protected ContentSettingsAdapter createContentSettingsAdapter(AwSettings settings) {
+    // Separate method to allow downstream to override when needed.
+    ContentSettingsAdapter createContentSettingsAdapter(AwSettings settings) {
         return new ContentSettingsAdapter(settings);
+    }
+
+    // Overridden in B-specific subclass.
+    boolean shouldEnableUserAgentReduction() {
+        return false;
+    }
+
+    // Overridden in B-specific subclass.
+    boolean shouldEnableFileSystemAccess() {
+        return false;
     }
 
     private void deleteContentsOnPackageDowngrade(PackageInfo packageInfo) {
