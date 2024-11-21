@@ -105,18 +105,22 @@ enum FeatureState {
 //
 // It should *not* be defined in header files; do not use this macro in header
 // files.
-#define BASE_FEATURE_PARAM(T, feature_object_name, feature, name, \
-                           default_value)                         \
-  namespace field_trial_params_internal {                         \
-  T GetFeatureParamWithCacheFor##feature_object_name(             \
-      const base::FeatureParam<T>* feature_param) {               \
-    static const T param = feature_param->GetWithoutCache();      \
-    return param;                                                 \
-  }                                                               \
-  } /* field_trial_params_internal */                             \
-  constinit const base::FeatureParam<T> feature_object_name(      \
-      feature, name, default_value,                               \
-      &field_trial_params_internal::                              \
+#define BASE_FEATURE_PARAM(T, feature_object_name, feature, name,       \
+                           default_value)                               \
+  namespace field_trial_params_internal {                               \
+  T GetFeatureParamWithCacheFor##feature_object_name(                   \
+      const base::FeatureParam<T>* feature_param) {                     \
+    static const typename base::internal::FeatureParamTraits<           \
+        T>::CacheStorageType storage =                                  \
+        base::internal::FeatureParamTraits<T>::ToCacheStorageType(      \
+            feature_param->GetWithoutCache());                          \
+    return base::internal::FeatureParamTraits<T>::FromCacheStorageType( \
+        storage);                                                       \
+  }                                                                     \
+  } /* field_trial_params_internal */                                   \
+  constinit const base::FeatureParam<T> feature_object_name(            \
+      feature, name, default_value,                                     \
+      &field_trial_params_internal::                                    \
           GetFeatureParamWithCacheFor##feature_object_name)
 
 // Same as BASE_FEATURE_PARAM() but used for enum type parameters with on extra

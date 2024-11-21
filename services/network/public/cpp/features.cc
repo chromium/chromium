@@ -151,9 +151,11 @@ BASE_FEATURE_PARAM(int,
 // Used to build the MDL component's installer attributes and possibly control
 // which release version is retrieved.
 // Altering this value via Finch does not have any effect for WebView.
-const base::FeatureParam<std::string> kMaskedDomainListExperimentalVersion{
-    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentalVersion",
-    /*default_value=*/""};
+BASE_FEATURE_PARAM(std::string,
+                   kMaskedDomainListExperimentalVersion,
+                   &kMaskedDomainList,
+                   /*name=*/"MaskedDomainListExperimentalVersion",
+                   /*default_value=*/"");
 
 // If this feature is enabled, the mDNS responder service responds to queries
 // for TXT records associated with
