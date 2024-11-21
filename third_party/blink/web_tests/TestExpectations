@@ -8642,3 +8642,6 @@ crbug.com/379418978 [ Debug Linux ] virtual/soft-navigation-fp-fcp/external/wpt/
 
 crbug.com/379664772 [ Linux ] virtual/sanitizer-api/external/wpt/sanitizer-api/sanitizer-names.tenative.html [ Failure Pass ]
 crbug.com/379664772 [ Linux ] virtual/sanitizer-api/external/wpt/sanitizer-api/sanitizer-unknown.tentative.html [ Failure Pass ]
+
+# Gardener 2024-11-21
+crbug.com/380323589 [ Win ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass ]
