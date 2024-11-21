@@ -452,17 +452,16 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 }
 
 - (void)onFieldTypesDetermined:(AutofillManager&)manager
-                       forForm:(FormGlobalId)form
+                       forForm:(FormGlobalId)formId
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
-  // Heuristics predictions are not relevant to PWM because it runs its own
-  // heuristics - only server predictions are.
-  if (source ==
-      AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete) {
+  if (source != AutofillManager::Observer::FieldTypeSource::kAutofillServer &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
     return;
   }
 
-  autofill::FormStructure* form_structure = manager.FindCachedFormById(form);
+  autofill::FormStructure* form_structure = manager.FindCachedFormById(formId);
   if (!form_structure) {
     return;
   }
@@ -486,28 +485,24 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       if (!child_frame) {
         continue;
       }
-
-      auto predictions = manager.GetServerPredictionsForForm(
-          form, base::ToVector(renderer_form.fields(),
-                               &autofill::FormFieldData::global_id));
-      _passwordManager->ProcessAutofillPredictions(
-          IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                                   child_frame),
-          renderer_form, predictions);
+      [self propagatePredictionsToPasswordManagerFrom:manager
+                                          forFormData:renderer_form
+                                         globalFormId:formId
+                                              inFrame:child_frame
+                                           fromSource:source];
     }
   } else {
-    auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
-    web::WebFrame* frame = driver.web_frame();
+    auto& autofill_driver =
+        static_cast<autofill::AutofillDriverIOS&>(manager.driver());
+    web::WebFrame* frame = autofill_driver.web_frame();
     if (!frame) {
       return;
     }
-    auto predictions = manager.GetServerPredictionsForForm(
-        form, base::ToVector(form_data.fields(),
-                             &autofill::FormFieldData::global_id));
-    _passwordManager->ProcessAutofillPredictions(
-        IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
-                                                                 frame),
-        form_data, predictions);
+    [self propagatePredictionsToPasswordManagerFrom:manager
+                                        forFormData:form_data
+                                       globalFormId:formId
+                                            inFrame:frame
+                                         fromSource:source];
   }
 }
 
@@ -1134,6 +1129,33 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 - (web::WebFramesManager*)webFramesManager {
   return password_manager::PasswordManagerJavaScriptFeature::GetInstance()
       ->GetWebFramesManager(_webState);
+}
+
+- (void)propagatePredictionsToPasswordManagerFrom:(AutofillManager&)manager
+                                      forFormData:(FormData)form
+                                     globalFormId:(FormGlobalId)globalFormId
+                                          inFrame:(web::WebFrame*)frame
+                                       fromSource:(AutofillManager::Observer::
+                                                       FieldTypeSource)source {
+  PasswordManagerDriver* driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
+                                                               frame);
+  std::vector<autofill::FieldGlobalId> field_ids =
+      base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
+  switch (source) {
+    case AutofillManager::Observer::FieldTypeSource::kAutofillServer:
+      _passwordManager->ProcessAutofillPredictions(
+          driver, form,
+          manager.GetServerPredictionsForForm(globalFormId, field_ids));
+      break;
+    case AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
+      _passwordManager->ProcessClassificationModelPredictions(
+          driver, form,
+          manager.GetHeursticPredictionForForm(
+              autofill::HeuristicSource::kPasswordManagerMachineLearning,
+              globalFormId, field_ids));
+      break;
+  }
 }
 
 #pragma mark - FormActivityObserver

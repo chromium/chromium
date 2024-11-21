@@ -410,6 +410,34 @@ TEST_F(SharedPasswordControllerTest,
                            Observer::FieldTypeSource::kAutofillServer);
 }
 
+// Tests that the password manager is notified about model predictions for a
+// form.
+TEST_F(SharedPasswordControllerTest,
+       PasswordManagerIsNotifiedAboutModelPredictions) {
+  base::test::ScopedFeatureList features(
+      password_manager::features::kPasswordFormClientsideClassifier);
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::WebFrame* frame = web_frame.get();
+  AddWebFrame(std::move(web_frame));
+
+  // Simulate seeing a form and expect that PasswordManager gets notified once
+  // the parsing is complete,
+  TestBrowserAutofillManager* manager =
+      autofill_manager_injector_->GetForFrame(frame);
+  ASSERT_TRUE(manager);
+  FormData test_form = autofill::test::CreateTestPersonalInformationFormData();
+  auto* password_driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(&web_state_,
+                                                               frame);
+  EXPECT_CALL(password_manager_,
+              ProcessClassificationModelPredictions(
+                  password_driver, test_form,
+                  ::testing::SizeIs(test_form.fields().size())));
+  manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
+}
+
 // Test that PasswordManager is notified of main frame navigation.
 TEST_F(SharedPasswordControllerTest,
        PasswordManagerDidNavigationMainFrameOnNavigationFinished) {
