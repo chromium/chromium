@@ -11874,6 +11874,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kServiceWorkerAutoPreloadVariations,
                                     "ServiceWorkerAutoPreload")},
 
+    {"autofill-enable-save-and-fill",
+     flag_descriptions::kAutofillEnableSaveAndFillName,
+     flag_descriptions::kAutofillEnableSaveAndFillDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSaveAndFill)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

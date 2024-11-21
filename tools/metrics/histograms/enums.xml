@@ -20847,6 +20847,7 @@ from previous Chrome versions.
   <int value="226633333"
       label="enable-experimental-accessibility-manifest-v3:disabled"/>
   <int value="227681377" label="WebAuthenticationNewPasskeyUI:enabled"/>
+  <int value="228024890" label="AutofillEnableSaveAndFill:enabled"/>
   <int value="228107154"
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
   <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
@@ -22102,6 +22103,7 @@ from previous Chrome versions.
   <int value="729082677" label="ShimlessRMAComplianceCheck:disabled"/>
   <int value="729726508" label="NtpModulesFirstRunExperience:disabled"/>
   <int value="730024226" label="enable-out-of-process-pdf"/>
+  <int value="730416275" label="AutofillEnableSaveAndFill:disabled"/>
   <int value="730478037" label="FilesAppExperimental:disabled"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
   <int value="730763207" label="BorealisScaleClientByDPI:disabled"/>

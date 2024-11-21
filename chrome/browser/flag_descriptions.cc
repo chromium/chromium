@@ -649,6 +649,11 @@ const char kAutofillEnableRankingFormulaCreditCardsDescription[] =
     "When enabled, Autofill will use a new ranking formula to rank Autofill "
     "credit card suggestions.";
 
+const char kAutofillEnableSaveAndFillName[] = "Enable Save and Fill";
+const char kAutofillEnableSaveAndFillDescription[] =
+    "When enabled, show an option to offer saving and filling a credit card "
+    "with a single click when users don't have any cards saved in Autofill.";
+
 const char kAutofillEnableSaveCardLoadingAndConfirmationName[] =
     "Enable save card loading and confirmation UX";
 const char kAutofillEnableSaveCardLoadingAndConfirmationDescription[] =

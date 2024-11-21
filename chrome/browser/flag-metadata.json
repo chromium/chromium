@@ -705,6 +705,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "autofill-enable-save-and-fill",
+    "owners": ["siyua@chromium.org", "averina@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-save-card-loading-and-confirmation",
     "owners": [
       "darwinyang@chromium.org",

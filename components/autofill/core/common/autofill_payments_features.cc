@@ -180,6 +180,12 @@ BASE_FEATURE(kAutofillEnablePrefetchingRiskDataForRetrieval,
              "AutofillEnablePrefetchingRiskDataForRetrieval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the 'Save and Fill' suggestion will be offered in the credit
+// card dropdown menu for users who don't have any cards saved in Autofill.
+BASE_FEATURE(kAutofillEnableSaveAndFill,
+             "AutofillEnableSaveAndFill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the save card screen will present a loading spinner when
 // uploading the card to the server and present a confirmation screen with the
 // result when completed.
