@@ -99,6 +99,66 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 
 
 @pytest.mark.asyncio
+async def test_browsingContext_create_noNavigationEventsEmitted(
+        websocket, context_id, read_sorted_messages):
+    pytest.xfail(
+        "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2793")
+
+    await subscribe(websocket, [
+        "browsingContext.contextCreated", "browsingContext.domContentLoaded",
+        "browsingContext.load", "browsingContext.navigationStarted"
+    ])
+
+    command_id = await send_JSON_command(websocket, {
+        "method": "browsingContext.create",
+        "params": {
+            "type": "tab"
+        }
+    })
+
+    [command_result, context_created_event] = await read_sorted_messages(2)
+
+    assert command_result == AnyExtending({
+        'id': command_id,
+        'type': 'success',
+    })
+
+    assert context_created_event == {
+        'method': 'browsingContext.contextCreated',
+        'params': {
+            'children': None,
+            'clientWindow': '',
+            'context': ANY_STR,
+            'originalOpener': context_id,
+            'parent': None,
+            'url': 'about:blank',
+            'userContext': 'default',
+        },
+        'type': 'event',
+    }
+    new_context_id = context_created_event["params"]["context"]
+
+    # Assert no other events.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "1",
+                "target": {
+                    "context": new_context_id,
+                },
+                "awaitPromise": False
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == AnyExtending({
+        'id': command_id,
+        'type': 'success',
+    })
+
+
+@pytest.mark.asyncio
 async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCreatedEmitted(
         websocket, context_id, html, iframe):
     nested_iframe = html('<h1>PAGE_WITHOUT_CHILD_IFRAMES</h1>')
