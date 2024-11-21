@@ -33,6 +33,11 @@ using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
 
+class MockPasswordFormCacheObserver : public PasswordFormCache::Observer {
+ public:
+  MOCK_METHOD(void, OnFormManagerAdded, (PasswordFormManager*), (override));
+};
+
 class PasswordFormCacheTest : public testing::Test {
  public:
   PasswordFormCacheTest() {
@@ -225,6 +230,20 @@ TEST_F(PasswordFormCacheTest, GetFormManagers) {
       cache().GetMatchedManager(&driver(), form.renderer_id());
   EXPECT_THAT(matched_manager, NotNull());
   EXPECT_EQ(matched_manager, cache().GetFormManagers()[0].get());
+}
+
+// Tests that Observer is notified about added form manager.
+TEST_F(PasswordFormCacheTest, NotifyAboutAddedManager) {
+  MockPasswordFormCacheObserver observer;
+
+  static_cast<PasswordFormCache*>(&cache())->AddObserver(&observer);
+
+  auto form_manager = std::make_unique<PasswordFormManager>(
+      &client(), driver().AsWeakPtr(), CreateTestPasswordFormData(),
+      &form_fetcher(), std::make_unique<PasswordSaveManagerImpl>(&client()),
+      /*metrics_recorder=*/nullptr);
+  EXPECT_CALL(observer, OnFormManagerAdded(form_manager.get()));
+  cache().AddFormManager(std::move(form_manager));
 }
 
 }  // namespace password_manager

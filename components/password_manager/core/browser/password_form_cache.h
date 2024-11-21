@@ -5,15 +5,23 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_CACHE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_CACHE_H_
 
+#include "base/observer_list_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace password_manager {
 class PasswordManagerDriver;
 struct PasswordForm;
+class PasswordFormManager;
 
 // Contains information about password forms detected on a web page.
 class PasswordFormCache {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Invoked whenever `form_manager` is added to the cache.
+    virtual void OnFormManagerAdded(PasswordFormManager* form_manager) {}
+  };
+
   PasswordFormCache();
   virtual ~PasswordFormCache();
   PasswordFormCache(const PasswordFormCache&) = delete;
@@ -29,6 +37,9 @@ class PasswordFormCache {
   virtual const PasswordForm* GetPasswordForm(
       PasswordManagerDriver* driver,
       autofill::FieldRendererId field_id) const = 0;
+
+  virtual void AddObserver(Observer* observer) {}
+  virtual void RemoveObserver(Observer* observer) {}
 };
 
 }  // namespace password_manager
