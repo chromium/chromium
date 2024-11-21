@@ -258,7 +258,7 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
   const std::string defaultGaiaId =
       _prefService->GetString(prefs::kIosSaveToDriveDefaultGaiaId);
   id<SystemIdentity> defaultIdentity =
-      _accountManagerService->GetIdentityWithGaiaID(defaultGaiaId);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(defaultGaiaId);
   if (defaultIdentity) {
     // If an identity is associated with the memorized GAIA ID, use it.
     [self.accountPickerConsumer setSelectedIdentity:defaultIdentity];

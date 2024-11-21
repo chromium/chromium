@@ -15,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/timer/timer.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -76,6 +78,7 @@ NSString* kDriveIconRepositoryPrefix =
   // If `_collectionType` is `kFolder`, identifier of that folder.
   NSString* _folderIdentifier;
   std::vector<DriveItem> _fetchedDriveItems;
+  raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveFilePickerItem`'s image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
@@ -156,6 +159,7 @@ NSString* kDriveIconRepositoryPrefix =
           sortingCriteria:(DriveItemsSortingType)sortingCriteria
          sortingDirection:(DriveItemsSortingOrder)sortingDirection
              driveService:(drive::DriveService*)driveService
+          identityManager:(signin::IdentityManager*)identityManager
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
              imageFetcher:
                  (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
@@ -165,12 +169,14 @@ NSString* kDriveIconRepositoryPrefix =
     CHECK(webState);
     CHECK(identity);
     CHECK(driveService);
+    CHECK(identityManager);
     CHECK(accountManagerService);
     CHECK(imagesPending);
     CHECK(imageCache);
     _webState = webState->GetWeakPtr();
     _identity = identity;
     _driveService = driveService;
+    _identityManager = identityManager;
     _accountManagerService = accountManagerService;
     _title = [title copy];
     _collectionType = collectionType;
@@ -220,6 +226,7 @@ NSString* kDriveIconRepositoryPrefix =
   _driveList = nullptr;
   _driveDownloader = nullptr;
   _accountManagerService = nullptr;
+  _identityManager = nullptr;
   _imageFetcher = nullptr;
   _imageTranscoder = nullptr;
 }
@@ -1187,8 +1194,9 @@ NSString* kDriveIconRepositoryPrefix =
   };
   // TODO(crbug.com/344812396): Add the identites block.
   UIMenuElement* identitiesMenu = [actionFactory
-      menuToSelectDriveIdentityWithIdentities:_accountManagerService
-                                                  ->GetAllIdentities()
+      menuToSelectDriveIdentityWithIdentities:signin::GetIdentitiesOnDevice(
+                                                  _identityManager,
+                                                  _accountManagerService)
                               currentIdentity:_identity
                                         block:actionResult];
   // TODO(crbug.com/344812396): Add the new account block.

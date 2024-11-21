@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -238,6 +239,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(kIOSChooseFromDrive);
     profile_ = TestProfileIOS::Builder().Build();
     drive_service_ = drive::DriveServiceFactory::GetForProfile(profile_.get());
+    _identityManager = IdentityManagerFactory::GetForProfile(profile_.get());
     _accountManagerService =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_fetcher_ =
@@ -283,6 +285,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
               sortingCriteria:DriveItemsSortingType::kName
              sortingDirection:DriveItemsSortingOrder::kAscending
                  driveService:drive_service_
+              identityManager:_identityManager
         accountManagerService:_accountManagerService
                  imageFetcher:std::move(image_fetcher_)
                 metricsHelper:metrics_helper_];
@@ -323,6 +326,7 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
   raw_ptr<drive::DriveService> drive_service_;
   std::unique_ptr<TestProfileIOS> profile_;
+  raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
