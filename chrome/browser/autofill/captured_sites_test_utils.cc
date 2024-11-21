@@ -30,6 +30,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -102,8 +103,18 @@ const int kAutofillActionNumRetries = 5;
 const char kWebPageReplayCertSPKI[] =
     "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
 
-const char kClockNotSetMessage[] =
-    "No AutofillClock override set from wpr archive: ";
+const char kTimeClockOverrideNotSetMessage[] =
+    "No TimeClock override set from wpr archive: ";
+
+// A helper class to override the current time.
+struct TimeOverrideHelper {
+  static base::Time TimeNow() { return current_time; }
+
+  // Used as the current time in captured sites tests.
+  static base::Time current_time;
+};
+
+base::Time TimeOverrideHelper::current_time;
 
 // Check and return that the caller wants verbose WPR output (off by default).
 bool IsVerboseWprLoggingEnabled() {
@@ -895,8 +906,9 @@ bool TestRecipeReplayer::ReplayTest(
   logging::SetMinLogLevel(logging::LOGGING_WARNING);
   if (!web_page_replay_server_wrapper()->Start(capture_file_path))
     return false;
-  if (OverrideAutofillClock(capture_file_path))
-    VLOG(1) << "AutofillClock was set to:" << autofill::AutofillClock::Now();
+  if (OverrideTimeClock(capture_file_path)) {
+    VLOG(1) << "OverrideTimeClock was set to:" << base::Time::Now();
+  }
   return ReplayRecordedActions(recipe_file_path, command_file_path);
 }
 
@@ -906,38 +918,46 @@ TestRecipeReplayer::GetValidationFailures() const {
 }
 
 // Extracts the time of the wpr recording from the wpr archive file and
-// overrides the autofill::AutofillClock to match that time.
-bool TestRecipeReplayer::OverrideAutofillClock(
+// overrides the base::Time::Now() to match that time.
+bool TestRecipeReplayer::OverrideTimeClock(
     const base::FilePath capture_file_path) {
   std::string json_text;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     if (!base::ReadFileToString(capture_file_path, &json_text)) {
-      VLOG(1) << kClockNotSetMessage << "Could not read file";
+      VLOG(1) << kTimeClockOverrideNotSetMessage << "Could not read file";
       return false;
     }
   }
   // Decompress the json text from gzip.
   std::string decompressed_json_text;
   if (!compression::GzipUncompress(json_text, &decompressed_json_text)) {
-    VLOG(1) << kClockNotSetMessage << "Could not gzip decompress file";
+    VLOG(1) << kTimeClockOverrideNotSetMessage
+            << "Could not gzip decompress file";
     return false;
   }
   // Convert the file text into a json object.
   std::optional<base::Value> parsed_json =
       base::JSONReader::Read(decompressed_json_text);
   if (!parsed_json) {
-    VLOG(1) << kClockNotSetMessage << "Failed to deserialize json";
+    VLOG(1) << kTimeClockOverrideNotSetMessage << "Failed to deserialize json";
     return false;
   }
 
   const std::optional<double> time_value =
       parsed_json->GetDict().FindDouble("DeterministicTimeSeedMs");
   if (!time_value) {
-    VLOG(1) << kClockNotSetMessage << "No DeterministicTimeSeedMs found";
+    VLOG(1) << kTimeClockOverrideNotSetMessage
+            << "No DeterministicTimeSeedMs found";
     return false;
   }
-  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(*time_value));
+
+  TimeOverrideHelper::current_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(*time_value);
+  time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+      &TimeOverrideHelper::TimeNow,
+      /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
   return true;
 }
 
