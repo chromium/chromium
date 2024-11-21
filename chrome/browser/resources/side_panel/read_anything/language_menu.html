@@ -9,7 +9,7 @@
     </cr-icon-button>
   </div>
   <div slot="header">
-    <cr-input autofocus class="search-field" type="search"
+    <cr-input autofocus id="searchField" class="search-field" type="search"
         placeholder="$i18n{readingModeLanguageMenuSearchLabel}"
         @value-changed="${this.onLanguageSearchValueChanged_}"
         .value="${this.languageSearchValue_}">
