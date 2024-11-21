@@ -1797,12 +1797,6 @@ bool WebGLRenderingContextBase::UsingSwapChain() const {
   return GetDrawingBuffer() && GetDrawingBuffer()->UsingSwapChain();
 }
 
-bool WebGLRenderingContextBase::IsOriginTopLeft() const {
-  if (isContextLost())
-    return false;
-  return GetDrawingBuffer()->IsOriginTopLeft();
-}
-
 void WebGLRenderingContextBase::PageVisibilityChanged() {
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(!Host()->IsPageVisible());
@@ -5891,7 +5885,8 @@ void WebGLRenderingContextBase::TexImageViaGPU(
       return;
     }
     source_size = source_canvas_webgl_context->GetDrawingBuffer()->Size();
-    is_source_origin_top_left = source_canvas_webgl_context->IsOriginTopLeft();
+    is_source_origin_top_left =
+        source_canvas_webgl_context->GetDrawingBuffer()->IsOriginTopLeft();
   }
   if (!params.width)
     params.width = source_size.width();

@@ -43,7 +43,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
   bool IsComposited() const final { return true; }
   bool PushFrame() override;
-  bool IsOriginTopLeft() const override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
   cc::Layer* CcLayer() const final;

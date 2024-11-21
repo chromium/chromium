@@ -154,10 +154,4 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
   return true;
 }
 
-bool ImageBitmapRenderingContextBase::IsOriginTopLeft() const {
-  if (Host()->IsOffscreenCanvas())
-    return false;
-  return Host()->IsAccelerated();
-}
-
 }  // namespace blink
