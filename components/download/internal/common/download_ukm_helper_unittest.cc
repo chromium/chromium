@@ -59,7 +59,7 @@ class DownloadUkmHelperTest : public testing::Test {
 TEST_F(DownloadUkmHelperTest, TestBasicReporting) {
   // RecordDownloadStarted
   ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  DownloadContent file_type = DownloadContent::AUDIO;
+  DownloadContent file_type = DownloadContent::kAudio;
   DownloadSource download_source = DownloadSource::UNKNOWN;
   DownloadConnectionSecurity state =
       DownloadConnectionSecurity::DOWNLOAD_SECURE;

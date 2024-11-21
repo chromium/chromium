@@ -49,8 +49,7 @@ void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
   download::DownloadContent download_content =
       download::DownloadContentFromMimeType(
           mime_type_string, /*record_content_subcategory=*/false);
-  base::UmaHistogramEnumeration("Download.Open.ContentType", download_content,
-                                download::DownloadContent::MAX);
+  base::UmaHistogramEnumeration("Download.Open.ContentType", download_content);
 }
 
 void RecordDatabaseAvailability(bool is_available) {

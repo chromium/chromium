@@ -90,7 +90,7 @@ TEST(SafeBrowsingDownloadStatsTest, RecordDownloadOpened) {
 
   base::Time download_end_time = base::Time::Now();
   download::DownloadContent fake_content =
-      download::DownloadContent::SPREADSHEET;
+      download::DownloadContent::kSpreadSheet;
   // Not logged for dangerous downloads.
   RecordDownloadOpenedLatency(
       download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
