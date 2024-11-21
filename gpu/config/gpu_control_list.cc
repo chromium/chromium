@@ -224,58 +224,25 @@ int GpuControlList::Version::Compare(
 
 bool GpuControlList::More::GLVersionInfoMismatch(
     const std::string& gl_version_string) const {
-  if (gl_version_string.empty())
+  if (gl_version_string.empty()) {
     return false;
-  if (!gl_version.IsSpecified() && gl_type == kGLTypeNone)
-    return false;
+  }
   std::vector<std::string> segments = base::SplitString(
       gl_version_string, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   std::string number;
-  GLType target_gl_type = kGLTypeNone;
   if (segments.size() > 2 &&
       segments[0] == "OpenGL" && segments[1] == "ES") {
     bool full_match = RE2::FullMatch(segments[2], "([\\d.]+).*", &number);
-    DCHECK(full_match);
-
-    target_gl_type = kGLTypeGLES;
-    if (segments.size() > 3 &&
-        base::StartsWith(segments[3], "(ANGLE",
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      target_gl_type = kGLTypeANGLE;
+    if (!full_match) {
+      // Bad version string from driver (or ANGLE, or tests).
+      return true;
     }
   } else {
+    // Desktop GL.
     number = segments[0];
-    target_gl_type = kGLTypeGL;
   }
 
-  GLType entry_gl_type = gl_type;
-  if (entry_gl_type == kGLTypeNone && gl_version.IsSpecified()) {
-    entry_gl_type = GetDefaultGLType();
-  }
-  if (entry_gl_type != kGLTypeNone && entry_gl_type != target_gl_type) {
-    return true;
-  }
-  if (gl_version.IsSpecified() && !gl_version.Contains(number)) {
-    return true;
-  }
-  return false;
-}
-
-// static
-GpuControlList::GLType GpuControlList::More::GetDefaultGLType() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return kGLTypeGL;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
-  return kGLTypeGL;
-#elif BUILDFLAG(IS_MAC)
-  return kGLTypeGL;
-#elif BUILDFLAG(IS_WIN)
-  return kGLTypeANGLE;
-#elif BUILDFLAG(IS_ANDROID)
-  return kGLTypeGLES;
-#else
-  return kGLTypeNone;
-#endif
+  return !gl_version.Contains(number);
 }
 
 void GpuControlList::Entry::LogControlListMatch(
@@ -306,19 +273,26 @@ bool GpuControlList::GLStrings::Contains(const GPUInfo& gpu_info) const {
     return false;
   }
 
-  std::string vendor;
-  std::string renderer;
-  std::string version;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
+  std::string gl_vendor_string = gpu_info.gl_vendor;
+  std::string gl_renderer_string = gpu_info.gl_renderer;
+  std::string gl_version_string = gpu_info.gl_version;
+  if (!gl_renderer_string.empty()) {
+    std::string vendor, renderer, version;
+    GLType gl_type = ProcessANGLEGLRenderer(gl_renderer_string, &vendor,
                                             &renderer, &version);
-  if (StringMismatch(is_angle_gl ? vendor : gpu_info.gl_vendor, gl_vendor)) {
+    if (gl_type == kGLTypeANGLE_GL || gl_type == kGLTypeANGLE_GLES) {
+      gl_vendor_string = vendor;
+      gl_renderer_string = renderer;
+      gl_version_string = version;
+    }
+  }
+  if (StringMismatch(gl_vendor_string, gl_vendor)) {
     return false;
   }
-  if (StringMismatch(is_angle_gl ? renderer : gpu_info.gl_renderer,
-                     gl_renderer)) {
+  if (StringMismatch(gl_renderer_string, gl_renderer)) {
     return false;
   }
-  if (StringMismatch(is_angle_gl ? version : gpu_info.gl_version, gl_version)) {
+  if (StringMismatch(gl_version_string, gl_version)) {
     return false;
   }
   return true;
@@ -347,11 +321,32 @@ bool GpuControlList::MachineModelInfo::Contains(const GPUInfo& gpu_info) const {
 }
 
 bool GpuControlList::More::Contains(const GPUInfo& gpu_info) const {
-  std::string vendor, renderer, version;
-  bool is_angle_gl = ProcessANGLEGLRenderer(gpu_info.gl_renderer, &vendor,
-                                            &renderer, &version);
-  if (GLVersionInfoMismatch(is_angle_gl ? version : gpu_info.gl_version)) {
-    return false;
+  GLType gl_backend_type = kGLTypeNone;
+  std::string gl_version_string = gpu_info.gl_version;
+  if (!gpu_info.gl_renderer.empty()) {
+    std::string version;
+    gl_backend_type = ProcessANGLEGLRenderer(gpu_info.gl_renderer,
+                                             /*vendor=*/nullptr,
+                                             /*renderer=*/nullptr, &version);
+    if (gl_type != kGLTypeNone && gl_type != gl_backend_type) {
+      return false;
+    }
+    if (gl_backend_type == kGLTypeANGLE_GL ||
+        gl_backend_type == kGLTypeANGLE_GLES) {
+      gl_version_string = version;
+    }
+  }
+  switch (gl_backend_type) {
+    case kGLTypeANGLE_GL:
+    case kGLTypeANGLE_GLES:
+    case kGLTypeGLES:
+      if (gl_version.IsSpecified() &&
+          GLVersionInfoMismatch(gl_version_string)) {
+        return false;
+      }
+      break;
+    default:
+      break;
   }
 
   if (gl_reset_notification_strategy != 0 &&
@@ -848,20 +843,36 @@ GpuControlList::OsType GpuControlList::GetOsType() {
 }
 
 // static
-bool GpuControlList::ProcessANGLEGLRenderer(const std::string& gl_renderer,
-                                            std::string* vendor,
-                                            std::string* renderer,
-                                            std::string* version) {
-  DCHECK(vendor);
-  DCHECK(renderer);
-  DCHECK(version);
-  if (gl_renderer.find("OpenGL") == std::string::npos) {
-    // Angle with vulkan implementation will not contain OpenGL version.
-    return false;
+GpuControlList::GLType GpuControlList::ProcessANGLEGLRenderer(
+    const std::string& gl_renderer,
+    std::string* vendor,
+    std::string* renderer,
+    std::string* version) {
+  std::array<std::string, 3> parts;
+  DCHECK(!gl_renderer.empty());
+  bool is_angle = RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)",
+                                 &(parts[0]), &(parts[1]), &(parts[2]));
+  if (!is_angle) {
+    return kGLTypeGLES;
   }
-
-  return RE2::FullMatch(gl_renderer, "ANGLE \\((.*), (.*), (.*)\\)", vendor,
-                        renderer, version);
+  if (base::StartsWith(parts[1], "Vulkan",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
+    return kGLTypeANGLE_VULKAN;
+  }
+  if (vendor) {
+    *vendor = parts[0];
+  }
+  if (renderer) {
+    *renderer = parts[1];
+  }
+  if (version) {
+    *version = parts[2];
+  }
+  if (base::StartsWith(parts[2], "OpenGL ES ", base::CompareCase::SENSITIVE)) {
+    return kGLTypeANGLE_GLES;
+  } else {
+    return kGLTypeANGLE_GL;
+  }
 }
 
 void GpuControlList::AddSupportedFeature(

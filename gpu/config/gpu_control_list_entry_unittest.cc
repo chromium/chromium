@@ -144,51 +144,41 @@ TEST_F(GpuControlListEntryTest, ChromeOSEntry) {
 TEST_F(GpuControlListEntryTest, GlTypeEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_GlTypeEntry);
   GPUInfo gpu_info;
-  gpu_info.gl_version = "OpenGL ES 3.0 V@66.0 AU@ (CL@)";
+  gpu_info.gl_renderer = "Mali-G52";
   EXPECT_FALSE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
-  gpu_info.gl_version = "3.0 NVIDIA-8.24.11 310.90.9b01";
-  EXPECT_TRUE(entry.Contains(kOsMacosx, "10.9", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G78, OpenGL ES 3.0)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "10.9", gpu_info));
+  gpu_info.gl_renderer =
+      "ANGLE (ARM, Vulkan 1.3.247 (Mali-G52 (0x74021000)), Mali G52-44.1.0)";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "10.9", gpu_info));
 }
 
 TEST_F(GpuControlListEntryTest, GlVersionGLESEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_GlVersionGLESEntry);
   GPUInfo gpu_info;
+  gpu_info.gl_renderer = "Mali-G78";
   gpu_info.gl_version = "OpenGL ES 3.0 V@66.0 AU@ (CL@)";
   EXPECT_TRUE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
   gpu_info.gl_version = "OpenGL ES 3.0V@66.0 AU@ (CL@)";
   EXPECT_TRUE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
   gpu_info.gl_version = "OpenGL ES 3.1 V@66.0 AU@ (CL@)";
   EXPECT_FALSE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
-  gpu_info.gl_version = "3.0 NVIDIA-8.24.11 310.90.9b01";
-  EXPECT_FALSE(entry.Contains(kOsMacosx, "10.9", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G78, OpenGL ES 3.0)";
   gpu_info.gl_version = "OpenGL ES 3.0 (ANGLE 1.2.0.2450)";
-  EXPECT_FALSE(entry.Contains(kOsWin, "6.1", gpu_info));
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "6.1", gpu_info));
 }
 
 TEST_F(GpuControlListEntryTest, GlVersionANGLEEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_GlVersionANGLEEntry);
   GPUInfo gpu_info;
-  gpu_info.gl_version = "OpenGL ES 3.0 V@66.0 AU@ (CL@)";
+  gpu_info.gl_renderer = "Mali-G78";
   EXPECT_FALSE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
-  gpu_info.gl_version = "3.0 NVIDIA-8.24.11 310.90.9b01";
-  EXPECT_FALSE(entry.Contains(kOsMacosx, "10.9", gpu_info));
-  gpu_info.gl_version = "OpenGL ES 3.0 (ANGLE 1.2.0.2450)";
-  EXPECT_TRUE(entry.Contains(kOsWin, "6.1", gpu_info));
-  gpu_info.gl_version = "OpenGL ES 2.0 (ANGLE 1.2.0.2450)";
-  EXPECT_FALSE(entry.Contains(kOsWin, "6.1", gpu_info));
-}
-
-TEST_F(GpuControlListEntryTest, GlVersionGLEntry) {
-  const Entry& entry = GetEntry(kGpuControlListEntryTest_GlVersionGLEntry);
-  GPUInfo gpu_info;
-  gpu_info.gl_version = "OpenGL ES 3.0 V@66.0 AU@ (CL@)";
-  EXPECT_FALSE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
-  gpu_info.gl_version = "3.0 NVIDIA-8.24.11 310.90.9b01";
-  EXPECT_TRUE(entry.Contains(kOsMacosx, "10.9", gpu_info));
-  gpu_info.gl_version = "4.0 NVIDIA-8.24.11 310.90.9b01";
-  EXPECT_FALSE(entry.Contains(kOsMacosx, "10.9", gpu_info));
-  gpu_info.gl_version = "OpenGL ES 3.0 (ANGLE 1.2.0.2450)";
-  EXPECT_FALSE(entry.Contains(kOsWin, "6.1", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G78, OpenGL ES 3.0)";
+  gpu_info.gl_version =
+      "OpenGL ES 2.0.0 (ANGLE 2.1.24078 git hash: ac6cda4cbd71)";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "6.1", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G78, OpenGL ES 2.0)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "6.1", gpu_info));
 }
 
 TEST_F(GpuControlListEntryTest, GlVendorEqual) {
@@ -316,23 +306,6 @@ TEST_F(GpuControlListEntryTest, NeedsMoreInfoForExceptionsEntry) {
   EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info, false));
   gpu_info.gl_renderer = "mesa";
   EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info, true));
-}
-
-TEST_F(GpuControlListEntryTest, NeedsMoreInfoForGlVersionEntry) {
-  const Entry& entry =
-      GetEntry(kGpuControlListEntryTest_NeedsMoreInfoForGlVersionEntry);
-  GPUInfo gpu_info;
-  EXPECT_TRUE(entry.NeedsMoreInfo(gpu_info, true));
-  EXPECT_TRUE(entry.Contains(kOsLinux, std::string(), gpu_info));
-  gpu_info.gl_version = "3.1 Mesa 11.1.0";
-  EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info, false));
-  EXPECT_TRUE(entry.Contains(kOsLinux, std::string(), gpu_info));
-  gpu_info.gl_version = "4.1 Mesa 12.1.0";
-  EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info, false));
-  EXPECT_FALSE(entry.Contains(kOsLinux, std::string(), gpu_info));
-  gpu_info.gl_version = "OpenGL ES 2.0 Mesa 12.1.0";
-  EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info, false));
-  EXPECT_FALSE(entry.Contains(kOsLinux, std::string(), gpu_info));
 }
 
 TEST_F(GpuControlListEntryTest, FeatureTypeAllEntry) {
@@ -1211,5 +1184,82 @@ TEST_F(GpuControlListEntryTest, DeviceRevisionUnspecifiedEntry) {
   EXPECT_TRUE(entry.Contains(kOsWin, "", gpu_info));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(GpuControlListEntryTest, GLES30Exception) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_GLES30Exception);
+  GPUInfo gpu_info;
+  gpu_info.gl_renderer = "Mali-G52";
+  gpu_info.gl_version = "OpenGL ES 3.1";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_version = "OpenGL ES 2.1";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G52, OpenGL ES 3.0)";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G52, OpenGL ES 2.1)";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+}
+
+TEST_F(GpuControlListEntryTest, WrongANGLEException) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_WrongANGLEException);
+  GPUInfo gpu_info;
+  gpu_info.gl_renderer = "Mali-G52";
+  gpu_info.gl_version = "OpenGL ES 3.1";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_version = "OpenGL ES 2.1";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G52, OpenGL ES 3.0)";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer =
+      "ANGLE (Intel, Vulkan 1.3.289 (Intel(R) Graphics (ADL GT2) "
+      "(0x00004626)), Intel open-source Mesa driver-24.2.0)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "", gpu_info));
+}
+
+TEST_F(GpuControlListEntryTest, ANGLEException) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_ANGLEException);
+  GPUInfo gpu_info;
+  gpu_info.gl_renderer = "Mali-G52";
+  gpu_info.gl_version = "OpenGL ES 3.1";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_version = "OpenGL ES 2.1";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G52, OpenGL ES 3.0)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer =
+      "ANGLE (Intel, Vulkan 1.3.289 (Intel(R) Graphics (ADL GT2) "
+      "(0x00004626)), Intel open-source Mesa driver-24.2.0)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "", gpu_info));
+}
+
+TEST_F(GpuControlListEntryTest, GlTypeAngleGl) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_GlTypeAngleGl);
+  GPUInfo gpu_info;
+  gpu_info.gl_renderer = "ANGLE (Intel, Mesa, 11.8)";
+  gpu_info.gl_version = "OpenGL ES 2.0.0 (ANGLE)";
+  EXPECT_TRUE(entry.Contains(kOsLinux, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (Intel, Mesa, 11.9)";
+  EXPECT_FALSE(entry.Contains(kOsLinux, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (ARM, Mali-G52, OpenGL ES 3.0)";
+  EXPECT_FALSE(entry.Contains(kOsLinux, "", gpu_info));
+  gpu_info.gl_renderer =
+      "ANGLE (Intel, Vulkan 1.3.289 (Intel(R) Graphics (ADL GT2) "
+      "(0x00004626)), Intel open-source Mesa driver-24.2.0)";
+  EXPECT_FALSE(entry.Contains(kOsLinux, "", gpu_info));
+}
+
+TEST_F(GpuControlListEntryTest, GLVersionOnly) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_GLVersionOnly);
+  GPUInfo gpu_info;
+  gpu_info.gl_renderer = "ANGLE (Intel, Mesa, OpenGL ES 3.2)";
+  gpu_info.gl_version = "OpenGL ES 2.0.0 (ANGLE)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer = "ANGLE (Intel, Mesa, OpenGL ES 3.0)";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_renderer = "ARM";
+  gpu_info.gl_version = "OpenGL ES 3.2";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "", gpu_info));
+  gpu_info.gl_version = "OpenGL ES 3.0";
+  EXPECT_TRUE(entry.Contains(kOsAndroid, "", gpu_info));
+}
 
 }  // namespace gpu

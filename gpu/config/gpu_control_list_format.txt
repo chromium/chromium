@@ -42,11 +42,13 @@
 // 9. "driver_version" is a VERSION structure (defined below). On Windows
 //    this value can be retrieved by searching for the "Driver File Version" in
 //    dxdiag.txt
-// 10. "gl_type" is a string, valid values include "gl", "gles", and "angle".
-//    If "gl_version" is specified and "gl_type" is not, use the default value.
-//    The default value on Android is "gles", on Windows is "angle", on other
-//    platforms is "gl".
+// 10. "gl_type" is a string, valid values include "gles", "angle_vulkan",
+//     "angle_gles", and "angle_gl". "gles", "angle_vulkan", and "angle_gles"
+//     are supported on Android; "angle_vulkan", "angle_gles", and "angle_gl"
+//     are supported on Linux; "angle_vulkan" and "angle_gles" are supported on
+//     ChromeOS.
 // 11. "gl_version" is a VERSION structure (defined below).
+//     This is only supported on Linux, ChromeOS, and Android.
 // 12. "gl_vendor" is a string pattern.
 // 13. "gl_renderer" is a string pattern.
 // 14. "gl_extensions" is a string pattern.

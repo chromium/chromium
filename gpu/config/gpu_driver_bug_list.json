@@ -271,7 +271,7 @@
       "os": {
         "type": "linux"
       },
-      "gl_type": "gl",
+      "gl_type": "angle_gl",
       "gl_renderer": ".*Mesa.*",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
@@ -419,7 +419,6 @@
       "os": {
         "type": "android"
       },
-      "gl_type": "gles",
       "gl_version": {
         "op": "<",
         "value": "3.0"
@@ -584,7 +583,6 @@
         "type": "android"
       },
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -776,7 +774,7 @@
         "op": "<",
         "value": "11.1"
       },
-      "gl_type": "gles",
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": "<",
         "value": "3.0"
@@ -844,7 +842,6 @@
       "machine_model_name": ["SM-G361H", "SM-G531H"],
       "gl_vendor": "ARM.*",
       "gl_renderer": "Mali.*",
-      "gl_type": "gles",
       "gl_version": {
         "op": "<",
         "value": "3.0"
@@ -862,7 +859,7 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gl",
+      "gl_type": "angle_gl",
       "features": [
         "disable_discard_framebuffer"
       ]
@@ -876,7 +873,7 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -894,7 +891,7 @@
       },
       "vendor_id": "0x10de",
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -911,7 +908,6 @@
         "type": "android"
       },
       "gl_vendor": "NVIDIA.*",
-      "gl_type": "gles",
       "gl_version": {
         "op": ">=",
         "value": "3.0"
@@ -1015,7 +1011,7 @@
       "os": {
         "type": "linux"
       },
-      "gl_type": "gl",
+      "gl_type": "angle_gl",
       "gl_version_string": ".*Mesa.*",
       "features": [
         "disable_post_sub_buffers_for_onscreen_surfaces"
@@ -1872,12 +1868,15 @@
       "disabled_extensions": [
         "GL_EXT_shader_framebuffer_fetch"
       ]
-   },
-   {
+    },
+    {
       "id": 315,
       "cr_bugs": [964010],
       "description": "Disable GL_MESA_framebuffer_flip_y for desktop GL",
-      "gl_type": "gl",
+      "os": {
+        "type": "linux"
+      },
+      "gl_type": "angle_gl",
       "disabled_extensions": [
         "GL_MESA_framebuffer_flip_y"
       ]
@@ -3095,7 +3094,6 @@
         }
       },
       "gl_vendor": "ARM.*",
-      "gl_type": "gles",
       "features": [
         "r8_egl_images_broken"
       ]

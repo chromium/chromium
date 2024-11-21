@@ -78,9 +78,10 @@ class GPU_EXPORT GpuControlList {
   };
 
   enum GLType {
-    kGLTypeGL,     // This is default on MacOSX, Linux, ChromeOS
-    kGLTypeGLES,   // This is default on Android
-    kGLTypeANGLE,  // This is default on Windows
+    kGLTypeGLES,
+    kGLTypeANGLE_GL,
+    kGLTypeANGLE_GLES,
+    kGLTypeANGLE_VULKAN,
     kGLTypeNone
   };
 
@@ -180,14 +181,10 @@ class GPU_EXPORT GpuControlList {
     SupportedOrNot subpixel_font_rendering;
 
     // Return true if GL_VERSION string does not fit the entry info
-    // on GL type and GL version.
+    // on GL version.
     bool GLVersionInfoMismatch(const std::string& gl_version_string) const;
 
     bool Contains(const GPUInfo& gpu_info) const;
-
-    // Return the default GL type, depending on the OS.
-    // See GLType declaration.
-    static GLType GetDefaultGLType();
   };
 
   struct GPU_EXPORT Device {
@@ -350,11 +347,13 @@ class GPU_EXPORT GpuControlList {
                                    size_t total_entries);
 
  private:
-  // Returns false if we cannot process the |gl_renderer| string as GL.
-  static bool ProcessANGLEGLRenderer(const std::string& gl_renderer,
-                                     std::string* vendor,
-                                     std::string* renderer,
-                                     std::string* version);
+  // Returns kGLTypeNone if gl_renderer is empty.
+  // Returns kGLTypeGLES if gl_renderer isn't in the format of ANGLE(_,_,_).
+  // Returns kGLTypeANGLE_VULKAN or kGLTypeANGLE_GLES otherwise.
+  static GLType ProcessANGLEGLRenderer(const std::string& gl_renderer,
+                                       std::string* vendor = nullptr,
+                                       std::string* renderer = nullptr,
+                                       std::string* version = nullptr);
 
   friend class GpuControlListEntryTest;
   friend class VersionInfoTest;

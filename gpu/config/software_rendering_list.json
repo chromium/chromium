@@ -576,7 +576,13 @@
           "os": {
             "type": "android"
           },
-          "gl_renderer": "ANGLE.*"
+          "gl_type": "angle_gles"
+        },
+        {
+          "os": {
+            "type": "android"
+          },
+          "gl_type": "angle_vulkan"
         }
       ],
       "features": [
