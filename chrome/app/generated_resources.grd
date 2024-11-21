@@ -10030,6 +10030,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_EXIT_FULLSCREEN" desc="The accessible name of the exit fullscreen button in the new merged menu">
         Exit full screen
       </message>
+      <message name="IDS_ACCNAME_FULLSCREEN_DISABLED" desc="The accessible name of the disabled fullscreen button in the new merged menu">
+        Full screen disabled
+      </message>
       <message name="IDS_ACCNAME_HOME" desc="The accessible name for the home button">
         Home
       </message>

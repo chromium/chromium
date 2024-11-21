@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/not_fatal_until.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -645,7 +646,7 @@ END_METADATA
 // ZoomView contains the various zoom controls: two buttons to increase/decrease
 // the zoom, a label showing the current zoom percent, and a button to go
 // full-screen.
-class AppMenu::ZoomView : public AppMenuView {
+class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
   METADATA_HEADER(ZoomView, AppMenuView)
 
  public:
@@ -660,6 +661,11 @@ class AppMenu::ZoomView : public AppMenuView {
             ->AddZoomLevelChangedCallback(
                 base::BindRepeating(&AppMenu::ZoomView::OnZoomLevelChanged,
                                     base::Unretained(this)));
+    // Disable full screen button when window is not resizable
+    views::Widget* widget = menu->browser_->GetBrowserView().GetWidget();
+    if (widget) {
+      widget_observation_.Observe(widget);
+    }
 
     const auto activate = [](ButtonMenuItemModel* menu_model, size_t index) {
       menu_model->ActivatedAt(index);
@@ -739,6 +745,7 @@ class AppMenu::ZoomView : public AppMenuView {
     // UpdateZoomControls().
     DCHECK(!zoom_label_max_width_.has_value());
     UpdateZoomControls(/*on_construction=*/true);
+    UpdateFullScreenButton();
   }
   ZoomView(const ZoomView&) = delete;
   ZoomView& operator=(const ZoomView&) = delete;
@@ -785,6 +792,15 @@ class AppMenu::ZoomView : public AppMenuView {
     fullscreen_button_->SetBoundsRect(bounds);
   }
 
+  // views::WidgetObserver
+  void OnWidgetSizeConstraintsChanged(views::Widget* widget) override {
+    UpdateFullScreenButton();
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    widget_observation_.Reset();
+  }
+
  private:
   const content::WebContents* GetActiveWebContents() const {
     return menu() ? menu()->browser_->tab_strip_model()->GetActiveWebContents()
@@ -819,6 +835,18 @@ class AppMenu::ZoomView : public AppMenuView {
     zoom_label_max_width_.reset();
   }
 
+  void UpdateFullScreenButton() {
+    bool can_fullscreen =
+        menu()->browser_->GetBrowserView().CanUserEnterFullscreen();
+    const int accname_string_id = can_fullscreen
+                                      ? IDS_ACCNAME_FULLSCREEN
+                                      : IDS_ACCNAME_FULLSCREEN_DISABLED;
+
+    fullscreen_button_->SetEnabled(can_fullscreen);
+    fullscreen_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(accname_string_id));
+  }
+
   // Returns the max width the zoom string can be.
   int GetZoomLabelMaxWidth() const {
     if (!zoom_label_max_width_) {
@@ -850,6 +878,7 @@ class AppMenu::ZoomView : public AppMenuView {
   }
 
   base::CallbackListSubscription browser_zoom_subscription_;
+  base::ScopedObservation<views::Widget, ZoomView> widget_observation_{this};
 
   // Button for incrementing the zoom.
   raw_ptr<Button> increment_button_ = nullptr;
