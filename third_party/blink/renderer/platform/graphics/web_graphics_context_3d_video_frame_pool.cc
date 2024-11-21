@@ -141,11 +141,10 @@ WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
 gpu::raster::RasterInterface*
 WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
   if (weak_context_provider_) {
-    if (auto* context_provider = weak_context_provider_->ContextProvider()) {
-      if (auto* raster_context_provider =
-              context_provider->RasterContextProvider()) {
-        return raster_context_provider->RasterInterface();
-      }
+    if (auto* raster_context_provider =
+            weak_context_provider_->ContextProvider()
+                ->RasterContextProvider()) {
+      return raster_context_provider->RasterInterface();
     }
   }
   return nullptr;
@@ -273,8 +272,6 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!weak_context_provider_)
     return false;
   auto* context_provider = weak_context_provider_->ContextProvider();
-  if (!context_provider)
-    return false;
   auto* raster_context_provider = context_provider->RasterContextProvider();
   if (!raster_context_provider)
     return false;

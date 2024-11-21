@@ -88,10 +88,6 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
   }
 
   auto* context_provider = context_provider_wrapper->ContextProvider();
-  if (!context_provider) {
-    DLOG(ERROR) << "Context lost, skipping frame";
-    return;
-  }
 
   // Readback to YUV is only used when result is opaque.
   const bool result_is_opaque =
