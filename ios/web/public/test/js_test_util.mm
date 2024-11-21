@@ -51,8 +51,12 @@ id ExecuteJavaScript(WKWebView* web_view,
       << "\nWKWebView failed to complete javascript execution.\n"
       << base::SysNSStringToUTF8(
              [[NSThread callStackSymbols] componentsJoinedByString:@"\n"]);
-  if (error) {
-    *error = block_error;
+  if (block_error) {
+    DLOG(WARNING) << "\nWKWebView javascript execution failed.\n"
+                  << base::SysNSStringToUTF8(block_error.description);
+    if (error) {
+      *error = block_error;
+    }
   }
   return result;
 }

@@ -9,6 +9,7 @@ import {inferLabelFromNext} from '//components/autofill/ios/form_util/resources/
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import type * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {removeQueryAndReferenceFromURL} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -414,7 +415,7 @@ gCrWeb.fill.webFormElementToFormData = function(
   }
 
   form.name = gCrWeb.form.getFormIdentifier(formElement);
-  form.origin = gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
+  form.origin = removeQueryAndReferenceFromURL(frame.origin);
   form.action = gCrWeb.fill.getCanonicalActionForForm(formElement);
 
   // The raw name and id attributes, which may be empty.
@@ -650,7 +651,7 @@ gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     return false;
   }
   form.name = '';
-  form.origin = gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
+  form.origin = removeQueryAndReferenceFromURL(frame.origin);
   form.action = '';
 
   if (!restrictUnownedFieldsToFormlessCheckout) {
