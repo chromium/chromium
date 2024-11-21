@@ -10,6 +10,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
+#include "ash/components/arc/session/arc_management_transition.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
@@ -37,6 +38,15 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
 
   // Activate ARC if the package list held by ArcAppListPrefs is not up to date.
   if (!profile_->GetPrefs()->GetBoolean(arc::prefs::kArcPackagesIsUpToDate)) {
+    OnChecked(std::move(callback), true);
+    return;
+  }
+
+  const ArcManagementTransition management_transition =
+      static_cast<ArcManagementTransition>(
+          profile_->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
+  // Activate ARC if a management transitioning is happening.
+  if (management_transition != ArcManagementTransition::NO_TRANSITION) {
     OnChecked(std::move(callback), true);
     return;
   }

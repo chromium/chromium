@@ -345,6 +345,16 @@ TEST_F(ArcActivationNecessityCheckerTest, InactiveDays0DayDelayedV2) {
       "Arc.ArcOnDemandV2.ActivationShouldBeDelayed", true, 1);
 }
 
+TEST_F(ArcActivationNecessityCheckerTest, ManagementTransition) {
+  profile_->GetPrefs()->SetInteger(
+      prefs::kArcManagementTransition,
+      int(ArcManagementTransition::CHILD_TO_REGULAR));
+
+  base::test::TestFuture<bool> future;
+  checker_->Check(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 }  // namespace
 
 }  // namespace arc
