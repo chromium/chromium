@@ -151,7 +151,8 @@ crbug.com/1378476 [ mac mac-arm64 ] GpuProcess_no_swiftshader_for_webgl_without_
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
+# Samsung flake that seems to signal visibility too many times
+crbug.com/380269801 [ android android-sm-s911u1 ] GpuProcess_visibility [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
