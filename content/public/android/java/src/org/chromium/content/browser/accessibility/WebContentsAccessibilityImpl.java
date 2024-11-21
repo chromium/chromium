@@ -2007,6 +2007,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @CalledByNative
     private void announceLiveRegionText(String text) {
+        assert !ContentFeatureMap.isEnabled(
+                        ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+                : "No views should be forcing an announcement outside approved instances.";
         if (isAccessibilityEnabled()) {
             AccessibilityEvent event =
                     AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT);

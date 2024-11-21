@@ -1081,6 +1081,7 @@ data/accessibility/aria/aria-listitem-expected-blink.txt
 data/accessibility/aria/aria-listitem-expected-mac.txt
 data/accessibility/aria/aria-listitem-expected-win.txt
 data/accessibility/aria/aria-listitem.html
+data/accessibility/aria/aria-live-exp-expected-android-external.txt
 data/accessibility/aria/aria-live-expected-android-assist-data.txt
 data/accessibility/aria/aria-live-expected-android-external.txt
 data/accessibility/aria/aria-live-expected-android.txt
@@ -1090,6 +1091,7 @@ data/accessibility/aria/aria-live-expected-mac.txt
 data/accessibility/aria/aria-live-expected-win.txt
 data/accessibility/aria/aria-live-nested-expected-blink.txt
 data/accessibility/aria/aria-live-nested.html
+data/accessibility/aria/aria-live-with-content-exp-expected-android-external.txt
 data/accessibility/aria/aria-live-with-content-expected-android-assist-data.txt
 data/accessibility/aria/aria-live-with-content-expected-android-external.txt
 data/accessibility/aria/aria-live-with-content-expected-android.txt
@@ -2598,6 +2600,7 @@ data/accessibility/event/live-region-create-expected-mac.txt
 data/accessibility/event/live-region-create-expected-uia-win.txt
 data/accessibility/event/live-region-create-expected-win.txt
 data/accessibility/event/live-region-create.html
+data/accessibility/event/live-region-elem-reparent-expected-android-exp.txt
 data/accessibility/event/live-region-elem-reparent-expected-android.txt
 data/accessibility/event/live-region-elem-reparent-expected-auralinux.txt
 data/accessibility/event/live-region-elem-reparent-expected-mac.txt

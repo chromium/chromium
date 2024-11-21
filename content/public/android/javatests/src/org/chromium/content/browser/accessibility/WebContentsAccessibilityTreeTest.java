@@ -24,6 +24,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -665,14 +666,30 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     public void test_ariaLive() {
         performAriaTest("aria-live.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    public void test_ariaLive_exp() {
+        performAriaTest("aria-live.html", "aria-live-exp");
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     public void test_ariaLiveWithContent() {
         performAriaTest("aria-live-with-content.html");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
+    public void test_ariaLiveWithContent_exp() {
+        performAriaTest("aria-live-with-content.html", "aria-live-with-content-exp");
     }
 
     @Test

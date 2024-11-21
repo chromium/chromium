@@ -586,6 +586,11 @@ void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
 
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
     const std::u16string& text) {
+  CHECK(!base::FeatureList::IsEnabled(
+            features::kAccessibilityDeprecateTypeAnnounce), )
+      << "No views should be forcing an announcement outside approved "
+         "instances.";
+
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {

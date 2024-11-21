@@ -11,6 +11,7 @@
 #include "base/i18n/char_iterator.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/public/common/content_features.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
@@ -291,9 +292,15 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     }
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED: {
       // This event is fired when an object appears in a live region.
-      // Speak its text.
-      std::u16string text = android_node->GetTextContentUTF16();
-      wcax->AnnounceLiveRegionText(text);
+      // Speak its text unless the experimental deprecation of the announce
+      // approach is enabled, in which case we do nothing. The node will have a
+      // live region type set, and the window content change event will inform
+      // the framework of the node change.
+      if (!base::FeatureList::IsEnabled(
+              features::kAccessibilityDeprecateTypeAnnounce)) {
+        std::u16string text = android_node->GetTextContentUTF16();
+        wcax->AnnounceLiveRegionText(text);
+      }
       break;
     }
     case ui::AXEventGenerator::Event::NAME_CHANGED: {
@@ -419,7 +426,12 @@ void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
     return;
   }
 
-  wcax->AnnounceLiveRegionText(base::UTF8ToUTF16(announcement));
+  // TODO(aleventhal): If aria-notification becomes a web standard, a solution
+  // that doesn't use a forced announcement must be implemented.
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityDeprecateTypeAnnounce)) {
+    wcax->AnnounceLiveRegionText(base::UTF8ToUTF16(announcement));
+  }
 }
 
 void BrowserAccessibilityManagerAndroid::SendLocationChangeEvents(

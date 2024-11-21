@@ -369,7 +369,7 @@ public class AccessibilityNodeInfoBuilder {
             boolean canOpenPopup,
             boolean multiLine,
             int inputType,
-            int unused_liveRegion,
+            int liveRegion,
             String errorMessage,
             int clickableScore,
             String display,
@@ -408,10 +408,13 @@ public class AccessibilityNodeInfoBuilder {
         node.setInputType(inputType);
         node.setHintText(hint);
 
-        // Deliberately don't call setLiveRegion because TalkBack speaks
-        // the entire region anytime it changes. Instead Chrome will
-        // call announceLiveRegionText() only on the nodes that change.
-        // node.setLiveRegion(liveRegion);
+        // Deliberately don't call setLiveRegion because TalkBack speaks the entire region anytime
+        // it changes. Instead Chrome will call announceLiveRegionText() only on the nodes that
+        // change. This approach is deprecated, so when the experimental flag is enabled, use live
+        // regions as expected.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)) {
+            node.setLiveRegion(liveRegion);
+        }
 
         // We only apply the |errorMessage| if {@link setAccessibilityNodeInfoBooleanAttributes}
         // set |contentInvalid| to true based on throttle delay.

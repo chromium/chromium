@@ -1,3 +1,3 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="status", roleDescription="status"]
-++View actions:[AX_FOCUS] bundle:[chromeRole="status", roleDescription="status"]
+++View liveRegion:1 actions:[AX_FOCUS] bundle:[chromeRole="status", roleDescription="status"]
+++View liveRegion:1 actions:[AX_FOCUS] bundle:[chromeRole="status", roleDescription="status"]
