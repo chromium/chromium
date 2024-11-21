@@ -12,6 +12,7 @@ or used in depot_tools' autoninja or siso wrapper.
 
 import os
 import shutil
+import sys
 
 
 def _is_google_corp_machine():
@@ -34,9 +35,10 @@ def use_siso_default(output_dir):
       os.path.join(os.path.dirname(__file__), "../config/siso/.sisoenv")):
     return False
 
-  # TODO(341167943): Use Siso by default for Googlers working on corp machines.
+  # TODO(341167943): Use Siso by default for Googlers working on corp
+  # Win/Mac machines.
   if _is_google_corp_machine():
-    return False
+    return sys.platform == "linux"
 
   # Otherwise, use Ninja, until we are ready to roll it out
   # on non-corp machines, too.
