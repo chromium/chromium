@@ -40,7 +40,7 @@
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
-#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
@@ -1521,13 +1521,14 @@ void MaybeRegisterChromeTutorials(
 
             // Bubble step - "Install" row
             TutorialDescription::BubbleStep(
-                PWAConfirmationBubbleView::kInstallButton)
+                web_app::WebAppInstallDialogDelegate::
+                    kPwaInstallDialogInstallButton)
                 .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_INSTALL)
                 .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 
-            // Event step - Click on "Add shortcut"
+            // Event step - Click on "Install"
             TutorialDescription::EventStep(
-                PWAConfirmationBubbleView::kInstalledPWAEventId)
+                web_app::WebAppInstallDialogDelegate::kInstalledPWAEventId)
                 .InSameContext(),
 
             // Completion of the tutorial.

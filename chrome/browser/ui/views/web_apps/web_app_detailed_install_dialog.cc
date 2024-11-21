@@ -419,8 +419,10 @@ void ShowWebAppDetailedInstallDialog(
                     IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
             .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
                                         delegate_weak_ptr),
-                         ui::DialogModel::Button::Params().SetLabel(
-                             l10n_util::GetStringUTF16(IDS_INSTALL)))
+                         ui::DialogModel::Button::Params()
+                             .SetLabel(l10n_util::GetStringUTF16(IDS_INSTALL))
+                             .SetId(WebAppInstallDialogDelegate::
+                                        kPwaInstallDialogInstallButton))
             .AddCancelButton(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
             .SetCloseActionCallback(base::BindOnce(
@@ -448,8 +450,10 @@ void ShowWebAppDetailedInstallDialog(
                     IDS_WEB_APP_DETAILED_INSTALL_DIALOG_DESCRIPTION_TITLE))
             .AddOkButton(base::BindOnce(&WebAppInstallDialogDelegate::OnAccept,
                                         delegate_weak_ptr),
-                         ui::DialogModel::Button::Params().SetLabel(
-                             l10n_util::GetStringUTF16(IDS_INSTALL)))
+                         ui::DialogModel::Button::Params()
+                             .SetLabel(l10n_util::GetStringUTF16(IDS_INSTALL))
+                             .SetId(WebAppInstallDialogDelegate::
+                                        kPwaInstallDialogInstallButton))
             .AddCancelButton(base::BindOnce(
                 &WebAppInstallDialogDelegate::OnCancel, delegate_weak_ptr))
             .SetDialogDestroyingCallback(base::BindOnce(
