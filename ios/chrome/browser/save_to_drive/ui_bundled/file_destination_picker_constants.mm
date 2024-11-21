@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_constants.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_constants.h"
 
 NSString* const kFileDestinationPickerFilesAccessibilityIdentifier =
     @"kFileDestinationPickerFilesAccessibilityIdentifier";

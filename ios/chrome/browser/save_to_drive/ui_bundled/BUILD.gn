@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("save_to_drive") {
+source_set("ui_bundled") {
   sources = [
     "save_to_drive_coordinator.h",
     "save_to_drive_coordinator.mm",
@@ -88,7 +88,7 @@ source_set("unit_tests") {
     "save_to_drive_mediator_unittest.mm",
   ]
   deps = [
-    ":save_to_drive",
+    ":ui_bundled",
     ":util",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",

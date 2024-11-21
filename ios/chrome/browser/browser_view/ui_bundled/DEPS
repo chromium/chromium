@@ -62,6 +62,7 @@ include_rules = [
   "+ios/chrome/browser/recent_tabs/ui_bundled",
   "+ios/chrome/browser/sad_tab/ui_bundled/sad_tab_coordinator.h",
   "+ios/chrome/browser/safe_browsing/ui_bundled/safe_browsing_coordinator.h",
+  "+ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h",
   "+ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
   "+ios/chrome/browser/send_tab_to_self/ui_bundled/send_tab_to_self_coordinator.h",

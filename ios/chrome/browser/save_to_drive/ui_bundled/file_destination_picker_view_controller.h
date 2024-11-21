@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_FILE_DESTINATION_PICKER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_FILE_DESTINATION_PICKER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_FILE_DESTINATION_PICKER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_FILE_DESTINATION_PICKER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
-#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_consumer.h"
 
 @protocol FileDestinationPickerActionDelegate;
 
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_FILE_DESTINATION_PICKER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_FILE_DESTINATION_PICKER_VIEW_CONTROLLER_H_

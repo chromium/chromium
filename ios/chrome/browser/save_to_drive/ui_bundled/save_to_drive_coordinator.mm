@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -15,6 +15,9 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_view_controller.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_mediator.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
@@ -26,9 +29,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
-#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_view_controller.h"
-#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
-#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/web_state.h"

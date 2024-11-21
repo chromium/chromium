@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_SAVE_TO_DRIVE_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_SAVE_TO_DRIVE_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_SAVE_TO_DRIVE_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_SAVE_TO_DRIVE_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_action_delegate.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_action_delegate.h"
 
 @protocol AccountPickerCommands;
 @protocol AccountPickerConsumer;
@@ -64,4 +64,4 @@ class DownloadTask;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SAVE_TO_DRIVE_SAVE_TO_DRIVE_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_SAVE_TO_DRIVE_MEDIATOR_H_

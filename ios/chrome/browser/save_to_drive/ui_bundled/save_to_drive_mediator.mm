@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_mediator.h"
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/drive/model/drive_service.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination.h"
+#import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_consumer.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -23,8 +25,6 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/save_to_drive/file_destination.h"
-#import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_consumer.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
