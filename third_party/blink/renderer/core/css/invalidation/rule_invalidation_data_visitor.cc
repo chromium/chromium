@@ -1728,9 +1728,8 @@ RuleInvalidationDataVisitor<VisitorType>::EnsureInvalidationSet(
       const InvalidationSet* invalidation_set = it->value.get();
       if (invalidation_set->GetType() == type) {
         return invalidation_set;
-      } else {
+      } else if (type == InvalidationType::kInvalidateDescendants) {
         // The caller wanted descendant and we found sibling+descendant.
-        CHECK(type == InvalidationType::kInvalidateDescendants);
         return To<SiblingInvalidationSet>(invalidation_set)->Descendants();
       }
     }
@@ -1762,9 +1761,8 @@ RuleInvalidationDataVisitor<VisitorType>::EnsureInvalidationSet(
       const InvalidationSet* invalidation_set = it->value.get();
       if (invalidation_set->GetType() == type) {
         return invalidation_set;
-      } else {
+      } else if (type == InvalidationType::kInvalidateDescendants) {
         // The caller wanted descendant and we found sibling+descendant.
-        CHECK(type == InvalidationType::kInvalidateDescendants);
         return To<SiblingInvalidationSet>(invalidation_set)->Descendants();
       }
     }

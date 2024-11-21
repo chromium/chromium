@@ -491,6 +491,48 @@ TEST_F(InvalidationSetToSelectorMapTest,
   EXPECT_EQ(found_event_count, 1u);
 }
 
+TEST_F(InvalidationSetToSelectorMapTest,
+       StartTracingLateWithPendingInsertRule_SiblingAfterDescendant) {
+  SetBodyInnerHTML(R"HTML(
+    <style id=target>
+      .a { color: red; }
+    </style>
+    <div id=first class=a>First</div>
+    <div class=b>Second</div>
+  )HTML");
+
+  StartTracing();
+
+  DummyExceptionStateForTesting exception_state;
+  CSSStyleSheet* sheet =
+      To<HTMLStyleElement>(GetElementById("target"))->sheet();
+  sheet->insertRule(".a + .b { color: green; }", 0, exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  GetElementById("first")->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ((*selector_list)[0], ".a + .b");
+        found_event_count++;
+      }
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
 TEST_F(InvalidationSetToSelectorMapTest, HandleRebuildAfterRuleSetChange) {
   // This test is intended to cover the case that necessitates us walking both
   // global and per-sheet rule sets when revisiting invalidation data on a late
