@@ -1492,6 +1492,7 @@ ci.builder(
     ),
     targets = targets.bundle(
         additional_compile_targets = [
+            "cronet_gn2bp_aosp_feedback_loop",
             "cronet_package",
             "cronet_package_ci",
         ],
