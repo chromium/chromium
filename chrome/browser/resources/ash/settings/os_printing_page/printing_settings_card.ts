@@ -15,7 +15,6 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -49,43 +48,16 @@ export class PrintingSettingsCardElement extends
         value: () =>
             new Set<Setting>([Setting.kPrintJobs, Setting.kScanningApp]),
       },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              print: 'os-settings:device-print',
-              scan: 'os-settings:device-scan',
-            };
-          }
-
-          return {
-            print: '',
-            scan: '',
-          };
-        },
-      },
     };
   }
 
   private browserProxy_: CupsPrintersBrowserProxy;
-  private isRevampWayfindingEnabled_: boolean;
-  private rowIcons_: Record<string, string>;
 
   constructor() {
     super();
 
     /** RouteOriginMixin override */
-    this.route =
-        this.isRevampWayfindingEnabled_ ? routes.DEVICE : routes.OS_PRINTING;
+    this.route = routes.DEVICE;
 
 
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
@@ -119,13 +91,6 @@ export class PrintingSettingsCardElement extends
   private onClickScanningApp_(): void {
     this.browserProxy_.openScanningApp();
     recordSettingChange(Setting.kScanningApp);
-  }
-
-  private getCupsPrintDescription_(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('cupsPrintDescription');
-    }
-    return '';
   }
 }
 

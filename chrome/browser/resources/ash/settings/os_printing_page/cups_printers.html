@@ -144,18 +144,16 @@
 </style>
 
 
-<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-  <cr-link-row id="printManagement"
-      on-click="onClickPrintManagement_"
-      external
-      using-slotted-label
-      sub-label="$i18n{printJobsSublabel}"
-      deep-link-focus-id$="[[Setting.kPrintJobs]]">
-    <div slot="label" class="section-title">$i18n{printJobsTitle}
-    </div>
-  </cr-link-row>
-  <div class="hr"></div>
-</template>
+<cr-link-row id="printManagement"
+    on-click="onClickPrintManagement_"
+    external
+    using-slotted-label
+    sub-label="$i18n{printJobsSublabel}"
+    deep-link-focus-id$="[[Setting.kPrintJobs]]">
+  <div slot="label" class="section-title">$i18n{printJobsTitle}
+  </div>
+</cr-link-row>
+<div class="hr"></div>
 
 <template is="dom-if" if="[[!hasActiveNetworkConnection]]">
   <div id="noConnectivityContentContainer"

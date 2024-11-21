@@ -176,9 +176,9 @@ class OsSettingsProviderTest : public testing::Test {
         mojom::Subpage::kBluetoothSavedDevices, SearchResultIcon::kBluetooth,
         SearchResultDefaultRank::kMedium, mojom::kBluetoothSectionPath,
         std::make_optional(mojom::Subpage::kBluetoothDevices));
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
+    fake_hierarchy_.AddSettingMetadata(mojom::Section::kSystemPreferences,
                                        mojom::Setting::kAddPrinter);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
+    fake_hierarchy_.AddSettingMetadata(mojom::Section::kSystemPreferences,
                                        mojom::Setting::kSavedPrinters);
     fake_hierarchy_.AddSettingMetadata(
         mojom::Section::kBluetooth, mojom::Setting::kFastPairSavedDevices,

@@ -185,10 +185,6 @@ suite('<main-page-container>', () => {
           pageName: 'kFiles',
           elementName: 'os-settings-files-page',
         },
-        {
-          pageName: 'kPrinting',
-          elementName: 'os-settings-printing-page',
-        },
 
         // About page
         {

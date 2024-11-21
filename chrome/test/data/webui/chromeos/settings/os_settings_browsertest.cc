@@ -1388,10 +1388,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("os_people_page/personalization_options_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPage) {
-  RunSettingsTest("os_printing_page/os_printing_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrintServer) {
   RunSettingsTest("os_printing_page/cups_print_server_test.js");
 }

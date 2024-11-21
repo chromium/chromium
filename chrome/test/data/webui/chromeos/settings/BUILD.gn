@@ -327,7 +327,6 @@ build_webui_tests("build") {
     "os_printing_page/cups_printer_page_test.ts",
     "os_printing_page/cups_printer_test_utils.ts",
     "os_printing_page/cups_printers_entry_test.ts",
-    "os_printing_page/os_printing_page_test.ts",
     "os_printing_page/printer_status_test.ts",
     "os_printing_page/printing_settings_card_test.ts",
     "os_printing_page/test_cups_printers_browser_proxy.ts",

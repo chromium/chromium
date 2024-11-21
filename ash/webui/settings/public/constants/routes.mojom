@@ -24,7 +24,7 @@ enum Section {
   kPrivacyAndSecurity = 11,
   kLanguagesAndInput = 12,
   kFiles = 13,
-  kPrinting = 14,
+  // Note: Value 14 was for deprecated kPrinting. Do not reuse.
   kAccessibility = 15,
   // Deprecated, do not reuse. http://crbug/370836853
   // kReset = 16,
@@ -326,7 +326,6 @@ const string kOfficeFilesSubpagePath = "officeFiles";
 const string kNetworkFileSharesSubpagePath = "smbShares";
 
 // Printing section.
-const string kPrintingSectionPath = "osPrinting";
 const string kPrintingDetailsSubpagePath = "cupsPrinters";
 
 // Accessibility section.

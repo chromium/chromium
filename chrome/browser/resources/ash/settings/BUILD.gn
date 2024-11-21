@@ -319,7 +319,6 @@ build_webui("build") {
     "os_printing_page/cups_printers_entry.ts",
     "os_printing_page/cups_saved_printers.ts",
     "os_printing_page/cups_settings_add_printer_dialog.ts",
-    "os_printing_page/os_printing_page.ts",
     "os_printing_page/printing_settings_card.ts",
     "os_privacy_page/manage_users_subpage.ts",
     "os_privacy_page/metrics_consent_toggle_button.ts",

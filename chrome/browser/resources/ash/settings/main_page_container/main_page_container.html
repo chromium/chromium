@@ -306,14 +306,6 @@
         </page-displayer>
       </template>
       <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kPrinting)]]"
-          restamp>
-        <page-displayer section="[[Section.kPrinting]]">
-          <os-settings-printing-page prefs="{{prefs}}">
-          </os-settings-printing-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
           if="[[shouldStampPage_(pageAvailability, Section.kReset)]]"
           restamp>
         <page-displayer section="[[Section.kReset]]">

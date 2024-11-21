@@ -4139,13 +4139,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINT_SERVER" desc="Label for button that allows the user to access the add print server dialog.">
     Print server
   </message>
-  <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS" desc="In Printing Settings, the title of the CUPS printers setting section.">
-    Printers
-  </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_PRINTING_CUPS_PRINT_TITLE" desc="In Printing Settings, the label of the CUPS print setting section.">
+  <message name="IDS_OS_SETTINGS_PRINTING_CUPS_PRINT_TITLE" desc="In Printing Settings, the label of the CUPS print setting section.">
     Print
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_PRINTING_CUPS_PRINT_DESCRIPTION" desc="In Printing Settings, the description of the CUPS print setting section.">
+  <message name="IDS_OS_SETTINGS_PRINTING_CUPS_PRINT_DESCRIPTION" desc="In Printing Settings, the description of the CUPS print setting section.">
     View or add printers and see active print jobs
   </message>
   <message name="IDS_SETTINGS_PRINTING_CUPS_PRINTERS_LEARN_MORE_LABEL" desc="Label for the link that teaches users how to use CUPS printing.">

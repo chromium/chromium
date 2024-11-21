@@ -101,12 +101,6 @@ export const SECTION_EXPECTATIONS: SectionData[] = [
     availableForGuest: false,
   },
   {
-    name: 'kPrinting',
-    availableBeforeRevamp: true,
-    availableAfterRevamp: false,
-    availableForGuest: true,
-  },
-  {
     name: 'kAboutChromeOs',
     availableBeforeRevamp: true,
     availableAfterRevamp: true,

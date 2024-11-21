@@ -13,7 +13,6 @@ import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 const ADVANCED_SECTION_PAGES = [
   'os-settings-files-page',
   'os-settings-languages-section',
-  'os-settings-printing-page',
 ];
 
 let lazyLoadPromise: Promise<CustomElementConstructor[]>|null = null;

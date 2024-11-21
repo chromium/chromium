@@ -44,8 +44,7 @@ void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
     //  An old Section can be filtered out once it has been fully incorporated
     // into the new revamp Section.
     return section == mojom::Section::kFiles ||
-           section == mojom::Section::kLanguagesAndInput ||
-           section == mojom::Section::kPrinting;
+           section == mojom::Section::kLanguagesAndInput;
   });
 }
 

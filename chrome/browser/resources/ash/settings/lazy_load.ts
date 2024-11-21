@@ -15,7 +15,6 @@ import '/strings.m.js';
 import './os_about_page/os_about_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/os_languages_section.js';
-import './os_printing_page/os_printing_page.js';
 /** Subpages */
 import './date_time_page/timezone_subpage.js';
 import './device_page/customize_mouse_buttons_subpage.js';
@@ -337,7 +336,6 @@ export {SettingsCupsPrintersEntryElement} from './os_printing_page/cups_printers
 export {CupsPrintersEntryManager} from './os_printing_page/cups_printers_entry_manager.js';
 export {SettingsCupsSavedPrintersElement} from './os_printing_page/cups_saved_printers.js';
 export {SettingsCupsAddPrinterDialogElement} from './os_printing_page/cups_settings_add_printer_dialog.js';
-export {OsSettingsPrintingPageElement} from './os_printing_page/os_printing_page.js';
 export {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './os_printing_page/printer_status.js';
 export {PrintingSettingsCardElement} from './os_printing_page/printing_settings_card.js';
 export {SettingsManageUsersSubpageElement} from './os_privacy_page/manage_users_subpage.js';

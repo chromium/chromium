@@ -216,7 +216,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_LANGUAGES_INPUT: Route;
   OS_LANGUAGES_INPUT_METHOD_OPTIONS: Route;
   OS_LANGUAGES_LANGUAGES: Route;
-  OS_PRINTING: Route;
   OS_PRIVACY: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
@@ -702,13 +701,6 @@ export function createRoutes(): OsSettingsRoutes {
           r.OS_LANGUAGES_LANGUAGES, routesMojom.APP_LANGUAGES_SUBPAGE_PATH,
           Subpage.kAppLanguages);
     }
-
-    // Printing section.
-    r.OS_PRINTING = createSection(
-        r.ADVANCED, routesMojom.PRINTING_SECTION_PATH, Section.kPrinting);
-    r.CUPS_PRINTERS = createSubpage(
-        r.OS_PRINTING, routesMojom.PRINTING_DETAILS_SUBPAGE_PATH,
-        Subpage.kPrintingDetails);
   }
 
   // Crostini details subpages.
