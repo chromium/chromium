@@ -143,10 +143,6 @@ void AddressDataManager::RemoveObserver(AddressDataManager::Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
-void AddressDataManager::AddChangeCallback(base::OnceClosure callback) {
-  change_callbacks_.push_back(std::move(callback));
-}
-
 void AddressDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::DataType::AUTOFILL_PROFILE ||
       data_type == syncer::DataType::CONTACT_INFO) {
@@ -580,14 +576,11 @@ AddressDataManager::GetAddressSuggestionStrikeDatabase() const {
 }
 
 void AddressDataManager::NotifyObservers() {
-  if (!IsAwaitingPendingAddressChanges()) {
-    for (Observer& o : observers_) {
-      o.OnAddressDataChanged();
-    }
-    for (base::OnceClosure& callback : change_callbacks_) {
-      std::move(callback).Run();
-    }
-    change_callbacks_.clear();
+  if (IsAwaitingPendingAddressChanges()) {
+    return;
+  }
+  for (Observer& o : observers_) {
+    o.OnAddressDataChanged();
   }
 }
 

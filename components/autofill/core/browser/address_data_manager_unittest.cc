@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
@@ -1187,13 +1186,6 @@ TEST_F(AddressDataManagerTest, AutofillSyncToggleAvailableInTransportMode) {
   EXPECT_FALSE(address_data_manager().IsAutofillSyncToggleAvailable());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-TEST_F(AddressDataManagerTest, ChangeCallbackIsTriggeredOnAddedProfile) {
-  ::testing::StrictMock<base::MockOnceClosure> callback;
-  EXPECT_CALL(callback, Run);
-  address_data_manager().AddChangeCallback(callback.Get());
-  AddProfileToAddressDataManager(test::GetFullProfile());
-}
 
 }  // namespace
 
