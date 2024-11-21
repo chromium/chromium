@@ -112,8 +112,7 @@ TEST_F(VpxQuantizerParserTest, InsufficientData) {
 
     const unsigned int first_partition_size =
         (frame->data[0] | (frame->data[1] << 8) | (frame->data[2] << 16)) >> 5;
-    if (frame->dependency ==
-        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+    if (frame->is_key_frame) {
       // Ten bytes should not be enough to decode the quantizer value
       // for a Key frame.
       EXPECT_EQ(-1, ParseVpxHeaderQuantizer(frame->data.first(10)));

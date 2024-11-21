@@ -64,8 +64,6 @@ class VideoEncoderTest
         std::vector<base::test::FeatureRef>{});
   }
 
-  ~VideoEncoderTest() override = default;
-
   void SetUp() final {
     VideoCodec codec = GetParam().first;
     codec_params_->codec = codec;
@@ -81,7 +79,7 @@ class VideoEncoderTest
     }
   }
 
-  void TearDown() final {
+  ~VideoEncoderTest() override {
     video_encoder_.reset();
     RunTasksAndAdvanceClock();
   }
@@ -275,13 +273,10 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     ASSERT_NE(expectation, expectations.end());
     EXPECT_EQ(expectation->second, encoded_frame->rtp_timestamp);
 
-    if (encoded_frame->dependency ==
-        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+    if (encoded_frame->is_key_frame) {
       EXPECT_EQ(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
       last_key_frame_id = encoded_frame->frame_id;
     } else {
-      EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::kDependent,
-                encoded_frame->dependency);
       EXPECT_GT(encoded_frame->frame_id, encoded_frame->referenced_frame_id);
       // There must always be a KEY frame before any DEPENDENT ones.
       ASSERT_FALSE(last_key_frame_id.is_null());
@@ -295,7 +290,6 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     if (is_testing_software_vp8_encoder()) {
       ASSERT_TRUE(std::isfinite(encoded_frame->encoder_utilization));
       EXPECT_LE(0.0, encoded_frame->encoder_utilization);
-      EXPECT_LE(0, encoded_frame->encoder_bitrate);
       ASSERT_TRUE(std::isfinite(encoded_frame->lossiness));
       EXPECT_LE(0.0, encoded_frame->lossiness);
     }

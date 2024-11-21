@@ -224,8 +224,7 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
   last_enqueued_frame_id_ = encoded_frame->frame_id;
   last_send_time_ = cast_environment_->Clock()->NowTicks();
 
-  if (!is_audio_ && encoded_frame->dependency ==
-                        openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
+  if (!is_audio_ && encoded_frame->is_key_frame) {
     VLOG_WITH_SSRC(1) << "Sending encoded key frame, id="
                       << encoded_frame->frame_id;
     frame_id_map_.clear();

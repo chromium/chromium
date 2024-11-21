@@ -18,12 +18,10 @@ namespace media::cast {
 TEST(OpenscreenConversionHelpersTest, EncodedFrameConversions) {
   SenderEncodedFrame original;
   original.encoder_utilization = 0.6f;
-  original.encoder_bitrate = 12345;
   original.lossiness = 0.5f;
   original.encode_completion_time =
       base::TimeTicks() + base::Milliseconds(1337);
-  original.dependency =
-      openscreen::cast::EncodedFrame::Dependency::kIndependent;
+  original.is_key_frame = true;
   original.frame_id = FrameId::first();
   original.rtp_timestamp = ToRtpTimeTicks(base::Seconds(3), 9000);
   original.reference_time = base::TimeTicks() + base::Milliseconds(1338);
@@ -35,7 +33,7 @@ TEST(OpenscreenConversionHelpersTest, EncodedFrameConversions) {
 
   const openscreen::cast::EncodedFrame converted =
       ToOpenscreenEncodedFrame(original);
-  EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::kIndependent,
+  EXPECT_EQ(openscreen::cast::EncodedFrame::Dependency::kKeyFrame,
             converted.dependency);
   EXPECT_EQ(openscreen::cast::FrameId(0), converted.frame_id);
   EXPECT_EQ(openscreen::cast::RtpTimeTicks(27000), converted.rtp_timestamp);
