@@ -192,6 +192,69 @@ public class ReorderDelegate {
     }
 
     /**
+     * Updates the location of the reordering tab. This 1. visually offsets the tab (clamped to the
+     * bounds of the strip) and 2. triggers a reorder (with animations) if the threshold is reached.
+     *
+     * @param stripViews The list of {@link StripLayoutView}.
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param deltaX The change in position for the reordering tab based on dragging and scrolling.
+     */
+    void updateReorderPosition(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            float deltaX) {
+        if (!getInReorderMode() || mInteractingTab == null || mReorderingForTabDrop) return;
+
+        int curIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
+        if (curIndex == TabModel.INVALID_TAB_INDEX) return;
+
+        // 1. Compute drag position.
+        float oldIdealX = mInteractingTab.getIdealX();
+        float oldScrollOffset = mScrollDelegate.getScrollOffset();
+        float offset = mInteractingTab.getOffsetX() + deltaX;
+
+        // 2. Attempt to move the tab. If successful, update other relevant properties.
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        if (reorderTabIfThresholdReached(groupTitles, stripTabs, offset, curIndex)) {
+            // 2.a. We may have exited reorder mode to display the confirmation dialog. If so, we
+            // should not set the new offset here, and instead let the tab slide back to its idealX.
+            if (!getInReorderMode()) return;
+            // 2.b. Since we just moved the tab we're dragging, adjust its offset so it stays in
+            // the same apparent position.
+            offset += oldIdealX - mInteractingTab.getIdealX();
+            // 2.c. When the strip is scrolling, deltaX is already accounted for by idealX. This is
+            // because idealX uses the scroll offset which has already been adjusted by deltaX.
+            if (mLastReorderScrollTime != 0) offset -= deltaX;
+            // 2.d. Group titles can affect minScrollOffset. When scrolled near the end of the
+            // strip, the scrollOffset being clamped can affect the apparent position.
+            offset -=
+                    MathUtils.flipSignIf(
+                            (mScrollDelegate.getScrollOffset() - oldScrollOffset), isRtl);
+        }
+
+        // 3. Limit offset based on tab position. First tab can't drag left, last tab can't drag
+        // right. If either is grouped, we allot additional drag distance to allow for dragging out
+        // of a group toward the edge of the strip.
+        // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
+        //  tab's trailing margin.
+        int newIndex = StripLayoutUtils.findIndexForTab(stripTabs, mInteractingTab.getTabId());
+        if (newIndex == 0) {
+            float limit =
+                    (stripViews[0] instanceof StripLayoutGroupTitle groupTitle)
+                            ? getDragOutThreshold(groupTitle, /* towardEnd= */ false)
+                            : mScrollDelegate.getReorderStartMargin();
+            offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
+        }
+        if (newIndex == stripTabs.length - 1) {
+            float limit = stripTabs[newIndex].getTrailingMargin();
+            offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
+        }
+        mInteractingTab.setOffsetX(offset);
+    }
+
+    /**
      * Stop reorder mode and clear any relevant state. Don't call if not in reorder mode.
      *
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
@@ -393,6 +456,74 @@ public class ReorderDelegate {
     }
 
     /**
+     * Handles the four different reordering cases:
+     *
+     * <pre>
+     * A] Tab is not interacting with tab groups. Reorder as normal.
+     * B] Tab is in a group. Maybe drag out of group.
+     * C] Tab is not in a group.
+     *  C.1] Adjacent group is collapsed. Maybe reorder past the collapsed group
+     *  C.2] Adjacent group is not collapsed. Maybe merge to group.
+     * </pre>
+     *
+     * If the tab has been dragged past the threshold for the given case, update the {@link
+     * TabModel} and return {@code true}. Else, return {@code false}.
+     *
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param offset The distance the interacting tab has been dragged from its ideal position.
+     * @return {@code True} if the reorder was successful. {@code False} otherwise.
+     */
+    private boolean reorderTabIfThresholdReached(
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            float offset,
+            int curIndex) {
+        boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
+        Tab curTab = mModel.getTabAt(curIndex);
+        Tab adjTab = mModel.getTabAt(curIndex + (towardEnd ? 1 : -1));
+        boolean isInGroup = mTabGroupModelFilter.isTabInTabGroup(curTab);
+        boolean mayDragInOrOutOfGroup =
+                adjTab == null
+                        ? isInGroup
+                        : StripLayoutUtils.notRelatedAndEitherTabInGroup(
+                                mTabGroupModelFilter, curTab, adjTab);
+
+        // Case A: Not interacting with tab groups.
+        if (!mayDragInOrOutOfGroup) {
+            return maybeSwapTab(stripTabs, offset, curIndex);
+        }
+
+        // Case B: Maybe drag out of group.
+        if (isInGroup) {
+            StripLayoutGroupTitle interactingGroupTitle =
+                    StripLayoutUtils.findGroupTitle(groupTitles, curTab.getRootId());
+            float threshold = getDragOutThreshold(interactingGroupTitle, towardEnd);
+            if (Math.abs(offset) <= threshold) return false;
+
+            moveInteractingTabOutOfGroup(groupTitles, stripTabs, interactingGroupTitle, towardEnd);
+            return true;
+        }
+
+        StripLayoutGroupTitle interactingGroupTitle =
+                StripLayoutUtils.findGroupTitle(groupTitles, adjTab.getRootId());
+        if (interactingGroupTitle.isCollapsed()) {
+            // Case C.1: Maybe drag past collapsed group.
+            float threshold = interactingGroupTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
+            if (Math.abs(offset) <= threshold) return false;
+
+            movePastCollapsedGroup(interactingGroupTitle, curIndex, towardEnd);
+            return true;
+        } else {
+            // Case C.2: Maybe merge to group.
+            if (Math.abs(offset) <= getDragInThreshold()) return false;
+
+            mergeInteractingTabToGroup(adjTab.getId(), interactingGroupTitle, towardEnd);
+            return true;
+        }
+    }
+
+    /**
      * Attempts to move the interacting tab out of its group. May prompt the user with a
      * confirmation dialog if the tab removal will result in a group deletion. Animates accordingly.
      *
@@ -401,7 +532,7 @@ public class ReorderDelegate {
      * @param groupTitle The title of the group the interacting tab is attempting to move out of.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
-    void moveInteractingTabOutOfGroup(
+    private void moveInteractingTabOutOfGroup(
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle groupTitle,
@@ -424,6 +555,7 @@ public class ReorderDelegate {
             // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
             if (!mActionConfirmationDelegate.isTabRemoveDialogSkipped()) {
                 stopReorderMode(groupTitles, stripTabs);
+                return;
             }
         } else {
             moveTabOutOfGroupInDirection(tabId, towardEnd);
@@ -444,7 +576,7 @@ public class ReorderDelegate {
      * @param groupTitle The title of the group the interacting tab is attempting to merge to.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
-    protected void mergeInteractingTabToGroup(
+    private void mergeInteractingTabToGroup(
             int destinationTabId, StripLayoutGroupTitle groupTitle, boolean towardEnd) {
         mTabGroupModelFilter.mergeTabsToGroup(
                 mInteractingTab.getTabId(), destinationTabId, /* skipUpdateTabModel= */ true);
@@ -461,7 +593,7 @@ public class ReorderDelegate {
      * @param curIndex The index of the interacting tab.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
-    protected void movePastCollapsedGroup(
+    private void movePastCollapsedGroup(
             StripLayoutGroupTitle groupTitle, int curIndex, boolean towardEnd) {
         // Move the tab, then animate the adjacent group indicator sliding.
         int numTabsToSkip =
@@ -480,7 +612,7 @@ public class ReorderDelegate {
      * @param curIndex The index of the interacting tab.
      * @return {@code True} if the reorder was successful. {@code False} otherwise.
      */
-    protected boolean maybeSwapTab(StripLayoutTab[] stripTabs, float offset, int curIndex) {
+    private boolean maybeSwapTab(StripLayoutTab[] stripTabs, float offset, int curIndex) {
         // TODO(crbug.com/372546700): Migrate to the pattern we use for the other reorder cases.
         //  i.e. check if we've reached the drag threshold in #reorderTabIfThresholdReached.
         final float moveThreshold = REORDER_OVERLAP_SWITCH_PERCENTAGE * mEffectiveTabWidth;
@@ -524,7 +656,7 @@ public class ReorderDelegate {
      * @param towardEnd True if dragging towards the end of the strip.
      * @return The threshold to drag out of a group.
      */
-    float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
+    private float getDragOutThreshold(StripLayoutGroupTitle groupTitle, boolean towardEnd) {
         float dragOutThreshold = getHalfTabWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
         return dragOutThreshold + (towardEnd ? 0 : groupTitle.getWidth());
     }
@@ -532,7 +664,7 @@ public class ReorderDelegate {
     /**
      * @return The threshold to drag into a group.
      */
-    float getDragInThreshold() {
+    private float getDragInThreshold() {
         return getHalfTabWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
     }
 

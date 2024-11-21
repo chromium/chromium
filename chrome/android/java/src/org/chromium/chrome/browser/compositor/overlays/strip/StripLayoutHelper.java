@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutT
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.INVALID_TIME;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
 
 import android.animation.Animator;
@@ -1792,7 +1791,8 @@ public class StripLayoutHelper
                 if (mReorderDelegate.getReorderingForTabDrop()) {
                     updateReorderPositionForTabDrop(x);
                 } else {
-                    updateReorderPosition(accumulatedDeltaX);
+                    mReorderDelegate.updateReorderPosition(
+                            mStripViews, mStripGroupTitles, mStripTabs, accumulatedDeltaX);
                 }
             }
         } else {
@@ -2594,7 +2594,8 @@ public class StripLayoutHelper
             if (mReorderDelegate.getReorderingForTabDrop()) {
                 updateReorderPositionForTabDrop(mReorderDelegate.getLastReorderX());
             } else {
-                updateReorderPosition(delta);
+                mReorderDelegate.updateReorderPosition(
+                        mStripViews, mStripGroupTitles, mStripTabs, delta);
             }
         }
     }
@@ -3190,11 +3191,6 @@ public class StripLayoutHelper
 
     private int findIndexForTab(int id) {
         return StripLayoutUtils.findIndexForTab(mStripTabs, id);
-    }
-
-    private int findStripViewIndexForStripTab(int curIndexInStripTab) {
-        return StripLayoutUtils.findStripViewIndexForStripTab(
-                mStripViews, mStripTabs, curIndexInStripTab);
     }
 
     private int getNumLiveTabs() {
@@ -3818,123 +3814,6 @@ public class StripLayoutHelper
         return stripLayoutTab.getFolioAttached()
                 && (isSelectedTab(stripLayoutTab.getTabId())
                         || stripLayoutTab.getContainerOpacity() == TAB_OPACITY_VISIBLE);
-    }
-
-    /**
-     * Handles the four different reordering cases:
-     *
-     * <pre>
-     * A] Tab is not interacting with tab groups. Reorder as normal.
-     * B] Tab is in a group. Maybe drag out of group.
-     * C] Tab is not in a group.
-     *  C.1] Adjacent group is collapsed. Maybe reorder past the collapsed group
-     *  C.2] Adjacent group is not collapsed. Maybe merge to group.
-     * </pre>
-     *
-     * If the tab has been dragged past the threshold for the given case, update the {@link
-     * TabModel} and return {@code true}. Else, return {@code false}.
-     *
-     * @param offset The distance the interacting tab has been dragged from its ideal position.
-     * @param curIndex The index of the interacting tab.
-     * @return {@code True} if the reorder was successful. {@code False} otherwise.
-     */
-    private boolean reorderTabIfThresholdReached(float offset, int curIndex) {
-        boolean towardEnd = (offset >= 0) ^ LocalizationUtils.isLayoutRtl();
-        Tab curTab = mModel.getTabAt(curIndex);
-        Tab adjTab = mModel.getTabAt(curIndex + (towardEnd ? 1 : -1));
-        boolean isInGroup = mTabGroupModelFilter.isTabInTabGroup(curTab);
-        boolean mayDragInOrOutOfGroup =
-                adjTab == null
-                        ? isInGroup
-                        : StripLayoutUtils.notRelatedAndEitherTabInGroup(
-                                mTabGroupModelFilter, curTab, adjTab);
-
-        // Case A: Not interacting with tab groups.
-        if (!mayDragInOrOutOfGroup) {
-            return mReorderDelegate.maybeSwapTab(mStripTabs, offset, curIndex);
-        }
-
-        // Case B: Maybe drag out of group.
-        if (isInGroup) {
-            StripLayoutGroupTitle interactingGroupTitle = findGroupTitle(curTab.getRootId());
-            float threshold =
-                    mReorderDelegate.getDragOutThreshold(interactingGroupTitle, towardEnd);
-            if (Math.abs(offset) <= threshold) return false;
-
-            mReorderDelegate.moveInteractingTabOutOfGroup(
-                    mStripGroupTitles, mStripTabs, interactingGroupTitle, towardEnd);
-            return true;
-        }
-
-        StripLayoutGroupTitle interactingGroupTitle = findGroupTitle(adjTab.getRootId());
-        if (interactingGroupTitle.isCollapsed()) {
-            // Case C.1: Maybe drag past collapsed group.
-            float threshold = interactingGroupTitle.getWidth() * REORDER_OVERLAP_SWITCH_PERCENTAGE;
-            if (Math.abs(offset) <= threshold) return false;
-
-            mReorderDelegate.movePastCollapsedGroup(interactingGroupTitle, curIndex, towardEnd);
-            return true;
-        } else {
-            // Case C.2: Maybe merge to group.
-            if (Math.abs(offset) <= mReorderDelegate.getDragInThreshold()) return false;
-
-            mReorderDelegate.mergeInteractingTabToGroup(
-                    adjTab.getId(), interactingGroupTitle, towardEnd);
-            return true;
-        }
-    }
-
-    private void updateReorderPosition(float deltaX) {
-        StripLayoutTab interactingTab = mReorderDelegate.getInteractingTab();
-        if (!mReorderDelegate.getInReorderMode()
-                || interactingTab == null
-                || mReorderDelegate.getReorderingForTabDrop()) {
-            return;
-        }
-
-        int curIndex = findIndexForTab(interactingTab.getTabId());
-        if (curIndex == TabModel.INVALID_TAB_INDEX) return;
-
-        // 1. Compute drag position.
-        float oldIdealX = interactingTab.getIdealX();
-        float oldScrollOffset = mScrollDelegate.getScrollOffset();
-        float offset = interactingTab.getOffsetX() + deltaX;
-
-        // 2. Attempt to move the tab. If successful, update other relevant properties.
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        if (reorderTabIfThresholdReached(offset, curIndex)) {
-            // 2.a. Since we just moved the tab we're dragging, adjust its offset so it stays in
-            // the same apparent position.
-            offset += oldIdealX - interactingTab.getIdealX();
-            // 2.b. When the strip is scrolling, deltaX is already accounted for by idealX. This is
-            // because idealX uses the scroll offset which has already been adjusted by deltaX.
-            if (mReorderDelegate.getLastReorderScrollTime() != 0) offset -= deltaX;
-            // 2.c. Group titles can affect minScrollOffset. When scrolled near the end of the
-            // strip, the scrollOffset being clamped can affect the apparent position.
-            offset -=
-                    MathUtils.flipSignIf(
-                            (mScrollDelegate.getScrollOffset() - oldScrollOffset), isRtl);
-        }
-
-        // 3. Limit offset based on tab position. First tab can't drag left, last tab can't drag
-        // right. If either is grouped, we allot additional drag distance to allow for dragging out
-        // of a group toward the edge of the strip.
-        // TODO(crbug.com/331854162): Refactor to set mStripStartMarginForReorder and the final
-        //  tab's trailing margin.
-        int newIndex = findIndexForTab(interactingTab.getTabId());
-        if (newIndex == 0) {
-            float limit =
-                    (mStripViews[0] instanceof StripLayoutGroupTitle groupTitle)
-                            ? mReorderDelegate.getDragOutThreshold(
-                                    groupTitle, /* towardEnd= */ false)
-                            : mScrollDelegate.getReorderStartMargin();
-            offset = isRtl ? Math.min(limit, offset) : Math.max(-limit, offset);
-        }
-        if (newIndex == mStripTabs.length - 1) {
-            float limit = mStripTabs[newIndex].getTrailingMargin();
-            offset = isRtl ? Math.max(-limit, offset) : Math.min(limit, offset);
-        }
-        interactingTab.setOffsetX(offset);
     }
 
     private float adjustXForTabDrop(float x) {
