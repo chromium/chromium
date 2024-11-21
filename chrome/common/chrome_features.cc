@@ -1605,4 +1605,12 @@ BASE_FEATURE(kPeriodicLogUploadMigration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
+// A feature to disable shortcut creation on CrOS, and instead treat
+// shortcuts as DIY apps.
+BASE_FEATURE(kDisableShortcutsEnableDiy,
+             "DisableShortcutsEnableDiy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace features
