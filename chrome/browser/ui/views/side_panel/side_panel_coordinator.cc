@@ -576,7 +576,7 @@ SidePanelCoordinator::GetUniqueKeyForKey(
   if (GetActiveContextualRegistry() &&
       GetActiveContextualRegistry()->GetEntryForKey(entry_key)) {
     return UniqueKey{
-        browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
+        browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
         entry_key};
   }
 
@@ -785,7 +785,7 @@ SidePanelCoordinator::GetNewActiveKeyOnTabChanged() {
   if (active_contextual_registry &&
       active_contextual_registry->active_entry()) {
     return UniqueKey{
-        browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
+        browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
         (*active_contextual_registry->active_entry())->key()};
   }
 
@@ -951,7 +951,7 @@ void SidePanelCoordinator::OnTabStripModelChanged(
     }
   } else if (new_contextual_registry &&
              new_contextual_registry->active_entry().has_value()) {
-    Show({browser_view_->browser()->GetActiveTabInterface()->GetTabHandle(),
+    Show({browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
           (*new_contextual_registry->active_entry())->key()},
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
          /*suppress_animations=*/true);

@@ -89,7 +89,7 @@ class SupervisedUserVerificationPage
   const GURL reauth_url_;
   raw_ptr<supervised_user::ChildAccountService> child_account_service_;
   // List with unique tab identifiers for spawned sign-in tabs.
-  std::list<uint32_t> signin_tabs_handle_id_list_;
+  std::list<tabs::TabHandle> signin_tabs_handle_list_;
   base::WeakPtrFactory<SupervisedUserVerificationPage> weak_factory_{this};
 };
 

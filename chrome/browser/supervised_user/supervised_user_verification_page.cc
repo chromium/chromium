@@ -96,18 +96,18 @@ SupervisedUserVerificationPage::SupervisedUserVerificationPage(
 SupervisedUserVerificationPage::~SupervisedUserVerificationPage() = default;
 
 void SupervisedUserVerificationPage::CloseSignInTabs() {
-  if (signin_tabs_handle_id_list_.empty()) {
+  if (signin_tabs_handle_list_.empty()) {
     return;
   }
 
   int closed_tab_count = 0;
   int skipped_tab_count = 0;
-  while (!signin_tabs_handle_id_list_.empty()) {
-    auto tab_handle_id = signin_tabs_handle_id_list_.front();
-    signin_tabs_handle_id_list_.pop_front();
+  while (!signin_tabs_handle_list_.empty()) {
+    const tabs::TabHandle tab_handle = signin_tabs_handle_list_.front();
+    signin_tabs_handle_list_.pop_front();
     // Obtains the tab associated with the unique tab handle id. A tab pointer
     // is only returned if the tab is still valid.
-    auto* tab_interface = tabs::TabInterface::MaybeGetFromHandle(tab_handle_id);
+    tabs::TabInterface* const tab_interface = tab_handle.Get();
     if (!tab_interface) {
       continue;
     }
@@ -211,7 +211,7 @@ void SupervisedUserVerificationPage::CommandReceived(
           signin_web_contents) {
         tabs::TabInterface* tab_interface =
             tabs::TabInterface::GetFromContents(signin_web_contents);
-        signin_tabs_handle_id_list_.emplace_back(tab_interface->GetTabHandle());
+        signin_tabs_handle_list_.emplace_back(tab_interface->GetHandle());
       }
       break;
     }

@@ -153,7 +153,7 @@ void SavedTabGroupWebContentsListener::PerformNavigation(const GURL& url) {
 }
 
 LocalTabID SavedTabGroupWebContentsListener::local_tab_id() const {
-  return local_tab_->GetTabHandle();
+  return local_tab_->GetHandle().raw_value();
 }
 
 content::WebContents* SavedTabGroupWebContentsListener::contents() const {

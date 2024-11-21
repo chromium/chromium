@@ -241,10 +241,6 @@ std::optional<tab_groups::TabGroupId> TabModel::GetGroup() const {
   return group_;
 }
 
-uint32_t TabModel::GetTabHandle() const {
-  return GetHandle().raw_value();
-}
-
 void TabModel::Close() {
   auto* window_interface = GetBrowserWindowInterface();
   auto* tab_strip = window_interface->GetTabStripModel();
@@ -329,11 +325,6 @@ TabInterface* TabInterface::MaybeGetFromContents(
     return nullptr;
   }
   return lookup->model();
-}
-
-// static
-TabInterface* TabInterface::MaybeGetFromHandle(uint32_t handle_id) {
-  return TabHandle(handle_id).Get();
 }
 
 }  // namespace tabs

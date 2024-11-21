@@ -388,7 +388,7 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
 
   // Close a group's tab.
   const int tab_id =
-      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
 
   // Assert the closed tab's data is correct in ProfileData.
@@ -654,7 +654,7 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
   ASSERT_EQ(2, browser2()->tab_strip_model()->count());
 
   const int tab_id =
-      browser2()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+      browser2()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
   handler()->CloseTab(tab_id);
@@ -673,7 +673,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
   AddTabWithTitle(browser3(), GURL(kTabUrl5), kTabName5);
 
   const int tab_id =
-      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
   browser2()->tab_strip_model()->CloseAllTabs();
   browser3()->tab_strip_model()->CloseAllTabs();
@@ -698,7 +698,8 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
 
-  int tab_id = browser1()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+  int tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
       base::BindLambdaForTesting(
@@ -804,7 +805,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
 
   const int tab_id =
-      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
 
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
@@ -831,7 +832,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
 
   const int tab_id =
-      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
 
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
@@ -868,7 +869,7 @@ TEST_F(TabSearchPageHandlerTest, TabDataToMojo) {
   EXPECT_EQ(mojo_tab_ptr->url,
             tab_data->tab()->GetContents()->GetLastCommittedURL());
   const int tab_id =
-      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle();
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }

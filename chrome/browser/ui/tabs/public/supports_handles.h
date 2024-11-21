@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_SUPPORTS_HANDLES_H_
-#define CHROME_BROWSER_UI_TABS_SUPPORTS_HANDLES_H_
+#ifndef CHROME_BROWSER_UI_TABS_PUBLIC_SUPPORTS_HANDLES_H_
+#define CHROME_BROWSER_UI_TABS_PUBLIC_SUPPORTS_HANDLES_H_
 
 // SupportsHandles is a way to add "handle" support to an object, such as a tab
 // or browser window which:
@@ -228,4 +228,4 @@ T* SupportsHandles<T, V>::Handle::Get() const {
   return internal::HandleHelper<T, V>::GetInstance().LookupObject(raw_value_);
 }
 
-#endif  // CHROME_BROWSER_UI_TABS_SUPPORTS_HANDLES_H_
+#endif  // CHROME_BROWSER_UI_TABS_PUBLIC_SUPPORTS_HANDLES_H_

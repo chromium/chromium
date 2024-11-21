@@ -15,7 +15,7 @@ namespace tabs {
 class MockTabInterface : public testing::NiceMock<TabInterface> {
  public:
   MockTabInterface();
-  ~MockTabInterface();
+  ~MockTabInterface() override;
 
   MOCK_METHOD(content::WebContents*, GetContents, (), (const, override));
   MOCK_METHOD(void, Close, (), (override));

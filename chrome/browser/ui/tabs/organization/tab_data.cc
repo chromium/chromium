@@ -16,7 +16,7 @@
 
 TabData::TabData(tabs::TabInterface* tab)
     : WebContentsObserver(tab->GetContents()),
-      tab_(tabs::TabHandle(tab->GetTabHandle())),
+      tab_(tab->GetHandle()),
       original_url_(tab->GetContents()->GetLastCommittedURL()) {
   original_tab_strip_model_ =
       tab->GetBrowserWindowInterface()->GetTabStripModel();

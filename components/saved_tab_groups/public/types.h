@@ -25,7 +25,7 @@ using LocalTabGroupID = base::Token;
 using LocalTabID = int;
 using LocalTabGroupID = tab_groups::TabGroupId;
 #else
-using LocalTabID = uint32_t;
+using LocalTabID = int32_t;
 using LocalTabGroupID = tab_groups::TabGroupId;
 #endif
 

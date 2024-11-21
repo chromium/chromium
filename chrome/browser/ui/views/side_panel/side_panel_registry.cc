@@ -109,9 +109,10 @@ bool SidePanelRegistry::Deregister(const SidePanelEntry::Key& key) {
           std::get_if<tabs::TabInterface*>(&owner_);
       tabs::TabInterface* tab = tab_ptr ? *tab_ptr : nullptr;
       // And it's for the active tab/window registry.
-      bool is_for_window_coordinator = !unique_key->tab_handle && !tab;
-      bool is_for_active_tab = unique_key->tab_handle && tab &&
-                               tab->GetTabHandle() == *unique_key->tab_handle;
+      const bool is_for_window_coordinator = !unique_key->tab_handle && !tab;
+      const bool is_for_active_tab =
+          unique_key->tab_handle && tab &&
+          tab->GetHandle() == *unique_key->tab_handle;
       // Synchronously close.
       if (is_for_window_coordinator || is_for_active_tab) {
         coordinator->Close(/*suppress_animations=*/true);

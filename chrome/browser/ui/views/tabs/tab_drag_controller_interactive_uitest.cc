@@ -2051,8 +2051,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  tabs::TabHandle dragged_tab = tabs::TabHandle(
-      browser()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle());
+  tabs::TabHandle dragged_tab =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
   // Move to the first tab and drag it enough so that it detaches.
   int tab_0_width = tab_strip->tab_at(0)->width();
@@ -2577,8 +2577,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragWhileDetached) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  tabs::TabHandle dragged_tab = tabs::TabHandle(
-      browser()->tab_strip_model()->GetTabAtIndex(0)->GetTabHandle());
+  tabs::TabHandle dragged_tab =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
   ui_test_utils::BrowserChangeObserver removed_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);

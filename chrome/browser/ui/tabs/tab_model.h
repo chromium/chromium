@@ -11,7 +11,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/tabs/supports_handles.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
@@ -29,9 +28,7 @@ namespace tabs {
 class TabCollection;
 class TabFeatures;
 
-class TabModel final : public SupportsHandles<TabModel>,
-                       public TabInterface,
-                       public TabStripModelObserver {
+class TabModel final : public TabInterface, public TabStripModelObserver {
  public:
   // Conceptually, tabs should always be a part of a normal window. There are
   // currently 2 cases where they are not:
@@ -144,7 +141,6 @@ class TabModel final : public SupportsHandles<TabModel>,
       views::WidgetDelegate* delegate) override;
   bool IsPinned() const override;
   std::optional<tab_groups::TabGroupId> GetGroup() const override;
-  uint32_t GetTabHandle() const override;
   void Close() override;
 
  private:
@@ -225,8 +221,6 @@ class TabModel final : public SupportsHandles<TabModel>,
   // Features that are per-tab will be owned by this class.
   std::unique_ptr<TabFeatures> tab_features_;
 };
-
-using TabHandle = TabModel::Handle;
 
 }  // namespace tabs
 

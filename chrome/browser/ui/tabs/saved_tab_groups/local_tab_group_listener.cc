@@ -36,7 +36,7 @@ LocalTabGroupListener::LocalTabGroupListener(
   std::optional<SavedTabGroup> group = service_->GetGroup(saved_guid);
   CHECK(group);
   for (const auto& [local_tab, saved_tab_guid] : tab_guid_mapping) {
-    const LocalTabID local_tab_id = local_tab->GetTabHandle();
+    const LocalTabID local_tab_id = local_tab->GetHandle().raw_value();
     service_->UpdateLocalTabId(local_id, saved_tab_guid, local_tab_id);
   }
 }
@@ -70,7 +70,7 @@ void LocalTabGroupListener::ResumeTracking() {
     tabs::TabInterface* const local_tab = local_tabs[i];
 
     const auto is_local_tab = [local_tab](const SavedTabGroupTab& saved_tab) {
-      return saved_tab.local_tab_id() == local_tab->GetTabHandle();
+      return saved_tab.local_tab_id() == local_tab->GetHandle().raw_value();
     };
     CHECK(std::find_if(saved_tabs.begin(), saved_tabs.end(), is_local_tab) !=
           saved_tabs.end());
@@ -112,7 +112,7 @@ void LocalTabGroupListener::AddTabFromLocal(tabs::TabInterface* local_tab,
       tab_strip_model->GetIndexOfTab(local_tab) -
       tabstrip_index_of_first_tab_in_group.value();
 
-  LocalTabID local_tab_id = local_tab->GetTabHandle();
+  LocalTabID local_tab_id = local_tab->GetHandle().raw_value();
 
   // Create a new SavedTabGroupTab linked to `local_tab_id`.
   SavedTabGroupTab tab =
@@ -135,7 +135,9 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   }
 
   const LocalTabID local_tab_id =
-      tab_strip_model->GetTabForWebContents(web_contents)->GetTabHandle();
+      tab_strip_model->GetTabForWebContents(web_contents)
+          ->GetHandle()
+          .raw_value();
   auto saved_group = service_->GetGroup(local_id_);
   CHECK(saved_group);
   const auto* saved_tab = saved_group->GetTab(local_tab_id);
@@ -184,7 +186,9 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   // Remove the tab from the service. If it's the last tab, the group
   // listener itself should be deleted.
   const LocalTabID local_tab_id =
-      tabs::TabInterface::GetFromContents(web_contents)->GetTabHandle();
+      tabs::TabInterface::GetFromContents(web_contents)
+          ->GetHandle()
+          .raw_value();
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
   CHECK(saved_group);
@@ -257,10 +261,10 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   // correct state.
   int next_index_in_tab_strip = group_index_range.start();
   for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
-    tabs::TabInterface* tab = saved_tab.local_tab_id().has_value()
-                                  ? tabs::TabInterface::MaybeGetFromHandle(
-                                        saved_tab.local_tab_id().value())
-                                  : nullptr;
+    tabs::TabInterface* tab =
+        saved_tab.local_tab_id().has_value()
+            ? tabs::TabHandle(saved_tab.local_tab_id().value()).Get()
+            : nullptr;
     MatchLocalTabToSavedTab(saved_tab, tab, tab_strip_model,
                             next_index_in_tab_strip);
     next_index_in_tab_strip++;
@@ -323,7 +327,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
 
   // Listen to navigations.
   service_->UpdateLocalTabId(local_id_, tab.saved_tab_guid(),
-                             local_tab->GetTabHandle());
+                             local_tab->GetHandle().raw_value());
 }
 
 void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
@@ -333,7 +337,7 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
   const std::vector<tabs::TabInterface*> tabs_in_local_group =
       SavedTabGroupUtils::GetTabsInGroup(local_id_);
   for (tabs::TabInterface* const local_tab : tabs_in_local_group) {
-    if (!saved_group->ContainsTab(local_tab->GetTabHandle())) {
+    if (!saved_group->ContainsTab(local_tab->GetHandle().raw_value())) {
       RemoveTabFromSync(local_tab, /*should_close_tab=*/true);
     }
   }

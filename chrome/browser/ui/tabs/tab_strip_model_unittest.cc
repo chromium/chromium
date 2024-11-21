@@ -741,18 +741,14 @@ TEST_P(TabStripModelTest, TestTabHandlesStaticTabstrip) {
   EXPECT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle1 =
-      tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle());
+  const tabs::TabHandle handle1 = tabstrip.GetTabAtIndex(0)->GetHandle();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
-  const tabs::TabHandle handle2 =
-      tabs::TabHandle(tabstrip.GetTabAtIndex(1)->GetTabHandle());
+  const tabs::TabHandle handle2 = tabstrip.GetTabAtIndex(1)->GetHandle();
 
   EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle1.Get()));
-  EXPECT_EQ(handle1,
-            tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle()));
+  EXPECT_EQ(handle1, tabstrip.GetTabAtIndex(0)->GetHandle());
   EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle2.Get()));
-  EXPECT_EQ(handle2,
-            tabs::TabHandle(tabstrip.GetTabAtIndex(1)->GetTabHandle()));
+  EXPECT_EQ(handle2, tabstrip.GetTabAtIndex(1)->GetHandle());
 }
 
 TEST_P(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
@@ -761,20 +757,16 @@ TEST_P(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
   EXPECT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle1 =
-      tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle());
+  const tabs::TabHandle handle1 = tabstrip.GetTabAtIndex(0)->GetHandle();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
-  const tabs::TabHandle handle2 =
-      tabs::TabHandle(tabstrip.GetTabAtIndex(1)->GetTabHandle());
+  const tabs::TabHandle handle2 = tabstrip.GetTabAtIndex(1)->GetHandle();
 
   tabstrip.MoveWebContentsAt(0, 1, false);
 
   EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle2.Get()));
-  EXPECT_EQ(handle2,
-            tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle()));
+  EXPECT_EQ(handle2, tabstrip.GetTabAtIndex(0)->GetHandle());
   EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle1.Get()));
-  EXPECT_EQ(handle1,
-            tabs::TabHandle(tabstrip.GetTabAtIndex(1)->GetTabHandle()));
+  EXPECT_EQ(handle1, tabstrip.GetTabAtIndex(1)->GetHandle());
 }
 
 TEST_P(TabStripModelTest, TestTabHandlesTabClosed) {
@@ -783,8 +775,7 @@ TEST_P(TabStripModelTest, TestTabHandlesTabClosed) {
   EXPECT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle =
-      tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle());
+  const tabs::TabHandle handle = tabstrip.GetTabAtIndex(0)->GetHandle();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
 
   tabstrip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
@@ -802,8 +793,8 @@ TEST_P(TabStripModelTest, TestTabHandlesOutOfBounds) {
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
 
   EXPECT_EQ(TabStripModel::kNoTab, tabstrip.GetIndexOfTab(nullptr));
-  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(2)->GetTabHandle(), "");
-  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(-1)->GetTabHandle(), "");
+  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(2)->GetHandle(), "");
+  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(-1)->GetHandle(), "");
 }
 
 TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
@@ -815,14 +806,13 @@ TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   ASSERT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle =
-      tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle());
+  const tabs::TabHandle handle = tabstrip.GetTabAtIndex(0)->GetHandle();
   content::WebContents* raw_contents = handle.Get()->GetContents();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
   content::WebContents* const opener = tabstrip.GetWebContentsAt(1);
 
   ASSERT_EQ(0, tabstrip.GetIndexOfTab(handle.Get()));
-  ASSERT_EQ(handle, tabs::TabHandle(tabstrip.GetTabAtIndex(0)->GetTabHandle()));
+  ASSERT_EQ(handle, tabstrip.GetTabAtIndex(0)->GetHandle());
   ASSERT_EQ(&tabstrip,
             handle.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 

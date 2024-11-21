@@ -1156,7 +1156,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
   tab_data->active = tab->IsInForeground();
-  tab_data->tab_id = tab->GetTabHandle();
+  tab_data->tab_id = tab->GetHandle().raw_value();
   tab_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
   if (group_id.has_value()) {
@@ -1269,7 +1269,7 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     std::set<SessionID> tab_restore_ids;
     for (const auto& removed_tab : change.GetRemove()->contents) {
       tabs::TabInterface* tab = removed_tab.tab;
-      tab_ids.push_back(tab->GetTabHandle());
+      tab_ids.push_back(tab->GetHandle().raw_value());
 
       if (removed_tab.session_id.has_value() &&
           removed_tab.session_id.value().is_valid()) {
@@ -1414,8 +1414,9 @@ TabSearchPageHandler::GetMojoForTabOrganizationSession(
   mojo_session->session_id = session->session_id();
   mojo_session->error = tab_search::mojom::TabOrganizationError::kNone;
   mojo_session->active_tab_id =
-      session->base_session_tab() ? session->base_session_tab()->GetTabHandle()
-                                  : tabs::TabHandle::NullValue;
+      session->base_session_tab()
+          ? session->base_session_tab()->GetHandle().raw_value()
+          : tabs::TabHandle::NullValue;
   std::vector<tab_search::mojom::TabOrganizationPtr> organizations;
 
   TabOrganizationRequest::State state = session->request()->state();

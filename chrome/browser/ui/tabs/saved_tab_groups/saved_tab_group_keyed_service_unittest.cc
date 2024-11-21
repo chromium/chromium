@@ -865,8 +865,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   service()->SaveGroup(group_id);
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
-  LocalTabID first_tab_id = tabstrip->GetTabAtIndex(0)->GetTabHandle();
-  LocalTabID second_tab_id = tabstrip->GetTabAtIndex(1)->GetTabHandle();
+  LocalTabID first_tab_id = tabstrip->GetTabAtIndex(0)->GetHandle().raw_value();
+  LocalTabID second_tab_id =
+      tabstrip->GetTabAtIndex(1)->GetHandle().raw_value();
 
   ASSERT_EQ(2u, group->saved_tabs().size());
   EXPECT_EQ(first_tab_id, group->saved_tabs()[0].local_tab_id().value());
@@ -916,8 +917,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   const SavedTabGroup* group = service()->model()->Get(group_id);
 
-  LocalTabID tab_0_local_id = tab_0->GetTabHandle();
-  LocalTabID tab_1_local_id = tab_1->GetTabHandle();
+  LocalTabID tab_0_local_id = tab_0->GetHandle().raw_value();
+  LocalTabID tab_1_local_id = tab_1->GetHandle().raw_value();
 
   std::unique_ptr<content::WebContents> replacement_web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
