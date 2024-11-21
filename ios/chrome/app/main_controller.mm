@@ -138,6 +138,7 @@
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "net/base/apple/url_conversions.h"
+#import "rlz/buildflags/buildflags.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
 
@@ -147,7 +148,12 @@
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 #import "ios/chrome/app/dump_documents_statistics.h"
-#endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+#endif
+
+#if BUILDFLAG(ENABLE_RLZ)
+#import "components/rlz/rlz_tracker.h"                        // nogncheck
+#import "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -945,7 +951,13 @@ void BeginMemoryExperimentationAfterDelay() {
 
       case ProfileInitStage::kLoadProfile:
       case ProfileInitStage::kMigrateStorage:
+        // Nothing to do.
+        break;
+
       case ProfileInitStage::kProfileLoaded:
+        [self scheduleRLZInitWithProfile:profileState.profile];
+        break;
+
       case ProfileInitStage::kPrepareUI:
       case ProfileInitStage::kUIReady:
       case ProfileInitStage::kFirstRun:
@@ -1130,6 +1142,10 @@ void BeginMemoryExperimentationAfterDelay() {
     return;
   }
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
+
+#if BUILDFLAG(ENABLE_RLZ)
+  rlz::RLZTracker::CleanupRlz();
+#endif
 
   _chromeMain.reset();
 }
@@ -1504,6 +1520,26 @@ void BeginMemoryExperimentationAfterDelay() {
   ios::provider::ScheduleAppDistributionNotifications(URLLoaderFactory,
                                                       isFirstRun);
   ios::provider::InitializeFirebase(installDate, isFirstRun);
+}
+
+// Schedules the initialization of the RLZ library with a give profile. This
+// method must only be called once. If this is the first run of the app, it
+// will record the installation event.
+- (void)scheduleRLZInitWithProfile:(ProfileIOS*)profile {
+#if BUILDFLAG(ENABLE_RLZ)
+  DCHECK(profile);
+  PrefService* prefs = profile->GetPrefs();
+
+  // Negative delay means to send ping immediately after first recorded search.
+  const int pingDelay = prefs->GetInteger(FirstRun::GetPingDelayPrefName());
+  rlz::RLZTracker::SetRlzDelegate(std::make_unique<RLZTrackerDelegateImpl>());
+  rlz::RLZTracker::InitRlzDelayed(
+      FirstRun::IsChromeFirstRun(), pingDelay < 0,
+      base::Milliseconds(abs(pingDelay)),
+      RLZTrackerDelegateImpl::IsGoogleDefaultSearch(profile),
+      RLZTrackerDelegateImpl::IsGoogleHomepage(profile),
+      RLZTrackerDelegateImpl::IsGoogleInStartpages(profile));
+#endif
 }
 
 // Records launch metrics when the application and all initial profiles have

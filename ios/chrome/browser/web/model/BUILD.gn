@@ -4,7 +4,6 @@
 
 import("//base/allocator/allocator.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
-import("//rlz/buildflags/buildflags.gni")
 
 source_set("model") {
   sources = [
@@ -335,7 +334,6 @@ source_set("web_internal") {
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//net",
-    "//rlz/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
     "//ui/display",
@@ -346,10 +344,6 @@ source_set("web_internal") {
     "UIKit.framework",
     "Foundation.framework",
   ]
-
-  if (enable_rlz) {
-    deps += [ "//ios/chrome/browser/rlz" ]
-  }
 }
 
 source_set("unit_tests_internal") {

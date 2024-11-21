@@ -16,6 +16,7 @@ import("//ios/chrome/app/chrome_app.gni")
 import("//ios/chrome/features.gni")
 import("//ios/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 declare_args() {
   # Controls whether fast_app_terminate_buildflags is enabled
@@ -519,6 +520,7 @@ source_set("app_internal") {
     "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",
+    "//rlz/buildflags",
     "//skia",
     "//ui/base",
     "//ui/gfx",
@@ -528,6 +530,13 @@ source_set("app_internal") {
 
   if (ios_enable_credential_provider_extension) {
     deps += [ ":credential_provider_migrator_app_agent" ]
+  }
+
+  if (enable_rlz) {
+    deps += [
+      "//components/rlz",
+      "//ios/chrome/browser/rlz",
+    ]
   }
 
   frameworks = [ "MediaPlayer.framework" ]

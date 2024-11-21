@@ -76,16 +76,10 @@
 #import "net/http/http_network_layer.h"
 #import "net/http/http_stream_factory.h"
 #import "net/url_request/url_request.h"
-#import "rlz/buildflags/buildflags.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/resource/resource_bundle.h"
-
-#if BUILDFLAG(ENABLE_RLZ)
-#import "components/rlz/rlz_tracker.h"                        // nogncheck
-#import "ios/chrome/browser/rlz/rlz_tracker_delegate_impl.h"  // nogncheck
-#endif
 
 #if DCHECK_IS_ON()
 #import "ui/display/screen_base.h"
@@ -348,28 +342,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       "");
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
-#if BUILDFLAG(ENABLE_RLZ)
-  // TODO(crbug.com/325257407): Factor all of the code that uses this to instead
-  // initialize for every profile.
-  std::vector<ProfileIOS*> profiles = profile_manager->GetLoadedProfiles();
-  ProfileIOS* last_used_profile = profiles.at(0);
-
-  // Init the RLZ library. This just schedules a task on the file thread to be
-  // run sometime later. If this is the first run we record the installation
-  // event.
-  int ping_delay = last_used_profile->GetPrefs()->GetInteger(
-      FirstRun::GetPingDelayPrefName());
-  // Negative ping delay means to send ping immediately after a first search is
-  // recorded.
-  rlz::RLZTracker::SetRlzDelegate(base::WrapUnique(new RLZTrackerDelegateImpl));
-  rlz::RLZTracker::InitRlzDelayed(
-      FirstRun::IsChromeFirstRun(), ping_delay < 0,
-      base::Milliseconds(abs(ping_delay)),
-      RLZTrackerDelegateImpl::IsGoogleDefaultSearch(last_used_profile),
-      RLZTrackerDelegateImpl::IsGoogleHomepage(last_used_profile),
-      RLZTrackerDelegateImpl::IsGoogleInStartpages(last_used_profile));
-#endif  // BUILDFLAG(ENABLE_RLZ)
-
   TranslateServiceIOS::Initialize();
 
   // Request new variations seed information from server.
@@ -394,9 +366,6 @@ void IOSChromeMainParts::PostMainMessageLoopRun() {
   segmentation_platform::UkmDatabaseClientHolder::GetClientInstance(nullptr)
       .PostMessageLoopRun();
 
-#if BUILDFLAG(ENABLE_RLZ)
-  rlz::RLZTracker::CleanupRlz();
-#endif  // BUILDFLAG(ENABLE_RLZ)
   application_context_->StartTearDown();
 }
 

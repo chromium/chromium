@@ -27,6 +27,7 @@ include_rules = [
   "+components/previous_session_info/previous_session_info.h",
   "+components/reading_list/core",
   "+components/reading_list/ios",
+  "+components/rlz",
   "+components/search_engines",
   "+components/send_tab_to_self",
   "+components/signin/internal",
@@ -49,6 +50,7 @@ include_rules = [
   "+ios/net",
   "+ios/public/provider/chrome",
   "+mojo/core/embedder/embedder.h",
+  "+rlz/buildflags",
   "+third_party/breakpad/breakpad/src/client/ios",
   "+third_party/crashpad/crashpad/client",
 
