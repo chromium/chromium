@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_network_issue_alert_presenter.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
@@ -61,12 +62,10 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/web_state.h"
-#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
@@ -91,7 +90,8 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
                                       LensOverlayResultConsumer,
                                       LensOverlayDetentsChangeObserver,
                                       LensOverlayConsentViewControllerDelegate,
-                                      LensOverlayPanTrackerDelegate>
+                                      LensOverlayPanTrackerDelegate,
+                                      LensOverlayNetworkIssueDelegate>
 
 // Whether the `_containerViewController` is currently presented.
 @property(nonatomic, assign, readonly) BOOL isLensOverlayVisible;
@@ -156,6 +156,9 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
   /// Configuration factory.
   LensOverlayConfigurationFactory* _lensConfigurationFactory;
+
+  /// Network issue alert presenter.
+  LensOverlayNetworkIssueAlertPresenter* _networkIssueAlertPresenter;
 }
 
 #pragma mark - public
@@ -189,6 +192,10 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   // lens.
   _mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
+
+  _networkIssueAlertPresenter = [[LensOverlayNetworkIssueAlertPresenter alloc]
+      initWithBaseViewController:_containerViewController];
+  _networkIssueAlertPresenter.delegate = self;
 
   if ([self termsOfServiceAccepted]) {
     [_selectionViewController start];
@@ -571,6 +578,13 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   }
 }
 
+#pragma mark - LensOverlayNetworkIssueDelegate
+
+- (void)onNetworkIssueAlertAcknowledged {
+  [self destroyLensUI:YES
+               reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
+}
+
 #pragma mark - LensOverlayDetentsChangeObserver
 
 - (void)onBottomSheetDimensionStateChanged:(SheetDimensionState)state {
@@ -680,7 +694,7 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
 - (void)handleSearchRequestErrored {
   [_resultMediator handleSearchRequestErrored];
-  [self showNoInternetAlert];
+  [_networkIssueAlertPresenter showAlert];
 }
 
 #pragma mark - LensOverlayConsentViewControllerDelegate
@@ -727,33 +741,6 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
   [HandlerForProtocol(self.browser->GetCommandDispatcher(), ApplicationCommands)
       openURLInNewTab:command];
-}
-
-- (void)showNoInternetAlert {
-  if (!_containerViewController) {
-    return;
-  }
-
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_TITLE)
-                       message:l10n_util::GetNSString(
-                                   IDS_IOS_LENS_ALERT_SUBTITLE)
-                preferredStyle:UIAlertControllerStyleAlert];
-
-  __weak __typeof(self) weakSelf = self;
-  UIAlertAction* defaultAction = [UIAlertAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_CLOSE_ACTION)
-                style:UIAlertActionStyleDefault
-              handler:^(UIAlertAction* action) {
-                [weakSelf destroyLensUI:YES
-                                 reason:lens::LensOverlayDismissalSource::
-                                            kLensPermissionsDenied];
-              }];
-  [alert addAction:defaultAction];
-
-  [_containerViewController presentViewController:alert
-                                         animated:YES
-                                       completion:nil];
 }
 
 - (BOOL)shouldShowConsentFlow {
@@ -890,6 +877,7 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
   [_displayLink invalidate];
   _displayLink = nil;
   _scopedForceOrientation.reset();
+  _networkIssueAlertPresenter = nil;
 }
 
 // The tab helper for the active web state.
