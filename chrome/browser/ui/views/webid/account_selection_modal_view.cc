@@ -363,7 +363,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateHeader() {
       std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
                                      views::style::STYLE_HEADLINE_4));
   SetLabelProperties(title_label_);
-  title_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  title_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
 
   return header;
 }
@@ -974,7 +974,7 @@ void AccountSelectionModalView::
         l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
     SetLabelProperties(body_label_);
-    body_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   }
 
   // Make sure not to keep dangling pointers around first. We do not reset
