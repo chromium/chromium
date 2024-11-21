@@ -133,6 +133,8 @@ void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
 // TODO(crbug.com/377126728): Deprecate this method.
 void LogFopSelectorShown(bool shown);
 
+// TODO(crbug.com/377126728): Remove this method after 11-24-2024, when all
+// metrics have been merged into M-132 milestone branch.
 // Log the overall transaction result. The transactions is considered to have
 // started from the time payment was offered to the user.
 void LogTransactionResult(TransactionResult result,

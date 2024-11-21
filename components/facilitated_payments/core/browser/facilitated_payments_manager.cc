@@ -189,9 +189,6 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     bool is_prompt_accepted,
     int64_t selected_instrument_id) {
   if (!is_prompt_accepted) {
-    LogTransactionResult(TransactionResult::kAbandoned, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
     return;
   }
   LogFopSelected();
