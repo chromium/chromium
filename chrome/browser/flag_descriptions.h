@@ -1713,6 +1713,8 @@ extern const char kLeftHandSideActivityIndicatorsDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kMerchantTrustName[];
 extern const char kMerchantTrustDescription[];
+extern const char kPrivacyPolicyInsightsName[];
+extern const char kPrivacyPolicyInsightsDescription[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

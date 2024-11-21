@@ -18766,6 +18766,7 @@ from previous Chrome versions.
   <int value="-614919871" label="NtpDriveModuleShowSixFiles:enabled"/>
   <int value="-614223913"
       label="ClickToCallContextMenuForSelectedText:enabled"/>
+  <int value="-613931316" label="PrivacyPolicyInsights:disabled"/>
   <int value="-613596048" label="new-canvas-2d-api"/>
   <int value="-613595118" label="StarterPackIPH:enabled"/>
   <int value="-613072171" label="ElementCapture:enabled"/>
@@ -19778,6 +19779,7 @@ from previous Chrome versions.
   <int value="-211162053" label="OmniboxHeaderPaddingUpdate:enabled"/>
   <int value="-208587977" label="OmniboxMaterialDesignWeatherIcons:enabled"/>
   <int value="-208435024" label="EnableUsernameCorrection:enabled"/>
+  <int value="-208357844" label="PrivacyPolicyInsights:enabled"/>
   <int value="-207858780" label="EnableAIPromptAPI:disabled"/>
   <int value="-206393363" label="enable-scroll-prediction"/>
   <int value="-205975637" label="WebUIDarkMode:enabled"/>

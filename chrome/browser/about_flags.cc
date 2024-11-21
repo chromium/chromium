@@ -8530,6 +8530,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kMerchantTrust)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"privacy-policy-insights", flag_descriptions::kPrivacyPolicyInsightsName,
+     flag_descriptions::kPrivacyPolicyInsightsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(page_info::kPrivacyPolicyInsights)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"cros-block-warnings",
      flag_descriptions::kCrosSystemLevelPermissionBlockedWarningsName,

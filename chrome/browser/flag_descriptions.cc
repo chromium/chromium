@@ -2987,6 +2987,12 @@ const char kMerchantTrustDescription[] =
     "Enables the merchant trust UI in page info.";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kPrivacyPolicyInsightsName[] = "Privacy Policy Insights";
+const char kPrivacyPolicyInsightsDescription[] =
+    "Enables the privacy policy insights UI in page info.";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kCrosSystemLevelPermissionBlockedWarningsName[] =
     "Chrome OS block warnings";

@@ -29,4 +29,8 @@ BASE_FEATURE(kMerchantTrust,
              "MerchantTrust",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivacyPolicyInsights,
+             "PrivacyPolicyInsights",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace page_info
