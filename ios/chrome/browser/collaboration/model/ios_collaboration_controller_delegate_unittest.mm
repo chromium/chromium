@@ -100,7 +100,8 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
   InitJoinFlowDelegate();
   base::MockCallback<CollaborationControllerDelegate::ResultCallback>
       completion_callback;
-  delegate_->ShowJoinDialog(completion_callback.Get());
+  data_sharing::SharedDataPreview preview_data;
+  delegate_->ShowJoinDialog(preview_data, completion_callback.Get());
   EXPECT_TRUE(base_view_controller_.presentedViewController);
   // The callback is not expected to be called, as it is called when the
   // given ShareKit flow returns, i.e. when the presented view controller is

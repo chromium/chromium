@@ -169,18 +169,19 @@ class CheckingFlowRequirementsState : public ControllerState {
       case CollaborationController::Flow::kJoin: {
         // Check if user is already part of the group.
         if (IsPeopleGroupInDataSharing()) {
-          if (!IsTabGroupInSync()) {
-            controller->TransitionTo(
-                StateId::kWaitingForSyncAndDataSharingGroup);
+          if (IsTabGroupInSync()) {
+            controller->TransitionTo(StateId::kOpeningLocalTabGroup);
             return;
           }
 
-          controller->TransitionTo(StateId::kOpeningLocalTabGroup);
+          controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
           return;
         }
 
         // If user is not part of the group, do a readgroup to ensure version
         // match.
+        // TODO(crbug.com/380113830): Add preview API call here to fetch preview
+        // data.
         controller->data_sharing_service()->ReadGroup(
             controller->token().group_id,
             base::BindOnce(&CheckingFlowRequirementsState::
@@ -219,16 +220,19 @@ class AddingUserToGroupState : public ControllerState {
       : ControllerState(id, controller) {}
 
   void OnEnter(const ErrorInfo& error) override {
+    // TODO(crbug.com/380113830): Add preview data here.
+    data_sharing::SharedDataPreview preview_data;
     controller->delegate()->ShowJoinDialog(
-        base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
-                       weak_ptr_factory_.GetWeakPtr()));
+        preview_data, base::BindOnce(&AddingUserToGroupState::ProcessOutcome,
+                                     weak_ptr_factory_.GetWeakPtr()));
   }
+
   void OnProcessingFinished() override {
-    if (!IsTabGroupInSync() || !IsPeopleGroupInDataSharing()) {
-      controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
+    if (IsTabGroupInSync() && IsPeopleGroupInDataSharing()) {
+      controller->TransitionTo(StateId::kOpeningLocalTabGroup);
       return;
     }
-    controller->TransitionTo(StateId::kOpeningLocalTabGroup);
+    controller->TransitionTo(StateId::kWaitingForSyncAndDataSharingGroup);
   }
 };
 
@@ -244,9 +248,6 @@ class WaitingForSyncAndDataSharingGroup
     // service.
     tab_group_sync_observer_.Observe(controller->tab_group_sync_service());
     data_sharing_observer_.Observe(controller->data_sharing_service());
-
-    // Force update sync.
-    controller->sync_service()->TriggerRefresh({syncer::SHARED_TAB_GROUP_DATA});
   }
 
   // ControllerState implementation.
@@ -254,10 +255,15 @@ class WaitingForSyncAndDataSharingGroup
     controller->TransitionTo(StateId::kOpeningLocalTabGroup);
   }
 
+  void OnEnter(const ErrorInfo& error) override {
+    // Force update sync.
+    controller->sync_service()->TriggerRefresh({syncer::SHARED_TAB_GROUP_DATA});
+  }
+
   // TabGroupSyncService::Observer implementation.
   void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
                        tab_groups::TriggerSource source) override {
-    if (group.collaboration_id().has_value() &&
+    if (group.is_shared_tab_group() &&
         group.collaboration_id().value() ==
             tab_groups::CollaborationId(controller->token().group_id.value()) &&
         IsPeopleGroupInDataSharing()) {

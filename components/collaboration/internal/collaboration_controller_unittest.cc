@@ -146,8 +146,8 @@ TEST_F(CollaborationControllerTest, FullFlowAllStates) {
   GroupData group_data = GroupData(group_id, /*display_name=*/"",
                                    /*members=*/{}, kAccessToken);
   base::OnceCallback<void(Outcome)> join_ui_callback;
-  EXPECT_CALL(*delegate_, ShowJoinDialog(IsNotNullCallback()))
-      .WillOnce(MoveArg<0>(&join_ui_callback));
+  EXPECT_CALL(*delegate_, ShowJoinDialog(_, IsNotNullCallback()))
+      .WillOnce(MoveArg<1>(&join_ui_callback));
 
   // 4. CheckingFlowRequirements -> AddingUserToGroup state.
   std::move(group_data_callback).Run(group_data);

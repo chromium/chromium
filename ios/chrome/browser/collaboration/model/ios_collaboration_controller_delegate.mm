@@ -73,7 +73,9 @@ void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange() {
   collaboration_flow_->share_kit_service()->PrimaryAccountChanged();
 }
 
-void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
+void IOSCollaborationControllerDelegate::ShowJoinDialog(
+    data_sharing::SharedDataPreview preview_data,
+    ResultCallback result) {
   CHECK_EQ(collaboration_flow_->type(),
            CollaborationFlowConfiguration::Type::kJoin);
   const CollaborationFlowConfigurationJoin& join_flow =

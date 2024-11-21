@@ -24,7 +24,11 @@ class MockCollaborationControllerDelegate
   MOCK_METHOD(void, Cancel, (ResultCallback result), (override));
   MOCK_METHOD(void, ShowAuthenticationUi, (ResultCallback result), (override));
   MOCK_METHOD(void, NotifySignInAndSyncStatusChange, (), (override));
-  MOCK_METHOD(void, ShowJoinDialog, (ResultCallback result), (override));
+  MOCK_METHOD(void,
+              ShowJoinDialog,
+              (data_sharing::SharedDataPreview preview_data,
+               ResultCallback result),
+              (override));
   MOCK_METHOD(void, ShowShareDialog, (ResultCallback result), (override));
   MOCK_METHOD(void, PromoteTabGroup, (ResultCallback result), (override));
 };
