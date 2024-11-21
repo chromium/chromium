@@ -1743,10 +1743,11 @@ enum HeaderBehaviour {
     }
     _fakeStatusBarView.hidden = !canShowTabStrip;
     [self addConstraintsToPrimaryToolbar];
-    // If tabstrip is coming back due to a window resize or screen rotation,
-    // reset the full screen controller to adjust the tabstrip position.
-    if (ShouldShowCompactToolbar(previousTraitCollection) &&
-        !ShouldShowCompactToolbar(self)) {
+    // If tabstrip is leaving or coming back due to a window resize or screen
+    // rotation, reset the full screen controller to adjust the tabstrip
+    // position and toolbar constraints.
+    if (ShouldShowCompactToolbar(previousTraitCollection) !=
+        ShouldShowCompactToolbar(self)) {
       [self
           updateForFullscreenProgress:self.fullscreenController->GetProgress()];
     }
