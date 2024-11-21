@@ -22,6 +22,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,6 +34,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
+#include "net/base/url_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/https_record_rdata.h"
@@ -45,15 +47,6 @@
 namespace net {
 
 namespace {
-
-#define CACHE_HISTOGRAM_TIME(name, time) \
-  UMA_HISTOGRAM_LONG_TIMES("DNS.HostCache." name, time)
-
-#define CACHE_HISTOGRAM_COUNT(name, count) \
-  UMA_HISTOGRAM_COUNTS_1000("DNS.HostCache." name, count)
-
-#define CACHE_HISTOGRAM_ENUM(name, value, max) \
-  UMA_HISTOGRAM_ENUMERATION("DNS.HostCache." name, value, max)
 
 // String constants for dictionary keys.
 const char kSchemeKey[] = "scheme";
@@ -204,6 +197,15 @@ std::optional<DnsQueryType> GetDnsQueryType(int dns_query_type) {
   return std::nullopt;
 }
 
+const std::string GetHistogramName(std::string_view histogram_name,
+                                   const HostCache::Key& key) {
+  constexpr std::string_view kHistogramPrefix = "Net.DNS.HostCache.";
+
+  return base::StrCat(
+      {kHistogramPrefix, histogram_name,
+       IsGoogleHostWithAlpnH3(GetHostname(key.host)) ? ".GoogleHost" : ""});
+}
+
 }  // namespace
 
 // Used in histograms; do not modify existing values.
@@ -212,23 +214,6 @@ enum HostCache::SetOutcome : int {
   SET_UPDATE_VALID = 1,
   SET_UPDATE_STALE = 2,
   MAX_SET_OUTCOME
-};
-
-// Used in histograms; do not modify existing values.
-enum HostCache::LookupOutcome : int {
-  LOOKUP_MISS_ABSENT = 0,
-  LOOKUP_MISS_STALE = 1,
-  LOOKUP_HIT_VALID = 2,
-  LOOKUP_HIT_STALE = 3,
-  MAX_LOOKUP_OUTCOME
-};
-
-// Used in histograms; do not modify existing values.
-enum HostCache::EraseReason : int {
-  ERASE_EVICT = 0,
-  ERASE_CLEAR = 1,
-  ERASE_DESTRUCT = 2,
-  MAX_ERASE_REASON
 };
 
 HostCache::Key::Key(absl::variant<url::SchemeHostPort, std::string> host,
@@ -712,6 +697,7 @@ HostCache::HostCache(size_t max_entries)
 
 HostCache::~HostCache() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RecordEraseAll(EraseReason::kEraseDestruct, tick_clock_->NowTicks());
 }
 
 const std::pair<const HostCache::Key, HostCache::Entry>*
@@ -721,14 +707,19 @@ HostCache::Lookup(const Key& key, base::TimeTicks now, bool ignore_secure) {
     return nullptr;
 
   auto* result = LookupInternalIgnoringFields(key, now, ignore_secure);
-  if (!result)
+  if (!result) {
+    RecordLookup(LookupOutcome::kLookupMissAbsent, now, key, nullptr);
     return nullptr;
+  }
 
   auto* entry = &result->second;
-  if (entry->IsStale(now, network_changes_))
+  if (entry->IsStale(now, network_changes_)) {
+    RecordLookup(LookupOutcome::kLookupMissStale, now, result->first, entry);
     return nullptr;
+  }
 
   entry->CountHit(/* hit_is_stale= */ false);
+  RecordLookup(LookupOutcome::kLookupHitValid, now, result->first, entry);
   return result;
 }
 
@@ -742,12 +733,17 @@ const std::pair<const HostCache::Key, HostCache::Entry>* HostCache::LookupStale(
     return nullptr;
 
   auto* result = LookupInternalIgnoringFields(key, now, ignore_secure);
-  if (!result)
+  if (!result) {
+    RecordLookup(LookupOutcome::kLookupMissAbsent, now, key, nullptr);
     return nullptr;
+  }
 
   auto* entry = &result->second;
   bool is_stale = entry->IsStale(now, network_changes_);
   entry->CountHit(/* hit_is_stale= */ is_stale);
+  RecordLookup(is_stale ? LookupOutcome::kLookupHitStale
+                        : LookupOutcome::kLookupHitValid,
+               now, result->first, entry);
 
   if (stale_out)
     entry->GetStaleness(now, network_changes_, stale_out);
@@ -892,6 +888,7 @@ void HostCache::set_persistence_delegate(PersistenceDelegate* delegate) {
 
 void HostCache::clear() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RecordEraseAll(EraseReason::kEraseClear, tick_clock_->NowTicks());
 
   // Don't bother scheduling a write if there's nothing to clear.
   if (size() == 0)
@@ -912,10 +909,12 @@ void HostCache::ClearForHosts(
   }
 
   bool changed = false;
+  base::TimeTicks now = tick_clock_->NowTicks();
   for (auto it = entries_.begin(); it != entries_.end();) {
     auto next_it = std::next(it);
 
     if (host_filter.Run(GetHostname(it->first.host))) {
+      RecordErase(EraseReason::kEraseClear, now, it->first, it->second);
       entries_.erase(it);
       changed = true;
     }
@@ -1225,6 +1224,8 @@ bool HostCache::EvictOneEntry(base::TimeTicks now) {
   }
 
   if (oldest_it) {
+    RecordErase(EraseReason::kEraseEvict, now, (*oldest_it)->first,
+                (*oldest_it)->second);
     entries_.erase(*oldest_it);
     return true;
   }
@@ -1234,6 +1235,48 @@ bool HostCache::EvictOneEntry(base::TimeTicks now) {
 bool HostCache::HasActivePin(const Entry& entry) {
   return entry.pinning().value_or(false) &&
          entry.network_changes() == network_changes();
+}
+
+void HostCache::RecordLookup(LookupOutcome outcome,
+                             base::TimeTicks now,
+                             const Key& key,
+                             const Entry* entry) {
+  base::UmaHistogramEnumeration(GetHistogramName("Lookup", key), outcome);
+  if (outcome == LookupOutcome::kLookupHitStale) {
+    CHECK_NE(entry, nullptr);
+    base::UmaHistogramLongTimes(GetHistogramName("LookupStale.ExpiredBy", key),
+                                now - entry->expires());
+    base::UmaHistogramCounts1000(
+        GetHistogramName("LookupStale.NetworkChanges", key),
+        network_changes_ - entry->network_changes());
+  }
+}
+
+void HostCache::RecordErase(EraseReason reason,
+                            base::TimeTicks now,
+                            const Key& key,
+                            const Entry& entry) {
+  HostCache::EntryStaleness stale;
+  entry.GetStaleness(now, network_changes_, &stale);
+  base::UmaHistogramEnumeration(GetHistogramName("Erase", key), reason);
+  if (stale.is_stale()) {
+    base::UmaHistogramLongTimes(GetHistogramName("EraseStale.ExpiredBy", key),
+                                stale.expired_by);
+    base::UmaHistogramCounts1000(
+        GetHistogramName("EraseStale.NetworkChanges", key),
+        stale.network_changes);
+    base::UmaHistogramCounts1000(GetHistogramName("EraseStale.StaleHits", key),
+                                 entry.stale_hits());
+  } else {
+    base::UmaHistogramLongTimes(GetHistogramName("EraseValid.ValidFor", key),
+                                -stale.expired_by);
+  }
+}
+
+void HostCache::RecordEraseAll(EraseReason reason, base::TimeTicks now) {
+  for (const auto& it : entries_) {
+    RecordErase(reason, now, it.first, it.second);
+  }
 }
 
 }  // namespace net
