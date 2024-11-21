@@ -5062,7 +5062,7 @@ Called by update_autofill_enums.py.-->
   <int value="34" label="Insecure context payment disabled message"/>
   <int value="35" label="Scan credit card"/>
   <int value="36" label="Virtual credit card entry"/>
-  <int value="37" label="Credit card field-by-field filling"/>
+  <int value="37" label="(DEPRECATED) Credit card field-by-field filling"/>
   <int value="38" label="Iban entry"/>
   <int value="39" label="Create new plus address"/>
   <int value="40" label="Fill existing plus address"/>
