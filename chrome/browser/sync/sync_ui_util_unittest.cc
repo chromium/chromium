@@ -87,7 +87,7 @@ SyncStatusLabels SetUpDistinctCase(
       service->SetInitialSyncFeatureSetupComplete(false);
       service->SetSetupInProgress();
       return {SyncStatusMessageType::kPreSynced, IDS_SYNC_SETUP_IN_PROGRESS,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SETUP_ERROR: {
       service->SetInitialSyncFeatureSetupComplete(false);
@@ -135,35 +135,35 @@ SyncStatusLabels SetUpDistinctCase(
     case STATUS_CASE_TRUSTED_VAULT_KEYS_ERROR:
       service->SetTrustedVaultKeyRequired(true);
       return {SyncStatusMessageType::kPasswordsOnlySyncError,
-              IDS_SETTINGS_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
+              IDS_SYNC_EMPTY_STRING, IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON,
               SyncStatusActionType::kRetrieveTrustedVaultKeys};
     case STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR:
       service->SetTrustedVaultRecoverabilityDegraded(true);
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
     case STATUS_CASE_SYNCED: {
       return {SyncStatusMessageType::kSynced, IDS_SYNC_ACCOUNT_SYNCING,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
     case STATUS_CASE_SYNC_DISABLED_BY_POLICY: {
       service->SetAllowedByEnterprisePolicy(false);
       return {SyncStatusMessageType::kSynced,
-              IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY, IDS_SYNC_EMPTY_STRING,
+              SyncStatusActionType::kNoAction};
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
       service->GetUserSettings()->SetSyncFeatureDisabledViaDashboard(true);
       return {SyncStatusMessageType::kSyncError,
               IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD,
-              IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+              IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case NUMBER_OF_STATUS_CASES:
       NOTREACHED();
   }
-  return {SyncStatusMessageType::kPreSynced, IDS_SETTINGS_EMPTY_STRING,
-          IDS_SETTINGS_EMPTY_STRING, SyncStatusActionType::kNoAction};
+  return {SyncStatusMessageType::kPreSynced, IDS_SYNC_EMPTY_STRING,
+          IDS_SYNC_EMPTY_STRING, SyncStatusActionType::kNoAction};
 }
 
 // This test ensures that each distinctive SyncService status will return a
@@ -291,7 +291,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
       GetSyncStatusLabels(&service, environment.identity_manager(),
                           /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(SyncStatusMessageType::kSynced,
-                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
                             SyncStatusActionType::kNoAction));
 
   // Add an error to the secondary account.
@@ -305,7 +305,7 @@ TEST(SyncUIUtilTest, IgnoreSyncErrorForNonSyncAccount) {
       GetSyncStatusLabels(&service, environment.identity_manager(),
                           /*is_user_clear_primary_account_allowed=*/true),
       SyncStatusLabelsMatch(SyncStatusMessageType::kSynced,
-                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+                            IDS_SYNC_ACCOUNT_SYNCING, IDS_SYNC_EMPTY_STRING,
                             SyncStatusActionType::kNoAction));
 }
 

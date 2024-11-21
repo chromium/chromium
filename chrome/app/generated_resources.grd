@@ -14365,98 +14365,96 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
 
-      <!-- Android uses native UI to handle Sync settings -->
-      <if expr="not is_android">
-        <!-- Sync options dialog strings -->
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
-            Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
-          </message>
-        </if>
-        <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
-          Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
-        </message>
-        <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
-          Sync is disabled by your administrator.
-        </message>
-        <if expr="chromeos_ash">
-          <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
-            Sync has been stopped via the Google Dashboard.
-          </message>
-        </if>
-        <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
-          Confirm sync settings to start sync.
-        </message>
-        <message name="IDS_SYNC_SETUP_IN_PROGRESS" desc="The message to display in the settings page when the sync setup is underway.">
-          Setup in progress...
-        </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
-          Sync isn't working. Try signing in again.
-        </message>
-        <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
-          Sync isn't working. Try signing out and back in again.
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
-          Enter your passphrase to sync your data
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
-          Enter passphrase
-        </message>
-        <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
-          Verify it's you
-        </message>
-
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
-            Sign in again to resume sync
-          </message>
-        </if>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
-            Sign out then sign in again to start sync
-          </message>
-        </if>
-        <if expr="not chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
-            Sign in again
-          </message>
-        </if>
-        <if expr="chromeos_ash">
-          <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
-            Sign out
-          </message>
-          <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
-            Your account sign-in details are out of date. Please sign out and sign in again.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
-            Your password has expired. Please sign out then sign in again to change it.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
-            Your password has been changed on the server. Please sign out then sign in again.
-          </message>
-          <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
-            Failed to get authentication token. Please sign out then sign in again to try again.
-          </message>
-        </if>
-        <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
-          Advanced settings
-        </message>
-
-        <if expr="chromeos_ash">
-          <!-- Spinner dialog for waiting sync backend to start up -->
-          <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
-            Please wait...
-          </message>
-        </if>
-
-        <!-- Encryption tab of the configure sync dialog -->
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
-          Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
-        </message>
-        <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
-          Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
+      <!-- Sync options dialog strings -->
+      <message name="IDS_SYNC_EMPTY_STRING" desc="Empty string, exist only to make code generic. No translation required." translateable="false"></message>
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_OVERVIEW" desc="The message that appears in the options dialog when sync has not been set up by the user.">
+          Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.
         </message>
       </if>
+      <message name="IDS_SYNC_START_SYNC_BUTTON_LABEL" desc="The label that appears on the sync button in the options dialog when sync has not been set up by the user.">
+        Sign in to <ph name="PRODUCT_NAME">$1<ex>Chrome</ex></ph>
+      </message>
+      <message name="IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY" desc="The message that appears in the settings page indicating that user is signed in, but sync is disabled by enterprise policy.">
+        Sync is disabled by your administrator.
+      </message>
+      <if expr="chromeos_ash">
+        <message name="IDS_SIGNED_IN_WITH_SYNC_STOPPED_VIA_DASHBOARD" desc="The message that appears in the settings page indicating that user is signed in, but sync has been stopped via the Google dashboard.">
+          Sync has been stopped via the Google Dashboard.
+        </message>
+      </if>
+      <message name="IDS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The message that appears in the settings page indicating that user is signed in, but sync hasn't started because the sync settings haven't been confirmed.">
+        Confirm sync settings to start sync.
+      </message>
+      <message name="IDS_SYNC_SETUP_IN_PROGRESS" desc="The message to display in the settings page when the sync setup is underway.">
+        Setup in progress...
+      </message>
+      <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown on the personal options page when there is an unrecoverable error.">
+        Sync isn't working. Try signing in again.
+      </message>
+      <message name="IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT" desc="Message shown on the personal options page when there is an unrecoverable error in ChromeOS as well as for managed accounts.">
+        Sync isn't working. Try signing out and back in again.
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD" desc="Message indicating user must re-enter their sync password.">
+        Enter your passphrase to sync your data
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_PASSWORD_BUTTON" desc="Button indicating user must re-enter their sync password.">
+        Enter passphrase
+      </message>
+      <message name="IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON" desc="Button indicating user must reauthenticate to sync encrypted datatypes.">
+        Verify it's you
+      </message>
+
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign in again to use sync.">
+          Sign in again to resume sync
+        </message>
+      </if>
+      <if expr="chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_ERROR" desc="The text to display on in the hyperlink when the user needs to sign out and sign in again to use sync on ChromeOS.">
+          Sign out then sign in again to start sync
+        </message>
+      </if>
+      <if expr="not chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign in again to use sync.">
+          Sign in again
+        </message>
+      </if>
+      <if expr="chromeos_ash">
+        <message name="IDS_SYNC_RELOGIN_BUTTON" desc="The text to display on the button when the user needs to sign out and sign in again to use sync on ChromeOS.">
+          Sign out
+        </message>
+        <message name="IDS_SYNC_TOKEN_HANDLE_ERROR_BUBBLE_VIEW_MESSAGE" desc="Message in the sign-in error bubble view when the user's token handle is invalid.">
+          Your account sign-in details are out of date. Please sign out and sign in again.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_EXPIRED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to change their password.">
+          Your password has expired. Please sign out then sign in again to change it.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_PASSWORD_CHANGED" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to update local password to cryptohome.">
+          Your password has been changed on the server. Please sign out then sign in again.
+        </message>
+        <message name="IDS_ACTIVE_DIRECTORY_REFRESH_AUTH_TOKEN" desc="The text to display on the hyperlink when the user needs to sign out and sign in again to get authentication token.">
+          Failed to get authentication token. Please sign out then sign in again to try again.
+        </message>
+      </if>
+      <message name="IDS_SYNC_ADVANCED_OPTIONS" desc="The text in the link that brings up the sync configure screen in the new tab page new data type notification.">
+        Advanced settings
+      </message>
+
+      <if expr="chromeos_ash">
+        <!-- Spinner dialog for waiting sync backend to start up -->
+        <message name="IDS_SYNC_SETUP_SPINNER_TITLE" desc="The title of the sync setup dialog showing spinner.">
+          Please wait...
+        </message>
+      </if>
+
+      <!-- Encryption tab of the configure sync dialog -->
+      <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM" desc="Text of the radio that when selected enables full encryption.">
+        Data is encrypted with your sync passphrase. This doesn't include payment methods and addresses from Google Pay.
+      </message>
+      <message name="IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE" desc="Text of the radio that when selected enables full encryption.">
+        Data was encrypted with your sync passphrase on <ph name="TIME">$1<ex>Sept 1, 2012</ex></ph>. This doesn't include payment methods and addresses from Google Pay.
+      </message>
 
       <!-- Translate Bubble -->
       <if expr="toolkit_views">

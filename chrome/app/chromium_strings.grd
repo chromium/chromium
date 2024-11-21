@@ -1535,15 +1535,13 @@ Permissions you've already given to websites and apps may apply to this account.
         To use and save Chromium data in your Google Account, update Chromium
       </message>
 
-      <!-- Sync errors. Android uses native UI to handle Sync settings -->
-      <if expr="not is_android">
-        <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
-          Update Chromium to start sync
-        </message>
-        <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
-          Update Chromium
-        </message>
-      </if>
+      <!-- Sync errors. -->
+      <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
+        Update Chromium to start sync
+      </message>
+      <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
+        Update Chromium
+      </message>
 
       <!-- Upgrade recovery bubble -->
       <message name="IDS_RECOVERY_BUBBLE_TITLE" desc="Text for the title of the chrome recovery bubble view.">

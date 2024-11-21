@@ -1704,15 +1704,13 @@ Permissions you've already given to websites and apps may apply to this account.
         To use and save Chrome data in your Google Account, update Chrome
       </message>
 
-      <!-- Sync errors. Android uses native UI to handle Sync settings -->
-      <if expr="not is_android">
-        <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
-          Update Chrome to start sync
-        </message>
-        <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
-          Update Chrome
-        </message>
-      </if>
+      <!-- Sync errors. -->
+      <message name="IDS_SYNC_UPGRADE_CLIENT" desc="Message indicating client needs to be upgraded to the latest version.">
+        Update Chrome to start sync
+      </message>
+      <message name="IDS_SYNC_UPGRADE_CLIENT_BUTTON" desc="Button indicating client needs to be upgraded to the latest version.">
+        Update Chrome
+      </message>
 
       <!-- Upgrade recovery bubble -->
       <message name="IDS_RECOVERY_BUBBLE_TITLE" desc="Text for the title of the chrome recovery bubble view.">
