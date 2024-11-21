@@ -172,11 +172,15 @@ class Traversal {
                                const Node* stay_within,
                                MatchFunc);
 
-  // Like previous, but skips children.
-  static ElementType* PreviousSkippingChildren(const Node&,
-                                               const Node* stay_within);
+  // Returns the previous direct sibling of the node, if there is one. If not,
+  // it will traverse up the ancestor chain until it finds an ancestor
+  // that has a previous sibling, returning that sibling. Or nullptr if none.
+  // See comment for |FlatTreeTraversal::PreviousAbsoluteSibling| for details.
+  static ElementType* PreviousAbsoluteSibling(const Node&,
+                                              const Node* stay_within);
 
-  // Like next, but skips children.
+  // Like next, but skips children.  If you're looking for the "Previous"
+  // version of this method, see PreviousAbsoluteSibling().
   static ElementType* NextSkippingChildren(const Node&);
   static ElementType* NextSkippingChildren(const Node&,
                                            const Node* stay_within);
@@ -488,13 +492,13 @@ inline ElementType* Traversal<ElementType>::Previous(
 }
 
 template <class ElementType>
-inline ElementType* Traversal<ElementType>::PreviousSkippingChildren(
+inline ElementType* Traversal<ElementType>::PreviousAbsoluteSibling(
     const Node& current,
     const Node* stay_within) {
   for (Node* node =
-           NodeTraversal::PreviousSkippingChildren(current, stay_within);
+           NodeTraversal::PreviousAbsoluteSibling(current, stay_within);
        node;
-       node = NodeTraversal::PreviousSkippingChildren(*node, stay_within)) {
+       node = NodeTraversal::PreviousAbsoluteSibling(*node, stay_within)) {
     if (auto* element = DynamicTo<ElementType>(*node)) {
       return element;
     }

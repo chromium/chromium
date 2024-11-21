@@ -97,6 +97,8 @@ class CORE_EXPORT FlatTreeTraversal {
   // NextSkippingChildren(3) will return 4.
   // NextSkippingChildren(2) will return 3.
   // NextSkippingChildren(4) will return nullptr.
+  // If you're looking for the "Previous" version of this method, see
+  // PreviousAbsoluteSibling().
   static Node* NextSkippingChildren(const Node&);
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);
 

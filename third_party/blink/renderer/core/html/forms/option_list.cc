@@ -37,6 +37,7 @@ void OptionListIterator::Advance(HTMLOptionElement* previous) {
         current = ElementTraversal::Next(*current, select_);
       }
     } else {
+      DCHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
       if (IsA<HTMLOptGroupElement>(current) &&
           current->parentNode() == select_) {
         if ((current_ = Traversal<HTMLOptionElement>::FirstChild(*current))) {
@@ -58,7 +59,7 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
   Element* current;
   if (next) {
     DCHECK_EQ(next->OwnerSelectElement(), select_);
-    current = ElementTraversal::PreviousSkippingChildren(*next, select_);
+    current = ElementTraversal::PreviousAbsoluteSibling(*next, select_);
   } else {
     current = ElementTraversal::LastChild(*select_);
   }
@@ -71,18 +72,19 @@ void OptionListIterator::Retreat(HTMLOptionElement* next) {
 
     if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
       if (IsA<HTMLSelectElement>(current)) {
-        current = ElementTraversal::PreviousSkippingChildren(*next, select_);
+        current = ElementTraversal::PreviousAbsoluteSibling(*next, select_);
       } else {
         current = ElementTraversal::Previous(*current, select_);
       }
     } else {
+      DCHECK(!RuntimeEnabledFeatures::CustomizableSelectEnabled());
       if (IsA<HTMLOptGroupElement>(current) &&
           current->parentNode() == select_) {
         if ((current_ = Traversal<HTMLOptionElement>::LastChild(*current))) {
           return;
         }
       }
-      current = ElementTraversal::PreviousSkippingChildren(*next, select_);
+      current = ElementTraversal::PreviousAbsoluteSibling(*next, select_);
     }
   }
 

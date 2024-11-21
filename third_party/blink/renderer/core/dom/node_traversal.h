@@ -60,12 +60,11 @@ class CORE_EXPORT NodeTraversal {
     return TraverseNextTemplate(current, stay_within);
   }
 
-  // Like next, but skips children and starts with the next sibling.
+  // Like next, but skips children and starts with the next sibling. If you're
+  // looking for the "Previous" version of this method, see
+  // PreviousAbsoluteSibling().
   static Node* NextSkippingChildren(const Node&);
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);
-
-  // Like previous, but skips children and starts with the next sibling.
-  static Node* PreviousSkippingChildren(const Node&, const Node* stay_within);
 
   static Node* FirstWithin(const Node& current) { return current.firstChild(); }
 
@@ -232,19 +231,6 @@ inline Node* NodeTraversal::NextSkippingChildren(const Node& current,
     return current.nextSibling();
   }
   return NextAncestorSibling(current, stay_within);
-}
-
-inline Node* NodeTraversal::PreviousSkippingChildren(const Node& current,
-                                                     const Node* stay_within) {
-  if (current == stay_within) {
-    return nullptr;
-  }
-
-  if (current.HasPreviousSibling()) {
-    return current.previousSibling();
-  }
-
-  return PreviousAncestorSibling(current, stay_within);
 }
 
 // Note that `HighestAncestorOrSelf` is used most commonly in `RemovedFrom` and
