@@ -1838,8 +1838,9 @@ Length StyleBuilderConverter::ConvertLengthSizing(StyleResolverState& state,
     case CSSValueID::kWebkitMaxContent:
       return Length::MaxContent();
     case CSSValueID::kStretch:
-    case CSSValueID::kWebkitFillAvailable:
       return Length::Stretch();
+    case CSSValueID::kWebkitFillAvailable:
+      return Length::FillAvailable();
     case CSSValueID::kWebkitFitContent:
     case CSSValueID::kFitContent:
       return Length::FitContent();

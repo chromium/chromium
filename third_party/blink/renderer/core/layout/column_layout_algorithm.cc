@@ -1486,7 +1486,7 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
 
   const Length& block_length = style.LogicalHeight();
   const Length& auto_length = space.IsBlockAutoBehaviorStretch()
-                                  ? Length::Stretch()
+                                  ? Length::FillAvailable()
                                   : Length::FitContent();
 
   extent = ResolveMainBlockLength(space, style, BorderPadding(), block_length,

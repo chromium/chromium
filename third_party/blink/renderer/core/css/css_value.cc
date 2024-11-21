@@ -108,6 +108,7 @@ CSSValue* CSSValue::Create(const Length& value, float zoom) {
     case Length::kAuto:
     case Length::kMinContent:
     case Length::kMaxContent:
+    case Length::kFillAvailable:
     case Length::kStretch:
     case Length::kFitContent:
     case Length::kContent:

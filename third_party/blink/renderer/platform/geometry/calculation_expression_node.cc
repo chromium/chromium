@@ -107,7 +107,7 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
       intrinsic_type =
           input.calc_size_keyword_behavior == CalcSizeKeywordBehavior::kAsAuto
               ? Length::Type::kAuto
-              : Length::Type::kStretch;
+              : Length::Type::kFillAvailable;
       break;
   }
 

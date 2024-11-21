@@ -1267,6 +1267,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       switch (main_length.GetType()) {
         case Length::kAuto:
         case Length::kFitContent:
+        case Length::kFillAvailable:
         case Length::kStretch:
         case Length::kPercent:
         case Length::kCalculated: {
