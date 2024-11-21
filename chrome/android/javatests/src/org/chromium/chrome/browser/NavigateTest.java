@@ -68,6 +68,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -162,6 +163,7 @@ public class NavigateTest {
     @Restriction(DeviceFormFactor.TABLET)
     @MediumTest
     @Feature({"Navigation"})
+    @DisableIf.Device(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testNavigateMany() throws Exception {
         final String[] urls =
                 mTestServer.getURLs(
