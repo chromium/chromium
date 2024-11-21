@@ -134,6 +134,8 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         })");
     case ModelBasedCapabilityKey::kTextSafety:
       // TODO: b/330346344 - Add traffic annotation.
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      // TODO: b/380116258 - Add traffic annotation.
       return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kBlingPrototyping:

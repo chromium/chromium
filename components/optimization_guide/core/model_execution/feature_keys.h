@@ -36,9 +36,11 @@ enum class ModelBasedCapabilityKey {
       MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT,
   kBlingPrototyping =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING,
+  kPasswordChangeSubmission = proto::ModelExecutionFeature::
+      MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION,
 };
 
-inline constexpr std::array<ModelBasedCapabilityKey, 12>
+inline constexpr std::array<ModelBasedCapabilityKey, 13>
     kAllModelBasedCapabilityKeys = {
         ModelBasedCapabilityKey::kCompose,
         ModelBasedCapabilityKey::kTabOrganization,
@@ -52,6 +54,7 @@ inline constexpr std::array<ModelBasedCapabilityKey, 12>
         ModelBasedCapabilityKey::kFormsAnnotations,
         ModelBasedCapabilityKey::kHistoryQueryIntent,
         ModelBasedCapabilityKey::kBlingPrototyping,
+        ModelBasedCapabilityKey::kPasswordChangeSubmission,
 };
 
 // A "real" feature implemented by a model-based capability.
@@ -118,6 +121,9 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING:
       return ModelBasedCapabilityKey::kBlingPrototyping;
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION:
+        return ModelBasedCapabilityKey::kPasswordChangeSubmission;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED() << "Invalid feature";
   }
@@ -157,6 +163,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kBlingPrototyping:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING;
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_PASSWORD_CHANGE_SUBMISSION;
   }
 }
 

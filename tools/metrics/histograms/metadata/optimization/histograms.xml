@@ -33,6 +33,8 @@ chromium-metrics-reviews@google.com.
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsPredictions" summary="Forms Predictions"/>
   <variant name="HistorySearch" summary="History Search"/>
+  <variant name="PasswordChangeSubmission"
+      summary="Password Change Submission"/>
   <variant name="PromptApi" summary="Prompt API"/>
   <variant name="Summarize" summary="Summarize"/>
   <variant name="TabOrganization" summary="Tab Organization"/>

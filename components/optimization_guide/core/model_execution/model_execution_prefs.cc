@@ -133,6 +133,7 @@ const char* GetOnDeviceFeatureRecentlyUsedPref(
     case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       // This should not be called for features that are not on-device.
       NOTREACHED();
   }

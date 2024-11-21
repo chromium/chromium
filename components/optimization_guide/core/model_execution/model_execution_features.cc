@@ -166,6 +166,7 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kBlingPrototyping:
+    case ModelBasedCapabilityKey::kPasswordChangeSubmission:
       return std::nullopt;
   }
 }
