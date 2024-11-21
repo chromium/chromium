@@ -121,6 +121,31 @@ TEST_F(UtilsJavaScriptTest,
   EXPECT_NSEQ(@"", result);
 }
 
+// Tests that removeQueryAndReferenceFromURL doesn't throw an exception on
+// invalid input.
+TEST_F(UtilsJavaScriptTest, RemoveQueryAndReferenceFromURL_InvalidInput) {
+  struct TestData {
+    NSString* input;
+    NSString* expected_output;
+  } test_data[] = {
+      {@"undefined", @""},
+      {@"null", @""},
+      {@"function() {}", @""},
+      {@"'stringButNotURL'", @""},
+  };
+  for (size_t i = 0; i < std::size(test_data); i++) {
+    TestData& data = test_data[i];
+    NSString* js = [NSString
+        stringWithFormat:
+            @"__gCrWeb.utils_tests.removeQueryAndReferenceFromURL(%@)",
+            data.input];
+    id result = web::test::ExecuteJavaScript(web_view(), js);
+
+    EXPECT_NSEQ(data.expected_output, result)
+        << " in test " << i << ": " << base::SysNSStringToUTF8(data.input);
+  }
+}
+
 // Tests that sendWebKitMessage works as expected
 TEST_F(UtilsJavaScriptTest, SendWebKitMessage) {
   struct TestData {

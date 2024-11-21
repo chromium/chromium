@@ -37,7 +37,17 @@ declare global {
  *   string if the window.URL prototype was changed by the hosted page.
  */
 export function removeQueryAndReferenceFromURL(url: string): string {
-  const parsed = new URL(url);
+  if (typeof url !== 'string') {
+    return '';
+  }
+
+  let parsed: URL | undefined;
+  // Strings which are not URLs will throw a TypeError.
+  try {
+    parsed = new URL(url);
+  } catch (error) {
+    return '';
+  }
 
   function isPropertyInvalid(value: unknown): boolean {
     return typeof value !== 'string';
