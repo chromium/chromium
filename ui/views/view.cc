@@ -2012,7 +2012,7 @@ void View::SetCachedTooltipText(const std::u16string& text) {
 }
 
 std::u16string View::GetTooltipText(const gfx::Point& p) const {
-  return std::u16string();
+  return GetCachedTooltipText();
 }
 
 const std::u16string& View::GetCachedTooltipText() const {
