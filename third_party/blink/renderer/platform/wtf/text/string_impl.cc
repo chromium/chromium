@@ -67,27 +67,22 @@ struct SameSizeAsStringImpl {
 
 ASSERT_SIZE(StringImpl, SameSizeAsStringImpl);
 
-std::u16string ToU16String(const LChar* chars, const wtf_size_t length) {
+std::u16string ToU16String(base::span<const LChar> chars) {
   std::u16string s;
-  s.reserve(length);
+  s.reserve(chars.size());
 
-  for (wtf_size_t i = 0U; i < length; ++i) {
+  for (size_t i = 0u; i < chars.size(); ++i) {
     s.push_back(chars[i]);
   }
-
   return s;
 }
 
-std::u16string ToU16String(const UChar* chars, const wtf_size_t length) {
-  return std::u16string(chars, length);
+std::u16string ToU16String(base::span<const UChar> chars) {
+  return std::u16string(base::as_string_view(chars));
 }
 
 std::u16string ToU16String(const StringView& s) {
-  if (s.Is8Bit()) {
-    return ToU16String(s.Characters8(), s.length());
-  }
-
-  return ToU16String(s.Characters16(), s.length());
+  return VisitCharacters(s, [](auto chars) { return ToU16String(chars); });
 }
 
 template <typename DestChar, typename SrcChar>
@@ -1209,11 +1204,7 @@ bool StringImpl::StartsWithIgnoringCaseAndAccents(
 }
 
 std::u16string StringImpl::ToU16String() const {
-  if (Is8Bit()) {
-    return ::WTF::ToU16String(Characters8(), length());
-  }
-
-  return ::WTF::ToU16String(Characters16(), length());
+  return ::WTF::ToU16String(StringView(*this));
 }
 
 bool StringImpl::StartsWithIgnoringASCIICase(const StringView& prefix) const {
