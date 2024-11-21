@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/anchor_element_provider.h"
+#include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -76,6 +77,18 @@ class AnchorElementPrecondition : public FeaturePromoPreconditionBase {
  private:
   const raw_ref<const AnchorElementProvider> provider_;
   const ui::ElementContext default_context_;
+};
+
+// Wraps a FeaturePromoLifecycle to determine if a promo can be shown.
+class LifecyclePrecondition : public FeaturePromoPreconditionBase {
+ public:
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(std::unique_ptr<FeaturePromoLifecycle>,
+                                       kLifecycle);
+  explicit LifecyclePrecondition(std::unique_ptr<FeaturePromoLifecycle>);
+  ~LifecyclePrecondition() override;
+
+  // FeaturePromoPrecondition:
+  FeaturePromoResult CheckPrecondition() const override;
 };
 
 }  // namespace user_education

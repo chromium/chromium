@@ -4,8 +4,11 @@
 
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "components/user_education/common/feature_promo/feature_promo_lifecycle.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -98,6 +101,23 @@ FeaturePromoResult AnchorElementPrecondition::CheckPrecondition() const {
   GetCachedData(kAnchorElement) = element;
   return element != nullptr ? FeaturePromoResult::Success()
                             : FeaturePromoResult::kBlockedByUi;
+}
+
+DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(LifecyclePrecondition,
+                                    std::unique_ptr<FeaturePromoLifecycle>,
+                                    kLifecycle);
+
+LifecyclePrecondition::LifecyclePrecondition(
+    std::unique_ptr<FeaturePromoLifecycle> lifecycle)
+    : FeaturePromoPreconditionBase(kLifecyclePrecondition, "Lifecycle Check") {
+  InitCache(kLifecycle);
+  GetCachedData(kLifecycle) = std::move(lifecycle);
+}
+
+LifecyclePrecondition::~LifecyclePrecondition() = default;
+
+FeaturePromoResult LifecyclePrecondition::CheckPrecondition() const {
+  return GetCachedData(kLifecycle)->CanShow();
 }
 
 }  // namespace user_education
