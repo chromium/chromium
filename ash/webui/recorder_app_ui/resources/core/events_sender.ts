@@ -63,6 +63,15 @@ export interface ExportEventParams {
   transcriptionAvailable: boolean;
 }
 
+export interface ChangePlaybackSpeedParams {
+  playbackSpeed: number;
+}
+
+export interface ChangePlaybackVolumeParams {
+  muted: boolean;
+  volume: number;
+}
+
 interface DurationOnlyPerf {
   kind: 'appStart'|'summaryModelDownload'|'transcriptionModelDownload';
 }
@@ -93,5 +102,9 @@ export abstract class EventsSender {
   abstract sendFeedbackSummaryEvent(params: FeedbackEventParams): void;
   abstract sendOnboardEvent(params: OnboardEventParams): void;
   abstract sendExportEvent(params: ExportEventParams): void;
+  abstract sendChangePlaybackSpeedEvent(params: ChangePlaybackSpeedParams
+  ): void;
+  abstract sendChangePlaybackVolumeEvent(params: ChangePlaybackVolumeParams
+  ): void;
   abstract sendPerfEvent(event: PerfEvent, duration: number): void;
 }

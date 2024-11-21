@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import {
+  ChangePlaybackSpeedParams,
+  ChangePlaybackVolumeParams,
   EventsSender as EventsSenderBase,
   ExportEventParams,
   FeedbackEventParams,
@@ -30,6 +32,10 @@ export class EventsSender extends EventsSenderBase {
   override sendOnboardEvent(_: OnboardEventParams): void {}
 
   override sendExportEvent(_: ExportEventParams): void {}
+
+  override sendChangePlaybackSpeedEvent(_: ChangePlaybackSpeedParams): void {}
+
+  override sendChangePlaybackVolumeEvent(_: ChangePlaybackVolumeParams): void {}
 
   override sendPerfEvent(_event: PerfEvent, _duration: number): void {}
 }

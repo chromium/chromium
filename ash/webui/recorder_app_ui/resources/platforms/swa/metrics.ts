@@ -5,6 +5,8 @@
 import {
   // Events
   CrOSEvents_RecorderApp_AppStartPerf,
+  CrOSEvents_RecorderApp_ChangePlaybackSpeed,
+  CrOSEvents_RecorderApp_ChangePlaybackVolume,
   CrOSEvents_RecorderApp_Export,
   CrOSEvents_RecorderApp_ExportPerf,
   CrOSEvents_RecorderApp_FeedbackSummary,
@@ -35,6 +37,8 @@ import {
 } from 'chrome://resources/ash/common/metrics/structured_metrics_service.js';
 
 import {
+  ChangePlaybackSpeedParams,
+  ChangePlaybackVolumeParams,
   EventsSender as EventsSenderBase,
   ExportEventParams,
   FeedbackEventParams,
@@ -409,6 +413,27 @@ export class EventsSender extends EventsSenderBase {
     const event = new CrOSEvents_RecorderApp_Export()
                     .setAudioFormat(audioFormat)
                     .setTranscriptFormat(transcriptFormat)
+                    .build();
+
+    record(event);
+  }
+
+  override sendChangePlaybackSpeedEvent(
+    params: ChangePlaybackSpeedParams,
+  ): void {
+    const event = new CrOSEvents_RecorderApp_ChangePlaybackSpeed()
+                    .setPlaybackSpeed(params.playbackSpeed)
+                    .build();
+
+    record(event);
+  }
+
+  override sendChangePlaybackVolumeEvent(
+    params: ChangePlaybackVolumeParams,
+  ): void {
+    const event = new CrOSEvents_RecorderApp_ChangePlaybackVolume()
+                    .setMuted(BigInt(params.muted))
+                    .setVolume(BigInt(params.volume))
                     .build();
 
     record(event);
