@@ -152698,6 +152698,19 @@
        {}
       ]
      ],
+     "nested-marker-styling.html": [
+      "b3602483b7334fc7e58ef883e99fb099c27ca647",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/nested-marker-styling-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-marker.html": [
       "9627ce936ae570325b430a1ac673cd66ae7d4252",
       [
@@ -176229,7 +176242,7 @@
       ]
      ],
      "marker-text-combine-upright.html": [
-      "808cf0d3b09137a302466c048c2c10c3c47a0c6e",
+      "c867d2aac31bc763720ae9e84b4517a754fb4128",
       [
        null,
        [
@@ -323130,7 +323143,7 @@
        []
       ],
       "opacity-valid-expected.txt": [
-       "cebbfe06674f27ea2b4de8661fcbd6775b6472f9",
+       "52b24269051446a1eeb4111faa8291c094700cac",
        []
       ]
      },
@@ -323637,7 +323650,7 @@
       ],
       "scroll-state": {
        "multiple-scroll-state-containers-comma-separated-queries-expected.txt": [
-        "5a8bcda6e57f6754e255b365e440fa1d98db1209",
+        "a0113e8f570d89c99df99fa5e9f4f38e12dcb7b6",
         []
        ],
        "scroll-state-query-with-var-expected.txt": [
@@ -340314,6 +340327,10 @@
       "c4233918ab5dbad77129e2c473d527feb022c3f7",
       []
      ],
+     "nested-marker-styling-ref.html": [
+      "620219926d089e6d77360bbfeb566f498399a888",
+      []
+     ],
      "ol-change-display-type-ref.html": [
       "a10bc17899f9cfaa938d04d198598c4fc82fe3ca",
       []
@@ -345713,7 +345730,7 @@
       []
      ],
      "marker-text-combine-upright-ref.html": [
-      "ae238c7443503e4253c7405688a60c239cfc9dee",
+      "7e9bdf3683022fc70f7ed78125fdef0ab030f157",
       []
      ],
      "marker-text-decoration-skip-ink-ref.html": [
@@ -395068,7 +395085,7 @@
      []
     ],
     "attribution-reporting-api.idl": [
-     "ed4497b56ff5b7cafe3ae43ae1fcba1638f4b29c",
+     "3fe24bd34a0f9954758a0e18f1632151ae451918",
      []
     ],
     "audio-output.idl": [
@@ -395372,7 +395389,7 @@
      []
     ],
     "fedcm.idl": [
-     "443d3311a24aa11ea529b960ad606f96051f9a01",
+     "c308ee273b9acca186e670e47cd62ef4093f11e1",
      []
     ],
     "fenced-frame.idl": [
@@ -395452,7 +395469,7 @@
      []
     ],
     "html.idl": [
-     "c295941fcb275089fb5d9f0c3b3aefd36120976e",
+     "aefa95dbd827e122725cee59697893109e7c62ad",
      []
     ],
     "idle-detection.idl": [
@@ -395932,7 +395949,7 @@
      []
     ],
     "web-animations-2.idl": [
-     "4c3af535149ec218d0ed99c59dee90e14ec4d5ab",
+     "97a0d3f6c6baa1bff57086e0028ceb98b2eb04f6",
      []
     ],
     "web-animations.idl": [
@@ -396024,7 +396041,7 @@
      []
     ],
     "webgpu.idl": [
-     "700e83c27559e76672940d910e8288cee44608a4",
+     "401d2ec69b5e9b1a9eb158a110aa040621bf7790",
      []
     ],
     "webhid.idl": [
@@ -413746,7 +413763,7 @@
      ]
     },
     "idlharness.window-expected.txt": [
-     "ce969c5afbe5f63195d75624a798340d97619a0d",
+     "62cc4d51c3a33c7bb6ba01db75c628a3853ac64f",
      []
     ],
     "interfaces": {
@@ -415229,6 +415246,54 @@
     ],
     "video-encoder-h264.https.any_high-6.2-expected.txt": [
      "3c94b3c80671e48cfffa1adf2ec63ff713fdda52",
+     []
+    ],
+    "video-encoder-h26x-annexb.https.any.worker_h264_annexb_hardware-expected.txt": [
+     "d652c29926bcb60c5f76d59c3da85da1bcaf7436",
+     []
+    ],
+    "video-encoder-h26x-annexb.https.any.worker_h265_annexb_hardware-expected.txt": [
+     "b10d1040e5503447bd9893cdb2302e4d5a6ddc5b",
+     []
+    ],
+    "video-encoder-h26x-annexb.https.any.worker_h265_annexb_software-expected.txt": [
+     "6cdf9ac43b73d222c8ceeaa70efc95c4a760a5c7",
+     []
+    ],
+    "video-encoder-h26x-annexb.https.any_h264_annexb_hardware-expected.txt": [
+     "d652c29926bcb60c5f76d59c3da85da1bcaf7436",
+     []
+    ],
+    "video-encoder-h26x-annexb.https.any_h265_annexb_hardware-expected.txt": [
+     "b10d1040e5503447bd9893cdb2302e4d5a6ddc5b",
+     []
+    ],
+    "video-encoder-h26x-annexb.https.any_h265_annexb_software-expected.txt": [
+     "6cdf9ac43b73d222c8ceeaa70efc95c4a760a5c7",
+     []
+    ],
+    "video-encoder-rescaling.https.any.worker_h264_annexb-expected.txt": [
+     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
+     []
+    ],
+    "video-encoder-rescaling.https.any.worker_h264_avc-expected.txt": [
+     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
+     []
+    ],
+    "video-encoder-rescaling.https.any.worker_vp9_p0-expected.txt": [
+     "05b06d9d0a4bc961153041b48f7c63fd65cbb7e8",
+     []
+    ],
+    "video-encoder-rescaling.https.any_h264_annexb-expected.txt": [
+     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
+     []
+    ],
+    "video-encoder-rescaling.https.any_h264_avc-expected.txt": [
+     "0cda5c9c02c522720b8d8484fce25cd44a074d74",
+     []
+    ],
+    "video-encoder-rescaling.https.any_vp9_p0-expected.txt": [
+     "05b06d9d0a4bc961153041b48f7c63fd65cbb7e8",
      []
     ],
     "video-encoder-utils.js": [
@@ -449691,7 +449756,7 @@
      ]
     ],
     "webkit-gradient-sign.html": [
-     "666bb32007ebcde3f346dbb8d228cd0abbb5c60c",
+     "68e1e32b1f336e99e99f54b4a32588648035b4d1",
      [
       null,
       {}
@@ -467874,7 +467939,7 @@
       ]
      ],
      "scope-shadow.html": [
-      "6aa1f3fce80cd48c33514a74146affb3c9b12e95",
+      "16956d838bdc53366c263de763f344d3256c8b92",
       [
        null,
        {}
@@ -469113,22 +469178,22 @@
        ]
       ],
       "scroll-state": {
-       "at-container-overflowing-parsing.html": [
-        "e45326a2ffec65ba1653afa5372e908bc825a8ae",
+       "at-container-scrollable-parsing.html": [
+        "298e2023a33d1d8b412c23f51b9a870328ae1dbc",
         [
          null,
          {}
         ]
        ],
-       "at-container-overflowing-serialization.html": [
-        "75a2be3bb788488b9521b8c6b1ae3e739f2b1c47",
+       "at-container-scrollable-serialization.html": [
+        "6aef321ce4b614d3f596964fa722007db52649d0",
         [
          null,
          {}
         ]
        ],
        "at-container-snapped-parsing.html": [
-        "adeace0a7d4f27bc58ad9aeb657fa28e1a45d161",
+        "1205194c6e5e06de9a8c10ba1524c301798dcae8",
         [
          null,
          {}
@@ -469177,14 +469242,14 @@
         ]
        ],
        "multiple-scroll-state-containers-comma-separated-queries.html": [
-        "f1622c1e7589047a0aa8951245708685198de015",
+        "1b48f486020f0694d6bd0610ea64969e28e65d6a",
         [
          null,
          {}
         ]
        ],
-       "scroll-state-initially-overflowing.html": [
-        "fe26333e55c493eac5972d852d60f3915add8b75",
+       "scroll-state-initially-scrollable.html": [
+        "3b40d7777f0c7142ecd3e89e2489ee4f1ac845ed",
         [
          null,
          {}
@@ -469204,43 +469269,57 @@
          {}
         ]
        ],
-       "scroll-state-overflowing-change.html": [
-        "15cdc96421fe89be7f944d7b5988a81bd591ab9a",
-        [
-         null,
-         {}
-        ]
-       ],
-       "scroll-state-overflowing-container-type-change.html": [
-        "ecb12141603238031aaabb644e607e0bad78b41a",
-        [
-         null,
-         {}
-        ]
-       ],
-       "scroll-state-overflowing-layout-change.html": [
-        "72344e2943dea37e553daca83ec68515aa7a7f91",
-        [
-         null,
-         {}
-        ]
-       ],
-       "scroll-state-overflowing-pseudo.html": [
-        "cb2638c5c122b53e4e122785203f3dcf6db8b8f5",
-        [
-         null,
-         {}
-        ]
-       ],
-       "scroll-state-overflowing-wm.html": [
-        "137808db805ef93e976d726630215ca1c5e9406c",
-        [
-         null,
-         {}
-        ]
-       ],
        "scroll-state-query-with-var.html": [
         "457b2612c1e7aeb768197f2c68b598d652a25f67",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-scrollable-axis.html": [
+        "0f31c95c7edb8a812f79e4c8fd254619ba23946c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-scrollable-change.html": [
+        "0554b3d3a03754b37e51b80d6c39449a7827a78e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-scrollable-container-type-change.html": [
+        "41ee24eb027ff6e9e4fb4c04b3bfc24fc6dc4d12",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-scrollable-layout-change.html": [
+        "81f4c64192c0ac47bf63d446d6e5f79e0ed17332",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-scrollable-pseudo.html": [
+        "e0c6a6e6eca5a469621b87c5a52bd312361b54f6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-scrollable-wm.html": [
+        "717205f0045869980c4710ac50d0fad35d57eca7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "scroll-state-snapped-both.html": [
+        "f2052192807ccd15176cf72cf06f546d76ae14e6",
         [
          null,
          {}
@@ -509537,7 +509616,7 @@
      "moveBefore": {
       "tentative": {
        "Node-moveBefore.html": [
-        "7056cd38470815bb59c026dc09edb1471a2321e1",
+        "22586d169c0ba211deafa5a1b510bdbcab567803",
         [
          null,
          {}
@@ -670033,7 +670112,7 @@
        ]
       ],
       "property-reflection.html": [
-       "c6ecbf84537d18cab0293ac1fd965b8e8fd40846",
+       "2f1bf01a864eaa52d8ba12d0efdd56e76148a803",
        [
         null,
         {
@@ -706854,6 +706933,570 @@
         [
          "variant",
          "?high-6.2"
+        ]
+       ]
+      }
+     ]
+    ],
+    "video-encoder-h26x-annexb.https.any.js": [
+     "076a8342f1fb3cf3eef81e398c690a8877f3f2aa",
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.html?h264_annexb_hardware",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.html?h264_annexb_software",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.html?h265_annexb_hardware",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.html?h265_annexb_software",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.worker.html?h264_annexb_hardware",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.worker.html?h264_annexb_software",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.worker.html?h265_annexb_hardware",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-h26x-annexb.https.any.worker.html?h265_annexb_software",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "/webcodecs/video-encoder-utils.js"
+        ],
+        [
+         "variant",
+         "?h264_annexb_software"
+        ],
+        [
+         "variant",
+         "?h264_annexb_hardware"
+        ],
+        [
+         "variant",
+         "?h265_annexb_software"
+        ],
+        [
+         "variant",
+         "?h265_annexb_hardware"
+        ]
+       ]
+      }
+     ]
+    ],
+    "video-encoder-rescaling.https.any.js": [
+     "70bafa04964cba77acc1c86b3f7d6f4b8ce4b728",
+     [
+      "webcodecs/video-encoder-rescaling.https.any.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.html?h264_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.html?h264_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.html?vp9_p0",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.worker.html?av1",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.worker.html?h264_annexb",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.worker.html?h264_avc",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.worker.html?vp8",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
+        ]
+       ]
+      }
+     ],
+     [
+      "webcodecs/video-encoder-rescaling.https.any.worker.html?vp9_p0",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "variant",
+         "?av1"
+        ],
+        [
+         "variant",
+         "?vp8"
+        ],
+        [
+         "variant",
+         "?vp9_p0"
+        ],
+        [
+         "variant",
+         "?h264_avc"
+        ],
+        [
+         "variant",
+         "?h264_annexb"
         ]
        ]
       }
