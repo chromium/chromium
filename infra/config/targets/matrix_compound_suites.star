@@ -697,7 +697,29 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "optimization_guide_win_script_tests",
+    name = "optimization_guide_win32_script_tests",
+    basic_suites = {
+        "model_validation_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "model_validation_tests_light_suite": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
+        "ondevice_stability_tests_suite": targets.legacy_matrix_config(
+            variants = [
+                "AMD_RADEON_RX_5500_XT",
+                "NVIDIA_GEFORCE_GTX_1660",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "optimization_guide_win64_script_tests",
     basic_suites = {
         "model_validation_tests_suite": targets.legacy_matrix_config(
             mixins = [

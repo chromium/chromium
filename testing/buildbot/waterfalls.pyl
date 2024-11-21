@@ -1560,7 +1560,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'optimization_guide_win_script_tests',
+           'isolated_scripts': 'optimization_guide_win32_script_tests',
         },
         'os_type': 'win',
       },
@@ -1575,7 +1575,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'optimization_guide_win_script_tests',
+           'isolated_scripts': 'optimization_guide_win64_script_tests',
         },
         'os_type': 'win',
       },
