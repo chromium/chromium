@@ -1058,6 +1058,9 @@ class CORE_EXPORT Document : public ContainerNode,
   inline bool HasExplicitlySetAttrElements() const {
     return !element_explicitly_set_attr_elements_map_.empty();
   }
+  inline bool HasExplicitlySetAttrElements(const Element* element) const {
+    return element_explicitly_set_attr_elements_map_.Contains(element);
+  }
 
   CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
   void MoveElementCachedAttrAssociatedElementsMapToNewDocument(

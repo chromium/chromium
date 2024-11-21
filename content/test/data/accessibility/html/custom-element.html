@@ -1,13 +1,30 @@
-<hr aria-label="Outside custom element">
-<div id="test-contents">
+<!--
+@BLINK-ALLOW:htmlTag='test-element'
+@BLINK-ALLOW:className*
+-->
+<template id="test-contents">
   <div role="presentation">
     <span>a</span>
     <span style="display:none">b</span>
     <span style="visibility:hidden">c</span>
   </div>
-</div>
-<hr aria-label="Inside custom element">
-<test-element></test-element>
+</template>
+<!-- A custom element is role=none by default -->
+<test-element class="no-attributes"></test-element>
+<!-- Using the role attribute will undo the default role=none -->
+<test-element role="group" class="has-role-group"></test-element>
+<!-- Most global ARIA Properties do not undo the default role=none, even though
+     they would on a non-custom element (see aria-global.html) -->
+<test-element aria-description="description" class="described"></test-element>
+<test-element aria-label="label" class="labeled"></test-element>
+<!-- A focusable node is always exposed, and therefore undoes role=none on a
+     custom element -->
+<test-element tabindex="0" class="focusable"></test-element>
+<!-- A node with aria-live or aria-owns is always exposed, undoing
+     role=none on a custom element -->
+<test-element aria-live="polite" class="live"></test-element>
+<test-element aria-owns="anything" class="owner"></test-element>
+
 <script>
   class TestElement extends HTMLElement {
     constructor() {

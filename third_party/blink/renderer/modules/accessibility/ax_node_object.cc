@@ -668,6 +668,66 @@ bool IsExemptFromInlineBlockCheck(ax::mojom::blink::Role role) {
          role == ax::mojom::blink::Role::kEmbeddedObject;
 }
 
+bool AXNodeObject::ShouldIncludeCustomElement() const {
+  Element* element = GetElement();
+  DCHECK(element);
+  DCHECK(element->IsCustomElement());
+  // Custom elements are generally ignored in the tree, with some exceptions:
+
+  // * Has aria role. This indicates the developer wants it in the tree.
+  if (RawAriaRole() != ax::mojom::blink::Role::kUnknown ||
+      role_ == ax::mojom::blink::Role::kGenericContainer) {
+    return true;
+  }
+
+  // * Has aria-live. This is a legitimate use case for ARIA semantics on
+  // a custom element.
+  if (HasAriaAttribute(html_names::kAriaLiveAttr)) {
+    return true;
+  }
+
+  // * Has aria-owns. Not keeping an element with aria-owns in the tree
+  // would break tree reordering expectations and create confusing situations.
+  if (HasARIAOwns(element)) {
+    return true;
+  }
+
+  // * Uses element internals with an accessibility attribute set.
+  // As element internals are not a convenient way to declare semantics, this
+  // indicates that it is more about hiding an implementation of semantics on
+  // the custom element, they are not likely to be used for semantics that
+  // are to be passed down into the shadow subtree by copying.
+  if (element->GetElementInternals() &&
+      element->GetElementInternals()->HasAnyAttribute()) {
+    return true;
+  }
+
+  // * Has element attributes (explicotly set attribute elements)
+  // As element internals are not a convenient way to declare semantics, and
+  // are used to create relations that cross shadow boundaries, they would
+  // not be useful for passing semantics via DOM attributes.
+  if (GetDocument()->HasExplicitlySetAttrElements(element)) {
+    return true;
+  }
+
+  // * Focusable.
+  if (element->IsKeyboardFocusable(
+          Element::UpdateBehavior::kNoneForAccessibility)) {
+    return true;
+  }
+
+  // * <webview> (special deprecated element used in ChromeOS WebUI apps, and
+  //   kept in tree to pass AutomationApiTest.LocationInWebView).
+  //   Custom elements in actual web content always have a hyphenated name,
+  //   and therefore <webview> in real web content cannot be a custom element.
+  DEFINE_STATIC_LOCAL(const AtomicString, web_view_tag, ("webview"));
+  if (element->HasLocalName(web_view_tag)) {
+    return true;
+  }
+
+  return false;
+}
+
 AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
     IgnoredReasons* ignored_reasons) const {
   DCHECK(GetDocument());
@@ -715,6 +775,13 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     }
     return kIgnoreObject;
+  }
+
+  // Custom elements are generally ignored in the tree.
+  if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+    if (element->IsCustomElement() && !ShouldIncludeCustomElement()) {
+      return kIgnoreObject;
+    }
   }
 
   if (IsA<SVGElement>(node)) {
@@ -1061,7 +1128,6 @@ bool AXNodeObject::ComputeIsIgnored(
   }
 
   // Handle content that is either visible or in a canvas subtree.
-
   AXObjectInclusion include = ShouldIncludeBasedOnSemantics(ignored_reasons);
   if (include == kIncludeObject) {
     return false;

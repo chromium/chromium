@@ -3060,6 +3060,21 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     }
   }
 
+  // In some cases custom elements are ignored to avoid duplicated semantics,
+  // since authors will often copy the ARIA properties into an element within
+  // the shadow dom. In these cases the role is also supposed to be "none". We
+  // do that here so a complex internal role change does not need to occur when
+  // focusability, aria-owns or aria-live change. See also
+  // AXNodeObject::ShouldIncludeBasedOnSemantics(). Note: since the node is
+  // ignored this does not impact any platform trees, but it does make this case
+  // easier to spot in blink dump tree tests
+  if (RuntimeEnabledFeatures::AccessibilityCustomElementRoleNoneEnabled()) {
+    if (role_ == ax::mojom::blink::Role::kGenericContainer && IsIgnored() &&
+        GetElement() && GetElement()->IsCustomElement()) {
+      return ax::mojom::blink::Role::kNone;
+    }
+  }
+
   // TODO(accessibility): Consider moving the image vs. image map role logic
   // here. Currently it is implemented in AXPlatformNode subclasses and thus
   // not available to the InspectorAccessibilityAgent.
