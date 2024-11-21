@@ -912,11 +912,9 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   }
   if (previousTraitCollection.userInterfaceStyle !=
       self.traitCollection.userInterfaceStyle) {
-    if (base::FeatureList::IsEnabled(kOmniboxColorIcons)) {
       [self.headerView
           updateButtonsForUserInterfaceStyle:self.traitCollection
                                                  .userInterfaceStyle];
-    }
   }
 }
 

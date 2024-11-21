@@ -434,10 +434,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)updateButtonsForUserInterfaceStyle:(UIUserInterfaceStyle)style {
-  const BOOL darkModeEnabled = (style == UIUserInterfaceStyleDark);
-  const BOOL useColorIcon =
-      !darkModeEnabled && base::FeatureList::IsEnabled(kOmniboxColorIcons);
-
+  const BOOL useColorIcon = (style != UIUserInterfaceStyleDark);
   content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   useColorIcon);
   if (self.lensButton) {

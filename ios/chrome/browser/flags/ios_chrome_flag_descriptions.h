@@ -782,11 +782,6 @@ extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebName[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
 
-// Title and description for the flag to enable the color icons in the
-// omnibox.
-extern const char kOmniboxColorIconsName[];
-extern const char kOmniboxColorIconsDescription[];
-
 // Title and description for the flag to force clipboard access to be
 // asynchronous.
 extern const char kOnlyAccessClipboardAsyncName[];

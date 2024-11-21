@@ -584,10 +584,6 @@ BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOmniboxColorIcons,
-             "OmniboxColorIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -891,10 +891,6 @@ const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
 
-const char kOmniboxColorIconsName[] = "Enable color icons in the Omnibox";
-const char kOmniboxColorIconsDescription[] =
-    "When enabled, displays color microphone and Lens icons in the omnibox.";
-
 const char kOnlyAccessClipboardAsyncName[] =
     "Only access the clipboard asynchronously";
 const char kOnlyAccessClipboardAsyncDescription[] =
