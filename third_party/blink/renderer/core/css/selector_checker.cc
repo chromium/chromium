@@ -160,14 +160,35 @@ static Element* ShadowHost(
   return nullptr;
 }
 
+// Returns true if we're matching in the context of a shadow tree [1],
+// and currently pointing at the host associated with that shadow tree.
+//
+// [1] https://drafts.csswg.org/css-scoping-1/#in-the-context-of-a-shadow-tree
+bool IsAtShadowHost(const SelectorChecker::SelectorCheckingContext& context) {
+  return ShadowHost(context) == context.element;
+}
+
+// When matched against the context of a shadow tree [1], the ParentElement
+// and PreviousSiblingElement functions return nullptr if they would go outside
+// of that tree. (Keeping in mind that the host is effectively the root of that
+// tree for selector matching purposes.)
+//
+// [1] https://drafts.csswg.org/css-scoping-1/#in-the-context-of-a-shadow-tree
+
 static Element* ParentElement(
     const SelectorChecker::SelectorCheckingContext& context) {
-  if (context.tree_scope &&
-      (context.tree_scope == context.element->ContainingShadowRoot() ||
-       context.tree_scope == context.element->GetTreeScope())) {
-    return context.element->ParentOrShadowHostElement();
+  if (IsAtShadowHost(context)) {
+    return nullptr;
   }
-  return context.element->parentElement();
+  return context.element->ParentOrShadowHostElement();
+}
+
+static Element* PreviousSiblingElement(
+    const SelectorChecker::SelectorCheckingContext& context) {
+  if (IsAtShadowHost(context)) {
+    return nullptr;
+  }
+  return ElementTraversal::PreviousSibling(*context.element);
 }
 
 // If context has scope, return slot that matches the scope, otherwise return
@@ -185,11 +206,6 @@ static const HTMLSlotElement* FindSlotElementInScope(
     }
   }
   return nullptr;
-}
-
-static inline bool NextSelectorExceedsScope(
-    const SelectorChecker::SelectorCheckingContext& context) {
-  return context.element == ShadowHost(context);
 }
 
 static bool ShouldMatchHoverOrActive(
@@ -366,10 +382,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     case CSSSelector::kSubSelector:
       return MatchForSubSelector(context, result);
     default: {
-      if (NextSelectorExceedsScope(context)) {
-        return kSelectorFailsCompletely;
-      }
-
       if (context.pseudo_id != kPseudoIdNone &&
           context.pseudo_id != result.dynamic_pseudo) {
         return kSelectorFailsCompletely;
@@ -539,9 +551,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         if (match == kSelectorMatches || match == kSelectorFailsCompletely) {
           return match;
         }
-        if (NextSelectorExceedsScope(next_context)) {
-          return kSelectorFailsCompletely;
-        }
         if (next_context.element->IsLink()) {
           DisallowMatchVisited(next_context);
         }
@@ -569,8 +578,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           parent->SetChildrenAffectedByDirectAdjacentRules();
         }
       }
-      next_context.element =
-          ElementTraversal::PreviousSibling(*context.element);
+      next_context.element = PreviousSiblingElement(context);
       if (!next_context.element) {
         return kSelectorFailsAllSiblings;
       }
@@ -586,11 +594,9 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           parent->SetChildrenAffectedByIndirectAdjacentRules();
         }
       }
-      next_context.element =
-          ElementTraversal::PreviousSibling(*context.element);
+      next_context.element = PreviousSiblingElement(context);
       for (; next_context.element;
-           next_context.element =
-               ElementTraversal::PreviousSibling(*next_context.element)) {
+           next_context.element = PreviousSiblingElement(next_context)) {
         MatchStatus match = MatchSelector(next_context, result);
         if (match == kSelectorMatches || match == kSelectorFailsAllSiblings ||
             match == kSelectorFailsCompletely) {
