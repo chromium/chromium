@@ -200,7 +200,7 @@ class PLATFORM_EXPORT CanvasResource
                  cc::PaintFlags::FilterQuality,
                  gfx::Size size,
                  viz::SharedImageFormat format,
-                 SkAlphaType sk_alpha_type,
+                 SkAlphaType alpha_type,
                  gfx::ColorSpace color_space);
 
   // Returns true if the resource is backed by memory such that it can be used
@@ -263,7 +263,7 @@ class PLATFORM_EXPORT CanvasResource
   base::WeakPtr<CanvasResourceProvider> provider_;
   gfx::Size size_;
   viz::SharedImageFormat format_;
-  SkAlphaType sk_alpha_type_;
+  SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   cc::PaintFlags::FilterQuality filter_quality_;
   LastUnrefCallback last_unref_callback_;
@@ -275,7 +275,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   static scoped_refptr<CanvasResourceSharedBitmap> Create(
       gfx::Size size,
       SkColorType sk_color_type,
-      SkAlphaType sk_alpha_type,
+      SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
@@ -303,7 +303,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   CanvasResourceSharedBitmap(
       gfx::Size size,
       SkColorType sk_color_type,
-      SkAlphaType sk_alpha_type,
+      SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
@@ -323,7 +323,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   static scoped_refptr<CanvasResourceSharedImage> Create(
       gfx::Size size,
       SkColorType sk_color_type,
-      SkAlphaType sk_alpha_type,
+      SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
@@ -404,7 +404,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   CanvasResourceSharedImage(gfx::Size size,
                             SkColorType sk_color_type,
-                            SkAlphaType sk_alpha_type,
+                            SkAlphaType alpha_type,
                             sk_sp<SkColorSpace> sk_color_space,
                             base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                             base::WeakPtr<CanvasResourceProvider>,
@@ -521,7 +521,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   static scoped_refptr<CanvasResourceSwapChain> Create(
       gfx::Size size,
       SkColorType sk_color_type,
-      SkAlphaType sk_alpha_type,
+      SkAlphaType alpha_type,
       sk_sp<SkColorSpace> sk_color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
@@ -558,7 +558,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
 
   CanvasResourceSwapChain(gfx::Size size,
                           SkColorType sk_color_type,
-                          SkAlphaType sk_alpha_type,
+                          SkAlphaType alpha_type,
                           sk_sp<SkColorSpace> sk_color_space,
                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                           base::WeakPtr<CanvasResourceProvider>,
