@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
+#import "ios/chrome/browser/ai_prototyping/utils/page_data_extraction_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
@@ -93,13 +94,14 @@
   request.set_model_strategy(strategy);
 
   // Adds information from each open tab to the request.
-  // TODO(crbug.com/370768381): Add page context for each tab.
   for (int index = 0; index < _webStateList->count(); ++index) {
     web::WebState* webState = _webStateList->GetWebStateAt(index);
     ::optimization_guide::proto::Tab* tab = request.add_tabs();
     tab->set_tab_id(webState->GetUniqueIdentifier().identifier());
     tab->set_title(base::UTF16ToUTF8(webState->GetTitle()));
     tab->set_url(webState->GetVisibleURL().spec());
+    tab->set_allocated_page_context(
+        page_data_extraction_utils::GetPageContextForWebState(webState));
   }
 
   // Execute the request.
