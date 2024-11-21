@@ -313,16 +313,16 @@ class DirectWritingServiceBinder {
         }
     }
 
-    void hideDWToolbar() {
+    void hideDwToolbar() {
         if (!isServiceConnected()) return;
         try {
             Bundle bundle = DirectWritingBundleUtil.buildBundle();
             mRemoteDwService.onEditTextActionModeStarted(bundle);
         } catch (DeadObjectException e) {
-            Log.e(TAG, "hideDWToolbar failed due to DeadObjectException.", e);
+            Log.e(TAG, "hideDwToolbar failed due to DeadObjectException.", e);
             resetDwServiceConnection();
         } catch (Exception e) {
-            Log.e(TAG, "hideDWToolbar failed.", e);
+            Log.e(TAG, "hideDwToolbar failed.", e);
         }
     }
 }
