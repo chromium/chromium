@@ -190,6 +190,7 @@ suite('FledgeSubpage', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -241,8 +242,82 @@ suite('FledgeSubpage', function() {
     ];
     assertDeepEquals(hrefs, expectedLinks);
   });
+
+  test('siteSuggestedAdsContentV2NotShown', async function() {
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#fledgeToggle')));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#siteSuggestedAdsToggleV2')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#secondDescription')));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#secondDescriptionV2')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#disclaimer')));
+    const learnMoreLink =
+        page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink');
+    assertTrue(!!learnMoreLink);
+    assertTrue(isVisible(learnMoreLink));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#learnMoreLinkV2')));
+    learnMoreLink!.click();
+    await flushTasks();
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#body')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#bodyV2')));
+  });
 });
 
+suite('SiteSuggestedAdsSubpageAdsApiUxEnhancement', function() {
+  let page: SettingsPrivacySandboxFledgeSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    testPrivacySandboxBrowserProxy.setFledgeState({
+      joiningSites: ['test-site-one.com'],
+      blockedSites: ['test-site-two.com'],
+    });
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-fledge-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_FLEDGE);
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getFledgeState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('siteSuggestedAdsContentV2', async function() {
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#fledgeToggle')));
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#siteSuggestedAdsToggleV2')));
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector('#secondDescription')));
+    assertTrue(
+        isVisible(page.shadowRoot!.querySelector('#secondDescriptionV2')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#disclaimer')));
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#learnMoreLink')));
+    const learnMoreLinkV2 =
+        page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLinkV2');
+    assertTrue(!!learnMoreLinkV2);
+    assertTrue(isVisible(learnMoreLinkV2));
+    learnMoreLinkV2.click();
+    await flushTasks();
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#body')));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#bodyV2')));
+  });
+});
 
 suite('TopicsSubpage', function() {
   let page: SettingsPrivacySandboxTopicsSubpageElement;
