@@ -948,6 +948,10 @@ crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffer
 crbug.com/335857348 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 crbug.com/375117795 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 
+## DrDc being re-enabled ##
+crbug.com/380250262 [ android android-pixel-2 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
+
 #####################
 # ChromeOS failures #
 #####################

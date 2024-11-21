@@ -695,7 +695,8 @@ crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/render
 
 ## Misc failures ##
 
-
+## DrDc being re-enabled ##
+crbug.com/380250262 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 
 ## Samsung failures ##
