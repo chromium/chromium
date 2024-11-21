@@ -1302,10 +1302,19 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="System Disconnect"/>
   <int value="1" label="User Disconnect"/>
   <int value="2" label="Suspend"/>
-  <int value="3" label="Switch Network"/>
+  <int value="3" label="Select Network"/>
   <int value="4" label="Disable"/>
   <int value="5" label="Service Unload"/>
   <int value="6" label="Disconnect On Ethernet"/>
+  <int value="7" label="Clear Credential"/>
+  <int value="8" label="No Endpoint Left"/>
+  <int value="9" label="New WiFi Device"/>
+  <int value="10" label="IP Config Failure"/>
+  <int value="11" label="Pending Service Timeout"/>
+  <int value="12" label="4-way Handshake Timeout"/>
+  <int value="13" label="Reconnect Timeout"/>
+  <int value="14" label="Roaming to Incorrect BSSID"/>
+  <int value="15" label="Shill"/>
 </enum>
 
 <enum name="NotificationSuppressionState">
