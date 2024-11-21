@@ -459,7 +459,7 @@ id<MTLRenderPipelineState> CreateRenderPipelineState(id<MTLDevice> device) {
       skcms_Matrix3x3 src_to_xyz;
       skcms_Matrix3x3 rec2020_to_xyz;
       skcms_Matrix3x3 xyz_to_rec2020;
-      SkNamedPrimariesExt::kRec2020.toXYZD50(&rec2020_to_xyz);
+      SkNamedPrimaries::kRec2020.toXYZD50(&rec2020_to_xyz);
       colorSpace.GetPrimaryMatrix(&src_to_xyz);
       skcms_Matrix3x3_invert(&rec2020_to_xyz, &xyz_to_rec2020);
       skcms_Matrix3x3 m = skcms_Matrix3x3_concat(&xyz_to_rec2020, &src_to_xyz);

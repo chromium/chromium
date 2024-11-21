@@ -10,6 +10,7 @@
 #include "ui/gfx/display_color_spaces.h"
 
 #include "build/build_config.h"
+#include "skia/ext/skcolorspace_primaries.h"
 
 namespace gfx {
 

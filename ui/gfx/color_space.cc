@@ -823,19 +823,19 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       // in case we somehow get an id which is not listed in the switch.
       // (We don't want to use "default", because we want the compiler
       //  to tell us if we forgot some enum values.)
-      return SkNamedPrimariesExt::kRec709;
+      return SkNamedPrimaries::kRec709;
 
     case ColorSpace::PrimaryID::BT470M:
-      return SkNamedPrimariesExt::kRec470SystemM;
+      return SkNamedPrimaries::kRec470SystemM;
 
     case ColorSpace::PrimaryID::BT470BG:
-      return SkNamedPrimariesExt::kRec470SystemBG;
+      return SkNamedPrimaries::kRec470SystemBG;
 
     case ColorSpace::PrimaryID::SMPTE170M:
-      return SkNamedPrimariesExt::kRec601;
+      return SkNamedPrimaries::kRec601;
 
     case ColorSpace::PrimaryID::SMPTE240M:
-      return SkNamedPrimariesExt::kSMPTE_ST_240;
+      return SkNamedPrimaries::kSMPTE_ST_240;
 
     case ColorSpace::PrimaryID::APPLE_GENERIC_RGB:
       return SkNamedPrimariesExt::kAppleGenericRGB;
@@ -844,16 +844,16 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       return SkNamedPrimariesExt::kWideGamutColorSpin;
 
     case ColorSpace::PrimaryID::FILM:
-      return SkNamedPrimariesExt::kGenericFilm;
+      return SkNamedPrimaries::kGenericFilm;
 
     case ColorSpace::PrimaryID::BT2020:
-      return SkNamedPrimariesExt::kRec2020;
+      return SkNamedPrimaries::kRec2020;
 
     case ColorSpace::PrimaryID::SMPTEST428_1:
-      return SkNamedPrimariesExt::kSMPTE_ST_428_1;
+      return SkNamedPrimaries::kSMPTE_ST_428_1;
 
     case ColorSpace::PrimaryID::SMPTEST431_2:
-      return SkNamedPrimariesExt::kSMPTE_RP_431_2;
+      return SkNamedPrimaries::kSMPTE_RP_431_2;
 
     case ColorSpace::PrimaryID::P3:
       return SkNamedPrimariesExt::kP3;
@@ -865,7 +865,7 @@ SkColorSpacePrimaries ColorSpace::GetColorSpacePrimaries(
       return SkNamedPrimariesExt::kA98RGB;
 
     case ColorSpace::PrimaryID::EBU_3213_E:
-      return SkNamedPrimariesExt::kITU_T_H273_Value22;
+      return SkNamedPrimaries::kITU_T_H273_Value22;
   }
   return primaries;
 }
@@ -923,16 +923,16 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
       fn->g = 1.801f;
       return true;
     case ColorSpace::TransferID::GAMMA22:
-      *fn = SkNamedTransferFnExt::kRec470SystemM;
+      *fn = SkNamedTransferFn::kRec470SystemM;
       return true;
     case ColorSpace::TransferID::GAMMA24:
       fn->g = 2.4f;
       return true;
     case ColorSpace::TransferID::GAMMA28:
-      *fn = SkNamedTransferFnExt::kRec470SystemBG;
+      *fn = SkNamedTransferFn::kRec470SystemBG;
       return true;
     case ColorSpace::TransferID::SMPTE240M:
-      *fn = SkNamedTransferFnExt::kSMPTE_ST_240;
+      *fn = SkNamedTransferFn::kSMPTE_ST_240;
       return true;
     case ColorSpace::TransferID::BT709:
     case ColorSpace::TransferID::SMPTE170M:
@@ -949,13 +949,13 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
     // media players.
     case ColorSpace::TransferID::SRGB:
     case ColorSpace::TransferID::SRGB_HDR:
-      *fn = SkNamedTransferFnExt::kSRGB;
+      *fn = SkNamedTransferFn::kSRGB;
       return true;
     case ColorSpace::TransferID::BT709_APPLE:
       *fn = SkNamedTransferFnExt::kRec709Apple;
       return true;
     case ColorSpace::TransferID::SMPTEST428_1:
-      *fn = SkNamedTransferFnExt::kSMPTE_ST_428_1;
+      *fn = SkNamedTransferFn::kSMPTE_ST_428_1;
       return true;
     case ColorSpace::TransferID::IEC61966_2_4:
       // This could potentially be represented the same as SRGB, but it handles

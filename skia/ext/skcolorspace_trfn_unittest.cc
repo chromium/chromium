@@ -12,7 +12,7 @@ namespace {
 constexpr float kEpsilon = 0.001;
 
 TEST(SkiaUtils, ScaleTrfn) {
-  skcms_TransferFunction x = SkNamedTransferFnExt::kIEC61966_2_1;
+  skcms_TransferFunction x = SkNamedTransferFn::kIEC61966_2_1;
   float alpha = 3.f;
 
   // Ensure that we round-trip successfully.

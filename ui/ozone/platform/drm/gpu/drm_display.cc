@@ -201,7 +201,7 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   // sync. HDR capability is determined in
   // gfx::DisplayUtil::GetColorSpaceFromEdid
   if (display_snapshot.color_space() == gfx::ColorSpace::CreateHDR10()) {
-    output_primaries = SkNamedPrimariesExt::kRec2020;
+    output_primaries = SkNamedPrimaries::kRec2020;
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
   } else {
