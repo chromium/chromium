@@ -56,10 +56,8 @@ FakeOnDeviceServiceSettings::~FakeOnDeviceServiceSettings() = default;
 
 FakeOnDeviceSession::FakeOnDeviceSession(
     FakeOnDeviceServiceSettings* settings,
-    const std::string& adaptation_model_weight,
     FakeOnDeviceModel* model)
     : settings_(settings),
-      adaptation_model_weight_(adaptation_model_weight),
       model_(model) {}
 
 FakeOnDeviceSession::~FakeOnDeviceSession() = default;
@@ -106,8 +104,7 @@ void FakeOnDeviceSession::Score(const std::string& text,
 
 void FakeOnDeviceSession::Clone(
     mojo::PendingReceiver<on_device_model::mojom::Session> session) {
-  auto new_session = std::make_unique<FakeOnDeviceSession>(
-      settings_, adaptation_model_weight_, model_);
+  auto new_session = std::make_unique<FakeOnDeviceSession>(settings_, model_);
   for (const auto& c : context_) {
     new_session->context_.push_back(c->Clone());
   }
@@ -118,14 +115,20 @@ void FakeOnDeviceSession::ExecuteImpl(
     mojom::InputOptionsPtr input,
     mojo::PendingRemote<mojom::StreamingResponder> response) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
+  if (model_->data().base_weight != "0") {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text = "Base model: " + model_->data().base_weight + "\n";
+    remote->OnResponse(std::move(chunk));
+  }
+  if (!model_->data().adaptation_model_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text =
+        "Adaptation model: " + model_->data().adaptation_model_weight + "\n";
+    remote->OnResponse(std::move(chunk));
+  }
   for (const auto& context : context_) {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "Context: " + CtxToString(*context) + "\n";
-    remote->OnResponse(std::move(chunk));
-  }
-  if (!adaptation_model_weight_.empty()) {
-    auto chunk = mojom::ResponseChunk::New();
-    chunk->text = "Adaptation model: " + adaptation_model_weight_ + "\n";
     remote->OnResponse(std::move(chunk));
   }
 
@@ -173,8 +176,7 @@ FakeOnDeviceModel::~FakeOnDeviceModel() = default;
 void FakeOnDeviceModel::StartSession(
     mojo::PendingReceiver<mojom::Session> session) {
   AddSession(std::move(session),
-             std::make_unique<FakeOnDeviceSession>(
-                 settings_, data_.adaptation_model_weight, this));
+             std::make_unique<FakeOnDeviceSession>(settings_, this));
 }
 
 void FakeOnDeviceModel::AddSession(
@@ -277,8 +279,10 @@ void FakeOnDeviceModelService::LoadModel(
     std::move(callback).Run(mojom::LoadModelResult::kSuccess);
     return;
   }
+  FakeOnDeviceModel::Data data;
+  data.base_weight = ReadFile(params->assets.weights);
   auto test_model =
-      std::make_unique<FakeOnDeviceModel>(settings_, FakeOnDeviceModel::Data{});
+      std::make_unique<FakeOnDeviceModel>(settings_, std::move(data));
   model_receivers_.Add(std::move(test_model), std::move(model));
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }

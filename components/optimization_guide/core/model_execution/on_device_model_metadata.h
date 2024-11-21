@@ -32,10 +32,6 @@ class OnDeviceModelMetadata final {
       const OnDeviceBaseModelSpec& model_spec,
       std::unique_ptr<proto::OnDeviceModelExecutionConfig> config);
 
-  // Returns a "copy" of the current adapter for a particular feature.
-  scoped_refptr<const OnDeviceModelFeatureAdapter> GetAdapter(
-      proto::ModelExecutionFeature feature) const;
-
   const base::FilePath& model_path() const { return model_path_; }
   const std::string& version() const { return version_; }
   const OnDeviceBaseModelSpec& model_spec() const { return model_spec_; }
@@ -54,11 +50,6 @@ class OnDeviceModelMetadata final {
   std::string version_;
   OnDeviceBaseModelSpec model_spec_;
   proto::OnDeviceModelValidationConfig validation_config_;
-
-  // Map from feature to associated state.
-  base::flat_map<proto::ModelExecutionFeature,
-                 scoped_refptr<OnDeviceModelFeatureAdapter>>
-      adapters_;
 };
 
 // Provides a stream of updated ModelMetadatas from component states.
