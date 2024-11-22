@@ -7376,6 +7376,21 @@
             ]
         }
     ],
+    "DefaultANGLEVulkan": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultANGLEVulkan"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserPromoAndroid2": [
         {
             "platforms": [
