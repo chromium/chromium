@@ -107,7 +107,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     CreateVideoEncoderMetricsProvider() = 0;
 
     // Called on encountering encoder errors.
-    virtual void OnVideoEncodingError() = 0;
+    virtual void OnVideoEncodingError(
+        const media::EncoderStatus& error_status) = 0;
 
     // Called when a track's ready state changes.
     virtual void OnSourceReadyStateChanged() = 0;
@@ -141,7 +142,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
       scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks capture_timestamp)>;
-  using OnErrorCB = base::RepeatingClosure;
+  using OnErrorCB = base::RepeatingCallback<void(const media::EncoderStatus&)>;
 
   // MediaStreamVideoSink implementation
   double GetRequiredMinFramesPerSec() const override { return 1; }
@@ -407,7 +408,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       CodecProfile codec_profile,
       bool is_screencast,
       bool create_vea_encoder);
-  void OnHardwareEncoderError();
+  void OnHardwareEncoderError(const media::EncoderStatus& error_status);
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
   void DisconnectFromTrack();

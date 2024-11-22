@@ -224,7 +224,7 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
          base::StrCat(
              {"libvpx failed to encode: ", vpx_codec_err_to_string(ret), " - ",
               vpx_codec_error_detail(encoder)})});
-    on_error_cb_.Run();
+    on_error_cb_.Run(media::EncoderStatus::Codes::kEncoderFailedEncode);
     return;
   }
 
@@ -340,7 +340,7 @@ bool VpxEncoder::ConfigureEncoder(const gfx::Size& size,
     DLOG(WARNING) << "vpx_codec_enc_init failed: " << ret;
     // Require the encoder to be reinitialized next frame.
     codec_config->g_timebase.den = 0;
-    on_error_cb_.Run();
+    on_error_cb_.Run(media::EncoderStatus::Codes::kEncoderInitializationError);
     return false;
   }
   encoder->reset(tmp_encoder.release());

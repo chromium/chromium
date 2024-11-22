@@ -26,7 +26,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   using CreateEncoderCB =
       base::RepeatingCallback<std::unique_ptr<media::VideoEncoder>(
           media::GpuVideoAcceleratorFactories*)>;
-  using OnErrorCB = base::OnceClosure;
+  using OnErrorCB = base::OnceCallback<void(const media::EncoderStatus&)>;
 
   MediaRecorderEncoderWrapper(
       scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,

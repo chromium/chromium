@@ -1104,10 +1104,11 @@ void MediaRecorderHandler::Trace(Visitor* visitor) const {
   visitor->Trace(weak_factory_);
 }
 
-void MediaRecorderHandler::OnVideoEncodingError() {
+void MediaRecorderHandler::OnVideoEncodingError(
+    const media::EncoderStatus& error_status) {
   if (recorder_) {
-    recorder_->OnError(DOMExceptionCode::kUnknownError,
-                       "Video encoding failed.");
+    recorder_->OnError(DOMExceptionCode::kEncodingError,
+                       String(media::EncoderStatusCodeToString(error_status)));
   }
 }
 

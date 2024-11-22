@@ -129,7 +129,8 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   const gfx::Size frame_size = frame->visible_rect().size();
   if (!openh264_encoder_ || configured_size_ != frame_size) {
     if (!ConfigureEncoder(frame_size)) {
-      on_error_cb_.Run();
+      on_error_cb_.Run(
+          media::EncoderStatus::Codes::kEncoderInitializationError);
       return;
     }
     first_frame_timestamp_ = capture_timestamp;
@@ -164,7 +165,7 @@ void H264Encoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
         {media::EncoderStatus::Codes::kEncoderFailedEncode,
          base::StrCat(
              {"OpenH264 failed to encode: ", base::NumberToString(ret)})});
-    on_error_cb_.Run();
+    on_error_cb_.Run(media::EncoderStatus::Codes::kEncoderFailedEncode);
     return;
   }
   const media::Muxer::VideoParameters video_params(*frame);

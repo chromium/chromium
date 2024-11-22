@@ -177,7 +177,10 @@ class MockVideoTrackRecorderCallbackInterface
               (),
               (override));
 
-  MOCK_METHOD(void, OnVideoEncodingError, (), (override));
+  MOCK_METHOD(void,
+              OnVideoEncodingError,
+              (const media::EncoderStatus& status),
+              (override));
   MOCK_METHOD(void, OnSourceReadyStateChanged, (), (override));
   void Trace(Visitor* v) const override { v->Trace(weak_factory_); }
   WeakCell<VideoTrackRecorder::CallbackInterface>* GetWeakCell() {
@@ -288,7 +291,10 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
   }
 
   void OnFailed() { FAIL(); }
-  void OnError() { video_track_recorder_->OnHardwareEncoderError(); }
+  void OnError() {
+    video_track_recorder_->OnHardwareEncoderError(
+        media::EncoderStatus::Codes::kEncoderFailedEncode);
+  }
 
   bool CanEncodeAlphaChannel() {
     bool result;

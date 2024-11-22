@@ -130,7 +130,7 @@ void VEAEncoder::NotifyErrorStatus(const media::EncoderStatus& status) {
               << static_cast<int>(status.code())
               << ", message=" << status.message();
   metrics_provider_->SetError(status);
-  on_error_cb_.Run();
+  on_error_cb_.Run(status);
   error_notified_ = true;
 }
 
