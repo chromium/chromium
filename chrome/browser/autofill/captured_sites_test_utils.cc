@@ -41,6 +41,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -862,6 +863,13 @@ bool ProfileDataController::AddAutofillProfileInfo(
     ADD_FAILURE() << "Unable to recognize autofill field type '" << field_type
                   << "'!";
     return false;
+  }
+
+  // PhoneNumber only allows PHONE_HOME_WHOLE_NUMBER to be set directly, so if
+  // any other phone type is set, convert it to PHONE_HOME_WHOLE_NUMBER.
+  if (GroupTypeOfFieldType(type.value()) == autofill::FieldTypeGroup::kPhone &&
+      type.value() != autofill::FieldType::PHONE_HOME_WHOLE_NUMBER) {
+    type = autofill::FieldType::PHONE_HOME_WHOLE_NUMBER;
   }
 
   if (base::StartsWith(field_type, "HTML_TYPE_CREDIT_CARD_",
