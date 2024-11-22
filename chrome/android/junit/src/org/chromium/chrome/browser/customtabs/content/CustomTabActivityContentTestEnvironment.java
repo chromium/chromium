@@ -27,8 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -144,27 +142,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
         when(intentDataProvider.getColorProvider()).thenReturn(colorProvider);
 
-        when(activity.getCustomTabActivityTabProvider()).thenReturn(tabProvider);
-        when(activity.getTabObserverRegistrar()).thenReturn(tabObserverRegistrar);
-        when(activity.getCustomTabObserver()).thenReturn(customTabObserver);
-        when(activity.getCustomTabNavigationEventObserver()).thenReturn(navigationEventObserver);
-        when(activity.getCipherFactory()).thenReturn(cipherFactory);
         when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
-        when(activity.getIntentDataProvider()).thenReturn(intentDataProvider);
-        when(activity.getLifecycleDispatcher()).thenReturn(lifecycleDispatcher);
-        when(activity.getActivityTabProvider()).thenReturn(activityTabProvider);
-        OneshotSupplierImpl<ProfileProvider> profileProviderSupplier = new OneshotSupplierImpl<>();
-        profileProviderSupplier.set(profileProvider);
-        when(activity.getProfileProviderSupplier()).thenReturn(profileProviderSupplier);
-        ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier =
-                new ObservableSupplierImpl(compositorViewHolder);
-        when(activity.getCompositorViewHolderSupplier()).thenReturn(compositorViewHolderSupplier);
-        when(activity.areTabModelsInitialized()).thenReturn(true);
-        when(activity.getCustomTabDelegateFactory()).thenReturn(customTabDelegateFactory);
-        when(activity.getCustomTabTabPersistencePolicy()).thenReturn(tabPersistencePolicy);
-        when(activity.getCustomTabActivityTabFactory()).thenReturn(tabFactory);
-        when(activity.getCustomTabMinimizationManagerHolder())
-                .thenReturn(mMinimizationManagerHolder);
         when(powerManager.isInteractive()).thenReturn(true);
     }
 
