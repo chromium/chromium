@@ -26,7 +26,14 @@ void InstallDefaultWebSocketHandlers(EmbeddedTestServer* server,
 
   // Optionally serve WebSocket test data.
   if (serve_websocket_test_data) {
-    const base::FilePath websocket_data_dir = GetWebSocketTestDataDirectory();
+    // Set up the file path for serving test files.
+    base::FilePath src_dir;
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+
+    // Serve WebSocket test data directory for both HTTP and HTTPS servers.
+    const base::FilePath websocket_data_dir =
+        src_dir.AppendASCII("net").AppendASCII("data").AppendASCII("websocket");
+
     server->ServeFilesFromDirectory(websocket_data_dir);
   }
 
