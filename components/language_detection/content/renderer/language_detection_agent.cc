@@ -20,15 +20,14 @@
 namespace language_detection {
 
 LanguageDetectionAgent::LanguageDetectionAgent(
-    content::RenderFrame* render_frame)
+    content::RenderFrame* render_frame,
+    language_detection::LanguageDetectionModel& language_detection_model)
     : content::RenderFrameObserver(render_frame),
-      waiting_for_first_foreground_(render_frame->IsHidden()) {
-  language_detection::LanguageDetectionModel& language_detection_model =
-      language_detection::GetLanguageDetectionModel();
-
+      waiting_for_first_foreground_(render_frame->IsHidden()),
+      language_detection_model_(language_detection_model) {
   // If the language detection model is available, we do not
   // worry about requesting the model.
-  if (language_detection_model.IsAvailable()) {
+  if (language_detection_model_->IsAvailable()) {
     return;
   }
 
@@ -94,9 +93,7 @@ void LanguageDetectionAgent::WasShown() {
 
   waiting_for_first_foreground_ = false;
 
-  language_detection::LanguageDetectionModel& language_detection_model =
-      language_detection::GetLanguageDetectionModel();
-  if (language_detection_model.IsAvailable()) {
+  if (language_detection_model_->IsAvailable()) {
     return;
   }
   // The model request was deferred because the frame was hidden

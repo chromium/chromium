@@ -17,6 +17,7 @@
 #include "components/language_detection/content/renderer/language_detection_agent.h"
 #include "components/translate/content/common/translate.mojom.h"
 #include "components/translate/core/common/translate_errors.h"
+#include "components/translate/core/language_detection/language_detection_model.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -180,6 +181,9 @@ class TranslateAgent : public content::RenderFrameObserver,
   // LanguageDetectionTabHelper (which implements the ContentTranslateDriver
   // Mojo interface).
   mojo::Remote<mojom::ContentTranslateDriver> translate_handler_;
+
+  const raw_ref<translate::LanguageDetectionModel>
+      translate_language_detection_model_;
 
   // Same lifetime as this.
   raw_ptr<language_detection::LanguageDetectionAgent> language_detection_agent_;

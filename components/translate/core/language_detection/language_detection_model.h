@@ -71,6 +71,10 @@ class LanguageDetectionModel {
 
   std::string GetModelVersion() const;
 
+  language_detection::LanguageDetectionModel& tflite_model() {
+    return *tflite_model_;
+  }
+
  private:
   // Execute the model on the provided |sampled_str| and return the top language
   // and the models score/confidence in that prediction.

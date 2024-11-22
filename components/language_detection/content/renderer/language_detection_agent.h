@@ -12,11 +12,15 @@
 
 namespace language_detection {
 
+class LanguageDetectionModel;
+
 // This class deals with language detection.
 // There is one LanguageDetectionAgent per RenderView.
 class LanguageDetectionAgent : public content::RenderFrameObserver {
  public:
-  explicit LanguageDetectionAgent(content::RenderFrame* render_frame);
+  explicit LanguageDetectionAgent(
+      content::RenderFrame* render_frame,
+      language_detection::LanguageDetectionModel& language_detection_model);
 
   LanguageDetectionAgent(const LanguageDetectionAgent&) = delete;
   LanguageDetectionAgent& operator=(const LanguageDetectionAgent&) = delete;
@@ -43,6 +47,10 @@ class LanguageDetectionAgent : public content::RenderFrameObserver {
 
   mojo::Remote<mojom::ContentLanguageDetectionDriver>
       language_detection_handler_;
+
+  // Not owned by `this`. It must outlive `this`.
+  const raw_ref<language_detection::LanguageDetectionModel>
+      language_detection_model_;
 
   // Weak pointer factory used to provide references to the translate host.
   base::WeakPtrFactory<LanguageDetectionAgent> weak_pointer_factory_{this};
