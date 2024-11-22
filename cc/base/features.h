@@ -33,12 +33,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<int>
 // Use DMSAA instead of MSAA for rastering tiles.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTiles);
 
-#if BUILDFLAG(IS_ANDROID)
-// Use DMSAA instead of MSAA for rastering tiles on Android GL backend. Note
-// that the above flag kUseDMSAAForTiles is used for Android Vulkan backend.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kUseDMSAAForTilesAndroidGL);
-#endif
-
 // Enables shared image cache for gpu used by CC instances instantiated for UI.
 // TODO(https://crbug.com/c/1378251): this shall also be possible to use by
 // renderers.

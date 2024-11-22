@@ -9868,13 +9868,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
      FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"use-dmsaa-for-tiles-android-gl",
-     flag_descriptions::kUseDMSAAForTilesAndroidGLName,
-     flag_descriptions::kUseDMSAAForTilesAndroidGLDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(::features::kUseDMSAAForTilesAndroidGL)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"app-launch-shortcut", flag_descriptions::kAppLaunchShortcut,
      flag_descriptions::kAppLaunchShortcutDescription, kOsCrOS,

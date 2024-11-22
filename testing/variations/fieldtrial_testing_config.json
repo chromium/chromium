@@ -24014,26 +24014,6 @@
             ]
         }
     ],
-    "UseDMSAAForTilesAndroidGL": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "geolocation_request_timeout_minutes": "30"
-                    },
-                    "enable_features": [
-                        "UseDMSAAForTilesAndroidGL"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseFusedLocationProvider": [
         {
             "platforms": [

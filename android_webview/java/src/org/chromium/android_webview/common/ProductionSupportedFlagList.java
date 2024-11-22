@@ -477,10 +477,6 @@ public final class ProductionSupportedFlagList {
                 CcFeatures.USE_DMSAA_FOR_TILES,
                 "Switches skia to use DMSAA instead of MSAA for tile raster"),
         Flag.baseFeature(
-                CcFeatures.USE_DMSAA_FOR_TILES_ANDROID_GL,
-                "Switches skia to use DMSAA instead of MSAA for tile raster"
-                        + " on Android GL backend."),
-        Flag.baseFeature(
                 BlinkFeatures.THREADED_BODY_LOADER,
                 "If enabled, reads and decodes navigation body data off the main thread."),
         Flag.baseFeature(BlinkFeatures.HIT_TEST_OPAQUENESS),

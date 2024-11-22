@@ -68,14 +68,6 @@ BASE_FEATURE(kUseDMSAAForTiles,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-// This flag controls the DMSAA for tile raster on Android GL backend whereas
-// above flag UseDMSAAForTiles controls the launch on Vulkan backend.
-BASE_FEATURE(kUseDMSAAForTilesAndroidGL,
-             "UseDMSAAForTilesAndroidGL",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kUIEnableSharedImageCacheForGpu,
              "UIEnableSharedImageCacheForGpu",
              base::FEATURE_DISABLED_BY_DEFAULT);
