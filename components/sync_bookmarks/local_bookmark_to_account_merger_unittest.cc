@@ -15,6 +15,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_test_util.h"
+#include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/sync/base/features.h"
@@ -114,13 +115,13 @@ class FolderBuilder {
 class LocalBookmarkToAccountMergerTest : public testing::Test {
  protected:
   LocalBookmarkToAccountMergerTest() {
+    model_->AddObserver(&observer_);
     model_->CreateAccountPermanentFolders();
-
-    // TODO(crbug.com/332532186): Disallow deletions by default by installing a
-    // mock observer.
   }
 
-  ~LocalBookmarkToAccountMergerTest() override = default;
+  ~LocalBookmarkToAccountMergerTest() override {
+    model_->RemoveObserver(&observer_);
+  }
 
   void AddLocalNodes(
       const std::vector<FolderBuilder::FolderOrUrl>& children_of_bookmark_bar,
@@ -147,6 +148,7 @@ class LocalBookmarkToAccountMergerTest : public testing::Test {
       syncer::kSyncEnableBookmarksInTransportMode};
   const std::unique_ptr<bookmarks::BookmarkModel> model_ =
       bookmarks::TestBookmarkClient::CreateModel();
+  testing::NiceMock<bookmarks::MockBookmarkModelObserver> observer_;
 };
 
 TEST_F(LocalBookmarkToAccountMergerTest,
@@ -185,6 +187,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
 
   // -------- The expected merge outcome --------
   // Same as the local model described above.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -227,6 +234,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
 
   // -------- The expected merge outcome --------
   // Same as the local model described above.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -304,6 +316,11 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldUploadLocalUuid) {
 
   // -------- The expected merge outcome --------
   // Same as the local model described above, including the UUID.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -346,6 +363,11 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBySemantics) {
   //    |- url2(http://www.url2.com)
   //    |- url3(http://www.url3.com)
   //    |- url1(http://www.url1.com)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -420,6 +442,11 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldNotDeduplicateIfDifferentUrls) {
   //    |- url3(http://www.url3.com)
   //    |- url4(http://www.url4.com)
   //  |- folder 3
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -452,6 +479,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   AddAccountNodes({FolderBuilder(kAccountTruncatedTitle)});
 
   // -------- The expected merge outcome --------
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -475,6 +507,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   AddAccountNodes({FolderBuilder(kAccountFullTitle)});
 
   // -------- The expected merge outcome --------
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -505,6 +542,11 @@ TEST_F(LocalBookmarkToAccountMergerTest, ShouldDeduplicateBookmarkByUuid) {
   // -------- The expected merge outcome --------
   // bookmark_bar
   //  |- bookmark(kUuid/kLocalTitle)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -561,6 +603,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //      |- url3(http://www.url3.com)
   //      |- url1(http://www.url1.com)
   //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -620,6 +667,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //    |- url3(http://www.url3.com)
   //    |- url1(http://www.url1.com)
   //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -690,6 +742,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //      |- url3(http://www.url3.com)
   //      |- url1(http://www.url1.com)
   //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -774,6 +831,11 @@ TEST_F(
   //      |- url3(http://www.url3.com)
   //      |- url1(http://www.url1.com)
   //  | - folder 1 (kTitle1)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(3);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -815,6 +877,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   // bookmark_bar
   //  | - folder
   //    | - bookmark(kUuid/kLocalTitle)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -859,6 +926,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  |- folder 1
   //    |- folder 2
   //      |- url1(http://www.url1.com)
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -899,6 +971,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -940,6 +1017,11 @@ TEST_F(
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -982,6 +1064,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //
   // The node should have been merged with its UUID match, even if the other
   // candidate matches by semantics.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(2);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(1);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -1015,6 +1102,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - bookmark ([new UUID]/kUrl1)
   //
   // The conflicting node UUID should have been replaced.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -1045,6 +1137,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //  | - bookmark ([new UUID])
   //
   // The conflicting node UUID should have been replaced.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());
@@ -1082,6 +1179,11 @@ TEST_F(LocalBookmarkToAccountMergerTest,
   //    | - bookmark (kUrl1)
   //
   // The conflicting node UUID should have been replaced.
+  EXPECT_CALL(observer_, BookmarkNodeAdded).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeMoved).Times(1);
+  EXPECT_CALL(observer_, BookmarkNodeRemoved).Times(0);
+  EXPECT_CALL(observer_, BookmarkNodeChanged).Times(0);
+
   LocalBookmarkToAccountMerger(model_.get()).MoveAndMerge();
 
   EXPECT_THAT(model_->bookmark_bar_node()->children(), IsEmpty());

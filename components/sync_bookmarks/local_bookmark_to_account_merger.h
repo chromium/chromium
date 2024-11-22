@@ -6,9 +6,14 @@
 #define COMPONENTS_SYNC_BOOKMARKS_LOCAL_BOOKMARK_TO_ACCOUNT_MERGER_H_
 
 #include <unordered_map>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
+
+namespace base {
+class Location;
+}  // namespace base
 
 namespace bookmarks {
 class BookmarkModel;
@@ -48,13 +53,30 @@ class LocalBookmarkToAccountMerger {
   static std::unordered_map<base::Uuid, GuidMatch, base::UuidHash>
   FindGuidMatches(const bookmarks::BookmarkModel* model);
 
-  // Ensures that all descendants under `local_subtree_root` have a copy among
-  // account nodes (under `account_subtree_root` or otherwise). It does so by
-  // copying nodes from local to account as required, which excludes the case
-  // where a local node has a matching account node (by UUID or similarity).
-  void CopyOrMergeDescendants(
+  // Removes an arbitrary set of nodes among siblings under `parent`, as
+  // selected by `indices_to_remove`, which must be sorted in ascending order.
+  // `location` is used for logging purposes and investigations.
+  void RemoveChildrenAt(const bookmarks::BookmarkNode* parent,
+                        const std::vector<size_t>& indices_to_remove,
+                        const base::Location& location);
+
+  // Moves descendants under `local_subtree_root`, excluding the root itself, to
+  // append them under `account_subtree_root`. This method tries to remove
+  // duplicates by UUID or similarity, which results in merging nodes. Both
+  // `local_subtree_root` and `account_subtree_root` must not be null.
+  void MoveOrMergeDescendants(
       const bookmarks::BookmarkNode* local_subtree_root,
       const bookmarks::BookmarkNode* account_subtree_root);
+
+  // Moves descendants under `local_subtree_root` if they match an account node
+  // by UUID. The remaining local nodes are left unmodified, i.e. those that
+  // didn't match by UUID and their ancestors didn't either. This is useful when
+  // a local subtree is about to be moved to account storage because its root
+  // node didn't match any account node: descendants should move as part of this
+  // subtree move, *except* those which have a UUID-based match, which should
+  // take precedence.
+  void MergeAndDeleteDescendantsThatMatchByUuid(
+      const bookmarks::BookmarkNode* local_subtree_root);
 
   // Updates `account_node` to hold the same semantics as `local_node`, which
   // excludes the UUID (remains unchanged). `account_node` must not be a
@@ -62,14 +84,6 @@ class LocalBookmarkToAccountMerger {
   void UpdateAccountNodeFromMatchingLocalNode(
       const bookmarks::BookmarkNode* local_node,
       const bookmarks::BookmarkNode* account_node);
-
-  // Copies a bookmark node from the local model to the account model. It works
-  // for both URL and folder nodes, but the latter case doesn't do anything
-  // about children (if any), the caller is responsible for copying over the
-  // children if desired.
-  const bookmarks::BookmarkNode* CopyLocalNodeToAccountModel(
-      const bookmarks::BookmarkNode* local_node,
-      const bookmarks::BookmarkNode* account_parent);
 
   // If `account_node` has a local counterpart of the same UUID, returns the
   // corresponding local node, otherwise returns a nullptr. `account_node` must

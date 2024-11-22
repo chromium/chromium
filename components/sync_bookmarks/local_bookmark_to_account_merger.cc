@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -129,8 +130,8 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
   //   parent node using semantics. If the found node has the same UUID as a
   //   different local bookmark, it is not considered a semantics match, as
   //   UUID matching takes precedence.
-  // * If no matching node is found, create a new bookmark node by appending it
-  //   last.
+  // * If no matching node is found, move the local node to account storage by
+  //   appending it last.
   // * If a matching node is found, update the properties of it from the
   //   corresponding local node.
   //
@@ -141,7 +142,7 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
        GetLocalAndAccountPermanentNodePairs(model_)) {
     CHECK(local_permanent_node);
     CHECK(account_permanent_node);
-    CopyOrMergeDescendants(
+    MoveOrMergeDescendants(
         /*local_subtree_root=*/local_permanent_node,
         /*account_subtree_root=*/account_permanent_node);
   }
@@ -153,10 +154,7 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
   // removed.
   for (const auto& [local_permanent_node, unused] :
        GetLocalAndAccountPermanentNodePairs(model_)) {
-    while (!local_permanent_node->children().empty()) {
-      model_->RemoveLastChild(local_permanent_node, kEditSourceForMetrics,
-                              FROM_HERE);
-    }
+    CHECK(local_permanent_node->children().empty());
   }
 
   model_->EndExtensiveChanges();
@@ -206,7 +204,22 @@ LocalBookmarkToAccountMerger::FindGuidMatches(
   return uuid_to_match_map;
 }
 
-void LocalBookmarkToAccountMerger::CopyOrMergeDescendants(
+void LocalBookmarkToAccountMerger::RemoveChildrenAt(
+    const bookmarks::BookmarkNode* parent,
+    const std::vector<size_t>& indices_to_remove,
+    const base::Location& location) {
+  CHECK(parent);
+  // TODO(crbug.com/332532186): This has quadratic runtime complexity and should
+  // be improved.
+  for (size_t index : base::Reversed(indices_to_remove)) {
+    const bookmarks::BookmarkNode* child = parent->children().at(index).get();
+    // Remove the UUID from the map to avoid dangling pointers.
+    uuid_to_match_map_.erase(child->uuid());
+    model_->Remove(child, kEditSourceForMetrics, location);
+  }
+}
+
+void LocalBookmarkToAccountMerger::MoveOrMergeDescendants(
     const bookmarks::BookmarkNode* local_subtree_root,
     const bookmarks::BookmarkNode* account_subtree_root) {
   CHECK(local_subtree_root);
@@ -240,8 +253,10 @@ void LocalBookmarkToAccountMerger::CopyOrMergeDescendants(
   }
 
   // If there are local child nodes, try to match them with account nodes.
-  for (const auto& local_child_ptr : local_subtree_root->children()) {
-    const bookmarks::BookmarkNode* const local_child = local_child_ptr.get();
+  size_t i = 0;
+  while (i < local_subtree_root->children().size()) {
+    const bookmarks::BookmarkNode* const local_child =
+        local_subtree_root->children()[i].get();
     CHECK(!local_child->is_permanent_node());
 
     // Try to match by UUID first.
@@ -265,17 +280,66 @@ void LocalBookmarkToAccountMerger::CopyOrMergeDescendants(
       CHECK(!matching_account_node->is_permanent_node());
       UpdateAccountNodeFromMatchingLocalNode(local_child,
                                              matching_account_node);
-    } else {
-      // If no match found, create a corresponding account node, which gets
-      // appended last.
-      matching_account_node =
-          CopyLocalNodeToAccountModel(local_child, account_subtree_root);
-      CHECK(matching_account_node);
-    }
 
-    // Since nodes are matching, their subtrees should be merged as well.
-    CopyOrMergeDescendants(local_child, matching_account_node);
+      // Since nodes are matching, their subtrees should be merged as well.
+      MoveOrMergeDescendants(local_child, matching_account_node);
+      ++i;
+    } else {
+      // Before the entire local subtree is moved to account storage, iterate
+      // descendants to find UUID matches. This is necessary because UUID-based
+      // matches takes precedence over any ancestor having matched (by UUID or
+      // otherwise).
+      MergeAndDeleteDescendantsThatMatchByUuid(local_child);
+
+      // Move the local node to account storage, along with all remaining
+      // descendants that didn't match by UUID.
+      // TODO(crbug.com/332532186): This has quadratic runtime complexity and
+      // should be improved.
+      model_->Move(local_child, account_subtree_root,
+                   account_subtree_root->children().size());
+    }
   }
+
+  // All remaining local nodes must have found a matching account node and been
+  // merged into it, as nodes without a match have been moved. Therefore, the
+  // remaining local data can be safely deleted.
+  while (!local_subtree_root->children().empty()) {
+    // Update the UUID match map to avoid dangling pointers.
+    uuid_to_match_map_.erase(local_subtree_root->children().back()->uuid());
+
+    model_->RemoveLastChild(local_subtree_root, kEditSourceForMetrics,
+                            FROM_HERE);
+  }
+}
+
+void LocalBookmarkToAccountMerger::MergeAndDeleteDescendantsThatMatchByUuid(
+    const bookmarks::BookmarkNode* local_subtree_root) {
+  CHECK(local_subtree_root);
+
+  std::vector<size_t> indices_to_remove;
+
+  for (size_t i = 0; i < local_subtree_root->children().size(); ++i) {
+    const bookmarks::BookmarkNode* const local_child =
+        local_subtree_root->children()[i].get();
+    CHECK(!local_child->is_permanent_node());
+
+    if (const bookmarks::BookmarkNode* matching_account_node =
+            FindMatchingAccountNodeByUuid(local_child)) {
+      CHECK(!matching_account_node->is_permanent_node());
+      UpdateAccountNodeFromMatchingLocalNode(local_child,
+                                             matching_account_node);
+      indices_to_remove.push_back(i);
+
+      // Since nodes are matching, their subtrees should be merged as well. In
+      // this case the matching isn't restricted to UUID-based matching.
+      MoveOrMergeDescendants(local_child, matching_account_node);
+    } else {
+      // Continue recursively to look for UUID-based matches.
+      MergeAndDeleteDescendantsThatMatchByUuid(local_child);
+    }
+  }
+
+  RemoveChildrenAt(local_subtree_root, indices_to_remove, FROM_HERE);
 }
 
 void LocalBookmarkToAccountMerger::UpdateAccountNodeFromMatchingLocalNode(
@@ -296,38 +360,6 @@ void LocalBookmarkToAccountMerger::UpdateAccountNodeFromMatchingLocalNode(
 
   // For the title, use the local one.
   model_->SetTitle(account_node, local_node->GetTitle(), kEditSourceForMetrics);
-}
-
-const bookmarks::BookmarkNode*
-LocalBookmarkToAccountMerger::CopyLocalNodeToAccountModel(
-    const bookmarks::BookmarkNode* local_node,
-    const bookmarks::BookmarkNode* account_parent) {
-  CHECK(local_node);
-  CHECK(!local_node->is_permanent_node());
-  CHECK(account_parent);
-
-  const size_t account_index = account_parent->children().size();
-
-  // See if the same UUID can be carried over or a random one generated.
-  const base::Uuid new_node_uuid =
-      (model_->GetNodeByUuid(
-           local_node->uuid(),
-           bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes) !=
-       nullptr)
-          ? base::Uuid::GenerateRandomV4()
-          : local_node->uuid();
-
-  // Note that this function is not expected to copy children recursively. The
-  // caller is responsible for dealing with children.
-  return local_node->is_folder()
-             ? model_->AddFolder(account_parent, account_index,
-                                 local_node->GetTitle(),
-                                 local_node->GetMetaInfoMap(),
-                                 local_node->date_added(), new_node_uuid)
-             : model_->AddURL(account_parent, account_index,
-                              local_node->GetTitle(), local_node->url(),
-                              local_node->GetMetaInfoMap(),
-                              local_node->date_added(), new_node_uuid);
 }
 
 const bookmarks::BookmarkNode*
