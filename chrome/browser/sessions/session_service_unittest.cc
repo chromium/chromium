@@ -910,8 +910,8 @@ TEST_F(SessionServiceTest, KeepPostDataWithoutPasswords) {
   entry1->SetURL(GURL("http://google.com"));
   entry1->SetTitle(u"title1");
   entry1->SetHasPostData(true);
-  entry1->SetPostData(network::ResourceRequestBody::CreateFromBytes(
-      post_data.data(), post_data.size()));
+  entry1->SetPostData(network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data)));
   SerializedNavigationEntry nav1 =
       sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
           0 /* == index*/, entry1.get());
