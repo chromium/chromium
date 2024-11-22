@@ -3476,6 +3476,7 @@
 <translation id="3429174588714165399">Создать ярлык для этой страницы</translation>
 <translation id="3429271624041785769">Языки веб-контента</translation>
 <translation id="3429275422858276529">Чтобы в будущем эту страницу было проще найти, добавьте ее в закладки</translation>
+<translation id="3431530007831146102">Управлять указателем мыши, двигая головой</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – освобождено <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Разделяемые объекты worker</translation>
 <translation id="3433507769937235446">Блокировать, если вас нет рядом</translation>
@@ -4986,7 +4987,7 @@
 <translation id="4481448477173043917">Устройство <ph name="DEVICE_TYPE" /> неожиданно перезапустилось</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Недавно закрытая вкладка</translation>
-<translation id="4486333480498805415">Точность геолокации</translation>
+<translation id="4486333480498805415">Точная геолокация</translation>
 <translation id="4487489714832036847">Вместо традиционного ПО на Chromebook устанавливаются приложения, которые откроют вам новые возможности для работы, развлечений и не только.</translation>
 <translation id="4488257340342212116">Разрешить сайтам использовать камеру</translation>
 <translation id="4490798467014431984">Расширения на этом сайте запрещены</translation>
