@@ -1,7 +1,5 @@
-# For service-related code
-per-file chrome_content_utility_client.*=rockot@google.com
+file://services/OWNERS
 
 # For security review.
 per-file services.*=set noparent
 per-file services.*=file://ipc/SECURITY_OWNERS
-per-file services.*=rockot@google.com
