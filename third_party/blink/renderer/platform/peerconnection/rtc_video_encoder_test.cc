@@ -392,6 +392,10 @@ class RTCVideoEncoderTest {
         .WillOnce(Invoke(this, &RTCVideoEncoderTest::Initialize));
     EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer).Times(AtLeast(3));
     EXPECT_CALL(*mock_vea_, Destroy()).Times(1);
+
+    EXPECT_CALL(*mock_gpu_factories_.get(),
+                GetVideoEncodeAcceleratorSupportedProfiles())
+        .WillRepeatedly(Return(supported_profiles_));
   }
 
   void SetUp() {
@@ -400,6 +404,40 @@ class RTCVideoEncoderTest {
 
     EXPECT_CALL(*mock_gpu_factories_.get(), GetTaskRunner())
         .WillRepeatedly(Return(encoder_thread_.task_runner()));
+
+    supported_profiles_ = {
+        {media::AV1PROFILE_PROFILE_MAIN,
+         gfx::Size(1280, 720),
+         30,
+         1,
+         media::VideoEncodeAccelerator::kConstantMode,
+         {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
+          media::SVCScalabilityMode::kL1T3}},
+        {media::H264PROFILE_BASELINE,
+         gfx::Size(1280, 720),
+         30,
+         1,
+         media::VideoEncodeAccelerator::kConstantMode,
+         {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
+          media::SVCScalabilityMode::kL1T3}},
+        {media::VP9PROFILE_PROFILE0,
+         gfx::Size(1280, 720),
+         30,
+         1,
+         media::VideoEncodeAccelerator::kConstantMode,
+         {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
+          media::SVCScalabilityMode::kL1T3, media::SVCScalabilityMode::kL3T3,
+          media::SVCScalabilityMode::kS3T3, media::SVCScalabilityMode::kS3T1,
+          media::SVCScalabilityMode::kL3T1, media::SVCScalabilityMode::kL2T3,
+          media::SVCScalabilityMode::kS2T3, media::SVCScalabilityMode::kS2T1,
+          media::SVCScalabilityMode::kL2T1}},
+        {media::VP8PROFILE_ANY,
+         gfx::Size(1280, 720),
+         30,
+         1,
+         media::VideoEncodeAccelerator::kConstantMode,
+         {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
+          media::SVCScalabilityMode::kL1T3}}};
   }
 
   void TearDown() {
@@ -817,6 +855,7 @@ class RTCVideoEncoderTest {
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
   scoped_refptr<media::MockMojoVideoEncoderMetricsProviderFactory>
       mock_encoder_metrics_provider_factory_;
+  media::VideoEncodeAccelerator::SupportedProfiles supported_profiles_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -1102,6 +1141,10 @@ TEST_F(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
   CreateEncoder(codec_type);
   webrtc::VideoCodec codec = GetDefaultCodec();
   codec.codecType = codec_type;
+
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillRepeatedly(Return(supported_profiles_));
 
   mock_vea_ = new media::MockVideoEncodeAccelerator();
   EXPECT_CALL(*mock_gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
@@ -1738,19 +1781,19 @@ TEST_F(RTCVideoEncoderEncodeTest, CreateAndInitVP9ThreeLayerSvc) {
                                                  /*num_spatial_layers=*/3);
   CreateEncoder(tl_codec.codecType);
 
-    ExpectCreateInitAndDestroyVEA();
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
-    EXPECT_THAT(
-        *config_,
-        Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
-              ElementsAre(
-                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
-                        Field(&SpatialLayer::height, kInputFrameHeight / 4)),
-                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
-                        Field(&SpatialLayer::height, kInputFrameHeight / 2)),
-                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth),
-                        Field(&SpatialLayer::height, kInputFrameHeight)))));
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  EXPECT_THAT(
+      *config_,
+      Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+            ElementsAre(
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 4)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 2)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth),
+                      Field(&SpatialLayer::height, kInputFrameHeight)))));
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, CreateAndInitVP9SvcSinglecast) {
@@ -1780,10 +1823,10 @@ TEST_F(RTCVideoEncoderEncodeTest,
   tl_codec.VP9()->numberOfTemporalLayers = 1;
   CreateEncoder(tl_codec.codecType);
 
-    ExpectCreateInitAndDestroyVEA();
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
-    EXPECT_THAT(config_->spatial_layers, IsEmpty());
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  EXPECT_THAT(config_->spatial_layers, IsEmpty());
 }
 
 TEST_F(RTCVideoEncoderEncodeTest,
@@ -1793,22 +1836,22 @@ TEST_F(RTCVideoEncoderEncodeTest,
   tl_codec.spatialLayers[2].active = false;
   CreateEncoder(tl_codec.codecType);
 
-    ExpectCreateInitAndDestroyVEA();
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
-    EXPECT_THAT(
-        *config_,
-        Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
-              ElementsAre(
-                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
-                        Field(&SpatialLayer::height, kInputFrameHeight / 4)),
-                  AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
-                        Field(&SpatialLayer::height, kInputFrameHeight / 2)))));
-    EXPECT_THAT(
-        *config_,
-        Field(&media::VideoEncodeAccelerator::Config::input_visible_size,
-              AllOf(Property(&gfx::Size::width, kInputFrameWidth / 2),
-                    Property(&gfx::Size::height, kInputFrameHeight / 2))));
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  EXPECT_THAT(
+      *config_,
+      Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+            ElementsAre(
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 4)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 2)))));
+  EXPECT_THAT(
+      *config_,
+      Field(&media::VideoEncodeAccelerator::Config::input_visible_size,
+            AllOf(Property(&gfx::Size::width, kInputFrameWidth / 2),
+                  Property(&gfx::Size::height, kInputFrameHeight / 2))));
 }
 
 TEST_F(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
@@ -2399,6 +2442,10 @@ TEST_F(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
   media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
       encoder_metrics_provider.get();
 
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillRepeatedly(Return(supported_profiles_));
+
   // The VEA will be owned by the RTCVideoEncoder once
   // factory.CreateVideoEncodeAccelerator() is called.
   mock_vea_ = new media::MockVideoEncodeAccelerator();
@@ -2463,6 +2510,10 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeVp9FrameWithMetricsProvider) {
       std::make_unique<media::MockVideoEncoderMetricsProvider>();
   media::MockVideoEncoderMetricsProvider* mock_encoder_metrics_provider =
       encoder_metrics_provider.get();
+
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillRepeatedly(Return(supported_profiles_));
 
   // The VEA will be owned by the RTCVideoEncoder once
   // factory.CreateVideoEncodeAccelerator() is called.
@@ -2830,6 +2881,13 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
     rtc::ArrayView<const uint8_t> prefix_;
     size_t encoded_image_size_;
   };
+
+  supported_profiles_.push_back({media::HEVCPROFILE_MAIN,
+                                 gfx::Size(1920, 1080),
+                                 30,
+                                 1,
+                                 media::VideoEncodeAccelerator::kConstantMode,
+                                 {media::SVCScalabilityMode::kL1T1}});
 
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH265;
   CreateEncoder(codec_type);
@@ -3297,17 +3355,16 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerGenericFrameInfo) {
   tl_codec.SetScalabilityMode(webrtc::ScalabilityMode::kL1T3);
   CreateEncoder(tl_codec.codecType);
 
-  media::VideoEncodeAccelerator::SupportedProfiles profiles{
-      {media::AV1PROFILE_PROFILE_MAIN,
-       /*max_resolution*/ gfx::Size(1920, 1088),
-       /*max_framerate_numerator*/ 30,
-       /*max_framerate_denominator*/ 1,
-       media::VideoEncodeAccelerator::kConstantMode,
-       {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T3}}};
-  EXPECT_CALL(*mock_gpu_factories_.get(),
-              GetVideoEncodeAcceleratorSupportedProfiles())
-      .Times(AtLeast(1))
-      .WillOnce(Return(profiles));
+  for (auto& profile : supported_profiles_) {
+    if (profile.profile == media::AV1PROFILE_PROFILE_MAIN) {
+      auto& scalability_modes = profile.scalability_modes;
+      scalability_modes.erase(
+          std::remove(scalability_modes.begin(), scalability_modes.end(),
+                      media::SVCScalabilityMode::kL1T2),
+          scalability_modes.end());
+    }
+  }
+
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
@@ -3351,25 +3408,18 @@ TEST_F(RTCVideoEncoderInitTest,
 
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
   CreateEncoder(codec_type);
-  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
-      {
-          media::VP9PROFILE_PROFILE0,
-          /*max_resolution=*/gfx::Size(640, 360),
-          /*max_framerate_numerator=*/30,
-          /*max_framerate_denominator=*/1,
-          media::VideoEncodeAccelerator::kConstantMode,
-          {media::SVCScalabilityMode::kL1T1},
-      },
-      {media::VP9PROFILE_PROFILE0,
-       /*max_resolution=*/gfx::Size(1280, 720),
-       /*max_framerate_numerator=*/30,
-       /*max_framerate_denominator=*/1,
-       media::VideoEncodeAccelerator::kConstantMode,
-       {media::SVCScalabilityMode::kL1T1}}};
-  EXPECT_CALL(*mock_gpu_factories_.get(),
-              GetVideoEncodeAcceleratorSupportedProfiles())
-      .Times(AtLeast(1))
-      .WillOnce(Return(profiles));
+
+  for (auto& profile : supported_profiles_) {
+    if (profile.profile == media::VP9PROFILE_PROFILE0) {
+      profile.max_resolution = gfx::Size(640, 360);
+    }
+  }
+  supported_profiles_.push_back({media::VP9PROFILE_PROFILE0,
+                                 /*max_resolution=*/gfx::Size(1280, 720),
+                                 /*max_framerate_numerator=*/30,
+                                 /*max_framerate_denominator=*/1,
+                                 media::VideoEncodeAccelerator::kConstantMode,
+                                 {media::SVCScalabilityMode::kL1T1}});
 
   webrtc::VideoCodec codec_settings;
   codec_settings.codecType = webrtc::kVideoCodecVP9;
@@ -3388,24 +3438,16 @@ TEST_F(RTCVideoEncoderInitTest,
 
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
   CreateEncoder(codec_type);
-  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
-      {
-          media::VP9PROFILE_PROFILE0,
-          /*max_resolution=*/gfx::Size(1280, 720),
-          /*max_framerate_numerator=*/30,
-          /*max_framerate_denominator=*/1,
-          media::VideoEncodeAccelerator::kConstantMode,
-          {media::SVCScalabilityMode::kL1T1},
-      },
-      {media::VP9PROFILE_PROFILE0,
-       /*max_resolution=*/gfx::Size(640, 360),
-       /*max_framerate_numerator=*/30,
-       /*max_framerate_denominator=*/1,
-       media::VideoEncodeAccelerator::kConstantMode,
-       {media::SVCScalabilityMode::kL1T1}}};
+
+  supported_profiles_.push_back({media::VP9PROFILE_PROFILE0,
+                                 /*max_resolution=*/gfx::Size(640, 360),
+                                 /*max_framerate_numerator=*/30,
+                                 /*max_framerate_denominator=*/1,
+                                 media::VideoEncodeAccelerator::kConstantMode,
+                                 {media::SVCScalabilityMode::kL1T1}});
   EXPECT_CALL(*mock_gpu_factories_.get(),
               GetVideoEncodeAcceleratorSupportedProfiles())
-      .WillOnce(Return(profiles));
+      .WillOnce(Return(supported_profiles_));
 
   webrtc::VideoCodec codec_settings;
   codec_settings.codecType = webrtc::kVideoCodecVP9;
@@ -3423,22 +3465,16 @@ TEST_F(RTCVideoEncoderInitTest,
 
   const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
   CreateEncoder(codec_type);
-  media::VideoEncodeAccelerator::SupportedProfile supported_profile;
-  supported_profile.profile = media::VP9PROFILE_PROFILE0;
-  supported_profile.max_resolution = gfx::Size(1280, 720);
-  supported_profile.max_framerate_numerator = 30;
-  supported_profile.max_framerate_denominator = 1;
-  supported_profile.rate_control_modes =
-      media::VideoEncodeAccelerator::kConstantMode;
-  supported_profile.min_resolution = gfx::Size(16, 16);
-  supported_profile.is_software_codec = true;
-  supported_profile.scalability_modes = {media::SVCScalabilityMode::kL1T1};
-  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
-      supported_profile};
+
+  for (auto& profile : supported_profiles_) {
+    if (profile.profile == media::VP9PROFILE_PROFILE0) {
+      profile.is_software_codec = true;
+    }
+  }
 
   EXPECT_CALL(*mock_gpu_factories_.get(),
               GetVideoEncodeAcceleratorSupportedProfiles())
-      .WillOnce(Return(profiles));
+      .WillOnce(Return(supported_profiles_));
 
   webrtc::VideoCodec codec_settings;
   codec_settings.codecType = webrtc::kVideoCodecVP9;
@@ -3455,22 +3491,16 @@ TEST_F(RTCVideoEncoderInitTest,
                                                  /*num_spatial_layers=*/1);
   CreateEncoder(tl_codec.codecType);
 
-  media::VideoEncodeAccelerator::SupportedProfile supported_profile;
-  supported_profile.profile = media::VP9PROFILE_PROFILE0;
-  supported_profile.max_resolution = gfx::Size(1280, 720);
-  supported_profile.max_framerate_numerator = 30;
-  supported_profile.max_framerate_denominator = 1;
-  supported_profile.rate_control_modes =
-      media::VideoEncodeAccelerator::kConstantMode;
-  supported_profile.min_resolution = gfx::Size(16, 16);
-  supported_profile.is_software_codec = true;
-  supported_profile.scalability_modes = {media::SVCScalabilityMode::kL1T3};
-  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
-      supported_profile};
+  for (auto& profile : supported_profiles_) {
+    if (profile.profile == media::VP9PROFILE_PROFILE0) {
+      profile.is_software_codec = true;
+      profile.scalability_modes = {media::SVCScalabilityMode::kL1T3};
+    }
+  }
 
   EXPECT_CALL(*mock_gpu_factories_.get(),
               GetVideoEncodeAcceleratorSupportedProfiles())
-      .WillOnce(Return(profiles));
+      .WillOnce(Return(supported_profiles_));
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
@@ -3481,23 +3511,12 @@ TEST_F(RTCVideoEncoderInitTest, SupportedTemporalLayersAreHardwareInitOK) {
                                                  /*num_spatial_layers=*/1);
   CreateEncoder(tl_codec.codecType);
 
-  media::VideoEncodeAccelerator::SupportedProfile supported_profile;
-  supported_profile.profile = media::VP9PROFILE_PROFILE0;
-  supported_profile.max_resolution = gfx::Size(1280, 720);
-  supported_profile.max_framerate_numerator = 30;
-  supported_profile.max_framerate_denominator = 1;
-  supported_profile.rate_control_modes =
-      media::VideoEncodeAccelerator::kConstantMode;
-  supported_profile.min_resolution = gfx::Size(16, 16);
-  supported_profile.is_software_codec = false;
-  supported_profile.scalability_modes = {media::SVCScalabilityMode::kL1T3};
-  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
-      supported_profile};
-
-  EXPECT_CALL(*mock_gpu_factories_.get(),
-              GetVideoEncodeAcceleratorSupportedProfiles())
-      .Times(AtLeast(1))
-      .WillOnce(Return(profiles));
+  for (auto& profile : supported_profiles_) {
+    if (profile.profile == media::VP9PROFILE_PROFILE0) {
+      profile.is_software_codec = false;
+      profile.scalability_modes = {media::SVCScalabilityMode::kL1T3};
+    }
+  }
 
   ExpectCreateInitAndDestroyVEA();
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
@@ -3517,16 +3536,12 @@ TEST_F(RTCVideoEncoderEncodeTest, H265TemporalLayerNotSupported) {
   tl_codec.SetScalabilityMode(webrtc::ScalabilityMode::kL1T2);
   CreateEncoder(tl_codec.codecType);
 
-  media::VideoEncodeAccelerator::SupportedProfiles profiles{
-      {media::HEVCPROFILE_MAIN,
-       /*max_resolution*/ gfx::Size(1920, 1088),
-       /*max_framerate_numerator*/ 30,
-       /*max_framerate_denominator*/ 1,
-       media::VideoEncodeAccelerator::kConstantMode,
-       {media::SVCScalabilityMode::kL1T1}}};
-  EXPECT_CALL(*mock_gpu_factories_.get(),
-              GetVideoEncodeAcceleratorSupportedProfiles())
-      .WillOnce(Return(profiles));
+  supported_profiles_.push_back({media::HEVCPROFILE_MAIN,
+                                 /*max_resolution*/ gfx::Size(1920, 1088),
+                                 /*max_framerate_numerator*/ 30,
+                                 /*max_framerate_denominator*/ 1,
+                                 media::VideoEncodeAccelerator::kConstantMode,
+                                 {media::SVCScalabilityMode::kL1T1}});
 
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
@@ -3576,19 +3591,16 @@ TEST_F(RTCVideoEncoderEncodeTest, H265TemporalLayerGenericFrameInfo) {
   tl_codec.SetScalabilityMode(webrtc::ScalabilityMode::kL1T3);
   CreateEncoder(tl_codec.codecType);
 
-  media::VideoEncodeAccelerator::SupportedProfiles profiles{
+  supported_profiles_.push_back(
       {media::HEVCPROFILE_MAIN,
        /*max_resolution*/ gfx::Size(1920, 1088),
        /*max_framerate_numerator*/ 30,
        /*max_framerate_denominator*/ 1,
        media::VideoEncodeAccelerator::kConstantMode,
        {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T2,
-        media::SVCScalabilityMode::kL1T3}}};
-  EXPECT_CALL(*mock_gpu_factories_.get(),
-              GetVideoEncodeAcceleratorSupportedProfiles())
-      .Times(AtLeast(1))
-      .WillOnce(Return(profiles));
+        media::SVCScalabilityMode::kL1T3}});
   ExpectCreateInitAndDestroyVEA();
+
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
 

@@ -2577,7 +2577,7 @@ int32_t RTCVideoEncoder::InitEncode(
                      vea_profile.min_resolution.height();
         });
 
-    if (!vea_supported_profiles.empty() && it == vea_supported_profiles.end()) {
+    if (vea_supported_profiles.empty() || it == vea_supported_profiles.end()) {
       LOG(ERROR) << "Requested dimensions (" << input_visible_size.ToString()
                  << ") beyond accelerator limits.";
       return initialization_error_message;
