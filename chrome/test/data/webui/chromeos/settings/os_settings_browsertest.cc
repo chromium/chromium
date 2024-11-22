@@ -124,9 +124,15 @@ class OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled
 };
 
 class OSSettingsMochaTestFilterKeysEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsMochaTestFilterKeysEnabled() {
+    scoped_feature_list_.InitWithFeatures({::features::kAccessibilityBounceKeys,
+                                           ::features::kAccessibilitySlowKeys},
+                                          {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ::features::kAccessibilityFilterKeys};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {

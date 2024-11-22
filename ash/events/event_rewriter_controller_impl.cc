@@ -137,7 +137,7 @@ void EventRewriterControllerImpl::Initialize(
     // should stop all touchpad events from propagating further into the system.
     AddEventRewriter(std::move(disable_touchpad_event_rewriter));
   }
-  if (::features::IsAccessibilityFilterKeysEnabled()) {
+  if (::features::IsAccessibilityBounceKeysEnabled()) {
     std::unique_ptr<FilterKeysEventRewriter> filter_keys_event_rewriter =
         std::make_unique<FilterKeysEventRewriter>();
     filter_keys_event_rewriter_ = filter_keys_event_rewriter.get();

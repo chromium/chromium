@@ -5700,10 +5700,15 @@ const char kAcceleratedMjpegDecodeDescription[] =
     "Enable hardware-accelerated mjpeg decode for captured frame where "
     "available.";
 
-const char kAccessibilityFilterKeysName[] = "Filter keys";
-const char kAccessibilityFilterKeysDescription[] =
-    "Enables settings to filter key presses in various ways, such as slow keys "
-    "and bounce keys.";
+const char kAccessibilityBounceKeysName[] = "Bounce keys";
+const char kAccessibilityBounceKeysDescription[] =
+    "Enables accessibility settings for bounce keys, which ignores quickly "
+    "repeated presses of the same keyboard key.";
+
+const char kAccessibilitySlowKeysName[] = "Slow keys";
+const char kAccessibilitySlowKeysDescription[] =
+    "Enables accessibility settings for slow key, which adds a delay between "
+    "when you press a key and when it activates.";
 
 const char kAllowApnModificationPolicyName[] =
     "Allow APN Modification by Policy";

@@ -2335,6 +2335,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "enable-accessibility-bounce-keys",
+    "owners": [ "aluh@chromium.com", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "enable-accessibility-deprecate-type-announce",
     "owners": ["mschillaci@google.com", "twellington@chromium.org", "zork@chromium.org", "//ui/accessibility/OWNERS"],
     "expiry_milestone": 137
@@ -2347,11 +2352,6 @@
   {
     "name": "enable-accessibility-facegaze",
     "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "enable-accessibility-filter-keys",
-    "owners": [ "anastasi@google.com", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 140
   },
   {
@@ -2408,6 +2408,11 @@
     "name": "enable-accessibility-shake-to-locate",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 146
+  },
+  {
+    "name": "enable-accessibility-slow-keys",
+    "owners": [ "aluh@chromium.com", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 143
   },
   {
     "name": "enable-accessibility-snapshot-stress-tests",

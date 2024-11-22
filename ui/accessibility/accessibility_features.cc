@@ -229,11 +229,18 @@ bool IsAccessibilityFlashScreenFeatureEnabled() {
       ::features::kAccessibilityFlashScreenFeature);
 }
 
-BASE_FEATURE(kAccessibilityFilterKeys,
-             "AccessibilityFilterKeys",
+BASE_FEATURE(kAccessibilityBounceKeys,
+             "AccessibilityBounceKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityFilterKeysEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAccessibilityFilterKeys);
+bool IsAccessibilityBounceKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityBounceKeys);
+}
+
+BASE_FEATURE(kAccessibilitySlowKeys,
+             "AccessibilitySlowKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilitySlowKeysEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilitySlowKeys);
 }
 
 BASE_FEATURE(kAccessibilityShakeToLocate,

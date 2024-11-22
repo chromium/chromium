@@ -158,7 +158,7 @@
     sub-label="$i18n{caretBrowsingLabelSubtext}"
     deep-link-focus-id$="[[Setting.kCaretBrowsing]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isFilterKeysFeatureEnabled_]]">
+<template is="dom-if" if="[[isSlowKeysFeatureEnabled_]]">
   <settings-toggle-button
       id="slowKeysToggle"
       class="hr"
@@ -185,6 +185,8 @@
       </settings-slider>
     </div>
   </iron-collapse>
+</template>
+<template is="dom-if" if="[[isBounceKeysFeatureEnabled_]]">
   <settings-toggle-button
       id="bounceKeysToggle"
       class="hr"

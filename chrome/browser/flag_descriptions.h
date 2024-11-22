@@ -3288,8 +3288,11 @@ extern const char kUseAngleGL[];
 extern const char kAcceleratedMjpegDecodeName[];
 extern const char kAcceleratedMjpegDecodeDescription[];
 
-extern const char kAccessibilityFilterKeysName[];
-extern const char kAccessibilityFilterKeysDescription[];
+extern const char kAccessibilityBounceKeysName[];
+extern const char kAccessibilityBounceKeysDescription[];
+
+extern const char kAccessibilitySlowKeysName[];
+extern const char kAccessibilitySlowKeysDescription[];
 
 extern const char kAllowApnModificationPolicyName[];
 extern const char kAllowApnModificationPolicyDescription[];

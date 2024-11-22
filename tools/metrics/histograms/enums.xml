@@ -15090,6 +15090,7 @@ from previous Chrome versions.
   <int value="-2091404586" label="TabStripKeyboardFocus:enabled"/>
   <int value="-2091355143" label="ShowCastPermissionRejectedError:enabled"/>
   <int value="-2090484194" label="ContextualSearchUrlActions:disabled"/>
+  <int value="-2089469157" label="AccessibilityBounceKeys:enabled"/>
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
   <int value="-2088472280" label="KeyboardShortcutViewerApp:disabled"/>
   <int value="-2088263177" label="EnableMixedContentDownloadDialog:enabled"/>
@@ -19095,6 +19096,7 @@ from previous Chrome versions.
   <int value="-493551777" label="StaleWhileRevalidate2:disabled"/>
   <int value="-492972850" label="SettingsAppNotificationSettings:disabled"/>
   <int value="-492864618" label="NTPForeignSessionsSuggestions:disabled"/>
+  <int value="-491975582" label="AccessibilitySlowKeys:enabled"/>
   <int value="-491546546" label="MeteredShowToggle:enabled"/>
   <int value="-491208379" label="ChromeTipsInMainMenuNewBadge:disabled"/>
   <int value="-491131428" label="OmniboxNewAnswerLayout:disabled"/>
@@ -20292,6 +20294,7 @@ from previous Chrome versions.
   <int value="-7297564" label="AutofillCaretExtraction:disabled"/>
   <int value="-7008077" label="MediaPickerAdoption:enabled"/>
   <int value="-6927869" label="webxr-hand-anonymization-strategy"/>
+  <int value="-5788544" label="AccessibilitySlowKeys:disabled"/>
   <int value="-5492723" label="CCTIncognito:enabled"/>
   <int value="-5305648" label="OmniboxClosePopupWithEscape:enabled"/>
   <int value="-5052940" label="enable-simplified-fullscreen"/>
@@ -24519,6 +24522,7 @@ from previous Chrome versions.
   <int value="1691291249" label="OsSettingsRevampWayfinding:enabled"/>
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
   <int value="1691853573" label="PersonalizationHub:enabled"/>
+  <int value="1691935745" label="AccessibilityBounceKeys:disabled"/>
   <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>
   <int value="1692995109" label="CCTPageInsightsHub:disabled"/>
   <int value="1693094211" label="FilesNG:disabled"/>

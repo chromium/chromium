@@ -362,7 +362,8 @@ suite('<settings-keyboard-and-text-input-page>', () => {
   // some prefs wouldn't have been registered in this case.
   test('Filter keys feature disabled shows no filter keys rows', async () => {
     loadTimeData.overrideValues({
-      isAccessibilityFilterKeysEnabled: false,
+      isAccessibilityBounceKeysEnabled: false,
+      isAccessibilitySlowKeysEnabled: false,
     });
     await initPage();
 

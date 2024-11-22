@@ -185,9 +185,13 @@ AX_BASE_EXPORT bool IsAccessibilityDisableTouchpadEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFlashScreenFeature);
 AX_BASE_EXPORT bool IsAccessibilityFlashScreenFeatureEnabled();
 
-// Controls whether the filter keys features are available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFilterKeys);
-AX_BASE_EXPORT bool IsAccessibilityFilterKeysEnabled();
+// Controls whether the bounce keys feature is available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityBounceKeys);
+AX_BASE_EXPORT bool IsAccessibilityBounceKeysEnabled();
+
+// Controls whether the slow keys feature is available.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySlowKeys);
+AX_BASE_EXPORT bool IsAccessibilitySlowKeysEnabled();
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
