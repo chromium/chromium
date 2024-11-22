@@ -1034,7 +1034,8 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
   if (force_disable_third_party_cookies) {
     overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
   }
-  AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides);
+  AddAdsHeuristicCookieSettingOverrides(is_ad_tagged, overrides,
+                                        /*emit_metrics=*/true);
   return overrides;
 }
 

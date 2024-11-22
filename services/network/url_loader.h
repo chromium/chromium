@@ -339,9 +339,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool automatically_assign_isolation_info,
       const ResourceRequest& request);
 
+  // Computes the CookieSettingOverrides to use for a given `ResourceRequest`.
+  // May also emit to histograms.
   static net::CookieSettingOverrides CalculateCookieSettingOverrides(
       net::CookieSettingOverrides factory_overrides,
-      const ResourceRequest& request);
+      const ResourceRequest& request,
+      bool emit_metrics);
 
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This

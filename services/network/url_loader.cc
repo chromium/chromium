@@ -774,7 +774,7 @@ URLLoader::URLLoader(
       /*priority_incremental=*/request.priority_incremental,
       /*cookie_setting_overrides=*/
       CalculateCookieSettingOverrides(factory_params_->cookie_setting_overrides,
-                                      request),
+                                      request, /*emit_metrics=*/true),
       /*shared_dictionary_getter=*/
       shared_dictionary_manager
           ? std::make_optional(
@@ -1746,7 +1746,8 @@ std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
 // static
 net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
-    const ResourceRequest& request) {
+    const ResourceRequest& request,
+    bool emit_metrics) {
   net::CookieSettingOverrides overrides(factory_overrides);
   if (request.is_outermost_main_frame &&
       network::cors::IsCorsEnabledRequestMode(request.mode)) {
@@ -1754,7 +1755,8 @@ net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
 
-  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides);
+  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides,
+                                        emit_metrics);
 
   // The `kStorageAccessGrantEligible` override should not be present in
   // factory_overrides.
