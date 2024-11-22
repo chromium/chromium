@@ -2004,12 +2004,12 @@ targets.bundle(
         ),
         "graphite_enabled_blink_wpt_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 1,
             ),
         ),
         "graphite_enabled_headless_shell_wpt_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 1,
+                shards = 7,
             ),
         ),
     },
