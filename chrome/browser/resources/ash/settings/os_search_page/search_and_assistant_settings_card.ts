@@ -115,7 +115,6 @@ export class SearchAndAssistantSettingsCardElement extends
 
   prefs: PrefsState;
   private isAssistantAllowed_: boolean;
-  private rowIcons_: Record<string, string>;
   private isQuickAnswersSupported_: boolean;
   private isMagicBoostFeatureEnabled_: boolean;
   private readonly isSunfishSettingsToggleVisible_: boolean;
