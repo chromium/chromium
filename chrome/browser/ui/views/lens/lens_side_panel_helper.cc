@@ -20,11 +20,6 @@
 
 namespace lens {
 
-bool ShouldPageBeVisible(const GURL& url) {
-  return lens::IsValidLensResultUrl(url) || !lens::IsLensUrl(url) ||
-         !lens::features::GetEnableLensHtmlRedirectFix();
-}
-
 views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
     base::OnceClosure close_callback,

@@ -32,10 +32,6 @@ extern void AppendLogsQueryParam(
     std::string* query_string,
     const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 
-// Appends or updates the start time query param with the current time if the
-// given url is a Lens url.
-extern GURL AppendOrReplaceStartTimeIfLensRequest(const GURL& url);
-
 // Appends the viewport width and height query params to the Lens or companion
 // request GURL if the width and height of the input size is not zero,
 // respectively.
@@ -59,11 +55,6 @@ extern std::string GetQueryParametersForLensRequest(
 // Check if the lens URL is a valid results page. This is done by checking if
 // the URL has a payload parameter.
 bool IsValidLensResultUrl(const GURL& url);
-
-// Returns true if the given URL corresponds to any Lens webpage. This is done
-// by checking if the given URL and lens::features::kHomepageURLForLens have
-// matching domains
-bool IsLensUrl(const GURL& url);
 
 // Returns true if the given URL corresponds to a Lens mWeb result page. This is
 // done by checking the URL and its parameters.

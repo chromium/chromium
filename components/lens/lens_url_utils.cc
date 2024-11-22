@@ -154,20 +154,6 @@ GURL AppendOrReplaceQueryParametersForLensRequest(
   return modified_url;
 }
 
-GURL AppendOrReplaceStartTimeIfLensRequest(const GURL& url) {
-  if (!IsLensUrl(url)) {
-    return url;
-  }
-
-  GURL modified_url(url);
-
-  int64_t current_time_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
-  modified_url =
-      net::AppendOrReplaceQueryParameter(modified_url, kStartTimeQueryParameter,
-                                         base::NumberToString(current_time_ms));
-  return modified_url;
-}
-
 GURL AppendOrReplaceViewportSizeForRequest(const GURL& url,
                                            const gfx::Size& viewport_size) {
   GURL modified_url(url);
@@ -207,11 +193,6 @@ bool IsValidLensResultUrl(const GURL& url) {
   std::string payload;
   // Make sure the payload is present
   return net::GetValueForKeyInQuery(url, kPayloadQueryParameter, &payload);
-}
-
-bool IsLensUrl(const GURL& url) {
-  return !url.is_empty() &&
-         url.host() == GURL(lens::features::GetHomepageURLForLens()).host();
 }
 
 bool IsLensMWebResult(const GURL& url) {
