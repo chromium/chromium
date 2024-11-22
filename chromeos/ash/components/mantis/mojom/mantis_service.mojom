@@ -23,6 +23,7 @@ enum InitializeResult {
   kSuccess,
   kGpuBlocked,
   [Default] kFailedToLoadLibrary,
+  [MinVersion=2] kFailedToLoadSafetyService,
 };
 
 // An observer to report the current platform model loading progress.
