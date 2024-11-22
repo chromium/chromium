@@ -595,7 +595,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_INTENT_FEATURE_OVERRIDES, true);
     public static final CachedFlag sCctMinimized = newCachedFlag(CCT_MINIMIZED, true);
     public static final CachedFlag sCctNavigationalPrefetch =
-            newCachedFlag(CCT_NAVIGATIONAL_PREFETCH, false);
+            newCachedFlag(
+                    CCT_NAVIGATIONAL_PREFETCH,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sCctGoogleBottomBar =
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR, false);
     public static final CachedFlag sCctGoogleBottomBarVariantLayouts =

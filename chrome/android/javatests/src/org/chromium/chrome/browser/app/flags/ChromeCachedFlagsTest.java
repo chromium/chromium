@@ -54,7 +54,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sAndroidAppIntegration,
                     ChromeFeatureList.sAsyncNotificationManager,
                     ChromeFeatureList.sCctFeatureUsage,
-                    ChromeFeatureList.sCctNavigationalPrefetch,
                     ChromeFeatureList.sCctGoogleBottomBar,
                     ChromeFeatureList.sCollectAndroidFrameTimelineMetrics,
                     ChromeFeatureList.sDownloadsMigrateToJobsAPI,
