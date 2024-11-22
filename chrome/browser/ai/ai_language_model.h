@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -30,7 +31,8 @@ class AILanguageModel : public AIContextBoundObject,
   using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
   using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
   using CreateLanguageModelCallback = base::OnceCallback<void(
-      mojo::PendingRemote<blink::mojom::AILanguageModel>,
+      base::expected<mojo::PendingRemote<blink::mojom::AILanguageModel>,
+                     blink::mojom::AIManagerCreateLanguageModelError>,
       blink::mojom::AILanguageModelInfoPtr)>;
 
   // The Context class manages the history of prompt input and output, which are

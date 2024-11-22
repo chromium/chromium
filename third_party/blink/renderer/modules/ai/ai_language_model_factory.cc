@@ -93,6 +93,7 @@ class CreateLanguageModelClient
     visitor->Trace(receiver_);
   }
 
+  // mojom::blink::AIManagerCreateLanguageModelClient implementation.
   void OnResult(
       mojo::PendingRemote<mojom::blink::AILanguageModel> language_model_remote,
       mojom::blink::AILanguageModelInfoPtr info) override {
@@ -100,16 +101,25 @@ class CreateLanguageModelClient
       return;
     }
 
-    if (info) {
-      AILanguageModel* language_model = MakeGarbageCollected<AILanguageModel>(
-          ai_->GetExecutionContext(), std::move(language_model_remote),
-          ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
-      GetResolver()->Resolve(language_model);
-    } else {
-      GetResolver()->RejectWithDOMException(
-          DOMExceptionCode::kInvalidStateError,
-          kExceptionMessageUnableToCreateSession);
+    CHECK(info);
+    AILanguageModel* language_model = MakeGarbageCollected<AILanguageModel>(
+        ai_->GetExecutionContext(), std::move(language_model_remote),
+        ai_->GetTaskRunner(), std::move(info), /*current_tokens=*/0);
+    GetResolver()->Resolve(language_model);
+
+    Cleanup();
+  }
+
+  void OnError(mojom::blink::AIManagerCreateLanguageModelError error) override {
+    if (!GetResolver()) {
+      return;
     }
+
+    // TODO(crbug.com/380175435): throw QuotaExceededException for the
+    // `kInitialPromptsTooLarge` error.
+    GetResolver()->RejectWithDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        kExceptionMessageUnableToCreateSession);
     Cleanup();
   }
 
