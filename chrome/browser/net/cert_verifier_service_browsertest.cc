@@ -236,10 +236,12 @@ class CertVerifierUserSettingsTest : public PlatformBrowserTest {
         ->WaitUntilNextUpdateForTesting(
             cert_verifier_service_update_waiter.GetCallback());
     base::test::TestFuture<bool> future;
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(std::move(cert_info));
     net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
         browser()->profile())
-        ->AddOrUpdateUserCertificate(std::move(cert_info),
-                                     future.GetCallback());
+        ->AddOrUpdateUserCertificates(std::move(cert_infos),
+                                      future.GetCallback());
     if (!future.Get()) {
       return testing::AssertionFailure() << "database update failed";
     }

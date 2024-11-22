@@ -40,12 +40,12 @@ ServerCertificateDatabaseService::ServerCertificateDatabaseService(
 
 ServerCertificateDatabaseService::~ServerCertificateDatabaseService() = default;
 
-void ServerCertificateDatabaseService::AddOrUpdateUserCertificate(
-    net::ServerCertificateDatabase::CertInformation cert_info,
+void ServerCertificateDatabaseService::AddOrUpdateUserCertificates(
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos,
     base::OnceCallback<void(bool)> callback) {
   server_cert_database_
-      .AsyncCall(&net::ServerCertificateDatabase::InsertOrUpdateCert)
-      .WithArgs(std::move(cert_info))
+      .AsyncCall(&net::ServerCertificateDatabase::InsertOrUpdateCerts)
+      .WithArgs(std::move(cert_infos))
       .Then(base::BindOnce(
           &ServerCertificateDatabaseService::HandleModificationResult,
           weak_factory_.GetWeakPtr(), std::move(callback)));

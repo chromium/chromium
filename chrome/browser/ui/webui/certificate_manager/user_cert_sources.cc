@@ -70,8 +70,10 @@ void UpdateCertificateAsync(
   net::ServerCertificateDatabaseService* server_cert_service =
       net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
           profile.get());
-  server_cert_service->AddOrUpdateUserCertificate(std::move(cert_info),
-                                                  std::move(update_callback));
+  std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+  cert_infos.push_back(std::move(cert_info));
+  server_cert_service->AddOrUpdateUserCertificates(std::move(cert_infos),
+                                                   std::move(update_callback));
 }
 
 void ViewCertificateAsync(
@@ -352,8 +354,10 @@ void UserCertSource::FileRead(std::optional<std::vector<uint8_t>> file_bytes) {
   cert_info.cert_metadata.mutable_trust()->set_trust_type(trust_);
   cert_info.der_cert = base::ToVector(cert_to_import->cert_span());
 
-  server_cert_service->AddOrUpdateUserCertificate(
-      std::move(cert_info),
+  std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+  cert_infos.push_back(std::move(cert_info));
+  server_cert_service->AddOrUpdateUserCertificates(
+      std::move(cert_infos),
       base::BindOnce(&UserCertSource::ImportCertificateResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }

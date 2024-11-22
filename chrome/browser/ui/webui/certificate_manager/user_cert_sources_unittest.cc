@@ -82,8 +82,10 @@ class UserCertSourcesUnitTest : public ChromeRenderViewHostTestHarness {
         chrome_browser_server_certificate_database::
             CertificateTrust_CertificateTrustType_CERTIFICATE_TRUST_TYPE_TRUSTED);
     base::test::TestFuture<bool> import_future;
-    server_cert_service->AddOrUpdateUserCertificate(
-        std::move(cert_info), import_future.GetCallback());
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(std::move(cert_info));
+    server_cert_service->AddOrUpdateUserCertificates(
+        std::move(cert_infos), import_future.GetCallback());
     ASSERT_TRUE(import_future.Take());
   }
 

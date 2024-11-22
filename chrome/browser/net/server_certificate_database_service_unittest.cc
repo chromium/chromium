@@ -57,10 +57,11 @@ TEST_F(ServerCertificateDatabaseServiceTest, TestNotifications) {
   // Insert a new cert.
   {
     base::test::TestFuture<bool> insert_waiter;
-    cert_db_service->AddOrUpdateUserCertificate(
-        MakeCertInfo(root->GetDER(),
-                     CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED),
-        insert_waiter.GetCallback());
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED));
+    cert_db_service->AddOrUpdateUserCertificates(std::move(cert_infos),
+                                                 insert_waiter.GetCallback());
     // Insert should be successful.
     EXPECT_TRUE(insert_waiter.Take());
   }
@@ -70,10 +71,11 @@ TEST_F(ServerCertificateDatabaseServiceTest, TestNotifications) {
   // Update metadata for existing cert.
   {
     base::test::TestFuture<bool> insert_waiter;
-    cert_db_service->AddOrUpdateUserCertificate(
-        MakeCertInfo(root->GetDER(),
-                     CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED),
-        insert_waiter.GetCallback());
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED));
+    cert_db_service->AddOrUpdateUserCertificates(std::move(cert_infos),
+                                                 insert_waiter.GetCallback());
     // Update should be successful.
     EXPECT_TRUE(insert_waiter.Take());
   }
@@ -185,10 +187,11 @@ TEST_F(ServerCertificateDatabaseServiceNSSMigratorTest, TestMigration) {
   // Change the settings of the cert that was imported.
   {
     base::test::TestFuture<bool> update_cert_waiter;
-    cert_db_service->AddOrUpdateUserCertificate(
-        MakeCertInfo(root->GetDER(),
-                     CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED),
-        update_cert_waiter.GetCallback());
+    std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos;
+    cert_infos.push_back(MakeCertInfo(
+        root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED));
+    cert_db_service->AddOrUpdateUserCertificates(
+        std::move(cert_infos), update_cert_waiter.GetCallback());
     EXPECT_TRUE(update_cert_waiter.Take());
   }
 
