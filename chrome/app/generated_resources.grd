@@ -3163,10 +3163,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that was interrupted and could not finish.">
         Couldn&#x2019;t finish download
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_STATUS_BLOCKED_ORGANIZATION"
-               desc="Status text for a download item that was blocked by the organization.">
-        Blocked by your organization
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_INTERRUPTED_SUBPAGE_SUMMARY_BLOCKED_ORGANIZATION"
                desc="Subpage summary text for a download item that was blocked by the organization.">
         Your organization blocked this file because it didn't meet a security policy
