@@ -228,6 +228,7 @@ TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
 }
 
 TEST_F(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
+  base::ScopedAllowBlockingForTesting allow_io;
   base::CommandLine sub_test = SetUpSubTest();
 
   // Initial sub-test run should be successful.

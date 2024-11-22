@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/consumer_kiosk_test_helper.h"
@@ -400,6 +401,7 @@ class InitialEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
 
 // Simple manual enrollment.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, ManualEnrollment) {
+  base::ScopedAllowBlockingForTesting allow_io;
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -424,6 +426,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, GetDeviceId) {
 // flag.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        DeviceBlockDevmodeAllowed) {
+  base::ScopedAllowBlockingForTesting allow_io;
   enterprise_management::ChromeDeviceSettingsProto proto;
   proto.mutable_system_settings()->set_block_devmode(true);
   policy_server_.UpdateDevicePolicy(proto);
@@ -458,6 +461,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 // Simple manual enrollment with device attributes prompt.
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        ManualEnrollmentWithDeviceAttributes) {
+  base::ScopedAllowBlockingForTesting allow_io;
   policy_server_.SetUpdateDeviceAttributesPermission(true);
 
   TriggerEnrollmentAndSignInSuccessfully();
@@ -725,6 +729,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 // Error during enrollment : Can not update device attributes
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        EnrollmentErrorUploadingDeviceAttributes) {
+  base::ScopedAllowBlockingForTesting allow_io;
   policy_server_.SetUpdateDeviceAttributesPermission(true);
   policy_server_.SetDeviceAttributeUpdateError(
       policy::DeviceManagementService::kInternalServerError);
@@ -870,6 +875,7 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, DeviceDisabled) {
 
 // Attestation enrollment.
 IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, Attestation) {
+  base::ScopedAllowBlockingForTesting allow_io;
   WaitForOobeUI();
   policy_server_.SetUpdateDeviceAttributesPermission(true);
 
@@ -1019,6 +1025,7 @@ class EnrollmentRecoveryTest : public EnrollmentEmbeddedPolicyServerBase {
 };
 
 IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, Success) {
+  base::ScopedAllowBlockingForTesting allow_io;
   test::SkipToEnrollmentOnRecovery();
 
   ASSERT_TRUE(StartupUtils::IsDeviceRegistered());
@@ -1160,6 +1167,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
 
 IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
                        ZeroTouchForcedAttestationSuccess) {
+  base::ScopedAllowBlockingForTesting allow_io;
   AllowlistSimpleChallengeSigningKey();
   policy_server_.SetupZeroTouchForcedEnrollment();
   policy_server_.SetUpdateDeviceAttributesPermission(true);
@@ -1195,6 +1203,7 @@ class OobeGuestButtonPolicy : public testing::WithParamInterface<bool>,
 };
 
 IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {
+  base::ScopedAllowBlockingForTesting allow_io;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
@@ -1214,6 +1223,7 @@ IN_PROC_BROWSER_TEST_P(OobeGuestButtonPolicy, VisibilityAfterEnrollment) {
 INSTANTIATE_TEST_SUITE_P(All, OobeGuestButtonPolicy, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, SwitchToViews) {
+  base::ScopedAllowBlockingForTesting allow_io;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ConfirmAndWaitLoginScreen();
@@ -1222,6 +1232,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, SwitchToViews) {
 
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        SwitchToViewsLocalUsers) {
+  base::ScopedAllowBlockingForTesting allow_io;
   AddPublicUser("test_user");
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -1232,6 +1243,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 
 IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                        SwitchToViewsLocales) {
+  base::ScopedAllowBlockingForTesting allow_io;
   auto initial_label = LoginScreenTestApi::GetShutDownButtonLabel();
 
   SetLoginScreenLocale("ru-RU");
@@ -1267,6 +1279,7 @@ class KioskEnrollmentPolicyServerTest
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest, KioskEnrollment) {
+  base::ScopedAllowBlockingForTesting allow_io;
   policy_server_.SetAvailableLicenses(/*has_enterpise_license=*/false,
                                       /*has_kiosk_license=*/true);
   policy_server_.SetUpdateDeviceAttributesPermission(true);
@@ -1304,6 +1317,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest, EnterpriseEnrollment) {
+  base::ScopedAllowBlockingForTesting allow_io;
   policy_server_.SetAvailableLicenses(/*has_enterpise_license=*/true,
                                       /*has_kiosk_license=*/false);
   policy_server_.SetUpdateDeviceAttributesPermission(true);
@@ -1360,6 +1374,7 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,
                        ManualEnrollmentAutolaunchKioskApp) {
+  base::ScopedAllowBlockingForTesting allow_io;
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -1402,6 +1417,7 @@ class KioskEnrollmentTestWithAddUserFlowEnabled : public KioskEnrollmentTest {
 IN_PROC_BROWSER_TEST_F(
     KioskEnrollmentTestWithAddUserFlowEnabled,
     ManualEnrollmentAutolaunchKioskAppWithAddUserAfterEnrollment) {
+  base::ScopedAllowBlockingForTesting allow_io;
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
@@ -1487,6 +1503,7 @@ class EnrollmentAddUserTest : public EnrollmentEmbeddedPolicyServerBase {
   }
 
   void EnrollAndWaitForAccountSelectionScreen() {
+    base::ScopedAllowBlockingForTesting allow_io;
     TriggerEnrollmentAndSignInSuccessfully();
     enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
     enrollment_ui_.LeaveSuccessScreen();
@@ -1572,6 +1589,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest, TokenExpirationOnGaiaScreen) {
 // selection screen shouldn't be shown.
 IN_PROC_BROWSER_TEST_F(EnrollmentAddUserTest,
                        TokenExpirationOnEnrollmentDoneScreen) {
+  base::ScopedAllowBlockingForTesting allow_io;
   TriggerEnrollmentAndSignInSuccessfully();
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   ExpectCredentials();
