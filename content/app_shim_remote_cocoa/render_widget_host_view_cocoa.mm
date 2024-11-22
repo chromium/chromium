@@ -2273,8 +2273,9 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
       // the maximum uint32_t. See crbug.com/40060200.
       uint32_t new_end = base::saturated_cast<uint32_t>(
           _markedRange.location + NSMaxRange(newSelRange));
-      _textSelectionRange =
-          gfx::Range(_markedRange.location + newSelRange.location, new_end);
+      uint32_t new_start = base::saturated_cast<uint32_t>(
+          _markedRange.location + newSelRange.location);
+      _textSelectionRange = gfx::Range(new_start, new_end);
     }
   } else {
     // An empty text means the composition is about to be cancelled,
