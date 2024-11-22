@@ -562,8 +562,8 @@ void ChromePasswordProtectionService::ShowInterstitial(
       base::NumberToString(static_cast<std::underlying_type_t<PasswordType>>(
           ConvertReusedPasswordAccountTypeToPasswordType(password_type)));
 
-  params.post_data = network::ResourceRequestBody::CreateFromBytes(
-      post_data.data(), post_data.size());
+  params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(post_data));
   web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
 
   LogWarningAction(WarningUIType::INTERSTITIAL, WarningAction::SHOWN,
