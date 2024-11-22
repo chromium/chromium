@@ -284,6 +284,7 @@ class LensOverlayQueryControllerTest : public testing::Test {
          {"use-pdf-interaction-type", "true"},
          {"use-webpage-interaction-type", "true"},
          {"send-lens-inputs-for-contextual-suggest", "true"},
+         {"send-page-url-for-contextualization", "true"},
          {"send-lens-inputs-for-lens-suggest", "true"},
          {"send-lens-visual-interaction-data-for-lens-suggest", "true"}});
   }

@@ -273,6 +273,10 @@ constexpr base::FeatureParam<bool> kUseInnerTextAsContext{
 constexpr base::FeatureParam<bool> kUseInnerHtmlAsContext{
     &kLensOverlayContextualSearchbox, "use-inner-html-as-context", false};
 
+constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
+    &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
+    false};
+
 constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
     &kLensOverlayContextualSearchbox, "page-content-request-timeout-ms", 60000};
 
@@ -652,6 +656,10 @@ int GetLensOverlayPageContentRequestTimeoutMs() {
 
 bool UseInnerHtmlAsContext() {
   return kUseInnerHtmlAsContext.Get();
+}
+
+bool SendPageUrlForContextualization() {
+  return kSendPageUrlForContextualization.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

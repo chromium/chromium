@@ -1513,7 +1513,8 @@ lens::Payload LensOverlayQueryController::CreatePageContentPayload() {
   payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
                                          underlying_content_bytes_.end());
   payload.set_content_type(ContentTypeToString(underlying_content_type_));
-  if (!page_url_.is_empty()) {
+  if (!page_url_.is_empty() &&
+      lens::features::SendPageUrlForContextualization()) {
     payload.set_page_url(page_url_.spec());
   }
   return payload;

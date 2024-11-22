@@ -425,6 +425,10 @@ extern bool UseInnerTextAsContext();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerHtmlAsContext();
 
+// Returns whether to include the page URL in the page content upload request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool SendPageUrlForContextualization();
+
 // The timeout set for page content upload requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayPageContentRequestTimeoutMs();
