@@ -6,7 +6,7 @@ if (is_android) {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "proto/about_this_site_metadata.proto" ]
+  sources = [ "proto/about_this_site_metadata.proto", "proto/merchant_trust_metadata.proto" ]
 
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
 }
@@ -30,6 +30,8 @@ static_library("core") {
     "about_this_site_validation.h",
     "features.cc",
     "features.h",
+    "merchant_trust_service.cc",
+    "merchant_trust_service.h",
     "page_info_action.cc",
     "page_info_action.h",
     "page_info_history_data_source.cc",
@@ -63,6 +65,7 @@ source_set("unit_tests") {
   sources = [
     "about_this_site_service_unittest.cc",
     "about_this_site_validation_unittest.cc",
+    "merchant_trust_service_unittest.cc",
     "page_info_history_data_source_unittest.cc",
   ]
 

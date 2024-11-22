@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_info/about_this_site_service_factory.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 
 #include <memory>
 
@@ -12,40 +12,37 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
+#include "components/page_info/core/merchant_trust_service.h"
 
 // static
-page_info::AboutThisSiteService* AboutThisSiteServiceFactory::GetForProfile(
+page_info::MerchantTrustService* MerchantTrustServiceFactory::GetForProfile(
     Profile* profile) {
-  return static_cast<page_info::AboutThisSiteService*>(
+  return static_cast<page_info::MerchantTrustService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 // static
-AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
-  static base::NoDestructor<AboutThisSiteServiceFactory> factory;
+MerchantTrustServiceFactory* MerchantTrustServiceFactory::GetInstance() {
+  static base::NoDestructor<MerchantTrustServiceFactory> factory;
   return factory.get();
 }
 
-AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
+MerchantTrustServiceFactory::MerchantTrustServiceFactory()
     : ProfileKeyedServiceFactory(
-          "AboutThisSiteServiceFactory",
+          "MerchantTrustServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
-  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
+MerchantTrustServiceFactory::~MerchantTrustServiceFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
 std::unique_ptr<KeyedService>
-AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
+MerchantTrustServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  if (!page_info::IsAboutThisSiteFeatureEnabled(
-          g_browser_process->GetApplicationLocale())) {
+  if (!base::FeatureList::IsEnabled(page_info::kMerchantTrust)) {
     return nullptr;
   }
 
@@ -57,18 +54,11 @@ AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  auto* template_service = TemplateURLServiceFactory::GetForProfile(profile);
-  // TemplateURLService may be null during testing.
-  if (!template_service) {
-    return nullptr;
-  }
-
-  return std::make_unique<page_info::AboutThisSiteService>(
-      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
-      template_service);
+  return std::make_unique<page_info::MerchantTrustService>(
+      optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs());
 }
 
-bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+bool MerchantTrustServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   // This service needs to be created at startup in order to register its
   // OptimizationType with OptimizationGuideDecider.
   return true;
