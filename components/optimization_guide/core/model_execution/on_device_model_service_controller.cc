@@ -466,12 +466,6 @@ void OnDeviceModelServiceController::OnDeviceModelClient::
   }
 }
 
-void OnDeviceModelServiceController::OnDeviceModelClient::OnSessionTimedOut() {
-  if (controller_) {
-    controller_->access_controller_->OnSessionTimedOut();
-  }
-}
-
 scoped_refptr<const OnDeviceModelFeatureAdapter>
 OnDeviceModelServiceController::GetFeatureAdapter(
     ModelBasedCapabilityKey feature) {

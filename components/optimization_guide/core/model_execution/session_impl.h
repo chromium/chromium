@@ -53,8 +53,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     GetModelRemote() = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
-    // Called to report a timeout reached while waiting for model response.
-    virtual void OnSessionTimedOut() = 0;
   };
 
   struct OnDeviceOptions final {
@@ -285,9 +283,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   // Called when the connection to the service is dropped.
   void OnDisconnect();
 
-  // Called when a on-device response was not received within the timeout.
-  void OnSessionTimedOut();
-
   // Calls SendResponse(kComplete) if we've received the full response and have
   // finished checking raw output safety for it.
   void MaybeSendCompleteResponse();
@@ -361,9 +356,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   std::unique_ptr<google::protobuf::MessageLite> context_;
   base::TimeTicks context_start_time_;
-
-  // The timeout value for on device model execution.
-  base::TimeDelta on_device_execution_timeout_;
 
   // Last message executed.
   std::unique_ptr<google::protobuf::MessageLite> last_message_;

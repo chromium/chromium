@@ -1111,8 +1111,12 @@ constexpr char kRestoreLastLockScreenNote[] =
 #endif
 
 // Deprecated 11/2024
-inline constexpr char kPrefixedVideoFullscreenApiAvailability[] =
+constexpr char kPrefixedVideoFullscreenApiAvailability[] =
     "media.prefixed_fullscreen_video_api_availability";
+
+// Deprecated 11/2024
+constexpr char kOnDeviceModelTimeoutCount[] =
+    "optimization_guide.on_device.timeout_count";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1223,6 +1227,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 10/2024.
   registry->RegisterBooleanPref(kBeforeunloadEventCancelByPreventDefaultEnabled,
                                 true);
+
+  // Deprecated 11/2024.
+  registry->RegisterIntegerPref(kOnDeviceModelTimeoutCount, 0);
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2481,6 +2488,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 10/2024.
   local_state->ClearPref(kBeforeunloadEventCancelByPreventDefaultEnabled);
+
+  // Added 11/2024
+  local_state->ClearPref(kOnDeviceModelTimeoutCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

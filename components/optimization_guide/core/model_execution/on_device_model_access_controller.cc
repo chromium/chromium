@@ -16,7 +16,6 @@ namespace {
 
 using model_execution::prefs::localstate::kOnDeviceModelChromeVersion;
 using model_execution::prefs::localstate::kOnDeviceModelCrashCount;
-using model_execution::prefs::localstate::kOnDeviceModelTimeoutCount;
 using model_execution::prefs::localstate::kOnDeviceModelValidationResult;
 
 const char kComponentVersionKey[] = "component_version";
@@ -53,7 +52,6 @@ OnDeviceModelAccessController::OnDeviceModelAccessController(
       version_info::GetVersionNumber()) {
     // When the version changes, reset the counts so that we try again.
     pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
-    pref_service_->SetInteger(kOnDeviceModelTimeoutCount, 0);
     pref_service_->SetString(kOnDeviceModelChromeVersion,
                              version_info::GetVersionNumber());
     if (features::ShouldOnDeviceModelClearValidationOnVersionChange()) {
@@ -83,11 +81,6 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
       base::Time::Now() < next_attempt_time_after_crash_) {
     return OnDeviceModelEligibilityReason::kTooManyRecentCrashes;
   }
-  if (pref_service_->GetInteger(kOnDeviceModelTimeoutCount) >=
-          features::GetOnDeviceModelTimeoutCountBeforeDisable() &&
-      base::Time::Now() < next_attempt_time_after_timeout_) {
-    return OnDeviceModelEligibilityReason::kTooManyRecentTimeouts;
-  }
   if (features::IsOnDeviceModelValidationEnabled() &&
       features::ShouldOnDeviceModelBlockOnValidationFailure()) {
     ValidationState state = GetValidationState();
@@ -103,9 +96,7 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
 
 void OnDeviceModelAccessController::OnResponseCompleted() {
   pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
-  pref_service_->SetInteger(kOnDeviceModelTimeoutCount, 0);
   next_attempt_time_after_crash_ = base::Time::Now();
-  next_attempt_time_after_timeout_ = base::Time::Now();
 }
 
 void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
@@ -121,17 +112,6 @@ void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
 
 void OnDeviceModelAccessController::OnGpuBlocked() {
   is_gpu_blocked_ = true;
-}
-
-void OnDeviceModelAccessController::OnSessionTimedOut() {
-  int timeout_count = pref_service_->GetInteger(kOnDeviceModelTimeoutCount) + 1;
-  pref_service_->SetInteger(kOnDeviceModelTimeoutCount, timeout_count);
-  // If the model will be disabled because of timeout count, use exponential
-  // backoff to re-enable.
-  next_attempt_time_after_timeout_ = GetNextAttemptAfterBackoff(
-      timeout_count, features::GetOnDeviceModelTimeoutCountBeforeDisable(),
-      features::GetOnDeviceModelTimeoutBackoffBaseTime(),
-      features::GetOnDeviceModelMaxTimeoutBackoffTime());
 }
 
 bool OnDeviceModelAccessController::ShouldValidateModel(

@@ -193,13 +193,6 @@ SessionImpl::SessionImpl(
       optimization_guide_logger_(optimization_guide_logger),
       model_quality_uploader_service_(model_quality_uploader_service),
       sampling_params_(ResolveSamplingParams(config_params, on_device_opts)) {
-  if (config_params && config_params->on_device_execution_timeout) {
-    on_device_execution_timeout_ =
-        *(config_params->on_device_execution_timeout);
-  } else {
-    on_device_execution_timeout_ =
-        features::GetOnDeviceModelTimeForInitialResponse();
-  }
   if (on_device_opts && on_device_opts->ShouldUse()) {
     on_device_state_.emplace(std::move(*on_device_opts), this);
     // Prewarm the initial session to make sure the service is started.
@@ -336,7 +329,7 @@ void SessionImpl::ExecuteModel(
     CancelPendingResponse(ExecuteModelResult::kCancelled);
     DestroyOnDeviceState();
     execute_remote_fn_.Run(
-        feature_, *last_message_, on_device_execution_timeout_,
+        feature_, *last_message_, std::nullopt,
         /*log_ai_data_request=*/nullptr,
         base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                        std::move(callback)));
@@ -422,9 +415,6 @@ void SessionImpl::ExecuteModel(
 
   on_device_state_->log_ai_data_request = std::move(log_ai_data_request);
   on_device_state_->start = base::TimeTicks::Now();
-  on_device_state_->timer_for_first_response.Start(
-      FROM_HERE, on_device_execution_timeout_,
-      base::BindOnce(&SessionImpl::OnSessionTimedOut, base::Unretained(this)));
 
   auto options = on_device_model::mojom::InputOptions::New();
   options->input = std::move(input->input);
@@ -481,8 +471,6 @@ void SessionImpl::BeginRequestExecution(
 
 // on_device_model::mojom::StreamingResponder:
 void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
-  on_device_state_->timer_for_first_response.Stop();
-
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
 
@@ -530,9 +518,6 @@ void SessionImpl::OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) {
 
 void SessionImpl::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
-  // Stop timer, just in case we didn't already via OnResponse().
-  on_device_state_->timer_for_first_response.Stop();
-
   proto::OnDeviceModelServiceResponse* logged_response =
       on_device_state_->MutableLoggedResponse();
   LogResponseHasRepeats(feature_, logged_response->has_repeats());
@@ -804,11 +789,6 @@ bool SessionImpl::ShouldUseOnDeviceModel() const {
   return on_device_state_ && on_device_state_->opts.model_client->ShouldUse();
 }
 
-void SessionImpl::OnSessionTimedOut() {
-  on_device_state_->opts.model_client->OnSessionTimedOut();
-  DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult::kTimedOut);
-}
-
 void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
     ExecuteModelResult result) {
   if (on_device_state_->histogram_logger) {
@@ -818,8 +798,7 @@ void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
   auto callback = std::move(on_device_state_->callback);
   DestroyOnDeviceState();
   execute_remote_fn_.Run(
-      feature_, *last_message_, on_device_execution_timeout_,
-      std::move(log_ai_data_request),
+      feature_, *last_message_, std::nullopt, std::move(log_ai_data_request),
       base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                      std::move(callback)));
 }
@@ -860,8 +839,7 @@ void SessionImpl::RunTextSafetyRemoteFallbackAndCompletionCallback(
   ts_request_log->set_url(ts_request->url());
 
   execute_remote_fn_.Run(
-      ModelBasedCapabilityKey::kTextSafety, *ts_request,
-      on_device_execution_timeout_,
+      ModelBasedCapabilityKey::kTextSafety, *ts_request, std::nullopt,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(&SessionImpl::OnTextSafetyRemoteResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
@@ -954,7 +932,6 @@ void SessionImpl::OnDeviceState::ResetRequestState() {
   callback.Reset();
   current_response.clear();
   start = base::TimeTicks();
-  timer_for_first_response.Stop();
   histogram_logger.reset();
   log_ai_data_request.reset();
   num_unchecked_response_tokens = 0;
