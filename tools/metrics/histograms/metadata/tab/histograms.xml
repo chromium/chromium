@@ -950,6 +950,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Shared.Recall.Desktop"
+    enum="SharedTabGroupRecallTypeDesktop" expires_after="2025-10-10">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    [ Desktop ] Tracks the type of recall action a user explicitly performs on a
+    shared tab group such as closing a group but not deleting it, or opening a
+    group from the bookmarks bar. Recorded when a user triggers a recall action.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Shared.UseUrlForTitle.{SanitizationRequestType}"
     enum="Boolean" expires_after="2025-10-10">
   <owner>qinmin@google.com</owner>

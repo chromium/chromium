@@ -201,6 +201,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.h:SharedTabGroupDataLoadFromDiskResult) -->
 
+<!-- LINT.IfChange(SharedTabGroupRecallTypeDesktop) -->
+
+<enum name="SharedTabGroupRecallTypeDesktop">
+  <int value="0" label="A group was opened from the bookmarks bar."/>
+  <int value="1" label="A group was opened from the everything menu."/>
+  <int value="2" label="A group was opened from the tab groups sub menu."/>
+  <int value="3" label="A group was closed from the tab group editor bubble."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>

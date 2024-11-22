@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -20,10 +22,12 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interactive_test_internal.h"
 
 namespace tab_groups {
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
+constexpr char kRecallHistogram[] = "TabGroups.Shared.Recall.Desktop";
 
 class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
  public:
@@ -159,6 +163,108 @@ IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
                                           kSkipPixelTestsReason),
                   Screenshot(kTabGroupHeaderToScreenshot,
                              "shared_icon_in_tab_group_header", "5924633"));
+}
+
+// Verify the closed metric is recorded when a shared group is closed from the
+// TabGroupEditorBubble.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricOnSharedGroupClosing) {
+  base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id");
+
+  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
+                  FinishTabstripAnimations(), HoverTabGroupHeader(group_id),
+                  ClickMouse(ui_controls::RIGHT),
+                  WaitForShow(kTabGroupEditorBubbleId),
+                  PressButton(kTabGroupEditorBubbleCloseGroupButtonId),
+                  WaitForHide(kTabGroupEditorBubbleCloseGroupButtonId),
+                  FinishTabstripAnimations());
+
+  histogram_tester.ExpectUniqueSample(
+      kRecallHistogram,
+      saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::kClosed, 1);
+}
+
+// Verify the OpenedFromBookmarksBar metric is recorded when a shared group is
+// opened from the bookmarks bar.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricOnSharedGroupOpeningFromBookmarksBar) {
+  ::base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id");
+
+  // Close the tab group.
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
+
+  RunTestSequence(FinishTabstripAnimations(), ShowBookmarksBar(),
+                  EnsurePresent(kSavedTabGroupButtonElementId),
+                  PressButton(kSavedTabGroupButtonElementId),
+                  FinishTabstripAnimations());
+
+  histogram_tester.ExpectUniqueSample(
+      kRecallHistogram,
+      saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+          kOpenedFromBookmarksBar,
+      1);
+}
+
+// Verify the OpenedFromEverythingMenu metric is recorded when a shared group is
+// opened from the everything menu.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricOnSharedGroupOpeningFromEverythingMenu) {
+  ::base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id");
+
+  // Close the tab group.
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
+
+  RunTestSequence(
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      SelectMenuItem(STGEverythingMenu::kTabGroup), FinishTabstripAnimations(),
+      // Close the everything menu to prevent flakes on mac.
+      HoverTabAt(0), ClickMouse(), WaitForHide(STGEverythingMenu::kTabGroup));
+
+  histogram_tester.ExpectUniqueSample(
+      kRecallHistogram,
+      saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+          kOpenedFromEverythingMenu,
+      1);
+}
+
+// Verify the OpenedFromSubmenu metric is recoreded when a shared group is
+// opened from the app menu > tab groups sub menu.
+IN_PROC_BROWSER_TEST_F(SharedTabGroupInteractiveUiTest,
+                       RecordMetricOnSharedGroupOpeningFromAppMenu) {
+  ::base::HistogramTester histogram_tester;
+
+  TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, "fake_collaboration_id");
+
+  // Close the tab group.
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group_id);
+
+  RunTestSequence(FinishTabstripAnimations(), ShowBookmarksBar(),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+                  SelectMenuItem(STGEverythingMenu::kTabGroup),
+                  SelectMenuItem(STGEverythingMenu::kOpenGroup),
+                  FinishTabstripAnimations(),
+                  // Close the app menu to prevent flakes on mac.
+                  HoverTabAt(0), ClickMouse(),
+                  WaitForHide(AppMenuModel::kTabGroupsMenuItem));
+
+  histogram_tester.ExpectUniqueSample(
+      kRecallHistogram,
+      saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+          kOpenedFromSubmenu,
+      1);
 }
 
 }  // namespace tab_groups

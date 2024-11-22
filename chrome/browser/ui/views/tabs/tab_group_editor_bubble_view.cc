@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -751,8 +752,25 @@ void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
 void TabGroupEditorBubbleView::HideGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
+
+  bool is_shared_group = false;
+  if (tab_groups::TabGroupSyncService* tab_group_service =
+          tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+              browser_->profile())) {
+    std::optional<tab_groups::SavedTabGroup> saved_group =
+        tab_group_service->GetGroup(group_);
+    is_shared_group =
+        saved_group.has_value() && saved_group->is_shared_tab_group();
+  }
+
   DeleteGroupFromTabstrip();
   GetWidget()->Close();
+
+  if (is_shared_group) {
+    tab_groups::saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
+        tab_groups::saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
+            kClosed);
+  }
 }
 
 void TabGroupEditorBubbleView::DeleteGroupPressed() {
