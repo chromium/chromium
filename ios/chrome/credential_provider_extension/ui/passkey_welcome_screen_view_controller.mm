@@ -239,10 +239,12 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
 }
 
 - (void)didTapPrimaryActionButton {
-  ProceduralBlock primaryButtonAction = _primaryButtonAction;
-  _primaryButtonAction = nil;
+  if (self.navigationController.topViewController != self) {
+    return;
+  }
 
-  primaryButtonAction();
+  CHECK(_primaryButtonAction);
+  _primaryButtonAction();
 }
 
 - (void)didTapSecondaryActionButton {
