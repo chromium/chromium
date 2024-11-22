@@ -147505,7 +147505,7 @@
       ]
      },
      "empty-span-size-001.html": [
-      "ea897891681462cc21516a9b62b22c5664142dcb",
+      "bbb33c6fc59221c6df2dd678bd401dac404863f1",
       [
        null,
        [
@@ -247166,7 +247166,7 @@
       ]
      ],
      "nothing-captured.html": [
-      "ac5635ec7cd0983162bc4189e62c9b9628d1417a",
+      "c7a0913bab0dc8e872c8895e275f41ae4ba0e70a",
       [
        null,
        [
@@ -309273,6 +309273,14 @@
     "OWNERS": [
      "8b46969745cd6f32867b33a7179724d4aad5529f",
      []
+    ],
+    "console-label-conversion.any.shadowrealm-expected.txt": [
+     "c4cf51c6285538952d0a018c839fd75446d67201",
+     []
+    ],
+    "console-namespace-object-class-string.any.shadowrealm-expected.txt": [
+     "c4cf51c6285538952d0a018c839fd75446d67201",
+     []
     ]
    },
    "contacts": {
@@ -339248,7 +339256,7 @@
       ]
      },
      "empty-span-size-001-ref.html": [
-      "6c55c63b56a0bdc1a1419b761b147cd35b54f22f",
+      "7cdb84a5bb048620b56087b52d3b3172c7c34f1a",
       []
      ],
      "empty-span-size-002-ref.html": [
@@ -355916,6 +355924,44 @@
       }
      },
      "the-stylepropertymap": {
+      "computed": {
+       "get-expected.txt": [
+        "f44a51f5a7f6c8711568dd3b1cd2d9add3dfeaf6",
+        []
+       ]
+      },
+      "declared": {
+       "clear-expected.txt": [
+        "f6b17cf8bc4390bc0f8891ccb0eacb1564e3372e",
+        []
+       ],
+       "declared.tentative-expected.txt": [
+        "1df0e4f8ce276ca611957e95d94e9baaa97807c6",
+        []
+       ],
+       "get-expected.txt": [
+        "31ba3938f4e91c573a6a332a3be4d210111a36b5",
+        []
+       ],
+       "get-shorthand-expected.txt": [
+        "02f2f395380445f6103c70c522275353de7ff766",
+        []
+       ]
+      },
+      "inline": {
+       "clear-expected.txt": [
+        "d1daf2f0199ac5f1915d13cbab485e21fc78f384",
+        []
+       ],
+       "get-expected.txt": [
+        "e33df0dda1924618dbb9702e4e5945c4e977b6b3",
+        []
+       ],
+       "get-shorthand-expected.txt": [
+        "b1f255a4ad0f793cde82e1964c7350324a43679b",
+        []
+       ]
+      },
       "properties": {
        "accent-color-expected.txt": [
         "f147be866d76b87d9209252a009357a123c9d4eb",
@@ -452247,14 +452293,39 @@
      ]
     ],
     "console-label-conversion.any.js": [
-     "4d48df3b1d0d00c1f0dd8778306db4b7bb00285d",
+     "9fa1bd0f7c275defd35c4d11069ca176dd4cb651",
      [
       "console/console-label-conversion.any.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ],
+     [
+      "console/console-label-conversion.any.shadowrealm.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ],
      [
       "console/console-label-conversion.any.worker.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ]
     ],
     "console-log-large-array.any.js": [
@@ -452330,14 +452401,39 @@
      ]
     ],
     "console-namespace-object-class-string.any.js": [
-     "d3ff7f7d07636154080f4d24106e1a6703c37dc4",
+     "4fed742c3083f2c10e85eed0a9889585bc218986",
      [
       "console/console-namespace-object-class-string.any.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
+     ],
+     [
+      "console/console-namespace-object-class-string.any.shadowrealm.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ],
      [
       "console/console-namespace-object-class-string.any.worker.html",
-      {}
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,shadowrealm"
+        ]
+       ]
+      }
      ]
     ],
     "console-tests-historical.any.js": [
@@ -493686,7 +493782,7 @@
         ]
        ],
        "get.html": [
-        "88fe53493cbcdfa470b2aa0558c9917fc253b242",
+        "5d9f51900c2c7c1d45b195d95a4cb8c6f82b9b4f",
         [
          null,
          {}
@@ -493730,14 +493826,14 @@
         ]
        ],
        "clear.html": [
-        "e6bdd4fffea6359e8c5b6c73a0d4de97696fec2e",
+        "49448b4f52a51a2853a49c2a2263200a16185229",
         [
          null,
          {}
         ]
        ],
        "declared.tentative.html": [
-        "f6c5dfdb6a9b3e6fdfc5d8000e3ac2e38f096e8e",
+        "43db502221d6d6112774927ec9febe3fe726c8f3",
         [
          null,
          {}
@@ -493772,14 +493868,14 @@
         ]
        ],
        "get-shorthand.html": [
-        "0a83ca4d09f37ebca5699c7234c5a2dd0e2ad4df",
+        "6c14c35ad8f52ba78229a1d8635414ac9fd27e70",
         [
          null,
          {}
         ]
        ],
        "get.html": [
-        "847b6f6fa7a22317e1e6e704a9dfb558e4f84d5c",
+        "870d138b10eae2c40fec3448f44fe62cc8194a4f",
         [
          null,
          {}
@@ -493837,7 +493933,7 @@
         ]
        ],
        "clear.html": [
-        "24ca69926b2816593bea2e2baa0444ee51d03e33",
+        "4599d5e212d53146c2519c46b82f945762a74406",
         [
          null,
          {}
@@ -493872,14 +493968,14 @@
         ]
        ],
        "get-shorthand.html": [
-        "6ce318d5995cd10c1fd15d3d3c24ae7863783364",
+        "56ee24a6642324713a8c2f2bb0056982afcf3734",
         [
          null,
          {}
         ]
        ],
        "get.html": [
-        "1fcc09be6f21b54f12b980e3a2154a7e98a46204",
+        "026b6752f06dc9cce78c0c836d63f6e6c9881d2a",
         [
          null,
          {}
@@ -686027,7 +686123,7 @@
      ]
     ],
     "single-touch.html": [
-     "4db96c208d62fe4b09558cce8312d4aba1d39836",
+     "002be074e15cd5758191eab2ba95186a59a0c6b6",
      [
       null,
       {
