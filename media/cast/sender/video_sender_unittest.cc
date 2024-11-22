@@ -16,10 +16,15 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_frame.h"
 #include "media/cast/cast_environment.h"
@@ -68,7 +73,7 @@ int GetSuggestedVideoBitrate() {
 
 }  // namespace
 
-class VideoSenderTest : public ::testing::Test {
+class VideoSenderTest : public ::testing::TestWithParam<bool> {
  public:
   VideoSenderTest(const VideoSenderTest&) = delete;
   VideoSenderTest& operator=(const VideoSenderTest&) = delete;
@@ -91,16 +96,17 @@ class VideoSenderTest : public ::testing::Test {
             *mock_openscreen_environment_);
     vea_factory_.SetAutoRespond(true);
     last_pixel_value_ = kPixelValue;
+    feature_list_.InitWithFeatureState(kCastStreamingMediaVideoEncoder,
+                                       GetParam());
   }
 
-  ~VideoSenderTest() override { FakeOpenscreenClock::ClearTickClock(); }
-
-  void TearDown() final {
+  ~VideoSenderTest() override {
     // Video encoders owned by the VideoSender are deleted asynchronously.
     // Delete the VideoSender here and then run any posted deletion tasks.
     openscreen_video_sender_ = nullptr;
     video_sender_.reset();
     task_runner_->RunTasks();
+    FakeOpenscreenClock::ClearTickClock();
   }
 
   // If |external| is true then external video encoder (VEA) is used.
@@ -139,12 +145,13 @@ class VideoSenderTest : public ::testing::Test {
   }
 
   scoped_refptr<media::VideoFrame> GetNewVideoFrame() {
-    if (first_frame_timestamp_.is_null())
+    if (first_frame_timestamp_.is_null()) {
       first_frame_timestamp_ = testing_clock_.NowTicks();
-    gfx::Size size(kWidth, kHeight);
+    }
+    constexpr gfx::Size kSize(kWidth, kHeight);
     scoped_refptr<media::VideoFrame> video_frame =
         media::VideoFrame::CreateFrame(
-            PIXEL_FORMAT_I420, size, gfx::Rect(size), size,
+            PIXEL_FORMAT_I420, kSize, gfx::Rect(kSize), kSize,
             testing_clock_.NowTicks() - first_frame_timestamp_);
     PopulateVideoFrame(video_frame.get(), last_pixel_value_++);
     return video_frame;
@@ -170,22 +177,26 @@ class VideoSenderTest : public ::testing::Test {
   std::unique_ptr<VideoSender> video_sender_;
   // Unowned pointer to the openscreen::cast::Sender.
   raw_ptr<openscreen::cast::Sender> openscreen_video_sender_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(VideoSenderTest, BuiltInEncoder) {
+TEST_P(VideoSenderTest, BuiltInEncoder) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
   InitEncoder(false, true);
   ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
 
   scoped_refptr<media::VideoFrame> video_frame = GetNewVideoFrame();
-
   const base::TimeTicks reference_time = testing_clock_.NowTicks();
   video_sender_->InsertRawVideoFrame(video_frame, reference_time);
 
-  task_runner_->RunTasks();
-  EXPECT_EQ(1, openscreen_video_sender_->GetInFlightFrameCount());
+  EXPECT_TRUE(base::test::RunUntil([this] {
+    task_runner_->RunTasks();
+    return openscreen_video_sender_->GetInFlightFrameCount() == 1;
+  }));
 }
 
-TEST_F(VideoSenderTest, ExternalEncoder) {
+TEST_P(VideoSenderTest, ExternalEncoder) {
   InitEncoder(true, true);
   ASSERT_EQ(STATUS_INITIALIZED, operational_status_);
 
@@ -224,7 +235,7 @@ TEST_F(VideoSenderTest, ExternalEncoder) {
   EXPECT_EQ(1, vea_factory_.vea_response_count());
 }
 
-TEST_F(VideoSenderTest, ExternalEncoderInitFails) {
+TEST_P(VideoSenderTest, ExternalEncoderInitFails) {
   InitEncoder(true, false);
 
   // The SizeAdaptableExternalVideoEncoder initially reports STATUS_INITIALIZED
@@ -244,5 +255,7 @@ TEST_F(VideoSenderTest, ExternalEncoderInitFails) {
   video_sender_.reset();
   task_runner_->RunTasks();
 }
+
+INSTANTIATE_TEST_SUITE_P(All, VideoSenderTest, ::testing::Bool());
 
 }  // namespace media::cast

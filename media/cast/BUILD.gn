@@ -79,6 +79,8 @@ source_set("encoding") {
     "encoding/external_video_encoder.h",
     "encoding/fake_software_video_encoder.cc",
     "encoding/fake_software_video_encoder.h",
+    "encoding/media_video_encoder_wrapper.cc",
+    "encoding/media_video_encoder_wrapper.h",
     "encoding/size_adaptable_video_encoder_base.cc",
     "encoding/size_adaptable_video_encoder_base.h",
     "encoding/software_video_encoder.h",
