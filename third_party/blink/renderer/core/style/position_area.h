@@ -137,6 +137,13 @@ struct PositionAreaOffsets {
   std::optional<LayoutUnit> left;
   std::optional<LayoutUnit> right;
 
+  PositionAreaOffsets() = default;
+  PositionAreaOffsets(std::optional<LayoutUnit> top,
+                      std::optional<LayoutUnit> bottom,
+                      std::optional<LayoutUnit> left,
+                      std::optional<LayoutUnit> right)
+      : top(top), bottom(bottom), left(left), right(right) {}
+
   bool operator==(const PositionAreaOffsets& other) const {
     return top == other.top && bottom == other.bottom && left == other.left &&
            right == other.right;
