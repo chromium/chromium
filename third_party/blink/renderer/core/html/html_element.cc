@@ -1955,11 +1955,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
       this, DocumentUpdateReason::kPopover);
 
   if (auto* dialog = DynamicTo<HTMLDialogElement>(this)) {
-    if (RuntimeEnabledFeatures::PopoverDialogNewFocusBehaviorEnabled()) {
-      dialog->SetFocusForDialog();
-    } else {
-      HTMLDialogElement::SetFocusForDialogLegacy(dialog);
-    }
+    dialog->SetFocusForDialog();
     return;
   }
 

@@ -3315,12 +3315,6 @@
       name: "PopoverButtonNestingBehavior",
       status: "experimental",
     },
-    // This is a killswitch for the behavior of <dialog popover autofocus>,
-    // which landed in M130 and can be removed in M132.
-    {
-      name: "PopoverDialogNewFocusBehavior",
-      status: "stable",
-    },
     {
       name: "PositionOutsideTabSpanCheckSiblingNode",
       status: "stable",
