@@ -39,8 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /** AccountManagerFacade wraps our access of AccountManager in Android. */
 public class AccountManagerFacadeImpl implements AccountManagerFacade {
@@ -455,20 +453,22 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     private List<String> getFilteredAccountEmails() {
-        Predicate<String> emailMatcher =
-                email -> {
-                    if (mAccountRestrictionPatterns.get().isEmpty()) {
-                        // If there are no restriction patterns then all emails will pass this
-                        // matcher.
-                        return true;
-                    }
-                    return mAccountRestrictionPatterns.get().stream()
-                            .anyMatch(pattern -> pattern.matches(email));
-                };
-        return mAllAccounts.get().stream()
-                .map(account -> account.name)
-                .filter(emailMatcher)
-                .collect(Collectors.toList());
+        List<String> ret = new ArrayList<>();
+        List<PatternMatcher> restrictions = mAccountRestrictionPatterns.get();
+        for (Account account : mAllAccounts.get()) {
+            String name = account.name;
+            boolean matches = restrictions.isEmpty();
+            for (PatternMatcher matcher : restrictions) {
+                if (matches) {
+                    break;
+                }
+                matches = matcher.matches(name);
+            }
+            if (matches) {
+                ret.add(name);
+            }
+        }
+        return ret;
     }
 
     /**

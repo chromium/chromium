@@ -14,11 +14,11 @@ import org.chromium.base.Promise;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /** AccountUtils groups some static util methods for account. */
 public class AccountUtils {
@@ -43,9 +43,12 @@ public class AccountUtils {
 
     /** Converts a list of {@link CoreAccountInfo}s to a list of account emails. */
     public static List<String> toAccountEmails(final List<CoreAccountInfo> coreAccountInfos) {
-        return coreAccountInfos.stream()
-                .map(coreAccountInfo -> coreAccountInfo.getEmail())
-                .collect(Collectors.toList());
+        int size = coreAccountInfos.size();
+        String[] emails = new String[size];
+        for (int i = 0; i < size; ++i) {
+            emails[i] = coreAccountInfos.get(i).getEmail();
+        }
+        return Arrays.asList(emails);
     }
 
     /**
