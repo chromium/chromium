@@ -86,11 +86,16 @@ bool NodesCompatibleForMatchByUuid(const bookmarks::BookmarkNode* node1,
   return true;
 }
 
-std::vector<raw_ptr<const bookmarks::BookmarkNode>> GetLocalPermanentNodes(
-    const bookmarks::BookmarkModel* model) {
+// Returns a vector with all user-editable permanent nodes, grouped in pairs
+// where the first element is the local permanent node and the second one is
+// the account counterpart.
+std::vector<std::pair<raw_ptr<const bookmarks::BookmarkNode>,
+                      raw_ptr<const bookmarks::BookmarkNode>>>
+GetLocalAndAccountPermanentNodePairs(const bookmarks::BookmarkModel* model) {
   CHECK(model);
-  return {model->bookmark_bar_node(), model->other_node(),
-          model->mobile_node()};
+  return {{model->bookmark_bar_node(), model->account_bookmark_bar_node()},
+          {model->other_node(), model->account_other_node()},
+          {model->mobile_node(), model->account_mobile_node()}};
 }
 
 }  // namespace
@@ -100,9 +105,11 @@ LocalBookmarkToAccountMerger::LocalBookmarkToAccountMerger(
     : model_(model), uuid_to_match_map_(FindGuidMatches(model)) {
   CHECK(model_);
   CHECK(model_->loaded());
-  CHECK(model_->account_bookmark_bar_node());
-  CHECK(model_->account_other_node());
-  CHECK(model_->account_mobile_node());
+  for (const auto& [local_permanent_node, account_permanent_node] :
+       GetLocalAndAccountPermanentNodePairs(model)) {
+    CHECK(local_permanent_node);
+    CHECK(account_permanent_node);
+  }
 }
 
 LocalBookmarkToAccountMerger::~LocalBookmarkToAccountMerger() = default;
@@ -130,23 +137,25 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
   // The semantics best match algorithm uses folder title or bookmark title/url
   // to perform the primary match. If there are multiple match candidates it
   // selects the first one.
-  CopyOrMergeDescendants(
-      /*local_subtree_root=*/model_->bookmark_bar_node(),
-      /*account_subtree_root=*/model_->account_bookmark_bar_node());
-  CopyOrMergeDescendants(/*local_subtree_root=*/model_->mobile_node(),
-                         /*account_subtree_root=*/model_->mobile_node());
-  CopyOrMergeDescendants(/*local_subtree_root=*/model_->other_node(),
-                         /*account_subtree_root=*/model_->other_node());
+  for (const auto& [local_permanent_node, account_permanent_node] :
+       GetLocalAndAccountPermanentNodePairs(model_)) {
+    CHECK(local_permanent_node);
+    CHECK(account_permanent_node);
+    CopyOrMergeDescendants(
+        /*local_subtree_root=*/local_permanent_node,
+        /*account_subtree_root=*/account_permanent_node);
+  }
 
   // Clear the UUID match map to avoid dangling pointers.
   uuid_to_match_map_.clear();
 
   // All local nodes have been copied to account storage and can be safely
   // removed.
-  for (const bookmarks::BookmarkNode* const permanent_node :
-       GetLocalPermanentNodes(model_)) {
-    while (!permanent_node->children().empty()) {
-      model_->RemoveLastChild(permanent_node, kEditSourceForMetrics, FROM_HERE);
+  for (const auto& [local_permanent_node, unused] :
+       GetLocalAndAccountPermanentNodePairs(model_)) {
+    while (!local_permanent_node->children().empty()) {
+      model_->RemoveLastChild(local_permanent_node, kEditSourceForMetrics,
+                              FROM_HERE);
     }
   }
 
@@ -161,19 +170,17 @@ LocalBookmarkToAccountMerger::FindGuidMatches(
     const bookmarks::BookmarkModel* model) {
   CHECK(model);
   CHECK(model->loaded());
-  CHECK(model->account_bookmark_bar_node());
-  CHECK(model->account_other_node());
-  CHECK(model->account_mobile_node());
 
   std::unordered_map<base::Uuid, LocalBookmarkToAccountMerger::GuidMatch,
                      base::UuidHash>
       uuid_to_match_map;
 
   // Iterate through all local bookmarks to find matches by UUID.
-  for (const bookmarks::BookmarkNode* const permanent_node :
-       GetLocalPermanentNodes(model)) {
+  for (const auto& [local_permanent_node, unused] :
+       GetLocalAndAccountPermanentNodePairs(model)) {
+    CHECK(local_permanent_node);
     ui::TreeNodeIterator<const bookmarks::BookmarkNode> local_iterator(
-        permanent_node);
+        local_permanent_node);
     while (local_iterator.has_next()) {
       const bookmarks::BookmarkNode* const local_node = local_iterator.Next();
       CHECK(local_node->uuid().is_valid());
