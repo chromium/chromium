@@ -1258,7 +1258,9 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
   for (InspectorStyleSheet* stylesheet :
        css_style_sheet_to_inspector_style_sheet_.Values()) {
     stylesheet->SyncTextIfNeeded();
-    ghost_rules.Populate(*stylesheet->PageStyleSheet());
+    if (RuntimeEnabledFeatures::InspectorGhostRulesEnabled()) {
+      ghost_rules.Populate(*stylesheet->PageStyleSheet());
+    }
   }
 
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(
