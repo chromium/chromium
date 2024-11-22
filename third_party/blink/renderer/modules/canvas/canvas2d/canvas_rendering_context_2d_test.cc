@@ -468,16 +468,17 @@ enum class CompositingMode {
 
 class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
-  FakeCanvasResourceProvider(const SkImageInfo& info,
+  FakeCanvasResourceProvider(gfx::Size size,
                              RasterModeHint hint,
                              CanvasResourceHost* resource_host,
                              CompositingMode compositing_mode)
-      : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
-                               info,
-                               cc::PaintFlags::FilterQuality::kLow,
-                               SharedGpuContext::ContextProviderWrapper(),
-                               /*resource_dispatcher=*/nullptr,
-                               resource_host),
+      : CanvasResourceProvider(
+            CanvasResourceProvider::kSharedImage,
+            SkImageInfo::MakeN32Premul(size.width(), size.height()),
+            cc::PaintFlags::FilterQuality::kLow,
+            SharedGpuContext::ContextProviderWrapper(),
+            /*resource_dispatcher=*/nullptr,
+            resource_host),
         is_accelerated_(hint != RasterModeHint::kPreferCPU),
         supports_direct_compositing_(
             compositing_mode == CompositingMode::kSupportsDirectCompositing) {
@@ -496,8 +497,8 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
         viz::SkColorTypeToSinglePlaneSharedImageFormat(
             info.colorInfo().colorType()),
         info.colorInfo().alphaType(),
-        // TODO(crbug.com/371227617): Change this class to just take in the
-        // gfx::Size and hardcode the other info, as all callers pass N32Premul.
+        // NOTE: The SkImageInfo here is hardcoded to have a null colorspace,
+        // which corresponds to SRGB.
         gfx::ColorSpace::CreateSRGB(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
         cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
@@ -540,8 +541,7 @@ bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
   // succeed).
   gfx::Size size = canvas_element.Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &canvas_element,
+      size, RasterModeHint::kPreferGPU, &canvas_element,
       CompositingMode::kSupportsDirectCompositing);
   canvas_element.SetResourceProviderForTesting(std::move(provider), size);
 
@@ -626,8 +626,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // Install a CanvasResourceProvider that does not support direct compositing.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kDoesNotSupportDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
@@ -651,8 +650,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
@@ -674,8 +672,7 @@ TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
   // the canvas composited.
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
 
@@ -700,8 +697,7 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferCPU, &CanvasElement(),
+      size, RasterModeHint::kPreferCPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(std::move(provider), size);
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
@@ -1313,8 +1309,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // The recording will be cleared, so nothing will be rastered before
@@ -1346,8 +1341,7 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_PartialCoverage) {
 
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
@@ -1426,8 +1420,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   gfx::Size size(10, 10);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
       std::make_unique<FakeCanvasResourceProvider>(
-          SkImageInfo::MakeN32Premul(size.width(), size.height()),
-          RasterModeHint::kPreferGPU, &CanvasElement(),
+          size, RasterModeHint::kPreferGPU, &CanvasElement(),
           CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   CanvasElement().SetResourceProviderForTesting(
@@ -1452,8 +1445,7 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   gfx::Size size2(10, 5);
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(
-          SkImageInfo::MakeN32Premul(size2.width(), size2.height()),
-          RasterModeHint::kPreferGPU, &CanvasElement(),
+          size2, RasterModeHint::kPreferGPU, &CanvasElement(),
           CompositingMode::kSupportsDirectCompositing);
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
@@ -2954,8 +2946,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
 
   gfx::Size size(100, 100);
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // Recorded draw ops are resterized on hibernation. The provider gets replaced
@@ -3176,12 +3167,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   gfx::Size size(100, 100);
   auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
+      size, RasterModeHint::kPreferGPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
   auto cpu_provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferCPU, &CanvasElement(),
+      size, RasterModeHint::kPreferCPU, &CanvasElement(),
       CompositingMode::kSupportsDirectCompositing);
 
   // When disabling acceleration, the raster content is read from the
