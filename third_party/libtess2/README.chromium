@@ -14,3 +14,4 @@ Game and tools oriented refactored version of GLU tesselator.
 Local Modifications:
 
 patches/0000-leq-cfi.patch: Fix CFI (and UBSAN) error with function pointers.
+patches/0001-assert_always_on.patch: Changes assert() to CHECK().

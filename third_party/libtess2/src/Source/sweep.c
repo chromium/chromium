@@ -29,7 +29,7 @@
 ** Author: Eric Veach, July 1994.
 */
 
-#include <assert.h>
+#include "libtess2/tess_assert.h"
 #include <stddef.h>
 #include <setjmp.h>		/* longjmp */
 
@@ -143,7 +143,7 @@ static void DeleteRegion( TESStesselator *tess, ActiveRegion *reg )
 		* deleted with zero winding number (ie. it better not get merged
 		* with a real edge).
 		*/
-		assert( reg->eUp->winding == 0 );
+		tess_assert( reg->eUp->winding == 0 );
 	}
 	reg->eUp->activeRegion = NULL;
 	dictDelete( tess->dict, reg->nodeUp );
@@ -156,7 +156,7 @@ static int FixUpperEdge( TESStesselator *tess, ActiveRegion *reg, TESShalfEdge *
 * Replace an upper edge which needs fixing (see ConnectRightVertex).
 */
 {
-	assert( reg->fixUpperEdge );
+	tess_assert( reg->fixUpperEdge );
 	if ( !tessMeshDelete( tess->mesh, reg->eUp ) ) return 0;
 	reg->fixUpperEdge = FALSE;
 	reg->eUp = newEdge;
@@ -237,7 +237,7 @@ static int IsWindingInside( TESStesselator *tess, int n )
 			return (n >= 2) || (n <= -2);
 	}
 	/*LINTED*/
-	assert( FALSE );
+	tess_assert( FALSE );
 	/*NOTREACHED*/
 
 	return( FALSE );
@@ -346,7 +346,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
 	/* Insert the new right-going edges in the dictionary */
 	e = eFirst;
 	do {
-		assert( VertLeq( e->Org, e->Dst ));
+		tess_assert( VertLeq( e->Org, e->Dst ));
 		AddRegionBelow( tess, regUp, e->Sym );
 		e = e->Onext;
 	} while ( e != eLast );
@@ -388,7 +388,7 @@ static void AddRightEdges( TESStesselator *tess, ActiveRegion *regUp,
 		ePrev = e;
 	}
 	regPrev->dirty = TRUE;
-	assert( regPrev->windingNumber - e->winding == reg->windingNumber );
+	tess_assert( regPrev->windingNumber - e->winding == reg->windingNumber );
 
 	if( cleanUp ) {
 		/* Check for intersections between newly adjacent edges. */
@@ -528,7 +528,7 @@ static int CheckForLeftSplice( TESStesselator *tess, ActiveRegion *regUp )
 	TESShalfEdge *eLo = regLo->eUp;
 	TESShalfEdge *e;
 
-	assert( ! VertEq( eUp->Dst, eLo->Dst ));
+	tess_assert( ! VertEq( eUp->Dst, eLo->Dst ));
 
 	if( VertLeq( eUp->Dst, eLo->Dst )) {
 		if( EdgeSign( eUp->Dst, eLo->Dst, eUp->Org ) < 0 ) return FALSE;
@@ -575,11 +575,11 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
 	TESSvertex isect, *orgMin;
 	TESShalfEdge *e;
 
-	assert( ! VertEq( dstLo, dstUp ));
-	assert( EdgeSign( dstUp, tess->event, orgUp ) <= 0 );
-	assert( EdgeSign( dstLo, tess->event, orgLo ) >= 0 );
-	assert( orgUp != tess->event && orgLo != tess->event );
-	assert( ! regUp->fixUpperEdge && ! regLo->fixUpperEdge );
+	tess_assert( ! VertEq( dstLo, dstUp ));
+	tess_assert( EdgeSign( dstUp, tess->event, orgUp ) <= 0 );
+	tess_assert( EdgeSign( dstLo, tess->event, orgLo ) >= 0 );
+	tess_assert( orgUp != tess->event && orgLo != tess->event );
+	tess_assert( ! regUp->fixUpperEdge && ! regLo->fixUpperEdge );
 
 	if( orgUp == orgLo ) return FALSE;	/* right endpoints are the same */
 
@@ -598,10 +598,10 @@ static int CheckForIntersect( TESStesselator *tess, ActiveRegion *regUp )
 
 	tesedgeIntersect( dstUp, orgUp, dstLo, orgLo, &isect );
 	/* The following properties are guaranteed: */
-	assert( MIN( orgUp->t, dstUp->t ) <= isect.t );
-	assert( isect.t <= MAX( orgLo->t, dstLo->t ));
-	assert( MIN( dstLo->s, dstUp->s ) <= isect.s );
-	assert( isect.s <= MAX( orgLo->s, orgUp->s ));
+	tess_assert( MIN( orgUp->t, dstUp->t ) <= isect.t );
+	tess_assert( isect.t <= MAX( orgLo->t, dstLo->t ));
+	tess_assert( MIN( dstLo->s, dstUp->s ) <= isect.s );
+	tess_assert( isect.s <= MAX( orgLo->s, orgUp->s ));
 
 	if( VertLeq( &isect, tess->event )) {
 		/* The intersection point lies slightly to the left of the sweep line,
@@ -904,7 +904,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
 		/* e->Org is an unprocessed vertex - just combine them, and wait
 		* for e->Org to be pulled from the queue
 		*/
-		assert( TOLERANCE_NONZERO );
+		tess_assert( TOLERANCE_NONZERO );
 		SpliceMergeVertices( tess, e, vEvent->anEdge );
 		return;
 	}
@@ -925,7 +925,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
 	/* vEvent coincides with e->Dst, which has already been processed.
 	* Splice in the additional right-going edges.
 	*/
-	assert( TOLERANCE_NONZERO );
+	tess_assert( TOLERANCE_NONZERO );
 	regUp = TopRightRegion( regUp );
 	reg = RegionBelow( regUp );
 	eTopRight = reg->eUp->Sym;
@@ -934,7 +934,7 @@ static void ConnectLeftDegenerate( TESStesselator *tess,
 		/* Here e->Dst has only a single fixable edge going right.
 		* We can delete it since now we have some real right-going edges.
 		*/
-		assert( eTopLeft != eTopRight );   /* there are some left edges too */
+		tess_assert( eTopLeft != eTopRight );   /* there are some left edges too */
 		DeleteRegion( tess, reg );
 		if ( !tessMeshDelete( tess->mesh, eTopRight ) ) longjmp(tess->env,1);
 		eTopRight = eTopLeft->Oprev;
@@ -1144,10 +1144,10 @@ static void DoneEdgeDict( TESStesselator *tess )
 		* created by ConnectRightVertex().
 		*/
 		if( ! reg->sentinel ) {
-			assert( reg->fixUpperEdge );
-			assert( ++fixedEdges == 1 );
+			tess_assert( reg->fixUpperEdge );
+			tess_assert( ++fixedEdges == 1 );
 		}
-		assert( reg->windingNumber == 0 );
+		tess_assert( reg->windingNumber == 0 );
 		DeleteRegion( tess, reg );
 		/*    tessMeshDelete( reg->eUp );*/
 	}
@@ -1254,7 +1254,7 @@ static int RemoveDegenerateFaces( TESStesselator *tess, TESSmesh *mesh )
 	for( f = mesh->fHead.next; f != &mesh->fHead; f = fNext ) {
 		fNext = f->next;
 		e = f->anEdge;
-		assert( e->Lnext != e );
+		tess_assert( e->Lnext != e );
 
 		if( e->Lnext->Lnext == e ) {
 			/* A face with only two edges */

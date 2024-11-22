@@ -39,4 +39,17 @@ source_set("libtess2") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   configs += [ ":private_config" ]
+
+  deps = [ ":tess_assert" ]
+}
+
+source_set("tess_assert") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "libtess2/tess_assert.cc",
+    "libtess2/tess_assert.h",
+  ]
+
+  deps = [ "//base" ]
 }
