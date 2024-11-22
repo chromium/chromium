@@ -39,9 +39,8 @@ float g_device_scale_factor_for_testing = 0.0;
 
 void AppendDataToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
-    const char* data,
-    size_t data_length) {
-  request_body->AppendBytes(data, data_length);
+    base::span<const uint8_t> data) {
+  request_body->AppendCopyOfBytes(data);
 }
 
 void AppendFileRangeToRequestBody(
@@ -432,9 +431,7 @@ void ReadResourceRequestBody(
     if (type == HTTPBodyElementType::kTypeData) {
       std::optional<base::span<const uint8_t>> data = ReadData(obj);
       if (data) {
-        AppendDataToRequestBody(request_body,
-                                reinterpret_cast<const char*>(data->data()),
-                                data->size());
+        AppendDataToRequestBody(request_body, *data);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
       std::optional<std::u16string> file_path = ReadString(obj);
@@ -709,10 +706,7 @@ void ReadResourceRequestBody(
     mojom::Element::Tag tag = element->which();
     switch (tag) {
       case mojom::Element::Tag::kBytes:
-        AppendDataToRequestBody(
-            request_body,
-            reinterpret_cast<const char*>(element->get_bytes().data()),
-            element->get_bytes().size());
+        AppendDataToRequestBody(request_body, element->get_bytes());
         break;
       case mojom::Element::Tag::kFile: {
         mojom::File* file = element->get_file().get();
