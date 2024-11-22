@@ -843,16 +843,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
   TestSimplePlayback("bear-av1-cenc.webm");
 }
 
-// Crashes on Win only.  <http://crbug.com/380434285>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
-  DISABLED_Playback_VideoOnly_WebM_AV1_10bit
-#else
-#define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
-  Playback_VideoOnly_WebM_AV1_10bit
-#endif  // BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_WebM_AV1_10bit) {
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.webm");
 }
 
@@ -860,15 +851,8 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest, Playback_VideoOnly_MP4_AV1) {
   TestSimplePlayback("bear-av1-cenc.mp4");
 }
 
-// Crashes on Win only.  <http://crbug.com/380434285>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Playback_VideoOnly_MP4_AV1_10bit \
-  DISABLED_Playback_VideoOnly_MP4_AV1_10bit
-#else
-#define MAYBE_Playback_VideoOnly_MP4_AV1_10bit Playback_VideoOnly_MP4_AV1_10bit
-#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       MAYBE_Playback_VideoOnly_MP4_AV1_10bit) {
+                       Playback_VideoOnly_MP4_AV1_10bit) {
   TestSimplePlayback("bear-av1-320x180-10bit-cenc.mp4");
 }
 

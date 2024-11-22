@@ -590,13 +590,7 @@ class MSEChangeTypeTest
   }
 };
 
-// Crashes on Win only.  <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PlayBackToBack DISABLED_PlayBackToBack
-#else
-#define MAYBE_PlayBackToBack PlayBackToBack
-#endif  // BUILDFLAG(IS_WIN)
-TEST_P(MSEChangeTypeTest, MAYBE_PlayBackToBack) {
+TEST_P(MSEChangeTypeTest, PlayBackToBack) {
   PlayBackToBack();
 }
 
@@ -1390,15 +1384,7 @@ TEST_F(PipelineIntegrationTest, MSEBasicPlaybackLive) {
 }
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-
-// Crashes on Win only.  <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MSE_BasicPlayback_AV1_WebM DISABLED_MSE_BasicPlayback_AV1_WebM
-#else
-#define MAYBE_MSE_BasicPlayback_AV1_WebM MSE_BasicPlayback_AV1_WebM
-#endif  // BUILDFLAG(IS_WIN)
-
-TEST_F(PipelineIntegrationTest, MAYBE_MSE_BasicPlayback_AV1_WebM) {
+TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_AV1_WebM) {
   TestMediaSource source("bear-av1.webm", 18898);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1415,15 +1401,7 @@ TEST_F(PipelineIntegrationTest, MAYBE_MSE_BasicPlayback_AV1_WebM) {
   Stop();
 }
 
-// Crashes on Win only.  <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MSE_BasicPlayback_AV1_10bit_WebM \
-  DISABLED_MSE_BasicPlayback_AV1_10bit_WebM
-#else
-#define MAYBE_MSE_BasicPlayback_AV1_10bit_WebM MSE_BasicPlayback_AV1_10bit_WebM
-#endif  // BUILDFLAG(IS_WIN)
-
-TEST_F(PipelineIntegrationTest, MAYBE_MSE_BasicPlayback_AV1_10bit_WebM) {
+TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_AV1_10bit_WebM) {
   TestMediaSource source("bear-av1-320x180-10bit.webm", 19076);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1440,6 +1418,8 @@ TEST_F(PipelineIntegrationTest, MAYBE_MSE_BasicPlayback_AV1_10bit_WebM) {
   EXPECT_EQ(last_video_frame_format_, PIXEL_FORMAT_YUV420P10);
   Stop();
 }
+
+#endif
 
 TEST_F(PipelineIntegrationTest, MSEBasicPlaybackVP9WebM) {
   TestMediaSource source("bear-vp9.webm", 67504);
@@ -1492,13 +1472,8 @@ TEST_F(PipelineIntegrationTest, MSEBasicPlaybackVP8AWebM) {
   Stop();
 }
 
-// Crashes on Win only.  <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MSE_ConfigChange_AV1_WebM DISABLED_MSE_ConfigChange_AV1_WebM
-#else
-#define MAYBE_MSE_ConfigChange_AV1_WebM MSE_ConfigChange_AV1_WebM
-#endif  // BUILDFLAG(IS_WIN)
-TEST_F(PipelineIntegrationTest, MAYBE_MSE_ConfigChange_AV1_WebM) {
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+TEST_F(PipelineIntegrationTest, MSE_ConfigChange_AV1_WebM) {
   TestMediaSource source("bear-av1-480x360.webm", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
 
@@ -1815,14 +1790,7 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_AV1_Audio_OPUS_MP4) {
   Stop();
 }
 
-// Crashes on Win only.  <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MSE_BasicPlayback_AV1_10bit_MP4 \
-  DISABLED_MSE_BasicPlayback_AV1_10bit_MP4
-#else
-#define MAYBE_MSE_BasicPlayback_AV1_10bit_MP4 MSE_BasicPlayback_AV1_10bit_MP4
-#endif  // BUILDFLAG(IS_WIN)
-TEST_F(PipelineIntegrationTest, MAYBE_MSE_BasicPlayback_AV1_10bit_MP4) {
+TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_AV1_10bit_MP4) {
   TestMediaSource source("bear-av1-320x180-10bit.mp4", 19658);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
   source.EndOfStream();
@@ -1894,28 +1862,13 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHashedFlacInMp4) {
 }
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-// Crashes on Win only. <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BasicPlayback_VideoOnly_AV1_Mp4 \
-  DISABLED_BasicPlayback_VideoOnly_AV1_Mp4
-#else
-#define MAYBE_BasicPlayback_VideoOnly_AV1_Mp4 BasicPlayback_VideoOnly_AV1_Mp4
-#endif  // BUILDFLAG(IS_WIN)
-TEST_F(PipelineIntegrationTest, MAYBE_BasicPlayback_VideoOnly_AV1_Mp4) {
+TEST_F(PipelineIntegrationTest, BasicPlayback_VideoOnly_AV1_Mp4) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-av1.mp4"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-// Crashes on Win only. <http://crbug.com/380429131>
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_BasicPlayback_VideoOnly_MonoAV1_Mp4 \
-  DISABLED_BasicPlayback_VideoOnly_MonoAV1_Mp4
-#else
-#define MAYBE_BasicPlayback_VideoOnly_MonoAV1_Mp4 \
-  BasicPlayback_VideoOnly_MonoAV1_Mp4
-#endif  // BUILDFLAG(IS_WIN)
-TEST_F(PipelineIntegrationTest, MAYBE_BasicPlayback_VideoOnly_MonoAV1_Mp4) {
+TEST_F(PipelineIntegrationTest, BasicPlayback_VideoOnly_MonoAV1_Mp4) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-mono-av1.mp4"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
