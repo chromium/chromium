@@ -266,6 +266,10 @@ Task::Type TaskManagerImpl::GetType(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetType();
 }
 
+Task::SubType TaskManagerImpl::GetSubType(TaskId task_id) const {
+  return GetTaskByTaskId(task_id)->GetSubType();
+}
+
 SessionID TaskManagerImpl::GetTabId(TaskId task_id) const {
   return GetTaskByTaskId(task_id)->GetTabId();
 }

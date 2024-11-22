@@ -50,6 +50,7 @@ class TestTaskManager : public TaskManagerInterface {
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
   Task::Type GetType(TaskId task_id) const override;
+  Task::SubType GetSubType(TaskId task_id) const override;
   SessionID GetTabId(TaskId task_id) const override;
   int GetChildProcessUniqueId(TaskId task_id) const override;
   void GetTerminationStatus(TaskId task_id,

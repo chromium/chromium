@@ -50,6 +50,7 @@ class ChildProcessTask : public Task {
   void Refresh(const base::TimeDelta& update_interval,
                int64_t refresh_flags) override;
   Type GetType() const override;
+  SubType GetSubType() const override;
   int GetChildProcessUniqueID() const override;
   int64_t GetV8MemoryAllocated() const override;
   int64_t GetV8MemoryUsed() const override;
@@ -72,6 +73,9 @@ class ChildProcessTask : public Task {
   // The type of the child process. See |content::ProcessType| and
   // |NaClTrustedProcessType|.
   const int process_type_;
+
+  // The subtype of the child process.
+  const ProcessSubtype process_subtype_;
 
   // Depending on the |process_type_|, determines whether this task uses V8
   // memory or not.

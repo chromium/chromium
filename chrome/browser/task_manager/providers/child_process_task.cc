@@ -174,6 +174,7 @@ ChildProcessTask::ChildProcessTask(const content::ChildProcessData& data,
       v8_memory_used_(-1),
       unique_child_process_id_(data.id),
       process_type_(data.process_type),
+      process_subtype_(subtype),
       uses_v8_memory_(UsesV8Memory(process_type_)) {}
 
 ChildProcessTask::~ChildProcessTask() {
@@ -222,6 +223,17 @@ Task::Type ChildProcessTask::GetType() const {
       return Task::RENDERER;
     default:
       return Task::UNKNOWN;
+  }
+}
+
+Task::SubType ChildProcessTask::GetSubType() const {
+  switch (process_subtype_) {
+    case ChildProcessTask::ProcessSubtype::kSpareRenderProcess:
+      return Task::SubType::kSpareRenderer;
+    case ChildProcessTask::ProcessSubtype::kUnknownRenderProcess:
+      return Task::SubType::kUnknownRenderer;
+    default:
+      return Task::SubType::kNoSubType;
   }
 }
 
