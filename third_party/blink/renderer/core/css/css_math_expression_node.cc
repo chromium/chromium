@@ -3486,6 +3486,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAtan2:
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
+      case CSSValueID::kCalcSize:
         return true;
       case CSSValueID::kPow:
       case CSSValueID::kSqrt:
@@ -3504,8 +3505,6 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kMediaProgress:
       case CSSValueID::kContainerProgress:
         return RuntimeEnabledFeatures::CSSProgressNotationEnabled();
-      case CSSValueID::kCalcSize:
-        return RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled();
       case CSSValueID::kSiblingCount:
       case CSSValueID::kSiblingIndex:
         return RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled();
@@ -3705,8 +3704,6 @@ class CSSMathExpressionNodeParser {
       return nullptr;
     }
 
-    DCHECK(RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled());
-
     stream.ConsumeWhitespace();
 
     CSSMathExpressionNode* basis = nullptr;
@@ -3788,12 +3785,10 @@ class CSSMathExpressionNodeParser {
         return progress;
       }
     }
-    if (RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
-      if (CSSMathExpressionNode* calc_size =
-              ParseCalcSize(function_id, stream, state)) {
-        context_.Count(WebFeature::kCSSCalcSizeFunction);
-        return calc_size;
-      }
+    if (CSSMathExpressionNode* calc_size =
+            ParseCalcSize(function_id, stream, state)) {
+      context_.Count(WebFeature::kCSSCalcSizeFunction);
+      return calc_size;
     }
     if (RuntimeEnabledFeatures::CSSSiblingFunctionsEnabled()) {
       if (CSSMathExpressionNode* sibling_function =

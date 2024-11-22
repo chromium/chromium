@@ -976,13 +976,6 @@
       name: "CSSCalcSimplificationAndSerialization",
     },
     {
-      // https://chromestatus.com/feature/5196713071738880
-      // Shipped in M129.  Should be safe to remove the flag a bit after
-      // M129 has shipped to stable.
-      name: "CSSCalcSizeFunction",
-      status: "stable",
-    },
-    {
       // https://chromestatus.com/feature/5082469066604544
       name: "CSSCaretAnimation",
       status: "experimental",

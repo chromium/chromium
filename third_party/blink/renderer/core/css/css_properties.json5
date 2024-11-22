@@ -3483,7 +3483,6 @@
       typedom_types: ["Keyword"],
       default_value: "numeric-only",
       invalidate: [],
-      runtime_flag: "CSSCalcSizeFunction",
     },
     {
       name: "isolation",

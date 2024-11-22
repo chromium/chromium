@@ -136,9 +136,6 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(
     float zoom,
     std::optional<EInterpolateSize> interpolate_size) {
   if (!length.IsSpecified()) {
-    if (!RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
-      return nullptr;
-    }
     CSSValueID keyword = LengthTypeToCSSValueID(length.GetType());
     if (keyword == CSSValueID::kInvalid ||
         !LengthPropertyFunctions::CanAnimateKeyword(property, keyword)) {
