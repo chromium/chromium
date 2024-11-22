@@ -17,6 +17,9 @@
   std::vector<GURL> _URLs;
   ApplicationModeRequestStatus _applicationModeRequestStatus;
 
+  // The mode in which the tab must be opened. Defaults to UNDETERMINED.
+  ApplicationModeForTabOpening _applicationMode;
+
   // Whether the application mode is forced or not (for example incognito mode
   // or regular mode were forced based on the profile prefs).
   BOOL _forceApplicationMode;
@@ -28,7 +31,6 @@
 @synthesize externalURLParams = _externalURLParams;
 @synthesize inputURLs = _inputURLs;
 @synthesize postOpeningAction = _postOpeningAction;
-@synthesize applicationMode = _applicationMode;
 // TODO(crbug.com/40106317): Remove this stub.
 @synthesize completePaymentRequest = _completePaymentRequest;
 @synthesize textQuery = _textQuery;
@@ -81,7 +83,7 @@
   NSMutableString* description =
       [NSMutableString stringWithFormat:@"AppStartupParameters: %s",
                                         _externalURL.spec().c_str()];
-  if (self.applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
+  if (_applicationMode == ApplicationModeForTabOpening::INCOGNITO) {
     [description appendString:@", should launch in incognito"];
   }
 
@@ -191,7 +193,7 @@
 - (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block {
   switch (_applicationModeRequestStatus) {
     case ApplicationModeRequestStatus::kAvailable:
-      block(self.applicationMode);
+      block(_applicationMode);
       break;
     case ApplicationModeRequestStatus::kRequested:
       NOTREACHED();
@@ -222,6 +224,10 @@
   }
   _applicationMode = applicationMode;
   _forceApplicationMode = forceApplicationMode;
+}
+
+- (ApplicationModeForTabOpening)applicationMode {
+  return _applicationMode;
 }
 
 @end

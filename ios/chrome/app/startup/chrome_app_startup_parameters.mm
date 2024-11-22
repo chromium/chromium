@@ -464,7 +464,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
            declaredSourceApp:appID
              secureSourceApp:nil
                  completeURL:completeURL
-             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+             applicationMode:mode
         forceApplicationMode:forceApplicationMode];
     params.openedWithURL = YES;
     params.openedViaFirstPartyScheme =

@@ -95,8 +95,6 @@ class GURL;
 // meant to be opened in new tabs automatically.
 @property(nonatomic, readwrite, strong) NSArray<NSURL*>* inputURLs;
 
-// The mode in which the tab must be opened. Defaults to UNDETERMINED.
-@property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;
 // Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)
     TabOpeningPostOpeningAction postOpeningAction;
@@ -142,6 +140,10 @@ class GURL;
 // `forceApplicationMode` is YES.
 - (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
       forceApplicationMode:(BOOL)forceApplicationMode;
+
+// A temporary getter for the `applicationMode`. Note: This getter will be
+// removed once the async version is fully launched.
+- (ApplicationModeForTabOpening)applicationMode;
 
 @end
 

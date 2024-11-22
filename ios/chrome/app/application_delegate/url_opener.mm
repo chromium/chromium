@@ -48,7 +48,6 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                sourceApplication:sourceApplication
                  applicationMode:ApplicationModeForTabOpening::NORMAL
             forceApplicationMode:YES];
-    params.applicationMode = ApplicationModeForTabOpening::NORMAL;
 
   } else if (IsIncognitoModeForced(prefService)) {
     params = [ChromeAppStartupParameters
@@ -56,7 +55,6 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
                sourceApplication:sourceApplication
                  applicationMode:ApplicationModeForTabOpening::INCOGNITO
             forceApplicationMode:YES];
-    params.applicationMode = ApplicationModeForTabOpening::INCOGNITO;
   } else {
     params = [ChromeAppStartupParameters
         startupParametersWithURL:URL
@@ -111,13 +109,13 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       }
       UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(gurl, virtualURL);
 
-      ApplicationModeForTabOpening targetMode = params.applicationMode;
+      ApplicationModeForTabOpening targetMode = [params applicationMode];
       // If the call is coming from the app, it should be opened in the current
       // mode to avoid changing mode.
       if (callerApp == CALLER_APP_GOOGLE_CHROME)
         targetMode = ApplicationModeForTabOpening::CURRENT;
 
-      if (params.applicationMode != ApplicationModeForTabOpening::INCOGNITO &&
+      if ([params applicationMode] != ApplicationModeForTabOpening::INCOGNITO &&
           [tabOpener URLIsOpenedInRegularMode:urlLoadParams.web_params.url]) {
         // Record metric.
       }

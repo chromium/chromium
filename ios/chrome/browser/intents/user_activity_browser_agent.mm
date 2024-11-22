@@ -816,7 +816,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
 void UserActivityBrowserAgent::OpenMultipleTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BOOL incognito_mode =
-      connection_information_.startupParameters.applicationMode ==
+      [connection_information_.startupParameters applicationMode] ==
       ApplicationModeForTabOpening::INCOGNITO;
   BOOL dismiss_omnibox = [[connection_information_ startupParameters]
                              postOpeningAction] != FOCUS_OMNIBOX;
