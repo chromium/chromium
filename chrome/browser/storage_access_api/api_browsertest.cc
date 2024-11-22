@@ -62,7 +62,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
-#include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -568,9 +568,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   void OpenConnectToPage(content::RenderFrameHost* frame,
-                         const net::SpawnedTestServer& wss_server) {
-    std::string query = base::StrCat(
-        {"url=", wss_server.GetURL(kHostB, "echo-request-headers").spec()});
+                         const net::EmbeddedTestServer& wss_server) {
+    std::string query =
+        base::StrCat({"url=", net::test_server::GetWebSocketURL(
+                                  wss_server, kHostB, "/echo-request-headers")
+                                  .spec()});
     GURL::Replacements replacements;
     replacements.SetQueryStr(query);
 
@@ -1800,11 +1802,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
                        WebsocketRequestsUseStorageAccessGrants) {
-  net::SpawnedTestServer wss_server(
-      net::SpawnedTestServer::TYPE_WSS,
-      net::SpawnedTestServer::SSLOptions(
-          net::SpawnedTestServer::SSLOptions::CERT_TEST_NAMES),
-      net::GetWebSocketTestDataDirectory());
+  net::EmbeddedTestServer wss_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  wss_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  net::test_server::InstallDefaultWebSocketHandlers(&wss_server);
+
   ASSERT_TRUE(wss_server.Start());
 
   SetBlockThirdPartyCookies(true);
