@@ -615,4 +615,16 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     "sanity/screen-details-pixel-ratio-and-color-depth.js",
     "--screen-info={ label='Screen' devicePixelRatio=3.0 colorDepth=32 }")
 
+// https://crbug.com/380313546
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WindowOpenOnSecondaryScreen DISABLED_WindowOpenOnSecondaryScreen
+#else
+#define MAYBE_WindowOpenOnSecondaryScreen WindowOpenOnSecondaryScreen
+#endif
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_WindowOpenOnSecondaryScreen,
+    "sanity/window-open-on-secondary-screen.js",
+    "--screen-info={ label='1st screen' }{ label='2nd screen' }")
+
 }  // namespace headless

@@ -60,13 +60,15 @@ void HeadlessBrowserImpl::PlatformSetWebContentsBounds(
   web_contents->window_tree_host()->SetBoundsInPixels(new_host_bounds);
   web_contents->window_tree_host()->window()->SetBounds(new_host_bounds);
 
-  gfx::NativeView native_view = web_contents->web_contents()->GetNativeView();
-  native_view->SetBounds(bounds);
+  if (gfx::NativeView native_view =
+          web_contents->web_contents()->GetNativeView()) {
+    native_view->SetBounds(bounds);
+  }
 
-  content::RenderWidgetHostView* host_view =
-      web_contents->web_contents()->GetRenderWidgetHostView();
-  if (host_view)
-    host_view->SetSize(bounds.size());
+  if (content::RenderWidgetHostView* host_view =
+          web_contents->web_contents()->GetRenderWidgetHostView()) {
+    host_view->SetBounds(bounds);
+  }
 }
 
 ui::Compositor* HeadlessBrowserImpl::PlatformGetCompositor(

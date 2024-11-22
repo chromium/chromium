@@ -7,8 +7,14 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "headless/lib/browser/headless_screen_info.h"
+#include "ui/display/display_finder.h"
+#include "ui/display/display_list.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
 
 namespace headless {
 
@@ -41,6 +47,23 @@ gfx::NativeWindow HeadlessScreen::GetLocalProcessWindowAtPoint(
 
 display::Display HeadlessScreen::GetDisplayNearestWindow(
     gfx::NativeWindow window) const {
+  // Mac always passes null gfx::NativeWindow, see https://crbug.com/380313546,
+  // so this method currently only returns primary display on Macs.
+#if defined(USE_AURA)
+  if (window) {
+    const gfx::Rect bounds = window->bounds();
+    const display::Display* nearest_display =
+        display::FindDisplayWithBiggestIntersection(display_list().displays(),
+                                                    bounds);
+    if (!nearest_display) {
+      nearest_display = display::FindDisplayNearestPoint(
+          display_list().displays(), bounds.CenterPoint());
+    }
+    if (nearest_display) {
+      return *nearest_display;
+    }
+  }
+#endif
   return GetPrimaryDisplay();
 }
 
