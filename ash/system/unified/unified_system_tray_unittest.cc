@@ -7,6 +7,8 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
@@ -930,6 +932,48 @@ TEST_F(PowerTrayViewTest, AccessibleName) {
   EXPECT_EQ(
       data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       PowerStatus::Get()->GetAccessibleNameString(/* full_description*/ true));
+}
+
+// Tests that the bubble bounds are set correctly when the virtual keyboard is
+// shown/hidden.
+TEST_P(UnifiedSystemTrayTest, VirtualKeyboardBubbleLayout) {
+  // Set a large enough screen size.
+  UpdateDisplay("1600x900");
+
+  // Start tablet mode and wait until display mode is updated.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+
+  KeyboardController* keyboard_controller = KeyboardController::Get();
+  keyboard_controller->SetEnableFlag(
+      keyboard::KeyboardEnableFlag::kShelfEnabled);
+  // The keyboard needs to be in a loaded state before being shown.
+  ASSERT_TRUE(keyboard::test::WaitUntilLoaded());
+
+  // Open the QS bubble.
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  auto* bubble_view = tray->bubble()->GetBubbleView();
+  tray->bubble()->UpdateBubble();
+
+  // Verify that the keyboard isn't visible.
+  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
+  gfx::Rect initial_bounds = bubble_view->GetBoundsInScreen();
+
+  // Show the virtual keyboard and verify the bounds of the bubble have changed.
+  keyboard_controller->ShowKeyboard();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(keyboard_controller->IsKeyboardVisible());
+  EXPECT_NE(bubble_view->GetBoundsInScreen(), initial_bounds);
+
+  // Hide the virtual keyboard and verify that the bubble bounds have been
+  // restored.
+  keyboard_controller->HideKeyboard(HideReason::kSystem);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
+  EXPECT_EQ(bubble_view->GetBoundsInScreen(), initial_bounds);
+
+  tray->CloseBubble();
 }
 
 }  // namespace ash

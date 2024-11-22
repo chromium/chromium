@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
@@ -88,6 +89,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
     unified_system_tray_->NotifyLeavingCalendarView();
   }
 
+  KeyboardController::Get()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
@@ -116,6 +118,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
 void UnifiedSystemTrayBubble::InitializeObservers() {
   unified_system_tray_->shelf()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
+  KeyboardController::Get()->AddObserver(this);
 
   CHECK(bubble_widget_);
   CHECK(bubble_view_);
@@ -251,6 +254,15 @@ void UnifiedSystemTrayBubble::OnTabletPhysicalStateChanged() {
 void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
     ShelfAutoHideState new_state) {
   UpdateBubbleBounds();
+}
+
+void UnifiedSystemTrayBubble::OnKeyboardVisibilityChanged(
+    const bool is_visible) {
+  // When keyboard visibility changes, delay updating the bubble bounds until
+  // after all the keyboard changes have been processed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&UnifiedSystemTrayBubble::UpdateBubbleBounds,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleHeight(bool is_showing_detiled_view) {
