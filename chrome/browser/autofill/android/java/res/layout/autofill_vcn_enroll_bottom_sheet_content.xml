@@ -105,6 +105,7 @@ found in the LICENSE file.
                 <!-- "Virtual card" label -->
                 <TextView
                     android:id="@+id/card_description"
+                    android:text="@string/autofill_virtual_card_entry_prefix"
                     android:layout_below="@id/card_label"
                     android:layout_toEndOf="@id/issuer_icon"
                     android:layout_height="wrap_content"
@@ -177,7 +178,8 @@ found in the LICENSE file.
                 android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_large"
                 android:layout_marginBottom="@dimen/min_touch_target_size"
                 android:accessibilityLiveRegion="1"
-                android:visibility="gone">
+                android:visibility="gone"
+                android:contentDescription="@string/autofill_virtual_card_enroll_loading_throbber_accessible_name">
                 <!-- Loading spinner. -->
                 <org.chromium.ui.widget.LoadingView
                     android:id="@+id/loading_view"

@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
@@ -63,6 +64,13 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
 public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpener {
+    private static final int CARD_ACCESSIBILITY_STRING_RESOURCE =
+            R.string.autofill_virtual_card_container_accessibility_description;
+    private static final int LOADING_ACCESSIBILITY_STRING_RESOURCE =
+            R.string.autofill_virtual_card_enroll_loading_throbber_accessible_name;
+    private static final int DESCRIPTION_STRING_RESOURCE =
+            R.string.autofill_virtual_card_entry_prefix;
+
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -219,16 +227,13 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     @Test
     @SmallTest
     public void testCardContainerAccessibilityDescription() {
-        ReadableObjectPropertyKey<String> descriptionProperty =
-                AutofillVcnEnrollBottomSheetProperties.CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION;
+        ReadableObjectPropertyKey<String> cardLabelProperty =
+                AutofillVcnEnrollBottomSheetProperties.CARD_LABEL;
 
-        bind(mModelBuilder.with(descriptionProperty, ""));
-        assertThat(String.valueOf(mView.mCardContainer.getContentDescription()), isEmptyString());
-
-        bind(mModelBuilder.with(descriptionProperty, "Content description"));
+        bind(mModelBuilder.with(cardLabelProperty, "Card Label"));
         assertThat(
                 String.valueOf(mView.mCardContainer.getContentDescription()),
-                equalTo("Content description"));
+                equalTo("Card Label, virtual card"));
     }
 
     @Test
@@ -335,8 +340,9 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     @Test
     @SmallTest
     public void testCardDescription() {
-        runTextViewTest(
-                mView.mCardDescription, AutofillVcnEnrollBottomSheetProperties.CARD_DESCRIPTION);
+        assertThat(
+                String.valueOf(mView.mCardDescription.getText()),
+                equalTo(sActivity.getString(DESCRIPTION_STRING_RESOURCE)));
     }
 
     private void runTextViewTest(TextView view, ReadableObjectPropertyKey<String> property) {
@@ -483,17 +489,8 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpe
     @Test
     @SmallTest
     public void testLoadingAccessibilityDescription() {
-        ReadableObjectPropertyKey<String> loadingDescription =
-                AutofillVcnEnrollBottomSheetProperties.LOADING_DESCRIPTION;
-
-        bind(mModelBuilder.with(loadingDescription, ""));
         assertThat(
                 String.valueOf(mView.mLoadingViewContainer.getContentDescription()),
-                isEmptyString());
-
-        bind(mModelBuilder.with(loadingDescription, "Loading description"));
-        assertThat(
-                String.valueOf(mView.mLoadingViewContainer.getContentDescription()),
-                equalTo("Loading description"));
+                equalTo(sActivity.getString(LOADING_ACCESSIBILITY_STRING_RESOURCE)));
     }
 }

@@ -68,21 +68,15 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
       env, java_bridge_, reinterpret_cast<jlong>(this), java_web_contents,
       delegate_->GetMessageText(), delegate_->GetDescriptionText(),
-      delegate_->GetLearnMoreLinkText(),
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
-          delegate_->GetCardLabel()),
-      issuer_icon_bitmap, network_icon_resource_id, std::move(issuer_icon_url),
+      delegate_->GetLearnMoreLinkText(), issuer_icon_bitmap,
+      network_icon_resource_id, std::move(issuer_icon_url),
       delegate_->GetCardLabel(),
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           delegate_->GetGoogleLegalMessage()),
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           delegate_->GetIssuerLegalMessage()),
       delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
-      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_LOADING_THROBBER_ACCESSIBLE_NAME));
+      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
 }
 
 void AutofillVCNEnrollBottomSheetBridge::Hide() {

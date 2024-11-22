@@ -159,23 +159,12 @@ import java.util.function.Function;
     static final ReadableObjectPropertyKey<Description> DESCRIPTION =
             new ReadableObjectPropertyKey<>();
 
-    /**
-     * The accessibility description for the container that displays the issuer icon, card label,
-     * and card description.
-     */
-    static final ReadableObjectPropertyKey<String> CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
-
     /** The icon for the card. */
     static final ReadableObjectPropertyKey<IssuerIcon> ISSUER_ICON =
             new ReadableObjectPropertyKey<>();
 
     /** The label for the card. */
     static final ReadableObjectPropertyKey<String> CARD_LABEL = new ReadableObjectPropertyKey<>();
-
-    /** The description for the card. */
-    static final ReadableObjectPropertyKey<String> CARD_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
 
     /** Legal messages from Google Pay. */
     static final ReadableObjectPropertyKey<LegalMessages> GOOGLE_LEGAL_MESSAGES =
@@ -196,24 +185,17 @@ import java.util.function.Function;
     /** Indicates whether the bottom sheet is in a loading state. */
     static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
 
-    /** The description for the loading view. */
-    static final ReadableObjectPropertyKey<String> LOADING_DESCRIPTION =
-            new ReadableObjectPropertyKey<>();
-
     static final PropertyKey[] ALL_KEYS = {
         MESSAGE_TEXT,
         DESCRIPTION,
-        CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
         ISSUER_ICON,
         ISSUER_ICON_FETCH_CALLBACK,
         CARD_LABEL,
-        CARD_DESCRIPTION,
         GOOGLE_LEGAL_MESSAGES,
         ISSUER_LEGAL_MESSAGES,
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
-        SHOW_LOADING_STATE,
-        LOADING_DESCRIPTION
+        SHOW_LOADING_STATE
     };
 
     /** Do not instantiate. */
