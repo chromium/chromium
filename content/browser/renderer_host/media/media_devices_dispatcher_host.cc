@@ -17,6 +17,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -36,6 +37,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
@@ -448,6 +450,12 @@ void MediaDevicesDispatcherHost::SelectAudioOutput(
     const std::string& hashed_device_id,
     SelectAudioOutputCallback select_audio_output_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!base::FeatureList::IsEnabled(blink::features::kSelectAudioOutput)) {
+    ReceivedBadMessage(render_frame_host_id_.child_id,
+                       bad_message::MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE);
+    return;
+  }
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   auto result = blink::mojom::SelectAudioOutputResult::New();
   result->status = blink::mojom::AudioOutputStatus::kUnknown;

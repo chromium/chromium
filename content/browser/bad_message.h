@@ -347,6 +347,7 @@ enum BadMessageReason {
   RFPH_POST_MESSAGE_PDF_CONTENT_FRAME = 319,
   PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE = 320,
   RFH_INITIATOR_BASE_URL_IS_EMPTY = 321,
+  MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE = 322,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:
