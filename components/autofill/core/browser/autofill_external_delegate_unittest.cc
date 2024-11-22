@@ -322,10 +322,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
   bool should_show_cards_from_account_option_ = false;
 };
 
-}  // namespace
-// The anonymous namespace needs to end here because of `friend`ships between
-// the tests and the production code.
-
 class AutofillExternalDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -2436,19 +2432,17 @@ TEST_F(AutofillExternalDelegateTest, AutocompleteShown_MetricsEmitted) {
                               1);
 }
 
-MATCHER_P(CreditCardMatches, card, "") {
-  return !arg.Compare(card);
-}
-
-// Test that autofill manager will fill the credit card form after user scans a
-// credit card.
-TEST_F(AutofillExternalDelegateTest, FillCreditCardForm) {
-  CreditCard card;
-  test::SetCreditCardInfo(&card, "Alice", "4111", "1", "3000", "1");
-  EXPECT_CALL(manager(),
-              FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, _, _,
-                                          CreditCardMatches(card), _));
-  external_delegate().OnCreditCardScanned(AutofillTriggerSource::kPopup, card);
+TEST_F(AutofillExternalDelegateTest, ScanCreditCard_FillForm) {
+  CreditCard card = test::GetCreditCard();
+  EXPECT_CALL(payments_client(), ScanCreditCard)
+      .WillOnce(
+          [&](MockPaymentsAutofillClient::CreditCardScanCallback callback) {
+            std::move(callback).Run(card);
+          });
+  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
+                             mojom::ActionPersistence::kFill, _, _, card, _));
+  external_delegate().DidAcceptSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kScanCreditCard), {});
 }
 
 TEST_F(AutofillExternalDelegateTest, IgnoreAutocompleteOffForAutofill) {
@@ -2822,5 +2816,7 @@ TEST_F(
       autofill_metrics::SuggestionRankingContext::RelativePosition::kRankedSame,
       0);
 }
+
+}  // namespace
 
 }  // namespace autofill
