@@ -31,8 +31,10 @@ BluetoothGattServiceFloss::BluetoothGattServiceFloss(
 }
 
 BluetoothGattServiceFloss::~BluetoothGattServiceFloss() {
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
+  if (floss::FlossDBusManager::IsInitialized()) {
+    FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+    FlossDBusManager::Get()->GetGattManagerClient()->RemoveServerObserver(this);
+  }
 }
 
 BluetoothAdapterFloss* BluetoothGattServiceFloss::GetAdapter() const {
