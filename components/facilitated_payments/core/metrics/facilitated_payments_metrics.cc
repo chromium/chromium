@@ -161,4 +161,9 @@ void LogUiScreenShown(UiState ui_screen) {
                                 ui_screen);
 }
 
+void LogPixFopSelectorShownLatency(base::TimeDelta latency) {
+  base::UmaHistogramLongTimes(
+      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy", latency);
+}
+
 }  // namespace payments::facilitated

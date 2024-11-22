@@ -1022,6 +1022,31 @@ TEST_F(FacilitatedPaymentsManagerTest, DismissPrompt) {
   EXPECT_EQ(manager_->ui_state_, UiState::kHidden);
 }
 
+// Test that when the Pix FOP selector is shown, its latency is logged.
+TEST_F(FacilitatedPaymentsManagerTest,
+       PixFopSelectorShown_LatencyHistogramLogged) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate Pix code being copied. The latency is computed from this point.
+  manager_->OnPixCodeCopiedToClipboard(GURL("https://example.com/"),
+                                       std::string(),
+                                       ukm::UkmRecorder::GetNewSourceID());
+  // Fully mocked time, does not advance by itself.
+  FastForwardBy(base::Seconds(2));
+  // Simulate that the FOP selector was shown successfully.
+  std::vector<autofill::BankAccount> bank_accounts = {
+      autofill::test::CreatePixBankAccount(100L)};
+  manager_->ShowPixPaymentPrompt(std::move(bank_accounts), base::DoNothing());
+  manager_->OnUiEvent(UiEvent::kNewScreenShown);
+
+  // Verify that when the Pix FOP selector is shown, latency histogram is
+  // logged.
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
+}
+
 class FacilitatedPaymentsManagerTestForUiScreens
     : public FacilitatedPaymentsManagerTest,
       public testing::WithParamInterface<UiState> {
