@@ -20,6 +20,7 @@
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/frame_sorter.h"
+#include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -849,6 +850,65 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {
   // There is one report for tracker id 1 and 2 expected frames (frame 0 and 1).
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(2u, results[1].frames_expected_v3);
+}
+
+// Mock DroppedFrameCounter class in order to test the number of times that
+// frames get backfilled. This is necessary since `WillBeginImplFrame` creates
+// `CompositorFrameReporter`s for backfilled frames which submit to the DFC
+// without a good interim spot to analyze the frame info contents.
+class DroppedFrameCounterMock : public DroppedFrameCounter {
+ public:
+  MOCK_METHOD2(OnEndFrame, void(const viz::BeginFrameArgs&, const FrameInfo&));
+};
+
+TEST_F(FrameSequenceTrackerTest,
+       FrameTrackerSkippedFramesPreservesSmoothThread) {
+  const uint64_t source = 1;
+  uint64_t sequence = 0;
+  const uint64_t kNumFramesSkipped = 5;
+
+  DroppedFrameCounterMock dfc = DroppedFrameCounterMock();
+
+  // Expect that kNumFramesSkipped are backfilled with the appropriate smooth
+  // thread set.
+  EXPECT_CALL(dfc, OnEndFrame(testing::_, testing::_))
+      .Times(kNumFramesSkipped)
+      .WillRepeatedly([=](const viz::BeginFrameArgs& args,
+                          const FrameInfo& frame_info) {
+        EXPECT_EQ(frame_info.final_state, FrameInfo::FrameFinalState::kDropped);
+        EXPECT_EQ(frame_info.scroll_thread,
+                  FrameInfo::SmoothEffectDrivingThread::kCompositor);
+      });
+
+  compositor_frame_reporting_controller_->SetDroppedFrameCounter(&dfc);
+  compositor_frame_reporting_controller_->SetFrameSequenceTrackerCollection(
+      &collection_);
+  auto frame0_args = CreateBeginFrameArgs(source, ++sequence);
+  compositor_frame_reporting_controller_->WillBeginImplFrame(frame0_args);
+  compositor_frame_reporting_controller_->OnFinishImplFrame(
+      frame0_args.frame_id);
+
+  // Starting frame 5 will trigger the callback expectation.
+  auto frame5_args =
+      CreateBeginFrameArgs(source, sequence + kNumFramesSkipped,
+                           base::TimeTicks::Now() /*+ base::Seconds(5)*/);
+  compositor_frame_reporting_controller_->WillBeginImplFrame(frame5_args);
+  // Clear the expectation before simulating finishing the frame.
+  testing::Mock::VerifyAndClearExpectations(&dfc);
+  compositor_frame_reporting_controller_->WillBeginMainFrame(frame5_args);
+  compositor_frame_reporting_controller_->NotifyReadyToCommit(nullptr);
+  compositor_frame_reporting_controller_->WillCommit();
+  compositor_frame_reporting_controller_->DidCommit();
+  compositor_frame_reporting_controller_->WillActivate();
+  compositor_frame_reporting_controller_->DidActivate();
+  SubmitInfo submit_info;
+  compositor_frame_reporting_controller_->DidSubmitCompositorFrame(
+      submit_info, frame5_args.frame_id, frame5_args.frame_id);
+  compositor_frame_reporting_controller_->OnFinishImplFrame(
+      frame5_args.frame_id);
+  viz::FrameTimingDetails ftd;
+  compositor_frame_reporting_controller_->DidPresentCompositorFrame(
+      submit_info.frame_token, ftd);
 }
 
 }  // namespace cc

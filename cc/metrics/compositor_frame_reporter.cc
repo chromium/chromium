@@ -610,8 +610,6 @@ CompositorFrameReporter::CompositorFrameReporter(
       global_trackers_(trackers) {
   DCHECK(global_trackers_.dropped_frame_counter);
   global_trackers_.dropped_frame_counter->OnBeginFrame(args);
-  DCHECK(IsScrollActive(active_trackers_) ||
-         scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kUnknown);
   if (scrolling_thread_ == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
     DCHECK(smooth_thread_ == SmoothThread::kSmoothCompositor ||
            smooth_thread_ == SmoothThread::kSmoothBoth);
