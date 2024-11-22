@@ -200,3 +200,15 @@ TEST_F(PlusAddressBottomSheetMediatorTest,
                 "PlusAddresses.AffiliationErrorFilledExisting"),
             1);
 }
+
+// Ensure the consumer is notified when the user tries again to confirm.
+TEST_F(PlusAddressBottomSheetMediatorTest, DidSelectTryAgainToConfirm) {
+  base::UserActionTester user_action_tester;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ didSelectTryAgainToConfirm]);
+  [mediator() didSelectTryAgainToConfirm];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.CreateErrorTryAgainClicked"),
+            1);
+}

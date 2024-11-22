@@ -156,6 +156,8 @@ enum class PlusAddressAction {
 }
 
 - (void)didSelectTryAgainToConfirm {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.CreateErrorTryAgainClicked"));
   [_consumer didSelectTryAgainToConfirm];
 }
 
