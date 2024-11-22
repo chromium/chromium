@@ -11059,6 +11059,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(device::kWebAuthnEnclaveAuthenticator,
                                     kWebAuthnEnclaveAuthenticatorVariations,
                                     "WebAuthenticationEnclaveAuthenticator")},
+    {"web-authentication-passkey-upgrade",
+     flag_descriptions::kWebAuthnPasskeyUpgradeName,
+     flag_descriptions::kWebAuthnPasskeyUpgradeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(device::kWebAuthnPasskeyUpgrade)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

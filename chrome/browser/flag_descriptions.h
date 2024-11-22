@@ -2268,6 +2268,8 @@ extern const char kWallpaperSearchSettingsVisibilityDescription[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kWebAuthnEnclaveAuthenticatorName[];
 extern const char kWebAuthnEnclaveAuthenticatorDescription[];
+extern const char kWebAuthnPasskeyUpgradeName[];
+extern const char kWebAuthnPasskeyUpgradeDescription[];
 #endif
 
 extern const char kWebBluetoothName[];

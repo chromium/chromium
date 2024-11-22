@@ -3947,6 +3947,12 @@ const char kWebAuthnEnclaveAuthenticatorName[] =
 const char kWebAuthnEnclaveAuthenticatorDescription[] =
     "Allow users to create and use Google Password Manager passkeys using a "
     "cloud-based authenticator service.";
+const char kWebAuthnPasskeyUpgradeName[] =
+    "Enable automatic passkey upgrades in Google Password Manager";
+const char kWebAuthnPasskeyUpgradeDescription[] =
+    "Enable the WebAuthn Conditional Create feature and let websites "
+    "automatically create passkeys in GPM if there is a matching password "
+    "credential for the same user.";
 #endif
 
 const char kWebBluetoothName[] = "Web Bluetooth";

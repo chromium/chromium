@@ -23567,6 +23567,7 @@ from previous Chrome versions.
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1307402891" label="ReadAloud:enabled"/>
   <int value="1308474501" label="SiteInstanceGroupsForDataUrls:disabled"/>
+  <int value="1308512803" label="WebAuthenticationPasskeyUpgrade:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>
   <int value="1308795362" label="HelpAppAppsList:enabled"/>
@@ -25422,6 +25423,7 @@ from previous Chrome versions.
   <int value="2035351945" label="lacros-selection-policy-ignore"/>
   <int value="2035415906" label="Win11StyleMenus:enabled"/>
   <int value="2035524582" label="WebViewRecordAppDataDirectorySize:disabled"/>
+  <int value="2036196106" label="WebAuthenticationPasskeyUpgrade:enabled"/>
   <int value="2036398832" label="AiSettingsPageRefresh:disabled"/>
   <int value="2037407406" label="CrostiniQtImeSupport:disabled"/>
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>

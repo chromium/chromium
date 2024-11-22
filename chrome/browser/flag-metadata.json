@@ -9262,6 +9262,14 @@
     "expiry_milestone": 132
   },
   {
+    "name": "web-authentication-passkey-upgrade",
+    "owners": [
+      "martinkr@google.com",
+      "chrome-webauthn@google.com"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "web-authentication-permit-enterprise-attestation",
     "owners": [ "chrome-webauthn@google.com" ],
     // This flag lets end users enroll security keys with an enterprise that
