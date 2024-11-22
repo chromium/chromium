@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -50,7 +51,6 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -301,10 +301,8 @@ class CreditCardSaveManagerTest : public testing::Test {
         std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
     credit_card_save_manager_ = credit_card_save_manager.get();
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
-    autofill_client_.set_test_form_data_importer(
-        std::make_unique<TestFormDataImporter>(
-            &autofill_client_, std::move(credit_card_save_manager),
-            /*iban_save_manager=*/nullptr));
+    test_api(*autofill_client_.GetFormDataImporter())
+        .set_credit_card_save_manager(std::move(credit_card_save_manager));
     autofill_client_.GetStrikeDatabase();
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());

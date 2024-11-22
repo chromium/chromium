@@ -978,8 +978,6 @@ static_library("test_support") {
     "test_browser_autofill_manager.cc",
     "test_browser_autofill_manager.h",
     "test_event_waiter.h",
-    "test_form_data_importer.cc",
-    "test_form_data_importer.h",
     "test_form_filler.cc",
     "test_form_filler.h",
     "test_payments_data_manager.cc",

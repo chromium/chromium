@@ -41,7 +41,6 @@
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
-#include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -182,9 +181,9 @@ class TestAutofillClientTemplate : public T {
 
   FormDataImporter* GetFormDataImporter() override {
     if (!form_data_importer_) {
-      set_test_form_data_importer(std::make_unique<FormDataImporter>(
+      form_data_importer_ = std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*history_service=*/nullptr));
+          /*history_service=*/nullptr);
     }
     return form_data_importer_.get();
   }
@@ -457,11 +456,6 @@ class TestAutofillClientTemplate : public T {
   void set_test_strike_database(
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
-  }
-
-  void set_test_form_data_importer(
-      std::unique_ptr<FormDataImporter> form_data_importer) {
-    form_data_importer_ = std::move(form_data_importer);
   }
 
   void set_form_origin(const GURL& url) {

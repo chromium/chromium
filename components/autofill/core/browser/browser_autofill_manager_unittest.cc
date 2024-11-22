@@ -79,7 +79,6 @@
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
@@ -834,10 +833,11 @@ class BrowserAutofillManagerTest : public testing::Test {
     auto credit_card_save_manager =
         std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
-    autofill_client_.set_test_form_data_importer(
-        std::make_unique<TestFormDataImporter>(
-            &autofill_client_, std::move(credit_card_save_manager),
-            std::make_unique<IbanSaveManager>(&autofill_client_)));
+    test_api(form_data_importer())
+        .set_credit_card_save_manager(std::move(credit_card_save_manager));
+    test_api(form_data_importer())
+        .set_iban_save_manager(
+            std::make_unique<IbanSaveManager>(&autofill_client_));
 
     ResetBrowserAutofillManager();
     // By default, if we offer single field form fill, suggestions should be
@@ -1340,9 +1340,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     return static_cast<TestAutofillExternalDelegate*>(
         test_api(*browser_autofill_manager_).external_delegate());
   }
-  TestFormDataImporter& form_data_importer() {
-    return static_cast<TestFormDataImporter&>(
-        *autofill_client_.GetFormDataImporter());
+  FormDataImporter& form_data_importer() {
+    return *autofill_client_.GetFormDataImporter();
   }
   MockSingleFieldFillRouter& single_field_fill_router() {
     return static_cast<MockSingleFieldFillRouter&>(

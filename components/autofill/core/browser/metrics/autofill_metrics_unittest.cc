@@ -57,7 +57,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"

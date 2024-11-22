@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -80,11 +81,9 @@ void AutofillMetricsBaseTest::SetUpHelper() {
       ->set_test_payments_network_interface(
           std::unique_ptr<payments::TestPaymentsNetworkInterface>(
               payments_network_interface));
-  autofill_client_->set_test_form_data_importer(
-      std::make_unique<TestFormDataImporter>(
-          autofill_client_.get(),
-          std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()),
-          /*iban_save_manager=*/nullptr));
+  test_api(*autofill_client_->GetFormDataImporter())
+      .set_credit_card_save_manager(
+          std::make_unique<TestCreditCardSaveManager>(autofill_client_.get()));
   autofill_client_->GetPaymentsAutofillClient()->set_autofill_offer_manager(
       std::make_unique<AutofillOfferManager>(&personal_data()));
 
