@@ -137,8 +137,10 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -5688,12 +5690,16 @@ class DeclarativeNetRequestResourceTypeBrowserTest
 
   void RunTests(const std::vector<TestCase>& test_cases) {
     // Start a web socket test server to test the websocket resource type.
-    net::SpawnedTestServer websocket_test_server(
-        net::SpawnedTestServer::TYPE_WS, net::GetWebSocketTestDataDirectory());
+    net::EmbeddedTestServer websocket_test_server(
+        net::EmbeddedTestServer::TYPE_HTTP);
+
+    net::test_server::InstallDefaultWebSocketHandlers(&websocket_test_server);
+
     ASSERT_TRUE(websocket_test_server.Start());
 
     // The |websocket_url| will echo the message we send to it.
-    GURL websocket_url = websocket_test_server.GetURL("echo-with-no-extension");
+    GURL websocket_url = net::test_server::GetWebSocketURL(
+        websocket_test_server, "/echo-with-no-extension");
 
     auto execute_script = [](content::RenderFrameHost* frame,
                              const std::string& script) {
