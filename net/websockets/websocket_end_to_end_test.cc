@@ -445,7 +445,7 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     event_interface_->WaitForDropChannel();
   }
 
-  void RunEmbeddedBasicSmokeTest(net::EmbeddedTestServer::Type server_type) {
+  void RunBasicSmokeTest(net::EmbeddedTestServer::Type server_type) {
     test_server::EmbeddedTestServer embedded_test_server(server_type);
 
     test_server::InstallDefaultWebSocketHandlers(&embedded_test_server);
@@ -469,18 +469,11 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
 // Basic test of connectivity. If this test fails, nothing else can be expected
 // to work.
 TEST_F(WebSocketEndToEndTest, BasicSmokeTest) {
-  SpawnedTestServer ws_server(SpawnedTestServer::TYPE_WS,
-                              GetWebSocketTestDataDirectory());
-  ASSERT_TRUE(ws_server.Start());
-  EXPECT_TRUE(ConnectAndWait(ws_server.GetURL(kEchoServer)));
+  RunBasicSmokeTest(net::EmbeddedTestServer::TYPE_HTTP);
 }
 
-TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTest) {
-  RunEmbeddedBasicSmokeTest(net::EmbeddedTestServer::TYPE_HTTP);
-}
-
-TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTestSSL) {
-  RunEmbeddedBasicSmokeTest(net::EmbeddedTestServer::TYPE_HTTPS);
+TEST_F(WebSocketEndToEndTest, BasicSmokeTestSSL) {
+  RunBasicSmokeTest(net::EmbeddedTestServer::TYPE_HTTPS);
 }
 
 TEST_F(WebSocketEndToEndTest, WebSocketEchoHandlerTest) {
