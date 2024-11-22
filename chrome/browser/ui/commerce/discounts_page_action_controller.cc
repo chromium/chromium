@@ -49,12 +49,11 @@ std::optional<bool> DiscountsPageActionController::ShouldShowForNavigation() {
     return std::nullopt;
   }
 
-  return discounts_.has_value();
+  return !discounts_.empty();
 }
 
 bool DiscountsPageActionController::WantsExpandedUi() {
-  if (!got_discounts_response_for_page_ || !discounts_.has_value() ||
-      discounts_.value().empty()) {
+  if (!got_discounts_response_for_page_ || discounts_.empty()) {
     return false;
   }
 
@@ -77,7 +76,7 @@ bool DiscountsPageActionController::WantsExpandedUi() {
     return true;
   }
 
-  for (const auto& discount_info : discounts_.value()) {
+  for (const auto& discount_info : discounts_) {
     if (ShouldAutoShowBubble(discount_info.id,
                              discount_info.is_merchant_wide)) {
       return true;
@@ -122,7 +121,7 @@ void DiscountsPageActionController::HandleDiscountInfoResponse(
 }
 
 const std::vector<DiscountInfo>& DiscountsPageActionController::GetDiscounts() {
-  return discounts_.value();
+  return discounts_;
 }
 
 void DiscountsPageActionController::CouponCodeCopied() {
