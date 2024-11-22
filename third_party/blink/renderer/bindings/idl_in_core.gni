@@ -582,7 +582,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/streams/stream_pipe_options.idl",
   "//third_party/blink/renderer/core/streams/transform_stream.idl",
   "//third_party/blink/renderer/core/streams/transform_stream_default_controller.idl",
-  "//third_party/blink/renderer/core/streams/underlying_sink_base.idl",
   "//third_party/blink/renderer/core/streams/underlying_source.idl",
   "//third_party/blink/renderer/core/streams/underlying_source_cancel_callback.idl",
   "//third_party/blink/renderer/core/streams/underlying_source_pull_callback.idl",

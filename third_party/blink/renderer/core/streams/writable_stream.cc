@@ -237,16 +237,15 @@ void WritableStream::InitWithCountQueueingStrategy(
     size_t high_water_mark,
     std::unique_ptr<WritableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  ScriptValue strategy_value =
-      CreateTrivialQueuingStrategy(script_state->GetIsolate(), high_water_mark);
-
-  auto underlying_sink_value = ScriptValue::From(script_state, underlying_sink);
-
-  // TODO(crbug.com/902633): This method of constructing a WritableStream
-  // introduces unnecessary trips through V8. Implement algorithms based on an
-  // UnderlyingSinkBase.
-  InitInternal(script_state, underlying_sink_value, strategy_value,
-               exception_state);
+  auto* controller = MakeGarbageCollected<WritableStreamDefaultController>();
+  WritableStreamDefaultController::SetUp(
+      script_state, this, controller,
+      MakeGarbageCollected<UnderlyingSinkStartAlgorithm>(underlying_sink,
+                                                         controller),
+      MakeGarbageCollected<UnderlyingSinkWriteAlgorithm>(underlying_sink),
+      MakeGarbageCollected<UnderlyingSinkCloseAlgorithm>(underlying_sink),
+      MakeGarbageCollected<UnderlyingSinkAbortAlgorithm>(underlying_sink),
+      high_water_mark, CreateDefaultSizeAlgorithm(), exception_state);
 
   transferring_optimizer_ = std::move(optimizer);
 }
