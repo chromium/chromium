@@ -345,8 +345,7 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     RuleSet& rules = sheet->EnsureRuleSet(*medium);
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
         sheet->ParserContext(), sheet, CSSNestingType::kNone,
-        /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
-        selector + " { color: green }"));
+        /*parent_rule_for_nesting=*/nullptr, selector + " { color: green }"));
     rules.AddStyleRule(rule, /*parent_rule=*/nullptr, *medium,
                        kRuleHasNoSpecialState, /*within_mixin=*/false);
 

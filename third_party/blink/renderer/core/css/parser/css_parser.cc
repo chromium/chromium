@@ -39,10 +39,9 @@ StyleRuleBase* CSSParser::ParseNestedDeclarationsRule(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
-    bool is_within_scope,
     StringView text) {
   return CSSParserImpl::ParseNestedDeclarationsRule(
-      context, nesting_type, parent_rule_for_nesting, is_within_scope, text);
+      context, nesting_type, parent_rule_for_nesting, text);
 }
 
 void CSSParser::ParseDeclarationListForInspector(
@@ -57,13 +56,12 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
-    bool is_within_scope,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
     HeapVector<CSSSelector>& arena) {
   CSSParserTokenStream stream(selector);
   return CSSSelectorParser::ParseSelector(
-      stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
+      stream, context, nesting_type, parent_rule_for_nesting,
       /* semicolon_aborts_nested_selector */ false, style_sheet_contents,
       arena);
 }
@@ -87,19 +85,17 @@ StyleRuleBase* CSSParser::ParseMarginRule(const CSSParserContext* context,
                                           const String& rule) {
   return CSSParserImpl::ParseRule(rule, context, CSSNestingType::kNone,
                                   /*parent_rule_for_nesting=*/nullptr,
-                                  /*is_within_scope=*/false, style_sheet,
-                                  CSSParserImpl::kPageMarginRules);
+                                  style_sheet, CSSParserImpl::kPageMarginRules);
 }
 
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     StyleSheetContents* style_sheet,
                                     CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
-                                    bool is_within_scope,
                                     const String& rule) {
-  return CSSParserImpl::ParseRule(
-      rule, context, nesting_type, parent_rule_for_nesting, is_within_scope,
-      style_sheet, CSSParserImpl::kAllowImportRules);
+  return CSSParserImpl::ParseRule(rule, context, nesting_type,
+                                  parent_rule_for_nesting, style_sheet,
+                                  CSSParserImpl::kAllowImportRules);
 }
 
 ParseSheetResult CSSParser::ParseSheet(
@@ -293,7 +289,7 @@ StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,
                                                 const String& rule) {
   StyleRuleBase* keyframe = CSSParserImpl::ParseRule(
       rule, context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, CSSParserImpl::kKeyframeRules);
+      nullptr, CSSParserImpl::kKeyframeRules);
   return To<StyleRuleKeyframe>(keyframe);
 }
 

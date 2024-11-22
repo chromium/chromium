@@ -94,8 +94,7 @@ class RuleFeatureSetTest : public testing::Test {
     HeapVector<CSSSelector> arena;
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext),
-        nesting_type, parent_rule_for_nesting, false /* is_within_scope */,
-        nullptr, selector_text, arena);
+        nesting_type, parent_rule_for_nesting, nullptr, selector_text, arena);
     return CollectFeaturesTo(selector_vector, nullptr /* style_scope */, set);
   }
 
@@ -2854,8 +2853,7 @@ TEST_F(RuleFeatureSetTest, NestedSelector) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       StrictCSSParserContext(SecureContextMode::kInsecureContext),
       CSSNestingType::kNone,
-      /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false, nullptr,
-      ".a, .b", arena);
+      /*parent_rule_for_nesting=*/nullptr, nullptr, ".a, .b", arena);
   auto* parent_rule = StyleRule::Create(
       selector_vector,
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode));

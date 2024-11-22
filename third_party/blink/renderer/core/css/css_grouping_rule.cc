@@ -63,16 +63,6 @@ CSSRule* FindClosestStyleOrScopeRule(CSSRule* parent) {
   return FindClosestStyleOrScopeRule(parent->parentRule());
 }
 
-bool IsWithinScopeRule(CSSRule* rule) {
-  if (rule == nullptr) {
-    return false;
-  }
-  if (IsA<CSSScopeRule>(rule)) {
-    return true;
-  }
-  return IsWithinScopeRule(rule->parentRule());
-}
-
 // Parsing child rules is highly dependent on the ancestor rules.
 // Under normal, full-stylesheet parsing, this information is available
 // on the stack, but for rule insertion we need to traverse and inspect
@@ -89,16 +79,13 @@ bool IsWithinScopeRule(CSSRule* rule) {
 void CalculateNestingContext(CSSRule& parent_rule,
                              CSSNestingType& nesting_type,
                              StyleRule*& parent_rule_for_nesting,
-                             bool& is_within_scope,
                              bool& is_nested_scope_rule) {
   nesting_type = CSSNestingType::kNone;
   parent_rule_for_nesting = nullptr;
-  is_within_scope = false;
   is_nested_scope_rule = false;
 
   if (CSSRule* closest_style_or_scope_rule =
           FindClosestStyleOrScopeRule(&parent_rule)) {
-    is_within_scope = IsWithinScopeRule(closest_style_or_scope_rule);
     if (auto* style_rule =
             DynamicTo<CSSStyleRule>(closest_style_or_scope_rule)) {
       nesting_type = CSSNestingType::kNesting;
@@ -142,14 +129,13 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
   } else {
     CSSNestingType nesting_type;
     StyleRule* parent_rule_for_nesting;
-    bool is_within_scope;
     bool is_nested_scope_rule;
     CalculateNestingContext(parent_rule, nesting_type, parent_rule_for_nesting,
-                            is_within_scope, is_nested_scope_rule);
+                            is_nested_scope_rule);
 
     new_rule = CSSParser::ParseRule(
         context, style_sheet ? style_sheet->Contents() : nullptr, nesting_type,
-        parent_rule_for_nesting, is_within_scope, rule_string);
+        parent_rule_for_nesting, rule_string);
 
     bool allow_nested_declarations =
         (nesting_type == CSSNestingType::kNesting) || is_nested_scope_rule;
@@ -158,8 +144,7 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
       // Retry as a CSSNestedDeclarations rule.
       // https://drafts.csswg.org/cssom/#insert-a-css-rule
       new_rule = CSSParser::ParseNestedDeclarationsRule(
-          context, nesting_type, parent_rule_for_nesting, is_within_scope,
-          rule_string);
+          context, nesting_type, parent_rule_for_nesting, rule_string);
     }
   }
 

@@ -680,15 +680,13 @@ void StyleRuleScope::SetPreludeText(const ExecutionContext* execution_context,
                                     String value,
                                     CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
-                                    bool is_within_scope,
                                     StyleSheetContents* style_sheet) {
   auto* parser_context =
       MakeGarbageCollected<CSSParserContext>(*execution_context);
   CSSParserTokenStream stream(value);
 
-  style_scope_ =
-      StyleScope::Parse(stream, parser_context, nesting_type,
-                        parent_rule_for_nesting, is_within_scope, style_sheet);
+  style_scope_ = StyleScope::Parse(stream, parser_context, nesting_type,
+                                   parent_rule_for_nesting, style_sheet);
   if (!stream.AtEnd()) {
     style_scope_ = nullptr;
   }

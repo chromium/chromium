@@ -165,7 +165,7 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   for (const auto& selector : selectors) {
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-        /*is_within_scope=*/false, nullptr, selector, arena);
+        nullptr, selector, arena);
     if (selector_vector.empty()) {
       continue;
     }
