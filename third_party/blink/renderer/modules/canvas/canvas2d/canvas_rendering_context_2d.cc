@@ -156,7 +156,7 @@ gpu::ContextSupport* GetContextSupport() {
   }
   return SharedGpuContext::ContextProviderWrapper()
       ->ContextProvider()
-      ->ContextSupport();
+      .ContextSupport();
 }
 
 // Serves as killswitch for changing CanCreateCanvasResourceProvider() to
@@ -326,7 +326,7 @@ bool CanvasRenderingContext2D::Restore() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
 
-  if (!context_provider_wrapper->ContextProvider()->IsContextLost()) {
+  if (!context_provider_wrapper->ContextProvider().IsContextLost()) {
     CanvasResourceProvider* resource_provider =
         host->GetOrCreateCanvasResourceProviderImpl(RasterModeHint::kPreferGPU);
 

@@ -342,8 +342,9 @@ ExternalTexture CreateExternalTexture(
   // If the context is lost, the resource provider would be invalid.
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   if (!context_provider_wrapper ||
-      context_provider_wrapper->ContextProvider()->IsContextLost())
+      context_provider_wrapper->ContextProvider().IsContextLost()) {
     return external_texture;
+  }
 
   // In 0-copy path, uploading shares the whole frame into dawn and apply
   // visible rect and sample from it. For 1-copy path, we should obey the
@@ -404,7 +405,7 @@ ExternalTexture CreateExternalTexture(
   DCHECK(resource_provider);
 
   viz::RasterContextProvider* raster_context_provider =
-      context_provider_wrapper->ContextProvider()->RasterContextProvider();
+      context_provider_wrapper->ContextProvider().RasterContextProvider();
 
   if (use_copy_to_shared_image) {
     // We don't need to specify a sync token since both CanvasResourceProvider

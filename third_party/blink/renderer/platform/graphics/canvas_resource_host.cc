@@ -19,7 +19,7 @@ bool CanUseGPU() {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
       SharedGpuContext::ContextProviderWrapper();
   return context_provider_wrapper &&
-         !context_provider_wrapper->ContextProvider()->IsContextLost();
+         !context_provider_wrapper->ContextProvider().IsContextLost();
 }
 
 }  // namespace

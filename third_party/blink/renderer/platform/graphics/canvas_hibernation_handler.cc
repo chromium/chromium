@@ -55,7 +55,7 @@ gpu::ContextSupport* GetContextSupport() {
   }
   return SharedGpuContext::ContextProviderWrapper()
       ->ContextProvider()
-      ->ContextSupport();
+      .ContextSupport();
 }
 
 }  // namespace

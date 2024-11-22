@@ -517,11 +517,11 @@ TEST_F(CanvasResourceProviderTest, NoRecycleIfLastRefCallback) {
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageCopyOnWriteDisabled) {
-  auto* fake_context = static_cast<FakeWebGraphicsContext3DProvider*>(
+  auto& fake_context = static_cast<FakeWebGraphicsContext3DProvider&>(
       context_provider_wrapper_->ContextProvider());
-  auto caps = fake_context->GetCapabilities();
+  auto caps = fake_context.GetCapabilities();
   caps.disable_2d_canvas_copy_on_write = true;
-  fake_context->SetCapabilities(caps);
+  fake_context.SetCapabilities(caps);
 
   const SkImageInfo kInfo = SkImageInfo::MakeN32Premul(10, 10);
 

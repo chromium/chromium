@@ -826,7 +826,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     return false;
   }
 
-  auto* ri = shared_context_wrapper->ContextProvider()->RasterInterface();
+  auto* ri = shared_context_wrapper->ContextProvider().RasterInterface();
 
   if (!GetContextProviderWeakPtr()) {
     return false;
@@ -834,7 +834,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   // todo(crbug/1267244) Use WebGPUMailboxTexture here instead of doing things
   // manually.
   gpu::webgpu::WebGPUInterface* webgpu =
-      GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
+      GetContextProviderWeakPtr()->ContextProvider().WebGPUInterface();
   gpu::webgpu::ReservedTexture reservation =
       webgpu->ReserveTexture(device_->GetHandle().Get());
   DCHECK(reservation.texture);

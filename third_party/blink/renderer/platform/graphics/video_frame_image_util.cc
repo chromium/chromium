@@ -160,7 +160,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
            const gpu::SyncToken& sync_token, bool is_lost) {
           if (is_lost || !context_provider)
             return;
-          auto* ri = context_provider->ContextProvider()->RasterInterface();
+          auto* ri = context_provider->ContextProvider().RasterInterface();
           media::WaitAndReplaceSyncTokenClient client(ri);
           frame->UpdateReleaseSyncToken(&client);
         },
@@ -314,7 +314,7 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
   viz::RasterContextProvider* raster_context_provider = nullptr;
   if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
     raster_context_provider =
-        wrapper->ContextProvider()->RasterContextProvider();
+        wrapper->ContextProvider().RasterContextProvider();
   }
 
   media::PaintCanvasVideoRenderer video_renderer;
@@ -334,7 +334,7 @@ scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {
     return nullptr;
 
   return base::WrapRefCounted(
-      wrapper->ContextProvider()->RasterContextProvider());
+      wrapper->ContextProvider().RasterContextProvider());
 }
 
 std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(

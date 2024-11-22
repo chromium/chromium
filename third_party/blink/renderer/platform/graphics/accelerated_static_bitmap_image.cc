@@ -49,7 +49,7 @@ void AcceleratedStaticBitmapImage::ReleaseTexture(void* ctx) {
   if (release_ctx->context_provider_wrapper) {
     if (release_ctx->texture_id) {
       auto* ri = release_ctx->context_provider_wrapper->ContextProvider()
-                     ->RasterInterface();
+                     .RasterInterface();
       ri->EndSharedImageAccessDirectCHROMIUM(release_ctx->texture_id);
       ri->DeleteGpuRasterTexture(release_ctx->texture_id);
     }
@@ -96,7 +96,7 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
   if (!shared_gpu_context) {
     return nullptr;
   }
-  auto* sii = shared_gpu_context->ContextProvider()->SharedImageInterface();
+  auto* sii = shared_gpu_context->ContextProvider().SharedImageInterface();
   if (!sii) {
     return nullptr;
   }
@@ -308,7 +308,7 @@ bool AcceleratedStaticBitmapImage::IsValid() const {
 WebGraphicsContext3DProvider* AcceleratedStaticBitmapImage::ContextProvider()
     const {
   auto context = ContextProviderWrapper();
-  return context ? context->ContextProvider() : nullptr;
+  return context ? &(context->ContextProvider()) : nullptr;
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -333,11 +333,11 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     return;
 
   gpu::raster::RasterInterface* shared_ri =
-      context_provider_wrapper->ContextProvider()->RasterInterface();
+      context_provider_wrapper->ContextProvider().RasterInterface();
   shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
 
   const auto& capabilities =
-      context_provider_wrapper->ContextProvider()->GetCapabilities();
+      context_provider_wrapper->ContextProvider().GetCapabilities();
 
   if (capabilities.gpu_rasterization) {
     DCHECK_EQ(shared_image_texture_id, 0u);
@@ -349,7 +349,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   }
 
   GrDirectContext* shared_gr_context =
-      context_provider_wrapper->ContextProvider()->GetGrContext();
+      context_provider_wrapper->ContextProvider().GetGrContext();
   DCHECK(shared_ri &&
          shared_gr_context);  // context isValid already checked in callers
 
@@ -370,7 +370,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat =
-      context_provider_wrapper->ContextProvider()->GetGrGLTextureFormat(
+      context_provider_wrapper->ContextProvider().GetGrGLTextureFormat(
           viz::SkColorTypeToSinglePlaneSharedImageFormat(
               sk_image_info_.colorType()));
   auto backend_texture =
@@ -461,7 +461,7 @@ bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
 gpu::SharedImageUsageSet AcceleratedStaticBitmapImage::GetUsage() const {
   return ContextProviderWrapper()
       ->ContextProvider()
-      ->SharedImageInterface()
+      .SharedImageInterface()
       ->UsageForMailbox(shared_image_->mailbox());
 }
 

@@ -103,25 +103,25 @@ void CanvasResource::Release() {
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())
     return nullptr;
-  return ContextProviderWrapper()->ContextProvider()->InterfaceBase();
+  return ContextProviderWrapper()->ContextProvider().InterfaceBase();
 }
 
 gpu::gles2::GLES2Interface* CanvasResource::ContextGL() const {
   if (!ContextProviderWrapper())
     return nullptr;
-  return ContextProviderWrapper()->ContextProvider()->ContextGL();
+  return ContextProviderWrapper()->ContextProvider().ContextGL();
 }
 
 gpu::raster::RasterInterface* CanvasResource::RasterInterface() const {
   if (!ContextProviderWrapper())
     return nullptr;
-  return ContextProviderWrapper()->ContextProvider()->RasterInterface();
+  return ContextProviderWrapper()->ContextProvider().RasterInterface();
 }
 
 gpu::webgpu::WebGPUInterface* CanvasResource::WebGPUInterface() const {
   if (!ContextProviderWrapper())
     return nullptr;
-  return ContextProviderWrapper()->ContextProvider()->WebGPUInterface();
+  return ContextProviderWrapper()->ContextProvider().WebGPUInterface();
 }
 
 void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
@@ -423,10 +423,10 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
           shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)),
       use_oop_rasterization_(is_accelerated &&
                              context_provider_wrapper_->ContextProvider()
-                                 ->GetCapabilities()
+                                 .GetCapabilities()
                                  .gpu_rasterization) {
   auto* shared_image_interface =
-      context_provider_wrapper_->ContextProvider()->SharedImageInterface();
+      context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(shared_image_interface);
 
   // These SharedImages are both read and written by the raster interface (both
@@ -542,7 +542,7 @@ GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   texture_info.fID = GetTextureIdForWriteAccess();
   texture_info.fTarget = GetClientSharedImage()->GetTextureTarget();
   texture_info.fFormat =
-      context_provider_wrapper_->ContextProvider()->GetGrGLTextureFormat(
+      context_provider_wrapper_->ContextProvider().GetGrGLTextureFormat(
           GetSharedImageFormat());
   return GrBackendTextures::MakeGL(Size().width(), Size().height(),
                                    skgpu::Mipmapped::kNo, texture_info);
@@ -566,7 +566,7 @@ CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   if (ContextProviderWrapper() && IsValid()) {
     auto* raster_interface = RasterInterface();
     auto* shared_image_interface =
-        ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
+        ContextProviderWrapper()->ContextProvider().SharedImageInterface();
     if (raster_interface && shared_image_interface) {
       gpu::SyncToken shared_image_sync_token;
       raster_interface->GenUnverifiedSyncTokenCHROMIUM(
@@ -717,7 +717,7 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
     return;
   }
   auto* sii =
-      ContextProviderWrapper()->ContextProvider()->SharedImageInterface();
+      ContextProviderWrapper()->ContextProvider().SharedImageInterface();
   std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> mapping =
       GetClientSharedImage()->Map();
   if (!mapping) {
@@ -998,7 +998,7 @@ CanvasResourceSwapChain::~CanvasResourceSwapChain() {
 
   if (!use_oop_rasterization_) {
     auto* raster_interface =
-        context_provider_wrapper_->ContextProvider()->RasterInterface();
+        context_provider_wrapper_->ContextProvider().RasterInterface();
     DCHECK(raster_interface);
     raster_interface->EndSharedImageAccessDirectCHROMIUM(
         back_buffer_texture_id_);
@@ -1057,11 +1057,11 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   TRACE_EVENT0("blink", "CanvasResourceSwapChain::PresentSwapChain");
 
   auto* raster_interface =
-      context_provider_wrapper_->ContextProvider()->RasterInterface();
+      context_provider_wrapper_->ContextProvider().RasterInterface();
   DCHECK(raster_interface);
 
   auto* sii =
-      context_provider_wrapper_->ContextProvider()->SharedImageInterface();
+      context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(sii);
 
   // Synchronize presentation and rendering.
@@ -1115,7 +1115,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
                      color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       use_oop_rasterization_(context_provider_wrapper_->ContextProvider()
-                                 ->GetCapabilities()
+                                 .GetCapabilities()
                                  .gpu_rasterization) {
   if (!context_provider_wrapper_)
     return;
@@ -1140,7 +1140,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   }
 
   auto* sii =
-      context_provider_wrapper_->ContextProvider()->SharedImageInterface();
+      context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(sii);
   gpu::SharedImageInterface::SwapChainSharedImages shared_images =
       sii->CreateSwapChain(GetSharedImageFormat(), Size(), GetColorSpace(),
@@ -1154,7 +1154,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
 
   // Wait for the mailboxes to be ready to be used.
   auto* raster_interface =
-      context_provider_wrapper_->ContextProvider()->RasterInterface();
+      context_provider_wrapper_->ContextProvider().RasterInterface();
   DCHECK(raster_interface);
   raster_interface->WaitSyncTokenCHROMIUM(sync_token_.GetData());
 

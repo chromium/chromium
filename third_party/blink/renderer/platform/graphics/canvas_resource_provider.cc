@@ -297,7 +297,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
         shared_image_usage_flags_(shared_image_usage_flags),
         use_oop_rasterization_(is_accelerated && ContextProviderWrapper()
                                                      ->ContextProvider()
-                                                     ->GetCapabilities()
+                                                     .GetCapabilities()
                                                      .gpu_rasterization) {
     resource_ = NewOrRecycledResource();
     GetFlushForImageListener()->AddObserver(this);
@@ -461,7 +461,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     resource->SetFilterQuality(FilterQuality());
     if (ContextProviderWrapper()
             ->ContextProvider()
-            ->GetCapabilities()
+            .GetCapabilities()
             .disable_2d_canvas_copy_on_write) {
       // A readback operation may alter the texture parameters, which may affect
       // the compositor's behavior. Therefore, we must trigger copy-on-write
@@ -880,7 +880,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                resource_host),
         use_oop_rasterization_(ContextProviderWrapper()
                                    ->ContextProvider()
-                                   ->GetCapabilities()
+                                   .GetCapabilities()
                                    .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
         gfx::Size(info.width(), info.height()),
@@ -957,7 +957,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     texture_info.fTarget =
         resource_->GetBackBufferClientSharedImage()->GetTextureTarget();
     texture_info.fFormat =
-        ContextProviderWrapper()->ContextProvider()->GetGrGLTextureFormat(
+        ContextProviderWrapper()->ContextProvider().GetGrGLTextureFormat(
             viz::SkColorTypeToSinglePlaneSharedImageFormat(
                 GetSkImageInfo().colorType()));
 
@@ -1100,11 +1100,12 @@ CanvasResourceProvider::CreateSharedImageProvider(
   // If the context is lost we don't want to re-create it here, the resulting
   // resource provider would be invalid anyway
   if (!context_provider_wrapper ||
-      context_provider_wrapper->ContextProvider()->IsContextLost())
+      context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
+  }
 
   const auto& capabilities =
-      context_provider_wrapper->ContextProvider()->GetCapabilities();
+      context_provider_wrapper->ContextProvider().GetCapabilities();
   if ((info.width() < 1 || info.height() < 1 ||
        info.width() > capabilities.max_texture_size ||
        info.height() > capabilities.max_texture_size)) {
@@ -1136,7 +1137,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   // If we cannot use overlay, we have to remove the scanout flag and the
   // concurrent read write flag.
   const auto& shared_image_caps = context_provider_wrapper->ContextProvider()
-                                      ->SharedImageInterface()
+                                      .SharedImageInterface()
                                       ->GetCapabilities();
   if (!is_gpu_memory_buffer_image_allowed ||
       (is_accelerated && !shared_image_caps.supports_scanout_shared_images)) {
@@ -1209,7 +1210,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
     return nullptr;
 
   const auto& capabilities =
-      context_provider_wrapper->ContextProvider()->GetCapabilities();
+      context_provider_wrapper->ContextProvider().GetCapabilities();
   if (info.width() > capabilities.max_texture_size ||
       info.height() > capabilities.max_texture_size) {
     return nullptr;
@@ -1217,7 +1218,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
 
   const auto& shared_image_capabilities =
       context_provider_wrapper->ContextProvider()
-          ->SharedImageInterface()
+          .SharedImageInterface()
           ->GetCapabilities();
   // Either swap_chain or gpu memory buffer should be enabled for this be used
   if (!shared_image_capabilities.shared_image_swap_chain &&
@@ -1253,10 +1254,10 @@ CanvasResourceProvider::CreateSwapChainProvider(
     return nullptr;
 
   const auto& capabilities =
-      context_provider_wrapper->ContextProvider()->GetCapabilities();
+      context_provider_wrapper->ContextProvider().GetCapabilities();
   const auto& shared_image_capabilities =
       context_provider_wrapper->ContextProvider()
-          ->SharedImageInterface()
+          .SharedImageInterface()
           ->GetCapabilities();
 
   if (info.width() > capabilities.max_texture_size ||
@@ -1446,11 +1447,11 @@ CanvasResourceProvider::CanvasResourceProvider(
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     const auto& caps =
-        context_provider_wrapper_->ContextProvider()->GetCapabilities();
+        context_provider_wrapper_->ContextProvider().GetCapabilities();
     oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
-            ->GetGpuFeatureInfo()
+            .GetGpuFeatureInfo()
             .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
         gpu::kGpuFeatureStatusEnabled) {
       max_recorded_op_bytes_ =
@@ -1553,7 +1554,7 @@ void CanvasResourceProvider::EnsureSkiaCanvas() {
   if (IsAccelerated() && ContextProviderWrapper() &&
       !ContextProviderWrapper()
            ->ContextProvider()
-           ->GetGpuFeatureInfo()
+           .GetGpuFeatureInfo()
            .IsWorkaroundEnabled(gpu::DISABLE_2D_CANVAS_AUTO_FLUSH)) {
     context_flushes.enable = true;
     context_flushes.max_draws_before_flush = kMaxDrawsBeforeContextFlush;
@@ -1666,19 +1667,19 @@ cc::PaintImage CanvasResourceProvider::MakeImageSnapshot(FlushReason reason) {
 gpu::gles2::GLES2Interface* CanvasResourceProvider::ContextGL() const {
   if (!context_provider_wrapper_)
     return nullptr;
-  return context_provider_wrapper_->ContextProvider()->ContextGL();
+  return context_provider_wrapper_->ContextProvider().ContextGL();
 }
 
 gpu::raster::RasterInterface* CanvasResourceProvider::RasterInterface() const {
   if (!context_provider_wrapper_)
     return nullptr;
-  return context_provider_wrapper_->ContextProvider()->RasterInterface();
+  return context_provider_wrapper_->ContextProvider().RasterInterface();
 }
 
 GrDirectContext* CanvasResourceProvider::GetGrContext() const {
   if (!context_provider_wrapper_)
     return nullptr;
-  return context_provider_wrapper_->ContextProvider()->GetGrContext();
+  return context_provider_wrapper_->ContextProvider().GetGrContext();
 }
 
 gfx::Size CanvasResourceProvider::Size() const {
@@ -1840,7 +1841,7 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::CreateResource() {
 
 cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheRGBA8() {
   if (UseHardwareDecodeCache()) {
-    return context_provider_wrapper_->ContextProvider()->ImageDecodeCache(
+    return context_provider_wrapper_->ContextProvider().ImageDecodeCache(
         kN32_SkColorType);
   }
 
@@ -1849,7 +1850,7 @@ cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheRGBA8() {
 
 cc::ImageDecodeCache* CanvasResourceProvider::ImageDecodeCacheF16() {
   if (UseHardwareDecodeCache()) {
-    return context_provider_wrapper_->ContextProvider()->ImageDecodeCache(
+    return context_provider_wrapper_->ContextProvider().ImageDecodeCache(
         kRGBA_F16_SkColorType);
   }
   return &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
@@ -1922,7 +1923,7 @@ void CanvasResourceProvider::ClearOldUnusedResources() {
   // side.
   if (cleared_resources && ContextProviderWrapper()) {
     if (gpu::ContextSupport* context_support =
-            ContextProviderWrapper()->ContextProvider()->ContextSupport()) {
+            ContextProviderWrapper()->ContextProvider().ContextSupport()) {
       context_support->FlushPendingWork();
     }
   }
@@ -2046,7 +2047,7 @@ size_t CanvasResourceProvider::GetSize() const {
 void CanvasResourceProvider::DisableLineDrawingAsPathsIfNecessary() {
   if (context_provider_wrapper_ &&
       context_provider_wrapper_->ContextProvider()
-              ->GetGpuFeatureInfo()
+              .GetGpuFeatureInfo()
               .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
           gpu::kGpuFeatureStatusEnabled) {
     recorder_->DisableLineDrawingAsPaths();

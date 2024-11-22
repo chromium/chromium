@@ -22,7 +22,7 @@ bool GraphicsContext3DUtils::Accelerated2DCanvasFeatureEnabled() {
 
   DCHECK(context_provider_wrapper_);
   const gpu::GpuFeatureInfo& gpu_feature_info =
-      context_provider_wrapper_->ContextProvider()->GetGpuFeatureInfo();
+      context_provider_wrapper_->ContextProvider().GetGpuFeatureInfo();
   return gpu::kGpuFeatureStatusEnabled ==
          gpu_feature_info
              .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS];

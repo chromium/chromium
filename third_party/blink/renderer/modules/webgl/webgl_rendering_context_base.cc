@@ -1893,7 +1893,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
       return false;
     }
     gpu::raster::RasterInterface* raster_interface =
-        shared_context_wrapper->ContextProvider()->RasterInterface();
+        shared_context_wrapper->ContextProvider().RasterInterface();
     auto client_si =
         resource_provider->GetBackingClientSharedImageForOverwrite();
     if (!client_si) {
@@ -6230,7 +6230,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
       raster_context_provider =
-          wrapper->ContextProvider()->RasterContextProvider();
+          wrapper->ContextProvider().RasterContextProvider();
     }
 
     // Go through the fast path doing a GPU-GPU textures copy without a readback
@@ -8602,7 +8602,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
       raster_context_provider =
-          wrapper->ContextProvider()->RasterContextProvider();
+          wrapper->ContextProvider().RasterContextProvider();
     }
     temp = CreateResourceProviderForVideoFrame(info, raster_context_provider);
   } else {

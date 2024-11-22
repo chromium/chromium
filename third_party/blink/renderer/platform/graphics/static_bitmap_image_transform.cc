@@ -254,7 +254,7 @@ scoped_refptr<StaticBitmapImage> StaticBitmapImageTransform::ApplyWithBlit(
       if (context_provider) {
         const gpu::SharedImageUsageSet shared_image_usage_flags =
             context_provider->ContextProvider()
-                ->SharedImageInterface()
+                .SharedImageInterface()
                 ->UsageForMailbox(source->GetMailboxHolder().mailbox);
         resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
             dest_info, kFilterQuality, kShouldInitialize, context_provider,

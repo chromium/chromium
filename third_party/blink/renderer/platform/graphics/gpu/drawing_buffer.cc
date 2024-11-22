@@ -323,7 +323,7 @@ gpu::gles2::GLES2Interface* DrawingBuffer::ContextGL() {
 }
 
 WebGraphicsContext3DProvider* DrawingBuffer::ContextProvider() {
-  return context_provider_->ContextProvider();
+  return &(context_provider_->ContextProvider());
 }
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>

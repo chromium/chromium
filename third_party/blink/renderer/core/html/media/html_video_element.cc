@@ -595,7 +595,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     if (allow_accelerated_images) {
       if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
         raster_context_provider =
-            wrapper->ContextProvider()->RasterContextProvider();
+            wrapper->ContextProvider().RasterContextProvider();
       }
     }
     resource_provider_.reset();

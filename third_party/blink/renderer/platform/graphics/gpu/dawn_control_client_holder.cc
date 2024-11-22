@@ -35,7 +35,7 @@ scoped_refptr<DawnControlClientHolder> DawnControlClientHolder::Create(
   // shared memory. There may still be outstanding mapped GPUBuffers pointing to
   // this memory.
   dawn_control_client_holder->context_provider_->ContextProvider()
-      ->SetLostContextCallback(WTF::BindRepeating(
+      .SetLostContextCallback(WTF::BindRepeating(
           &DawnControlClientHolder::MarkContextLost,
           dawn_control_client_holder->weak_ptr_factory_.GetWeakPtr()));
   return dawn_control_client_holder;
@@ -48,7 +48,7 @@ DawnControlClientHolder::DawnControlClientHolder(
           std::move(context_provider))),
       task_runner_(task_runner),
       api_channel_(context_provider_->ContextProvider()
-                       ->WebGPUInterface()
+                       .WebGPUInterface()
                        ->GetAPIChannel()),
       recyclable_resource_cache_(GetContextProviderWeakPtr(), task_runner) {}
 
@@ -109,7 +109,7 @@ DawnControlClientHolder::GetOrCreateCanvasResource(const SkImageInfo& info) {
 void DawnControlClientHolder::Flush() {
   auto context_provider = GetContextProviderWeakPtr();
   if (context_provider) [[likely]] {
-    context_provider->ContextProvider()->WebGPUInterface()->FlushCommands();
+    context_provider->ContextProvider().WebGPUInterface()->FlushCommands();
   }
 }
 
@@ -119,7 +119,7 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
     return;
   }
   if (!context_provider->ContextProvider()
-           ->WebGPUInterface()
+           .WebGPUInterface()
            ->EnsureAwaitingFlush()) {
     // We've already enqueued a task to flush, or the command buffer
     // is empty. Do nothing.
@@ -130,7 +130,7 @@ void DawnControlClientHolder::EnsureFlush(scheduler::EventLoop& event_loop) {
         if (auto context_provider =
                 dawn_control_client->GetContextProviderWeakPtr()) {
           context_provider->ContextProvider()
-              ->WebGPUInterface()
+              .WebGPUInterface()
               ->FlushAwaitingCommands();
         }
       },

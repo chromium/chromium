@@ -723,7 +723,7 @@ TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
   // This will cause SkSurface_Gpu creation to fail.
   SharedGpuContext::ContextProviderWrapper()
       ->ContextProvider()
-      ->GetGrContext()
+      .GetGrContext()
       ->abandonContext();
 
   // Drawing to the canvas should cause a CanvasResourceProvider to be created.
@@ -1953,7 +1953,7 @@ TEST_P(CanvasRenderingContext2DTest,
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
-                                     ->GetCapabilities())
+                                     .GetCapabilities())
       .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
 
   CreateContext(kNonOpaque);
@@ -1978,7 +1978,7 @@ TEST_P(CanvasRenderingContext2DTest,
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
-                                     ->GetCapabilities())
+                                     .GetCapabilities())
       .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
 
   // Draw to the canvas and verify that the canvas is not composited.

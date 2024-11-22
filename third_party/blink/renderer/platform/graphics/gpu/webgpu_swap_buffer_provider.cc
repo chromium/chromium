@@ -197,7 +197,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
   // use.
   if (!swap_buffer_pool_) {
     swap_buffer_pool_ = gpu::SharedImagePool<SwapBuffer>::Create(
-        info, context_provider->ContextProvider()->SharedImageInterface(),
+        info, context_provider->ContextProvider().SharedImageInterface(),
         /*max_pool_size=*/4);
   } else if (swap_buffer_pool_->GetImageInfo() != info) {
     swap_buffer_pool_->Reconfigure(info);

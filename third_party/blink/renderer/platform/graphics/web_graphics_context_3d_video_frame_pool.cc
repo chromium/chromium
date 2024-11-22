@@ -110,7 +110,7 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
   gpu::SharedImageInterface* SharedImageInterface() const {
     if (!weak_context_provider_)
       return nullptr;
-    return weak_context_provider_->ContextProvider()->SharedImageInterface();
+    return weak_context_provider_->ContextProvider().SharedImageInterface();
   }
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
@@ -142,8 +142,7 @@ gpu::raster::RasterInterface*
 WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
   if (weak_context_provider_) {
     if (auto* raster_context_provider =
-            weak_context_provider_->ContextProvider()
-                ->RasterContextProvider()) {
+            weak_context_provider_->ContextProvider().RasterContextProvider()) {
       return raster_context_provider->RasterInterface();
     }
   }
@@ -156,9 +155,8 @@ void SignalGpuCompletion(
     GLenum query_target,
     base::OnceClosure callback) {
   DCHECK(ctx_wrapper);
-  auto* context_provider = ctx_wrapper->ContextProvider();
-  DCHECK(context_provider);
-  auto* raster_context_provider = context_provider->RasterContextProvider();
+  auto& context_provider = ctx_wrapper->ContextProvider();
+  auto* raster_context_provider = context_provider.RasterContextProvider();
   DCHECK(raster_context_provider);
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
@@ -173,7 +171,7 @@ void SignalGpuCompletion(
          unsigned query_id, base::OnceClosure wrapped_callback) {
         if (ctx_wrapper) {
           if (auto* ri_provider =
-                  ctx_wrapper->ContextProvider()->RasterContextProvider()) {
+                  ctx_wrapper->ContextProvider().RasterContextProvider()) {
             auto* ri = ri_provider->RasterInterface();
             ri->DeleteQueriesEXT(1, &query_id);
           }
@@ -197,9 +195,8 @@ void CopyToGpuMemoryBuffer(
   CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);
-  auto* context_provider = ctx_wrapper->ContextProvider();
-  DCHECK(context_provider);
-  auto* raster_context_provider = context_provider->RasterContextProvider();
+  auto& context_provider = ctx_wrapper->ContextProvider();
+  auto* raster_context_provider = context_provider.RasterContextProvider();
   DCHECK(raster_context_provider);
   auto* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
@@ -207,7 +204,7 @@ void CopyToGpuMemoryBuffer(
   gpu::SyncToken blit_done_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(blit_done_sync_token.GetData());
 
-  auto* sii = context_provider->SharedImageInterface();
+  auto* sii = context_provider.SharedImageInterface();
   DCHECK(sii);
 
   const bool use_async_copy =
@@ -271,14 +268,14 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
                       perfetto::Flow::ProcessScoped(flow_id));
   if (!weak_context_provider_)
     return false;
-  auto* context_provider = weak_context_provider_->ContextProvider();
-  auto* raster_context_provider = context_provider->RasterContextProvider();
+  auto& context_provider = weak_context_provider_->ContextProvider();
+  auto* raster_context_provider = context_provider.RasterContextProvider();
   if (!raster_context_provider)
     return false;
 
 #if BUILDFLAG(IS_WIN)
   // CopyToGpuMemoryBuffer is only supported for D3D shared images on Windows.
-  if (!context_provider->SharedImageInterface()
+  if (!context_provider.SharedImageInterface()
            ->GetCapabilities()
            .shared_image_d3d) {
     DVLOG(1) << "CopyToGpuMemoryBuffer not supported.";
