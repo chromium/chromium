@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "components/language_detection/core/browser/language_detection_model_service.h"
+#include "components/language_detection/core/browser/language_detection_model_provider.h"
 
 namespace language_detection {
 
 ContentLanguageDetectionDriver::ContentLanguageDetectionDriver(
-    LanguageDetectionModelService* language_detection_model_service)
-    : language_detection_model_service_(language_detection_model_service) {}
+    LanguageDetectionModelProvider* language_detection_model_provider)
+    : language_detection_model_provider_(language_detection_model_provider) {}
 
 ContentLanguageDetectionDriver::~ContentLanguageDetectionDriver() = default;
 
@@ -23,12 +23,12 @@ void ContentLanguageDetectionDriver::AddReceiver(
 
 void ContentLanguageDetectionDriver::GetLanguageDetectionModel(
     GetLanguageDetectionModelCallback callback) {
-  if (!language_detection_model_service_) {
+  if (!language_detection_model_provider_) {
     std::move(callback).Run(base::File());
     return;
   }
 
-  language_detection_model_service_->GetLanguageDetectionModelFile(
+  language_detection_model_provider_->GetLanguageDetectionModelFile(
       std::move(callback));
 }
 

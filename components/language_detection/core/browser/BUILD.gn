@@ -6,6 +6,8 @@ import("//build/config/ui.gni")
 
 static_library("language_detection_model_service") {
   sources = [
+    "language_detection_model_provider.cc",
+    "language_detection_model_provider.h",
     "language_detection_model_service.cc",
     "language_detection_model_service.h",
   ]

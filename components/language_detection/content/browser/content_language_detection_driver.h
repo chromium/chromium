@@ -15,14 +15,14 @@
 
 namespace language_detection {
 
-class LanguageDetectionModelService;
+class LanguageDetectionModelProvider;
 
 // Content implementation of LanguageDetectionDriver.
 class ContentLanguageDetectionDriver
     : public mojom::ContentLanguageDetectionDriver {
  public:
   explicit ContentLanguageDetectionDriver(
-      LanguageDetectionModelService* language_detection_model_service);
+      LanguageDetectionModelProvider* language_detection_model_provider);
 
   ContentLanguageDetectionDriver(const ContentLanguageDetectionDriver&) =
       delete;
@@ -55,10 +55,10 @@ class ContentLanguageDetectionDriver
   mojo::ReceiverSet<language_detection::mojom::ContentLanguageDetectionDriver>
       receivers_;
 
-  // The service that provides the model files needed for translate. Not owned
+  // Provides access to the model file needed for language detection. Not owned
   // but guaranteed to outlive `this`.
-  const raw_ptr<LanguageDetectionModelService>
-      language_detection_model_service_;
+  const raw_ptr<LanguageDetectionModelProvider>
+      language_detection_model_provider_;
 
   base::WeakPtrFactory<ContentLanguageDetectionDriver> weak_pointer_factory_{
       this};
