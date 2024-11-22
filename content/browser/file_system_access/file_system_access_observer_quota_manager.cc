@@ -4,6 +4,8 @@
 
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 
+#include "base/metrics/histogram_functions.h"
+
 namespace content {
 
 FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
@@ -16,9 +18,13 @@ FileSystemAccessObserverQuotaManager::FileSystemAccessObserverQuotaManager(
 
 // TODO(crbug.com/338457523): Inform the watcher manager to remove this
 // from the quota manager map entry for this storage key.
-// TODO(crbug.com/338457523): Report metrics.
-FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() =
-    default;
+FileSystemAccessObserverQuotaManager::~FileSystemAccessObserverQuotaManager() {
+  base::UmaHistogramCounts100000("Storage.FileSystemAccess.ObserverUsage",
+                                 high_water_mark_usage_);
+  base::UmaHistogramBoolean(
+      "Storage.FileSystemAccess.ObserverUsageQuotaExceeded",
+      reached_quota_limit_);
+}
 
 FileSystemAccessObserverQuotaManager::UsageChangeResult
 
@@ -27,18 +33,22 @@ FileSystemAccessObserverQuotaManager::OnUsageChange(size_t old_usage,
   // The caller should have reported this `old_usage` in its last call, so that
   // `total_usage_` is equal to the sum of `old_usage` plus possibly other
   // observation group usages.
-  CHECK_GE(total_usage_, static_cast<int64_t>(old_usage));
+  CHECK_GE(total_usage_, old_usage);
 
-  int64_t updated_total_usage = total_usage_ + new_usage - old_usage;
+  size_t updated_total_usage = total_usage_ + new_usage - old_usage;
 
   // TODO(crbug.com/338457523): Use FileSystemAccessChangeSource::quota_limit()
   // once the implementation is ready.
   if (quota_limit_for_testing_ > 0 &&
       updated_total_usage > quota_limit_for_testing_) {
     total_usage_ -= old_usage;
+    reached_quota_limit_ = true;
     return UsageChangeResult::kQuotaUnavailable;
   }
 
+  if (updated_total_usage > high_water_mark_usage_) {
+    high_water_mark_usage_ = updated_total_usage;
+  }
   total_usage_ = updated_total_usage;
   return UsageChangeResult::kOk;
 }

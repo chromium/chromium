@@ -11,6 +11,7 @@
 namespace content {
 
 // Keeps track of the total usage of observer resource for a given StorageKey.
+// TODO(crbug.com/338457523): Update size_t to int64_t.
 class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
     : public base::RefCountedDeleteOnSequence<
           FileSystemAccessObserverQuotaManager> {
@@ -24,11 +25,6 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
       const blink::StorageKey& storage_key,
       FileSystemAccessWatcherManager* watcher_manager);
 
-  FileSystemAccessObserverQuotaManager(
-      FileSystemAccessObserverQuotaManager const&) = delete;
-  FileSystemAccessObserverQuotaManager& operator=(
-      FileSystemAccessObserverQuotaManager const&) = delete;
-
   // Updates the total usage if the quota is available.
   // Otherwise, returns `UsageChangeResult::kQuotaUnavailable`.
   //
@@ -37,12 +33,11 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
   // A caller should not call this again if it receives `kQuotaUnavailable`.
   UsageChangeResult OnUsageChange(size_t old_usage, size_t new_usage);
 
-  void SetQuotaLimitForTesting(int64_t quota_limit) {
-    CHECK_GE(quota_limit, 0);
+  void SetQuotaLimitForTesting(size_t quota_limit) {
     quota_limit_for_testing_ = quota_limit;
   }
 
-  int64_t GetTotalUsageForTesting() { return total_usage_; }
+  size_t GetTotalUsageForTesting() { return total_usage_; }
 
  private:
   friend class base::RefCountedDeleteOnSequence<
@@ -55,8 +50,10 @@ class CONTENT_EXPORT FileSystemAccessObserverQuotaManager
   // TODO(crbug.com/338457523): Update to raw_ref once connected to watcher
   // manager.
   const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_;
-  int64_t total_usage_ = 0;
-  int64_t quota_limit_for_testing_ = 0;
+  size_t total_usage_ = 0;
+  size_t quota_limit_for_testing_ = 0;
+  size_t high_water_mark_usage_ = 0;
+  bool reached_quota_limit_ = false;
 };
 
 }  // namespace content
