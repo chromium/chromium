@@ -321,23 +321,16 @@ base::TimeDelta HlsRenditionImpl::ClearOldSegments(base::TimeDelta media_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!is_stopped_for_shutdown_);
   base::TimeTicks removal_start = base::TimeTicks::Now();
-  // Keep 10 seconds of content before the current media time. On mobile, a very
-  // common pattern is to make double tapping the left side of the player
-  // trigger a 10 second seek backwards. Keeping 10 seconds of time prior to the
-  // current media time allows for a ten second rewind seek without triggering
-  // new data loads. For live content, we keep 2 seconds instead, since seeking
-  // is disallowed. Some content needs to be kept in the buffer to make sure
-  // that bounds checking stays clean.
-  base::TimeDelta remove_until;
-  if (IsLive()) {
-    remove_until = media_time - base::Seconds(2);
-  } else {
-    remove_until = media_time - kBufferDuration - segments_->GetMaxDuration();
-  }
-
-  if ((IsLive() && remove_until > base::Seconds(0)) ||
-      remove_until > kBufferDuration) {
-    engine_host_->Remove(role_, base::TimeDelta(), remove_until);
+  // A common pattern on the mobile player is a 10 second rewind triggered by a
+  // double tap on the left side of the player, so we want to keep at least 10
+  // seconds of older content so a seek won't require a re-fetch. We also need
+  // to keep at least enough data for there to be some keyframes, which we can
+  // get from the segment max duration.
+  base::TimeDelta required_buffer =
+      std::max(kBufferDuration, segments_->GetMaxDuration() * 2);
+  if (media_time > required_buffer) {
+    engine_host_->Remove(role_, base::TimeDelta(),
+                         media_time - required_buffer);
   }
 
   auto ranges = engine_host_->GetBufferedRanges(role_);

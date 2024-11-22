@@ -41,7 +41,13 @@ constexpr char kInitialFetchPlaylist[] =
     "#EXTINF:2.00000,\n"
     "playlist_4500Kb_14551253.ts\n"
     "#EXTINF:2.00000,\n"
-    "playlist_4500Kb_14551254.ts\n";
+    "playlist_4500Kb_14551254.ts\n"
+    "#EXTINF:2.00000,\n"
+    "playlist_4500Kb_14551255.ts\n"
+    "#EXTINF:2.00000,\n"
+    "playlist_4500Kb_14551256.ts\n"
+    "#EXTINF:2.00000,\n"
+    "playlist_4500Kb_14551257.ts\n";
 
 const std::string kSecondFetchLivePlaylist =
     "#EXTM3U\n"
@@ -478,7 +484,7 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataFetchNewManifest) {
   // Old data will try to be removed. Since media time is 0, there is nothing
   // to do. Then there will be an attempt to fetch a new manifest, which will
   // get an update.
-  task_environment_.FastForwardBy(base::Seconds(23));
+  task_environment_.FastForwardBy(base::Seconds(33));
   EXPECT_CALL(*mock_hrh_,
               UpdateRenditionManifestUri("test", GURL("http://example.com"), _))
       .WillOnce(
@@ -500,20 +506,19 @@ TEST_F(HlsRenditionImplUnittest, TestRenditionHasEnoughDataDeleteOldContent) {
 
   // CheckState causes the rentidion to:
   // Check buffered ranges first. In this case, we've loaded a bunch of content
-  // already, and our loaded ranges are [0 - 32)
+  // already, and our loaded ranges are [0 - 42)
   Ranges<base::TimeDelta> loaded_ranges;
-  loaded_ranges.Add(base::Seconds(0), base::Seconds(32));
+  loaded_ranges.Add(base::Seconds(0), base::Seconds(42));
   EXPECT_CALL(*mock_mdeh_, GetBufferedRanges(_))
       .Times(2)
       .WillRepeatedly(Return(loaded_ranges));
-  // Old data will try to be removed. Since media time is 15, there are 5
-  // seconds of old data to delete. There will be no new fetch and parse for
-  // manifest updates.
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(13)));
-  task_environment_.FastForwardBy(base::Seconds(15));
+  // We will remove old data here - which is max(10, 2*segment_duration) behind
+  // the current timestamp, or 25 - max(10, 4) = 15 seconds
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(15)));
+  task_environment_.FastForwardBy(base::Seconds(25));
 
   // CheckState should in this case respond with a delay of 17 - 10 / 2 seconds.
-  rendition->CheckState(base::Seconds(15), 0.0,
+  rendition->CheckState(base::Seconds(25), 0.0,
                         BindCheckState(base::Seconds(12)));
 
   task_environment_.RunUntilIdle();
@@ -568,9 +573,8 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   // After the pipeline does it's seeking shenanigans, another check state
   // event will be called at 9 seconds, rate 1.0. Because there are 23 seconds
   // now left in the buffer, the response will be a requested pause of 18
-  // seconds, and old buffers (from 0 - 7 seconds) will be cleared.
+  // seconds.
   RespondWithRange(base::Seconds(0), base::Seconds(32));
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(7)));
   rendition->CheckState(base::Seconds(9), 1.0,
                         BindCheckState(base::Seconds(18)));
   task_environment_.RunUntilIdle();
@@ -636,8 +640,10 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
 
   // Now, finally, we've satisfied the buffer, so we can clear old segments,
   // and the loop can pause for (22 - 10/2) or 17 seconds.
+  // Old data is 200 - (10 + 2*segment_duration), or 200 - max(10 + 2*2) = 190.
+
   RespondWithRange(base::Seconds(0), base::Seconds(222));
-  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(198)));
+  EXPECT_CALL(*mock_mdeh_, Remove(_, base::Seconds(0), base::Seconds(190)));
   rendition->CheckState(base::Seconds(200), 1.0,
                         BindCheckState(base::Seconds(17)));
   task_environment_.RunUntilIdle();
