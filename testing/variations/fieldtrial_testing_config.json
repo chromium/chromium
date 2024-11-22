@@ -1584,21 +1584,6 @@
             ]
         }
     ],
-    "AutofillEnableAndroidNKeyForFidoAuthentication": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableAndroidNKeyForFidoAuthentication"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableCardBenefitsForAmericanExpress": [
         {
             "platforms": [
