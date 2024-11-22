@@ -10,7 +10,6 @@ import json
 import os
 import re
 import sys
-import tempfile
 """
 This script parses all the log files in a directory, looking for instances
 of a particular warning. It collects all the ones it finds, and writes the
@@ -29,19 +28,23 @@ def parse_args(args):
     Parse commandline flags. Possible options:
 
     Configuration options:
-    log_dir :     The directory containing the log files to scrape
+    log_dir :     The directory containing the log files to scrape, or just
+                  a single build log.
     output :      Where the collected warning information should go. Either the
                   string "stdout" (case-insensitive) or a path to a file.
-    warning_text: The text in the log indicating a warning was raised
-    summarize:    If True, we output a human-readable summary.
-                  Otherwise, we output a json with more information
+    warning_text: The text in the log indicating a warning was raised.
+    summarize:    If present, we output a human-readable summary.
+                  Otherwise, we output a json with more information.
+    print-links:  If present, try to provide a direct link to the first warning
+                  in each file on chromium codesearch.
     """
     parser = argparse.ArgumentParser(description=__doc__,)
     parser.add_argument("-l",
                         "--log-dir",
                         required=True,
                         type=str,
-                        help="Path to the directory containing the build logs.")
+                        help="Path to the directory containing the build logs, "
+                        "or to a single build log.")
     parser.add_argument("-o",
                         "--output",
                         required=True,
@@ -106,7 +109,7 @@ def extract_warning_location(line):
     if not match:
         return None
     path, line, col = match.groups()
-    return path, int(line), int(col)
+    return os.path.normpath(path), int(line), int(col)
 
 
 def collect_warning(summarize, print_links, log_name, log_file, collection,
@@ -230,10 +233,14 @@ def log_output(summarize, print_links, collection, output):
 
 def main(args):
     parsed_args = parse_args(args)
-    log_files = [
-        os.path.join(parsed_args["log_dir"], f)
-        for f in os.listdir(parsed_args["log_dir"])
-    ]
+    try:
+        log_files = [
+            os.path.join(parsed_args["log_dir"], f)
+            for f in os.listdir(parsed_args["log_dir"])
+        ]
+    except NotADirectoryError:
+        # Assume the argument was the (one) file to read.
+        log_files = [parsed_args["log_dir"]]
 
     collection = collections.defaultdict(list)
     failures = []
