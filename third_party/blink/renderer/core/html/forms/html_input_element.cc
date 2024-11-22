@@ -2258,7 +2258,6 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool HTMLInputElement::IsLastInputElementInForm() {
   DCHECK(GetDocument().GetPage());
   return !GetDocument()
@@ -2275,7 +2274,6 @@ void HTMLInputElement::DispatchSimulatedEnter() {
 
   EventDispatcher::DispatchSimulatedEnterEvent(*this);
 }
-#endif
 
 bool HTMLInputElement::IsInteractiveContent() const {
   return input_type_->IsInteractiveContent();
