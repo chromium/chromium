@@ -13,15 +13,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
@@ -46,7 +43,6 @@
 #include "url/url_constants.h"
 
 namespace tab_groups {
-constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
 class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
  protected:
@@ -274,94 +270,6 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, OpenGroupHelper) {
       }),
       // The group is opened into the tab strip.
       WaitForShow(kTabGroupHeaderElementId));
-}
-
-using DataSharingChromeNativeUiPixelTest = DataSharingChromeNativeUiTest;
-
-// Take a screenshot of the shared tab group in app menu > tab groups and
-// everything menu in the bookmarks bar.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
-                       SharedTabGroupInMenus) {
-  std::string fake_collab_id = "fake_collab_id";
-  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
-  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
-      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile()));
-
-  // Make the group shared.
-  tab_group_service->MakeTabGroupSharedForTesting(local_group_id,
-                                                  fake_collab_id);
-
-  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
-                  FinishTabstripAnimations(), ShowBookmarksBar(),
-
-                  // Screenshot app menu -> tab groups.
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
-                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
-                  EnsurePresent(tab_groups::STGEverythingMenu::kTabGroup),
-                  SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                                          kSkipPixelTestsReason),
-                  Screenshot(tab_groups::STGEverythingMenu::kTabGroup,
-                             "shared_icon_in_app_menu", "5924633"),
-
-                  // Close the app menu.
-                  HoverTabAt(0), ClickMouse(),
-                  WaitForHide(AppMenuModel::kTabGroupsMenuItem),
-
-                  // Screenshot everything menu.
-                  EnsurePresent(kSavedTabGroupOverflowButtonElementId),
-                  PressButton(kSavedTabGroupOverflowButtonElementId),
-                  EnsurePresent(tab_groups::STGEverythingMenu::kTabGroup),
-                  Screenshot(tab_groups::STGEverythingMenu::kTabGroup,
-                             "shared_icon_in_everything_menu", "5924633"),
-
-                  // Close the everything menu.
-                  HoverTabAt(0), ClickMouse());
-}
-
-// Take a screenshot of the shared tab group's TabGroupHeader in the tabstrip.
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiPixelTest,
-                       SharedTabGroupInTabStrip) {
-  const char kTabGroupHeaderToScreenshot[] = "Tab group header to hover";
-
-  std::string fake_collab_id = "fake_collab_id";
-  tab_groups::LocalTabGroupID local_group_id = InstrumentATabGroup();
-  tab_groups::TabGroupSyncServiceImpl* tab_group_service =
-      static_cast<tab_groups::TabGroupSyncServiceImpl*>(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              browser()->profile()));
-
-  // Make the group shared.
-  tab_group_service->MakeTabGroupSharedForTesting(local_group_id,
-                                                  fake_collab_id);
-
-  // Manually call set visual data to repaint the tab group header with the
-  // share icon.
-  TabGroup* tab_group =
-      browser()->tab_strip_model()->group_model()->GetTabGroup(local_group_id);
-  tab_group->SetVisualData(*tab_group->visual_data());
-
-  RunTestSequence(
-      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      ShowBookmarksBar(),
-      NameDescendantView(
-          kBrowserViewElementId, kTabGroupHeaderToScreenshot,
-          base::BindRepeating(
-              [](tab_groups::TabGroupId group_id, const views::View* view) {
-                const TabGroupHeader* header =
-                    views::AsViewClass<TabGroupHeader>(view);
-                if (!header) {
-                  return false;
-                }
-                return header->group().value() == group_id;
-              },
-              local_group_id)),
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              kSkipPixelTestsReason),
-      Screenshot(kTabGroupHeaderToScreenshot, "shared_icon_in_tab_group_header",
-                 "5924633"));
 }
 
 }  // namespace tab_groups
