@@ -84,7 +84,7 @@ class NavigationPolicyThrottleTest : public testing::Test {
 
 // The navigation is expected to be evaluated, based on the params and
 // NavigationPhase. The navigation is set to be aborted.
-TEST_F(NavigationPolicyThrottleTest, WillStartRequest_MainFrame) {
+TEST_F(NavigationPolicyThrottleTest, WillStartRequestMainFrame) {
   MockNavigationPolicyHandle navigation_handle((GURL(kUrl1)));
   navigation_handle.set_is_same_document(true);
 
@@ -113,7 +113,7 @@ TEST_F(NavigationPolicyThrottleTest, WillStartRequest_MainFrame) {
 // subframes. It will not be evaluated and the navigation is expected to
 // proceed, even if the NavigationPolicyProvider is set to abort the current
 // request.
-TEST_F(NavigationPolicyThrottleTest, WillStartRequest_SubFrame) {
+TEST_F(NavigationPolicyThrottleTest, WillStartRequestSubFrame) {
   MockNavigationPolicyHandle navigation_handle((GURL(kUrl2)));
   navigation_handle.set_is_main_frame(false);
   navigation_handle.set_is_same_document(false);
