@@ -29,6 +29,7 @@ class GlicButton : public TabStripControlButton {
   void NotifyClick(const ui::Event& event) final;
 
  private:
+  // Tab strip that contains this button.
   raw_ptr<TabStripController> tab_strip_controller_;
 };
 
