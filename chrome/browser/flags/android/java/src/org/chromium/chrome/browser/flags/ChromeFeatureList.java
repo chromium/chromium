@@ -671,7 +671,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNotificationTrampoline =
             newCachedFlag(NOTIFICATION_TRAMPOLINE, false);
     public static final CachedFlag sPowerSavingModeBroadcastReceiverInBackground =
-            newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, false);
+            newCachedFlag(
+                    POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =

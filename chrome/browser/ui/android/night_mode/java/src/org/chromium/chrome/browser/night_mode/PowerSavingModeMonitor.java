@@ -39,6 +39,8 @@ public class PowerSavingModeMonitor {
 
     private boolean mPowerSavingIsOn;
 
+    private boolean mUnregisterRequested;
+
     private volatile boolean mBroadcastReceiverRegistered;
 
     private static final TaskRunner sSequencedTaskRunner =
@@ -115,6 +117,7 @@ public class PowerSavingModeMonitor {
     }
 
     private void stop() {
+        if (mUnregisterRequested) return;
         if (!mBroadcastReceiverRegistered) {
             // A #register has been queued up, but the receiver hasn't been registered yet so null
             // it out to return early.
@@ -123,6 +126,7 @@ public class PowerSavingModeMonitor {
             }
             return;
         }
+        mUnregisterRequested = true;
 
         if (ChromeFeatureList.sPowerSavingModeBroadcastReceiverInBackground.isEnabled()) {
             sSequencedTaskRunner.execute(this::unregisterPowerSavingModeMonitorBroadcastReceiver);
@@ -132,6 +136,7 @@ public class PowerSavingModeMonitor {
     }
 
     private void unregisterPowerSavingModeMonitorBroadcastReceiver() {
+        mUnregisterRequested = false;
         mBroadcastReceiverRegistered = false;
         ContextUtils.getApplicationContext().unregisterReceiver(mPowerModeReceiver);
         mPowerModeReceiver = null;
