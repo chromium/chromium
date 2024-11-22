@@ -600,7 +600,9 @@
 -external/wpt/html/browsers/origin/cross-origin-objects/cross-origin-objects.html
 -external/wpt/html/browsers/the-window-object/open-close/open-features-is-popup-condition.html*
 -external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-width.html
+-external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerwidth.html
 -external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization*
+-external/wpt/html/webappapis/system-state-and-capabilities/the-navigator-object/clientinformation.window.html
 -external/wpt/html/canvas/element/filters/2d.filter.canvasFilterObject.dropShadow.tentative.html
 -external/wpt/html/canvas/element/filters/2d.filter.layers.dropShadow.tentative.html
 -external/wpt/html/canvas/element/manual/filters/svg-filter-lh-rlh.html
