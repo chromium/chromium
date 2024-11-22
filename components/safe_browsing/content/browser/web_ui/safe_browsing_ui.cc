@@ -563,10 +563,10 @@ ReferrerChainProvider* WebUIInfoSingleton::GetReferrerChainProvider(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-ReferringAppInfo WebUIInfoSingleton::GetReferringAppInfo(
+internal::ReferringAppInfo WebUIInfoSingleton::GetReferringAppInfo(
     content::WebContents* web_contents) {
   return sb_service_ ? sb_service_->GetReferringAppInfo(web_contents)
-                     : ReferringAppInfo{};
+                     : internal::ReferringAppInfo{};
 }
 #endif
 
@@ -1740,25 +1740,21 @@ base::Value::Dict SerializeUrlDisplayExperiment(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
+base::Value::Dict SerializeReferringAppInfo(
+    const internal::ReferringAppInfo& info) {
   base::Value::Dict dict;
-  dict.Set(
-      "referring_app_source",
-      LoginReputationClientRequest_ReferringAppInfo_ReferringAppSource_Name(
-          info.referring_app_source));
+  dict.Set("referring_app_source",
+           ReferringAppInfo_ReferringAppSource_Name(info.referring_app_source));
   dict.Set("referring_app_info", info.referring_app_name);
   dict.Set("target_url", info.target_url.spec());
   return dict;
 }
 #endif
 
-base::Value::Dict SerializeReferringAppInfo(
-    const LoginReputationClientRequest::ReferringAppInfo& info) {
+base::Value::Dict SerializeReferringAppInfo(const ReferringAppInfo& info) {
   base::Value::Dict dict;
-  dict.Set(
-      "referring_app_source",
-      LoginReputationClientRequest_ReferringAppInfo_ReferringAppSource_Name(
-          info.referring_app_source()));
+  dict.Set("referring_app_source", ReferringAppInfo_ReferringAppSource_Name(
+                                       info.referring_app_source()));
   dict.Set("referring_app_info", info.referring_app_name());
   return dict;
 }
@@ -2749,7 +2745,7 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
 #if BUILDFLAG(IS_ANDROID)
 void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
   base::Value::Dict referring_app_value;
-  ReferringAppInfo info =
+  internal::ReferringAppInfo info =
       WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());
   referring_app_value = SerializeReferringAppInfo(info);

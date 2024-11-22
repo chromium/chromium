@@ -331,7 +331,7 @@ SafeBrowsingServiceImpl::GetReferrerChainProviderFromBrowserContext(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-ReferringAppInfo SafeBrowsingServiceImpl::GetReferringAppInfo(
+internal::ReferringAppInfo SafeBrowsingServiceImpl::GetReferringAppInfo(
     content::WebContents* web_contents) {
   return safe_browsing::GetReferringAppInfo(web_contents);
 }

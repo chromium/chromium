@@ -123,7 +123,7 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
 
 #if BUILDFLAG(IS_ANDROID)
   // Returns the referring app info that starts the activity.
-  virtual LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+  virtual ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) = 0;
 #endif
 

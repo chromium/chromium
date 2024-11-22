@@ -1891,12 +1891,11 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-LoginReputationClientRequest::ReferringAppInfo
-ChromePasswordProtectionService::GetReferringAppInfo(
+ReferringAppInfo ChromePasswordProtectionService::GetReferringAppInfo(
     content::WebContents* web_contents) {
-  ReferringAppInfo info_struct =
+  internal::ReferringAppInfo info_struct =
       safe_browsing::GetReferringAppInfo(web_contents);
-  LoginReputationClientRequest::ReferringAppInfo info_proto;
+  ReferringAppInfo info_proto;
   info_proto.set_referring_app_source(info_struct.referring_app_source);
   info_proto.set_referring_app_name(info_struct.referring_app_name);
   return info_proto;
