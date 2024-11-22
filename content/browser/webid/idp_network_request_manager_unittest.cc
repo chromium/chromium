@@ -926,6 +926,56 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
   }
 }
 
+// Tests various scenarios on resolving branding icon's url for given config
+// url.
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingIconReltivePath) {
+  // branding icon url domain matches with config url domain
+  {
+    const char test_json[] = R"({
+    "branding" : {
+      "icons": [
+        {
+          "url": "/16.png",
+          "size": 16
+        }
+      ]
+    }
+    })";
+
+    FetchStatus fetch_status;
+    IdentityProviderMetadata idp_metadata;
+    std::tie(fetch_status, idp_metadata) =
+        SendConfigRequestAndWaitForResponse(test_json);
+
+    EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+    EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+    EXPECT_EQ("https://idp.test/16.png", idp_metadata.brand_icon_url);
+  }
+
+  // branding icon url domain doesnt match with config url domain
+  {
+    const char test_json[] = R"({
+    "branding" : {
+      "icons": [
+        {
+          "url": "https://example.com/16.png",
+          "size": 16
+        }
+      ]
+    }
+    })";
+
+    FetchStatus fetch_status;
+    IdentityProviderMetadata idp_metadata;
+    std::tie(fetch_status, idp_metadata) =
+        SendConfigRequestAndWaitForResponse(test_json);
+
+    EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+    EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+    EXPECT_EQ("https://example.com/16.png", idp_metadata.brand_icon_url);
+  }
+}
+
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountActiveMode) {
   base::test::ScopedFeatureList list;

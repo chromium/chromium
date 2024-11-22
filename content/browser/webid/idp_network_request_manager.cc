@@ -335,7 +335,8 @@ std::optional<SkColor> ParseCssColor(const std::string* value) {
 
 GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
                              int brand_icon_ideal_size,
-                             int brand_icon_minimum_size) {
+                             int brand_icon_minimum_size,
+                             const GURL& config_url) {
   std::vector<blink::Manifest::ImageResource> icons;
   for (const base::Value& icon_value : *icons_value) {
     const base::Value::Dict* icon_value_dict = icon_value.GetIfDict();
@@ -349,7 +350,13 @@ GURL FindBestMatchingIconUrl(const base::Value::List* icons_value,
     }
 
     blink::Manifest::ImageResource icon;
-    icon.src = GURL(*icon_src);
+
+    if (!config_url.is_empty()) {
+      icon.src = config_url.Resolve(*icon_src);
+    } else {
+      icon.src = GURL(*icon_src);
+    }
+
     if (!icon.src.is_valid() || !icon.src.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
@@ -385,8 +392,9 @@ void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
     return;
   }
 
-  idp_metadata.brand_icon_url = FindBestMatchingIconUrl(
-      icons_value, brand_icon_ideal_size, brand_icon_minimum_size);
+  idp_metadata.brand_icon_url =
+      FindBestMatchingIconUrl(icons_value, brand_icon_ideal_size,
+                              brand_icon_minimum_size, idp_metadata.config_url);
 }
 
 // This method follows https://mimesniff.spec.whatwg.org/#json-mime-type.
@@ -627,8 +635,9 @@ void OnClientMetadataParsed(
 
   const base::Value::List* icons_value = response.FindList(kBrandingIconsKey);
   if (icons_value) {
-    data.brand_icon_url = FindBestMatchingIconUrl(
-        icons_value, rp_brand_icon_ideal_size, rp_brand_icon_minimum_size);
+    data.brand_icon_url =
+        FindBestMatchingIconUrl(icons_value, rp_brand_icon_ideal_size,
+                                rp_brand_icon_minimum_size, GURL());
   }
 
   std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
