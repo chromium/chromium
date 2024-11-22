@@ -31,8 +31,6 @@ class AutofillDriverIOS;
 // This factory will keep the parameters needed to create an AutofillDriverIOS.
 // These parameters only depend on the web_state, so there is one
 // AutofillDriverIOSFactory per WebState.
-// TODO: crbug.com/355907668 - Introduce AutofillClientIOS and move ownership to
-// that class.
 class AutofillDriverIOSFactory final
     : public AutofillDriverFactory,
       public web::WebStateUserData<AutofillDriverIOSFactory>,
