@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -1644,6 +1645,34 @@ class OnDeviceTranslationOriginTrialBrowserTest : public InProcessBrowserTest {
                                   std::string(kOriginTrialToken).c_str())));
   }
 
+  bool IsDefinedJs(std::string js_expression) {
+    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                  base::StringPrintf("(%s) !== undefined", js_expression))
+        .ExtractBool();
+  }
+
+  // Tests that `window.translation.canTranslate` and
+  // `window.translation.canTranslate` don't exist.
+  void ExpectAPIDisabled() {
+    if (!IsDefinedJs("window.translation")) {
+      // `window.translate` is not there, we're done.
+      return;
+    }
+
+    // We expect to find the detection API but no translate API.
+    EXPECT_TRUE(IsDefinedJs("window.translation.canDetect"));
+    EXPECT_FALSE(IsDefinedJs("window.translation.canTranslate"));
+    EXPECT_FALSE(IsDefinedJs("window.translation.createTranslator"));
+  }
+
+  // Tests that `window.translation.canTranslate` and
+  // `window.translation.canTranslate` both exist.
+  void ExpectAPIEnabled() {
+    EXPECT_TRUE(IsDefinedJs("window.translation"));
+    EXPECT_TRUE(IsDefinedJs("window.translation.canTranslate"));
+    EXPECT_TRUE(IsDefinedJs("window.translation.createTranslator"));
+  }
+
  private:
   // URLLoaderInterceptor callback
   static bool InterceptRequest(
@@ -1678,15 +1707,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialBrowserTest,
   CHECK(ui_test_utils::NavigateToURL(
       browser(), GURL("https://translation-api.test/blank.html")));
   // The API is not available without the Origin Trial token.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
   // Inject the Origin Trial token into the page.
   InjectOriginTrialMetaTag();
   // The API is available with the Origin Trial token.
-  EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.translation === undefined")
-                   .ExtractBool());
+  ExpectAPIEnabled();
 
   // Test the behavior of Translation API.
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
@@ -1703,9 +1728,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialBrowserTest,
   CHECK(ui_test_utils::NavigateToURL(
       browser(), GURL("https://translation-api.test/ot_token_header.html")));
   // The API is available when the Origin Trial token is in the header.
-  EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.translation === undefined")
-                   .ExtractBool());
+  ExpectAPIEnabled();
 
   // Test the behavior of Translation API.
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
@@ -1736,16 +1759,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialKillSwitchBrowserTest,
   CHECK(ui_test_utils::NavigateToURL(
       browser(), GURL("https://translation-api.test/blank.html")));
   // The API is not available when the kill switch is enabled.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
   // Inject the Origin Trial token into the page.
   InjectOriginTrialMetaTag();
   // The API is not available when the kill switch is enabled even if the Origin
   // Trial token is injected.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
 }
 
 // Tests the behavior of the Origin Trial token header when the kill switch is
@@ -1757,9 +1776,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationOriginTrialKillSwitchBrowserTest,
       browser(), GURL("https://translation-api.test/ot_token_header.html")));
   // The API is not available when the kill switch is enabled even if the Origin
   // Trial token is in the header.
-  EXPECT_TRUE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     "window.translation === undefined")
-                  .ExtractBool());
+  ExpectAPIDisabled();
 }
 
 // Tests the behavior of when the command line flag "translate-kit-binary-path"
