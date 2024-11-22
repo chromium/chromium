@@ -34,7 +34,6 @@ js_type_check("closure_compile_module") {
     ":network_password_input",
     ":network_property_list_mojo",
     ":network_proxy_exclusions",
-    ":network_proxy_input",
     ":onc_mojo",
     ":sim_lock_dialogs",
   ]
@@ -281,17 +280,6 @@ js_library("network_proxy_exclusions") {
     "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("network_proxy_input") {
-  deps = [
-    ":onc_mojo",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
 }
 
