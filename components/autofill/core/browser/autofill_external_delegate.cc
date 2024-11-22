@@ -228,11 +228,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     SuggestionType item_id) {
   switch (item_id) {
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kFillFullAddress:
     case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullPhoneNumber:
-    case SuggestionType::kFillFullEmail:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
       // Virtual cards can appear on their own when filling the CVC for a card
@@ -291,6 +287,10 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
     case SuggestionType::kBnplEntry:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullEmail:
       return false;
   }
 }
@@ -628,35 +628,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case SuggestionType::kAddressEntry:
     case SuggestionType::kCreditCardEntry:
-    case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kDevtoolsTestAddressEntry:
       FillAutofillFormData(
           suggestion.type, suggestion.payload, /*metadata=*/std::nullopt,
           /*is_preview=*/true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      break;
-    case SuggestionType::kFillFullAddress:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload,
-          /*metadata=*/std::nullopt, /*is_preview=*/true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      break;
-    case SuggestionType::kFillFullName:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload,
-          /*metadata=*/std::nullopt, /*is_preview=*/true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      break;
-    case SuggestionType::kFillFullPhoneNumber:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload,
-          /*metadata=*/std::nullopt, /*is_preview=*/true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      break;
-    case SuggestionType::kFillFullEmail:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload,
-          /*metadata=*/std::nullopt, /*is_preview=*/true,
           TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kAutocompleteEntry:
@@ -762,6 +737,11 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kViewPasswordDetails:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kFillEverythingFromAddressProfile:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullEmail:
       NOTREACHED();  // Should be handled elsewhere.
   }
 }
@@ -775,11 +755,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
 
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillEverythingFromAddressProfile:
-    case SuggestionType::kFillFullPhoneNumber:
-    case SuggestionType::kFillFullEmail:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kDevtoolsTestAddressEntry:
       DidAcceptAddressSuggestion(suggestion, metadata);
@@ -948,6 +923,11 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kDeleteAddressProfile:
     case SuggestionType::kEditAddressProfile:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullPhoneNumber:
+    case SuggestionType::kFillFullEmail:
+    case SuggestionType::kFillEverythingFromAddressProfile:
       NOTREACHED();  // Should be handled elsewhere.
   }
   // Note that some suggestion types return early.
@@ -1015,10 +995,6 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     // These SuggestionTypes are various types which can appear in the first
     // level suggestion to fill an address or credit card field.
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullPhoneNumber:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
       return manager_->RemoveAutofillProfileOrCreditCard(suggestion.payload);
@@ -1078,6 +1054,10 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillPredictionImprovements:
     case SuggestionType::kPredictionImprovementsError:
     case SuggestionType::kEditPredictionImprovementsInformation:
+    case SuggestionType::kFillFullAddress:
+    case SuggestionType::kFillFullName:
+    case SuggestionType::kFillFullEmail:
+    case SuggestionType::kFillFullPhoneNumber:
       return false;
   }
 }
@@ -1329,23 +1309,12 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           plus_address_delegate && email_and_plus_address_shown) {
         plus_address_delegate->DidChooseEmailOverPlusAddress();
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      FillAutofillFormData(
+          suggestion.type, suggestion.payload, metadata,
+          /*is_preview=*/false,
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      break;
     }
-    case SuggestionType::kFillEverythingFromAddressProfile:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, metadata,
-          /*is_preview=*/false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      break;
-    case SuggestionType::kFillFullAddress:
-    case SuggestionType::kFillFullName:
-    case SuggestionType::kFillFullEmail:
-    case SuggestionType::kFillFullPhoneNumber:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, metadata,
-          /*is_preview=*/false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
-      break;
     case SuggestionType::kAddressFieldByFieldFilling:
       CHECK(suggestion.field_by_field_filling_type_used);
       if (std::optional<AutofillProfile> profile =

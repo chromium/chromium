@@ -270,11 +270,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // The method how suggestions were triggered on the current form.
   AutofillSuggestionTriggerSource trigger_source_;
 
-  // We key this information by form section to guarantee granular filling
-  // side effects are specific are not "leaked" to other forms.
-  base::flat_map<Section, SuggestionType>
-      last_accepted_address_suggestion_for_address_form_section_;
-
   bool show_cards_from_account_suggestion_was_shown_ = false;
 
   std::vector<SuggestionType> shown_suggestion_types_;

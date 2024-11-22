@@ -1103,14 +1103,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnSuggestionsShown(suggestions);
 }
 
-// Test parameter data for asserting that group filling suggestions
-// forward the expected fields to the manager.
-struct GroupFillingTestParams {
-  const FieldTypeSet field_types_to_fill;
-  const SuggestionType type;
-  const std::string test_name;
-};
-
 // Test that an accepted autofill suggestion will fill the form.
 TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
   IssueOnQuery();
@@ -1193,31 +1185,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   histogram_tester.ExpectUniqueSample("Autofill.SuggestionAcceptedIndex",
                                       suggestion_accepted_row, 1);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       ExternalDelegateAccept_FillEverythingSuggestion_FillAndPreview) {
-  IssueOnQuery();
-  const AutofillProfile profile = test::GetFullProfile();
-  pdm().address_data_manager().AddProfile(profile);
-  const Suggestion suggestion = test::CreateAutofillSuggestion(
-      SuggestionType::kFillEverythingFromAddressProfile, u"John Legend",
-      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
-
-  // Test preview.
-  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
-                             mojom::ActionPersistence::kPreview,
-                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
-  external_delegate().DidSelectSuggestion(suggestion);
-
-  // Test fill.
-  EXPECT_CALL(manager(), FillOrPreviewProfileForm(
-                             mojom::ActionPersistence::kFill,
-                             HasQueriedFormId(), IsQueriedFieldId(), _, _));
-  EXPECT_CALL(client(), HideAutofillSuggestions(
-                            SuggestionHidingReason::kAcceptSuggestion));
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 2});
 }
 
 // Tests that when accepting a suggestion, the `AutofillSuggestionTriggerSource`
@@ -2697,10 +2664,6 @@ class AutofillExternalDelegate_RemoveSuggestionTest
 
 const SuggestionType kRemoveSuggestionTestCases[] = {
     SuggestionType::kAddressEntry,
-    SuggestionType::kFillFullAddress,
-    SuggestionType::kFillFullName,
-    SuggestionType::kFillFullEmail,
-    SuggestionType::kFillFullPhoneNumber,
     SuggestionType::kAddressFieldByFieldFilling,
     SuggestionType::kCreditCardEntry,
     SuggestionType::kAutocompleteEntry,
