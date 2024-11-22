@@ -1894,7 +1894,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                         "devtools_compatibility.js"}));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectComponentExtension) {
+// TODO(crbug.com/380336226): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantInspectComponentExtension \
+  DISABLED_CantInspectComponentExtension
+#else
+#define MAYBE_CantInspectComponentExtension CantInspectComponentExtension
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
+                       MAYBE_CantInspectComponentExtension) {
   std::string extension_id = BuildComponentExtension();
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
