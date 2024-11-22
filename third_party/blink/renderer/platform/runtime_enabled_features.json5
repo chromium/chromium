@@ -4871,9 +4871,7 @@
     {
       // Launch feature flag for 1-component GPUVertexFormat and unorm8x4-bgra
       name: "WebGPUOneComponentVertexFormats",
-      status: "experimental",
-      // Also enabled as part of all experimental WebGPU features.
-      implied_by: ["WebGPUExperimentalFeatures"],
+      status: "stable",
     },
     {
       // Using subgroup related features in WebGPU.
