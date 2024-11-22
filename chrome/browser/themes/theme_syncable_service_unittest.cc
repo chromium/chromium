@@ -1590,6 +1590,48 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 }
 
 TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
+       ShouldNotUploadNtpBackgroundIfSetFromLocalResource) {
+  base::Value::Dict new_value =
+      base::Value::Dict()
+          .Set(kNtpCustomBackgroundURL, kTestUrl)
+          .Set(kNtpCustomBackgroundAttributionLine1, "attribution_line_1")
+          .Set(kNtpCustomBackgroundAttributionLine2, "attribution_line_2")
+          .Set(kNtpCustomBackgroundAttributionActionURL,
+               "attribution_action_url")
+          .Set(kNtpCustomBackgroundCollectionId, "collection_id")
+          .Set(kNtpCustomBackgroundResumeToken, "resume_token")
+          .Set(kNtpCustomBackgroundRefreshTimestamp,
+               static_cast<int>(1234567890))
+          .Set(kNtpCustomBackgroundMainColor, static_cast<int>(SK_ColorRED));
+
+  profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+                             base::Value(new_value.Clone()));
+
+  // Mark ntp background set from local resource.
+  profile()->GetPrefs()->SetBoolean(prefs::kNtpCustomBackgroundLocalToDevice,
+                                    true);
+
+  // Start syncing.
+  std::optional<syncer::ModelError> error =
+      theme_sync_service()->MergeDataAndStartSyncing(
+          syncer::THEMES, syncer::SyncDataList(),
+          std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+              fake_change_processor()));
+  ASSERT_FALSE(error.has_value()) << error.value().message();
+
+  theme_sync_service()->OnThemeChanged();
+
+  const syncer::SyncChangeList& changes = fake_change_processor()->changes();
+  ASSERT_GE(changes.size(), 0u);
+  EXPECT_FALSE(
+      changes.back().sync_data().GetSpecifics().theme().has_ntp_background());
+
+  // Verify that the old pref is not updated.
+  EXPECT_FALSE(profile()->GetPrefs()->GetUserPrefValue(
+      prefs::kNtpCustomBackgroundDictDoNotUse));
+}
+
+TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
        ShouldApplyRemoteNtpBackgroundChange) {
   // Start syncing.
   std::optional<syncer::ModelError> error =
