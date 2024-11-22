@@ -270,9 +270,15 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame12bitMono) {
   EXPECT_EQ("32115092dc00fbe86823b0b714a0f63e", GetVideoFrameHash(*frame));
 }
 
+// Crashes on Win only.  <http://crbug.com/380429131>
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DecodeFrameLargerWidth DISABLED_DecodeFrameLargerWidth
+#else
+#define MAYBE_DecodeFrameLargerWidth DecodeFrameLargerWidth
+#endif  // BUILDFLAG(IS_WIN)
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
-TEST_F(Dav1dVideoDecoderTest, DecodeFrameLargerWidth) {
+TEST_F(Dav1dVideoDecoderTest, MAYBE_DecodeFrameLargerWidth) {
   DecodeIFrameThenTestFile("av1-I-frame-1280x720", gfx::Size(1280, 720));
 }
 
