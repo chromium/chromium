@@ -7642,29 +7642,6 @@ CSSValue* ConsumeDashedIdentOrTactic(CSSParserTokenStream& stream,
   return list;
 }
 
-// position-area( <position-area> )
-CSSValue* ConsumePositionAreaFunction(CSSParserTokenStream& stream) {
-  CHECK(!RuntimeEnabledFeatures::CSSPositionAreaValueEnabled());
-
-  if (stream.Peek().FunctionId() != CSSValueID::kPositionArea) {
-    return nullptr;
-  }
-  const CSSValue* position_area;
-  {
-    CSSParserTokenStream::BlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    position_area = ConsumePositionArea(stream);
-    if (!position_area) {
-      return nullptr;
-    }
-  }
-  stream.ConsumeWhitespace();
-  auto* function =
-      MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPositionArea);
-  function->Append(*position_area);
-  return function;
-}
-
 }  // namespace
 
 CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
@@ -7673,12 +7650,8 @@ CSSValue* ConsumeSinglePositionTryFallback(CSSParserTokenStream& stream,
   if (CSSValue* value = ConsumeDashedIdentOrTactic(stream, context)) {
     return value;
   }
-  if (RuntimeEnabledFeatures::CSSPositionAreaValueEnabled()) {
-    // <position-area>
-    return ConsumePositionArea(stream);
-  }
-  // position-area( <position-area> )
-  return ConsumePositionAreaFunction(stream);
+  // <position-area>
+  return ConsumePositionArea(stream);
 }
 
 CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream& stream,

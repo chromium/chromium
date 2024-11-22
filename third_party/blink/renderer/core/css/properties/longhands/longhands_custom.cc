@@ -7446,15 +7446,8 @@ void PositionTryFallbacks::ApplyValue(StyleResolverState& state,
   }
   HeapVector<PositionTryFallback> fallbacks;
   for (const auto& fallback : To<CSSValueList>(value)) {
-    // position-area( <position-area> )
-    if (const auto* function = DynamicTo<CSSFunctionValue>(fallback.Get())) {
-      CHECK(!RuntimeEnabledFeatures::CSSPositionAreaValueEnabled());
-      CHECK_EQ(1u, function->length());
-      blink::PositionArea position_area =
-          StyleBuilderConverter::ConvertPositionArea(state, function->First());
-      fallbacks.push_back(PositionTryFallback(position_area));
-      continue;
-    }
+    DCHECK(!IsA<CSSFunctionValue>(fallback.Get()))
+        << "position-area( <position-area> ) was deprecated/removed";
     // <'position-area'>
     if (IsA<CSSValuePair>(fallback.Get()) ||
         IsA<CSSIdentifierValue>(fallback.Get())) {

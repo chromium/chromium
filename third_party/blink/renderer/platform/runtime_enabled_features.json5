@@ -1138,13 +1138,6 @@
       status: "stable",
     },
     {
-      // For the position-try-fallbacks property, replaces the inset-area()
-      // syntax (which had the old "inset-area" name) with just a
-      // <'position-area'>.
-      name: "CSSPositionAreaValue",
-      status: "stable",
-    },
-    {
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },

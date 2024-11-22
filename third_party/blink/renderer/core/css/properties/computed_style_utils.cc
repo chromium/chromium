@@ -4401,17 +4401,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
   CSSValueList* fallback_list = CSSValueList::CreateCommaSeparated();
   for (const PositionTryFallback& fallback : fallbacks.GetFallbacks()) {
     if (!fallback.GetPositionArea().IsNone()) {
-      if (RuntimeEnabledFeatures::CSSPositionAreaValueEnabled()) {
-        // <position-area>
-        fallback_list->Append(
-            *ValueForPositionArea(fallback.GetPositionArea()));
-      } else {
-        // position-area( <position-area> )
-        auto* function =
-            MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kPositionArea);
-        function->Append(*ValueForPositionArea(fallback.GetPositionArea()));
-        fallback_list->Append(*function);
-      }
+      // <position-area>
+      fallback_list->Append(*ValueForPositionArea(fallback.GetPositionArea()));
       continue;
     }
     // [<dashed-ident> || <try-tactic>]
