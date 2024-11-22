@@ -4420,8 +4420,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSpeechAPITest,
 
 // Tests overriding user agent.
 IN_PROC_BROWSER_TEST_P(WebViewTest, UserAgent) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   ASSERT_TRUE(RunExtensionTest(
       "platform_apps/web_view/common",
       {.custom_arg = "useragent", .launch_as_platform_app = true}))

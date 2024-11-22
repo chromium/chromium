@@ -96,6 +96,8 @@ class MimeHandlerViewGuest
 
   // GuestViewBase overrides.
   bool CanBeEmbeddedInsideCrossProcessFrames() const override;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) final;
 
   content::RenderFrameHost* GetEmbedderFrame();
 

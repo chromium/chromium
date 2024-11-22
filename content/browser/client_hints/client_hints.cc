@@ -688,8 +688,10 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     NavigatorDelegate* nav_delegate =
         frame_tree_node ? frame_tree_node->navigator().GetDelegate() : nullptr;
     ua_metadata =
-        nav_delegate ? nav_delegate->GetUserAgentOverride().ua_metadata_override
-                     : std::nullopt;
+        nav_delegate
+            ? nav_delegate->GetUserAgentOverride(frame_tree_node->frame_tree())
+                  .ua_metadata_override
+            : std::nullopt;
     // If a custom UA override is set, but no value is provided for UA client
     // hints, disable them.
     disable_due_to_custom_ua = !ua_metadata.has_value();

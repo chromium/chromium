@@ -435,6 +435,8 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // GuestPageHolder::Delegate implementation.
   void GuestDidStopLoading() final;
   content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() override;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) override;
 
   // WebContentsDelegate implementation.
   void ActivateContents(content::WebContents* contents) final;

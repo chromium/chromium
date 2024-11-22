@@ -12,6 +12,10 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 
+namespace blink {
+struct RendererPreferences;
+}  // namespace blink
+
 namespace content {
 
 struct ContextMenuParams;
@@ -47,6 +51,10 @@ class GuestPageHolder : public base::SupportsUserData {
     // Returns a pointer to a service to manage JavaScript dialogs. May return
     // nullptr in which case dialogs aren't shown.
     virtual JavaScriptDialogManager* GuestGetJavascriptDialogManager() = 0;
+
+    // Allow the delegate to mutate the RendererPreferences.
+    virtual void GuestOverrideRendererPreferences(
+        blink::RendererPreferences& preferences) = 0;
 
     // TODO(40202416): Guest implementations need to be informed of several
     // other events that they currently get through primary main frame specific

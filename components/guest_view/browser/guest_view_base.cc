@@ -681,6 +681,9 @@ void GuestViewBase::DidStopLoading() {
   GuestDidStopLoading();
 }
 
+void GuestViewBase::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {}
+
 void GuestViewBase::WebContentsDestroyed() {
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
     // Once attached, the guest can't outlive its owner WebContents.

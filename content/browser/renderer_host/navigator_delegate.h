@@ -30,6 +30,7 @@ class DeviceBoundSession;
 namespace content {
 
 class CommitDeferringCondition;
+class FrameTree;
 class NavigationHandle;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -108,7 +109,8 @@ class NavigatorDelegate {
       bool is_outermost_main_frame_navigation) = 0;
 
   // Returns the overridden user agent string if it's set.
-  virtual const blink::UserAgentOverride& GetUserAgentOverride() = 0;
+  virtual const blink::UserAgentOverride& GetUserAgentOverride(
+      FrameTree& frame_tree) = 0;
 
   // Returns the value to use for NavigationEntry::IsOverridingUserAgent() for
   // a renderer initiated navigation.

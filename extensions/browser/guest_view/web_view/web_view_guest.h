@@ -222,6 +222,8 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
                               const content::ContextMenuParams& params) final;
   content::JavaScriptDialogManager* GuestGetJavascriptDialogManager() final;
+  void GuestOverrideRendererPreferences(
+      blink::RendererPreferences& preferences) final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
@@ -426,6 +428,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Used to delay the navigation of a recreated guest contents until later in
   // the attachment process when state related to the WebRequest API is set up.
   base::OnceClosure recreate_initial_nav_;
+
+  // The current UA override.
+  blink::UserAgentOverride ua_override_;
 
   // This is used to ensure pending tasks will not fire after this object is
   // destroyed.

@@ -123,6 +123,11 @@ bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
   return true;
 }
 
+void MimeHandlerViewGuest::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {
+  // TODO(crbug.com/40202416): Set `can_accept_load_drops`.
+}
+
 void MimeHandlerViewGuest::SetBeforeUnloadController(
     mojo::PendingRemote<mime_handler::BeforeUnloadControl>
         pending_before_unload_control) {

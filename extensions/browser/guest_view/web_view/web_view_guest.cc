@@ -79,6 +79,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -783,10 +784,20 @@ void WebViewGuest::Reload() {
   GetController().Reload(content::ReloadType::NORMAL, false);
 }
 
+void WebViewGuest::GuestOverrideRendererPreferences(
+    blink::RendererPreferences& preferences) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  preferences.user_agent_override = ua_override_;
+}
+
 void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
   bool is_overriding_ua_string = !ua_string_override.empty();
   if (is_overriding_ua_string) {
     base::RecordAction(UserMetricsAction("WebView.Guest.OverrideUA"));
+
+    if (!net::HttpUtil::IsValidHeaderValue(ua_string_override)) {
+      return;
+    }
   }
 
   std::optional<blink::UserAgentOverride> default_user_agent_override =
@@ -819,7 +830,12 @@ void WebViewGuest::SetUserAgentOverride(const std::string& ua_string_override) {
   }
 
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    NOTIMPLEMENTED();
+    ua_override_ = default_user_agent_override.value_or(
+        blink::UserAgentOverride::UserAgentOnly(ua_string_override));
+
+    // Force an update to sync renderer preferences.
+    web_contents()->SyncRendererPrefs();
+    UserAgentOverrideSet(ua_override_);
   } else {
     web_contents()->SetUserAgentOverride(
         default_user_agent_override.value_or(
@@ -859,7 +875,11 @@ void WebViewGuest::UpdateUserAgentMetadata() {
           blink::UserAgentOverride::UserAgentOnly(retained_ua_string_override));
 
   if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    NOTIMPLEMENTED();
+    ua_override_ = new_user_agent_override;
+
+    // Force an update to sync renderer preferences.
+    web_contents()->SyncRendererPrefs();
+    UserAgentOverrideSet(ua_override_);
   } else {
     web_contents()->SetUserAgentOverride(new_user_agent_override, false);
   }
