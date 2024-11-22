@@ -22,7 +22,10 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -55,6 +58,9 @@ constexpr char kHostD[] = "d.test";
 
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
+
+constexpr char kAllowedByStorageAccessTypeHistogram[] =
+    "API.EffectiveStorageAccess.AllowedByStorageAccessType";
 
 constexpr char kRequestStorageAccessUkmEntryName[] =
     "RequestStorageAccessFor.RequestStorageResult";
@@ -583,6 +589,12 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
         base::StrCat({R"({"primary": "https://)", kHostA,
                       R"(", "associatedSites": ["https://)", kHostC, R"("])",
                       R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
+  }
+
+  permissions::MockPermissionPromptFactory MakePromptFactory(Browser& browser) {
+    return permissions::MockPermissionPromptFactory(
+        permissions::PermissionRequestManager::FromWebContents(
+            browser.tab_strip_model()->GetActiveWebContents()));
   }
 };
 
@@ -1230,6 +1242,81 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
       ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
                                          kRequestStorageResultMetricName),
       testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       AllowedByStorageAccessTypeUma_kNone) {
+  base::HistogramTester histogram_tester;
+  SetBlockThirdPartyCookies(true);
+
+  SetCrossSiteCookieOnHost(kHostA);
+
+  NavigateToPageWithFrame(kHostA);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kAllowedByStorageAccessTypeHistogram,
+                  /*sample=*/content_settings::CookieSettingsBase::
+                      AllowedByStorageAccessType::kNone),
+              Gt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       AllowedByStorageAccessTypeUma_kTopLevelAccessOnly) {
+  base::HistogramTester histogram_tester;
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+
+  SetCrossSiteCookieOnHost(kHostB);
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  // kHostA can request storage access on behalf of kHostB, and it is granted
+  // (by an implicit grant) through the test framework's related website set.
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+
+  EXPECT_EQ(CookiesFromFetchWithCredentials(GetPrimaryMainFrame(), kHostB,
+                                            /*cors_enabled=*/true),
+            "cross-site=b.test");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kAllowedByStorageAccessTypeHistogram,
+                  /*sample=*/content_settings::CookieSettingsBase::
+                      AllowedByStorageAccessType::kTopLevelOnly),
+              Gt(0));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       AllowedByStorageAccessTypeUma_kStorageAccessOnly) {
+  base::HistogramTester histogram_tester;
+  permissions::MockPermissionPromptFactory prompt_factory =
+      MakePromptFactory(*browser());
+  prompt_factory.set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  SetBlockThirdPartyCookies(true);
+
+  SetCrossSiteCookieOnHost(kHostA);
+
+  NavigateToPageWithFrame(kHostA);
+
+  NavigateFrameTo(kHostB, "/empty.html");
+
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  ASSERT_EQ(ReadCookiesViaJS(GetFrame()), "");
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kAllowedByStorageAccessTypeHistogram,
+                  /*sample=*/content_settings::CookieSettingsBase::
+                      AllowedByStorageAccessType::kStorageAccessOnly),
+              Gt(0));
 }
 
 }  // namespace

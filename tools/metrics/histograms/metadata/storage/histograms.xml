@@ -63,6 +63,17 @@ chromium-metrics-reviews@google.com.
   <variant name="KAnonKeyProtos" summary="KAnonKeyProtos"/>
 </variants>
 
+<histogram name="API.EffectiveStorageAccess.AllowedByStorageAccessType"
+    enum="AllowedByStorageAccessType" expires_after="2025-11-10">
+  <owner>selya@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records whether storage-access or top-level-storage-access allow access to
+    cookies in a given context. This will be recorded every time cookies are
+    read or set.
+  </summary>
+</histogram>
+
 <histogram name="API.StorageAccess.AllowedRequests3" enum="StorageAccessResult"
     expires_after="2024-07-28">
   <owner>mkwst@chromium.org</owner>

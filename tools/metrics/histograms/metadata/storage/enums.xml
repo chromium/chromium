@@ -56,6 +56,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:AdProtoDecompressionOutcome) -->
 
+<enum name="AllowedByStorageAccessType">
+  <int value="0"
+      label="kNone: The cookie was not accessible through
+             TopLevelStorageAccess or StorageAccess."/>
+  <int value="1"
+      label="kTopLevelOnly: The cookie was accessible via
+             TopLevelStorageAccess."/>
+  <int value="2"
+      label="kStorageAccessOnly: The cookie was accessible via StorageAccess."/>
+  <int value="3"
+      label="kTopLevelAndStorageAccess: The cookie was accessible via
+             TopLevelStorageAccess and StorageAccess"/>
+</enum>
+
 <enum name="AutograntViaFedCmOutcome">
   <int value="0" label="Allowed"/>
   <int value="1" label="Denied by permissions policy"/>
