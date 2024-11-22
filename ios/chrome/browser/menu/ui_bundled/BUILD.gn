@@ -9,11 +9,8 @@ source_set("ui_bundled") {
     "action_factory.mm",
     "browser_action_factory.h",
     "browser_action_factory.mm",
-    "menu_histograms.h",
-    "menu_histograms.mm",
   ]
   deps = [
-    ":menu_action_type",
     "//base",
     "//components/open_from_clipboard",
     "//components/prefs",
@@ -40,6 +37,7 @@ source_set("ui_bundled") {
     "//ui/base",
     "//url",
   ]
+  public_deps = [ ":menu_action_type" ]
 }
 
 source_set("tab_context_menu_delegate") {
@@ -52,9 +50,13 @@ source_set("tab_context_menu_delegate") {
 }
 
 source_set("menu_action_type") {
-  sources = [ "menu_action_type.h" ]
+  sources = [
+    "menu_action_type.h",
+    "menu_histograms.h",
+    "menu_histograms.mm",
+  ]
 
-  deps = []
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
