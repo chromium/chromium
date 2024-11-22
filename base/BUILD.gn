@@ -411,6 +411,8 @@ component("base") {
     "memory/weak_ptr.h",
     "memory/writable_shared_memory_region.cc",
     "memory/writable_shared_memory_region.h",
+    "message_loop/io_watcher.cc",
+    "message_loop/io_watcher.h",
     "message_loop/message_pump.cc",
     "message_loop/message_pump.h",
     "message_loop/message_pump_default.cc",
@@ -3785,6 +3787,7 @@ test("base_unittests") {
       "memory/madv_free_discardable_memory_allocator_posix_unittest.cc",
       "memory/madv_free_discardable_memory_posix_unittest.cc",
       "message_loop/fd_watch_controller_posix_unittest.cc",
+      "message_loop/io_watcher_fd_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",
       "posix/unix_domain_socket_unittest.cc",
     ]

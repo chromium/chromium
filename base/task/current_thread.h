@@ -50,6 +50,8 @@ class SequenceManagerImpl;
 }
 }  // namespace sequence_manager
 
+class IOWatcher;
+
 // CurrentThread is a proxy to a subset of Task related APIs bound to the
 // current thread
 //
@@ -215,6 +217,9 @@ class BASE_EXPORT CurrentThread {
   void EnableMessagePumpTimeKeeperMetrics(
       const char* thread_name,
       bool wall_time_based_metrics_enabled_for_testing = false);
+
+  // Returns the IOWatcher instance exposed by this thread, if any.
+  IOWatcher* GetIOWatcher();
 
  protected:
   explicit CurrentThread(

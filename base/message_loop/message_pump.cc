@@ -5,10 +5,12 @@
 #include "base/message_loop/message_pump.h"
 
 #include "base/check.h"
+#include "base/message_loop/io_watcher.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/notreached.h"
+#include "base/task/current_thread.h"
 #include "base/task/task_features.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
@@ -41,6 +43,103 @@ bool g_explicit_high_resolution_timer_win = true;
 #endif  // BUILDFLAG(IS_WIN)
 
 MessagePump::MessagePumpFactory* message_pump_for_ui_factory_ = nullptr;
+
+#if !BUILDFLAG(IS_NACL) && BUILDFLAG(IS_POSIX)
+class MessagePumpForIOFdWatchImpl : public IOWatcher::FdWatch,
+                                    public MessagePumpForIO::FdWatcher {
+ public:
+  MessagePumpForIOFdWatchImpl(IOWatcher::FdWatcher* fd_watcher,
+                              const Location& location)
+      : fd_watcher_(fd_watcher), controller_(location) {}
+
+  ~MessagePumpForIOFdWatchImpl() override {
+    controller_.StopWatchingFileDescriptor();
+  }
+
+  MessagePumpForIO::FdWatchController& controller() { return controller_; }
+
+ private:
+  // MessagePumpForIO::FdWatcher:
+  void OnFileCanReadWithoutBlocking(int fd) override {
+    fd_watcher_->OnFdReadable(fd);
+  }
+
+  void OnFileCanWriteWithoutBlocking(int fd) override {
+    fd_watcher_->OnFdWritable(fd);
+  }
+
+  const raw_ptr<IOWatcher::FdWatcher> fd_watcher_;
+  MessagePumpForIO::FdWatchController controller_;
+};
+#endif
+
+class IOWatcherForCurrentIOThread : public IOWatcher {
+ public:
+  IOWatcherForCurrentIOThread() : thread_(CurrentIOThread::Get()) {}
+
+  // IOWatcher:
+#if !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_WIN)
+  bool RegisterIOHandlerImpl(HANDLE file,
+                             MessagePumpForIO::IOHandler* handler) override {
+    return thread_.RegisterIOHandler(file, handler);
+  }
+
+  bool RegisterJobObjectImpl(HANDLE job,
+                             MessagePumpForIO::IOHandler* handler) override {
+    return thread_.RegisterJobObject(job, handler);
+  }
+#elif BUILDFLAG(IS_POSIX)
+  std::unique_ptr<FdWatch> WatchFileDescriptorImpl(
+      int fd,
+      FdWatchDuration duration,
+      FdWatchMode mode,
+      FdWatcher& fd_watcher,
+      const Location& location) override {
+    MessagePumpForIO::Mode io_mode;
+    switch (mode) {
+      case FdWatchMode::kRead:
+        io_mode = MessagePumpForIO::WATCH_READ;
+        break;
+      case FdWatchMode::kWrite:
+        io_mode = MessagePumpForIO::WATCH_WRITE;
+        break;
+      case FdWatchMode::kReadWrite:
+        io_mode = MessagePumpForIO::WATCH_READ_WRITE;
+        break;
+    }
+    const bool is_persistent = duration == FdWatchDuration::kPersistent;
+    auto watch =
+        std::make_unique<MessagePumpForIOFdWatchImpl>(&fd_watcher, location);
+    if (!thread_.WatchFileDescriptor(fd, is_persistent, io_mode,
+                                     &watch->controller(), watch.get())) {
+      return nullptr;
+    }
+    return watch;
+  }
+#endif
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD))
+  bool WatchMachReceivePortImpl(
+      mach_port_t port,
+      MessagePumpForIO::MachPortWatchController* controller,
+      MessagePumpForIO::MachPortWatcher* delegate) override {
+    return thread_.WatchMachReceivePort(port, controller, delegate);
+  }
+#elif BUILDFLAG(IS_FUCHSIA)
+  bool WatchZxHandleImpl(zx_handle_t handle,
+                         bool persistent,
+                         zx_signals_t signals,
+                         MessagePumpForIO::ZxHandleWatchController* controller,
+                         MessagePumpForIO::ZxHandleWatcher* delegate) override {
+    return thread_.WatchZxHandle(handle, persistent, signals, controller,
+                                 delegate);
+  }
+#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_NACL)
+
+ private:
+  CurrentIOThread thread_;
+};
 
 }  // namespace
 
@@ -178,6 +277,18 @@ TimeTicks MessagePump::AdjustDelayedRunTime(TimeTicks earliest_time,
     return std::min(aligned_run_time, latest_time);
   }
   return run_time;
+}
+
+IOWatcher* MessagePump::GetIOWatcher() {
+  // By default only "IO thread" message pumps support async IO.
+  //
+  // TODO(crbug.com/379190028): This is done for convenience given the
+  // preexistence of CurrentIOThread, but we should eventually remove this in
+  // favor of each IO MessagePump implementation defining their own override.
+  if (!io_watcher_ && CurrentIOThread::IsSet()) {
+    io_watcher_ = std::make_unique<IOWatcherForCurrentIOThread>();
+  }
+  return io_watcher_.get();
 }
 
 }  // namespace base

@@ -19,6 +19,7 @@
 
 namespace base {
 
+class IOWatcher;
 class TimeTicks;
 
 class BASE_EXPORT MessagePump {
@@ -281,6 +282,15 @@ class BASE_EXPORT MessagePump {
   // implementation returns `false` and does nothing.
   virtual bool HandleNestedNativeLoopWithApplicationTasks(
       bool application_tasks_desired);
+
+  // If the MessagePump implementation supports async IO event handling, this
+  // returns a valid IOWatcher implementation to use. Otherwise returns null.
+  virtual IOWatcher* GetIOWatcher();
+
+ private:
+  // TODO(crbug.com/379190028): Individual MessagePump subclasses should own and
+  // initialize their own IOWatcher.
+  std::unique_ptr<IOWatcher> io_watcher_;
 };
 
 }  // namespace base
