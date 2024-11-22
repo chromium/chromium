@@ -65,7 +65,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sMostVisitedTilesReselect,
                     ChromeFeatureList.sNewTabPageAndroidTriggerForPrerender2,
                     ChromeFeatureList.sPriceInsights,
-                    ChromeFeatureList.sOptimizationGuidePushNotifications,
                     ChromeFeatureList.sPostGetMyMemoryStateToBackground,
                     ChromeFeatureList.sPrefetchBrowserInitiatedTriggers,
                     ChromeFeatureList.sSafetyHubMagicStack,
