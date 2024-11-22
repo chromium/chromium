@@ -13608,7 +13608,7 @@ class StorageAccessHeaderRetryURLRequestTest
     : public StorageAccessHeaderURLRequestTest,
       public testing::WithParamInterface<StorageAccessHeaderRetryData> {};
 
-TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
+TEST_P(StorageAccessHeaderRetryURLRequestTest, Retry) {
   const StorageAccessHeaderRetryData test = GetParam();
   set_activate_storage_access_value(test.activate_storage_access_value);
 
@@ -13759,8 +13759,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          StorageAccessHeaderRetryURLRequestTest,
                          testing::ValuesIn(storage_access_header_retry_tests));
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_RedirectPrioritizesRetryHeader) {
+TEST_F(StorageAccessHeaderURLRequestTest, RedirectPrioritizesRetryHeader) {
   set_response_sequence({ResponseKind::kRedirect, ResponseKind::kRedirect});
 
   auto context_builder = CreateTestURLRequestContextBuilder();
@@ -13808,8 +13807,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   EXPECT_EQ(req->url().path(), "/echo");
 }
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_AuthChallengeIgnoresRetryHeader) {
+TEST_F(StorageAccessHeaderURLRequestTest, AuthChallengeIgnoresRetryHeader) {
   set_response_sequence({ResponseKind::kAuthChallenge,
                          ResponseKind::kExpectAuthCredentials,
                          ResponseKind::kOk});
@@ -13854,7 +13852,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
 }
 
 TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_AuthWithoutChallengeHonorsRetryHeader) {
+       AuthWithoutChallengeHonorsRetryHeader) {
   set_response_sequence(
       {ResponseKind::kAuthWithoutChallenge, ResponseKind::kOk});
 
@@ -13893,8 +13891,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   EXPECT_FALSE(d.auth_required_called());
 }
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_SurvivesPostAuthRetries) {
+TEST_F(StorageAccessHeaderURLRequestTest, SurvivesPostAuthRetries) {
   set_response_sequence({ResponseKind::kOk, ResponseKind::kAuthChallenge,
                          ResponseKind::kExpectAuthCredentials});
   auto context_builder = CreateTestURLRequestContextBuilder();
@@ -13936,8 +13933,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   EXPECT_TRUE(d.auth_required_called());
 }
 
-TEST_F(StorageAccessHeaderURLRequestTest,
-       StorageAccessHeaderRetry_NoRetryWhenDisabled) {
+TEST_F(StorageAccessHeaderURLRequestTest, NoRetryWhenDisabled) {
   set_response_sequence({ResponseKind::kOk});
 
   auto context_builder = CreateTestURLRequestContextBuilder();

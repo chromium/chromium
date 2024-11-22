@@ -5020,7 +5020,7 @@ class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
   }
 };
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadNoStatus) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5044,7 +5044,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_StatusNone) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusNone) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5073,8 +5073,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_StatusNone) {
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest,
-       StorageAccessHeader_Load_StatusInactive) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusInactive) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5097,8 +5096,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
   EXPECT_TRUE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest,
-       StorageAccessHeader_Load_StatusActive) {
+TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusActive) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5176,7 +5174,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, Load_StatusActive_IncorrectType) {
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
+TEST_F(StorageAccessHeaderURLLoaderTest, RedirectWithLoad) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL(kStorageAccessRedirectLoadPath));
@@ -5201,8 +5199,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
-TEST_F(StorageAccessHeaderURLLoaderTest,
-       StorageAccessHeader_NoLoadWhenHeaderNotenabled) {
+TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
