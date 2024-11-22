@@ -210,6 +210,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.BackgroundRefresh.LaunchType"
+    enum="LaunchTypeForBackgroundRefreshType" expires_after="2025-03-23">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh is triggered. Logs the launch type (warm
+    vs. cold) for the background refresh.
+  </summary>
+</histogram>
+
 <histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
     expires_after="2025-04-20">
   <owner>thegreenfrog@chromium.org</owner>

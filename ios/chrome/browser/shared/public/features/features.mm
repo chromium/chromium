@@ -1066,7 +1066,7 @@ bool IsHomeCustomizationEnabled() {
 
 BASE_FEATURE(kEnableAppBackgroundRefresh,
              "EnableAppBackgroundRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAppBackgroundRefreshEnabled() {
   version_info::Channel channel = ::GetChannel();

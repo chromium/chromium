@@ -119,6 +119,14 @@ typedef void (^TaskExpirationBlock)();
 }
 @end
 
+// Refresh provider whose refresh interval is settable.
+@interface SettableIntervalRefreshProvider : AppRefreshProvider
+@property(nonatomic, readwrite) base::TimeDelta refreshInterval;
+@end
+@implementation SettableIntervalRefreshProvider
+@synthesize refreshInterval;
+@end
+
 // Test audience for the background refresh agent.
 // It (a) records that the start and end callbacks are called, and
 //    (b) quits the injected runloop when the end callback is made.
@@ -226,6 +234,14 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
           // the member is accessed by `ExpireTask()`.
           task_expiration_handler_ = [handler copy];
         });
+    // Stub the task request method to capture the last task request.
+    OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
+                                              error:[OCMArg setTo:nil]])
+        .andDo(^(NSInvocation* invocation) {
+          __weak BGAppRefreshTaskRequest* request;
+          [invocation getArgument:&request atIndex:2];
+          last_task_request_ = [request copy];
+        });
   }
 
   // Simulate the app entering the background by calling the relevant
@@ -287,6 +303,7 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
   // Mocks and the handlers they are configured with.
   id task_scheduler_mock_;
   TaskHandlerBlock task_handler_;
+  BGAppRefreshTaskRequest* last_task_request_ = nil;
   id task_mock_;
   TaskExpirationBlock task_expiration_handler_;
 
@@ -318,8 +335,6 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteSingleTask) {
   TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -340,8 +355,6 @@ TEST_F(BackgroundRefreshAppAgentTest, NotExecuteNotDueTask) {
       [[TestNotDueRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:notDueProvider];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -363,8 +376,6 @@ TEST_F(BackgroundRefreshAppAgentTest, ExecuteTwoTasks) {
   TestRefreshProvider* provider2 = [[TestRefreshProvider alloc] init];
   [agent_ addAppRefreshProvider:provider2];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -444,8 +455,6 @@ TEST_F(BackgroundRefreshAppAgentTest, DISABLED_ExpireTask) {
   long_provider.injectedTask = [[ProlongedTask alloc] init];
   [agent_ addAppRefreshProvider:long_provider];
 
-  OCMStub([task_scheduler_mock_ submitTaskRequest:OCMOCK_ANY
-                                            error:[OCMArg setTo:nil]]);
   OCMStub([task_mock_ setTaskCompletedWithSuccess:YES]);
 
   SimulateAppBackgrounding();
@@ -490,4 +499,61 @@ TEST_F(BackgroundRefreshAppAgentTest, NoSchedulingWhenNotEnabled) {
   EXPECT_FALSE(audience_.started);
   EXPECT_FALSE(audience_.ended);
   EXPECT_FALSE([provider injectedTask].executed);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, RefreshIntervalNoProviders) {
+  // Test that with no configured providers, no refresh is scheduled.
+  SimulateAppBackgrounding();
+  EXPECT_EQ(last_task_request_, nil);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, RefreshIntervalOneProvider) {
+  // Test that with one configured provider, the refresh delay is the interval
+  // defined by the provider.
+  TestRefreshProvider* provider = [[TestRefreshProvider alloc] init];
+  [agent_ addAppRefreshProvider:provider];
+  // Maximum expected delay is one minute more than the provider's refresh
+  // interval.
+  NSTimeInterval expected_delay_max =
+      (provider.refreshInterval + base::Minutes(1)).InSecondsF();
+
+  SimulateAppBackgrounding();
+
+  EXPECT_NE(last_task_request_, nil);
+
+  NSTimeInterval seconds_delay =
+      last_task_request_.earliestBeginDate.timeIntervalSinceNow;
+  EXPECT_GT(seconds_delay, 0.0);
+  EXPECT_LT(seconds_delay, expected_delay_max);
+}
+
+TEST_F(BackgroundRefreshAppAgentTest, RefreshIntervalSeveralProviders) {
+  // Test that with several configured providers, the refresh delay is the
+  // minimum interval defined by the providers.
+  SettableIntervalRefreshProvider* provider1 =
+      [[SettableIntervalRefreshProvider alloc] init];
+  provider1.refreshInterval = base::Days(1);
+  [agent_ addAppRefreshProvider:provider1];
+
+  SettableIntervalRefreshProvider* provider2 =
+      [[SettableIntervalRefreshProvider alloc] init];
+  provider2.refreshInterval = base::Hours(1);
+  [agent_ addAppRefreshProvider:provider2];
+
+  SettableIntervalRefreshProvider* provider3 =
+      [[SettableIntervalRefreshProvider alloc] init];
+  provider3.refreshInterval = base::Minutes(10);
+  [agent_ addAppRefreshProvider:provider3];
+
+  // Maximum expected delay is one minute more than the minimum (10 minutes).
+  NSTimeInterval expected_delay_max = base::Minutes(11).InSecondsF();
+
+  SimulateAppBackgrounding();
+
+  EXPECT_NE(last_task_request_, nil);
+
+  NSTimeInterval seconds_delay =
+      last_task_request_.earliestBeginDate.timeIntervalSinceNow;
+  EXPECT_GT(seconds_delay, 0.0);
+  EXPECT_LT(seconds_delay, expected_delay_max);
 }

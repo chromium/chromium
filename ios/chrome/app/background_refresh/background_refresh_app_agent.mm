@@ -18,43 +18,6 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-namespace {
-
-// Debug NSUserDefaults key used to reset debug data. If the stored value of
-// this key is less than `resetDataValue`, then all of the foillowing debug
-// data counts are reset to 0.
-NSString* resetDebugDataKey = @"debug_data_reset";
-NSInteger resetDebugDataValue = 3;
-
-// Debug NSUserDefaults keys used to collect debug data.
-// Number of times refresh was triggered.
-NSString* triggeredBackgroundRefreshesKey =
-    @"debug_number_of_triggered_background_refreshes";
-// Number of times refresh was triggered during a cold start.
-NSString* coldBackgroundRefreshesKey =
-    @"debug_number_of_cold_background_refreshes";
-// Number of times systemTriggeredRefreshForTask was run when appState was
-// UIApplicationStateActive.
-NSString* appStateActiveCountDuringBackgroundRefreshKey =
-    @"debug_app_state_active_count_during_background_refresh";
-// Number of times systemTriggeredRefreshForTask was run when appState was
-// UIApplicationStateInactive.
-NSString* appStateInactiveCountDuringBackgroundRefreshKey =
-    @"debug_app_state_inactive_count_during_background_refresh";
-// Number of times systemTriggeredRefreshForTask was run when appState was
-// UIApplicationStateBackground.
-NSString* appStateBackgroundCountDuringBackgroundRefreshKey =
-    @"debug_app_state_background_count_during_background_refresh";
-// Number of times systemTriggeredRefreshForTask was run with no due tasks.
-NSString* noTasksDueCountDuringBackgroundRefreshKey =
-    @"debug_no_tasks_due_count_during_background_refresh";
-// Number of times systemTriggeredRefreshForTask was with the last startup not
-// being clean (as defined by ApplicationContext::WasLastShutdownClean());
-NSString* dirtyShutdownDuringAppRefreshKey =
-    @"debug_dirty_shutdown_during_app_refresh";
-
-}  // namespace
-
 @interface BGTaskScheduler (cheating)
 - (void)_simulateLaunchForTaskWithIdentifier:(NSString*)ident;
 @end
@@ -102,28 +65,14 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 
 #pragma mark - SceneObservingAppAgent
 
-- (void)appDidEnterForeground {
-  // Log if the last session was cleanly shutdown.
-  if (self.startupInformation.isColdStart &&
-      !GetApplicationContext()->WasLastShutdownClean()) {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    [defaults
-        setInteger:[defaults integerForKey:dirtyShutdownDuringAppRefreshKey] + 1
-            forKey:dirtyShutdownDuringAppRefreshKey];
-  }
-}
-
 - (void)appDidEnterBackground {
-  [self requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
+  [self requestAppRefresh];
 }
 
 #pragma mark - Private
 
 - (void)registerBackgroundRefreshTask {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-
-  // TODO(crbug.com/354918794): Remove debug logging once not needed anymore.
-  [self maybeResetDebugData];
 
   auto handler = ^(BGTask* task) {
     [self systemTriggeredExecutionForTask:task];
@@ -138,6 +87,7 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 }
 
 // Debugging note: To induce the scheduler to call this task, you should
+// uncomment the debug code at the end of -requestAppRefresh, or:
 //   (1) Set a breakpoint sometime after `-registerBaskgroundRefreshTask` is
 //       called.
 //   (2) When the app is paused, run the following command in the debugger:
@@ -145,11 +95,8 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 //         _simulateLaunchForTaskWithIdentifier:@"chrome.app.refresh"]
 //   (3) Resume execution.
 //
-// Note that calling -requestAppRefreshWithDelay: with a delay value of 0.0
-// will call _simulateLaunchForTaskWithIdentifier: immediately.
-//
 // To trigger the expiration handler (that is, to forcibly expire the task):
-//   (1) Set a breakpoint in the followsing method, after the for-loop that
+//   (1) Set a breakpoint in -handleExecutionForTask:, after the for-loop that
 //       calls all of the providers.
 //   (2) Make sure this method is called by triggering the task as described
 //       above.
@@ -178,19 +125,6 @@ NSString* dirtyShutdownDuringAppRefreshKey =
     [weakSelf systemTriggeredExpirationForTask:weakTask];
   }];
 
-  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSInteger triggeredRefreshCount =
-      [defaults integerForKey:triggeredBackgroundRefreshesKey];
-  [defaults setInteger:triggeredRefreshCount + 1
-                forKey:triggeredBackgroundRefreshesKey];
-  if (self.startupInformation.isColdStart) {
-    NSInteger coldRefreshCount =
-        [defaults integerForKey:coldBackgroundRefreshesKey];
-    [defaults setInteger:coldRefreshCount + 1
-                  forKey:coldBackgroundRefreshesKey];
-  }
-
   // Hop on to the main thread for task execution.
   dispatch_async(dispatch_get_main_queue(), ^{
     [weakSelf handleExecutionForTask:task];
@@ -211,24 +145,20 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 - (void)handleExecutionForTask:(BGTask*)task {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  // TODO(crbug.com/354918794): Remove this code once not needed anymore.
-  NSString* appState;
-  switch ([[UIApplication sharedApplication] applicationState]) {
-    case UIApplicationStateActive:
-      appState = appStateActiveCountDuringBackgroundRefreshKey;
-      break;
-    case UIApplicationStateInactive:
-      appState = appStateInactiveCountDuringBackgroundRefreshKey;
-      break;
-    case UIApplicationStateBackground:
-      appState = appStateBackgroundCountDuringBackgroundRefreshKey;
-      break;
+  // Record cold/warm start for this refresh.
+
+  LaunchTypeForBackgroundRefreshActions launchType =
+      LaunchTypeForBackgroundRefreshActions::kUnknown;
+  if (self.startupInformation.isColdStart) {
+    launchType = LaunchTypeForBackgroundRefreshActions::kLaunchTypeCold;
+  } else {
+    launchType = LaunchTypeForBackgroundRefreshActions::kLaunchTypeWarm;
   }
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setInteger:[defaults integerForKey:appState] + 1 forKey:appState];
+  base::UmaHistogramEnumeration(kLaunchTypeForBackgroundRefreshHistogram,
+                                launchType);
 
   // Schedule another refresh.
-  [self requestAppRefreshWithDelay:30 * 60.0];  // 30 minutes.
+  [self requestAppRefresh];
 
   [self refreshStarted];
   for (AppRefreshProvider* provider in self.providers) {
@@ -247,12 +177,6 @@ NSString* dirtyShutdownDuringAppRefreshKey =
   if (self.activeProviders.count == 0) {
     [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];
-    // TODO(crbug.com/354918794): Remove this code once not needed anymore.
-    [defaults
-        setInteger:
-            [defaults integerForKey:noTasksDueCountDuringBackgroundRefreshKey] +
-            1
-            forKey:noTasksDueCountDuringBackgroundRefreshKey];
   }
 }
 
@@ -299,20 +223,30 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 
 // Request that app refresh runs no sooner than `delay` seconds from now.
 // Multiple requests for refresh will be coalesced.
-// TODO(crbug.com/354918222): Derive `delay` from the refresh intervals of the
-// providers.
-- (void)requestAppRefreshWithDelay:(NSTimeInterval)delay {
+- (void)requestAppRefresh {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   // Schedule requests only if flag is enabled.
   if (!IsAppBackgroundRefreshEnabled()) {
     return;
   }
 
+  // Find the minimum refresh interval.
+  base::TimeDelta delay = base::TimeDelta::Max();
+  for (AppRefreshProvider* provider in self.providers) {
+    delay = std::min(delay, provider.refreshInterval);
+  }
+  if (delay == base::TimeDelta::Max()) {
+    // No provider provided a usable refresh interval.
+    return;
+  }
+  NSTimeInterval delayInSeconds = delay.InSecondsF();
+
   // TODO(crbug.com/354918222): coalesce multiple requests so there's only ever
   // a single scheduled refresh pending.
   BGAppRefreshTaskRequest* request = [[BGAppRefreshTaskRequest alloc]
       initWithIdentifier:kAppBackgroundRefreshTaskIdentifier];
-  request.earliestBeginDate = [NSDate dateWithTimeIntervalSinceNow:delay];
+  request.earliestBeginDate =
+      [NSDate dateWithTimeIntervalSinceNow:delayInSeconds];
   NSError* error = nil;
   [BGTaskScheduler.sharedScheduler submitTaskRequest:request error:&error];
   BGTaskSchedulerErrorActions action = BGTaskSchedulerErrorActions::kUnknown;
@@ -336,31 +270,10 @@ NSString* dirtyShutdownDuringAppRefreshKey =
 
   base::UmaHistogramEnumeration(kBGTaskSchedulerErrorHistogram, action);
 
-  // Time-saving debug mode.
-  if (delay == 0.0) {
-    [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
-                                           kAppBackgroundRefreshTaskIdentifier];
-  }
-}
-
-// TODO(crbug.com/354918794): Remove this method once not needed anymore.
-- (void)maybeResetDebugData {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSInteger resetValue = [defaults integerForKey:resetDebugDataKey];
-  if (resetValue < resetDebugDataValue) {
-    NSArray* debugKeys = @[
-      triggeredBackgroundRefreshesKey, coldBackgroundRefreshesKey,
-      appStateActiveCountDuringBackgroundRefreshKey,
-      appStateInactiveCountDuringBackgroundRefreshKey,
-      appStateBackgroundCountDuringBackgroundRefreshKey,
-      noTasksDueCountDuringBackgroundRefreshKey,
-      dirtyShutdownDuringAppRefreshKey
-    ];
-    for (NSString* key in debugKeys) {
-      [defaults setInteger:0 forKey:key];
-    }
-    [defaults setInteger:resetDebugDataValue forKey:resetDebugDataKey];
-  }
+  // Time-saving debug mode; uncomment this to immediately trigger the refresh
+  // task. Please do not delete the commented code!
+  // [[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:
+  //                                      kAppBackgroundRefreshTaskIdentifier];
 }
 
 @end

@@ -42,4 +42,17 @@ enum class BGTaskSchedulerErrorActions {
   kMaxValue = kErrorCodeTooManyPendingTaskRequests,
 };
 
+// Histogram name for application launch status when background tasks are
+// triggered.
+extern const char kLaunchTypeForBackgroundRefreshHistogram[];
+
+// Enum for the IOS.BackgroundRefresh.LaunchType histogram.
+// Keep in sync with "LaunchTypeForBackgroundRefreshType".
+enum class LaunchTypeForBackgroundRefreshActions {
+  kUnknown = 0,
+  kLaunchTypeCold = 1,
+  kLaunchTypeWarm = 2,
+  kMaxValue = kLaunchTypeWarm,
+};
+
 #endif  // IOS_CHROME_APP_BACKGROUND_REFRESH_BACKGROUND_REFRESH_METRICS_H_

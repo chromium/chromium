@@ -14424,6 +14424,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="43" label="Web Install API"/>
 </enum>
 
+<enum name="LaunchTypeForBackgroundRefreshType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Cold"/>
+  <int value="2" label="Warm"/>
+</enum>
+
 <enum name="LcppHintStatus">
   <int value="0" label="kSucceedToSet"/>
   <int value="1" label="kNoLcppData"/>
