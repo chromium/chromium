@@ -136,20 +136,6 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
               (override));
 };
 
-class MockPersonalDataManager : public TestPersonalDataManager {
- public:
-  MockPersonalDataManager() = default;
-  MOCK_METHOD(void, RemoveByGUID, (const std::string&), (override));
-};
-
-class MockAddressDataManager : public TestAddressDataManager {
- public:
-  using TestAddressDataManager::TestAddressDataManager;
-  MOCK_METHOD(bool, IsAutofillProfileEnabled, (), (const override));
-  MOCK_METHOD(void, UpdateProfile, (const AutofillProfile&), (override));
-  MOCK_METHOD(void, RemoveProfile, (const std::string&), (override));
-};
-
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   using TestAutofillDriver::TestAutofillDriver;
@@ -343,10 +329,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 class AutofillExternalDelegateUnitTest : public testing::Test {
  protected:
   void SetUp() override {
-    client().set_personal_data_manager(
-        std::make_unique<NiceMock<MockPersonalDataManager>>());
-    pdm().set_address_data_manager(
-        std::make_unique<NiceMock<MockAddressDataManager>>());
     autofill_driver_ =
         std::make_unique<NiceMock<MockAutofillDriver>>(&client());
     auto mock_browser_autofill_manager =
@@ -441,13 +423,7 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     return static_cast<MockBrowserAutofillManager&>(
         driver().GetAutofillManager());
   }
-  MockPersonalDataManager& pdm() {
-    return static_cast<MockPersonalDataManager&>(
-        client().GetPersonalDataManager());
-  }
-  MockAddressDataManager& address_data_manager() {
-    return static_cast<MockAddressDataManager&>(pdm().address_data_manager());
-  }
+  PersonalDataManager& pdm() { return client().GetPersonalDataManager(); }
   MockCreditCardAccessManager& cc_access_manager() {
     return static_cast<MockCreditCardAccessManager&>(
         manager().GetCreditCardAccessManager());
@@ -2645,55 +2621,67 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
-class AutofillExternalDelegate_RemoveSuggestionTest
-    : public AutofillExternalDelegateUnitTest,
-      public ::testing::WithParamInterface<SuggestionType> {
- public:
-  void SetUp() override {
-    AutofillExternalDelegateUnitTest::SetUp();
-    client().set_single_field_fill_router(
-        std::make_unique<MockSingleFieldFillRouter>(
-            client().GetAutocompleteHistoryManager(), nullptr, nullptr));
-  }
+TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_Autocomplete) {
+  auto mock_single_field_fill_router =
+      std::make_unique<MockSingleFieldFillRouter>(
+          client().GetAutocompleteHistoryManager(), nullptr, nullptr);
+  EXPECT_CALL(*mock_single_field_fill_router,
+              OnRemoveCurrentSingleFieldSuggestion);
+  client().set_single_field_fill_router(
+      std::move(mock_single_field_fill_router));
+  EXPECT_TRUE(
+      external_delegate().RemoveSuggestion(Suggestion(u"autocomplete")));
+}
 
-  MockSingleFieldFillRouter& single_field_fill_router() {
-    return static_cast<MockSingleFieldFillRouter&>(
-        client().GetSingleFieldFillRouter());
-  }
-};
-
-const SuggestionType kRemoveSuggestionTestCases[] = {
-    SuggestionType::kAddressEntry,
-    SuggestionType::kAddressFieldByFieldFilling,
-    SuggestionType::kCreditCardEntry,
-    SuggestionType::kAutocompleteEntry,
-    SuggestionType::kPasswordEntry,
-};
-
-INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
-                         AutofillExternalDelegate_RemoveSuggestionTest,
-                         ::testing::ValuesIn(kRemoveSuggestionTestCases));
-
-TEST_P(AutofillExternalDelegate_RemoveSuggestionTest, RemoveSuggestion) {
+TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_Address) {
   const AutofillProfile profile = test::GetFullProfile();
-  const Suggestion& suggestion = test::CreateAutofillSuggestion(
-      GetParam(), u"autofill suggestion",
-      Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid())));
   pdm().address_data_manager().AddProfile(profile);
+  ASSERT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kAddressEntry, u"address",
+                                     Suggestion::AutofillProfilePayload(
+                                         Suggestion::Guid(profile.guid())))));
+  EXPECT_FALSE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
+}
 
-  if (suggestion.type == SuggestionType::kAutocompleteEntry) {
-    EXPECT_CALL(single_field_fill_router(),
-                OnRemoveCurrentSingleFieldSuggestion);
-  } else if (suggestion.type != SuggestionType::kPasswordEntry) {
-    // Passwords entries cannot be deleted. Since all the remaining ones are
-    // address or credit card, we can expect that pdm is called.
-    EXPECT_CALL(pdm(), RemoveByGUID);
-  }
-  bool result = external_delegate().RemoveSuggestion(suggestion);
+TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_AddressFieldByField) {
+  const AutofillProfile profile = test::GetFullProfile();
+  pdm().address_data_manager().AddProfile(profile);
+  ASSERT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
+  EXPECT_TRUE(
+      external_delegate().RemoveSuggestion(test::CreateAutofillSuggestion(
+          SuggestionType::kAddressFieldByFieldFilling, u"address",
+          Suggestion::AutofillProfilePayload(
+              Suggestion::Guid(profile.guid())))));
+  EXPECT_FALSE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
+}
 
-  // Password entries are the only ones from the test set that cannot be
-  // deleted.
-  EXPECT_EQ(result, suggestion.type != SuggestionType::kPasswordEntry);
+TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_LocalCard) {
+  const CreditCard local_card = test::GetCreditCard();
+  pdm().payments_data_manager().AddCreditCard(local_card);
+  ASSERT_TRUE(
+      pdm().payments_data_manager().GetCreditCardByGUID(local_card.guid()));
+  EXPECT_TRUE(external_delegate().RemoveSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry, u"card",
+                                     Suggestion::Guid(local_card.guid()))));
+  EXPECT_FALSE(
+      pdm().payments_data_manager().GetCreditCardByGUID(local_card.guid()));
+}
+
+// Tests that server cards are not removed.
+TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_ServerCard) {
+  const CreditCard server_card = test::GetMaskedServerCard();
+  TestPaymentsDataManager& paydm =
+      static_cast<TestPaymentsDataManager&>(pdm().payments_data_manager());
+  paydm.SetAutofillWalletImportEnabled(true);
+  paydm.AddServerCreditCard(server_card);
+  ASSERT_TRUE(
+      pdm().payments_data_manager().GetCreditCardByGUID(server_card.guid()));
+  EXPECT_FALSE(external_delegate().RemoveSuggestion(
+      test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry, u"card",
+                                     Suggestion::Guid(server_card.guid()))));
+  EXPECT_TRUE(
+      pdm().payments_data_manager().GetCreditCardByGUID(server_card.guid()));
 }
 
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,

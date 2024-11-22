@@ -436,13 +436,6 @@ class TestAutofillClientTemplate : public T {
     }
   }
 
-  void set_personal_data_manager(std::unique_ptr<TestPersonalDataManager> pdm) {
-    // `FormDataImporter` has a reference to the PDM.
-    CHECK(!form_data_importer_)
-        << "Do not reset PDM after using FormDataImporter.";
-    test_personal_data_manager_ = std::move(pdm);
-  }
-
   void set_payments_autofill_client(
       std::unique_ptr<payments::TestPaymentsAutofillClient> payments_client) {
     payments_autofill_client_ = std::move(payments_client);

@@ -131,7 +131,7 @@ class PersonalDataManager : public KeyedService,
   // functions instead:
   // - `address_data_manager().RemoveProfile()`.
   // - `payments_data_manager().RemoveByGUID()`.
-  virtual void RemoveByGUID(const std::string& guid);
+  void RemoveByGUID(const std::string& guid);
 
   // Returns whether the personal data has been loaded from the web database.
   virtual bool IsDataLoaded() const;

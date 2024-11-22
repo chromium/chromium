@@ -995,12 +995,39 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     // These SuggestionTypes are various types which can appear in the first
     // level suggestion to fill an address or credit card field.
     case SuggestionType::kAddressEntry:
-    case SuggestionType::kAddressFieldByFieldFilling:
-    case SuggestionType::kCreditCardEntry:
-      return manager_->RemoveAutofillProfileOrCreditCard(suggestion.payload);
+    case SuggestionType::kAddressFieldByFieldFilling: {
+      const std::string guid =
+          absl::get<Suggestion::AutofillProfilePayload>(suggestion.payload)
+              .guid.value();
+      if (AddressDataManager& adm = manager_->client()
+                                        .GetPersonalDataManager()
+                                        .address_data_manager();
+          adm.GetProfileByGUID(guid)) {
+        adm.RemoveProfile(guid);
+        return true;
+      }
+      return false;
+    }
+    case SuggestionType::kCreditCardEntry: {
+      const std::string guid =
+          absl::get<Suggestion::Guid>(suggestion.payload).value();
+      if (PaymentsDataManager& pdm = manager_->client()
+                                         .GetPersonalDataManager()
+                                         .payments_data_manager();
+          const CreditCard* credit_card = pdm.GetCreditCardByGUID(guid)) {
+        // Server cards cannot be deleted from within Chrome.
+        if (CreditCard::IsLocalCard(credit_card)) {
+          pdm.DeleteLocalCreditCards({*credit_card});
+          return true;
+        }
+      }
+      return false;
+    }
     case SuggestionType::kAutocompleteEntry:
-      manager_->RemoveCurrentSingleFieldSuggestion(
-          query_field_.name(), suggestion.main_text.value, suggestion.type);
+      manager_->client()
+          .GetSingleFieldFillRouter()
+          .OnRemoveCurrentSingleFieldSuggestion(
+              query_field_.name(), suggestion.main_text.value, suggestion.type);
       return true;
     case SuggestionType::kFillEverythingFromAddressProfile:
     case SuggestionType::kEditAddressProfile:

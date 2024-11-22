@@ -1958,40 +1958,6 @@ void BrowserAutofillManager::OnHidePopupImpl() {
   }
 }
 
-bool BrowserAutofillManager::RemoveAutofillProfileOrCreditCard(
-    const Suggestion::Payload& payload) {
-  const std::string guid =
-      absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)
-          ? absl::get<Suggestion::AutofillProfilePayload>(payload).guid.value()
-          : absl::get<Suggestion::Guid>(payload).value();
-  PersonalDataManager& pdm = client().GetPersonalDataManager();
-  if (const CreditCard* credit_card =
-          pdm.payments_data_manager().GetCreditCardByGUID(guid)) {
-    // Server cards cannot be deleted from within Chrome.
-    bool allowed_to_delete = CreditCard::IsLocalCard(credit_card);
-    if (allowed_to_delete) {
-      pdm.payments_data_manager().DeleteLocalCreditCards({*credit_card});
-    }
-    return allowed_to_delete;
-  }
-
-  if (const AutofillProfile* profile =
-          pdm.address_data_manager().GetProfileByGUID(guid)) {
-    pdm.RemoveByGUID(profile->guid());
-    return true;
-  }
-
-  return false;  // The ID was valid. The entry may have been deleted in a race.
-}
-
-void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
-    const std::u16string& name,
-    const std::u16string& value,
-    SuggestionType type) {
-  client().GetSingleFieldFillRouter().OnRemoveCurrentSingleFieldSuggestion(
-      name, value, type);
-}
-
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion,
     const FormData& form,

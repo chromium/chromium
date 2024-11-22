@@ -4796,41 +4796,6 @@ TEST_F(BrowserAutofillManagerTest,
   FormSubmitted(form);
 }
 
-TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
-  // Add and remove an Autofill profile.
-  AutofillProfile profile = test::GetFullProfile();
-  personal_data().address_data_manager().AddProfile(profile);
-
-  EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::Guid(profile.guid())));
-
-  EXPECT_FALSE(
-      personal_data().address_data_manager().GetProfileByGUID(profile.guid()));
-}
-
-TEST_F(BrowserAutofillManagerTest, RemoveLocalCreditCard) {
-  // Add and remove an Autofill credit card.
-  CreditCard local_card = test::GetCreditCard();
-  personal_data().payments_data_manager().AddCreditCard(local_card);
-
-  EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::Guid(local_card.guid())));
-
-  EXPECT_FALSE(personal_data().payments_data_manager().GetCreditCardByGUID(
-      local_card.guid()));
-}
-
-TEST_F(BrowserAutofillManagerTest, RemoveServerCreditCard) {
-  CreditCard server_card = test::GetMaskedServerCard();
-  personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-
-  EXPECT_FALSE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
-      Suggestion::Guid(server_card.guid())));
-
-  EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByGUID(
-      server_card.guid()));
-}
-
 // Test our external delegate is called at the right time.
 TEST_F(BrowserAutofillManagerTest, TestExternalDelegate) {
   FormData form = CreateTestAddressFormData();
