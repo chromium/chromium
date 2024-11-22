@@ -355,6 +355,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTabGroupUiOpenedFromBottomToolbarBecomesSensitive() {
         // Load sensitive content only into the first tab.
         final Tab firstTab = mPage.getLoadedTab();
