@@ -1172,6 +1172,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
   if (!name_attr.empty()) {
     ADD_ATTRIBUTE("name", name_attr);
   }
+  // JAWS url reading feature for links depends on "href", before JAWS 2025.
+  if (ui::IsLink(GetOwner()->GetRole())) {
+    ADD_ATTRIBUTE("href", GetOwner()->GetStringAttribute(
+                              ax::mojom::StringAttribute::kUrl));
+  }
 
   // Vispero's Inspect tool needs this temporarily, until they start tracking
   // nodes using the unique id. Also used by OmniPass / Fiserve Verifast.
