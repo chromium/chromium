@@ -24,8 +24,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link TabRemover} for the regular tab model. Uses a {@link TabModelRemover}
@@ -269,11 +267,8 @@ public class TabRemoverImpl implements TabRemover {
         // and asserts. Any tabs that are closing or cannot be found in the tab model need to be
         // skipped.
         tabsToClose =
-                tabsToClose.stream()
-                        .map((tab) -> tabModel.getTabById(tab.getId()))
-                        .filter(Objects::nonNull)
-                        .filter(tab -> !tab.isClosing())
-                        .collect(Collectors.toList());
+                TabModelUtils.getTabsById(
+                        TabModelUtils.getTabIds(tabsToClose), tabModel, /* allowClosing= */ false);
 
         // If no tabs remain we will just no-op. This may leave placeholder tabs behind; however,
         // those placeholder tabs may be the only tabs left in the group so do not pre-emptively

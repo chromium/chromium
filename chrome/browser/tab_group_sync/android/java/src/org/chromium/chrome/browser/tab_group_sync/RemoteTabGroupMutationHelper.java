@@ -22,7 +22,6 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Helper class to create a {@link SavedTabGroup} based on a local tab group. It's a wrapper around
@@ -158,15 +157,13 @@ public class RemoteTabGroupMutationHelper {
      */
     public void handleMultipleTabClosure(List<Tab> tabs) {
         LogUtils.log(TAG, "handleMultipleTabClosure, tabs# " + tabs.size());
-        // Filter out tabs that weren't in a group.
-        List<Tab> tabsInGroups =
-                tabs.stream()
-                        .filter(tab -> tab.getTabGroupId() != null)
-                        .collect(Collectors.toList());
 
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
                 mTabGroupModelFilter.getLazyAllTabGroupIdsInComprehensiveModel(tabs);
-        for (Tab tab : tabsInGroups) {
+        for (Tab tab : tabs) {
+            if (tab.getTabGroupId() == null) {
+                continue;
+            }
             Token tabGroupId = tab.getTabGroupId();
             if (mTabGroupModelFilter.isTabGroupHiding(tabGroupId)
                     && !tabGroupIdsInComprehensiveModel.get().contains(tabGroupId)) {

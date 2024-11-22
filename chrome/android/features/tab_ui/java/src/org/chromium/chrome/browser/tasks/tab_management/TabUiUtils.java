@@ -331,6 +331,16 @@ public class TabUiUtils {
         contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
     }
 
+    /** Returns whether any tabs have sensitive content. */
+    public static boolean anySensitiveContent(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab.getTabHasSensitiveContent()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Mark the tab switcher view as sensitive if at least one of the tabs in {@param tabList} has
      * sensitive content. Note that if all sensitive tabs are removed from the tab switcher, the tab
@@ -348,12 +358,8 @@ public class TabUiUtils {
             return;
         }
 
-        if (tabList.stream().anyMatch(tab -> tab.getTabHasSensitiveContent())) {
-            contentSensitivitySetter.onResult(/* contentIsSensitive= */ true);
-        } else {
-            // If not marked as not sensitive, the tab switcher might remain sensitive from a
-            // previous set of tabs.
-            contentSensitivitySetter.onResult(/* contentIsSensitive= */ false);
-        }
+        // If not marked as not sensitive, the tab switcher might remain sensitive from a
+        // previous set of tabs.
+        contentSensitivitySetter.onResult(anySensitiveContent(tabList));
     }
 }

@@ -101,7 +101,7 @@ class TabGroup {
 
     /** Returns the ID of the first tab in the group. */
     int getTabIdOfFirstTab() {
-        return mTabIds.stream().findFirst().get();
+        return mTabIds.iterator().next();
     }
 
     /** Returns the ID of the last tab in the group. */

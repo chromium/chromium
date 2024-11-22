@@ -24,9 +24,7 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /** Implementation of the {@link TabUngrouper} interface. */
 public class TabUngrouperImpl implements TabUngrouper {
@@ -170,11 +168,11 @@ public class TabUngrouperImpl implements TabUngrouper {
             TabGroupModelFilter filter = mTabGroupModelFilter;
             TabModel tabModel = filter.getTabModel();
             List<Tab> newTabsToUngroup =
-                    mTabsToUngroup.stream()
-                            .map(tab -> tabModel.getTabById(tab.getId()))
-                            .filter(Objects::nonNull)
-                            .filter(tab -> !tab.isClosing() && filter.isTabInTabGroup(tab))
-                            .collect(Collectors.toList());
+                    TabModelUtils.getTabsById(
+                            TabModelUtils.getTabIds(mTabsToUngroup),
+                            tabModel,
+                            /* allowClosing= */ false,
+                            filter::isTabInTabGroup);
 
             PassthroughTabUngrouper.doUngroupTabs(filter, newTabsToUngroup, mTrailing);
             if (mListener != null) {

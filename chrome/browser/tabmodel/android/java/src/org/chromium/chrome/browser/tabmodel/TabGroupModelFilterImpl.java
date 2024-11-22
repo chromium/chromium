@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * An implementation of {@link TabGroupModelFilterInternal} that puts {@link Tab}s into a group
@@ -1554,7 +1553,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 }
             } else {
                 Set<Integer> closingTabIds =
-                        tabClosureParams.tabs.stream().map(Tab::getId).collect(Collectors.toSet());
+                        new HashSet<>(TabModelUtils.getTabIds(tabClosureParams.tabs));
                 for (int rootId : getAllTabGroupRootIds()) {
                     TabGroup group = mRootIdToGroupMap.get(rootId);
                     if (group == null) continue;

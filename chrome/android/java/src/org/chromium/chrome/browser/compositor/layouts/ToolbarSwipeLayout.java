@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -310,12 +311,8 @@ public class ToolbarSwipeLayout extends Layout {
                 && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                 && ChromeFeatureList.isEnabled(
                         SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-                && visibleTabs.stream()
-                        .anyMatch(
-                                tabId ->
-                                        model.getTabById(tabId) != null
-                                                && model.getTabById(tabId)
-                                                        .getTabHasSensitiveContent())) {
+                && TabUiUtils.anySensitiveContent(
+                        TabModelUtils.getTabsById(visibleTabs, model, /* allowClosing= */ true))) {
             mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
         }
 
