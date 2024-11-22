@@ -18668,7 +18668,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
           =1 {Chrome removed permissions from 1 site}
           other {Chrome removed permissions from {NUM_SITES} sites}}
         </message>
-        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" translateable="false">
+        <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="Summary for the compromised passwords Safety Check module on the Magic Stack. Shown when Safety Check has identified insecure credentials.">
           {NUM_SITES, plural,
           =1 {Found 1 compromised password}
           other {Found {NUM_SITES} compromised passwords}}
