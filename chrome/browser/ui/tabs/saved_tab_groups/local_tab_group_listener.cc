@@ -232,8 +232,6 @@ void LocalTabGroupListener::GroupRemovedFromSync() {
 LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   PauseTracking();
 
-  RemoveLocalWebContentsNotInSavedGroup();
-
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
   CHECK(saved_group.has_value());
@@ -254,7 +252,6 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
 
   // Add, navigate, and reorder local tabs to match saved tabs.
   const gfx::Range group_index_range = local_tab_group->ListTabs();
-  CHECK_LE(group_index_range.length(), saved_group->saved_tabs().size());
 
   // Parallel iterate over saved tabs and local indices. For each saved tab and
   // index, ensure the corresponding local tab is at that index and in the
@@ -269,6 +266,10 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
                             next_index_in_tab_strip);
     next_index_in_tab_strip++;
   }
+
+  RemoveLocalWebContentsNotInSavedGroup();
+  CHECK_EQ(local_tab_group->ListTabs().length(),
+           saved_group->saved_tabs().size());
 
   ResumeTracking();
 

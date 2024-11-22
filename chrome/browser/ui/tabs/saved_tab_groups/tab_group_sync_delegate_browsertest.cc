@@ -414,5 +414,63 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   EXPECT_TRUE(local_group->visual_data()->is_collapsed());
 }
 
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
+                       TabRemovalsFromSyncDontCauseZeroTabStateInLocal) {
+  TabGroupSyncService* service =
+      TabGroupSyncServiceFactory::GetForProfile(browser()->profile());
+  service->AddObserver(this);
+
+  // Starts with one tab.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Add a tab and create a group.
+  chrome::AddTabAt(browser(), GURL("chrome://newtab"), 0, false);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  const LocalTabGroupID local_id =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  TabGroup* local_group =
+      browser()->tab_strip_model()->group_model()->GetTabGroup(local_id);
+  ASSERT_THAT(local_group, NotNull());
+  ASSERT_EQ(1, local_group->tab_count());
+  local_group->SetVisualData(
+      TabGroupVisualData(u"Title", tab_groups::TabGroupColorId::kBlue,
+                         /*is_collapsed=*/true),
+      /*is_customized=*/true);
+
+  // Verify that the group is saved and has exactly one tab.
+  WaitUntilCallbackReceived();
+  std::optional<SavedTabGroup> saved_group = service->GetGroup(local_id);
+  ASSERT_TRUE(saved_group.has_value());
+  ASSERT_EQ(1u, saved_group->saved_tabs().size());
+  base::Uuid saved_group_id = saved_group->saved_guid();
+  base::Uuid saved_tab_id = saved_group->saved_tabs()[0].saved_tab_guid();
+
+  // Simulate three updates received by sync: one tab removal, two tab
+  // additions. This could generate transient zero tab state but shouldn't close
+  // the group locally. We send the addition first and removal next because this
+  // is the order merges are sent from bridge. If removal is sent first, model
+  // will delete the group instead for last tab closure.
+  const SavedTabGroupTab added_tab1(GURL(chrome::kChromeUINewTabURL),
+                                    u"New Tab 1", saved_group_id,
+                                    /*position=*/0);
+  const SavedTabGroupTab added_tab2(GURL(chrome::kChromeUINewTabURL),
+                                    u"New Tab 2", saved_group_id,
+                                    /*position=*/1);
+  model_->AddTabToGroupFromSync(saved_group_id, added_tab1);
+  model_->AddTabToGroupFromSync(saved_group_id, added_tab2);
+  model_->RemoveTabFromGroupFromSync(saved_group_id, saved_tab_id);
+  WaitUntilCallbackReceived();
+  WaitUntilCallbackReceived();
+
+  saved_group = service->GetGroup(local_id);
+  ASSERT_EQ(2u, saved_group->saved_tabs().size());
+
+  // Verify that the group still exists in the tab strip and has 2 tabs in
+  // total.
+  EXPECT_EQ(2u, SavedTabGroupUtils::GetTabsInGroup(local_id).size());
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+}
+
 }  // namespace
 }  // namespace tab_groups
