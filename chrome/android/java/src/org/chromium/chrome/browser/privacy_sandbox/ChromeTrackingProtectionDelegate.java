@@ -43,11 +43,6 @@ public class ChromeTrackingProtectionDelegate implements TrackingProtectionDeleg
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionBrandedUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX);
-    }
-
-    @Override
     public boolean shouldDisplayIpProtection() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }

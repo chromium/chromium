@@ -93,11 +93,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tracking_protection_preferences);
-        if (mDelegate.shouldShowTrackingProtectionBrandedUi()) {
-            mPageTitle.set(getString(R.string.privacy_sandbox_tracking_protection_title));
-        } else {
-            mPageTitle.set(getString(R.string.third_party_cookies_page_title));
-        }
+        mPageTitle.set(getString(R.string.third_party_cookies_page_title));
 
         setHasOptionsMenu(true);
 
@@ -129,8 +125,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                 (ChromeSwitchPreference) findPreference(PREF_FINGERPRINTING_PROTECTION_TOGGLE);
         TextMessagePreference fingerprintingProtectionLearnMore =
                 (TextMessagePreference) findPreference(PREF_FINGERPRINTING_PROTECTION_LEARN_MORE);
-        ChromeSwitchPreference doNotTrackSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_DNT_TOGGLE);
 
         // Block all 3rd party cookies switch.
         blockAll3pCookiesSwitch.setChecked(mDelegate.isBlockAll3pcEnabled());
@@ -195,18 +189,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                                         }
                                     })));
         }
-
-        // Do not track switch.
-        if (mDelegate.shouldShowTrackingProtectionBrandedUi()) {
-            doNotTrackSwitch.setVisible(true);
-            doNotTrackSwitch.setChecked(mDelegate.isDoNotTrackEnabled());
-            doNotTrackSwitch.setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
-                        mDelegate.setDoNotTrack((boolean) newValue);
-                        return true;
-                    });
-        }
-
         mAllowListExpanded = true;
         mAllowedSiteCount = 0;
         ExpandablePreferenceGroup allowedGroup =
