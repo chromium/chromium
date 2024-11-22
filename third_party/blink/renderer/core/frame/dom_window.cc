@@ -84,8 +84,27 @@ DOMWindow::~DOMWindow() {
 }
 
 v8::Local<v8::Value> DOMWindow::Wrap(ScriptState* script_state) {
-  auto& world = script_state->World();
-  return window_proxy_manager_->GetWindowProxy(world)->GetGlobalProxy();
+  // TODO(yukishiino): Get understanding of why it's possible to initialize
+  // the context after the frame is detached.  And then, remove the following
+  // lines.  See also https://crbug.com/712638 .
+  Frame* frame = GetFrame();
+  if (!frame)
+    return v8::Null(script_state->GetIsolate());
+
+  // TODO(yukishiino): We'd like to return a global proxy instead of undefined
+  // regardless of whether it's detached or not, in order to conform to spec.
+  //
+  // Getting the proxy also results in initializing it and eventually yields in
+  // `SetupWindowPrototypeChain()` calls for the window proxy.
+  v8::MaybeLocal<v8::Object> proxy =
+      frame->GetWindowProxy(script_state->World())->GlobalProxyIfNotDetached();
+  if (proxy.IsEmpty()) {
+    // Return Undefined instead of an empty to avoid crashes further along the
+    // way, as `Wrap()` is expected to return a non-empty value.
+    return v8::Undefined(script_state->GetIsolate());
+  } else {
+    return proxy.ToLocalChecked();
+  }
 }
 
 v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
