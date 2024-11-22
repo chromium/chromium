@@ -473,9 +473,9 @@ java_group("android_webview_no_weblayer_java") {
     "//android_webview/support_library:support_lib_glue_java",
   ]
 
-  # If the T SDK isn't public yet, include the downstream code to support T.
-  if (!public_android_sdk && android_sdk_release == "t") {
-    deps += [ "//clank/android_webview/next:t_sdk_java" ]
+  # If the B SDK isn't public yet, include the downstream code to support B.
+  if (!public_android_sdk && android_sdk_release == "b") {
+    deps += [ "//clank/android_webview/next:b_sdk_java" ]
   }
 }
 
