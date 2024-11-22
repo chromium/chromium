@@ -618,13 +618,21 @@ HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
 // https://crbug.com/380313546
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_WindowOpenOnSecondaryScreen DISABLED_WindowOpenOnSecondaryScreen
+#define MAYBE_ScreenRotationSecondaryScreen \
+  DISABLED_ScreenRotationSecondaryScreen
 #else
 #define MAYBE_WindowOpenOnSecondaryScreen WindowOpenOnSecondaryScreen
+#define MAYBE_ScreenRotationSecondaryScreen ScreenRotationSecondaryScreen
 #endif
 
 HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
     MAYBE_WindowOpenOnSecondaryScreen,
     "sanity/window-open-on-secondary-screen.js",
     "--screen-info={ label='1st screen' }{ label='2nd screen' }")
+
+HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(
+    MAYBE_ScreenRotationSecondaryScreen,
+    "sanity/screen-rotation-secondary-screen.js",
+    "--screen-info={ label='1st screen' }{ 600x800 label='2nd screen' }")
 
 }  // namespace headless
