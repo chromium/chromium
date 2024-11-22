@@ -450,9 +450,6 @@ class Port(object):
             # Enable `ontouch*` event handlers for testing, even if no
             # touchscreen is actually detected.
             '--touch-events=enabled',
-            # Make rendering more consistent across high-/low-end CPUs during
-            # testing.
-            '--disable-skia-runtime-opts',
         ])
         return flags
 
