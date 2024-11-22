@@ -289,14 +289,22 @@ bool ResolveShortcutProperties(const FilePath& shortcut_path,
         return false;
       }
       switch (pv_app_id.get().vt) {
-        case VT_EMPTY:
+        case VT_EMPTY: {
           properties->set_app_id(std::wstring());
           break;
-        case VT_LPWSTR:
+        }
+        case VT_LPWSTR: {
           properties->set_app_id(pv_app_id.get().pwszVal);
           break;
-        default:
+        }
+        case VT_BSTR: {
+          BSTR bs = pv_app_id.get().bstrVal;
+          properties->set_app_id(std::wstring(bs, ::SysStringLen(bs)));
+          break;
+        }
+        default: {
           NOTREACHED() << "Unexpected variant type: " << pv_app_id.get().vt;
+        }
       }
     }
 
