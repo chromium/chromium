@@ -243,6 +243,7 @@ def CheckAccessibilityHtmlSvgPair(input_api, output_api):
         ]
     return []
 
+
 def CheckAccessibilityHtmlFileTest(input_api, output_api):
     """Checks that new HTML accessibility test files have corresponding test references."""
 
@@ -308,6 +309,65 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
                 "New HTML accessibility test files should have a corresponding "
                 "reference in the associated browsertest file.\n"
                 "Problems found:\n",
+                problems,
+            )
+        ]
+    return []
+
+
+# TODO(accessibility) Check the current directory for the html file,
+# instead of just added/modified files (if possible).
+def CheckAccessibilityHtmlExpectationsPair(input_api, output_api):
+    """Checks that HTML accessibility test files have corresponding
+    expectation files (and vice-versa)."""
+
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file, files_to_check=[r"content/test/data/accessibility/.+\.(html|txt)"]
+        )
+
+    problems = []
+    html_files = {}
+    txt_files = {}
+
+    for f in input_api.AffectedFiles(file_filter=FileFilter):
+        if f.Action() != 'A':
+            continue
+        path = f.LocalPath()
+        basename = input_api.os_path.basename(path)
+        name, ext = input_api.os_path.splitext(basename)
+        if ext == ".html":
+            html_files[name] = path
+        elif ext == ".txt" and "-expected-" in basename:
+            txt_files[name] = path
+
+    # Check HTML files for corresponding expectations
+    for name, html_path in html_files.items():
+        hasMatch = False
+        for key, _ in txt_files.items():
+            if name in key:
+                hasMatch = True
+                break
+        if not hasMatch:
+            problems.append(f"{html_path} (missing corresponding -expected-*.txt file)")
+
+    # Check expectation files for corresponding HTML
+    for name, txt_path in txt_files.items():
+        hasMatch = False
+        for key, _ in html_files.items():
+            if key in name:
+                hasMatch = True
+                break
+        if not hasMatch:
+            problems.append(f"{txt_path} (missing corresponding .html file)")
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                "HTML accessibility test files must have a corresponding"
+                "\nexpectation file (and vice-versa). Note this may be a"
+                "\nfalse positive if the html file already existed."
+                "\nProblems found:\n",
                 problems,
             )
         ]

@@ -620,5 +620,68 @@ class AccessibilityHtmlFileTestTest(unittest.TestCase):
         self.assertIn("WebContentsAccessibilityTreeTest.java", results[0].items[3])
 
 
+class CheckAccessibilityHtmlExpectationsPairTest(unittest.TestCase):
+
+    # Test no warning if valid pairs exist
+    def testValidPairs(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/foo.html", []),
+            MockFile("content/test/data/accessibility/aria/foo-expected-android.txt", []),
+            MockFile("content/test/data/accessibility/event/bar.html", []),
+            MockFile("content/test/data/accessibility/event/bar-expected-win.txt", []),
+            MockFile("content/test/data/accessibility/other/same.html", []),
+            MockFile("content/test/data/accessibility/other/same-expected-uia.txt", []),
+            MockFile("content/test/data/accessibility/other/same-expected-blink.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test no warning if simply modifying files
+    def testModifyNotChecked(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/foo.html", [], action='M'),
+            MockFile("content/test/data/accessibility/event/bar-expected-win.txt", [], action='M'),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test warnings raised if any pairing is missing
+    def testInvalidPairs(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/foo.html", []),
+            MockFile("content/test/data/accessibility/event/bar-expected-win.txt", []),
+            MockFile("content/test/data/accessibility/other/baz.html", []),
+            MockFile("content/test/data/accessibility/other/same-expected-chromium.txt", []),
+            MockFile("content/test/data/accessibility/accname/beep.html", []),
+            MockFile("content/test/data/accessibility/accname/beep-android.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(5, len(results[0].items))
+        self.assertIn("foo.html", results[0].items[0])
+        self.assertIn("missing corresponding -expected-*.txt", results[0].items[0])
+        self.assertIn("baz.html", results[0].items[1])
+        self.assertIn("missing corresponding -expected-*.txt", results[0].items[1])
+        self.assertIn("beep.html", results[0].items[2])
+        self.assertIn("missing corresponding -expected-*.txt", results[0].items[2])
+        self.assertIn("bar-expected-win.txt", results[0].items[3])
+        self.assertIn("missing corresponding .html", results[0].items[3])
+        self.assertIn("same-expected-chromium.txt", results[0].items[4])
+        self.assertIn("missing corresponding .html", results[0].items[4])
+
+    # Test no warnings for unrelated files/directories
+    def testNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/foo.html", []),
+            MockFile("foo/bar-expected-foo.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlExpectationsPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
 if __name__ == '__main__':
     unittest.main()
