@@ -372,6 +372,9 @@ class ASH_EXPORT AppListControllerImpl
   // using an empty `app_id`.
   bool SetHomeButtonQuickApp(const std::string& app_id);
 
+  // May show the Sunfish education nudge, anchored to the `launcher_button`.
+  void MaybeShowSunfishLauncherNudge(views::View* launcher_button);
+
  private:
   // Convenience methods for getting models from `model_provider_`.
   AppListModel* GetModel();

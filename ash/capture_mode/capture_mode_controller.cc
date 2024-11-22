@@ -43,6 +43,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/message_view_factory.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -900,6 +901,8 @@ void CaptureModeController::StartSunfishSession() {
           prefs::kSunfishEnabled)) {
     return;
   }
+  // Close the launcher nudge if it is still visible.
+  AnchoredNudgeManager::Get()->Cancel(capture_mode::kSunfishLauncherNudgeId);
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
 }
 

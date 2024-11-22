@@ -8,6 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_public_test_util.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_view.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/capture_mode/action_button_view.h"
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_button_view.h"
@@ -35,11 +39,15 @@
 #include "ash/scanner/scanner_controller.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/home_button.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/auto_reset.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -1600,6 +1608,59 @@ TEST_F(SunfishTest, PanelBounds) {
   target_bounds.set_y(above_button_y);
   EXPECT_EQ(controller->GetSearchResultsPanel()->GetBoundsInScreen(),
             target_bounds);
+}
+
+// Tests that the sunfish launcher nudge appears and closes properly in
+// clamshell mode.
+TEST_F(SunfishTest, ClamshellLauncherNudge) {
+  // Open the app list by clicking on the home button.
+  LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+  auto* bubble_view = GetAppListBubbleView();
+  ASSERT_TRUE(bubble_view);
+  auto* sunfish_button = bubble_view->search_box_view()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+
+  // The Sunfish launcher nudge should be visible.
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  const AnchoredNudge* nudge =
+      nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId);
+  ASSERT_TRUE(nudge);
+  EXPECT_TRUE(nudge->GetVisible());
+
+  // Start the sunfish session using the launcher button. The nudge should
+  // close.
+  LeftClickOn(sunfish_button);
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+  EXPECT_FALSE(
+      nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
+}
+
+// Tests that the sunfish launcher nudge appears and closes properly in
+// tablet mode.
+TEST_F(SunfishTest, TabletLauncherNudge) {
+  SwitchToTabletMode();
+
+  // The app list should be open by default when we enter tablet mode.
+  auto* app_list_view = GetAppListView();
+  ASSERT_TRUE(app_list_view);
+  auto* sunfish_button = app_list_view->search_box_view()->sunfish_button();
+  ASSERT_TRUE(sunfish_button);
+
+  // The Sunfish launcher nudge should be visible.
+  AnchoredNudgeManagerImpl* nudge_manager =
+      Shell::Get()->anchored_nudge_manager();
+  const AnchoredNudge* nudge =
+      nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId);
+  ASSERT_TRUE(nudge);
+  EXPECT_TRUE(nudge->GetVisible());
+
+  // Start the sunfish session using the launcher button. The nudge should
+  // close.
+  GestureTapOn(sunfish_button);
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+  EXPECT_FALSE(
+      nudge_manager->GetNudgeIfShown(capture_mode::kSunfishLauncherNudgeId));
 }
 
 class ScannerTest : public AshTestBase {

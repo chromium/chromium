@@ -17,6 +17,7 @@
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/quick_app_access_model.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
@@ -29,6 +30,7 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -52,6 +54,7 @@
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -1686,8 +1689,17 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
     last_visible_ = real_visibility;
 
     // Updates AppsContainerView in `fullscreen_presenter_`.
-    if (app_list_view)
+    if (app_list_view) {
       app_list_view->OnAppListVisibilityChanged(real_visibility);
+
+      // Only handle the tablet mode visibility changes, and let clamshell mode
+      // handle the nudge separately.
+      if (real_visibility && IsInTabletMode()) {
+        MaybeShowSunfishLauncherNudge(fullscreen_presenter_->GetView()
+                                          ->search_box_view()
+                                          ->sunfish_button());
+      }
+    }
 
     for (auto& observer : observers_)
       observer.OnAppListVisibilityChanged(real_visibility, display_id);
@@ -2063,6 +2075,28 @@ bool AppListControllerImpl::SetHomeButtonQuickApp(const std::string& app_id) {
     return false;
   }
   return model_provider_->quick_app_access_model()->SetQuickApp(app_id);
+}
+
+void AppListControllerImpl::MaybeShowSunfishLauncherNudge(
+    views::View* launcher_button) {
+  if (!IsSunfishAllowedAndEnabled()) {
+    return;
+  }
+
+  // TODO(hewer): Add user prefs to prevent the nudge from appearing too
+  // frequently.
+
+  CHECK(launcher_button);
+
+  // TODO(hewer): Upload string for translation.
+  AnchoredNudgeData nudge_data = AnchoredNudgeData(
+      capture_mode::kSunfishLauncherNudgeId,
+      NudgeCatalogName::kSunfishLauncherNudge,
+      u"Select anything on your screen and let your Chromebook suggest best "
+      u"actions from there",
+      launcher_button);
+
+  AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
 }  // namespace ash

@@ -143,7 +143,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   AppListBubblePage current_page_for_test() { return current_page_; }
   views::ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
-  SearchBoxView* search_box_view_for_test() { return search_box_view_; }
+  SearchBoxView* search_box_view() { return search_box_view_; }
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
   AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }

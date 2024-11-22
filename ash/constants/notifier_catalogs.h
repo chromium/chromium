@@ -259,7 +259,8 @@ enum class NudgeCatalogName {
   kVideoConferenceTraySidetoneNotSupported = 36,
   kVideoConferenceTraySidetoneEnabled = 37,
   kGraduationAppEnabled = 38,
-  kMaxValue = kGraduationAppEnabled
+  kSunfishLauncherNudge = 39,
+  kMaxValue = kSunfishLauncherNudge
 };
 
 // A living catalog that registers toasts.

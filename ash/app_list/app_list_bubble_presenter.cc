@@ -15,6 +15,8 @@
 #include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/search_box_view.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -275,6 +277,11 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
   const bool is_side_shelf = !shelf->IsHorizontalAlignment();
   bubble_view_->StartShowAnimation(is_side_shelf);
   controller_->OnVisibilityChanged(/*visible=*/true, display_id);
+
+  // Show the sunfish nudge after the widget is shown, so the anchor view is
+  // visible.
+  controller_->MaybeShowSunfishLauncherNudge(
+      bubble_view_->search_box_view()->sunfish_button());
 }
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {

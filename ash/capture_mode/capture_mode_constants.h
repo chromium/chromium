@@ -158,6 +158,9 @@ constexpr int kPanelButtonSpacing = 10;
 inline constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 
+// The ID for the nudge anchored to the Sunfish button in the launcher.
+inline constexpr char kSunfishLauncherNudgeId[] = "kSunfishLauncherNudge";
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_
