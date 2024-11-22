@@ -162,8 +162,15 @@ void DisplayMediaAccessHandler::HandleRequest(
   // in Mac, because the UI implementation in Mac pops a window over any content
   // which might be confusing for the users. See https://crbug.com/1407733 for
   // details.
+  //
+  // If the page isn't in the foreground, but the page has a document
+  // picture-in-picture window, then we will still allow it as the picker will
+  // be displayed on the document picture-in-picture window.
+  //
   // TODO(emircan): Remove this once Mac UI doesn't use a window.
   if (web_contents->GetVisibility() != content::Visibility::VISIBLE &&
+      !(base::FeatureList::IsEnabled(kDisplayCaptureUiInPipIfActive) &&
+        web_contents->HasPictureInPictureDocument()) &&
       request.request_type != blink::MEDIA_DEVICE_UPDATE) {
     LOG(ERROR) << "Do not allow getDisplayMedia() on a backgrounded page.";
     std::move(callback).Run(
