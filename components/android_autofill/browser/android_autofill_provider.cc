@@ -108,6 +108,8 @@ WebAuthnCredManDelegate* GetCredManDelegate(AutofillManager* manager) {
 }
 
 bool AllowCredManOnField(const FormFieldData& field) {
+  // TODO(crbug.com/380405846): Carefully clean up this check when the feature
+  // is launched such that it doesn't accidentally get launched for WebView.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillVirtualViewStructureAndroid)) {
     return false;
