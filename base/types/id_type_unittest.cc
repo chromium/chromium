@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <limits>
-
 #include "base/types/id_type.h"
+
+#include <limits>
+#include <unordered_map>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -104,6 +106,19 @@ TEST(IdType, EnsureConstexpr) {
   static_assert(!kMultiZero, "");
   static_assert(!kMultiNegative, "");
   static_assert(kMultiOne, "");
+}
+
+TEST(IdType, Map) {
+  struct TestObject {};
+  using TestId = IdType32<class MapTestTag>;
+  TestId::Generator id_generator;
+  std::unordered_map<TestId, TestObject> map;
+
+  TestObject obj[5];
+
+  for (auto& i : obj) {
+    map[id_generator.GenerateNextId()] = i;
+  }
 }
 
 class IdTypeSpecificValueTest : public ::testing::TestWithParam<int> {

@@ -6,6 +6,7 @@
 #define BASE_TYPES_ID_TYPE_H_
 
 #include <cstdint>
+#include <functional>
 #include <type_traits>
 
 #include "base/ranges/algorithm.h"
@@ -37,7 +38,7 @@ namespace base {
 //
 // IdType32<Foo> behaves just like an int32_t in the following aspects:
 // - it can be used as a key in std::map;
-// - it can be used as a key in std::unordered_map (see StrongAlias::Hasher);
+// - it can be used as a key in std::unordered_map
 // - it can be used as an argument to DCHECK_EQ or streamed to LOG(ERROR);
 // - it has the same memory footprint and runtime overhead as int32_t;
 // - it can be copied by memcpy.
@@ -132,5 +133,24 @@ template <typename TypeMarker>
 using IdTypeU64 = IdType<TypeMarker, std::uint64_t, 0>;
 
 }  // namespace base
+
+template <typename TypeMarker,
+          typename WrappedType,
+          WrappedType kInvalidValue,
+          WrappedType kFirstGeneratedId,
+          WrappedType... kExtraInvalidValues>
+struct std::hash<base::IdType<TypeMarker,
+                              WrappedType,
+                              kInvalidValue,
+                              kFirstGeneratedId,
+                              kExtraInvalidValues...>> {
+  size_t operator()(const base::IdType<TypeMarker,
+                                       WrappedType,
+                                       kInvalidValue,
+                                       kFirstGeneratedId,
+                                       kExtraInvalidValues...>& id) const {
+    return std::hash<WrappedType>()(id.value());
+  }
+};
 
 #endif  // BASE_TYPES_ID_TYPE_H_
