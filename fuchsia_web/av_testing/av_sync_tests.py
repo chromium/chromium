@@ -161,13 +161,6 @@ def main() -> int:
 
 if __name__ == '__main__':
     logging.warning('Running %s with env %s', sys.argv, os.environ)
-    # TODO(crbug.com/40935291): Currently the machine is not running a fuchsia
-    # managed docker image, the FUCHSIA_NODENAME environment is not set.
-    if 'FUCHSIA_NODENAME' not in os.environ:
-        os.environ['FUCHSIA_NODENAME'] = Path(
-            '/home/swarming/target-id').read_text().strip()
-    # The version is not available without explicitly sending in the
-    # command line flags.
     logging.warning('Chrome version %s %s', version.chrome_version_str(),
                     version.git_revision())
     build_info = get_build_info()
