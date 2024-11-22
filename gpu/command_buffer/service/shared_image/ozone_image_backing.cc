@@ -695,10 +695,8 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
         << "Unexpected write stream: " << static_cast<int>(access_stream)
         << ", " << static_cast<int>(last_write_stream_) << ", "
         << write_streams_count_;
-    // Always need end fence for multiple write streams. For single write stream
-    // need an end fence for all usages except for raster using delegated
-    // compositing.
-    need_end_fence = write_streams_count_ > 1;
+    // Always need end fence.
+    need_end_fence = true;
   }
 
   return true;
