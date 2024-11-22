@@ -784,12 +784,6 @@ ArcManagementTransition GetManagementTransition(const Profile* profile) {
   const ArcManagementTransition management_transition =
       static_cast<ArcManagementTransition>(
           profile->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
-  const bool is_unmanaged_to_managed_enabled =
-      base::FeatureList::IsEnabled(kEnableUnmanagedToManagedTransitionFeature);
-  if (management_transition == ArcManagementTransition::UNMANAGED_TO_MANAGED &&
-      !is_unmanaged_to_managed_enabled) {
-    return ArcManagementTransition::NO_TRANSITION;
-  }
   return management_transition;
 }
 

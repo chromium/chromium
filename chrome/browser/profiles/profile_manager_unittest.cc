@@ -1186,10 +1186,6 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
 }
 
 TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
@@ -1201,10 +1197,6 @@ TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
 }
 
 TEST_F(ProfileManagerTest, InitProfileForManagedUserOnFirstSignIn) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       true /* profile_is_new */, false /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
@@ -1230,10 +1222,6 @@ TEST_F(ProfileManagerTest,
 
 TEST_F(ProfileManagerTest,
        InitProfileForManagedUserForFirstSignInOnNewVersion) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
@@ -1245,10 +1233,6 @@ TEST_F(ProfileManagerTest,
 }
 
 TEST_F(ProfileManagerTest, InitProfileForChildUserForFirstSignInOnNewVersion) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       true /* profile_is_child */, true /* user_is_child */,

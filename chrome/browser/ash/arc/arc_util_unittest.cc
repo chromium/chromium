@@ -190,7 +190,6 @@ class ChromeArcUtilTest : public testing::Test {
  private:
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
-  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
@@ -646,30 +645,13 @@ TEST_F(ChromeArcUtilTest, ArcStartModeWithoutPlayStore) {
   EXPECT_FALSE(IsPlayStoreAvailable());
 }
 
-TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
+TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition) {
   profile()->GetPrefs()->SetInteger(
       arc::prefs::kArcManagementTransition,
       static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
 
   EXPECT_EQ(GetManagementTransition(profile()),
             arc::ArcManagementTransition::UNMANAGED_TO_MANAGED);
-}
-
-TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition_FeatureOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
-  profile()->GetPrefs()->SetInteger(
-      arc::prefs::kArcManagementTransition,
-      static_cast<int>(arc::ArcManagementTransition::UNMANAGED_TO_MANAGED));
-
-  EXPECT_EQ(GetManagementTransition(profile()),
-            arc::ArcManagementTransition::NO_TRANSITION);
 }
 
 class ArcOobeTest : public ChromeArcUtilTest {

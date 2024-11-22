@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_session_runner.h"
@@ -64,10 +63,7 @@ class ManagementTransitionScreenTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<TransitionScreenTestParams> {
  public:
-  ManagementTransitionScreenTest() {
-    feature_list_.InitAndEnableFeature(
-        arc::kEnableUnmanagedToManagedTransitionFeature);
-  }
+  ManagementTransitionScreenTest() = default;
 
   ManagementTransitionScreen* GetScreen() {
     return WizardController::default_controller()
@@ -132,8 +128,6 @@ class ManagementTransitionScreenTest
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_, /*test_base=*/this,
                                           embedded_test_server(),
                                           GetTargetUserType()};
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagementTransitionScreenTest,
