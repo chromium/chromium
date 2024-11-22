@@ -206,7 +206,6 @@ test("cast_unittests") {
     "sender/openscreen_frame_sender_unittest.cc",
     "sender/video_bitrate_suggester_unittest.cc",
     "sender/video_sender_unittest.cc",
-    "test/utility/audio_utility_unittest.cc",
   ]
 
   deps = [

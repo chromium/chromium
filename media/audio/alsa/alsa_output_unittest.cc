@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 #include <memory>
 
@@ -47,6 +42,29 @@ using testing::StrEq;
 using testing::Unused;
 
 namespace media {
+namespace {
+
+constexpr const ChannelLayout kTestChannelLayout = CHANNEL_LAYOUT_STEREO;
+constexpr const int kTestSampleRate = AudioParameters::kAudioCDSampleRate;
+constexpr const int kTestBitsPerSample = 16;
+constexpr const AudioParameters::Format kTestFormat =
+    AudioParameters::AUDIO_PCM_LINEAR;
+constexpr const char kTestDeviceName[] = "TestDevice";
+constexpr const char kDummyMessage[] = "dummy";
+constexpr const uint32_t kTestFramesPerPacket = 1000;
+constexpr const int kTestFailedErrno = -EACCES;
+
+const int kTestBytesPerFrame =
+    kTestBitsPerSample / 8 * ChannelLayoutToChannelCount(kTestChannelLayout);
+const size_t kTestPacketSize = kTestFramesPerPacket * kTestBytesPerFrame;
+
+// The APIs that use handles are not const-correct and require this annoying
+// conversion.
+snd_pcm_t* GetFakeHandle() {
+  return const_cast<snd_pcm_t*>(reinterpret_cast<snd_pcm_t*>(1));
+}
+
+}  // namespace
 
 class MockAudioManagerAlsa : public AudioManagerAlsa {
  public:
@@ -123,70 +141,17 @@ class AlsaPcmOutputStreamTest : public testing::Test {
   // in all tests that use buffer_ without opening the stream.
   void InitBuffer(AlsaPcmOutputStream* test_stream) {
     DCHECK(test_stream);
-    packet_ = new DataBuffer(kTestPacketSize);
-    packet_->set_data_size(kTestPacketSize);
+    packet_ = base::MakeRefCounted<DataBuffer>(kTestPacketSize);
+    packet_->set_size(kTestPacketSize);
     test_stream->buffer_ = std::make_unique<SeekableBuffer>(0, kTestPacketSize);
     test_stream->buffer_->Append(packet_.get());
   }
-
-  static const ChannelLayout kTestChannelLayout;
-  static const int kTestSampleRate;
-  static const int kTestBitsPerSample;
-  static const int kTestBytesPerFrame;
-  static const AudioParameters::Format kTestFormat;
-  static const char kTestDeviceName[];
-  static const char kDummyMessage[];
-  static const uint32_t kTestFramesPerPacket;
-  static const int kTestPacketSize;
-  static const int kTestFailedErrno;
-  static snd_pcm_t* const kFakeHandle;
-
-  // Used to simulate DeviceNameHint.
-  static char kSurround40[];
-  static char kSurround41[];
-  static char kSurround50[];
-  static char kSurround51[];
-  static char kSurround70[];
-  static char kSurround71[];
-  static void* kFakeHints[];
-  static char kGenericSurround50[];
 
   base::TestMessageLoop message_loop_;
   StrictMock<MockAlsaWrapper> mock_alsa_wrapper_;
   std::unique_ptr<StrictMock<MockAudioManagerAlsa>> mock_manager_;
   scoped_refptr<DataBuffer> packet_;
 };
-
-const ChannelLayout AlsaPcmOutputStreamTest::kTestChannelLayout =
-    CHANNEL_LAYOUT_STEREO;
-const int AlsaPcmOutputStreamTest::kTestSampleRate =
-    AudioParameters::kAudioCDSampleRate;
-const int AlsaPcmOutputStreamTest::kTestBitsPerSample = 16;
-const int AlsaPcmOutputStreamTest::kTestBytesPerFrame =
-    AlsaPcmOutputStreamTest::kTestBitsPerSample / 8 *
-    ChannelLayoutToChannelCount(AlsaPcmOutputStreamTest::kTestChannelLayout);
-const AudioParameters::Format AlsaPcmOutputStreamTest::kTestFormat =
-    AudioParameters::AUDIO_PCM_LINEAR;
-const char AlsaPcmOutputStreamTest::kTestDeviceName[] = "TestDevice";
-const char AlsaPcmOutputStreamTest::kDummyMessage[] = "dummy";
-const uint32_t AlsaPcmOutputStreamTest::kTestFramesPerPacket = 1000;
-const int AlsaPcmOutputStreamTest::kTestPacketSize =
-    AlsaPcmOutputStreamTest::kTestFramesPerPacket *
-    AlsaPcmOutputStreamTest::kTestBytesPerFrame;
-const int AlsaPcmOutputStreamTest::kTestFailedErrno = -EACCES;
-snd_pcm_t* const AlsaPcmOutputStreamTest::kFakeHandle =
-    reinterpret_cast<snd_pcm_t*>(1);
-
-char AlsaPcmOutputStreamTest::kSurround40[] = "surround40:CARD=foo,DEV=0";
-char AlsaPcmOutputStreamTest::kSurround41[] = "surround41:CARD=foo,DEV=0";
-char AlsaPcmOutputStreamTest::kSurround50[] = "surround50:CARD=foo,DEV=0";
-char AlsaPcmOutputStreamTest::kSurround51[] = "surround51:CARD=foo,DEV=0";
-char AlsaPcmOutputStreamTest::kSurround70[] = "surround70:CARD=foo,DEV=0";
-char AlsaPcmOutputStreamTest::kSurround71[] = "surround71:CARD=foo,DEV=0";
-void* AlsaPcmOutputStreamTest::kFakeHints[] = {
-    kSurround40, kSurround41, kSurround50, kSurround51,
-    kSurround70, kSurround71, nullptr};
-char AlsaPcmOutputStreamTest::kGenericSurround50[] = "surround50";
 
 // Custom action to clear a memory buffer.
 ACTION(ClearBuffer) {
@@ -210,7 +175,7 @@ TEST_F(AlsaPcmOutputStreamTest, ConstructedState) {
 }
 
 TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
-  const double kMicrosPerFrame =
+  constexpr const double kMicrosPerFrame =
       static_cast<double>(1000000) / kTestSampleRate;
   const double kPacketFramesInMinLatency =
       AlsaPcmOutputStream::kMinLatencyMicros / kMicrosPerFrame / 2.0;
@@ -219,7 +184,7 @@ TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
   // AlsaPcmOutputStream::kMinLatencyMicros will get clipped to
   // AlsaPcmOutputStream::kMinLatencyMicros,
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_,
               PcmSetParams(_, _, _, _, _, _,
                            AlsaPcmOutputStream::kMinLatencyMicros))
@@ -233,8 +198,9 @@ TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
   ASSERT_TRUE(test_stream->Open());
 
   // Now close it and test that everything was released.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle)).WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
+      .WillOnce(Return(0));
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   test_stream->Close();
 
@@ -248,7 +214,7 @@ TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
                                 .InMicroseconds();
 
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_,
               PcmSetParams(_, _, _, _, _, _, expected_micros))
       .WillOnce(Return(0));
@@ -261,9 +227,9 @@ TEST_F(AlsaPcmOutputStreamTest, LatencyFloor) {
   ASSERT_TRUE(test_stream->Open());
 
   // Now close it and test that everything was released.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   test_stream->Close();
 
@@ -282,14 +248,14 @@ TEST_F(AlsaPcmOutputStreamTest, OpenClose) {
   EXPECT_CALL(mock_alsa_wrapper_,
               PcmOpen(_, StrEq(kTestDeviceName), SND_PCM_STREAM_PLAYBACK,
                       SND_PCM_NONBLOCK))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_,
-              PcmSetParams(kFakeHandle, SND_PCM_FORMAT_S16_LE,
+              PcmSetParams(GetFakeHandle(), SND_PCM_FORMAT_S16_LE,
                            SND_PCM_ACCESS_RW_INTERLEAVED,
                            ChannelLayoutToChannelCount(kTestChannelLayout),
                            kTestSampleRate, 1, expected_micros))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmGetParams(kFakeHandle, _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmGetParams(GetFakeHandle(), _, _))
       .WillOnce(DoAll(SetArgPointee<1>(kTestFramesPerPacket),
                       SetArgPointee<2>(kTestFramesPerPacket / 2), Return(0)));
 
@@ -298,15 +264,15 @@ TEST_F(AlsaPcmOutputStreamTest, OpenClose) {
   ASSERT_TRUE(test_stream->Open());
 
   EXPECT_EQ(AlsaPcmOutputStream::kIsOpened, test_stream->state());
-  EXPECT_EQ(kFakeHandle, test_stream->playback_handle_);
+  EXPECT_EQ(GetFakeHandle(), test_stream->playback_handle_);
   EXPECT_EQ(kTestFramesPerPacket, test_stream->frames_per_packet_);
   EXPECT_TRUE(test_stream->buffer_.get());
   EXPECT_FALSE(test_stream->stop_stream_);
 
   // Now close it and test that everything was released.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   test_stream->Close();
 }
@@ -332,12 +298,12 @@ TEST_F(AlsaPcmOutputStreamTest, PcmOpenFailed) {
 
 TEST_F(AlsaPcmOutputStreamTest, PcmSetParamsFailed) {
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_, PcmSetParams(_, _, _, _, _, _, _))
       .WillOnce(Return(kTestFailedErrno));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   EXPECT_CALL(mock_alsa_wrapper_, StrError(kTestFailedErrno))
       .WillOnce(Return(kDummyMessage));
@@ -362,7 +328,7 @@ TEST_F(AlsaPcmOutputStreamTest, StartStop) {
   // with the resulting configuration data, and transitions the object state to
   // kIsOpened.
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_, PcmSetParams(_, _, _, _, _, _, _))
       .WillOnce(Return(0));
   EXPECT_CALL(mock_alsa_wrapper_, PcmGetParams(_, _, _))
@@ -377,26 +343,25 @@ TEST_F(AlsaPcmOutputStreamTest, StartStop) {
   test_stream->SetTickClockForTesting(&tick_clock);
 
   // Expect Device setup.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmDrop(kFakeHandle))
-      .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmPrepare(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmDrop(GetFakeHandle())).WillOnce(Return(0));
+  EXPECT_CALL(mock_alsa_wrapper_, PcmPrepare(GetFakeHandle()))
       .WillOnce(Return(0));
 
   // Expect the pre-roll.
   MockAudioSourceCallback mock_callback;
-  EXPECT_CALL(mock_alsa_wrapper_, PcmState(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmState(GetFakeHandle()))
       .WillRepeatedly(Return(SND_PCM_STATE_RUNNING));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmDelay(kFakeHandle, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmDelay(GetFakeHandle(), _))
       .WillRepeatedly(DoAll(SetArgPointee<1>(0), Return(0)));
   EXPECT_CALL(mock_callback,
               OnMoreData(base::TimeDelta(), tick_clock.NowTicks(),
                          AudioGlitchInfo(), _))
       .WillRepeatedly(DoAll(ClearBuffer(), Return(kTestFramesPerPacket)));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(kFakeHandle, _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(GetFakeHandle(), _, _))
       .WillRepeatedly(Return(kTestFramesPerPacket));
 
   // Expect scheduling.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
       .Times(AtLeast(2))
       .WillRepeatedly(Return(kTestFramesPerPacket));
 
@@ -407,9 +372,9 @@ TEST_F(AlsaPcmOutputStreamTest, StartStop) {
   test_stream->Stop();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   test_stream->Close();
 }
@@ -432,7 +397,7 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketFinishedPacket) {
 TEST_F(AlsaPcmOutputStreamTest, WritePacketNormalPacket) {
   // We need to open the stream before writing data to ALSA.
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_, PcmSetParams(_, _, _, _, _, _, _))
       .WillOnce(Return(0));
   EXPECT_CALL(mock_alsa_wrapper_, PcmGetParams(_, _, _))
@@ -444,32 +409,34 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketNormalPacket) {
   test_stream->TransitionTo(AlsaPcmOutputStream::kIsPlaying);
 
   // Write a little less than half the data.
-  int written = packet_->data_size() / kTestBytesPerFrame / 2 - 1;
-  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(kFakeHandle))
-        .WillOnce(Return(written));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(kFakeHandle, packet_->data(), _))
+  int written = packet_->size() / kTestBytesPerFrame / 2 - 1;
+  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
+      .WillOnce(Return(written));
+  EXPECT_CALL(mock_alsa_wrapper_,
+              PcmWritei(GetFakeHandle(), packet_->data().data(), _))
       .WillOnce(Return(written));
 
   test_stream->WritePacket();
 
   ASSERT_EQ(test_stream->buffer_->forward_bytes(),
-            packet_->data_size() - written * kTestBytesPerFrame);
+            packet_->size() - written * kTestBytesPerFrame);
 
   // Write the rest.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
       .WillOnce(Return(kTestFramesPerPacket - written));
-  EXPECT_CALL(mock_alsa_wrapper_,
-              PcmWritei(kFakeHandle,
-                        packet_->data() + written * kTestBytesPerFrame,
-                        _))
-      .WillOnce(Return(packet_->data_size() / kTestBytesPerFrame - written));
+  EXPECT_CALL(
+      mock_alsa_wrapper_,
+      PcmWritei(GetFakeHandle(),
+                packet_->data().subspan(written * kTestBytesPerFrame).data(),
+                _))
+      .WillOnce(Return(packet_->size() / kTestBytesPerFrame - written));
   test_stream->WritePacket();
-  EXPECT_EQ(0, test_stream->buffer_->forward_bytes());
+  EXPECT_EQ(0u, test_stream->buffer_->forward_bytes());
 
   // Now close it and test that everything was released.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   test_stream->Close();
 }
@@ -477,7 +444,7 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketNormalPacket) {
 TEST_F(AlsaPcmOutputStreamTest, WritePacketWriteFails) {
   // We need to open the stream before writing data to ALSA.
   EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_, PcmSetParams(_, _, _, _, _, _, _))
       .WillOnce(Return(0));
   EXPECT_CALL(mock_alsa_wrapper_, PcmGetParams(_, _, _))
@@ -490,34 +457,34 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketWriteFails) {
 
   // Fail due to a recoverable error and see that PcmRecover code path
   // continues normally.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
       .WillOnce(Return(kTestFramesPerPacket));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(kFakeHandle, _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(GetFakeHandle(), _, _))
       .WillOnce(Return(-EINTR));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmRecover(kFakeHandle, _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmRecover(GetFakeHandle(), _, _))
       .WillOnce(Return(0));
 
   test_stream->WritePacket();
 
-  ASSERT_EQ(test_stream->buffer_->forward_bytes(), packet_->data_size());
+  ASSERT_EQ(test_stream->buffer_->forward_bytes(), packet_->size());
 
   // Fail the next write, and see that stop_stream_ is set.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(kFakeHandle))
-        .WillOnce(Return(kTestFramesPerPacket));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(kFakeHandle, _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
+      .WillOnce(Return(kTestFramesPerPacket));
+  EXPECT_CALL(mock_alsa_wrapper_, PcmWritei(GetFakeHandle(), _, _))
       .WillOnce(Return(kTestFailedErrno));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmRecover(kFakeHandle, _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmRecover(GetFakeHandle(), _, _))
       .WillOnce(Return(kTestFailedErrno));
   EXPECT_CALL(mock_alsa_wrapper_, StrError(kTestFailedErrno))
       .WillOnce(Return(kDummyMessage));
   test_stream->WritePacket();
-  EXPECT_EQ(test_stream->buffer_->forward_bytes(), packet_->data_size());
+  EXPECT_EQ(test_stream->buffer_->forward_bytes(), packet_->size());
   EXPECT_TRUE(test_stream->stop_stream_);
 
   // Now close it and test that everything was released.
-  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmClose(GetFakeHandle()))
       .WillOnce(Return(0));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmName(kFakeHandle))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmName(GetFakeHandle()))
       .WillOnce(Return(kTestDeviceName));
   test_stream->Close();
 }
@@ -531,7 +498,7 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketStopStream) {
   // No expectations set on the strict mock because nothing should be called.
   test_stream->stop_stream_ = true;
   test_stream->WritePacket();
-  EXPECT_EQ(0, test_stream->buffer_->forward_bytes());
+  EXPECT_EQ(0u, test_stream->buffer_->forward_bytes());
   test_stream->Close();
 }
 
@@ -639,6 +606,22 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacketFullBuffer) {
   test_stream->Close();
 }
 
+constexpr const char kSurround40[] = "surround40:CARD=foo,DEV=0";
+constexpr const char kSurround41[] = "surround41:CARD=foo,DEV=0";
+constexpr const char kSurround50[] = "surround50:CARD=foo,DEV=0";
+constexpr const char kSurround51[] = "surround51:CARD=foo,DEV=0";
+constexpr const char kSurround70[] = "surround70:CARD=foo,DEV=0";
+constexpr const char kSurround71[] = "surround71:CARD=foo,DEV=0";
+constexpr const char kGenericSurround50[] = "surround50";
+
+void** GetFakeHints() {
+  static const char* kFakeHints[] = {kSurround40, kSurround41, kSurround50,
+                                     kSurround51, kSurround70, kSurround71,
+                                     nullptr};
+  return const_cast<void**>(
+      reinterpret_cast<const void** const>(std::data(kFakeHints)));
+}
+
 TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
   // Try channels from 1 -> 9. and see that we get the more specific surroundXX
   // device opened for channels 4-8.  For all other channels, the device should
@@ -648,28 +631,14 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
   //
   // Note that the loop starts at "1", so the first parameter is ignored in
   // these arrays.
-  const char* kExpectedDeviceName[] = {nullptr,
-                                       AlsaPcmOutputStream::kDefaultDevice,
-                                       AlsaPcmOutputStream::kDefaultDevice,
-                                       AlsaPcmOutputStream::kDefaultDevice,
-                                       kSurround40,
-                                       kSurround50,
-                                       kSurround51,
-                                       kSurround70,
-                                       kSurround71,
-                                       AlsaPcmOutputStream::kDefaultDevice};
-  bool kExpectedDownmix[] = { false, false, false, false, false, true,
-                              false, false, false, false };
-  ChannelLayout kExpectedLayouts[] = { CHANNEL_LAYOUT_NONE,
-                                       CHANNEL_LAYOUT_MONO,
-                                       CHANNEL_LAYOUT_STEREO,
-                                       CHANNEL_LAYOUT_SURROUND,
-                                       CHANNEL_LAYOUT_4_0,
-                                       CHANNEL_LAYOUT_5_0,
-                                       CHANNEL_LAYOUT_5_1,
-                                       CHANNEL_LAYOUT_7_0,
-                                       CHANNEL_LAYOUT_7_1 };
-
+  constexpr std::array<const char*, 9> kExpectedDeviceName{
+      {nullptr, AlsaPcmOutputStream::kDefaultDevice,
+       AlsaPcmOutputStream::kDefaultDevice, AlsaPcmOutputStream::kDefaultDevice,
+       kSurround40, kSurround50, kSurround51, kSurround70, kSurround71}};
+  constexpr std::array<ChannelLayout, 9> kExpectedLayouts{
+      {CHANNEL_LAYOUT_NONE, CHANNEL_LAYOUT_MONO, CHANNEL_LAYOUT_STEREO,
+       CHANNEL_LAYOUT_SURROUND, CHANNEL_LAYOUT_4_0, CHANNEL_LAYOUT_5_0,
+       CHANNEL_LAYOUT_5_1, CHANNEL_LAYOUT_7_0, CHANNEL_LAYOUT_7_1}};
 
   for (int i = 1; i < 9; ++i) {
     if (i == 3 || i == 4 || i == 5)  // invalid number of channels
@@ -682,16 +651,16 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
       // The DeviceNameHint and DeviceNameFreeHint need to be paired to avoid a
       // memory leak.
       EXPECT_CALL(mock_alsa_wrapper_, DeviceNameHint(_, _, _))
-          .WillOnce(DoAll(SetArgPointee<2>(&kFakeHints[0]), Return(0)));
-      EXPECT_CALL(mock_alsa_wrapper_, DeviceNameFreeHint(&kFakeHints[0]))
+          .WillOnce(DoAll(SetArgPointee<2>(GetFakeHints()), Return(0)));
+      EXPECT_CALL(mock_alsa_wrapper_, DeviceNameFreeHint(GetFakeHints()))
           .Times(1);
     }
 
     EXPECT_CALL(mock_alsa_wrapper_,
                 PcmOpen(_, StrEq(kExpectedDeviceName[i]), _, _))
-        .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+        .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
     EXPECT_CALL(mock_alsa_wrapper_,
-                PcmSetParams(kFakeHandle, _, _, i, _, _, _))
+                PcmSetParams(GetFakeHandle(), _, _, i, _, _, _))
         .WillOnce(Return(0));
 
     // The parameters are specified by ALSA documentation, and are in constants
@@ -703,8 +672,9 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
 
     AlsaPcmOutputStream* test_stream = CreateStream(kExpectedLayouts[i]);
     EXPECT_TRUE(test_stream->AutoSelectDevice(i));
-    EXPECT_EQ(kExpectedDownmix[i],
-              static_cast<bool>(test_stream->channel_mixer_));
+
+    // Expected downmix is only true for the fifth iteration.
+    EXPECT_EQ(i == 5, static_cast<bool>(test_stream->channel_mixer_));
 
     Mock::VerifyAndClearExpectations(&mock_alsa_wrapper_);
     Mock::VerifyAndClearExpectations(mock_manager_.get());
@@ -713,8 +683,6 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceDeviceSelect) {
 }
 
 TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceFallbackDevices) {
-  using std::string;
-
   // If there are problems opening a multi-channel device, it the fallbacks
   // operations should be as follows.  Assume the multi-channel device name is
   // surround50:
@@ -726,19 +694,16 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceFallbackDevices) {
   //   5) Try open "plug:default".
   //   6) Give up trying to open.
   //
-  const string first_try = kSurround50;
-  const string second_try = string(AlsaPcmOutputStream::kPlugPrefix) +
-                            kSurround50;
-  const string third_try = string(AlsaPcmOutputStream::kPlugPrefix) +
-                           kGenericSurround50;
-  const string fourth_try = AlsaPcmOutputStream::kDefaultDevice;
-  const string fifth_try = string(AlsaPcmOutputStream::kPlugPrefix) +
-                           AlsaPcmOutputStream::kDefaultDevice;
+  const std::array<std::string, 5> kTries{
+      {kSurround50, std::string(AlsaPcmOutputStream::kPlugPrefix) + kSurround50,
+       std::string(AlsaPcmOutputStream::kPlugPrefix) + kGenericSurround50,
+       AlsaPcmOutputStream::kDefaultDevice,
+       std::string(AlsaPcmOutputStream::kPlugPrefix) +
+           AlsaPcmOutputStream::kDefaultDevice}};
 
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameHint(_, _, _))
-      .WillOnce(DoAll(SetArgPointee<2>(&kFakeHints[0]), Return(0)));
-  EXPECT_CALL(mock_alsa_wrapper_, DeviceNameFreeHint(&kFakeHints[0]))
-      .Times(1);
+      .WillOnce(DoAll(SetArgPointee<2>(GetFakeHints()), Return(0)));
+  EXPECT_CALL(mock_alsa_wrapper_, DeviceNameFreeHint(GetFakeHints())).Times(1);
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameGetHint(_, StrEq("IOID")))
       .WillRepeatedly(Invoke(OutputHint));
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameGetHint(_, StrEq("NAME")))
@@ -747,15 +712,15 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceFallbackDevices) {
       .WillRepeatedly(Return(kDummyMessage));
 
   InSequence s;
-  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(first_try.c_str()), _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(kTries[0].c_str()), _, _))
       .WillOnce(Return(kTestFailedErrno));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(second_try.c_str()), _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(kTries[1].c_str()), _, _))
       .WillOnce(Return(kTestFailedErrno));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(third_try.c_str()), _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(kTries[2].c_str()), _, _))
       .WillOnce(Return(kTestFailedErrno));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(fourth_try.c_str()), _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(kTries[3].c_str()), _, _))
       .WillOnce(Return(kTestFailedErrno));
-  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(fifth_try.c_str()), _, _))
+  EXPECT_CALL(mock_alsa_wrapper_, PcmOpen(_, StrEq(kTries[4].c_str()), _, _))
       .WillOnce(Return(kTestFailedErrno));
 
   AlsaPcmOutputStream* test_stream = CreateStream(CHANNEL_LAYOUT_5_0);
@@ -770,9 +735,9 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDeviceHintFail) {
       .WillRepeatedly(Return(kTestFailedErrno));
   EXPECT_CALL(mock_alsa_wrapper_,
               PcmOpen(_, StrEq(AlsaPcmOutputStream::kDefaultDevice), _, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kFakeHandle), Return(0)));
+      .WillOnce(DoAll(SetArgPointee<0>(GetFakeHandle()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_,
-              PcmSetParams(kFakeHandle, _, _, 2, _, _, _))
+              PcmSetParams(GetFakeHandle(), _, _, 2, _, _, _))
       .WillOnce(Return(0));
   EXPECT_CALL(mock_alsa_wrapper_, StrError(kTestFailedErrno))
       .WillOnce(Return(kDummyMessage));
@@ -789,7 +754,7 @@ TEST_F(AlsaPcmOutputStreamTest, BufferPacketStopStream) {
   test_stream->stop_stream_ = true;
   bool source_exhausted;
   test_stream->BufferPacket(&source_exhausted);
-  EXPECT_EQ(0, test_stream->buffer_->forward_bytes());
+  EXPECT_EQ(0u, test_stream->buffer_->forward_bytes());
   EXPECT_TRUE(source_exhausted);
   test_stream->Close();
 }

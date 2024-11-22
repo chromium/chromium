@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <memory>
 
 #include "base/android/build_info.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -215,7 +212,8 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // sufficient data remaining in the file to fill up the complete frame.
     int frames = max_size / (dest->channels() * kBytesPerSample);
     if (max_size) {
-      auto* source = reinterpret_cast<const int16_t*>(file_->data() + pos_);
+      auto* source = reinterpret_cast<const int16_t*>(
+          base::span<const uint8_t>(*file_).subspan(pos_).data());
       dest->FromInterleaved<SignedInt16SampleTypeTraits>(source, frames);
       pos_ += max_size;
     }
@@ -267,20 +265,19 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   FileAudioSink& operator=(const FileAudioSink&) = delete;
 
   ~FileAudioSink() override {
-    int bytes_written = 0;
+    size_t bytes_written = 0;
     while (bytes_written < buffer_->forward_capacity()) {
-      const uint8_t* chunk;
-      int chunk_size;
-
+      const base::span<const uint8_t> chunk = buffer_->GetCurrentChunk();
       // Stop writing if no more data is available.
-      if (!buffer_->GetCurrentChunk(&chunk, &chunk_size))
+      if (chunk.empty()) {
         break;
+      }
 
       // Write recorded data chunk to the file and prepare for next chunk.
       // TODO(henrika): use file_util:: instead.
-      fwrite(chunk, 1, chunk_size, binary_file_);
-      buffer_->Seek(chunk_size);
-      bytes_written += chunk_size;
+      fwrite(chunk.data(), 1, chunk.size(), binary_file_);
+      buffer_->Seek(chunk.size());
+      bytes_written += chunk.size();
     }
     base::CloseFile(binary_file_);
   }
@@ -291,17 +288,16 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
               double volume,
               const AudioGlitchInfo& glitch_info) override {
     const int num_samples = src->frames() * src->channels();
-    std::unique_ptr<int16_t> interleaved(new int16_t[num_samples]);
+    auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
     src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.get());
+                                                    interleaved.data());
 
     // Store data data in a temporary buffer to avoid making blocking
     // fwrite() calls in the audio callback. The complete buffer will be
     // written to file in the destructor.
-    const int bytes_per_sample = sizeof(*interleaved);
-    const int size = bytes_per_sample * num_samples;
-    if (!buffer_->Append((const uint8_t*)interleaved.get(), size))
+    if (!buffer_->Append(base::as_bytes(interleaved.as_span()))) {
       event_->Signal();
+    }
   }
 
   void OnError() override {}
@@ -321,14 +317,12 @@ class FullDuplexAudioSinkSource
       public AudioOutputStream::AudioSourceCallback {
  public:
   explicit FullDuplexAudioSinkSource(const AudioParameters& params)
-      : params_(params),
-        previous_time_(base::TimeTicks::Now()),
-        started_(false) {
+      : params_(params), previous_time_(base::TimeTicks::Now()) {
     // Start with a reasonably small FIFO size. It will be increased
     // dynamically during the test if required.
     size_t buffer_size = params.GetBytesPerBuffer(kSampleFormat);
     fifo_ = std::make_unique<media::SeekableBuffer>(0, 2 * buffer_size);
-    buffer_.reset(new uint8_t[buffer_size]);
+    buffer_ = base::HeapArray<uint8_t>::Uninit(buffer_size);
   }
 
   FullDuplexAudioSinkSource(const FullDuplexAudioSinkSource&) = delete;
@@ -347,12 +341,11 @@ class FullDuplexAudioSinkSource
     const int diff = (now_time - previous_time_).InMilliseconds();
 
     const int num_samples = src->frames() * src->channels();
-    std::unique_ptr<int16_t> interleaved(new int16_t[num_samples]);
+    auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
     src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.get());
-    const int bytes_per_sample = sizeof(*interleaved);
-    const int size = bytes_per_sample * num_samples;
+                                                    interleaved.data());
 
+    const auto byte_span = base::as_bytes(interleaved.as_span());
     base::AutoLock lock(lock_);
     if (diff > 1000) {
       started_ = true;
@@ -360,8 +353,8 @@ class FullDuplexAudioSinkSource
 
       // Log out the extra delay added by the FIFO. This is a best effort
       // estimate. We might be +- 10ms off here.
-      int extra_fifo_delay =
-          static_cast<int>(BytesToMilliseconds(fifo_->forward_bytes() + size));
+      int extra_fifo_delay = static_cast<int>(
+          BytesToMilliseconds(fifo_->forward_bytes() + byte_span.size()));
       DVLOG(1) << extra_fifo_delay;
     }
 
@@ -373,7 +366,7 @@ class FullDuplexAudioSinkSource
 
     // Append new data to the FIFO and extend the size if the max capacity
     // was exceeded. Flush the FIFO when extended just in case.
-    if (!fifo_->Append((const uint8_t*)interleaved.get(), size)) {
+    if (!fifo_->Append(byte_span)) {
       fifo_->set_forward_capacity(2 * fifo_->forward_capacity());
       fifo_->Clear();
     }
@@ -385,9 +378,10 @@ class FullDuplexAudioSinkSource
                  base::TimeTicks /* delay_timestamp */,
                  const AudioGlitchInfo& /* glitch_info */,
                  AudioBus* dest) override {
-    const int size_in_bytes =
+    const size_t size_in_bytes =
         kBytesPerSample * dest->frames() * dest->channels();
-    EXPECT_EQ(size_in_bytes, params_.GetBytesPerBuffer(kSampleFormat));
+    EXPECT_EQ(size_in_bytes,
+              static_cast<size_t>(params_.GetBytesPerBuffer(kSampleFormat)));
 
     base::AutoLock lock(lock_);
 
@@ -404,9 +398,9 @@ class FullDuplexAudioSinkSource
     if (fifo_->forward_bytes() < size_in_bytes) {
       dest->Zero();
     } else {
-      fifo_->Read(buffer_.get(), size_in_bytes);
+      fifo_->Read(buffer_.subspan(size_in_bytes));
       dest->FromInterleaved<SignedInt16SampleTypeTraits>(
-          reinterpret_cast<int16_t*>(buffer_.get()), dest->frames());
+          reinterpret_cast<int16_t*>(buffer_.data()), dest->frames());
     }
 
     return dest->frames();
@@ -426,8 +420,8 @@ class FullDuplexAudioSinkSource
   base::TimeTicks previous_time_;
   base::Lock lock_;
   std::unique_ptr<media::SeekableBuffer> fifo_;
-  std::unique_ptr<uint8_t[]> buffer_;
-  bool started_;
+  base::HeapArray<uint8_t> buffer_;
+  bool started_ = false;
 };
 
 // Test fixture class for tests which only exercise the output path.

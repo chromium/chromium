@@ -51,38 +51,6 @@ class TestAudioBusFactory {
   SineWaveAudioSource source_;
 };
 
-// Assuming |samples| contains a single-frequency sine wave (and maybe some
-// low-amplitude noise), count the number of times the sine wave crosses
-// zero.
-//
-// Example use case: When expecting a 440 Hz tone, this can be checked using the
-// following expression:
-//
-//   abs((CountZeroCrossings(...) / seconds_per_frame / 2) - 440) <= 1
-//
-// ...where seconds_per_frame is the number of samples divided by the sampling
-// rate.  The divide by two accounts for the fact that a sine wave crosses zero
-// twice per cycle (first downwards, then upwards).  The absolute maximum
-// difference of 1 accounts for the sine wave being out of perfect phase.
-int CountZeroCrossings(const float* samples, int length);
-
-// Encode |timestamp| into the samples pointed to by 'samples' in a way
-// that should be decodable even after compressing/decompressing the audio.
-// Assumes 48Khz sampling rate and needs at least 240 samples. Returns
-// false if |length| of |samples| is too small. If more than 240 samples are
-// available, then the timestamp will be repeated. |sample_offset| should
-// contain how many samples has been encoded so far, so that we can make smooth
-// transitions between encoded chunks.
-// See audio_utility.cc for details on how the encoding is done.
-bool EncodeTimestamp(uint16_t timestamp,
-                     size_t sample_offset,
-                     size_t length,
-                     float* samples);
-
-// Decode a timestamp encoded with EncodeTimestamp. Returns true if a
-// timestamp was found in |samples|.
-bool DecodeTimestamp(const float* samples, size_t length, uint16_t* timestamp);
-
 }  // namespace cast
 }  // namespace media
 

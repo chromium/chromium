@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "media/audio/apple/audio_low_latency_input.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -26,7 +24,6 @@
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/audio/audio_unittest_util.h"
-#include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/seekable_buffer.h"
@@ -69,25 +66,21 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
   static const int kMaxBufferSize = 2 * 2 * 480 * 100 * 10;
 
   explicit WriteToFileAudioSink(const char* file_name)
-      : buffer_(0, kMaxBufferSize),
-        file_(fopen(file_name, "wb")),
-        bytes_to_write_(0) {
-  }
+      : buffer_(0, kMaxBufferSize), file_(fopen(file_name, "wb")) {}
 
   ~WriteToFileAudioSink() override {
-    int bytes_written = 0;
+    size_t bytes_written = 0;
     while (bytes_written < bytes_to_write_) {
-      const uint8_t* chunk;
-      int chunk_size;
-
+      const base::span<const uint8_t> chunk = buffer_.GetCurrentChunk();
       // Stop writing if no more data is available.
-      if (!buffer_.GetCurrentChunk(&chunk, &chunk_size))
+      if (chunk.empty()) {
         break;
+      }
 
       // Write recorded data chunk to the file and prepare for next chunk.
-      fwrite(chunk, 1, chunk_size, file_);
-      buffer_.Seek(chunk_size);
-      bytes_written += chunk_size;
+      fwrite(chunk.data(), 1, chunk.size(), file_);
+      buffer_.Seek(chunk.size());
+      bytes_written += chunk.size();
     }
     fclose(file_);
   }
@@ -98,17 +91,15 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
               double volume,
               const AudioGlitchInfo& glitch_info) override {
     const int num_samples = src->frames() * src->channels();
-    std::unique_ptr<int16_t> interleaved(new int16_t[num_samples]);
+    auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
     src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.get());
+                                                    interleaved.data());
 
-    // Store data data in a temporary buffer to avoid making blocking
-    // fwrite() calls in the audio callback. The complete buffer will be
-    // written to file in the destructor.
-    const int bytes_per_sample = sizeof(*interleaved);
-    const int size = bytes_per_sample * num_samples;
-    if (buffer_.Append((const uint8_t*)interleaved.get(), size)) {
-      bytes_to_write_ += size;
+    // Store data in a temporary buffer to avoid making blocking fwrite() calls
+    // in the audio callback. The complete buffer will be written to file in the
+    // destructor.
+    if (buffer_.Append(base::as_bytes(interleaved.as_span()))) {
+      bytes_to_write_ += interleaved.as_span().size_bytes();
     }
   }
 
@@ -117,7 +108,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
  private:
   media::SeekableBuffer buffer_;
   raw_ptr<FILE> file_;
-  int bytes_to_write_;
+  size_t bytes_to_write_ = 0;
 };
 
 class MacAudioInputTest : public testing::Test {
@@ -158,8 +149,8 @@ class MacAudioInputTest : public testing::Test {
   // a 10ms frame size and a sample rate which is set to the hardware sample
   // rate.
   AudioInputStream* CreateDefaultAudioInputStream() {
-    int fs = HardwareSampleRateForDefaultInputDevice();
-    int samples_per_packet = fs / 100;
+    const int fs = HardwareSampleRateForDefaultInputDevice();
+    const int samples_per_packet = fs / 100;
 #if BUILDFLAG(IS_MAC)
     ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
 #else
@@ -179,8 +170,8 @@ class MacAudioInputTest : public testing::Test {
   // specified channel layout.
   AudioInputStream* CreateAudioInputStream(
       ChannelLayoutConfig channel_layout_config) {
-    int fs = HardwareSampleRateForDefaultInputDevice();
-    int samples_per_packet = fs / 100;
+    const int fs = HardwareSampleRateForDefaultInputDevice();
+    const int samples_per_packet = fs / 100;
     AudioInputStream* ais = audio_manager_->MakeAudioInputStream(
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                         channel_layout_config, fs, samples_per_packet),
@@ -307,15 +298,15 @@ TEST_F(MacAudioInputTest, AUAudioInputStreamVerifyStereoRecording) {
 // environment variable to a value greater than 0.
 TEST_F(MacAudioInputTest, DISABLED_AUAudioInputStreamRecordToFile) {
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
-  const char* file_name = "out_stereo_10sec.pcm";
+  static constexpr char kFileName[] = "out_stereo_10sec.pcm";
 
-  int fs = HardwareSampleRateForDefaultInputDevice();
+  const int fs = HardwareSampleRateForDefaultInputDevice();
   AudioInputStream* ais = CreateDefaultAudioInputStream();
   EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
 
-  fprintf(stderr, "               File name  : %s\n", file_name);
+  fprintf(stderr, "               File name  : %s\n", kFileName);
   fprintf(stderr, "               Sample rate: %d\n", fs);
-  WriteToFileAudioSink file_sink(file_name);
+  WriteToFileAudioSink file_sink(kFileName);
   fprintf(stderr, "               >> Speak into the mic while recording...\n");
   ais->Start(&file_sink);
   base::PlatformThread::Sleep(TestTimeouts::action_timeout());
@@ -327,8 +318,8 @@ TEST_F(MacAudioInputTest, DISABLED_AUAudioInputStreamRecordToFile) {
 TEST(MacAudioInputUpmixerTest, Upmix16bit) {
   constexpr int kNumFrames = 512;
   constexpr int kBytesPerSample = sizeof(int16_t);
-  int16_t mono[kNumFrames];
-  int16_t stereo[kNumFrames * 2];
+  std::array<int16_t, kNumFrames> mono;
+  std::array<int16_t, kNumFrames * 2> stereo;
 
   // Fill the mono buffer and the first half of the stereo buffer with data
   for (int i = 0; i != kNumFrames; ++i) {
@@ -339,7 +330,7 @@ TEST(MacAudioInputUpmixerTest, Upmix16bit) {
   AudioBuffer audio_buffer;
   audio_buffer.mNumberChannels = 2;
   audio_buffer.mDataByteSize = kNumFrames * kBytesPerSample * 2;
-  audio_buffer.mData = stereo;
+  audio_buffer.mData = stereo.data();
   AUAudioInputStream::UpmixMonoToStereoInPlace(&audio_buffer, kBytesPerSample);
 
   // Assert that the samples have been distributed properly
@@ -352,8 +343,8 @@ TEST(MacAudioInputUpmixerTest, Upmix16bit) {
 TEST(MacAudioInputUpmixerTest, Upmix32bit) {
   constexpr int kNumFrames = 512;
   constexpr int kBytesPerSample = sizeof(int32_t);
-  int32_t mono[kNumFrames];
-  int32_t stereo[kNumFrames * 2];
+  std::array<int32_t, kNumFrames> mono;
+  std::array<int32_t, kNumFrames * 2> stereo;
 
   // Fill the mono buffer and the first half of the stereo buffer with data
   for (int i = 0; i != kNumFrames; ++i) {
@@ -364,7 +355,7 @@ TEST(MacAudioInputUpmixerTest, Upmix32bit) {
   AudioBuffer audio_buffer;
   audio_buffer.mNumberChannels = 2;
   audio_buffer.mDataByteSize = kNumFrames * kBytesPerSample * 2;
-  audio_buffer.mData = stereo;
+  audio_buffer.mData = stereo.data();
   AUAudioInputStream::UpmixMonoToStereoInPlace(&audio_buffer, kBytesPerSample);
 
   // Assert that the samples have been distributed properly

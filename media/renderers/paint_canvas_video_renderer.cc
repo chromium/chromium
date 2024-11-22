@@ -1259,7 +1259,7 @@ bool TexImageHelper(VideoFrame* frame,
       frame->visible_rect().width() * output_bytes_per_pixel;
   *temp_buffer =
       new DataBuffer(output_row_bytes * frame->visible_rect().height());
-  FlipAndConvertY16(frame, (*temp_buffer)->writable_data(), format, type,
+  FlipAndConvertY16(frame, (*temp_buffer)->writable_data().data(), format, type,
                     flip_y, output_row_bytes);
   return true;
 }
@@ -1644,7 +1644,7 @@ bool PaintCanvasVideoRenderer::TexImage2D(
 
   gl->TexImage2D(target, level, internalformat, frame->visible_rect().width(),
                  frame->visible_rect().height(), 0, format, type,
-                 temp_buffer->data());
+                 temp_buffer->data().data());
   return true;
 }
 
@@ -1668,7 +1668,7 @@ bool PaintCanvasVideoRenderer::TexSubImage2D(unsigned target,
 
   gl->TexSubImage2D(
       target, level, xoffset, yoffset, frame->visible_rect().width(),
-      frame->visible_rect().height(), format, type, temp_buffer->data());
+      frame->visible_rect().height(), format, type, temp_buffer->data().data());
   return true;
 }
 
