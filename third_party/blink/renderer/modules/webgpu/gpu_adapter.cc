@@ -381,12 +381,7 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   auto* device = MakeGarbageCollected<GPUDevice>(
       execution_context, GetDawnControlClient(), this, descriptor->label());
-  dawn_desc.SetUncapturedErrorCallback(
-      device->error_callback()->UnboundCallback(),
-      device->error_callback()->AsUserdata());
-  dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
-                                  device->lost_callback()->UnboundCallback(),
-                                  device->lost_callback()->AsUserdata());
+  device->SetDescriptorCallbacks(dawn_desc);
 
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
