@@ -81,6 +81,13 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       log_manager_(std::move(log_manager)) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
+  if (auto* factory = AutofillDriverIOSFactory::FromWebState(web_state_)) {
+    // Autofill expects that AutofillDrivers and their ownees are destroyed
+    // before the AutofillClient. It's not clear if that's the case on iOS
+    // WebView. As a temporary fix, we explicitly delete the drivers.
+    // TODO(crbug.com/380442588): Investigate and look for a better fix.
+    static_cast<web::WebStateObserver*>(factory)->WebStateDestroyed(web_state_);
+  }
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
