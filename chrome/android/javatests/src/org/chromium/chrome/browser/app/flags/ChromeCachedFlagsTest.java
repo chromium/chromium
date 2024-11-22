@@ -60,7 +60,6 @@ public class ChromeCachedFlagsTest {
                     ChromeFeatureList.sDrawKeyNativeEdgeToEdge,
                     ChromeFeatureList.sEdgeToEdgeBottomChin,
                     ChromeFeatureList.sEdgeToEdgeWebOptIn,
-                    ChromeFeatureList.sEsbAiStringUpdate,
                     ChromeFeatureList.sMostVisitedTilesReselect,
                     ChromeFeatureList.sNewTabPageAndroidTriggerForPrerender2,
                     ChromeFeatureList.sPriceInsights,

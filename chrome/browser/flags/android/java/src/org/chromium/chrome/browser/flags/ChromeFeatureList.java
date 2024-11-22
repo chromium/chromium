@@ -646,7 +646,11 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, true);
-    public static final CachedFlag sEsbAiStringUpdate = newCachedFlag(ESB_AI_STRING_UPDATE, false);
+    public static final CachedFlag sEsbAiStringUpdate =
+            newCachedFlag(
+                    ESB_AI_STRING_UPDATE,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sForceTranslucentNotificationTrampoline =
