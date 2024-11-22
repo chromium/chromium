@@ -583,12 +583,13 @@ class WTF_EXPORT StringImpl {
   static scoped_refptr<StringImpl> CreateUninitialized(wtf_size_t length,
                                                        UChar*& data);
 
-  scoped_refptr<StringImpl> Replace(UChar pattern,
-                                    const LChar* replacement,
-                                    wtf_size_t replacement_length);
-  scoped_refptr<StringImpl> Replace(UChar pattern,
-                                    const UChar* replacement,
-                                    wtf_size_t replacement_length);
+  template <typename DestCharType,
+            typename SrcCharType,
+            typename ReplacementCharType>
+  void DoReplace(base::span<const SrcCharType> source,
+                 UChar pattern,
+                 base::span<const ReplacementCharType> replacement,
+                 base::span<DestCharType> dest) const;
 
   template <class UCharPredicate>
   scoped_refptr<StringImpl> StripMatchedCharacters(UCharPredicate);

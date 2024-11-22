@@ -1399,172 +1399,69 @@ scoped_refptr<StringImpl> StringImpl::Replace(UChar pattern,
                                               const StringView& replacement) {
   if (replacement.IsNull())
     return this;
-  if (replacement.Is8Bit())
-    return Replace(pattern, replacement.Characters8(), replacement.length());
-  return Replace(pattern, replacement.Characters16(), replacement.length());
-}
-
-scoped_refptr<StringImpl> StringImpl::Replace(UChar pattern,
-                                              const LChar* replacement,
-                                              wtf_size_t rep_str_length) {
-  DCHECK(replacement);
-
-  wtf_size_t src_segment_start = 0;
-  wtf_size_t match_count = 0;
 
   // Count the matches.
-  while ((src_segment_start = Find(pattern, src_segment_start)) != kNotFound) {
+  wtf_size_t match_count = 0;
+  wtf_size_t search_index = 0;
+  while ((search_index = Find(pattern, search_index)) != kNotFound) {
     ++match_count;
-    ++src_segment_start;
+    ++search_index;
   }
 
   // If we have 0 matches then we don't have to do any more work.
-  if (!match_count)
+  if (!match_count) {
     return this;
-
-  CHECK(!rep_str_length ||
-        match_count <= numeric_limits<wtf_size_t>::max() / rep_str_length);
-
-  wtf_size_t replace_size = match_count * rep_str_length;
-  wtf_size_t new_size = length_ - match_count;
-  CHECK_LT(new_size, (numeric_limits<wtf_size_t>::max() - replace_size));
-
-  new_size += replace_size;
+  }
 
   // Construct the new data.
-  wtf_size_t src_segment_end;
-  wtf_size_t src_segment_length;
-  src_segment_start = 0;
-  wtf_size_t dst_offset = 0;
+  const wtf_size_t new_size = ComputeSizeAfterReplacement(
+      length_, match_count, 1, replacement.length());
 
-  if (Is8Bit()) {
-    LChar* data;
+  if (Is8Bit() && replacement.Is8Bit()) {
+    base::span<LChar> data;
     scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_size, data);
-
-    while ((src_segment_end = Find(pattern, src_segment_start)) != kNotFound) {
-      src_segment_length = src_segment_end - src_segment_start;
-      memcpy(data + dst_offset, Characters8() + src_segment_start,
-             src_segment_length * sizeof(LChar));
-      dst_offset += src_segment_length;
-      memcpy(data + dst_offset, replacement, rep_str_length * sizeof(LChar));
-      dst_offset += rep_str_length;
-      src_segment_start = src_segment_end + 1;
-    }
-
-    src_segment_length = length_ - src_segment_start;
-    memcpy(data + dst_offset, Characters8() + src_segment_start,
-           src_segment_length * sizeof(LChar));
-
-    DCHECK_EQ(dst_offset + src_segment_length, new_impl->length());
-
+    DoReplace(Span8(), pattern, replacement.Span8(), data);
     return new_impl;
   }
 
-  UChar* data;
+  base::span<UChar> data;
   scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_size, data);
-
-  while ((src_segment_end = Find(pattern, src_segment_start)) != kNotFound) {
-    src_segment_length = src_segment_end - src_segment_start;
-    memcpy(data + dst_offset, Characters16() + src_segment_start,
-           src_segment_length * sizeof(UChar));
-
-    dst_offset += src_segment_length;
-    for (wtf_size_t i = 0; i < rep_str_length; ++i)
-      data[i + dst_offset] = replacement[i];
-
-    dst_offset += rep_str_length;
-    src_segment_start = src_segment_end + 1;
+  if (replacement.Is8Bit()) {
+    DoReplace(Span16(), pattern, replacement.Span8(), data);
+  } else {
+    if (Is8Bit()) {
+      DoReplace(Span8(), pattern, replacement.Span16(), data);
+    } else {
+      DoReplace(Span16(), pattern, replacement.Span16(), data);
+    }
   }
-
-  src_segment_length = length_ - src_segment_start;
-  memcpy(data + dst_offset, Characters16() + src_segment_start,
-         src_segment_length * sizeof(UChar));
-
-  DCHECK_EQ(dst_offset + src_segment_length, new_impl->length());
-
   return new_impl;
 }
 
-scoped_refptr<StringImpl> StringImpl::Replace(UChar pattern,
-                                              const UChar* replacement,
-                                              wtf_size_t rep_str_length) {
-  DCHECK(replacement);
-
-  wtf_size_t src_segment_start = 0;
-  wtf_size_t match_count = 0;
-
-  // Count the matches.
-  while ((src_segment_start = Find(pattern, src_segment_start)) != kNotFound) {
-    ++match_count;
-    ++src_segment_start;
-  }
-
-  // If we have 0 matches then we don't have to do any more work.
-  if (!match_count)
-    return this;
-
-  CHECK(!rep_str_length ||
-        match_count <= numeric_limits<wtf_size_t>::max() / rep_str_length);
-
-  wtf_size_t replace_size = match_count * rep_str_length;
-  wtf_size_t new_size = length_ - match_count;
-  CHECK_LT(new_size, (numeric_limits<wtf_size_t>::max() - replace_size));
-
-  new_size += replace_size;
-
-  // Construct the new data.
+template <typename DestCharType,
+          typename SrcCharType,
+          typename ReplacementCharType>
+void StringImpl::DoReplace(base::span<const SrcCharType> src,
+                           UChar pattern,
+                           base::span<const ReplacementCharType> replacement,
+                           base::span<DestCharType> dest) const {
   wtf_size_t src_segment_end;
-  wtf_size_t src_segment_length;
-  src_segment_start = 0;
-  wtf_size_t dst_offset = 0;
-
-  if (Is8Bit()) {
-    UChar* data;
-    scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_size, data);
-
-    while ((src_segment_end = Find(pattern, src_segment_start)) != kNotFound) {
-      src_segment_length = src_segment_end - src_segment_start;
-      for (wtf_size_t i = 0; i < src_segment_length; ++i)
-        data[i + dst_offset] = Characters8()[i + src_segment_start];
-
-      dst_offset += src_segment_length;
-      memcpy(data + dst_offset, replacement, rep_str_length * sizeof(UChar));
-
-      dst_offset += rep_str_length;
-      src_segment_start = src_segment_end + 1;
-    }
-
-    src_segment_length = length_ - src_segment_start;
-    for (wtf_size_t i = 0; i < src_segment_length; ++i)
-      data[i + dst_offset] = Characters8()[i + src_segment_start];
-
-    DCHECK_EQ(dst_offset + src_segment_length, new_impl->length());
-
-    return new_impl;
-  }
-
-  UChar* data;
-  scoped_refptr<StringImpl> new_impl = CreateUninitialized(new_size, data);
-
+  wtf_size_t src_segment_start = 0;
   while ((src_segment_end = Find(pattern, src_segment_start)) != kNotFound) {
-    src_segment_length = src_segment_end - src_segment_start;
-    memcpy(data + dst_offset, Characters16() + src_segment_start,
-           src_segment_length * sizeof(UChar));
+    auto src_before =
+        src.subspan(src_segment_start, src_segment_end - src_segment_start);
 
-    dst_offset += src_segment_length;
-    memcpy(data + dst_offset, replacement, rep_str_length * sizeof(UChar));
+    auto [dest_before, rest] = dest.split_at(src_before.size());
+    CopyChars(dest_before, src_before);
 
-    dst_offset += rep_str_length;
+    auto [dest_replaced, dest_after] = rest.split_at(replacement.size());
+    CopyChars(dest_replaced, replacement);
+    dest = dest_after;
+
     src_segment_start = src_segment_end + 1;
   }
 
-  src_segment_length = length_ - src_segment_start;
-  memcpy(data + dst_offset, Characters16() + src_segment_start,
-         src_segment_length * sizeof(UChar));
-
-  DCHECK_EQ(dst_offset + src_segment_length, new_impl->length());
-
-  return new_impl;
+  CopyChars(dest, src.subspan(src_segment_start));
 }
 
 scoped_refptr<StringImpl> StringImpl::Replace(const StringView& pattern,
