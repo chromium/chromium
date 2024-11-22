@@ -1169,8 +1169,8 @@ void InterceptionJob::ApplyModificationsToRequest(
 
   if (modifications->modified_post_data.has_value()) {
     const auto& post_data = modifications->modified_post_data.value();
-    request->request_body = network::ResourceRequestBody::CreateFromBytes(
-        reinterpret_cast<const char*>(post_data.data()), post_data.size());
+    request->request_body =
+        network::ResourceRequestBody::CreateFromCopyOfBytes(post_data);
     request_bodies_.clear();
   }
 
