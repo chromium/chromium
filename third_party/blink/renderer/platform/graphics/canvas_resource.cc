@@ -447,8 +447,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     // resolved.
 
     client_shared_image = shared_image_interface->CreateSharedImage(
-        {GetSharedImageFormat(), Size(), GetColorSpace(),
-         kTopLeft_GrSurfaceOrigin, alpha_type,
+        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
          gpu::SharedImageUsageSet(shared_image_usage_flags),
          "CanvasResourceRasterGmb"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
@@ -457,8 +456,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     }
   } else {
     client_shared_image = shared_image_interface->CreateSharedImage(
-        {GetSharedImageFormat(), Size(), GetColorSpace(),
-         kTopLeft_GrSurfaceOrigin, alpha_type,
+        {format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
          gpu::SharedImageUsageSet(shared_image_usage_flags),
          "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
@@ -1135,9 +1133,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       context_provider_wrapper_->ContextProvider().SharedImageInterface();
   DCHECK(sii);
   gpu::SharedImageInterface::SwapChainSharedImages shared_images =
-      sii->CreateSwapChain(GetSharedImageFormat(), Size(), GetColorSpace(),
-                           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                           usage);
+      sii->CreateSwapChain(format, size, color_space, kTopLeft_GrSurfaceOrigin,
+                           kPremul_SkAlphaType, usage);
   CHECK(shared_images.back_buffer);
   CHECK(shared_images.front_buffer);
   back_buffer_shared_image_ = std::move(shared_images.back_buffer);
