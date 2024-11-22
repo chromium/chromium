@@ -1564,6 +1564,27 @@
     "expires": "Jan 14, 2025"
   },
   {
+    "prefix": "fledge-bidding-and-auction-kanonymity",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "owners": [
+      "behamilton@google.com",
+      "pauljensen@chromium.org"
+    ],
+    "bases": [
+      "external/wpt/fledge/tentative/get-interest-group-auction-data.https.window.js",
+      "external/wpt/fledge/tentative/server-response.https.window.js"
+    ],
+    "args": [
+      "--enable-features=FledgeConsiderKAnonymity,FledgeEnforceKAnonymity,EnableBandAKAnonEnforcement,EnableBandADealSupport,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fpublickeyservice.gcp.privacysandboxservices.com%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
+      "--disable-features=CookieDeprecationFacilitatedTesting"
+    ],
+    "expires": "Jan 14, 2025"
+  },
+  {
     "prefix": "async-script-scheduling-disabled",
     "owners": ["chikamune@chromium.org", "sisidovski@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],

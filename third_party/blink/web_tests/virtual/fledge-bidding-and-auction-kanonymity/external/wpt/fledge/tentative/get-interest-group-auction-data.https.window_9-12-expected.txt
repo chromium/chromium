@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() browserSignals
+  assert_true: Auction unexpectedly had no winner expected true got false
+[FAIL] getInterestGroupAdAuctionData() browserSignals with include-full-ads
+  assert_true: Auction unexpectedly had no winner expected true got false
+Harness: the test ran to completion.
+
