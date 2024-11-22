@@ -7,6 +7,7 @@ import './ui_page.js';
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/ash/common/cr.m.js';
 
+import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy, BrowserProxyImpl} from './multidevice_setup_browser_proxy.js';
@@ -19,6 +20,7 @@ Polymer({
 
   behaviors: [
     UiPageContainerBehavior,
+    WebUIListenerBehavior,
   ],
 
   properties: {
@@ -75,6 +77,30 @@ Polymer({
       value: '',
     },
 
+    /** @private {boolean} */
+    authenticateByPin_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {string} */
+    passwordPageHeader_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {string} */
+    authPrompt_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private {string} */
+    authError_: {
+      type: String,
+      value: '',
+    },
+
     /** @private {!QuickUnlockPrivate} */
     quickUnlockPrivate_: {
       type: Object,
@@ -122,7 +148,12 @@ Polymer({
     this.browserProxy_.getProfileInfo().then((profileInfo) => {
       this.profilePhotoUrl_ = profileInfo.profilePhotoUrl;
       this.email_ = profileInfo.email;
+      this.authenticateByPin_ = profileInfo.authenticateByPin;
+      this.updateUiForAuthFactor_();
     });
+
+    this.addWebUIListener(
+        'multidevice_setup.switchToPinAuth', this.switchToPinAuth_.bind(this));
   },
 
   /** Overridden from UiPageContainerBehavior. */
@@ -175,4 +206,24 @@ Polymer({
     return this.passwordInvalid_ || !this.inputValue_ ||
         this.waitingForPasswordCheck_;
   },
+
+  /** @private */
+  switchToPinAuth_() {
+    this.authenticateByPin_ = true;
+    this.updateUiForAuthFactor_();
+  },
+
+  /** @private */
+  updateUiForAuthFactor_() {
+    if (this.authenticateByPin_) {
+      this.passwordPageHeader_ = this.i18n('passwordPageHeaderForPIN');
+      this.authPrompt_ = this.i18n('enterPIN');
+      this.authError_ = this.i18n('wrongPIN');
+    } else {
+      this.passwordPageHeader_ = this.i18n('passwordPageHeader');
+      this.authPrompt_ = this.i18n('enterPassword');
+      this.authError_ = this.i18n('wrongPassword');
+    }
+  },
+
 });

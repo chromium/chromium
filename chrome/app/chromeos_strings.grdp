@@ -64,6 +64,15 @@
   <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PASSWORD_LABEL" desc="Message displayed in the multi-device setup flow when the user has entered an incorrect password.">
     Wrong password
   </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_HEADER_FOR_PIN" desc="Header for the first page in the multi-device setup flow for PIN only users; the page displays a field in which the user must enter their PIN to continue.">
+    Enter your PIN
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_ENTER_PIN_LABEL" desc="Default text in the field for user to enter their PIN.">
+    PIN
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_PASSWORD_PAGE_WRONG_PIN_LABEL" desc="Message displayed in the multi-device setup flow for PIN only users; when the user has entered an incorrect PIN.">
+    Wrong PIN
+  </message>
   <message name="IDS_MULTIDEVICE_SETUP_BACK_LABEL" desc="Label for button to navigate back in MultiDevice setup workflow.">
     Back
   </message>
