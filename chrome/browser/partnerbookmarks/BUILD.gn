@@ -9,3 +9,10 @@ android_library("delegate_java") {
 
   deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
 }
+
+# TODO: Intentionally left empty.
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/partnerbookmarks/Placeholder.java",
+  ]
+}
