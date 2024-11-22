@@ -4,11 +4,9 @@
 
 #include "components/autofill/core/browser/form_parsing/autofill_ai_field_parser.h"
 
-#include "base/notreached.h"
-#include "components/autofill/core/browser/autofill_field.h"
+#include "base/check_op.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
 
 namespace autofill {
 
@@ -17,14 +15,11 @@ std::unique_ptr<FormFieldParser> AutofillAiFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-  if (context.pattern_file != PatternFile::kAutofillAi) {
-    NOTREACHED();
-  }
+  CHECK_EQ(context.pattern_file, PatternFile::kAutofillAi);
   std::optional<FieldAndMatchInfo> match;
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      "PREDICTION_IMPROVEMENTS", std::nullopt, context.pattern_file);
-  if (ParseField(context, scanner, patterns, &match,
-                 "PREDICTION_IMPROVEMENTS")) {
+      "AUTOFILL_AI", /*language_code=*/std::nullopt, context.pattern_file);
+  if (ParseField(context, scanner, patterns, &match, "AUTOFILL_AI")) {
     return std::make_unique<AutofillAiFieldParser>(std::move(*match));
   }
 #endif

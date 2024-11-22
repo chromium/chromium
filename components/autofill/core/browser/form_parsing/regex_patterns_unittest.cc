@@ -247,7 +247,7 @@ TEST_P(RegexPatternsTestWithSamples, TestPositiveAndNegativeCases) {
                 MatchesAny(GetMatchPatterns(test_case.pattern_name,
                                             LanguageCode(test_case.language),
                                             test_case.pattern_file)))
-        << "pattern_source=" << static_cast<int>(test_case.pattern_file) << ","
+        << "pattern_file=" << static_cast<int>(test_case.pattern_file) << ","
         << "pattern_name=" << test_case.pattern_name << ","
         << "language=" << test_case.language;
   }
@@ -268,21 +268,16 @@ INSTANTIATE_TEST_SUITE_P(RegexPatternsTest,
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
                              PatternTestCase {
                                .pattern_file = PatternFile::kLegacy,
-                               .pattern_name = "PATTERN_SOURCE_DUMMY",
+                               .pattern_name = "PATTERN_FILE_DUMMY",
                                .language = "en", .positive_samples = {"legacy"},
-                               .negative_samples = {
-                                 "default",
-                                 "experimental"
-                               }
-                             }
+                               .negative_samples = {"default"}}
 #else
                              PatternTestCase{
                                  .pattern_file = PatternFile::kDefault,
-                                 .pattern_name = "PATTERN_SOURCE_DUMMY",
+                                 .pattern_name = "PATTERN_FILE_DUMMY",
                                  .language = "en",
                                  .positive_samples = {"default"},
-                                 .negative_samples = {"legacy",
-                                                      "experimental"}},
+                                 .negative_samples = {"legacy"}},
                              PatternTestCase{
                                  .pattern_file = PatternFile::kDefault,
                                  .pattern_name =
