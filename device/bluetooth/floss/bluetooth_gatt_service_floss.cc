@@ -17,6 +17,8 @@ constexpr std::pair<GattStatus, device::BluetoothGattService::GattErrorCode>
         {GattStatus::kInvalidAttributeLen, GattErrorCode::kInvalidLength},
         {GattStatus::kReadNotPermitted, GattErrorCode::kNotPermitted},
         {GattStatus::kWriteNotPermitted, GattErrorCode::kNotPermitted},
+        {GattStatus::kInsufficientAuthentication,
+         GattErrorCode::kNotAuthorized},
         {GattStatus::kInsufficientAuthorization, GattErrorCode::kNotAuthorized},
         {GattStatus::kReqNotSupported, GattErrorCode::kNotSupported},
 };

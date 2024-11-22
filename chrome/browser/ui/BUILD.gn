@@ -5100,7 +5100,7 @@ static_library("ui") {
       ]
     }
 
-    if (is_win || is_linux) {
+    if (is_win || is_linux || is_chromeos) {
       sources += [
         "views/bluetooth_device_credentials_view.cc",
         "views/bluetooth_device_credentials_view.h",

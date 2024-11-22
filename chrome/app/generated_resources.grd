@@ -3879,7 +3879,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Bluetooth Device Credentials (i.e. PIN/Passkey) dialog -->
-      <if expr="is_win or is_linux">
+      <if expr="is_win or is_linux or is_chromeos">
         <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_TITLE" desc="Title of the Bluetooth device credentials prompt dialog.">
           Device Credentials
         </message>
