@@ -883,8 +883,11 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
                                    ->GetCapabilities()
                                    .gpu_rasterization) {
     resource_ = CanvasResourceSwapChain::Create(
-        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
-        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        gfx::Size(info.width(), info.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            info.colorInfo().colorType()),
+        info.colorInfo().alphaType(),
+        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
         ContextProviderWrapper(), CreateWeakPtr(), FilterQuality());
     // CanvasResourceProviderSwapChain can only operate in a single buffered
     // mode so enable it as soon as possible.
