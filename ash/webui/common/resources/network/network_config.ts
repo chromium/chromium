@@ -22,64 +22,60 @@ import './network_config_toggle.js';
 import './network_password_input.js';
 import './network_shared.css.js';
 
-import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 import {CertificateType, ConfigProperties, CrosNetworkConfigInterface, EAPConfigProperties, GlobalPolicy, HiddenSsidMode, IPSecConfigProperties, L2TPConfigProperties, ManagedBoolean, ManagedEAPProperties, ManagedInt32, ManagedIPSecProperties, ManagedL2TPProperties, ManagedOpenVPNProperties, ManagedProperties, ManagedString, ManagedStringList, ManagedWireGuardProperties, NetworkCertificate, OpenVPNConfigProperties, SecurityType, StartConnectResult, SubjectAltName, VpnType, WireGuardConfigProperties} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, IPConfigType, NetworkType, OncSource, PolicySource} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 import {getTemplate} from './network_config.html.js';
+import {NetworkConfigInputElement} from './network_config_input.js';
 import {NetworkListenerBehavior} from './network_listener_behavior.js';
+import {NetworkPasswordInputElement} from './network_password_input.js';
 import {OncMojo} from './onc_mojo.js';
 
-/**
- * Note: closure does not always recognize this if inside function() {}.
- * @enum {string}
- */
-const VPNConfigType = {
-  IKEV2: 'IKEv2',
-  L2TP_IPSEC: 'L2TP_IPsec',
-  OPEN_VPN: 'OpenVPN',
-  WIREGUARD: 'WireGuard',
-};
+enum VPNConfigType {
+  IKEV2 = 'IKEv2',
+  L2TP_IPSEC = 'L2TP_IPsec',
+  OPEN_VPN = 'OpenVPN',
+  WIREGUARD = 'WireGuard',
+}
 
 /**
  * Authentication types for IPsec-based VPNs.
- * @enum {string}
  */
-const IpsecAuthType = {
-  PSK: 'PSK',
-  CERT: 'Cert',
-  EAP: 'EAP',
-};
+enum IpsecAuthType {
+  PSK = 'PSK',
+  CERT = 'Cert',
+  EAP = 'EAP',
+}
 
 /**
  * Method to configure WireGuard local key pair.
- * @enum {string}
  */
-const WireGuardKeyConfigType = {
-  USE_CURRENT: 'UseCurrent',
-  GENERATE_NEW: 'GenerateNew',
-  USER_INPUT: 'UserInput',
-};
+enum WireGuardKeyConfigType {
+  USE_CURRENT = 'UseCurrent',
+  GENERATE_NEW = 'GenerateNew',
+  USER_INPUT = 'UserInput',
+}
 
-/** @type {string}  */ const DEFAULT_HASH = 'default';
-/** @type {string}  */ const DO_NOT_CHECK_HASH = 'do-not-check';
-/** @type {string}  */ const NO_CERTS_HASH = 'no-certs';
-/** @type {string}  */ const NO_USER_CERT_HASH = 'no-user-cert';
+const DEFAULT_HASH = 'default';
+const DO_NOT_CHECK_HASH = 'do-not-check';
+const NO_CERTS_HASH = 'no-certs';
+const NO_USER_CERT_HASH = 'no-user-cert';
 
-/** @type {string}  */ const DEFAULT_EAP_OUTER_PROTOCOL = 'PEAP';
+const DEFAULT_EAP_OUTER_PROTOCOL = 'PEAP';
 
-/** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
+const PLACEHOLDER_CREDENTIAL = '(credential)';
+
+const MIN_PASSPHRASE_LENGTH = 5;
 
 /**
  * A light-weight regular expression for testing an IPv4 address string. Note
  * that this is not a complete check and thus some invalid input can also be
  * accepted.
- * @type {RegExp}
- * @private
  */
 const IPV4_ADDR_REGEX = /^([0-9]+\.){3}[0-9]+$/i;
 
@@ -87,8 +83,6 @@ const IPV4_ADDR_REGEX = /^([0-9]+\.){3}[0-9]+$/i;
  * A light-weight regular expression for testing an IPv6 address string. Note
  * that this is not a complete check and thus some invalid input can also be
  * accepted.
- * @type {RegExp}
- * @private
  */
 const IPV6_ADDR_REGEX = /^(\:?[0-9a-f]{0,4}){2,8}$/i;
 
@@ -96,466 +90,496 @@ const IPV6_ADDR_REGEX = /^(\:?[0-9a-f]{0,4}){2,8}$/i;
  * A light-weight regular expression for testing an IP CIDR string (e.g.,
  * 192.168.1.0/24). Both IPv4 and IPv6 are accepted. Note that this is not a
  * complete check and thus some invalid input can also be accepted.
- * @type {RegExp}
- * @private
  */
 const IP_CIDR_REGEX = /^[0-9a-f\.\:]+\/[0-9]+?$/i;
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-config',
+interface EapProperties {
+  Outer: boolean;
+  Inner: boolean;
+  ServerCA: boolean;
+  EapServerCertMatch: boolean;
+  UserCert: boolean;
+  Identity: boolean;
+  Password: boolean;
+  AnonymousIdentity: boolean;
+}
 
-  behaviors: [
-    NetworkListenerBehavior,
-    I18nBehavior,
-  ],
+interface VpnProperties {
+  IPsec: boolean;
+  IPsecPSK: boolean;
+  IPsecEAP: boolean;
+  IKEv2: boolean;
+  OpenVPN: boolean;
+  WireGuard: boolean;
+  ServerCA: boolean;
+  UserCert: boolean;
+}
 
-  properties: {
-    /** @type {!GlobalPolicy|undefined} */
-    globalPolicy_: Object,
+const NetworkConfigElementBase =
+    mixinBehaviors([NetworkListenerBehavior], I18nMixin(PolymerElement)) as {
+      new (): PolymerElement & I18nMixinInterface,
+    };
 
-    /**
-     * The GUID when an existing network is being configured. This will be
-     * empty when configuring a new network.
-     */
-    guid: String,
+export class NetworkConfigElement extends NetworkConfigElementBase {
+  static get is() {
+    return 'network-config' as const;
+  }
 
-    /** The type of network being configured as a string. */
-    type: String,
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * The type of network being configured as an enum.
-     * @private {NetworkType|undefined}
-     */
-    mojoType_: Number,
+  static get properties() {
+    return {
+      globalPolicy_: Object,
 
-    /** True if the user configuring the network can toggle the shared state. */
-    shareAllowEnable: Boolean,
+      /**
+       * The GUID when an existing network is being configured. This will be
+       * empty when configuring a new network.
+       */
+      guid: String,
 
-    /** The default shared state. */
-    shareDefault: Boolean,
+      name: String,
 
-    enableConnect: {
-      type: Boolean,
-      notify: true,
-      value: false,
-    },
-
-    enableSave: {
-      type: Boolean,
-      notify: true,
-      value: false,
-    },
-
-    /**
-     * Whether pressing the "Enter" key within the password field should start a
-     * connection attempt. If this field is false, pressing "Enter" saves the
-     * current configuration but does not connect.
-     */
-    connectOnEnter: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** Set to any error from the last configuration result. */
-    error: {
+      /** The type of network being configured as a string. */
       type: String,
-      notify: true,
-    },
 
-    /**
-     * The prefilled network configuration. This can be empty if nothing to
-     * prefill or the configuration will be synced according to `this.guid`.
-     * @type {?ConfigProperties}
-     */
-    prefilledProperties: Object,
-
-    /** @private {?ManagedProperties} */
-    managedProperties_: {
-      type: Object,
-      value: null,
-    },
-
-    /**
-     * Managed EAP properties used for determination of managed EAP fields.
-     * @private {?ManagedEAPProperties}
-     */
-    managedEapProperties_: {
-      type: Object,
-      value: null,
-    },
-
-    /** Set once managedProperties_ have been sent; prevents multiple saves. */
-    propertiesSent_: Boolean,
-
-    /**
-     * The configuration properties for the network.
-     * @private {!ConfigProperties|undefined}
-     */
-    configProperties_: Object,
-
-    /**
-     * Reference to the EAP properties for the current type or null if all EAP
-     * properties should be hidden (e.g. WiFi networks with non EAP Security).
-     * Note: even though this references an entry in configProperties_, we
-     * need to send a separate notification when it changes for data binding
-     * (e.g. by using 'set').
-     * @private {?EAPConfigProperties}
-     */
-    eapProperties_: {
-      type: Object,
-      value: null,
-    },
-
-    /**
-     * The cached result of installed server CA certificates.
-     * @private {
-     *     undefined|Array<!NetworkCertificate>}
-     */
-    cachedServerCaCerts_: Array,
-
-    /**
-     * The cached result of installed user certificates.
-     * @private {
-     *     undefined|Array<!NetworkCertificate>}
-     */
-    cachedUserCerts_: Array,
-
-    /**
-     * Used to populate the 'Server CA certificate' dropdown.
-     * @private {!Array<!NetworkCertificate>}
-     */
-    serverCaCerts_: {
-      type: Array,
-      value() {
-        return [];
+      /**
+       * The type of network being configured as an enum.
+       */
+      mojoType_: {
+        type: Number,
+        value: undefined,
       },
-    },
 
-    /** @private {string|undefined} */
-    selectedServerCaHash_: String,
+      /**
+         True if the user configuring the network can toggle the shared state.
+       */
+      shareAllowEnable: Boolean,
 
-    /**
-     * Used to populate the 'User certificate' dropdown.
-     * @private {!Array<!NetworkCertificate>}
-     */
-    userCerts_: {
-      type: Array,
-      value() {
-        return [];
+      /** The default shared state. */
+      shareDefault: Boolean,
+
+      enableConnect: {
+        type: Boolean,
+        notify: true,
+        value: false,
       },
-    },
 
-    /** @private {string|undefined} */
-    selectedUserCertHash_: {
-      type: String,
-      observer: 'updateIsConfigured_',
-    },
-
-    /**
-     * Whether all required properties have been set.
-     * @private
-     */
-    isConfigured_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether this network should be shared with other users of the device.
-     * @private
-     */
-    shareNetwork_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * This is a ManagedBoolean that represents a device-policy-enforced false
-     * value. It is used to present a policy-disabled toggle for "Share network"
-     * when user-created networks are ephemeral. It is never mutated.
-     * @private {!ManagedBoolean}
-     */
-    shareNetworkEphemeralDisabled_: {
-      type: Object,
-      value: {
-        activeValue: false,
-        policySource: PolicySource.kDevicePolicyEnforced,
-        policyValue: false,
+      enableSave: {
+        type: Boolean,
+        notify: true,
+        value: false,
       },
-    },
 
-    /**
-     * Whether the device should automatically connect to the network.
-     * @private
-     */
-    autoConnect_: {
-      type: Boolean,
-      observer: 'updateHiddenNetworkWarning_',
-    },
-
-    /**
-     * Whether or not to show the hidden network warning.
-     * @private
-     */
-    hiddenNetworkWarning_: Boolean,
-
-    /**
-     * Security value, used for Ethernet and Wifi and to detect when Security
-     * changes. NOTE: the <select> element might set this to a string, see
-     * crbug.com/1046149.
-     * @private {!SecurityType|string|undefined}
-     */
-    securityType_: Number,
-
-    /**
-     * 'SaveCredentials' value used for VPN (OpenVPN, IPsec, and L2TP).
-     * @private
-     */
-    vpnSaveCredentials_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * VPN Type from vpnTypeItems_.
-     * @private {VPNConfigType|undefined}
-     */
-    vpnType_: {
-      type: String,
-      observer: 'updateVpnIPsecAuthTypeItems_',
-    },
-
-    /**
-     * Ipsec auth type from ipsecAuthTypeItems_.
-     * @private {IpsecAuthType}
-     */
-    ipsecAuthType_: {
-      type: String,
-      value: IpsecAuthType.PSK,
-    },
-
-    /** @private {WireGuardKeyConfigType|undefined} */
-    wireguardKeyType_: String,
-
-    /** @private {string|undefined} */
-    ipAddressInput_: {
-      type: String,
-      observer: 'updateIsConfigured_',
-    },
-
-    /** @private {string|undefined} */
-    nameServersInput_: String,
-
-    /**
-     * Dictionary of boolean values determining which EAP properties to show,
-     * or null to hide all EAP settings.
-     * @private {?{
-     *   Outer: (boolean|undefined),
-     *   Inner: (boolean|undefined),
-     *   ServerCA: (boolean|undefined),
-     *   EapServerCertMatch: (boolean|undefined),
-     *   UserCert: (boolean|undefined),
-     *   Identity: (boolean|undefined),
-     *   Password: (boolean|undefined),
-     *   AnonymousIdentity: (boolean|undefined),
-     * }}
-     */
-    showEap_: {
-      type: Object,
-      value: null,
-    },
-
-    /**
-     * Dictionary of boolean values determining which VPN properties to show,
-     * or null to hide all VPN settings.
-     * @private {?{
-     *   IPsec: (boolean|undefined),
-     *   IPsecPSK: (boolean|undefined),
-     *   IPsecEAP: (boolean|undefined),
-     *   IKEv2: (boolean|undefined),
-     *   OpenVPN: (boolean|undefined),
-     *   WireGuard: (boolean|undefined),
-     *   ServerCA: (boolean|undefined),
-     *   UserCert: (boolean|undefined),
-     * }}
-     */
-    showVpn_: {
-      type: Object,
-      value: null,
-    },
-
-    /**
-     * Whether the WireGuard private key input box should be shown.
-     * @private
-     */
-    isWireGuardUserPrivateKeyInputActive_: {
-      type: Boolean,
-      computed: 'updateWireGuardKeyType_(wireguardKeyType_)',
-    },
-
-    /**
-     * Array of values for the EAP Method (Outer) dropdown.
-     * They will be presented in a dropdown in this order.
-     * @private {!Array<string>}
-     */
-    eapOuterItems_: {
-      type: Array,
-      readOnly: true,
-      value: ['PEAP', 'EAP-TLS', 'EAP-TTLS', 'LEAP'],
-    },
-
-    /**
-     * Array of values for the EAP EAP Phase 2 authentication (Inner) dropdown
-     * when the Outer type is PEAP.
-     * @private {!Array<string>}
-     * @const
-     */
-    eapInnerItemsPeap_: {
-      type: Array,
-      readOnly: true,
-      value: () => {
-        const values = ['Automatic', 'MD5', 'MSCHAPv2'];
-        if (loadTimeData.getBoolean('eapGtcWifiAuthentication')) {
-          values.push('GTC');
-        }
-        return values;
+      /**
+       * Whether pressing the "Enter" key within the password field should start
+       * a connection attempt. If this field is false, pressing "Enter" saves
+       * the current configuration but does not connect.
+       */
+      connectOnEnter: {
+        type: Boolean,
+        value: false,
       },
-    },
 
-    /**
-     * Array of values for the EAP EAP Phase 2 authentication (Inner) dropdown
-     * when the Outer type is EAP-TTLS.
-     * @private {!Array<string>}
-     * @const
-     */
-    eapInnerItemsTtls_: {
-      type: Array,
-      readOnly: true,
-      value: ['Automatic', 'MD5', 'MSCHAP', 'MSCHAPv2', 'PAP', 'CHAP', 'GTC'],
-    },
+      /** Set to any error from the last configuration result. */
+      error: {
+        type: String,
+        notify: true,
+      },
 
-    /**
-     * Array of values for the VPN Type dropdown.
-     * Note: closure does not recognize Array<VPNConfigType> here.
-     * @private {!Array<string>}
-     */
-    vpnTypeItems_: {
-      type: Array,
-      value: [
-        VPNConfigType.L2TP_IPSEC,
-        VPNConfigType.OPEN_VPN,
-      ],
-    },
+      /**
+       * The prefilled network configuration. This can be empty if nothing to
+       * prefill or the configuration will be synced according to `this.guid`.
+       */
+      prefilledProperties: Object,
 
-    /**
-     * Array of values for the Authentication Type dropdown for IPsec-based
-     * VPNs.
-     * @private {!Array<string>}
-     */
-    ipsecAuthTypeItems_: {
-      type: Array,
-      value: [],
-    },
+      managedProperties_: {
+        type: Object,
+        value: null,
+      },
 
-    /**
-     * Array of values for the WireGuard key configuration method dropdown.
-     * The actual value is set in initWireGuardKeyConfigType_() since the
-     * value differs for new network and existing networks.
-     * @private {!Array<string>}
-     */
-    wireguardKeyTypeItems_: {
-      type: Array,
-      value: [],
-    },
+      /**
+       * Managed EAP properties used for determination of managed EAP fields.
+       */
+      managedEapProperties_: {
+        type: Object,
+        value: null,
+      },
 
-    /**
-     * Whether the current network configuration allows only device-wide
-     * certificates (e.g. shared EAP TLS networks).
-     * @private
-     */
-    deviceCertsOnly_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Set once managedProperties_ have been sent; prevents multiple saves.
+       */
+      propertiesSent_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    configRequiresPassphrase_: {
-      type: Boolean,
-      computed: 'computeConfigRequiresPassphrase_(mojoType_, securityType_)',
-    },
+      /**
+       * The configuration properties for the network.
+       */
+      configProperties_: {
+        type: Object,
+        value: undefined,
+      },
 
-    /** @private */
-    serializedDomainSuffixMatch_: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Reference to the EAP properties for the current type or null if all EAP
+       * properties should be hidden (e.g. WiFi networks with non EAP Security).
+       * Note: even though this references an entry in configProperties_, we
+       * need to send a separate notification when it changes for data binding
+       * (e.g. by using 'set').
+       */
+      eapProperties_: {
+        type: Object,
+      },
 
-    /** @private */
-    serializedSubjectAltNameMatch_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * The cached result of installed server CA certificates.
+       */
+      cachedServerCaCerts_: {
+        type: Array,
+        value: undefined,
+      },
 
-  observers: [
-    'setEnableConnect_(isConfigured_, propertiesSent_)',
-    'setEnableSave_(isConfigured_, managedProperties_)',
-    'setShareNetwork_(mojoType_, managedProperties_, securityType_,' +
-        'shareDefault, shareAllowEnable)',
-    'updateConfigProperties_(mojoType_, managedProperties_)',
-    'updateSecurity_(configProperties_, securityType_)',
-    'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_, ' +
-        'securityType_, eapProperties_.outer)',
-    'updateEapOuter_(eapProperties_.outer)',
-    'updateEapCerts_(eapProperties_.*, serverCaCerts_, userCerts_)',
-    'updateShowEap_(configProperties_.*, eapProperties_.*, securityType_)',
-    'updateVpnType_(configProperties_, vpnType_, ipsecAuthType_)',
-    'updateVpnIPsecCerts_(vpnType_, ipsecAuthType_,' +
-        'configProperties_.typeConfig.vpn.ipSec.*, serverCaCerts_, userCerts_)',
-    'updateOpenVPNCerts_(vpnType_,' +
-        'configProperties_.typeConfig.vpn.openVpn.*,' +
-        'serverCaCerts_, userCerts_)',
-    // Multiple updateIsConfigured observers for different configurations.
-    'updateIsConfigured_(configProperties_.*, securityType_)',
-    'updateIsConfigured_(configProperties_, eapProperties_.*)',
-    'updateIsConfigured_(configProperties_.typeConfig.wifi.*)',
-    'updateIsConfigured_(configProperties_.typeConfig.vpn.*, vpnType_,' +
-        'ipsecAuthType_)',
-  ],
+      /**
+       * The cached result of installed user certificates.
+       */
+      cachedUserCerts_: {
+        type: Array,
+        value: undefined,
+      },
 
-  listeners: {'enter': 'onEnterEvent_'},
+      /**
+       * Used to populate the 'Server CA certificate' dropdown.
+       */
+      serverCaCerts_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-  /** @const */
-  MIN_PASSPHRASE_LENGTH: 5,
+      selectedServerCaHash_: {
+        type: String,
+        value: undefined,
+      },
 
-  /** @private {?CrosNetworkConfigInterface} */
-  networkConfig_: null,
+      /**
+       * Used to populate the 'User certificate' dropdown.
+       */
+      userCerts_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
 
-  /** @override */
-  created() {
+      selectedUserCertHash_: {
+        type: String,
+        value: undefined,
+        observer: 'updateIsConfigured_',
+      },
+
+      /**
+       * Whether all required properties have been set.
+       */
+      isConfigured_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether this network should be shared with other users of the device.
+       */
+      shareNetwork_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * This is a ManagedBoolean that represents a device-policy-enforced false
+       * value. It is used to present a policy-disabled toggle for "Share
+       * network" when user-created networks are ephemeral. It is never mutated.
+       */
+      shareNetworkEphemeralDisabled_: {
+        type: Object,
+        value: {
+          activeValue: false,
+          policySource: PolicySource.kDevicePolicyEnforced,
+          policyValue: false,
+        },
+      },
+
+      /**
+       * Whether the device should automatically connect to the network.
+       */
+      autoConnect_: {
+        type: Boolean,
+        observer: 'updateHiddenNetworkWarning_',
+      },
+
+      /**
+       * Whether or not to show the hidden network warning.
+       */
+      hiddenNetworkWarning_: Boolean,
+
+      /**
+       * Security value, used for Ethernet and Wifi and to detect when Security
+       * changes. NOTE: the <select> element might set this to a string, see
+       * crbug.com/1046149.
+       */
+      securityType_: Object,
+
+      /**
+       * 'SaveCredentials' value used for VPN (OpenVPN, IPsec, and L2TP).
+       */
+      vpnSaveCredentials_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * VPN Type from vpnTypeItems_.
+       */
+      vpnType_: {
+        type: String,
+        value: undefined,
+        observer: 'updateVpnIPsecAuthTypeItems_',
+      },
+
+      /**
+       * Ipsec auth type from ipsecAuthTypeItems_.
+       */
+      ipsecAuthType_: {
+        type: String,
+        value: IpsecAuthType.PSK,
+      },
+
+      wireguardKeyType_: String,
+
+      ipAddressInput_: {
+        type: String,
+        observer: 'updateIsConfigured_',
+      },
+
+      nameServersInput_: String,
+
+      /**
+       * Dictionary of boolean values determining which EAP properties to show,
+       * or null to hide all EAP settings.
+       */
+      showEap_: {
+        type: Object,
+      },
+
+      /**
+       * Dictionary of boolean values determining which VPN properties to show,
+       * or null to hide all VPN settings.
+       */
+      showVpn_: {
+        type: Object,
+      },
+
+      /**
+       * Whether the WireGuard private key input box should be shown.
+       */
+      isWireGuardUserPrivateKeyInputActive_: {
+        type: Boolean,
+        computed: 'computeWireGuardKeyType_(wireguardKeyType_)',
+      },
+
+      /**
+       * Array of values for the EAP Method (Outer) dropdown.
+       * They will be presented in a dropdown in this order.
+       */
+      eapOuterItems_: {
+        type: Array,
+        readOnly: true,
+        value: ['PEAP', 'EAP-TLS', 'EAP-TTLS', 'LEAP'],
+      },
+
+      /**
+       * Array of values for the EAP EAP Phase 2 authentication (Inner) dropdown
+       * when the Outer type is PEAP.
+       */
+      eapInnerItemsPeap_: {
+        type: Array,
+        readOnly: true,
+        value: () => {
+          const values = ['Automatic', 'MD5', 'MSCHAPv2'];
+          if (loadTimeData.getBoolean('eapGtcWifiAuthentication')) {
+            values.push('GTC');
+          }
+          return values;
+        },
+      },
+
+      /**
+       * Array of values for the EAP EAP Phase 2 authentication (Inner) dropdown
+       * when the Outer type is EAP-TTLS.
+       */
+      eapInnerItemsTtls_: {
+        type: Array,
+        readOnly: true,
+        value: ['Automatic', 'MD5', 'MSCHAP', 'MSCHAPv2', 'PAP', 'CHAP', 'GTC'],
+      },
+
+      /**
+       * Array of values for the VPN Type dropdown.
+       * Note: closure does not recognize Array<VPNConfigType> here.
+       */
+      vpnTypeItems_: {
+        type: Array,
+        value: [
+          VPNConfigType.L2TP_IPSEC,
+          VPNConfigType.OPEN_VPN,
+        ],
+      },
+
+      /**
+       * Array of values for the Authentication Type dropdown for IPsec-based
+       * VPNs.
+       */
+      ipsecAuthTypeItems_: {
+        type: Array,
+        value: [],
+      },
+
+      /**
+       * Array of values for the WireGuard key configuration method dropdown.
+       * The actual value is set in initWireGuardKeyConfigType_() since the
+       * value differs for new network and existing networks.
+       */
+      wireguardKeyTypeItems_: {
+        type: Array,
+        value: [],
+      },
+
+      /**
+       * Whether the current network configuration allows only device-wide
+       * certificates (e.g. shared EAP TLS networks).
+       */
+      deviceCertsOnly_: {
+        type: Boolean,
+        value: false,
+      },
+
+      configRequiresPassphrase_: {
+        type: Boolean,
+        computed: 'computeConfigRequiresPassphrase_(mojoType_, securityType_)',
+      },
+
+      serializedDomainSuffixMatch_: {
+        type: String,
+        value: '',
+      },
+
+      serializedSubjectAltNameMatch_: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  guid: string;
+  name: string;
+  type: string;
+  shareAllowEnable: boolean;
+  shareDefault: boolean;
+  enableConnect: boolean;
+  enableSave: boolean;
+  connectOnEnter: boolean;
+  error: string;
+  prefilledProperties: ConfigProperties|null;
+  private globalPolicy_: GlobalPolicy|undefined;
+  private mojoType_: NetworkType|undefined;
+  private managedProperties_: ManagedProperties|null;
+  private managedEapProperties_: ManagedEAPProperties|null;
+  private propertiesSent_: boolean;
+  private configProperties_: ConfigProperties|undefined;
+  private eapProperties_: EAPConfigProperties|null;
+  private cachedServerCaCerts_: NetworkCertificate[]|undefined;
+  private cachedUserCerts_: NetworkCertificate[]|undefined;
+  private serverCaCerts_: NetworkCertificate[];
+  private userCerts_: NetworkCertificate[];
+  private selectedServerCaHash_: string|undefined;
+  private selectedUserCertHash_: string|undefined;
+  private isConfigured_: boolean;
+  private shareNetwork_: boolean;
+  private shareNetworkEphemeralDisabled_: ManagedBoolean;
+  private autoConnect_: boolean;
+  private hiddenNetworkWarning_: boolean;
+  private securityType_: SecurityType|string|undefined;
+  private vpnSaveCredentials_: boolean;
+  private vpnType_: VPNConfigType|undefined;
+  private ipsecAuthType_: IpsecAuthType;
+  private wireguardKeyType_: WireGuardKeyConfigType|undefined;
+  private ipAddressInput_: string|undefined;
+  private nameServersInput_: string|undefined;
+  private showEap_: EapProperties|null;
+  private showVpn_: VpnProperties|null;
+  private isWireGuardUserPrivateKeyInputActive_: boolean;
+  private eapOuterItems_: string[];
+  private eapInnerItemsPeap_: string[];
+  private eapInnerItemsTtls_: string[];
+  private vpnTypeItems_: string[];
+  private ipsecAuthTypeItems_: string[];
+  private wireguardKeyTypeItems_: string[];
+  private deviceCertsOnly_: boolean;
+  private configRequiresPassphrase_: boolean;
+  private serializedDomainSuffixMatch_: string;
+  private serializedSubjectAltNameMatch_: string;
+  private networkConfig_: CrosNetworkConfigInterface;
+
+  static get observers() {
+    return [
+      'setEnableConnect_(isConfigured_, propertiesSent_)',
+      'setEnableSave_(isConfigured_, managedProperties_)',
+      'setShareNetwork_(mojoType_, managedProperties_, securityType_,' +
+          'shareDefault, shareAllowEnable)',
+      'updateConfigProperties_(mojoType_, managedProperties_)',
+      'updateSecurity_(configProperties_, securityType_)',
+      'updateCertItems_(cachedServerCaCerts_, cachedUserCerts_, vpnType_, ' +
+          'securityType_, eapProperties_.outer)',
+      'updateEapOuter_(eapProperties_.outer)',
+      'updateEapCerts_(eapProperties_.*, serverCaCerts_, userCerts_)',
+      'updateShowEap_(configProperties_.*, eapProperties_.*, securityType_)',
+      'updateVpnType_(configProperties_, vpnType_, ipsecAuthType_)',
+      'updateVpnIPsecCerts_(vpnType_, ipsecAuthType_,' +
+          'configProperties_.typeConfig.vpn.ipSec.*, serverCaCerts_,' +
+          'userCerts_)',
+      'updateOpenVPNCerts_(vpnType_,' +
+          'configProperties_.typeConfig.vpn.openVpn.*,' +
+          'serverCaCerts_, userCerts_)',
+      // Multiple updateIsConfigured observers for different configurations.
+      'updateIsConfigured_(configProperties_.*, securityType_)',
+      'updateIsConfigured_(configProperties_, eapProperties_.*)',
+      'updateIsConfigured_(configProperties_.typeConfig.wifi.*)',
+      'updateIsConfigured_(configProperties_.typeConfig.vpn.*, vpnType_,' +
+          'ipsecAuthType_)',
+
+    ];
+  }
+
+  constructor() {
+    super();
+
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-  },
+  }
 
-  /** @override */
-  attached() {
+  override connectedCallback() {
+    super.connectedCallback();
+
     this.networkConfig_.getGlobalPolicy().then(response => {
       this.globalPolicy_ = response.result;
     });
-  },
+
+    this.addEventListener('enter', this.onEnterEvent_);
+  }
 
   init() {
-    this.mojoType_ = undefined;
-    this.vpnType_ = undefined;
-    this.managedProperties_ = null;
-    this.configProperties_ = undefined;
-    this.propertiesSent_ = false;
-    this.cachedServerCaCerts_ = undefined;
-    this.cachedUserCerts_ = undefined;
-    this.selectedServerCaHash_ = undefined;
-    this.selectedUserCertHash_ = undefined;
-
     this.networkConfig_.getSupportedVpnTypes().then(response => {
       this.updateVpnTypeItems_(response.vpnTypes);
     });
@@ -571,8 +595,9 @@ Polymer({
           OncMojo.getDefaultManagedProperties(mojoType, this.guid, this.name);
       // Allow securityType_ to be set externally (e.g. in tests).
       if (mojoType === NetworkType.kWiFi && this.securityType_ !== undefined) {
-        managedProperties.typeProperties.wifi.security =
-            /**@type {!SecurityType}*/ (this.securityType_);
+        assert(managedProperties.typeProperties.wifi);
+        this.securityType_ = this.getSecurityTypeAsNumber(this.securityType_);
+        managedProperties.typeProperties.wifi.security = this.securityType_;
       }
       this.managedProperties_ = managedProperties;
       this.mojoType_ = mojoType;
@@ -591,30 +616,30 @@ Polymer({
     this.hiddenNetworkWarning_ = this.showHiddenNetworkWarning_();
 
     this.updateIsConfigured_();
-  },
+  }
 
-  save() {
+  save(): void {
     this.saveAndConnect_(false /* connect */);
-  },
+  }
 
-  connect() {
+  connect(): void {
     this.saveAndConnect_(true /* connect */);
-  },
+  }
 
 
-  /** @private */
-  focusPassphrase_() {
-    const passphraseInput = this.$$('#wifi-passphrase');
+  private focusPassphrase_(): void {
+    const passphraseInput =
+        this.shadowRoot!.querySelector<NetworkPasswordInputElement>(
+            '#wifi-passphrase');
     if (passphraseInput) {
       passphraseInput.focus();
     }
-  },
+  }
 
   /**
-   * @param {boolean} connect If true, connect after save.
-   * @private
+   * @param  connect If true, connect after save.
    */
-  saveAndConnect_(connect) {
+  private saveAndConnect_(connect: boolean): void {
     if (!this.managedProperties_ || this.propertiesSent_) {
       return;
     }
@@ -651,6 +676,7 @@ Polymer({
       // situations, e.g., when the network SSID is misspelled or the network is
       // not within range.
       if (this.mojoType_ === NetworkType.kWiFi) {
+        assert(propertiesToSet.typeConfig.wifi);
         propertiesToSet.typeConfig.wifi.hiddenSsid = HiddenSsidMode.kDisabled;
       }
       if (!this.autoConnect_) {
@@ -670,35 +696,32 @@ Polymer({
                 response.success, response.errorMessage, connect);
           });
     }
-    this.fire('properties-set');
-  },
+    this.dispatchEvent(new CustomEvent('properties-set'));
+  }
 
-  /** @private */
-  focusFirstInput_() {
+  private focusFirstInput_(): void {
     flush();
-    const e = this.$$(
+    const e = this.shadowRoot!.querySelector<HTMLElement>(
         'network-config-input:not([readonly]),' +
         'network-password-input:not([disabled]),' +
         'network-config-select:not([disabled])');
     if (e) {
       e.focus();
     }
-  },
+  }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onEnterEvent_(event) {
-    if (event.composedPath()[0].localName === 'network-config-input' ||
-        event.composedPath()[0].localName === 'network-password-input') {
+  private onEnterEvent_(event: Event): void {
+    // TODO(crbug.com/379893491): Replace with assert.
+    if ((event.composedPath()[0] as HTMLElement).localName ===
+            'network-config-input' ||
+        (event.composedPath()[0] as HTMLElement).localName ===
+            'network-password-input') {
       this.onEnterPressedInInput_();
       event.stopPropagation();
     }
-  },
+  }
 
-  /** @private */
-  onEnterPressedInInput_() {
+  private onEnterPressedInInput_(): void {
     if (!this.isConfigured_) {
       return;
     }
@@ -708,45 +731,28 @@ Polymer({
     } else {
       this.save();
     }
-  },
+  }
 
-  /** @private */
-  close_() {
+  private close_(): void {
     this.guid = '';
     this.type = '';
     this.securityType_ = undefined;
-    this.fire('close');
-  },
+    this.dispatchEvent(new CustomEvent('close'));
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasGuid_() {
+  private hasGuid_(): boolean {
     return !!this.guid;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isIkev2Supported_() {
+  private isIkev2Supported_(): boolean {
     return this.vpnTypeItems_.includes(VPNConfigType.IKEV2);
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isWireGuardSupported_() {
+  private isWireGuardSupported_(): boolean {
     return this.vpnTypeItems_.includes(VPNConfigType.WIREGUARD);
-  },
+  }
 
-  /**
-   * @param {!Array<string>|undefined} responseTypes
-   * @private
-   */
-  updateVpnTypeItems_(responseTypes) {
+  private updateVpnTypeItems_(responseTypes: string[]): void {
     this.vpnTypeItems_ = [
       VPNConfigType.L2TP_IPSEC,
       VPNConfigType.OPEN_VPN,
@@ -757,10 +763,9 @@ Polymer({
     if (responseTypes.includes('wireguard')) {
       this.vpnTypeItems_.push(VPNConfigType.WIREGUARD);
     }
-  },
+  }
 
-  /** @private */
-  initWireGuardKeyConfigType_() {
+  private initWireGuardKeyConfigType_(): void {
     let items = [
       WireGuardKeyConfigType.GENERATE_NEW,
       WireGuardKeyConfigType.USER_INPUT,
@@ -772,7 +777,7 @@ Polymer({
       this.wireguardKeyType_ = WireGuardKeyConfigType.GENERATE_NEW;
     }
     this.wireguardKeyTypeItems_ = items;
-  },
+  }
 
   /** NetworkListenerBehavior override */
   onNetworkCertificatesChanged() {
@@ -780,16 +785,10 @@ Polymer({
       this.set('cachedServerCaCerts_', response.serverCas.slice());
       this.set('cachedUserCerts_', response.userCerts.slice());
     });
-  },
+  }
 
-  /**
-   * @param {CertificateType} type
-   * @param {string} desc
-   * @param {string} hash
-   * @return {!NetworkCertificate}
-   * @private
-   */
-  getDefaultCert_(type, desc, hash) {
+  private getDefaultCert_(type: CertificateType, desc: string, hash: string):
+      NetworkCertificate {
     return {
       type: type,
       hash: hash,
@@ -802,49 +801,32 @@ Polymer({
       // so treat thiem as device-wide.
       deviceWide: true,
     };
-  },
+  }
 
-  /**
-   * @param {?ManagedBoolean|undefined} property
-   * @return {boolean}
-   * @private
-   */
-  getActiveBoolean_(property) {
+  private getActiveBoolean_(property: ManagedBoolean|undefined|null): boolean {
     if (!property) {
       return false;
     }
     return property.activeValue;
-  },
+  }
 
-  /**
-   * @param {?ManagedInt32|undefined} property
-   * @return {number}
-   * @private
-   */
-  getActiveInt32_(property) {
+  private getActiveInt32_(property: ManagedInt32|undefined|null): number {
     if (!property) {
       return 0;
     }
     return property.activeValue;
-  },
+  }
 
-  /**
-   * @param {?ManagedStringList|undefined} property
-   * @return {!Array<string>|undefined}
-   * @private
-   */
-  getActiveStringList_(property) {
+  private getActiveStringList_(property: ManagedStringList|undefined|
+                               null): string[]|undefined {
     if (!property) {
       return undefined;
     }
     return property.activeValue;
-  },
+  }
 
-  /**
-   * @param {?ManagedProperties} managedProperties
-   * @private
-   */
-  getManagedPropertiesCallback_(managedProperties) {
+  private getManagedPropertiesCallback_(managedProperties: ManagedProperties|
+                                        null) {
     if (!managedProperties) {
       // The network no longer exists; close the page.
       console.warn('Network no longer exists: ' + this.guid);
@@ -859,11 +841,16 @@ Polymer({
     if (this.mojoType_ === NetworkType.kVPN) {
       let saveCredentials = false;
       const vpn = managedProperties.typeProperties.vpn;
+      assert(vpn);
       if (vpn.type === VpnType.kOpenVPN) {
+        assert(vpn.openVpn);
         saveCredentials = this.getActiveBoolean_(vpn.openVpn.saveCredentials);
       } else if (vpn.type === VpnType.kIKEv2) {
+        assert(vpn.ipSec);
         saveCredentials = this.getActiveBoolean_(vpn.ipSec.saveCredentials);
       } else if (vpn.type === VpnType.kL2TPIPsec) {
+        assert(vpn.ipSec);
+        assert(vpn.l2tp);
         saveCredentials = this.getActiveBoolean_(vpn.ipSec.saveCredentials) ||
             this.getActiveBoolean_(vpn.l2tp.saveCredentials);
       } else if (vpn.type === VpnType.kWireGuard) {
@@ -875,13 +862,9 @@ Polymer({
     this.setError_(managedProperties.errorState);
     this.updateCertError_();
     this.focusFirstInput_();
-  },
+  }
 
-  /**
-   * @return {!Array<SecurityType>}
-   * @private
-   */
-  getSecurityItems_() {
+  private getSecurityItems_(): SecurityType[] {
     if (this.mojoType_ === NetworkType.kWiFi) {
       return [
         SecurityType.kNone,
@@ -894,10 +877,9 @@ Polymer({
       SecurityType.kNone,
       SecurityType.kWpaEap,
     ];
-  },
+  }
 
-  /** @private */
-  setShareNetwork_() {
+  private setShareNetwork_(): void {
     if (this.mojoType_ === undefined || !this.managedProperties_ ||
         !this.securityType_ === undefined) {
       return;
@@ -925,19 +907,14 @@ Polymer({
       }
     }
     this.shareNetwork_ = this.shareDefault;
-  },
+  }
 
-  /** @private */
-  onShareChanged_(event) {
+  private onShareChanged_(_event: Event): void {
     this.updateSelectedCerts_();
-  },
+  }
 
-  /**
-   * @param {!ManagedEAPProperties} eap
-   * @return {!EAPConfigProperties}
-   * @private
-   */
-  getEAPConfigProperties_(eap) {
+  private getEAPConfigProperties_(eap: ManagedEAPProperties):
+      EAPConfigProperties {
     return {
       anonymousIdentity: OncMojo.getActiveString(eap.anonymousIdentity),
       clientCertType: OncMojo.getActiveString(eap.clientCertType),
@@ -949,26 +926,22 @@ Polymer({
       password: OncMojo.getActiveString(eap.password),
       saveCredentials: this.getActiveBoolean_(eap.saveCredentials),
       serverCaPems: this.getActiveStringList_(eap.serverCaPems),
-      subjectAltNameMatch:
-          /** @type {!Array<!SubjectAltName>} */
-          (OncMojo.getActiveValue(eap.subjectAltNameMatch) || []),
+      subjectAltNameMatch: (OncMojo.getActiveValue(eap.subjectAltNameMatch) as
+                            unknown) as SubjectAltName[] ||
+          [],
       subjectMatch: OncMojo.getActiveString(eap.subjectMatch),
       useSystemCas: this.getActiveBoolean_(eap.useSystemCas),
     };
-  },
+  }
 
-  /**
-   * @param {!ManagedIPSecProperties} ipSec
-   * @return {!IPSecConfigProperties}
-   * @private
-   */
-  getIPSecConfigProperties_(ipSec) {
+  private getIPSecConfigProperties_(ipSec: ManagedIPSecProperties):
+      IPSecConfigProperties {
     return {
       authenticationType:
           OncMojo.getActiveString(ipSec.authenticationType) || 'PSK',
       clientCertPkcs11Id: OncMojo.getActiveString(ipSec.clientCertPkcs11Id),
       clientCertType: OncMojo.getActiveString(ipSec.clientCertType),
-      eap: ipSec.eap ? this.getEAPConfigProperties_(ipSec.eap) : null,
+      eap: ipSec.eap ? this.getEAPConfigProperties_(ipSec.eap) : undefined,
       group: OncMojo.getActiveString(ipSec.group),
       ikeVersion: this.getActiveInt32_(ipSec.ikeVersion),
       localIdentity: OncMojo.getActiveString(ipSec.localIdentity),
@@ -978,28 +951,20 @@ Polymer({
       serverCaPems: this.getActiveStringList_(ipSec.serverCaPems),
       serverCaRefs: this.getActiveStringList_(ipSec.serverCaRefs),
     };
-  },
+  }
 
-  /**
-   * @param {!ManagedL2TPProperties} l2tp
-   * @return {!L2TPConfigProperties}
-   * @private
-   */
-  getL2TPConfigProperties_(l2tp) {
+  private getL2TPConfigProperties_(l2tp: ManagedL2TPProperties):
+      L2TPConfigProperties {
     return {
       lcpEchoDisabled: this.getActiveBoolean_(l2tp.lcpEchoDisabled),
       password: OncMojo.getActiveString(l2tp.password),
       saveCredentials: this.getActiveBoolean_(l2tp.saveCredentials),
       username: OncMojo.getActiveString(l2tp.username),
     };
-  },
+  }
 
-  /**
-   * @param {!ManagedOpenVPNProperties} openVpn
-   * @return {!OpenVPNConfigProperties}
-   * @private
-   */
-  getOpenVPNConfigProperties_(openVpn) {
+  private getOpenVPNConfigProperties_(openVpn: ManagedOpenVPNProperties):
+      OpenVPNConfigProperties {
     return {
       clientCertPkcs11Id: OncMojo.getActiveString(openVpn.clientCertPkcs11Id),
       clientCertType: OncMojo.getActiveString(openVpn.clientCertType),
@@ -1013,15 +978,11 @@ Polymer({
           OncMojo.getActiveString(openVpn.userAuthenticationType),
       username: OncMojo.getActiveString(openVpn.username),
     };
-  },
+  }
 
-  /**
-   * @param {!ManagedWireGuardProperties} wireguard
-   * @return {!WireGuardConfigProperties}
-   * @private
-   */
-  getWireGuardConfigProperties_(wireguard) {
-    const config = {
+  private getWireGuardConfigProperties_(wireguard: ManagedWireGuardProperties):
+      WireGuardConfigProperties {
+    const config: WireGuardConfigProperties = {
       ipAddresses: this.getActiveStringList_(wireguard.ipAddresses) ?? [],
       privateKey: OncMojo.getActiveString(wireguard.privateKey),
       peers: [],
@@ -1034,19 +995,19 @@ Polymer({
           // a placeholder here.
           peerCopied.presharedKey = PLACEHOLDER_CREDENTIAL;
         }
+        assert(config.peers);
         config.peers.push(peerCopied);
       }
     }
     return config;
-  },
+  }
 
   /**
    * Updates the config properties when |this.managedProperties| changes.
    * This gets called once when navigating to the page when default properties
    * are set, and again for existing networks when the properties are received.
-   * @private
    */
-  updateConfigProperties_() {
+  private updateConfigProperties_(): void {
     if (this.mojoType_ === undefined || !this.managedProperties_) {
       return;
     }
@@ -1064,8 +1025,10 @@ Polymer({
     switch (managedProperties.type) {
       case NetworkType.kWiFi:
         const wifi = managedProperties.typeProperties.wifi;
-        const configWifi = configProperties.typeConfig.wifi;
+        assert(wifi);
         autoConnect = this.getActiveBoolean_(wifi.autoConnect);
+        const configWifi = configProperties.typeConfig.wifi;
+        assert(configWifi);
         configWifi.passphrase = OncMojo.getActiveString(wifi.passphrase);
         configWifi.ssid = OncMojo.getActiveString(wifi.ssid);
         if (wifi.eap) {
@@ -1076,19 +1039,23 @@ Polymer({
         configWifi.security = security;
         break;
       case NetworkType.kEthernet:
+        assert(managedProperties.typeProperties.ethernet);
         const eap = managedProperties.typeProperties.ethernet.eap ?
             this.getEAPConfigProperties_(
                 managedProperties.typeProperties.ethernet.eap) :
             undefined;
         security = eap ? SecurityType.kWpaEap : SecurityType.kNone;
         const auth = security === SecurityType.kWpaEap ? '8021X' : 'None';
+        assert(configProperties.typeConfig.ethernet);
         configProperties.typeConfig.ethernet.authentication = auth;
         configProperties.typeConfig.ethernet.eap = eap;
         break;
       case NetworkType.kVPN:
         const vpn = managedProperties.typeProperties.vpn;
+        assert(vpn);
         const vpnType = vpn.type;
         const configVpn = configProperties.typeConfig.vpn;
+        assert(configVpn);
         configVpn.host = OncMojo.getActiveString(vpn.host);
         configVpn.type = {value: vpnType};
         if (vpnType === VpnType.kIKEv2) {
@@ -1112,6 +1079,7 @@ Polymer({
           assert(vpn.wireguard);
           configVpn.wireguard =
               this.getWireGuardConfigProperties_(vpn.wireguard);
+          assert(configVpn.wireguard.ipAddresses);
           this.ipAddressInput_ = configVpn.wireguard.ipAddresses.join(',');
           const staticIpConfig = managedProperties.staticIpConfig;
           if (staticIpConfig && staticIpConfig.nameServers) {
@@ -1149,46 +1117,41 @@ Polymer({
     if (requestCertificates) {
       this.onNetworkCertificatesChanged();
     }
-  },
+  }
 
   /**
    * Ensures that the appropriate properties are set or deleted when
    * |securityType_| changes.
-   * @private
    */
-  updateSecurity_() {
+  private updateSecurity_(): void {
     if (this.securityType_ === undefined || !this.configProperties_) {
       return;
     }
     const type = this.mojoType_;
-    // Force |securityType_| to an enum value when the <select> element sets it
-    // to a string. See crbug.com/1046149 for details.
-    if (typeof (this.securityType_) === 'string') {
-      this.securityType_ =
-          /** @type {!SecurityType}*/ (
-              Number.parseInt(/** @type {string}*/ (this.securityType_), 10));
-    }
+    this.securityType_ = this.getSecurityTypeAsNumber(this.securityType_);
     const security = this.securityType_;
     if (type === NetworkType.kWiFi) {
+      assert(this.configProperties_.typeConfig.wifi);
       this.configProperties_.typeConfig.wifi.security = security;
     } else if (type === NetworkType.kEthernet) {
       const auth = security === SecurityType.kWpaEap ? '8021X' : 'None';
+      assert(this.configProperties_.typeConfig.ethernet);
       this.configProperties_.typeConfig.ethernet.authentication = auth;
     }
     let eap;
     if (security === SecurityType.kWpaEap) {
       eap = this.getEap_(this.configProperties_, true);
+      assert(eap);
       eap.outer = eap.outer || DEFAULT_EAP_OUTER_PROTOCOL;
     }
     this.setEap_(eap);
-  },
+  }
 
   /**
    * Ensures that the appropriate EAP properties are created (or deleted when
    * the eap.outer property changes.
-   * @private
    */
-  updateEapOuter_() {
+  private updateEapOuter_(): void {
     const eap = this.eapProperties_;
     if (!eap || !eap.outer) {
       return;
@@ -1207,10 +1170,9 @@ Polymer({
       this.set('eapProperties_.clientCertPkcs11Id', '');
       this.selectedUserCertHash_ = NO_USER_CERT_HASH;
     }
-  },
+  }
 
-  /** @private */
-  updateEapCerts_() {
+  private updateEapCerts_(): void {
     // EAP is used for all configurable types except VPN.
     if (this.mojoType_ === NetworkType.kVPN) {
       return;
@@ -1220,10 +1182,9 @@ Polymer({
     const certId =
         eap && eap.clientCertType === 'PKCS11Id' ? eap.clientCertPkcs11Id : '';
     this.setSelectedCerts_(pem, certId);
-  },
+  }
 
-  /** @private */
-  updateShowEap_() {
+  private updateShowEap_(): void {
     if (!this.eapProperties_ || this.securityType_ === SecurityType.kNone) {
       this.showEap_ = null;
       this.updateCertError_();
@@ -1247,15 +1208,11 @@ Polymer({
         break;
     }
     this.updateCertError_();
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} properties
-   * @param {boolean=} opt_create
-   * @return {?EAPConfigProperties}
-   * @private
-   */
-  getEap_(properties, opt_create) {
+  private getEap_(
+      properties: ConfigProperties,
+      optCreate: boolean|undefined = undefined): EAPConfigProperties|null {
     let eap;
     if (properties.typeConfig.wifi) {
       eap = properties.typeConfig.wifi.eap;
@@ -1264,62 +1221,69 @@ Polymer({
     } else if (properties.typeConfig.vpn && properties.typeConfig.vpn.ipSec) {
       eap = properties.typeConfig.vpn.ipSec.eap;
     }
-    if (opt_create) {
+    if (optCreate) {
       return eap || {
         saveCredentials: false,
         useSystemCas: false,
         domainSuffixMatch: [],
         subjectAltNameMatch: [],
+        anonymousIdentity: undefined,
+        clientCertPkcs11Id: undefined,
+        clientCertType: undefined,
+        identity: undefined,
+        inner: undefined,
+        outer: undefined,
+        password: undefined,
+        serverCaPems: undefined,
+        subjectMatch: undefined,
       };
     }
     return eap || null;
-  },
+  }
 
-  /**
-   * @param {!EAPConfigProperties|undefined} eapProperties
-   * @private
-   */
-  setEap_(eapProperties) {
+  private setEap_(eapProperties: EAPConfigProperties|undefined) {
+    assert(this.configProperties_);
     switch (this.mojoType_) {
       case NetworkType.kWiFi:
+        assert(this.configProperties_.typeConfig.wifi);
         this.configProperties_.typeConfig.wifi.eap = eapProperties;
         break;
-      case NetworkType.kEthernet:
+      case NetworkType.kEthernet: {
+        assert(this.configProperties_.typeConfig.ethernet);
         this.configProperties_.typeConfig.ethernet.eap = eapProperties;
         break;
+      }
     }
     this.set('eapProperties_', eapProperties);
-  },
+  }
 
-  /**
-   * @param {!ManagedProperties} managedProperties
-   * @return {?ManagedEAPProperties}
-   * @private
-   */
-  getManagedEap_(managedProperties) {
+  private getManagedEap_(managedProperties: ManagedProperties):
+      ManagedEAPProperties|null {
     let managedEap;
     switch (managedProperties.type) {
-      case NetworkType.kWiFi:
+      case NetworkType.kWiFi: {
+        assert(managedProperties.typeProperties.wifi);
         managedEap = managedProperties.typeProperties.wifi.eap;
         break;
-      case NetworkType.kEthernet:
+      }
+      case NetworkType.kEthernet: {
+        assert(managedProperties.typeProperties.ethernet);
         managedEap = managedProperties.typeProperties.ethernet.eap;
         break;
-      case NetworkType.kVPN:
+      }
+      case NetworkType.kVPN: {
+        assert(managedProperties.typeProperties.vpn);
         if (managedProperties.typeProperties.vpn.ipSec) {
           managedEap = managedProperties.typeProperties.vpn.ipSec.eap;
         }
         break;
+      }
     }
     return managedEap || null;
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} properties
-   * @return {!VPNConfigType}
-   * @private
-   */
-  getVpnTypeFromProperties_(properties) {
+  private getVpnTypeFromProperties_(properties: ConfigProperties):
+      VPNConfigType {
     const vpn = properties.typeConfig.vpn;
     assert(vpn);
     if (!!vpn.type && vpn.type.value === VpnType.kIKEv2) {
@@ -1330,14 +1294,10 @@ Polymer({
       return VPNConfigType.WIREGUARD;
     }
     return VPNConfigType.OPEN_VPN;
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} properties
-   * @return {!IpsecAuthType}
-   * @private
-   */
-  getIpsecAuthTypeFromProperties_(properties) {
+  private getIpsecAuthTypeFromProperties_(properties: ConfigProperties):
+      IpsecAuthType {
     const vpn = properties.typeConfig.vpn;
     assert(vpn);
     if (!vpn.type ||
@@ -1347,6 +1307,7 @@ Polymer({
       // Initiate it to "PSK" for simplicity.
       return IpsecAuthType.PSK;
     }
+    assert(vpn.ipSec);
     if (vpn.ipSec.authenticationType === IpsecAuthType.PSK) {
       return IpsecAuthType.PSK;
     } else if (vpn.ipSec.authenticationType === IpsecAuthType.CERT) {
@@ -1355,15 +1316,13 @@ Polymer({
       return IpsecAuthType.EAP;
     }
     assertNotReached();
-  },
+  }
 
-  /** @private */
-  updateWireGuardKeyType_() {
+  private computeWireGuardKeyType_(): boolean {
     return this.wireguardKeyType_ === WireGuardKeyConfigType.USER_INPUT;
-  },
+  }
 
-  /** @private */
-  updateCertItems_() {
+  private updateCertItems_(): void {
     if (this.configProperties_ === undefined ||
         this.cachedServerCaCerts_ === undefined ||
         this.cachedUserCerts_ === undefined) {
@@ -1404,7 +1363,8 @@ Polymer({
     });
 
     const isEap = this.securityType_ === SecurityType.kWpaEap;
-    const isEapTls = isEap && this.eapProperties_.outer === 'EAP-TLS';
+    const isEapTls =
+        isEap && this.eapProperties_ && this.eapProperties_.outer === 'EAP-TLS';
 
     // User certificate is allowed but not required for OpenVPN and
     // EAP protocols except EAP-TLS (required for EAP-TLS)
@@ -1424,10 +1384,9 @@ Polymer({
 
     this.updateSelectedCerts_();
     this.updateCertError_();
-  },
+  }
 
-  /** @private */
-  updateVpnType_() {
+  private updateVpnType_(): void {
     if (this.configProperties_ === undefined || this.vpnType_ === undefined) {
       return;
     }
@@ -1447,8 +1406,18 @@ Polymer({
             authenticationType: this.ipsecAuthType_,
             ikeVersion: 2,
             saveCredentials: false,
+            clientCertPkcs11Id: undefined,
+            clientCertType: undefined,
+            eap: undefined,
+            group: undefined,
+            localIdentity: undefined,
+            psk: undefined,
+            remoteIdentity: undefined,
+            serverCaPems: undefined,
+            serverCaRefs: undefined,
           };
         }
+        assert(vpn.ipSec);
         if (this.ipsecAuthType_ === IpsecAuthType.EAP && !vpn.ipSec.eap) {
           vpn.ipSec.eap = {
             domainSuffixMatch: [],
@@ -1456,7 +1425,16 @@ Polymer({
             saveCredentials: false,
             subjectAltNameMatch: [],
             useSystemCas: false,
+            anonymousIdentity: undefined,
+            clientCertPkcs11Id: undefined,
+            clientCertType: undefined,
+            identity: undefined,
+            inner: undefined,
+            password: undefined,
+            serverCaPems: undefined,
+            subjectMatch: undefined,
           };
+          assert(vpn.ipSec.eap);
           this.eapProperties_ = vpn.ipSec.eap;
         }
         break;
@@ -1475,16 +1453,46 @@ Polymer({
             authenticationType: this.ipsecAuthType_,
             ikeVersion: 1,
             saveCredentials: false,
+            clientCertPkcs11Id: undefined,
+            clientCertType: undefined,
+            eap: undefined,
+            group: undefined,
+            localIdentity: undefined,
+            psk: undefined,
+            remoteIdentity: undefined,
+            serverCaPems: undefined,
+            serverCaRefs: undefined,
           };
         }
         break;
       case VPNConfigType.OPEN_VPN:
         vpn.type = {value: VpnType.kOpenVPN};
-        vpn.openVpn = vpn.openVpn || {saveCredentials: false};
+        vpn.openVpn = vpn.openVpn || {
+          saveCredentials: false,
+          clientCertPkcs11Id: undefined,
+          clientCertType: undefined,
+          extraHosts: undefined,
+          otp: undefined,
+          password: undefined,
+          serverCaPems: undefined,
+          serverCaRefs: undefined,
+          username: undefined,
+          userAuthenticationType: undefined,
+        };
         break;
       case VPNConfigType.WIREGUARD:
         vpn.type = {value: VpnType.kWireGuard};
-        vpn.wireguard = vpn.wireguard || {peers: [{}]};
+        vpn.wireguard = vpn.wireguard || {
+          peers: [{
+            publicKey: '',
+            presharedKey: undefined,
+            allowedIps: undefined,
+            endpoint: undefined,
+            persistentKeepaliveInterval: 0,
+          }],
+          ipAddresses: undefined,
+          privateKey: undefined,
+        };
         break;
       default:
         assertNotReached();
@@ -1529,10 +1537,9 @@ Polymer({
       delete vpn.wireguard;
     }
     this.updateCertError_();
-  },
+  }
 
-  /** @private */
-  updateVpnIPsecAuthTypeItems_() {
+  private updateVpnIPsecAuthTypeItems_(): void {
     this.ipsecAuthTypeItems_ = [
       IpsecAuthType.PSK,
       IpsecAuthType.CERT,
@@ -1540,10 +1547,9 @@ Polymer({
     if (this.vpnType_ === VPNConfigType.IKEV2) {
       this.ipsecAuthTypeItems_.push(IpsecAuthType.EAP);
     }
-  },
+  }
 
-  /** @private */
-  updateVpnIPsecCerts_() {
+  private updateVpnIPsecCerts_(): void {
     if (this.vpnType_ !== VPNConfigType.L2TP_IPSEC &&
         this.vpnType_ !== VPNConfigType.IKEV2) {
       return;
@@ -1551,6 +1557,7 @@ Polymer({
     if (this.ipsecAuthType_ === IpsecAuthType.PSK) {
       return;
     }
+    assert(this.configProperties_?.typeConfig.vpn);
     const ipSec = this.configProperties_.typeConfig.vpn.ipSec;
     if (!ipSec) {
       return;
@@ -1559,13 +1566,13 @@ Polymer({
     const certId =
         ipSec.clientCertType === 'PKCS11Id' ? ipSec.clientCertPkcs11Id : '';
     this.setSelectedCerts_(pem, certId);
-  },
+  }
 
-  /** @private */
-  updateOpenVPNCerts_() {
+  private updateOpenVPNCerts_(): void {
     if (this.vpnType_ !== VPNConfigType.OPEN_VPN) {
       return;
     }
+    assert(this.configProperties_?.typeConfig.vpn);
     const openVpn = this.configProperties_.typeConfig.vpn.openVpn;
     if (!openVpn) {
       return;
@@ -1574,15 +1581,13 @@ Polymer({
     const certId =
         openVpn.clientCertType === 'PKCS11Id' ? openVpn.clientCertPkcs11Id : '';
     this.setSelectedCerts_(pem, certId);
-  },
+  }
 
-  /** @private */
-  updateCertError_() {
+  private updateCertError_(): void {
     // If |this.error| was set to something other than a cert error, do not
     // change it.
-    /** @const */ const noCertsError = 'networkErrorNoUserCertificate';
-    /** @const */ const noValidCertsError =
-        'networkErrorNotAvailableForNetworkAuth';
+    const noCertsError = 'networkErrorNoUserCertificate';
+    const noValidCertsError = 'networkErrorNotAvailableForNetworkAuth';
     if (this.error && this.error !== noCertsError &&
         this.error !== noValidCertsError) {
       return;
@@ -1607,16 +1612,14 @@ Polymer({
     }
     this.setError_('');
     return;
-  },
+  }
 
   /**
    * Sets the selected cert if |pem| (serverCa) or |certId| (user) is specified.
    * Otherwise sets a default value if no certificate is selected.
-   * @param {string|undefined} pem
-   * @param {string|undefined} certId
-   * @private
    */
-  setSelectedCerts_(pem, certId) {
+  private setSelectedCerts_(pem: string|undefined, certId: string|undefined):
+      void {
     if (pem) {
       const serverCa = this.serverCaCerts_.find(function(cert) {
         return cert.pemOrId === pem;
@@ -1632,7 +1635,7 @@ Polymer({
       // |userCerts_[i].pemOrId| is always in the format |slot:id|.
       // Use a substring comparison to support both |certId| formats.
       const userCert = this.userCerts_.find(function(cert) {
-        return cert.pemOrId.indexOf(/** @type {string} */ (certId)) >= 0;
+        return cert.pemOrId.indexOf(certId) >= 0;
       });
       if (userCert) {
         this.selectedUserCertHash_ = userCert.hash;
@@ -1640,30 +1643,25 @@ Polymer({
     }
     this.updateSelectedCerts_();
     this.updateIsConfigured_();
-  },
+  }
 
-  /**
-   * @param {!Array<!NetworkCertificate>} certs
-   * @param {string|undefined} hash
-   * @private
-   * @return {!NetworkCertificate|undefined}
-   */
-  findCert_(certs, hash) {
+  private findCert_(certs: NetworkCertificate[], hash: string|undefined):
+      NetworkCertificate|undefined {
     if (!hash) {
       return undefined;
     }
+
     return certs.find((cert) => {
       return cert.hash === hash;
     });
-  },
+  }
 
   /**
    * Called when the certificate list or a selected certificate changes.
    * Ensures that each selected certificate exists in its list, or selects the
    * correct default value.
-   * @private
    */
-  updateSelectedCerts_() {
+  private updateSelectedCerts_(): void {
     if (!this.serverCaCerts_.length || !this.userCerts_.length) {
       return;
     }
@@ -1713,23 +1711,18 @@ Polymer({
         }
       }
     }
-  },
+  }
   /**
    * Checks that the hash of the certificate is set and not one of the default
    * special strings.
-   * @param {NetworkCertificate|undefined} cert
-   * @return {boolean}
-   * @private
    */
-  isRealCertUsableForNetworkAuth_(cert) {
+  private isRealCertUsableForNetworkAuth_(cert: NetworkCertificate|
+                                          undefined): boolean {
     return !!cert && cert.hash !== DO_NOT_CHECK_HASH &&
         cert.hash !== DEFAULT_HASH;
-  },
-  /**
-   * @return {boolean}
-   * @private
-   */
-  getIsConfigured_() {
+  }
+
+  private getIsConfigured_(): boolean {
     if (this.securityType_ === undefined || !this.configProperties_) {
       return false;
     }
@@ -1748,7 +1741,7 @@ Polymer({
       }
       if (this.configRequiresPassphrase_) {
         const passphrase = typeConfig.wifi.passphrase;
-        if (!passphrase || passphrase.length < this.MIN_PASSPHRASE_LENGTH) {
+        if (!passphrase || passphrase.length < MIN_PASSPHRASE_LENGTH) {
           return false;
         }
       }
@@ -1757,68 +1750,43 @@ Polymer({
       return this.eapIsConfigured_();
     }
     return true;
-  },
+  }
 
-  /** @private */
-  updateIsConfigured_() {
+  private updateIsConfigured_(): void {
     this.isConfigured_ = this.getIsConfigured_();
-  },
+  }
 
-  /**
-   * @param {NetworkType} networkType
-   * @return {boolean}
-   * @private
-   */
-  isWiFi_(networkType) {
+  private isWiFi_(networkType: NetworkType): boolean {
     return networkType === NetworkType.kWiFi;
-  },
+  }
 
-  /** @private */
-  setEnableSave_() {
+  private setEnableSave_(): void {
     this.enableSave = this.isConfigured_ && !!this.managedProperties_;
-  },
+  }
 
-  /** @private */
-  setEnableConnect_() {
+  private setEnableConnect_(): void {
     this.enableConnect = this.isConfigured_ && !this.propertiesSent_;
-  },
+  }
 
-  /**
-   * @param {NetworkType} networkType
-   * @return {boolean}
-   * @private
-   */
-  securityIsVisible_(networkType) {
+  private securityIsVisible_(networkType: NetworkType): boolean {
     return networkType === NetworkType.kWiFi ||
         networkType === NetworkType.kEthernet;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  securityIsEnabled_() {
+  private securityIsEnabled_(): boolean {
     // WiFi Security type cannot be changed once configured.
     return !this.guid || this.mojoType_ === NetworkType.kEthernet;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shareIsVisible_() {
+  private shareIsVisible_(): boolean {
     if (!this.managedProperties_) {
       return false;
     }
     return this.managedProperties_.source === OncSource.kNone &&
         this.managedProperties_.type === NetworkType.kWiFi;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shareIsEnabled_() {
+  private shareIsEnabled_(): boolean {
     if (!this.managedProperties_) {
       return false;
     }
@@ -1827,15 +1795,13 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
   /**
    * Returns true if the network configured by this UI element is ephemeral
    * according to enterprise policy.
-   * @return {boolean}
-   * @private
    */
-  networkIsEphemeral_() {
+  private networkIsEphemeral_(): boolean {
     if (!loadTimeData.getBoolean('ephemeralNetworkPoliciesEnabled')) {
       return false;
     }
@@ -1848,75 +1814,44 @@ Polymer({
     }
     // Only user-created networks are ephemeral with this policy.
     return this.managedProperties_.source === OncSource.kNone;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  configCanAutoConnect_() {
+  private configCanAutoConnect_(): boolean {
     // Only WiFi can choose whether or not to autoConnect.
     return loadTimeData.getBoolean('showHiddenNetworkWarning') &&
         this.mojoType_ === NetworkType.kWiFi;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  autoConnectDisabled_() {
+  private autoConnectDisabled_(): boolean {
     return this.isAutoConnectEnforcedByPolicy_();
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isAutoConnectEnforcedByPolicy_() {
+  private isAutoConnectEnforcedByPolicy_(): boolean {
     return !!this.globalPolicy_ &&
         !!this.globalPolicy_.allowOnlyPolicyNetworksToAutoconnect;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showHiddenNetworkWarning_() {
+  private showHiddenNetworkWarning_(): boolean {
     flush();
     return loadTimeData.getBoolean('showHiddenNetworkWarning') &&
         this.autoConnect_ && !this.hasGuid_();
-  },
+  }
 
-  /**
-   * @private
-   */
-  updateHiddenNetworkWarning_() {
+  private updateHiddenNetworkWarning_(): void {
     this.hiddenNetworkWarning_ = this.showHiddenNetworkWarning_();
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  selectedServerCaHashIsValid_() {
+  private selectedServerCaHashIsValid_(): boolean {
     return !!this.selectedServerCaHash_ &&
         this.selectedServerCaHash_ !== NO_CERTS_HASH;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  selectedUserCertHashIsValid_() {
+  private selectedUserCertHashIsValid_(): boolean {
     return !!this.selectedUserCertHash_ &&
         this.selectedUserCertHash_ !== NO_CERTS_HASH;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  eapIsConfigured_() {
+  private eapIsConfigured_(): boolean {
     if (!this.configProperties_) {
       return false;
     }
@@ -1934,75 +1869,72 @@ Polymer({
         return false;
       }
       cert = this.findCert_(this.serverCaCerts_, this.selectedServerCaHash_);
+      assert(cert);
       if (!cert.deviceWide) {
         return false;
       }
     }
 
     return this.selectedUserCertHashIsValid_();
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  ikev2IsConfigured_() {
-    const vpn = this.configProperties_.typeConfig.vpn;
+  private ikev2IsConfigured_(): boolean {
+    assert(this.configProperties_);
     switch (this.ipsecAuthType_) {
-      case IpsecAuthType.PSK:
+      case IpsecAuthType.PSK: {
+        const vpn = this.configProperties_.typeConfig.vpn;
+        assert(vpn);
+        assert(vpn.ipSec);
         return !!vpn.ipSec.psk;
+      }
       case IpsecAuthType.CERT:
         // TODO(b/206722135): Show proper error message in the UI if server CA
         // is invalid.
         return this.selectedServerCaHashIsValid_() &&
             this.selectedUserCertHashIsValid_();
-      case IpsecAuthType.EAP:
+      case IpsecAuthType.EAP: {
+        assert(this.eapProperties_);
         return this.selectedServerCaHashIsValid_() &&
             !!this.eapProperties_.identity;
+      }
       default:
         assertNotReached();
     }
-  },
+  }
 
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  l2tpIpsecIsConfigured_() {
+  private l2tpIpsecIsConfigured_(): boolean {
+    assert(this.configProperties_);
     const vpn = this.configProperties_.typeConfig.vpn;
+    assert(vpn);
     switch (this.ipsecAuthType_) {
-      case IpsecAuthType.PSK:
+      case IpsecAuthType.PSK: {
+        assert(vpn.l2tp);
+        assert(vpn.ipSec);
         return !!vpn.l2tp.username && !!vpn.ipSec.psk;
-      case IpsecAuthType.CERT:
+      }
+      case IpsecAuthType.CERT: {
+        assert(vpn.l2tp);
         // TODO(b/206722135): Show proper error message in the UI if server CA
         // is invalid.
         return !!vpn.l2tp.username && this.selectedServerCaHashIsValid_() &&
             this.selectedUserCertHashIsValid_();
+      }
       default:
         assertNotReached();
     }
-  },
+  }
 
-  /**
-   * @param {string|null|undefined} input
-   * @return {boolean}
-   * @private
-   */
-  isValidWireGuardKey_(input) {
+  private isValidWireGuardKey_(input: string|undefined|null): boolean {
     // A base64 translation of a 32 byte string is 44 bytes with '=' ending
     return !!input && input.length === 44 && input.charAt(43) === '=' &&
         !!input.match(/^[a-z0-9+/=]+$/i);
-  },
+  }
 
   /**
    * Checks if the input ipAddresses is a comma-delimited string which contains
    * IP addresses (v4, v6, or both).
-   * @param {string|undefined} ipAddresses
-   * @return {boolean}
-   * @private
    */
-  isValidWireGuardIpAddresses_(ipAddresses) {
+  private isValidWireGuardIpAddresses_(ipAddresses: string|undefined): boolean {
     if (!ipAddresses) {
       return false;
     }
@@ -2022,15 +1954,11 @@ Polymer({
       return false;
     }
     return v4Count + v6Count > 0;
-  },
+  }
 
-  /**
-   * @param {WireGuardConfigProperties|null|undefined} wireguard
-   * @param {string|undefined} ipAddresses
-   * @return {boolean}
-   * @private
-   */
-  isWireGuardConfigurationValid_(wireguard, ipAddresses) {
+  private isWireGuardConfigurationValid_(
+      wireguard: WireGuardConfigProperties|null|undefined,
+      ipAddresses: string|undefined): boolean {
     if (!wireguard) {
       return false;
     }
@@ -2042,6 +1970,7 @@ Polymer({
       return false;
     }
     // TODO: Current UI only supports configuring a single peer.
+    assert(wireguard.peers);
     const peer = wireguard.peers[0];
     if (!this.isValidWireGuardKey_(peer.publicKey)) {
       return false;
@@ -2061,13 +1990,10 @@ Polymer({
       return false;
     }
     return true;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  vpnIsConfigured_() {
+  private vpnIsConfigured_(): boolean {
+    assert(this.configProperties_);
     const vpn = this.configProperties_.typeConfig.vpn;
     if (!this.configProperties_.name || !vpn ||
         (!vpn.host && this.vpnType_ !== VPNConfigType.WIREGUARD)) {
@@ -2089,13 +2015,10 @@ Polymer({
             vpn.wireguard, this.ipAddressInput_);
     }
     return false;
-  },
+  }
 
-  /** @private */
-  getPropertiesToSet_() {
-    const propertiesToSet =
-        /** @type {!ConfigProperties}*/ (
-            Object.assign({}, this.configProperties_));
+  private getPropertiesToSet_(): ConfigProperties {
+    const propertiesToSet = Object.assign({}, this.configProperties_);
     // Do not set AutoConnect by default, the connection manager will set
     // it to true on a successful connection.
     delete propertiesToSet.autoConnect;
@@ -2108,15 +2031,19 @@ Polymer({
     }
     if (this.mojoType_ === NetworkType.kVPN) {
       const vpnConfig = propertiesToSet.typeConfig.vpn;
+      assert(vpnConfig);
       // VPN.Host can be an IP address but will not be recognized as such if
       // there is initial whitespace, so trim it.
       if (vpnConfig.host !== undefined) {
         vpnConfig.host = vpnConfig.host.trim();
       }
+      assert(vpnConfig.type);
       const vpnType = vpnConfig.type.value;
+
       if (vpnType === VpnType.kOpenVPN) {
         this.setOpenVPNProperties_(propertiesToSet);
       } else {
+        assert(propertiesToSet.typeConfig.vpn);
         delete propertiesToSet.typeConfig.vpn.openVpn;
       }
       if (vpnType === VpnType.kIKEv2) {
@@ -2124,36 +2051,30 @@ Polymer({
       } else if (vpnType === VpnType.kL2TPIPsec) {
         this.setVpnL2tpIpsecProperties_(propertiesToSet);
       } else {
+        assert(propertiesToSet.typeConfig.vpn);
         delete propertiesToSet.typeConfig.vpn.ipSec;
         delete propertiesToSet.typeConfig.vpn.l2tp;
       }
       if (vpnType === VpnType.kWireGuard) {
         this.setWireGuardProperties_(propertiesToSet);
       } else {
+        assert(propertiesToSet.typeConfig.vpn);
         delete propertiesToSet.typeConfig.vpn.wireguard;
       }
     }
     return propertiesToSet;
-  },
+  }
 
-  /**
-   * @return {!Array<string>}
-   * @private
-   */
-  getServerCaPems_() {
+  private getServerCaPems_(): string[] {
     const caHash = this.selectedServerCaHash_ || '';
     if (!caHash || caHash === DO_NOT_CHECK_HASH || caHash === DEFAULT_HASH) {
       return [];
     }
     const serverCa = this.findCert_(this.serverCaCerts_, caHash);
     return serverCa && serverCa.pemOrId ? [serverCa.pemOrId] : [];
-  },
+  }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getUserCertPkcs11Id_() {
+  private getUserCertPkcs11Id_(): string {
     const userCertHash = this.selectedUserCertHash_ || '';
     if (!this.selectedUserCertHashIsValid_() ||
         userCertHash === NO_USER_CERT_HASH) {
@@ -2161,13 +2082,9 @@ Polymer({
     }
     const userCert = this.findCert_(this.userCerts_, userCertHash);
     return (userCert && userCert.pemOrId) || '';
-  },
+  }
 
-  /**
-   * @param {!EAPConfigProperties} eap
-   * @private
-   */
-  setEapProperties_(eap) {
+  private setEapProperties_(eap: EAPConfigProperties): void {
     eap.useSystemCas = this.selectedServerCaHash_ === DEFAULT_HASH;
 
     eap.serverCaPems = this.getServerCaPems_();
@@ -2175,13 +2092,10 @@ Polymer({
     const pkcs11Id = this.getUserCertPkcs11Id_();
     eap.clientCertType = pkcs11Id ? 'PKCS11Id' : 'None';
     eap.clientCertPkcs11Id = pkcs11Id || '';
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} propertiesToSet
-   * @private
-   */
-  setVpnIkev2Properties_(propertiesToSet) {
+  private setVpnIkev2Properties_(propertiesToSet: ConfigProperties): void {
+    assert(propertiesToSet.typeConfig.vpn);
     const ipsec = propertiesToSet.typeConfig.vpn.ipSec;
     assert(!!ipsec);
 
@@ -2204,6 +2118,7 @@ Polymer({
     if (ipsec.authenticationType === IpsecAuthType.EAP) {
       // Not all fields in eap are used by IKEv2, so create a new object here.
       const eap = ipsec.eap;
+      assert(eap);
       ipsec.eap = {
         domainSuffixMatch: [],
         identity: eap.identity,
@@ -2212,6 +2127,12 @@ Polymer({
         saveCredentials: this.vpnSaveCredentials_,
         subjectAltNameMatch: [],
         useSystemCas: false,
+        anonymousIdentity: undefined,
+        clientCertPkcs11Id: undefined,
+        clientCertType: undefined,
+        inner: undefined,
+        serverCaPems: undefined,
+        subjectMatch: undefined,
       };
     } else {
       delete ipsec.eap;
@@ -2219,13 +2140,10 @@ Polymer({
 
     ipsec.ikeVersion = 2;
     ipsec.saveCredentials = this.vpnSaveCredentials_;
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} propertiesToSet
-   * @private
-   */
-  setOpenVPNProperties_(propertiesToSet) {
+  private setOpenVPNProperties_(propertiesToSet: ConfigProperties): void {
+    assert(propertiesToSet.typeConfig.vpn);
     const openVpn = propertiesToSet.typeConfig.vpn.openVpn;
     assert(!!openVpn);
 
@@ -2246,22 +2164,26 @@ Polymer({
 
     openVpn.saveCredentials = this.vpnSaveCredentials_;
     propertiesToSet.typeConfig.vpn.openVpn = openVpn;
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} propertiesToSet
-   * @private
-   */
-  setWireGuardProperties_(propertiesToSet) {
+  private setWireGuardProperties_(propertiesToSet: ConfigProperties): void {
+    assert(propertiesToSet.typeConfig.vpn);
     const wireguard = propertiesToSet.typeConfig.vpn.wireguard;
     assert(!!wireguard);
     propertiesToSet.typeConfig.vpn.host = 'wireguard';
     propertiesToSet.ipAddressConfigType = 'Static';
+    assert(this.ipAddressInput_);
     wireguard.ipAddresses = this.ipAddressInput_.split(',');
     propertiesToSet.staticIpConfig = {
       gateway: this.ipAddressInput_,
       routingPrefix: 32,
       type: IPConfigType.kIPv4,
+      ipAddress: undefined,
+      excludedRoutes: undefined,
+      includedRoutes: undefined,
+      nameServers: undefined,
+      searchDomains: undefined,
+      webProxyAutoDiscoveryUrl: undefined,
     };
     if (this.nameServersInput_) {
       propertiesToSet.nameServersConfigType = 'Static';
@@ -2281,14 +2203,11 @@ Polymer({
         peer.presharedKey = '';  // Explicitly removed
       }
     }
-  },
+  }
 
-  /**
-   * @param {!ConfigProperties} propertiesToSet
-   * @private
-   */
-  setVpnL2tpIpsecProperties_(propertiesToSet) {
+  private setVpnL2tpIpsecProperties_(propertiesToSet: ConfigProperties) {
     const vpn = propertiesToSet.typeConfig.vpn;
+    assert(vpn);
     assert(vpn.ipSec);
     assert(vpn.l2tp);
 
@@ -2306,15 +2225,13 @@ Polymer({
     delete vpn.ipSec.eap;
     delete vpn.ipSec.localIdentity;
     delete vpn.ipSec.remoteIdentity;
-  },
+  }
 
   /**
-   * @param {boolean} success
-   * @param {string} errorMessage
-   * @param {boolean} connect If true, connect after save.
-   * @private
+   * @param connect If true, connect after save.
    */
-  setPropertiesCallback_(success, errorMessage, connect) {
+  private setPropertiesCallback_(
+      success: boolean, errorMessage: string, connect: boolean): void {
     if (!success) {
       console.warn(
           'Unable to set properties for: ' + this.guid +
@@ -2325,6 +2242,7 @@ Polymer({
       return;
     }
 
+    assert(this.managedProperties_);
     // Only attempt a connection if the network is not yet connected.
     if (connect &&
         this.managedProperties_.connectionState ===
@@ -2333,15 +2251,10 @@ Polymer({
     } else {
       this.close_();
     }
-  },
+  }
 
-  /**
-   * @param {?string} guid
-   * @param {string} errorMessage
-   * @param {boolean} connect If true, connect after save.
-   * @private
-   */
-  createNetworkCallback_(guid, errorMessage, connect) {
+  private createNetworkCallback_(
+      guid: string|null, errorMessage: string, connect: boolean): void {
     if (!guid) {
       console.warn(
           'Unable to configure network: ' + guid + ' Error: ' + errorMessage);
@@ -2356,13 +2269,9 @@ Polymer({
     } else {
       this.close_();
     }
-  },
+  }
 
-  /**
-   * @param {string} guid
-   * @private
-   */
-  startConnect_(guid) {
+  private startConnect_(guid: string): void {
     this.networkConfig_.startConnect(guid).then(response => {
       const result = response.result;
       if (result === StartConnectResult.kSuccess ||
@@ -2380,27 +2289,18 @@ Polymer({
           ' Message: ' + response.message);
       this.propertiesSent_ = false;
     });
-  },
+  }
 
-  /**
-   * @param {NetworkType|undefined} mojoType
-   * @param {SecurityType|undefined} securityType
-   * @return {boolean}
-   * @private
-   */
-  computeConfigRequiresPassphrase_(mojoType, securityType) {
+  private computeConfigRequiresPassphrase_(
+      mojoType: NetworkType|undefined,
+      securityType: SecurityType|undefined): boolean {
     // Note: 'Passphrase' is only used by WiFi; Ethernet uses EAP.Password.
     return mojoType === NetworkType.kWiFi &&
         (securityType === SecurityType.kWepPsk ||
          securityType === SecurityType.kWpaPsk);
-  },
+  }
 
-  /**
-   * @param {string} outer
-   * @return {!Array<string>}
-   * @private
-   */
-  getEapInnerItems_(outer) {
+  private getEapInnerItems_(outer: string): string[] {
     if (outer === 'PEAP') {
       return this.eapInnerItemsPeap_;
     }
@@ -2408,113 +2308,106 @@ Polymer({
       return this.eapInnerItemsTtls_;
     }
     return [];
-  },
+  }
 
-  /**
-   * @param {string|undefined} error
-   * @private
-   */
-  setError_(error) {
+  private setError_(error: string|undefined): void {
     this.error = error || '';
-  },
+  }
 
-  /**
-   * Returns a managed property for policy controlled networks.
-   * @param {!ManagedProperties} managedProperties
-   * @return {ManagedString|undefined}
-   * @private
-   */
-  getManagedSecurity_(managedProperties) {
+  private getManagedSecurity_(managedProperties: ManagedProperties):
+      ManagedString|undefined {
     const policySource =
         OncMojo.getEnforcedPolicySourceFromOncSource(managedProperties.source);
     if (policySource === PolicySource.kNone) {
       return undefined;
     }
     switch (managedProperties.type) {
-      case NetworkType.kWiFi:
+      case NetworkType.kWiFi: {
+        assert(managedProperties.typeProperties.wifi);
         return {
           activeValue: OncMojo.getSecurityTypeString(
               managedProperties.typeProperties.wifi.security),
           policySource: policySource,
+          policyValue: undefined,
         };
-        break;
-      case NetworkType.kEthernet:
+      }
+      case NetworkType.kEthernet: {
+        assert(managedProperties.typeProperties.ethernet);
         return {
           activeValue: OncMojo.getActiveString(
               managedProperties.typeProperties.ethernet.authentication),
           policySource: policySource,
+          policyValue: undefined,
         };
-        break;
+      }
     }
     return undefined;
-  },
+  }
 
-  /**
-   * @param {!ManagedProperties} managedProperties
-   * @return {!ManagedBoolean|undefined}
-   * @private
-   */
-  getManagedVpnSaveCredentials_(managedProperties) {
+  private getManagedVpnSaveCredentials_(managedProperties: ManagedProperties):
+      ManagedBoolean|undefined|null {
     const vpn = managedProperties.typeProperties.vpn;
+    assert(vpn);
     switch (vpn.type) {
-      case VpnType.kIKEv2:
+      case VpnType.kIKEv2: {
+        assert(vpn.ipSec);
         return vpn.ipSec.saveCredentials || OncMojo.createManagedBool(false);
-      case VpnType.kOpenVPN:
+      }
+      case VpnType.kOpenVPN: {
+        assert(vpn.openVpn);
         return vpn.openVpn.saveCredentials || OncMojo.createManagedBool(false);
-      case VpnType.kL2TPIPsec:
+      }
+      case VpnType.kL2TPIPsec: {
+        assert(vpn.ipSec);
+        assert(vpn.l2tp);
         return vpn.ipSec.saveCredentials || vpn.l2tp.saveCredentials ||
             OncMojo.createManagedBool(false);
+      }
       case VpnType.kWireGuard:
         return OncMojo.createManagedBool(true);
     }
     assertNotReached();
-    return undefined;
-  },
+  }
 
-  /**
-   * @param {!ManagedProperties} managedProperties
-   * @return {?ManagedStringList|undefined}
-   * @private
-   */
-  getManagedVpnServerCaRefs_(managedProperties) {
+  private getManagedVpnServerCaRefs_(managedProperties: ManagedProperties):
+      ManagedStringList|undefined|null {
     const vpn = managedProperties.typeProperties.vpn;
+    assert(vpn);
     switch (vpn.type) {
       case VpnType.kOpenVPN:
+        assert(vpn.openVpn);
         return vpn.openVpn.serverCaRefs;
       case VpnType.kIKEv2:
       case VpnType.kL2TPIPsec:
+        assert(vpn.ipSec);
         return vpn.ipSec.serverCaRefs;
     }
     assertNotReached();
-    return undefined;
-  },
+  }
 
-  /**
-   * @param {!ManagedProperties} managedProperties
-   * @return {!ManagedString|undefined}
-   * @private
-   */
-  getManagedVpnClientCertType_(managedProperties) {
+  private getManagedVpnClientCertType_(managedProperties: ManagedProperties):
+      ManagedString|undefined {
     const vpn = managedProperties.typeProperties.vpn;
+    assert(vpn);
     switch (vpn.type) {
       case VpnType.kOpenVPN:
+        assert(vpn.openVpn);
         return vpn.openVpn.clientCertType || OncMojo.createManagedString('');
       case VpnType.kIKEv2:
       case VpnType.kL2TPIPsec:
+        assert(vpn.ipSec);
         return vpn.ipSec.clientCertType || OncMojo.createManagedString('');
     }
     assertNotReached();
-    return undefined;
-  },
+  }
 
-  /** @private */
-  onWifiPasswordInputKeypress_() {
+  private onWifiPasswordInputKeypress_() {
     // bad-passphrase corresponds to kErrorBadPassphrase in shill
     if (this.error === 'bad-passphrase') {
       // Reset error if user starts typing new password.
       this.setError_('');
     }
-  },
+  }
 
   /**
    * Verifies if the selected server CA certificate can be used for the selected
@@ -2523,10 +2416,10 @@ Polymer({
    * configuring the domain suffix match or subject alternative match and
    * without explicitly allowing insecure connections via Chrome flags.
    * Otherwise returns true.
-   * @return {boolean}
-   * @private
    */
-  eapConfigServerCaCertAllowed_() {
+  private eapConfigServerCaCertAllowed_(): boolean {
+    assert(this.eapProperties_);
+
     const outer = this.eapProperties_.outer;
     if (!(outer === 'EAP-TLS' || outer === 'EAP-TTLS' || outer === 'PEAP')) {
       return true;
@@ -2553,5 +2446,24 @@ Polymer({
     }
 
     return false;
-  },
-});
+  }
+
+  // Force |securityType_| to an enum value when the <select> element sets it
+  // to a string. See crbug.com/1046149 for details.
+  private getSecurityTypeAsNumber(securityType: SecurityType|
+                                  string): SecurityType {
+    if (typeof this.securityType_ === 'string') {
+      return Number.parseInt(this.securityType_, 10);
+    }
+
+    return securityType as SecurityType;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkConfigElement.is]: NetworkConfigElement;
+  }
+}
+
+customElements.define(NetworkConfigElement.is, NetworkConfigElement);
