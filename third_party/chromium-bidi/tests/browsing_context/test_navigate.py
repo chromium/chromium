@@ -406,11 +406,11 @@ async def test_browsingContext_navigationStartedEvent_viaScript(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
-        websocket, context_id, url_base, html, iframe):
+        websocket, context_id, url_base, html, iframe, read_sorted_messages):
     await subscribe(websocket, ["browsingContext.navigationStarted"])
     iframe_url = html("<h1>FRAME</h1>")
     page_url = html(iframe(iframe_url))
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
@@ -420,34 +420,38 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaCommand(
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": page_url,
-        }
-    }
-
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": ANY_STR,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": iframe_url,
-        }
-    }
+    messages = await read_sorted_messages(3)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }),
+        {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': page_url,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': ANY_STR,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': iframe_url,
+            },
+            'type': 'event',
+        },
+    ]
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
-        websocket, context_id, url_base, html, iframe):
+        websocket, context_id, url_base, html, iframe, read_sorted_messages):
     await subscribe(websocket, ["browsingContext.navigationStarted"])
     iframe_url = html("<h1>FRAME</h1>")
     page_url = html(iframe(iframe_url))
@@ -470,42 +474,43 @@ async def test_browsingContext_navigationStartedEvent_iframe_viaScript(
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": page_url,
-        }
-    }
-
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({"id": command_id, "type": "success"})
-
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": ANY_STR,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            "url": iframe_url,
-        }
-    }
+    messages = await read_sorted_messages(3)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }),
+        {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': page_url,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': ANY_STR,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': iframe_url,
+            },
+            'type': 'event',
+        },
+    ]
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigationStartedEvent_viaCommand(
-        websocket, context_id, html):
+        websocket, context_id, html, read_sorted_messages):
     url = html()
 
     await subscribe(websocket, ["browsingContext.navigationStarted"])
 
-    await send_JSON_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
@@ -515,18 +520,22 @@ async def test_browsingContext_navigationStartedEvent_viaCommand(
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == {
-        'type': 'event',
-        "method": "browsingContext.navigationStarted",
-        "params": {
-            "context": context_id,
-            "navigation": ANY_UUID,
-            "timestamp": ANY_TIMESTAMP,
-            # TODO: Should report correct string
-            "url": ANY_STR,
+    messages = await read_sorted_messages(2)
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }), {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url,
+            },
+            'type': 'event',
         }
-    }
+    ]
 
 
 @pytest.mark.asyncio

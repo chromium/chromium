@@ -13,11 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from test_helpers import ANY_TIMESTAMP, read_JSON_message, send_JSON_command
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_noInitialLoadEvents(websocket, html):
+async def test_browsingContext_noInitialLoadEvents(websocket, html,
+                                                   assert_no_more_messages):
     # Due to the nature, the test does not always fail, even if the
     # implementation does not guarantee the initial context to be fully loaded.
     # The test asserts there was no initial "browsingContext.load" emitted
@@ -79,3 +81,49 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html):
             'url': url
         }
     } == resp
+    assert_no_more_messages()
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_load_properNavigation(websocket, context_id,
+                                                     url_example,
+                                                     read_sorted_messages,
+                                                     assert_no_more_messages):
+    await subscribe(websocket, "browsingContext.load")
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example,
+                "wait": "none",
+                "context": context_id
+            }
+        })
+
+    [command_result, load_event] = await read_sorted_messages(2)
+    assert [command_result, load_event] == [
+        {
+            'id': command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_example,
+            },
+            'type': 'success',
+        },
+        {
+            'method': 'browsingContext.load',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+            'type': 'event',
+        },
+    ]
+
+    assert command_result['result']['navigation'] == load_event['params'][
+        'navigation']
+
+    await assert_no_more_messages()

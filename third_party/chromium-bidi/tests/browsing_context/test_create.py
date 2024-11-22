@@ -13,101 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from anys import ANY_DICT, ANY_STR
+from anys import ANY_STR
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
                           get_tree, goto_url, read_JSON_message,
                           send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_create_eventContextCreatedEmitted(
-        websocket, read_sorted_messages):
-    await subscribe(websocket, [
-        "browsingContext.contextCreated", "browsingContext.domContentLoaded",
-        "browsingContext.load"
-    ])
-
-    await send_JSON_command(websocket, {
-        "id": 9,
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }
-    })
-
-    # Read event messages. The order can vary in headless and headful modes, so
-    # sort is needed:
-    # * `browsingContext.contextCreated` event.
-    # * `browsingContext.domContentLoaded` event.
-    # * `browsingContext.load` event.
-    [context_created_event, dom_content_loaded_event,
-     load_event] = await read_sorted_messages(3)
-
-    # Read the `browsingContext.create` command result. It should be sent after
-    # all the loading events.
-    command_result = await read_JSON_message(websocket)
-
-    new_context_id = command_result['result']['context']
-
-    # Assert command done.
-    assert command_result == {
-        "type": "success",
-        "id": 9,
-        "result": {
-            'context': new_context_id
-        }
-    }
-
-    # Assert "browsingContext.contextCreated" event emitted.
-    assert {
-        "type": "event",
-        "method": "browsingContext.contextCreated",
-        "params": {
-            "context": new_context_id,
-            "url": "about:blank",
-            "children": None,
-            "parent": None,
-            "userContext": "default",
-            "originalOpener": None,
-            'clientWindow': ANY_STR,
-        }
-    } == context_created_event
-
-    # Assert "browsingContext.domContentLoaded" event emitted.
-    assert {
-        "type": "event",
-        "method": "browsingContext.domContentLoaded",
-        "params": {
-            "context": new_context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": "about:blank"
-        }
-    } == dom_content_loaded_event
-
-    # Assert "browsingContext.load" event emitted.
-    assert {
-        "type": "event",
-        "method": "browsingContext.load",
-        "params": {
-            "context": new_context_id,
-            "navigation": ANY_STR,
-            "timestamp": ANY_TIMESTAMP,
-            "url": "about:blank"
-        }
-    } == load_event
-
-
-@pytest.mark.asyncio
-async def test_browsingContext_create_noNavigationEventsEmitted(
-        websocket, context_id, read_sorted_messages):
-    pytest.xfail(
-        "https://github.com/GoogleChromeLabs/chromium-bidi/issues/2793")
-
-    await subscribe(websocket, [
-        "browsingContext.contextCreated", "browsingContext.domContentLoaded",
-        "browsingContext.load", "browsingContext.navigationStarted"
-    ])
+async def test_browsingContext_create_eventsEmitted(websocket,
+                                                    read_sorted_messages,
+                                                    assert_no_more_messages):
+    await subscribe(websocket, "browsingContext")
 
     command_id = await send_JSON_command(websocket, {
         "method": "browsingContext.create",
@@ -117,45 +33,144 @@ async def test_browsingContext_create_noNavigationEventsEmitted(
     })
 
     [command_result, context_created_event] = await read_sorted_messages(2)
+    assert [command_result, context_created_event] == [{
+        "type": "success",
+        "id": command_id,
+        "result": {
+            'context': ANY_STR
+        }
+    }, {
+        "type": "event",
+        "method": "browsingContext.contextCreated",
+        "params": {
+            "context": ANY_STR,
+            "url": "about:blank",
+            "children": None,
+            "parent": None,
+            "userContext": "default",
+            "originalOpener": None,
+            'clientWindow': ANY_STR,
+        }
+    }]
+    assert command_result['result']['context'] == context_created_event[
+        'params']['context']
 
-    assert command_result == AnyExtending({
-        'id': command_id,
-        'type': 'success',
-    })
+    await assert_no_more_messages()
 
-    assert context_created_event == {
-        'method': 'browsingContext.contextCreated',
-        'params': {
-            'children': None,
-            'clientWindow': '',
-            'context': ANY_STR,
-            'originalOpener': context_id,
-            'parent': None,
-            'url': 'about:blank',
-            'userContext': 'default',
-        },
-        'type': 'event',
-    }
-    new_context_id = context_created_event["params"]["context"]
 
-    # Assert no other events.
+@pytest.mark.asyncio
+async def test_browsingContext_windowOpen_blank_eventsEmitted(
+        websocket, context_id, read_sorted_messages, assert_no_more_messages):
+    await subscribe(websocket, "browsingContext")
+
     command_id = await send_JSON_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
-                "expression": "1",
+                "expression": "window.open('about:blank')",
                 "target": {
-                    "context": new_context_id,
+                    "context": context_id
                 },
-                "awaitPromise": False
+                "resultOwnership": "root",
+                "awaitPromise": False,
             }
         })
 
-    response = await read_JSON_message(websocket)
-    assert response == AnyExtending({
-        'id': command_id,
-        'type': 'success',
-    })
+    [command_result, context_created_event] = await read_sorted_messages(2)
+    assert [command_result, context_created_event] == [
+        AnyExtending({
+            "type": "success",
+            "id": command_id,
+        }), {
+            "type": "event",
+            "method": "browsingContext.contextCreated",
+            "params": {
+                "context": ANY_STR,
+                "url": "about:blank",
+                "children": None,
+                "parent": None,
+                "userContext": "default",
+                "originalOpener": ANY_STR,
+                'clientWindow': ANY_STR,
+            }
+        }
+    ]
+
+    await assert_no_more_messages()
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_windowOpen_nonBlank_eventsEmitted(
+        websocket, context_id, read_sorted_messages, assert_no_more_messages,
+        url_example):
+    await subscribe(websocket, "browsingContext")
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"window.open('{url_example}')",
+                "target": {
+                    "context": context_id
+                },
+                "resultOwnership": "root",
+                "awaitPromise": False,
+            }
+        })
+
+    events = await read_sorted_messages(5)
+
+    events == [
+        AnyExtending({
+            "type": "success",
+            "id": command_id,
+        }),
+        {
+            "type": "event",
+            "method": "browsingContext.contextCreated",
+            "params": {
+                "context": ANY_STR,
+                "url": "about:blank",
+                "children": None,
+                "parent": None,
+                "userContext": "default",
+                "originalOpener": ANY_STR,
+                'clientWindow': ANY_STR,
+            }
+        },
+        {
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': ANY_STR,
+                'navigation': ANY_STR,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.load',
+            'params': {
+                'context': ANY_STR,
+                'navigation': ANY_STR,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+            'type': 'event',
+        },
+        {
+            'method': 'browsingContext.navigationStarted',
+            'params': {
+                'context': ANY_STR,
+                'navigation': ANY_STR,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+            'type': 'event',
+        },
+    ]
+
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
@@ -249,17 +264,14 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
 
 @pytest.mark.asyncio
 async def test_browsingContext_create_withUserGesture_eventsEmitted(
-        websocket, context_id, html, url_example, read_sorted_messages):
+        websocket, context_id, html, url_example, read_sorted_messages,
+        assert_no_more_messages):
     LINK_WITH_BLANK_TARGET = html(
         f'''<a href="{url_example}" target="_blank">new tab</a>''')
 
     await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
-    await subscribe(websocket, [
-        'browsingContext.contextCreated',
-        'browsingContext.domContentLoaded',
-        'browsingContext.load',
-    ])
+    await subscribe(websocket, 'browsingContext')
 
     command_id = await send_JSON_command(
         websocket, {
@@ -274,96 +286,74 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             }
         })
 
-    # Read event messages. The order can vary, so read all and sort them. Ignore
-    # optional "browsingContext.domContentLoaded" event for "about:blank" pages.
-    # Expected sorted messages order:
-    # 1. Command result.
-    # 2. "browsingContext.contextCreated" event.
-    # (optional). "browsingContext.domContentLoaded" event for "about:blank".
-    #             Omitted in headful mode.
-    # 3. "browsingContext.domContentLoaded" event for the example_url.
-    # 4. "browsingContext.load" event.
-    messages = await read_sorted_messages(
-        4, lambda m: 'method' not in m or
-        (m['method'] != 'browsingContext.domContentLoaded') or m['params'][
-            'url'] != 'about:blank')
+    messages = await read_sorted_messages(2)
 
-    # Get the new context id from the "browsingContext.contextCreated" event.
-    new_context_id = messages[1]['params']['context']
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }), {
+            'type': 'event',
+            'method': 'browsingContext.contextCreated',
+            'params': {
+                'context': ANY_STR,
+                'url': 'about:blank',
+                'clientWindow': ANY_STR,
+                'children': None,
+                'parent': None,
+                'userContext': 'default',
+                'originalOpener': ANY_STR,
+            }
+        }
+    ]
 
-    assert messages == [{
-        'id': command_id,
-        'type': 'success',
-        'result': ANY_DICT
-    }, {
-        'type': 'event',
-        'method': 'browsingContext.contextCreated',
-        'params': {
-            'context': ANY_STR,
-            'url': 'about:blank',
-            'clientWindow': ANY_STR,
-            'children': None,
-            'parent': None,
-            'userContext': 'default',
-            'originalOpener': ANY_STR,
-        }
-    }, {
-        'type': 'event',
-        'method': 'browsingContext.domContentLoaded',
-        'params': {
-            'context': new_context_id,
-            'navigation': ANY_STR,
-            'timestamp': ANY_TIMESTAMP,
-            'url': url_example
-        }
-    }, {
-        'type': 'event',
-        'method': 'browsingContext.load',
-        'params': {
-            'context': new_context_id,
-            'navigation': ANY_STR,
-            'timestamp': ANY_TIMESTAMP,
-            'url': url_example
-        }
-    }]
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("type", ["window", "tab"])
-async def test_browsingContext_create_withUserContext(websocket, type):
-    user_context = await execute_command(websocket, {
+async def test_browsingContext_create_withUserContext(websocket, type,
+                                                      assert_no_more_messages,
+                                                      read_sorted_messages):
+    result = await execute_command(websocket, {
         "method": "browser.createUserContext",
         "params": {}
     })
+    user_context = result["userContext"]
 
-    await subscribe(websocket, [
-        "browsingContext.contextCreated", "browsingContext.domContentLoaded",
-        "browsingContext.load"
-    ])
+    await subscribe(websocket, "browsingContext")
 
-    result = await execute_command(
+    command_id = await send_JSON_command(
         websocket, {
             "method": "browsingContext.create",
             "params": {
                 "type": type,
-                "userContext": user_context["userContext"]
+                "userContext": user_context
             }
         })
 
-    tree = await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    messages = await read_sorted_messages(2)
 
-    assert len(tree['contexts']) == 2
+    assert messages == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }), {
+            "type": "event",
+            "method": "browsingContext.contextCreated",
+            "params": {
+                "context": ANY_STR,
+                "url": "about:blank",
+                "children": None,
+                "parent": None,
+                "userContext": user_context,
+                "originalOpener": None,
+                'clientWindow': ANY_STR,
+            }
+        }
+    ]
 
-    assert tree["contexts"][1] == AnyExtending({
-        'context': result['context'],
-        'url': 'about:blank',
-        'userContext': user_context["userContext"],
-        'children': [],
-        'parent': None
-    })
+    await assert_no_more_messages()
 
 
 @pytest.mark.asyncio

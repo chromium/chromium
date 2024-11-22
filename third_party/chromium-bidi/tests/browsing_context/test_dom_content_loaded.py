@@ -13,19 +13,71 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from test_helpers import send_JSON_command, subscribe, wait_for_event
+from anys import ANY_STR
+from test_helpers import (ANY_TIMESTAMP, ANY_UUID, read_JSON_message,
+                          send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_subscribeToAllBrowsingContextEvents_eventReceived(
-        websocket):
-    await subscribe(websocket, ["browsingContext"])
+async def test_browsingContext_domContentLoaded_create_notReceived(
+        websocket, assert_no_more_messages):
+    await subscribe(websocket, ["browsingContext.domContentLoaded"])
 
-    await send_JSON_command(websocket, {
+    command_id = await send_JSON_command(websocket, {
         "method": "browsingContext.create",
         "params": {
             "type": "tab"
         }
     })
 
-    await wait_for_event(websocket, "browsingContext.domContentLoaded")
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'id': command_id,
+        'result': {
+            'context': ANY_STR,
+        },
+        'type': 'success',
+    }
+
+    await assert_no_more_messages()
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_domContentLoaded_navigate_received(
+        websocket, context_id, url_example, assert_no_more_messages,
+        read_sorted_messages):
+    await subscribe(websocket, ["browsingContext.domContentLoaded"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url_example,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    messages = await read_sorted_messages(2)
+    assert messages == [
+        {
+            'id': command_id,
+            'result': {
+                'navigation': ANY_UUID,
+                'url': url_example,
+            },
+            'type': 'success',
+        },
+        {
+            'method': 'browsingContext.domContentLoaded',
+            'params': {
+                'context': context_id,
+                'navigation': ANY_UUID,
+                'timestamp': ANY_TIMESTAMP,
+                'url': url_example,
+            },
+            'type': 'event',
+        },
+    ]
+
+    await assert_no_more_messages()

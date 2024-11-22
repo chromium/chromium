@@ -411,32 +411,28 @@ async def test_preloadScript_add_loadedInMultipleContexts(
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
         websocket, context_id, url_all_origins, html, read_sorted_messages):
+    await subscribe(websocket, ["script.message"])
+
+    await goto_url(websocket, context_id, html())
+
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
             "params": {
-                "functionDeclaration": "() => { window.foo='bar'; }",
+                "functionDeclaration": """
+                    (channel) => {
+                        setTimeout(() => {
+                            channel('preload script executed')
+                        }, 1);
+                    }""",
+                "arguments": [{
+                    "type": "channel",
+                    "value": {
+                        "channel": "some_channel_name"
+                    },
+                }, ],
             }
         })
-
-    await goto_url(websocket, context_id, html())
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "window.foo",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-    assert result["result"] == {"type": "string", "value": 'bar'}
-
-    # Needed to make sure the iFrame loaded.
-    await subscribe(websocket, ["browsingContext.load"])
 
     # Create a new iframe within the same context.
     command_id = await send_JSON_command(
@@ -456,37 +452,26 @@ async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
 
     # Depending on the URL, the iframe can be loaded before or after the script
     # is done.
-    [command_result, browsing_context_load] = await read_sorted_messages(2)
-    assert command_result == {
-        "type": "success",
-        "id": command_id,
-        "result": ANY_DICT
-    }
-    assert browsing_context_load == {
-        'type': 'event',
-        "method": "browsingContext.load",
-        "params": AnyExtending({
-            "context": ANY_STR,
-            "url": url_all_origins
-        })
-    }
+    [command_result, script_message_event] = await read_sorted_messages(2)
 
-    iframe_context_id = browsing_context_load["params"]["context"]
-    assert iframe_context_id != context_id
-
-    result = await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": "window.foo",
-                "target": {
-                    "context": iframe_context_id
+    assert [command_result, script_message_event] == [
+        AnyExtending({
+            'id': command_id,
+            'type': 'success',
+        }),
+        AnyExtending({
+            'method': 'script.message',
+            'params': {
+                'channel': 'some_channel_name',
+                'data': {
+                    'value': 'preload script executed',
                 },
-                "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
-    assert result["result"] == {"type": "string", "value": 'bar'}
+            },
+            'type': 'event',
+        }),
+    ]
+
+    assert context_id != script_message_event['params']['source']['context']
 
 
 @pytest.mark.asyncio
