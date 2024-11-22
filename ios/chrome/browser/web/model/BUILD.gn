@@ -243,6 +243,7 @@ source_set("web_internal") {
     "//components/dom_distiller/core",
     "//components/flags_ui",
     "//components/google/core/common",
+    "//components/heap_profiling/in_process",
     "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/language/ios/browser",
