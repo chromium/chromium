@@ -121,9 +121,6 @@ class PLATFORM_EXPORT CanvasResource
   // The bounds for this resource.
   gfx::Size Size() const { return size_; }
 
-  // Whether this is origin top-left or bottom-left image.
-  virtual bool IsOriginTopLeft() const { return true; }
-
   // Whether this resource uses ClientSharedImage.
   // TODO(crbug.com/351275962): Remove this method once
   // CanvasResourceSharedBitmap holds ClientSharedImage and
@@ -474,9 +471,6 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
   bool SupportsAcceleratedCompositing() const override { return true; }
   bool OriginClean() const final { return is_origin_clean_; }
   void SetOriginClean(bool value) final { is_origin_clean_ = value; }
-  bool IsOriginTopLeft() const final {
-    return client_si_->surface_origin() == kTopLeft_GrSurfaceOrigin;
-  }
   void NotifyResourceLost() override { resource_is_lost_ = true; }
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
