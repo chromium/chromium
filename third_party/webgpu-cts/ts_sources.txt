@@ -357,6 +357,9 @@ src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/compat/compatibility_test.ts
 src/webgpu/compat/api/validation/createBindGroup.spec.ts
 src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
+src/webgpu/shader/types.ts
+src/webgpu/shader/validation/decl/util.ts
+src/webgpu/compat/api/validation/pipeline_creation.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
@@ -370,7 +373,6 @@ src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constructable.spec.ts
 src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/constants/flags.spec.ts
-src/webgpu/shader/types.ts
 src/webgpu/shader/values.ts
 src/webgpu/shader/execution/float_parse.spec.ts
 src/webgpu/shader/execution/limits.spec.ts
@@ -620,7 +622,6 @@ src/webgpu/shader/execution/expression/call/builtin/tan.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
-src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts
