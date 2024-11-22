@@ -349,10 +349,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdScrollMarker;
     case kPseudoScrollMarkerGroup:
       return kPseudoIdScrollMarkerGroup;
-    case kPseudoScrollNextButton:
-      return kPseudoIdScrollNextButton;
-    case kPseudoScrollPrevButton:
-      return kPseudoIdScrollPrevButton;
+    case kPseudoScrollButton:
+      return kPseudoIdScrollButton;
     case kPseudoColumn:
       return kPseudoIdColumn;
     case kPseudoScrollbarButton:
@@ -639,8 +637,6 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"scope", CSSSelector::kPseudoScope},
     {"scroll-marker", CSSSelector::kPseudoScrollMarker},
     {"scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
-    {"scroll-next-button", CSSSelector::kPseudoScrollNextButton},
-    {"scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
     {"search-text", CSSSelector::kPseudoSearchText},
     {"select-arrow", CSSSelector::kPseudoSelectArrow},
     {"selection", CSSSelector::kPseudoSelection},
@@ -678,6 +674,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"picker", CSSSelector::kPseudoPicker},
+    {"scroll-button", CSSSelector::kPseudoScrollButton},
     {"slotted", CSSSelector::kPseudoSlotted},
     {"state", CSSSelector::kPseudoState},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
@@ -765,8 +762,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if ((match->type == CSSSelector::kPseudoScrollNextButton ||
-       match->type == CSSSelector::kPseudoScrollPrevButton) &&
+  if (match->type == CSSSelector::kPseudoScrollButton &&
       !RuntimeEnabledFeatures::CSSPseudoScrollButtonsEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
@@ -889,8 +885,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoScrollbarTrackPiece:
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
-    case kPseudoScrollNextButton:
-    case kPseudoScrollPrevButton:
+    case kPseudoScrollButton:
     case kPseudoColumn:
     case kPseudoPicker:
     case kPseudoSelection:
@@ -1640,9 +1635,8 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoScrollbarTrackPiece:
     case kPseudoScrollMarker:
     case kPseudoScrollMarkerGroup:
-    case kPseudoScrollNextButton:
+    case kPseudoScrollButton:
     case kPseudoColumn:
-    case kPseudoScrollPrevButton:
     case kPseudoWebKitCustomElement:
     case kPseudoBlinkInternalElement:
     case kPseudoDetailsContent:

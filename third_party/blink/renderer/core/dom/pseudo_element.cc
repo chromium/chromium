@@ -115,8 +115,10 @@ PseudoElement* PseudoElement::Create(Element* parent,
                                                                 pseudo_id);
   } else if (pseudo_id == kPseudoIdScrollMarker) {
     return MakeGarbageCollected<ScrollMarkerPseudoElement>(parent);
-  } else if (pseudo_id == kPseudoIdScrollNextButton ||
-             pseudo_id == kPseudoIdScrollPrevButton) {
+  } else if (pseudo_id == kPseudoIdScrollUpButton ||
+             pseudo_id == kPseudoIdScrollDownButton ||
+             pseudo_id == kPseudoIdScrollLeftButton ||
+             pseudo_id == kPseudoIdScrollRightButton) {
     return MakeGarbageCollected<ScrollButtonPseudoElement>(parent, pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
@@ -170,15 +172,25 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (AtomicString("::scroll-marker-group")));
       return scroll_marker_group;
     }
-    case kPseudoIdScrollNextButton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_next_button,
-                          (AtomicString("::scroll-next-button")));
-      return scroll_next_button;
+    case kPseudoIdScrollUpButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_up_button,
+                          (AtomicString("::scroll-button(up)")));
+      return scroll_up_button;
     }
-    case kPseudoIdScrollPrevButton: {
-      DEFINE_STATIC_LOCAL(QualifiedName, scroll_prev_button,
-                          (AtomicString("::scroll-prev-button")));
-      return scroll_prev_button;
+    case kPseudoIdScrollDownButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_down_button,
+                          (AtomicString("::scroll-button(down)")));
+      return scroll_down_button;
+    }
+    case kPseudoIdScrollLeftButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_left_button,
+                          (AtomicString("::scroll-button(left)")));
+      return scroll_left_button;
+    }
+    case kPseudoIdScrollRightButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_right_button,
+                          (AtomicString("::scroll-button(right)")));
+      return scroll_right_button;
     }
     case kPseudoIdScrollMarker: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker,
@@ -422,8 +434,10 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       }
       break;
     }
-    case kPseudoIdScrollNextButton:
-    case kPseudoIdScrollPrevButton:
+    case kPseudoIdScrollUpButton:
+    case kPseudoIdScrollDownButton:
+    case kPseudoIdScrollLeftButton:
+    case kPseudoIdScrollRightButton:
       if (style.ContentBehavesAsNormal()) {
         context.counters_context.LeaveObject(*layout_object);
         return;
@@ -489,8 +503,10 @@ bool PseudoElement::CanGenerateContent() const {
     case kPseudoIdSelectArrow:
     case kPseudoIdScrollMarker:
     case kPseudoIdScrollMarkerGroup:
-    case kPseudoIdScrollNextButton:
-    case kPseudoIdScrollPrevButton:
+    case kPseudoIdScrollUpButton:
+    case kPseudoIdScrollDownButton:
+    case kPseudoIdScrollLeftButton:
+    case kPseudoIdScrollRightButton:
       return true;
     default:
       return false;
@@ -581,8 +597,10 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdSelectArrow:
       return !pseudo_style.ContentPreventsBoxGeneration();
     case kPseudoIdScrollMarker:
-    case kPseudoIdScrollNextButton:
-    case kPseudoIdScrollPrevButton:
+    case kPseudoIdScrollUpButton:
+    case kPseudoIdScrollDownButton:
+    case kPseudoIdScrollLeftButton:
+    case kPseudoIdScrollRightButton:
       return !pseudo_style.ContentBehavesAsNormal();
     case kPseudoIdMarker: {
       if (!pseudo_style.ContentBehavesAsNormal()) {

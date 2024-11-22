@@ -97,6 +97,23 @@ void MarkAsEntireComplexSelector(base::span<CSSSelector> selectors) {
   selectors.back().SetLastInComplexSelector(true);
 }
 
+// https://drafts.csswg.org/css-overflow-5/#typedef-scroll-button-direction
+bool IsScrollButtonDirectionKeyword(const CSSParserToken& ident) {
+  switch (ident.Id()) {
+    case CSSValueID::kUp:
+    case CSSValueID::kDown:
+    case CSSValueID::kLeft:
+    case CSSValueID::kRight:
+    case CSSValueID::kBlockStart:
+    case CSSValueID::kBlockEnd:
+    case CSSValueID::kInlineStart:
+    case CSSValueID::kInlineEnd:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 // static
@@ -1202,8 +1219,7 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
-    case CSSSelector::kPseudoScrollNextButton:
-    case CSSSelector::kPseudoScrollPrevButton:
+    case CSSSelector::kPseudoScrollButton:
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
       // generally after pseudo elements.
       return pseudo_class == CSSSelector::kPseudoFocus ||
@@ -1919,6 +1935,22 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       }
 
       selector.SetNth(ab.first, ab.second, sub_selectors);
+      output_.push_back(std::move(selector));
+      return true;
+    }
+    case CSSSelector::kPseudoScrollButton: {
+      const CSSParserToken& ident = stream.Peek();
+      if (ident.GetType() != kIdentToken) {
+        return false;
+      }
+      if (!IsScrollButtonDirectionKeyword(ident)) {
+        return false;
+      }
+      selector.SetArgument(ident.Value().ToAtomicString());
+      stream.ConsumeIncludingWhitespace();
+      if (!stream.AtEnd()) {
+        return false;
+      }
       output_.push_back(std::move(selector));
       return true;
     }

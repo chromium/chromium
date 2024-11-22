@@ -380,10 +380,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
       class_names.Append("::scroll-marker-group");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollMarker) {
       class_names.Append("::scroll-marker");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollNextButton) {
-      class_names.Append("::scroll-next-button");
-    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollPrevButton) {
-      class_names.Append("::scroll-prev-button");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollUpButton) {
+      class_names.Append("::scroll-button(up)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollDownButton) {
+      class_names.Append("::scroll-button(down)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollLeftButton) {
+      class_names.Append("::scroll-button(left)");
+    } else if (pseudo_element->GetPseudoId() == kPseudoIdScrollRightButton) {
+      class_names.Append("::scroll-button(right)");
     }
   }
   if (!class_names.empty())
@@ -1824,8 +1828,9 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
             kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter,
             kPseudoIdSelectArrow, kPseudoIdScrollMarkerGroupAfter,
-            kPseudoIdScrollMarker, kPseudoIdScrollNextButton,
-            kPseudoIdScrollPrevButton}) {
+            kPseudoIdScrollMarker, kPseudoIdScrollUpButton,
+            kPseudoIdScrollDownButton, kPseudoIdScrollLeftButton,
+            kPseudoIdScrollRightButton}) {
         if (Node* pseudo_node = element->GetPseudoElement(pseudo_id))
           VisitAndCollectDistanceInfo(pseudo_node);
       }

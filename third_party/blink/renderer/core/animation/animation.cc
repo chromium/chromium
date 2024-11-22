@@ -123,15 +123,17 @@ bool SupportedTimeValue(double time_in_ms) {
 
 enum class PseudoPriority {
   kNone,
-  kScrollPrevButton,
   kScrollMarkerGroupBefore,
   kMarker,
   kScrollMarker,
+  kScrollUpButton,
+  kScrollDownButton,
+  kScrollLeftButton,
+  kScrollRightButton,
   kBefore,
   kOther,
   kAfter,
   kScrollMarkerGroupAfter,
-  kScrollNextButton,
 };
 
 unsigned NextSequenceNumber() {
@@ -142,9 +144,6 @@ unsigned NextSequenceNumber() {
 PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   if (pseudo == kPseudoIdNone)
     return PseudoPriority::kNone;
-  if (pseudo == kPseudoIdScrollPrevButton) {
-    return PseudoPriority::kScrollPrevButton;
-  }
   if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
     return PseudoPriority::kScrollMarkerGroupBefore;
   }
@@ -153,15 +152,24 @@ PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   if (pseudo == kPseudoIdScrollMarker) {
     return PseudoPriority::kScrollMarker;
   }
+  if (pseudo == kPseudoIdScrollUpButton) {
+    return PseudoPriority::kScrollUpButton;
+  }
+  if (pseudo == kPseudoIdScrollDownButton) {
+    return PseudoPriority::kScrollDownButton;
+  }
+  if (pseudo == kPseudoIdScrollLeftButton) {
+    return PseudoPriority::kScrollLeftButton;
+  }
+  if (pseudo == kPseudoIdScrollRightButton) {
+    return PseudoPriority::kScrollRightButton;
+  }
   if (pseudo == kPseudoIdBefore)
     return PseudoPriority::kBefore;
   if (pseudo == kPseudoIdAfter)
     return PseudoPriority::kAfter;
   if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
     return PseudoPriority::kScrollMarkerGroupAfter;
-  }
-  if (pseudo == kPseudoIdScrollNextButton) {
-    return PseudoPriority::kScrollNextButton;
   }
   return PseudoPriority::kOther;
 }

@@ -367,11 +367,17 @@ class CORE_EXPORT Node : public EventTarget {
   DISABLE_CFI_PERF bool IsScrollMarkerGroupAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupAfter;
   }
-  DISABLE_CFI_PERF bool IsScrollNextButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollNextButton;
+  DISABLE_CFI_PERF bool IsScrollUpButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollUpButton;
   }
-  DISABLE_CFI_PERF bool IsScrollPrevButtonPseudoElement() const {
-    return GetPseudoId() == kPseudoIdScrollPrevButton;
+  DISABLE_CFI_PERF bool IsScrollDownButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollDownButton;
+  }
+  DISABLE_CFI_PERF bool IsScrollLeftButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollLeftButton;
+  }
+  DISABLE_CFI_PERF bool IsScrollRightButtonPseudoElement() const {
+    return GetPseudoId() == kPseudoIdScrollRightButton;
   }
   DISABLE_CFI_PERF bool IsMarkerPseudoElement() const {
     return GetPseudoId() == kPseudoIdMarker;

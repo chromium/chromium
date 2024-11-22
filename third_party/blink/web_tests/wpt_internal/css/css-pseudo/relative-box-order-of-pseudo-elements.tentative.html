@@ -13,7 +13,7 @@
             scroll-marker-group: after;
         }
 
-        div::scroll-prev-button {
+        div::scroll-button(up) {
             background: red;
             content: "";
             height: 20px;
@@ -21,8 +21,16 @@
             display: flex;
         }
 
-        div::before {
+        div::scroll-button(right) {
+            content: "";
             background: orange;
+            height: 20px;
+            width: 100px;
+            display: flex;
+        }
+
+        div::before {
+            background: yellow;
             content: "";
             height: 20px;
             width: 100px;
@@ -30,23 +38,15 @@
         }
 
         div > li {
-            background: yellow;
+            background: green;
             height: 20px;
             width: 100px;
             display: flex;
         }
 
         div::after {
-            background: green;
-            content: "";
-            height: 20px;
-            width: 100px;
-            display: flex;
-        }
-
-        div::scroll-next-button {
-            content: "";
             background: blue;
+            content: "";
             height: 20px;
             width: 100px;
             display: flex;

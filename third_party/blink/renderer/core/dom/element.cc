@@ -3863,7 +3863,13 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (child_change.TraversePseudoElements(*this)) {
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollPrevButton, child_change,
+    UpdatePseudoElement(kPseudoIdScrollUpButton, child_change,
+                        child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollDownButton, child_change,
+                        child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollLeftButton, child_change,
+                        child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollRightButton, child_change,
                         child_recalc_context);
     UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupBefore,
                                          child_change, child_recalc_context);
@@ -3908,8 +3914,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
     UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupAfter,
                                          child_change, child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollNextButton, child_change,
-                        child_recalc_context);
 
     // If we are re-attaching us or any of our descendants, we need to attach
     // the descendants before we know if this element generates a ::first-letter
@@ -4413,7 +4417,6 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       child_attacher = &whitespace_attacher;
     }
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollNextButton, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdSelectArrow, *child_attacher);
     if (GetShadowRoot()) {
@@ -4424,9 +4427,12 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     RebuildPseudoElementLayoutTree(kPseudoIdCheck, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollLeftButton, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollDownButton, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdScrollUpButton, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollMarkerGroupBefore,
                                    local_attacher);
-    RebuildPseudoElementLayoutTree(kPseudoIdScrollPrevButton, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBackdrop, *child_attacher);
     RebuildFirstLetterLayoutTree();
     ClearChildNeedsReattachLayoutTree();
@@ -10670,8 +10676,10 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:
       case kPseudoIdScrollMarker:
-      case kPseudoIdScrollNextButton:
-      case kPseudoIdScrollPrevButton:
+      case kPseudoIdScrollUpButton:
+      case kPseudoIdScrollDownButton:
+      case kPseudoIdScrollLeftButton:
+      case kPseudoIdScrollRightButton:
         return pseudo_element->UltimateOriginatingElement()
             ->ImplicitAnchorElement();
       default:

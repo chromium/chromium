@@ -319,6 +319,60 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 
 namespace {
 
+PseudoId PseudoIdFromScrollButtonArgument(const AtomicString& argument,
+                                          const ComputedStyle& style) {
+  if (argument == AtomicString("up")) {
+    return kPseudoIdScrollUpButton;
+  }
+  if (argument == AtomicString("down")) {
+    return kPseudoIdScrollDownButton;
+  }
+  if (argument == AtomicString("left")) {
+    return kPseudoIdScrollLeftButton;
+  }
+  if (argument == AtomicString("right")) {
+    return kPseudoIdScrollRightButton;
+  }
+  LogicalToPhysical<bool> logical(style.GetWritingDirection(),
+                                  argument == AtomicString("inline-start"),
+                                  argument == AtomicString("inline-end"),
+                                  argument == AtomicString("block-start"),
+                                  argument == AtomicString("block-end"));
+  if (logical.Top()) {
+    return kPseudoIdScrollUpButton;
+  }
+  if (logical.Bottom()) {
+    return kPseudoIdScrollDownButton;
+  }
+  if (logical.Left()) {
+    return kPseudoIdScrollLeftButton;
+  }
+  CHECK(logical.Right());
+  return kPseudoIdScrollRightButton;
+}
+
+bool MatchScrollButton(const Element& element,
+                       const SelectorChecker::SelectorCheckingContext& context,
+                       SelectorChecker::MatchResult& result) {
+  const ComputedStyle* style = element.ParentComputedStyle();
+  CHECK(style);
+  PseudoId pseudo_id =
+      PseudoIdFromScrollButtonArgument(context.selector->Argument(), *style);
+  // Check that pseudo ids match when checking for pseudo element,
+  // but always match if checking for regular element to set the style
+  // flag.
+  if ((element.GetPseudoId() == pseudo_id ||
+       (!element.IsPseudoElement() && !context.pseudo_id))) {
+    // Don't set dynamic_pseudo for pseudo element, as it will set
+    // pseudo style flag instead of setting an actual style.
+    if (!element.IsPseudoElement()) {
+      result.dynamic_pseudo = pseudo_id;
+    }
+    return true;
+  }
+  return false;
+}
+
 bool NeedsScopeActivation(
     const SelectorChecker::SelectorCheckingContext& context) {
   // If we reach the end of the selector without handling context.style_scope,
@@ -2511,6 +2565,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       result.dynamic_pseudo = context.pseudo_id;
       return true;
     }
+    case CSSSelector::kPseudoScrollButton:
+      return MatchScrollButton(element, context, result);
     case CSSSelector::kPseudoTargetText:
       if (!is_ua_rule_) {
         UseCounter::Count(context.element->GetDocument(),

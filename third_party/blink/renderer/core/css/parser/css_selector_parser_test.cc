@@ -478,8 +478,8 @@ TEST(CSSSelectorParserTest, ScrollControlPseudos) {
   TestCase test_cases[] = {
       {"ul::scroll-marker-group", CSSSelector::kPseudoScrollMarkerGroup},
       {"li::scroll-marker", CSSSelector::kPseudoScrollMarker},
-      {"div::scroll-next-button", CSSSelector::kPseudoScrollNextButton},
-      {"div::scroll-prev-button", CSSSelector::kPseudoScrollPrevButton},
+      {"div::scroll-button(up)", CSSSelector::kPseudoScrollButton},
+      {"div::scroll-button(left)", CSSSelector::kPseudoScrollButton},
   };
 
   HeapVector<CSSSelector> arena;

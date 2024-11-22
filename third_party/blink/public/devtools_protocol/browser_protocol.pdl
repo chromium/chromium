@@ -2749,8 +2749,7 @@ domain DOM
       first-line-inherited
       scroll-marker
       scroll-marker-group
-      scroll-next-button
-      scroll-prev-button
+      scroll-button
       scrollbar
       scrollbar-thumb
       scrollbar-button

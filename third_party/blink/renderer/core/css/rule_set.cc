@@ -287,8 +287,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
       switch (selector->GetPseudoType()) {
         case CSSSelector::kPseudoFocus:
           if (pseudo_type == CSSSelector::kPseudoScrollMarker ||
-              pseudo_type == CSSSelector::kPseudoScrollNextButton ||
-              pseudo_type == CSSSelector::kPseudoScrollPrevButton) {
+              pseudo_type == CSSSelector::kPseudoScrollButton) {
             break;
           }
           [[fallthrough]];
@@ -307,8 +306,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
         case CSSSelector::kPseudoScrollMarker:
-        case CSSSelector::kPseudoScrollNextButton:
-        case CSSSelector::kPseudoScrollPrevButton:
+        case CSSSelector::kPseudoScrollButton:
           pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoWebKitCustomElement:

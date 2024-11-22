@@ -8,7 +8,7 @@
     --scroll-buttons-background: red;
   }
 
-  div::scroll-next-button {
+  div::scroll-button(inline-start) {
     content: "";
     background: var(--scroll-buttons-background);
     display: flex;
@@ -16,7 +16,7 @@
     width: 100px;
   }
 
-  div::scroll-prev-button {
+  div::scroll-button(down) {
     content: "";
     background: var(--scroll-buttons-background);
     display: flex;

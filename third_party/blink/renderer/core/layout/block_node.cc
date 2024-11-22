@@ -1618,18 +1618,6 @@ void BlockNode::HandleScrollMarkerGroup() const {
     auto* scroll_marker_group = To<ScrollMarkerGroupPseudoElement>(
         group_node.GetLayoutBox()->GetNode());
     scroll_marker_group->ClearFocusGroup();
-    if (PseudoElement* scroll_next_button =
-            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
-                kPseudoIdScrollNextButton)) {
-      To<ScrollButtonPseudoElement>(scroll_next_button)
-          ->SetScrollMarkerGroup(scroll_marker_group);
-    }
-    if (PseudoElement* scroll_prev_button =
-            scroll_marker_group->UltimateOriginatingElement()->GetPseudoElement(
-                kPseudoIdScrollPrevButton)) {
-      To<ScrollButtonPseudoElement>(scroll_prev_button)
-          ->SetScrollMarkerGroup(scroll_marker_group);
-    }
     AttachScrollMarkers(*box_, context);
 
     DCHECK(GetDocument().GetStyleEngine().InScrollMarkersAttachment());
