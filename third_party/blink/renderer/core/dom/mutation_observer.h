@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -132,6 +133,7 @@ class CORE_EXPORT MutationObserver final
   HeapVector<Member<MutationRecord>> records_;
   MutationObserverRegistrationSet registrations_;
   unsigned priority_;
+  probe::AsyncTaskContext async_task_context_;
 
   FRIEND_TEST_ALL_PREFIXES(MutationObserverTest, DisconnectCrash);
 };
