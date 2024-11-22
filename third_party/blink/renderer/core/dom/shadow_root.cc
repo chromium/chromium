@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -319,9 +320,13 @@ void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
 }
 
 void ShadowRoot::setReferenceTarget(const AtomicString& reference_target) {
-  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()) {
+  if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+          GetDocument().GetExecutionContext())) {
     return;
   }
+
+  UseCounter::CountWebDXFeature(GetDocument(),
+                                WebDXFeature::kDRAFT_ReferenceTarget);
 
   if (referenceTarget() == reference_target) {
     return;

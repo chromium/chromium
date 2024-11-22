@@ -3921,6 +3921,7 @@
       // crbug.com/346835896
       name: "ShadowRootReferenceTarget",
       status: "experimental",
+      origin_trial_feature_name: "ShadowRootReferenceTarget"
     },
     {
       // crbug.com/329677645

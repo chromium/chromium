@@ -921,15 +921,15 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
             html_names::kShadowrootserializableAttr);
     bool clonable = template_stack_item->GetAttributeItem(
         html_names::kShadowrootclonableAttr);
+    Element* host = open_elements_.TopStackItem()->GetElement();
     const auto* reference_target_attr =
-        RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled()
+        RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
+            host->GetDocument().GetExecutionContext())
             ? template_stack_item->GetAttributeItem(
                   html_names::kShadowrootreferencetargetAttr)
             : nullptr;
     const auto& reference_target =
         reference_target_attr ? reference_target_attr->Value() : g_null_atom;
-    HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
-    Element* host = shadow_host_stack_item->GetElement();
 
     bool success = host->AttachDeclarativeShadowRoot(
         *template_element, declarative_shadow_root_mode, focus_delegation,

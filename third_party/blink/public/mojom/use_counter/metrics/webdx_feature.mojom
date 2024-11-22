@@ -301,6 +301,7 @@ enum WebDXFeature {
   kLocaleInfoObsoletedGetters = 243,
   kLocaleInfoFunctions = 244,
   kViewTransitionClass = 245,
+  kDRAFT_ReferenceTarget = 246,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
