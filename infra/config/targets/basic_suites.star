@@ -517,7 +517,7 @@ targets.legacy_basic_suite(
         # running WPTs with forced device scale factor.
         "high_dpi_headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 2,
+                shards = 3,
             ),
         ),
     },
@@ -543,7 +543,7 @@ targets.legacy_basic_suite(
         ),
         "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 13,
+                shards = 18,
             ),
         ),
     },
@@ -668,7 +668,7 @@ targets.legacy_basic_suite(
         ),
         "headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 13,
+                shards = 18,
             ),
         ),
         "content_shell_crash_test": targets.legacy_test_config(),
@@ -1705,7 +1705,7 @@ targets.legacy_basic_suite(
         ),
         "not_site_per_process_headless_shell_wpt_tests": targets.legacy_test_config(
             swarming = targets.swarming(
-                shards = 8,
+                shards = 11,
             ),
         ),
         "webdriver_wpt_tests": targets.legacy_test_config(
