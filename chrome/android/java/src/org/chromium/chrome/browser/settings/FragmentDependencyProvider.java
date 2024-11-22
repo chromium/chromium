@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.privacy_sandbox.ChromeTrackingProtectionDeleg
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragmentBase;
 import org.chromium.chrome.browser.safety_check.SafetyCheckBridge;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -182,12 +181,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                         SiteSettingsHelper.showCategorySettings(
                                 context, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
                     });
-        }
-        if (fragment instanceof SafeBrowsingSettingsFragmentBase) {
-            SafeBrowsingSettingsFragmentBase safeBrowsingFragment =
-                    (SafeBrowsingSettingsFragmentBase) fragment;
-            safeBrowsingFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof LanguageSettings) {
             ((LanguageSettings) fragment)

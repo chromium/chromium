@@ -40,6 +40,6 @@ public class EnhancedProtectionSettingsFragment extends SafeBrowsingSettingsFrag
     }
 
     private void onLearnMoreClicked(View view) {
-        openUrlInCct(SAFE_BROWSING_IN_CHROME_URL);
+        getCustomTabLauncher().openUrlInCct(getContext(), SAFE_BROWSING_IN_CHROME_URL);
     }
 }
