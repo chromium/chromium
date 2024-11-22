@@ -28,8 +28,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "checkout_pgo_profiles"
+                  "android"
                 ],
                 "config": "chromium"
               }
