@@ -22,6 +22,11 @@ class Autofill_CreditCardFill;
 
 namespace autofill::autofill_metrics {
 
+// To reduce traffic, only a random sample of browser sessions upload UKM data.
+// This function returns whether we should record autofill UKM events for the
+// current session.
+bool ShouldRecordUkm();
+
 // Utility to log URL keyed form interaction events.
 class FormInteractionsUkmLogger {
  public:

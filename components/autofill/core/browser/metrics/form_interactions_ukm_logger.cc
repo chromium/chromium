@@ -25,6 +25,20 @@ constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
 }  // namespace
 
+bool ShouldRecordUkm() {
+  // We only need to generate this random number once while the current process
+  // is running.
+  static const int random_value_per_session = base::RandInt(0, 99);
+
+  const int kSamplingRate =
+      base::FeatureList::IsEnabled(
+          features::kAutofillLogUKMEventsWithSamplingOnSession)
+          ? features::kAutofillLogUKMEventsWithSamplingOnSessionRate.Get()
+          : 0;
+
+  return random_value_per_session < kSamplingRate;
+}
+
 FormInteractionsUkmLogger::FormInteractionsUkmLogger(
     AutofillClient* autofill_client,
     ukm::UkmRecorder* ukm_recorder)

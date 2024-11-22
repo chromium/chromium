@@ -22,21 +22,6 @@
 
 namespace autofill {
 
-class VotesUploaderTestApi {
- public:
-  explicit VotesUploaderTestApi(VotesUploader* votes_uploader)
-      : votes_uploader_(*votes_uploader) {}
-
-  // Blocks until all pending votes have been emitted. This fails if either a
-  // timeout is hit or if the BrowserAutofillManager::vote_upload_task_runner_
-  // has not been initialized yet.
-  [[nodiscard]] testing::AssertionResult FlushPendingVotes(
-      base::TimeDelta timeout = base::Seconds(10));
-
- private:
-  raw_ref<VotesUploader> votes_uploader_;
-};
-
 // Exposes some testing operations for BrowserAutofillManager.
 class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
  public:
@@ -121,10 +106,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
  private:
   raw_ref<BrowserAutofillManager> manager_;
 };
-
-inline VotesUploaderTestApi test_api(VotesUploader& votes_uploader) {
-  return VotesUploaderTestApi(&votes_uploader);
-}
 
 inline BrowserAutofillManagerTestApi test_api(BrowserAutofillManager& manager) {
   return BrowserAutofillManagerTestApi(&manager);
