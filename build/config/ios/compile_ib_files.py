@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 import argparse
 import logging
 import os
@@ -14,18 +15,15 @@ def main():
   parser = argparse.ArgumentParser(
       description='A script to compile xib and storyboard.',
       fromfile_prefix_chars='@')
-  parser.add_argument('-o',
-                      '--output',
-                      required=True,
+  parser.add_argument('-o', '--output', required=True,
                       help='Path to output bundle.')
-  parser.add_argument('-i',
-                      '--input',
-                      required=True,
+  parser.add_argument('-i', '--input', required=True,
                       help='Path to input xib or storyboard.')
   args, unknown_args = parser.parse_known_args()
 
   ibtool_args = [
-      'xcrun', 'ibtool', '--errors', '--warnings', '--notices',
+      'xcrun', 'ibtool',
+      '--errors', '--warnings', '--notices',
       '--output-format', 'human-readable-text'
   ]
   ibtool_args += unknown_args
