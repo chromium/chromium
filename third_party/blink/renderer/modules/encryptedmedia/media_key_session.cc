@@ -1027,8 +1027,7 @@ void MediaKeySession::OnSessionClosed(media::CdmSessionClosedReason reason) {
 
   // 7. Resolve promise.
   closed_promise_->Resolve(
-      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason))
-          .AsString());
+      V8MediaKeySessionClosedReason(ConvertSessionClosedReason(reason)));
 
   // Fail any pending events, except if it's a close request.
   action_timer_.Stop();
@@ -1103,7 +1102,7 @@ void MediaKeySession::OnSessionKeysChange(
     // 4.2.2 Insert an entry for pair's key ID into statuses with the
     //       value of pair's MediaKeyStatus value.
     key_statuses_map_->AddEntry(
-        key.Id(), EncryptedMediaUtils::ConvertKeyStatusToString(key.Status()));
+        key.Id(), EncryptedMediaUtils::ConvertKeyStatusToEnum(key.Status()));
 
     ukm::builders::Media_EME_CdmSystemCode(source_id)
         .SetCdmSystemCode(key.SystemCode())

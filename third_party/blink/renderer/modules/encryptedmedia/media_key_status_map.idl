@@ -21,5 +21,5 @@ enum MediaKeyStatus {
     iterable <BufferSource, MediaKeyStatus>;
     readonly attribute unsigned long size;
     boolean has(BufferSource keyId);
-    [CallWith=ScriptState] any get(BufferSource keyId);
+    (MediaKeyStatus or undefined) get(BufferSource keyId);
 };

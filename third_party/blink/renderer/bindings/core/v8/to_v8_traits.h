@@ -305,20 +305,6 @@ struct ToV8Traits<
                                                  const T& enumeration) {
     return V8String(script_state->GetIsolate(), enumeration.AsCStr());
   }
-
-  // TODO(crbug.com/1184543): Remove this overload.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 const String& value) {
-    DCHECK(!value.empty());
-    return V8String(script_state->GetIsolate(), value);
-  }
-
-  // TODO(crbug.com/1184543): Remove this overload.
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
-                                                 const AtomicString& value) {
-    DCHECK(!value.empty());
-    return V8String(script_state->GetIsolate(), value.GetString());
-  }
 };
 
 // NotShared
