@@ -102,30 +102,24 @@ public class AccountInfo extends CoreAccountInfo {
     }
 
     /**
-     * @return Whether the account email can be used in display fields.
-     * If `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available
-     * (Tribool.UNKNOWN), uses fallback.
+     * Returns whether the account email can be used in display fields. If
+     * `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available (Tribool.UNKNOWN), uses
+     * fallback.
      */
     public boolean canHaveEmailAddressDisplayed() {
-        switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
-            case Tribool.FALSE:
-                {
-                    return false;
-                }
-            case Tribool.TRUE:
-                {
-                    return true;
-                }
-        }
-        return AccountEmailDisplayHook.canHaveEmailAddressDisplayed(getEmail());
+        return switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
+            case Tribool.FALSE -> false;
+            case Tribool.TRUE -> true;
+            default -> AccountEmailDisplayHook.canHaveEmailAddressDisplayed(getEmail());
+        };
     }
 
-    /** @return Full name of the account. */
+    /** Returns the full name of the account. */
     public String getFullName() {
         return mFullName;
     }
 
-    /** @return Given name of the account. */
+    /** Returns the given name of the account. */
     public String getGivenName() {
         return mGivenName;
     }
@@ -138,14 +132,14 @@ public class AccountInfo extends CoreAccountInfo {
         return mAccountImage;
     }
 
-    /** @return the capability values associated with the account. */
+    /** Returns the capability values associated with the account. */
     public AccountCapabilities getAccountCapabilities() {
         return mAccountCapabilities;
     }
 
     /**
-     * @return Whether the {@link AccountInfo} has any valid displayable information.
-     * The displayable information are full name, given name and avatar.
+     * Returns whether the {@link AccountInfo} has any valid displayable information. The
+     * displayable information are full name, given name and avatar.
      */
     public boolean hasDisplayableInfo() {
         return !TextUtils.isEmpty(mFullName)
