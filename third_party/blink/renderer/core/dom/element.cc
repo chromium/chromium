@@ -4776,8 +4776,7 @@ std::optional<TextDirection> Element::ResolveAutoDirectionality() const {
           }
         } else if (Element* slotted_element =
                        DynamicTo<Element>(slotted_node)) {
-          if (include_in_traversal(slotted_element) ||
-              !RuntimeEnabledFeatures::DirAutoFixSlotExclusionsEnabled()) {
+          if (include_in_traversal(slotted_element)) {
             std::optional<TextDirection> slotted_child_result =
                 contained_text_auto_directionality(slotted_element);
             if (slotted_child_result) {
