@@ -739,7 +739,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual void CloneNonAttributePropertiesFrom(const Element&,
                                                NodeCloningData&) {}
 
-  // NOTE: This shadows Node::GetComputedStyle().
   const ComputedStyle* GetComputedStyle() const {
     return computed_style_.Get();
   }
