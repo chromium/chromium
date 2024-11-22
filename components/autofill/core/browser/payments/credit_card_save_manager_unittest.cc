@@ -238,7 +238,6 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
-    set_personal_data_manager(std::make_unique<TestPersonalDataManager>());
     TestPersonalDataManager& pdm = GetPersonalDataManager();
     pdm.set_payments_data_manager(std::make_unique<MockPaymentsDataManager>());
     set_payments_autofill_client(

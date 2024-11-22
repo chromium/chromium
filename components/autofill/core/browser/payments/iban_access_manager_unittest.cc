@@ -38,8 +38,6 @@ class IbanAccessManagerTest : public testing::Test {
  public:
   IbanAccessManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    autofill_client_.set_personal_data_manager(
-        std::make_unique<TestPersonalDataManager>());
     autofill_client_.set_sync_service(&sync_service_);
     autofill_client_.GetPaymentsAutofillClient()
         ->set_test_payments_network_interface(
