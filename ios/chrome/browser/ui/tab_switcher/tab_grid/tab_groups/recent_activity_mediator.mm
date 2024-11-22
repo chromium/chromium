@@ -9,6 +9,7 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_consumer.h"
@@ -39,22 +40,6 @@ ActivityLogType ConvertCollaborationEvent(
     default:
       return ActivityLogType::kUndefined;
   }
-}
-
-std::string CollaborationId(
-    raw_ptr<tab_groups::TabGroupSyncService> syncService,
-    base::WeakPtr<const TabGroup> tabGroup) {
-  if (!tabGroup || !syncService) {
-    return "";
-  }
-
-  std::optional<tab_groups::SavedTabGroup> savedTabGroup =
-      syncService->GetGroup(tabGroup->tab_group_id());
-  if (savedTabGroup.has_value() &&
-      savedTabGroup->collaboration_id().has_value()) {
-    return savedTabGroup->collaboration_id()->value();
-  }
-  return "";
 }
 
 }  // namespace
@@ -99,8 +84,10 @@ std::string CollaborationId(
 // Creates recent activity logs and passes them to the consumer.
 - (void)populateItemsFromService {
   collaboration::messaging::ActivityLogQueryParams params;
+  NSString* collabID =
+      tab_groups::utils::GetTabGroupCollabID(_tabGroup.get(), _syncService);
   params.collaboration_id =
-      data_sharing::GroupId(CollaborationId(_syncService, _tabGroup));
+      data_sharing::GroupId(base::SysNSStringToUTF8(collabID));
 
   NSMutableArray<RecentActivityLogItem*>* items = [[NSMutableArray alloc] init];
 
