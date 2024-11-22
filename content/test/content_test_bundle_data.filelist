@@ -8,6 +8,8 @@ data/accept-drop.html
 data/accept-header-iframe.html
 data/accept-header-iframe.html.mock-http-headers
 data/accept-header.html
+data/accessibility/PRESUBMIT.py
+data/accessibility/PRESUBMIT_test.py
 data/accessibility/accdescription/description-ignores-slot-expected-blink.txt
 data/accessibility/accdescription/description-ignores-slot.html
 data/accessibility/accname/desc-combobox-focusable-expected-android-assist-data.txt
