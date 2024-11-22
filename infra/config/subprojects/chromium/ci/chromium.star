@@ -297,6 +297,7 @@ ci.builder(
             config = "chromium",
             apply_configs = [
                 "android",
+                "checkout_pgo_profiles",
             ],
         ),
         chromium_config = builder_config.chromium_config(
