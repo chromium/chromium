@@ -75,13 +75,11 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
         value: false,
       },
 
-      /**
-       * Whether the user is in kiosk mode.
-       */
-      isKioskModeActive_: {
+      isKioskOldA11ySettingsRedirectionEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isKioskModeActive');
+          return loadTimeData.getBoolean(
+              'isKioskOldA11ySettingsRedirectionEnabled');
         },
       },
 
@@ -155,7 +153,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   private browserProxy_: OsA11yPageBrowserProxy;
   private hasScreenReader_: boolean;
   private isGuest_: boolean;
-  private isKioskModeActive_: boolean;
+  private isKioskOldA11ySettingsRedirectionEnabled_: boolean;
   private rowIcons_: Record<string, string>;
   private section_: Section;
 
@@ -167,7 +165,7 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
 
     this.browserProxy_ = OsA11yPageBrowserProxyImpl.getInstance();
 
-    if (this.isKioskModeActive_) {
+    if (this.isKioskOldA11ySettingsRedirectionEnabled_) {
       this.redirectToOldA11ySettings();
     }
   }

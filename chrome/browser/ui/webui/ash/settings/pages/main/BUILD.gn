@@ -41,6 +41,7 @@ static_library("main") {
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/common",
     "//chrome/common:chrome_features",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//components/strings:components_strings",
     "//components/user_manager",
     "//content/public/browser",

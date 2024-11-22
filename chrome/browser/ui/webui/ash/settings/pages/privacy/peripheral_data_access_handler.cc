@@ -15,7 +15,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
@@ -53,13 +55,14 @@ bool PeripheralDataAccessHandler::GetPrefState() {
   return pcie_tunneling_allowed;
 }
 
-PeripheralDataAccessHandler::PeripheralDataAccessHandler() {
+PeripheralDataAccessHandler::PeripheralDataAccessHandler(Profile* profile) {
   auto* pref = g_browser_process->local_state()->FindPreference(
       ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled);
   DCHECK(pref);
   // If the user has a managed policy or is a guest profile, prevent user
   // configuration of the setting.
-  is_user_configurable_ = !pref->IsManaged() && !IsGuestModeActive();
+  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+  is_user_configurable_ = !pref->IsManaged() && !IsGuestModeActive(user);
 
   peripheral_data_access_subscription_ =
       CrosSettings::Get()->AddSettingsObserver(

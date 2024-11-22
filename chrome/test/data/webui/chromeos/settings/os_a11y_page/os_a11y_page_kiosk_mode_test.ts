@@ -85,8 +85,9 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
         isVisible(page.shadowRoot!.querySelector('#additionalFeaturesLink')));
   });
 
-  test('Always redirect to MANAGE_ACCESSIBILITY route in kiosk mode', () => {
-    loadTimeData.overrideValues({isKioskModeActive: true});
+  test('Redirect to MANAGE_ACCESSIBILITY route if enabled', () => {
+    loadTimeData.overrideValues(
+        {isKioskOldA11ySettingsRedirectionEnabled: true});
     Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
     initPage();
     flush();
@@ -94,4 +95,19 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
     assertEquals(
         Router.getInstance().currentRoute, routes.MANAGE_ACCESSIBILITY);
   });
+
+  test(
+      'Not redirect to MANAGE_ACCESSIBILITY route for kiosk if disabled',
+      () => {
+        loadTimeData.overrideValues({
+          isKioskOldA11ySettingsRedirectionEnabled: false,
+          isKioskModeActive: true
+        });
+        Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
+        initPage();
+        flush();
+
+        assertEquals(
+            Router.getInstance().currentRoute, routes.OS_ACCESSIBILITY);
+      });
 });
