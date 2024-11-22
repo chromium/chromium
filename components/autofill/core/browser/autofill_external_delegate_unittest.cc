@@ -326,7 +326,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
 // The anonymous namespace needs to end here because of `friend`ships between
 // the tests and the production code.
 
-class AutofillExternalDelegateUnitTest : public testing::Test {
+class AutofillExternalDelegateTest : public testing::Test {
  protected:
   void SetUp() override {
     autofill_driver_ =
@@ -468,15 +468,15 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
 // Variant for use in cases when we expect the BrowserAutofillManager would
 // normally set the |should_show_cards_from_account_option_| bit.
 class AutofillExternalDelegateCardsFromAccountTest
-    : public AutofillExternalDelegateUnitTest {
+    : public AutofillExternalDelegateTest {
  protected:
   void SetUp() override {
-    AutofillExternalDelegateUnitTest::SetUp();
+    AutofillExternalDelegateTest::SetUp();
     manager().ShowCardsFromAccountOption();
   }
 };
 
-TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
+TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
   IssueOnQuery();
 
   // Main filling product is not defined before the first call to
@@ -592,7 +592,7 @@ TEST_F(AutofillExternalDelegateUnitTest, GetMainFillingProduct) {
 }
 
 // Test that our external delegate called the virtual methods at the right time.
-TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
+TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();
 
   const auto kExpectedSuggestions =
@@ -622,7 +622,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 }
 
 // Test that data list elements for a node will appear in the Autofill popup.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateDataList) {
   std::vector<SelectOption> data_list_items;
   data_list_items.emplace_back();
 
@@ -653,7 +653,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
 }
 
 // Test that datalist values can get updated while a popup is showing.
-TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
+TEST_F(AutofillExternalDelegateTest, UpdateDataListWhileShowingPopup) {
   EXPECT_CALL(client(), ShowAutofillSuggestions).Times(0);
 
   // Make sure just setting the data list values doesn't cause the popup to
@@ -691,7 +691,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
 
 // Test that we _don't_ de-dupe autofill values against datalist values. We
 // keep both with a separator.
-TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
+TEST_F(AutofillExternalDelegateTest, DuplicateAutofillDatalistValues) {
   std::vector<SelectOption> datalist{{.value = u"Rick", .text = u"Deckard"},
                                      {.value = u"Beyonce", .text = u"Knowles"}};
   EXPECT_CALL(client(), UpdateAutofillDataListValues(ElementsAre(
@@ -722,7 +722,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 
 // Test that we de-dupe autocomplete values against datalist values, keeping the
 // latter in case of a match.
-TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
+TEST_F(AutofillExternalDelegateTest, DuplicateAutocompleteDatalistValues) {
   std::vector<SelectOption> datalist{{.value = u"Rick", .text = u"Deckard"},
                                      {.value = u"Beyonce", .text = u"Knowles"}};
   EXPECT_CALL(client(), UpdateAutofillDataListValues(ElementsAre(
@@ -759,7 +759,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
 // Test that the Autofill popup is able to display warnings explaining why
 // Autofill is disabled for a website.
 // Regression test for http://crbug.com/247880
-TEST_F(AutofillExternalDelegateUnitTest, AutofillWarnings) {
+TEST_F(AutofillExternalDelegateTest, AutofillWarnings) {
   IssueOnQuery();
 
   AutofillClient::PopupOpenArgs open_args;
@@ -784,8 +784,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AutofillWarnings) {
 
 // Test that Autofill warnings are removed if there are also autocomplete
 // entries in the vector.
-TEST_F(AutofillExternalDelegateUnitTest,
-       AutofillWarningsNotShown_WithSuggestions) {
+TEST_F(AutofillExternalDelegateTest, AutofillWarningsNotShown_WithSuggestions) {
   IssueOnQuery();
 
   EXPECT_CALL(client(),
@@ -804,7 +803,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that the Autofill delegate doesn't try and fill a form with a
 // negative unique id.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateInvalidUniqueId) {
   IssueOnQuery();
   // Ensure it doesn't try to preview the negative id.
   EXPECT_CALL(manager(), FillOrPreviewProfileForm).Times(0);
@@ -825,7 +824,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
 
 // Test that the Autofill delegate still allows previewing and filling
 // specifically of the negative ID for SuggestionType::kIbanEntry.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsIbanEntry) {
   IssueOnQuery();
 
   EXPECT_CALL(
@@ -879,7 +878,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateFillsIbanEntry) {
 // Test that the Autofill delegate still allows previewing and filling
 // specifically of the negative ID for
 // SuggestionType::kMerchantPromoCodeEntry.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ExternalDelegateFillsMerchantPromoCodeEntry) {
   IssueOnQuery();
 
@@ -920,7 +919,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that the Autofill delegate routes the merchant promo code suggestions
 // footer redirect logic correctly.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ExternalDelegateMerchantPromoCodeSuggestionsFooter) {
   IssueOnQuery();
   const GURL gurl{"https://example.com/"};
@@ -934,7 +933,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that the ClearPreview call is only sent if the form was being previewed
 // (i.e. it isn't autofilling a password).
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateClearPreviewedForm) {
   // Ensure selecting a new password entries or Autofill entries will
   // cause any previews to get cleared.
   IssueOnQuery();
@@ -978,8 +977,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
 }
 
 // Test that the popup is hidden once we are done editing the autofill field.
-TEST_F(AutofillExternalDelegateUnitTest,
-       ExternalDelegateHidePopupAfterEditing) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateHidePopupAfterEditing) {
   EXPECT_CALL(client(), ShowAutofillSuggestions);
   test::GenerateTestAutofillPopup(&external_delegate());
 
@@ -990,8 +988,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that the driver is directed to accept the data list after being notified
 // that the user accepted the data list suggestion.
-TEST_F(AutofillExternalDelegateUnitTest,
-       ExternalDelegateAcceptDatalistSuggestion) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateAcceptDatalistSuggestion) {
   IssueOnQuery();
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
@@ -1007,7 +1004,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that a11y autofill availability is set to `kNoSuggestions` when
 // the popup is open and if it was manually triggered on an unclassified field.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        AutofillSuggestionAvailability_ManuallFallback) {
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
   get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
@@ -1026,8 +1023,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
 // the popup is open with regular autofill suggestions.
-TEST_F(AutofillExternalDelegateUnitTest,
-       AutofillSuggestionAvailability_Autofill) {
+TEST_F(AutofillExternalDelegateTest, AutofillSuggestionAvailability_Autofill) {
   IssueOnQuery();
 
   std::vector<Suggestion> suggestions = {
@@ -1044,7 +1040,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that a11y autofill availability is set to `kAutofillAvailable` when
 // the popup is open with the `kRetrievePredictionImprovements` suggestion.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        AutofillSuggestionAvailability_RetrievePredictionImprovements) {
   IssueOnQuery();
 
@@ -1062,7 +1058,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that a11y autofill availability is set to `kAutocompleteAvailable` when
 // the popup is open with autocomplete suggestions.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        AutofillSuggestionAvailability_Autocomplete) {
   IssueOnQuery();
 
@@ -1080,7 +1076,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 }
 
 // Test that an accepted autofill suggestion will fill the form.
-TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
+TEST_F(AutofillExternalDelegateTest, AcceptSuggestion) {
   IssueOnQuery();
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
@@ -1097,7 +1093,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion) {
       SuggestionPosition{.row = 2});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        TestAddressSuggestionShown_MetricsEmitted) {
   base::HistogramTester histogram_tester;
   client().set_test_addresses({test::GetFullProfile()});
@@ -1114,7 +1110,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 }
 
 // Test that an accepted test address autofill suggestion will fill the form.
-TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
+TEST_F(AutofillExternalDelegateTest, TestAddressSuggestion_FillAndPreview) {
   IssueOnQuery();
   const AutofillProfile profile = test::GetFullProfile();
   client().set_test_addresses({profile});
@@ -1144,7 +1140,7 @@ TEST_F(AutofillExternalDelegateUnitTest, TestAddressSuggestion_FillAndPreview) {
       1);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        AcceptFirstPopupLevelSuggestion_LogSuggestionAcceptedMetric) {
   IssueOnQuery();
   const AutofillProfile profile = test::GetFullProfile();
@@ -1165,7 +1161,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Tests that when accepting a suggestion, the `AutofillSuggestionTriggerSource`
 // is converted to the correct `AutofillTriggerSource`.
-TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
+TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
   // Expect that `kFormControlElementClicked` translates to source `kPopup` or
   // `kKeyboardAccessory`, depending on the platform.
   const AutofillProfile profile = test::GetFullProfile();
@@ -1200,7 +1196,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptSuggestion_TriggerSource) {
                                           SuggestionPosition{.row = 1});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        VirtualCreditCard_ManualFallback_CreditCardForm_Preview) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
@@ -1228,7 +1224,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        VirtualCreditCard_ManualFallback_NonCreditCardForm_NoPreview) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
@@ -1246,7 +1242,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        VirtualCreditCard_ManualFallback_CreditCardForm_FullFormFilling) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
@@ -1276,7 +1272,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Tests that on acceptance of a `kRetrievePredictionImprovements` suggestion,
 // the `AutofillAiDelegate::OnClickedTriggerSuggestion()` event handler is
 // called.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        DidAcceptRetrievePredictionImprovementsSuggestionCallsEventHandler) {
   EXPECT_CALL(*client().GetAutofillAiDelegate(), OnClickedTriggerSuggestion);
   external_delegate().DidAcceptSuggestion(
@@ -1288,7 +1284,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
 // `Suggestion::PredictionImprovementsPayload` payload, the full form is filled
 // accordingly.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        DidAcceptFillPredictionImprovementsFillsFullForm) {
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
@@ -1323,7 +1319,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Tests that on acceptance of a `kFillPredictionImprovements` suggestion with
 // `Suggestion::ValueToFill` payload, the queried field is filled.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        DidAcceptFillPredictionImprovementsFillsSingleField) {
   IssueOnQuery();
   ASSERT_GT(queried_form().fields().size(), 0UL);
@@ -1344,7 +1340,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Tests that the `AutofillPredictionImprovementsDelegate` is notified when the
 // `kPredictionImprovementsLoadingState` suggestion is shown.
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        OnPredictionImprovementsSuggestionsShownNotifiesDelegate) {
   FormData form = CreateTestAddressFormData();
   ASSERT_GT(form.fields().size(), 0UL);
@@ -1364,13 +1360,13 @@ TEST_F(AutofillExternalDelegateUnitTest,
       Suggestion(SuggestionType::kPredictionImprovementsLoadingState)});
 }
 
-class AutofillExternalDelegatePlusAddressUnitTest
-    : public AutofillExternalDelegateUnitTest {
+class AutofillExternalDelegatePlusAddressTest
+    : public AutofillExternalDelegateTest {
  public:
-  AutofillExternalDelegatePlusAddressUnitTest() = default;
+  AutofillExternalDelegatePlusAddressTest() = default;
 
   void SetUp() override {
-    AutofillExternalDelegateUnitTest::SetUp();
+    AutofillExternalDelegateTest::SetUp();
     client().set_plus_address_delegate(
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>());
   }
@@ -1407,7 +1403,7 @@ class AutofillExternalDelegatePlusAddressUnitTest
 // Mock out an existing plus address autofill suggestion, and ensure that
 // choosing it results in the field being filled with its value (as opposed to
 // the mocked address used in the creation flow).
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        ExternalDelegateFillsExistingPlusAddress) {
   // Trigger the popup on an email field.
   IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
@@ -1460,7 +1456,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests the scenario when the user chooses an email suggestion over the plus
 // address suggestion.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        EmailSuggestionIsFilledWhenPlusAddressIsSuggested) {
   // Trigger the popup on an email field.
   IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
@@ -1507,7 +1503,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests the scenario when the user triggers plus address suggestions manually
 // from the context menu and no email suggestions are shown.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        AcceptsManuallyTriggeredPlusAddressFillingSuggestion) {
   // Trigger the popup on an email field.
   IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
@@ -1560,7 +1556,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Mock out the new plus address creation flow, and ensure that its completion
 // results in the field being filled with the resulting plus address.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        ExternalDelegateOffersPlusAddressCreation) {
   const std::u16string kMockPlusAddressForCreationCallback =
       u"test+1234@test.example";
@@ -1612,7 +1608,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // context menu. Mock out the new plus address creation flow, and ensure that
 // its completion results in the field being filled with the resulting plus
 // address.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressSuggestionsAreTriggeredManually) {
   const std::u16string kMockPlusAddressForCreationCallback =
       u"test+1234@test.example";
@@ -1666,7 +1662,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // Tests that showing a plus address inline suggestion calls
 // `AutofillPlusAddressDelegate` with a callback that updates the Autofill
 // popup.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineSuggestionShown) {
   ShowPlusAddressInlineSuggestion(std::nullopt);
 
@@ -1693,7 +1689,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests that displaying an address suggestion that contains a plus address
 // email override records the corresponding user action.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressEmailOverrideUserAction) {
   IssueOnQuery();
   base::UserActionTester user_action_tester;
@@ -1712,7 +1708,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests that selecting an inline plus address suggestion previews the value
 // stored in the payload.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineSuggestionSelected) {
   const std::u16string plus_address = u"test+plus@test.example";
   ShowPlusAddressInlineSuggestion(plus_address);
@@ -1730,7 +1726,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests that selecting an inline plus address suggestion with an empty address
 // value does not preview anything.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineSuggestionSelectedWithNoAddress) {
   ShowPlusAddressInlineSuggestion(std::nullopt);
 
@@ -1742,8 +1738,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // Tests that triggering the extra button action on a plus address inline
 // suggestion informs the plus address delegate and passes a callback that can
 // be used to update the Autofill suggestions.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
-       PlusAddressExtraButtonAction) {
+TEST_F(AutofillExternalDelegatePlusAddressTest, PlusAddressExtraButtonAction) {
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
   {
@@ -1773,7 +1768,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // Tests that triggering the extra button action on a plus address error
 // suggestion informs the plus address delegate and passes a callback that can
 // be used to update the Autofill suggestions.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressExtraButtonActionForErrorSuggestion) {
   IssueOnQuery();
 
@@ -1816,7 +1811,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests that running the update callback is a no-op if the session id of the
 // suggestions UI has changed since the update callback was requested.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressExtraButtonActionUiSessionIdChanged) {
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
@@ -1847,7 +1842,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests that running the update callback is safe even after AED has been
 // destroyed.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressExtraButtonActionIsAlwaysSafeToCall) {
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
@@ -1874,7 +1869,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // Tests that triggering the extra button action on a plus address inline
 // suggestion informs the plus address delegate and passes a callback that can
 // be used to update the Autofill suggestions.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest, PlusAddressInlineAccepted) {
+TEST_F(AutofillExternalDelegatePlusAddressTest, PlusAddressInlineAccepted) {
   const std::u16string plus_address = u"test+plus@test.example";
   ShowPlusAddressInlineSuggestion(plus_address);
 
@@ -1950,7 +1945,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest, PlusAddressInlineAccepted) {
 // `ShowAffiliationErrorDialogCallback` that, when run, triggers showing a plus
 // address affiliation error dialog in `AutofillClient`. If that dialog is
 // accepted, the affiliated plus address is filled.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineAcceptedAffiliationError) {
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
   const std::u16string affiliated_domain = u"https://bar.com";
@@ -1987,7 +1982,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // Tests that `OnAcceptedInlineSuggestion` gets passed a
 // `ShowErrorDialogCallback` that, when run, triggers showing a plus address
 // error dialog in `AutofillClient`.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineAcceptedQuotaError) {
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
@@ -2013,7 +2008,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
 // Tests that `OnAcceptedInlineSuggestion` gets passed a closure that, when run,
 // triggers reshowing the plus address suggestions.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineAcceptedReshowSuggestions) {
   ShowPlusAddressInlineSuggestion(u"test+plus@test.example");
 
@@ -2040,7 +2035,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 // triggers reshowing the plus address suggestions. `OnAcceptedInlineSuggestion`
 // is correctly notified when the Autofill was triggered via the Chrome context
 // manu entry.
-TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+TEST_F(AutofillExternalDelegatePlusAddressTest,
        PlusAddressInlineAcceptedViaManualFallbackReshowSuggestions) {
   ShowPlusAddressInlineSuggestion(
       u"test+plus@test.example",
@@ -2066,7 +2061,7 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 }
 
 TEST_F(
-    AutofillExternalDelegateUnitTest,
+    AutofillExternalDelegateTest,
     AutofillAi_DidPerformButtonAction_ThumbsUpFeedbackIsForwardedToDelegate) {
   IssueOnQuery();
 
@@ -2082,7 +2077,7 @@ TEST_F(
 }
 
 TEST_F(
-    AutofillExternalDelegateUnitTest,
+    AutofillExternalDelegateTest,
     AutofillAi_DidPerformButtonAction_ThumbsDownFeedbackIsForwardedToDelegate) {
   IssueOnQuery();
 
@@ -2097,7 +2092,7 @@ TEST_F(
       PredictionImprovementsButtonActions::kThumbsDownClicked);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        AutofillAi_DidPerformButtonAction_LearnMoreIsForwardedToDelegate) {
   IssueOnQuery();
 
@@ -2110,7 +2105,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       PredictionImprovementsButtonActions::kLearnMoreClicked);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {
   const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
   FormGlobalId form_id = test::MakeFormGlobalId();
@@ -2151,7 +2146,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // caret bounds are not used because the
 // `ComposeDelegate::ShouldAnchorNudgeOnCaret()` is returning false.
 TEST_F(
-    AutofillExternalDelegateUnitTest,
+    AutofillExternalDelegateTest,
     ComposeSuggestion_ComposeProactiveNudge_ShouldAnchorNudgeOnCaretReturnsFalse_DoNotForwardsCaretBoundsToClient) {
   const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
   FormGlobalId form_id = test::MakeFormGlobalId();
@@ -2188,7 +2183,7 @@ TEST_F(
 }
 
 TEST_F(
-    AutofillExternalDelegateUnitTest,
+    AutofillExternalDelegateTest,
     ComposeSuggestion_ComposeProactiveNudge_CaretOutsideField_DoNotSendCaretBoundsToClient) {
   const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
   FormGlobalId form_id = test::MakeFormGlobalId();
@@ -2227,7 +2222,7 @@ TEST_F(
 }
 
 TEST_F(
-    AutofillExternalDelegateUnitTest,
+    AutofillExternalDelegateTest,
     NonComposeSuggestion_NonComposeProactiveNudge_DoNotForwardsCaretBoundsToClient) {
   IssueOnQuery(gfx::Rect(/*width=*/123, /*height=*/123));
 
@@ -2257,7 +2252,7 @@ TEST_F(
 
 // Tests that accepting a Compose suggestion returns a callback that, when run,
 // fills the trigger field.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateOpensComposeAndFills) {
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(client(), GetComposeDelegate)
       .WillByDefault(Return(&compose_delegate));
@@ -2285,7 +2280,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
                                           SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        Compose_AcceptDisable_CallsComposeDelegate) {
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(client(), GetComposeDelegate)
@@ -2301,7 +2296,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        Compose_AcceptGoToSettings_CallsComposeDelegate) {
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(client(), GetComposeDelegate)
@@ -2317,7 +2312,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        Compose_AcceptNeverShowOnThisWebsiteAgain_CallsComposeDelegate) {
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(client(), GetComposeDelegate)
@@ -2336,7 +2331,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 #if !BUILDFLAG(IS_IOS)
 // Test that the driver is directed to clear or undo the form after being
 // notified that the user accepted the suggestion to clear or undo the form.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoForm) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateUndoForm) {
   IssueOnQuery();
   EXPECT_CALL(manager(), UndoAutofill);
   external_delegate().DidAcceptSuggestion(
@@ -2345,7 +2340,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoForm) {
 
 // Test that the driver is directed to undo the form after being notified that
 // the user selected the suggestion to undo the form.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoPreviewForm) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateUndoPreviewForm) {
   IssueOnQuery();
   EXPECT_CALL(manager(), UndoAutofill);
   external_delegate().DidSelectSuggestion(
@@ -2355,7 +2350,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoPreviewForm) {
 
 // Test that autofill client will scan a credit card after use accepted the
 // suggestion to scan a credit card.
-TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
+TEST_F(AutofillExternalDelegateTest, ScanCreditCardMenuItem) {
   IssueOnQuery();
   EXPECT_CALL(payments_client(), ScanCreditCard);
   EXPECT_CALL(client(), HideAutofillSuggestions(
@@ -2366,8 +2361,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
       SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
-       ScanCreditCardMetrics_SuggestionShown) {
+TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionShown) {
   base::HistogramTester histogram;
   IssueOnQuery();
   std::vector<Suggestion> suggestions = {
@@ -2379,8 +2373,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
-       ScanCreditCardMetrics_SuggestionAccepted) {
+TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionAccepted) {
   base::HistogramTester histogram;
   IssueOnQuery();
   std::vector<Suggestion> suggestions = {
@@ -2401,7 +2394,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                               0);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ScanCreditCardMetrics_DifferentSuggestionAccepted) {
   base::HistogramTester histogram;
   IssueOnQuery();
@@ -2423,8 +2416,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                               1);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
-       ScanCreditCardMetrics_SuggestionNotShown) {
+TEST_F(AutofillExternalDelegateTest, ScanCreditCardMetrics_SuggestionNotShown) {
   base::HistogramTester histogram;
   IssueOnQuery();
   OnSuggestionsReturned(queried_field().global_id(), {});
@@ -2432,7 +2424,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   histogram.ExpectTotalCount("Autofill.ScanCreditCardPrompt", 0);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, AutocompleteShown_MetricsEmitted) {
+TEST_F(AutofillExternalDelegateTest, AutocompleteShown_MetricsEmitted) {
   base::HistogramTester histogram;
   IssueOnQuery();
   std::vector<Suggestion> suggestions = {test::CreateAutofillSuggestion(
@@ -2450,7 +2442,7 @@ MATCHER_P(CreditCardMatches, card, "") {
 
 // Test that autofill manager will fill the credit card form after user scans a
 // credit card.
-TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardForm) {
+TEST_F(AutofillExternalDelegateTest, FillCreditCardForm) {
   CreditCard card;
   test::SetCreditCardInfo(&card, "Alice", "4111", "1", "3000", "1");
   EXPECT_CALL(manager(),
@@ -2459,7 +2451,7 @@ TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardForm) {
   external_delegate().OnCreditCardScanned(AutofillTriggerSource::kPopup, card);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
+TEST_F(AutofillExternalDelegateTest, IgnoreAutocompleteOffForAutofill) {
   const FormData form;
   FormFieldData field;
   field.set_is_focusable(true);
@@ -2479,7 +2471,7 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
   OnSuggestionsReturned(field.global_id(), autofill_items);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ExternalDelegateFillFieldWithValue_Autocomplete) {
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
@@ -2507,7 +2499,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       "Autofill.SuggestionAcceptedIndex.Autocomplete", 0, 1);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ExternalDelegateFillFieldWithValue_MerchantPromoCode) {
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
@@ -2533,8 +2525,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
-       ExternalDelegateFillFieldWithValue_Iban) {
+TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillFieldWithValue_Iban) {
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
   IssueOnQuery();
@@ -2566,7 +2557,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
+TEST_F(AutofillExternalDelegateTest,
        ExternalDelegateFillFieldWithValue_FieldByFieldFilling) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
@@ -2596,7 +2587,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
 // Test that browser autofill manager will handle the unmasking request for the
 // virtual card after users accept the suggestion to use a virtual card.
-TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
+TEST_F(AutofillExternalDelegateTest, AcceptVirtualCardOptionItem) {
   IssueOnQuery();
   FormData form;
   CreditCard card = test::GetMaskedServerCard();
@@ -2609,7 +2600,7 @@ TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
                                           SuggestionPosition{.row = 0});
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
+TEST_F(AutofillExternalDelegateTest, SelectVirtualCardOptionItem) {
   IssueOnQuery();
   CreditCard card = test::GetMaskedServerCard();
   pdm().payments_data_manager().AddCreditCard(card);
@@ -2621,7 +2612,7 @@ TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_Autocomplete) {
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_Autocomplete) {
   auto mock_single_field_fill_router =
       std::make_unique<MockSingleFieldFillRouter>(
           client().GetAutocompleteHistoryManager(), nullptr, nullptr);
@@ -2633,7 +2624,7 @@ TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_Autocomplete) {
       external_delegate().RemoveSuggestion(Suggestion(u"autocomplete")));
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_Address) {
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_Address) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
   ASSERT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
@@ -2644,7 +2635,7 @@ TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_Address) {
   EXPECT_FALSE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_AddressFieldByField) {
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_AddressFieldByField) {
   const AutofillProfile profile = test::GetFullProfile();
   pdm().address_data_manager().AddProfile(profile);
   ASSERT_TRUE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
@@ -2656,7 +2647,7 @@ TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_AddressFieldByField) {
   EXPECT_FALSE(pdm().address_data_manager().GetProfileByGUID(profile.guid()));
 }
 
-TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_LocalCard) {
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_LocalCard) {
   const CreditCard local_card = test::GetCreditCard();
   pdm().payments_data_manager().AddCreditCard(local_card);
   ASSERT_TRUE(
@@ -2669,7 +2660,7 @@ TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_LocalCard) {
 }
 
 // Tests that server cards are not removed.
-TEST_F(AutofillExternalDelegateUnitTest, RemoveSuggestion_ServerCard) {
+TEST_F(AutofillExternalDelegateTest, RemoveSuggestion_ServerCard) {
   const CreditCard server_card = test::GetMaskedServerCard();
   TestPaymentsDataManager& paydm =
       static_cast<TestPaymentsDataManager&>(pdm().payments_data_manager());
@@ -2710,8 +2701,7 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
                          base::Bucket(Event::kButtonAppearedOnce, 1)));
 }
 
-TEST_F(AutofillExternalDelegateUnitTest,
-       RecordSuggestionTypeOnSuggestionAccepted) {
+TEST_F(AutofillExternalDelegateTest, RecordSuggestionTypeOnSuggestionAccepted) {
   base::HistogramTester histogram_tester;
   IssueOnQuery();
 
@@ -2729,7 +2719,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
 // Tests that setting `is_update` to true in
 // `AttemptToDisplayAutofillSuggestions` leads to a call to
 // `AutofillClient::UpdateAutofillSuggestions`.
-TEST_F(AutofillExternalDelegateUnitTest, UpdateSuggestions) {
+TEST_F(AutofillExternalDelegateTest, UpdateSuggestions) {
   IssueOnQuery();
 
   std::vector<Suggestion> suggestions1 = {Suggestion(u"Some suggestion")};
@@ -2768,11 +2758,11 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
 
 // Tests logging with the new ranking algorithm experiment for Autofill
 // suggestions enabled.
-class AutofillExternalDelegateUnitTestWithNewSuggestionRankingAlgorithm
-    : public AutofillExternalDelegateUnitTest {
+class AutofillExternalDelegateTestWithNewSuggestionRankingAlgorithm
+    : public AutofillExternalDelegateTest {
  public:
   void SetUp() override {
-    AutofillExternalDelegateUnitTest::SetUp();
+    AutofillExternalDelegateTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {features::kAutofillEnableRankingFormulaCreditCards,
@@ -2804,7 +2794,7 @@ class AutofillExternalDelegateUnitTestWithNewSuggestionRankingAlgorithm
 
 // Test that the SuggestionRankingDifference metric is logged after a credit
 // card suggestion is accepted.
-TEST_F(AutofillExternalDelegateUnitTestWithNewSuggestionRankingAlgorithm,
+TEST_F(AutofillExternalDelegateTestWithNewSuggestionRankingAlgorithm,
        SuggestionAccepted_LogSuggestionRankingDifference_CreditCard) {
   base::HistogramTester histogram;
   IssueOnQuery();
@@ -2822,7 +2812,7 @@ TEST_F(AutofillExternalDelegateUnitTestWithNewSuggestionRankingAlgorithm,
 // Test that the SuggestionRankingDifference metric is not logged after a credit
 // card suggestion is accepted if the rankings are the same in both algorithms.
 TEST_F(
-    AutofillExternalDelegateUnitTestWithNewSuggestionRankingAlgorithm,
+    AutofillExternalDelegateTestWithNewSuggestionRankingAlgorithm,
     SuggestionAccepted_LogSuggestionRankingDifference_NotLoggedWhenRankingsAreTheSame) {
   base::HistogramTester histogram;
   IssueOnQuery();

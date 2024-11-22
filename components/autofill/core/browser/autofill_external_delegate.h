@@ -137,8 +137,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateUnitTest,
-                           FillCreditCardForm);
+  FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateTest, FillCreditCardForm);
 
   // Tries to display `suggestions` in the suggestions UI. If `is_update` is
   // true, then `AutofillClient::UpdateAutofillSuggestions` is called, which
