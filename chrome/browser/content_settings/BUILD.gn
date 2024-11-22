@@ -20,6 +20,7 @@ source_set("content_settings") {
     "//base",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/browsing_data/content",
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",

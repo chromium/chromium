@@ -71,20 +71,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="DISMISSED_SCRIM"/>
 </enum>
 
-<!-- LINT.IfChange(Duration) -->
-
-<enum name="Duration">
-  <int value="0" label="FourSeconds"/>
-  <int value="1" label="TenSeconds"/>
-  <int value="2" label="OneMinute"/>
-  <int value="3" label="FiveMinutes"/>
-  <int value="4" label="TenMinutes"/>
-  <int value="5" label="OneHour"/>
-  <int value="6" label="MoreThanOneHour"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/permissions/permission_indicators_tab_data.h:Duration) -->
-
 <!-- LINT.IfChange(ExternalProtocolScheme) -->
 
 <enum name="ExternalProtocolScheme">
