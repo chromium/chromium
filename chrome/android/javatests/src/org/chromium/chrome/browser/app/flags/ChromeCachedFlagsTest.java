@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -95,6 +96,7 @@ public class ChromeCachedFlagsTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "http://crbug.com/380380524")
     public void testValueIsConsistentWithDefault() {
         mEntryPoints.startOnBlankPageNonBatched();
 
