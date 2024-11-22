@@ -361,11 +361,11 @@ SearchSection::SearchSection(Profile* profile,
     UpdateQuickAnswersSearchTags();
   }
 
+  // Magic boost related search tags are updated in `AddLoadTimeData`, i.e. when
+  // the settings app is opened. See `AddLoadTimeData`.
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  if (magic_boost_state && magic_boost_state->IsMagicBoostAvailable()) {
-    updater.AddSearchTags(GetMagicBoostSearchConcepts());
+  if (magic_boost_state) {
     magic_boost_state->AddObserver(this);
-    UpdateSubMagicBoostSearchTags();
   }
 }
 
@@ -411,10 +411,19 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
 
-  html_source->AddBoolean(
-      "isMagicBoostFeatureEnabled",
+  bool is_magic_boost_feature_enabled =
       chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
-          IsLobsterSettingsToggleVisible(profile()));
+      IsLobsterSettingsToggleVisible(profile());
+
+  // Updates magic boost search tags each time when the load time data is added,
+  // instead of a one-off update in the constructor, to avoid the unreliable
+  // value of chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() during
+  // the user login.
+  // See crbug.com/379281461 for more details.
+  UpdateMagicBoostSearchTags(is_magic_boost_feature_enabled);
+
+  html_source->AddBoolean("isMagicBoostFeatureEnabled",
+                          is_magic_boost_feature_enabled);
 
   html_source->AddBoolean("isMagicBoostNoticeBannerVisible",
                           IsMagicBoostNoticeBannerVisible(profile()));
@@ -584,7 +593,9 @@ void SearchSection::OnEligibilityChanged(bool eligible) {
 }
 
 void SearchSection::OnMagicBoostEnabledUpdated(bool enabled) {
-  UpdateSubMagicBoostSearchTags();
+  // This is triggered on magic boost prefs value changes, which means magic
+  // boost must be available.
+  UpdateMagicBoostSearchTags(/*is_magic_boost_available=*/true);
 }
 
 void SearchSection::OnIsDeleting() {
@@ -647,13 +658,20 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   }
 }
 
-void SearchSection::UpdateSubMagicBoostSearchTags() {
+void SearchSection::UpdateMagicBoostSearchTags(bool is_magic_boost_available) {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   DCHECK(magic_boost_state);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
+  updater.RemoveSearchTags(GetMagicBoostSearchConcepts());
   updater.RemoveSearchTags(GetMagicBoostSubSearchConcepts());
+
+  if (!is_magic_boost_available) {
+    return;
+  }
+
+  updater.AddSearchTags(GetMagicBoostSearchConcepts());
 
   if (magic_boost_state->magic_boost_enabled().value_or(false)) {
     updater.AddSearchTags(GetMagicBoostSubSearchConcepts());
