@@ -68,12 +68,10 @@ class MEDIA_EXPORT AUAudioInputStream
  public:
   // The ctor takes all the usual parameters, plus |manager| which is the
   // the audio manager who is creating this object.
-  AUAudioInputStream(
-      AudioManagerApple* manager,
-      const AudioParameters& input_params,
-      AudioDeviceID audio_device_id,
-      const AudioManager::LogCallback& log_callback,
-      AudioManagerBase::VoiceProcessingMode voice_processing_mode);
+  AUAudioInputStream(AudioManagerApple* manager,
+                     const AudioParameters& input_params,
+                     AudioDeviceID audio_device_id,
+                     const AudioManager::LogCallback& log_callback);
 
   AUAudioInputStream(const AUAudioInputStream&) = delete;
   AUAudioInputStream& operator=(const AUAudioInputStream&) = delete;
@@ -103,6 +101,9 @@ class MEDIA_EXPORT AUAudioInputStream
     return input_params_.frames_per_buffer();
   }
   AudioUnit audio_unit() const { return audio_unit_; }
+
+  static bool IsEchoCancellationSupported(AudioDeviceID audio_device_id,
+                                          const AudioParameters& params);
 
   // Fan out the data from the first half of audio_buffer into interleaved
   // stereo across the whole of audio_buffer. Public for testing only.
@@ -162,6 +163,10 @@ class MEDIA_EXPORT AUAudioInputStream
   // Called from the dtor and when the stream is reset.
   void ReportAndResetStats();
 
+  // Logs a message both to the log callback and to the console.
+  void LogMessageEverywhere(const char* function_name,
+                            const std::string& message);
+
   // Verifies that Open(), Start(), Stop() and Close() are all called on the
   // creating thread which is the main browser thread (CrBrowserMain) on Mac.
   THREAD_CHECKER(thread_checker_);
@@ -175,10 +180,10 @@ class MEDIA_EXPORT AUAudioInputStream
   // Stores the number of frames that we actually get callbacks for.
   // This may be different from what we ask for, so we use this for stats in
   // order to understand how often this happens and what are the typical values.
-  size_t number_of_frames_provided_;
+  size_t number_of_frames_provided_ = 0;
 
   // Pointer to the object that will receive the recorded audio samples.
-  raw_ptr<AudioInputCallback> sink_;
+  raw_ptr<AudioInputCallback> sink_ = nullptr;
 
   // Structure that holds the desired output format of the stream.
   // Note that, this format can differ from the device(=input) format.
@@ -187,7 +192,7 @@ class MEDIA_EXPORT AUAudioInputStream
   // The special Audio Unit called AUHAL, which allows us to pass audio data
   // directly from a microphone, through the HAL, and to our application.
   // The AUHAL also enables selection of non default devices.
-  AudioUnit audio_unit_;
+  AudioUnit audio_unit_{0};
 
   // The UID refers to the current input audio device.
   const AudioDeviceID input_device_id_;
@@ -221,8 +226,8 @@ class MEDIA_EXPORT AUAudioInputStream
   // |got_input_callback_| is reset to false in Stop() on the main thread. This
   // is safe since after stopping the audio unit there is no current callback
   // ongoing and no further callbacks coming.
-  bool got_input_callback_;
-  base::subtle::Atomic32 input_callback_is_active_;
+  bool got_input_callback_ = false;
+  base::subtle::Atomic32 input_callback_is_active_ = false;
 
   // Timer which triggers CheckInputStartupSuccess() to verify that input
   // callbacks have started as intended after a successful call to Start().
@@ -231,15 +236,15 @@ class MEDIA_EXPORT AUAudioInputStream
 
   // Set to true when we've successfully called SuppressNoiseReduction to
   // disable ambient noise reduction.
-  bool noise_reduction_suppressed_;
+  bool noise_reduction_suppressed_ = false;
 
   // Controls whether or not we use the kAudioUnitSubType_VoiceProcessingIO
   // voice processing component that provides echo cancellation, ducking
   // and gain control on Sierra and later.
-  const bool use_voice_processing_;
+  bool use_voice_processing_ = false;
 
   // The of the output device to cancel echo from.
-  AudioDeviceID output_device_id_for_aec_;
+  AudioDeviceID output_device_id_for_aec_ = kAudioObjectUnknown;
 
   // Stores the timestamp of the previous audio buffer provided by the OS.
   // We use this in combination with |last_number_of_frames_| to detect when
@@ -249,8 +254,8 @@ class MEDIA_EXPORT AUAudioInputStream
   // These variables are only touched on the callback thread and then read
   // in the dtor (when no longer receiving callbacks).
   // NOTE: Float64 and UInt32 types are used for native API compatibility.
-  Float64 last_sample_time_;
-  UInt32 last_number_of_frames_;
+  Float64 last_sample_time_ = 0;
+  UInt32 last_number_of_frames_ = 0;
 
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).

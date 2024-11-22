@@ -715,14 +715,7 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     params.set_effects(AudioParameters::NOISE_SUPPRESSION);
   }
 
-  // VoiceProcessingIO cannot be used on aggregate devices, since it creates an
-  // aggregate device itself.  It also only runs in mono, but we allow upmixing
-  // to stereo since we can't claim a device works either in stereo without echo
-  // cancellation or mono with echo cancellation.
-  if (media::IsSystemEchoCancellationEnforced() &&
-      (params.channel_layout() == CHANNEL_LAYOUT_MONO ||
-       params.channel_layout() == CHANNEL_LAYOUT_STEREO) &&
-      GetDeviceTransportType(device) != kAudioDeviceTransportTypeAggregate) {
+  if (AUAudioInputStream::IsEchoCancellationSupported(device, params)) {
     params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
   }
 
@@ -894,13 +887,8 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
     return nullptr;
   }
 
-  VoiceProcessingMode voice_processing_mode =
-      (params.effects() & AudioParameters::ECHO_CANCELLER)
-          ? VoiceProcessingMode::kEnabled
-          : VoiceProcessingMode::kDisabled;
-
-  auto* stream = new AUAudioInputStream(this, params, audio_device_id,
-                                        log_callback, voice_processing_mode);
+  auto* stream =
+      new AUAudioInputStream(this, params, audio_device_id, log_callback);
   low_latency_input_streams_.insert(stream);
   return stream;
 }
