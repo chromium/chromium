@@ -65,7 +65,8 @@ enum class BuiltInImage {
   kGoogleDocsIcon = 8,
   kYouTubeIcon = 9,
   kPlayStoreIcon = 10,
-  kMaxValue = kPlayStoreIcon,
+  kRNotification = 11,
+  kMaxValue = kRNotification,
 };
 
 // Supported window anchor element.
