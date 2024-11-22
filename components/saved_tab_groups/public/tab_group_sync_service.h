@@ -177,7 +177,6 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // Converts the saved tab group to shared tab group and associates it with the
   // given `collaboration_id` (this is the same as data_sharing::GroupId). The
   // tab group must not be shared.
-  // TODO(crbug.com/351022699): consider using data_sharing::GroupId.
   virtual void MakeTabGroupShared(const LocalTabGroupID& local_group_id,
                                   std::string_view collaboration_id) = 0;
 
