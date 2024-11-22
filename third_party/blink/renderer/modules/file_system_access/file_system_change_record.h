@@ -19,6 +19,20 @@ class FileSystemChangeRecord : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static FileSystemChangeRecord* Create(
+      FileSystemHandle* root,
+      FileSystemHandle* changed_handle,
+      Vector<String> relative_path_components,
+      V8FileSystemChangeType type,
+      std::optional<Vector<String>> relative_path_moved_from = std::nullopt);
+
+  FileSystemChangeRecord(
+      FileSystemHandle* root,
+      FileSystemHandle* changed_handle,
+      Vector<String> relative_path_components,
+      V8FileSystemChangeType type,
+      std::optional<Vector<String>> relative_path_moved_from);
+
   FileSystemChangeRecord(FileSystemHandle* root,
                          FileSystemHandle* changed_handle,
                          const Vector<String>& relative_path_components,

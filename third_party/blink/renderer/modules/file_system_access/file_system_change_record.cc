@@ -62,6 +62,30 @@ FileSystemHandle* GetChangedHandleForType(FileSystemHandle* changed_handle,
 
 }  // namespace
 
+// static
+FileSystemChangeRecord* FileSystemChangeRecord::Create(
+    FileSystemHandle* root,
+    FileSystemHandle* changed_handle,
+    Vector<String> relative_path_components,
+    V8FileSystemChangeType type,
+    std::optional<Vector<String>> relative_path_moved_from) {
+  return MakeGarbageCollected<FileSystemChangeRecord>(
+      root, changed_handle, std::move(relative_path_components),
+      std::move(type), std::move(relative_path_moved_from));
+}
+
+FileSystemChangeRecord::FileSystemChangeRecord(
+    FileSystemHandle* root,
+    FileSystemHandle* changed_handle,
+    Vector<String> relative_path_components,
+    V8FileSystemChangeType type,
+    std::optional<Vector<String>> relative_path_moved_from)
+    : type_(std::move(type)),
+      root_(root),
+      changed_handle_(GetChangedHandleForType(changed_handle, type_)),
+      relative_path_components_(std::move(relative_path_components)),
+      relative_path_moved_from_(std::move(relative_path_moved_from)) {}
+
 FileSystemChangeRecord::FileSystemChangeRecord(
     FileSystemHandle* root,
     FileSystemHandle* changed_handle,
