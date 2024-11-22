@@ -198,3 +198,47 @@ def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
             )
         ]
     return []
+
+
+def CheckAccessibilityHtmlSvgPair(input_api, output_api):
+    """Checks that .html and .svg files with the same base name
+    are in the same directory."""
+
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=[r"content/test/data/accessibility/.+\.(html|svg)"]
+        )
+
+    files_by_basename = {}
+    problems = []
+
+    for f in input_api.AffectedFiles(file_filter=FileFilter):
+        path = f.LocalPath()
+        basename = input_api.os_path.basename(path)
+        name, ext = input_api.os_path.splitext(basename)
+        files_by_basename.setdefault(name, []).append((path, ext))
+
+    for name, file_list in files_by_basename.items():
+        has_html = any(ext == ".html" for _, ext in file_list)
+        has_svg = any(ext == ".svg" for _, ext in file_list)
+
+        # Check for mismatched directories
+        if has_html and has_svg and len(file_list) > 1:
+            paths = [path for path, _ in file_list]
+            if any(input_api.os_path.dirname(path1) !=
+                   input_api.os_path.dirname(path2)
+                   for path1 in paths for path2 in paths):
+                # Report as a single "pair" item
+                problems.append(f"pair {paths[0]} and {paths[1]}")
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                ".html and .svg files with the same base name should"
+                " located in the same directory.\n"
+                "Problematic pairs:\n",
+                problems,
+            )
+        ]
+    return []

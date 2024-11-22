@@ -320,5 +320,59 @@ class CheckAccessibilityTestExpectationFilenamesTest(unittest.TestCase):
             mock_input_api, MockOutputApi())
         self.assertEqual(0, len(results))
 
+
+class CheckAccessibilityHtmlSvgPairTest(unittest.TestCase):
+
+    # Test that files paired properly give no warning, and that if there
+    # is only an html file there is no warning.
+    def testValidPairs(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/foo.html", []),
+            MockFile("content/test/data/accessibility/aria/foo.svg", []),
+            MockFile("content/test/data/accessibility/event/bar.html", []),
+            MockFile("content/test/data/accessibility/event/bar.svg", []),
+            MockFile("content/test/data/accessibility/baz.html", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlSvgPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test that files with the same name and different directories give,
+    # and files with different base names in the same directory do not.
+    def testInvalidPairs(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            # Different directories, should give warning
+            MockFile("content/test/data/accessibility/aria/foo.html", []),
+            MockFile("content/test/data/accessibility/event/foo.svg", []),
+
+            # Different base names, should not give warning
+            MockFile("content/test/data/accessibility/aria/bar.html", []),
+            MockFile("content/test/data/accessibility/aria/baz.svg", []),
+
+            # Different directories, should give warning
+            MockFile("content/test/data/accessibility/event/same.html", []),
+            MockFile("content/test/data/accessibility/aria/same.svg", []),
+
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlSvgPair(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(2, len(results[0].items))
+        self.assertIn("content/test/data/accessibility/aria/foo.html", results[0].items[0])
+        self.assertIn("content/test/data/accessibility/event/foo.svg", results[0].items[0])
+        self.assertIn("content/test/data/accessibility/event/same.html", results[0].items[1])
+        self.assertIn("content/test/data/accessibility/aria/same.svg", results[0].items[1])
+
+    # Test that unrelated files in different directories do not give warning
+    def testNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/foo.html", []),
+            MockFile("foo/bar.svg", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityHtmlSvgPair(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
 if __name__ == '__main__':
     unittest.main()
