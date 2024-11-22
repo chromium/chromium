@@ -1119,12 +1119,6 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void AutofillExternalDelegate::OnAddressDataChanged() {
-  adm_observation_.Reset();
-  manager_->driver().RendererShouldTriggerSuggestions(query_field_.global_id(),
-                                                      GetReopenTriggerSource());
-}
-
 void AutofillExternalDelegate::OnCreditCardScanned(
     const AutofillTriggerSource trigger_source,
     const CreditCard& card) {

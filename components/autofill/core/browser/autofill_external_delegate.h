@@ -16,7 +16,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/form_filler.h"
@@ -41,8 +40,7 @@ class CreditCard;
 enum class CreditCardFetchResult;
 
 // Delegate for in-browser Autocomplete and Autofill display and selection.
-class AutofillExternalDelegate : public AutofillSuggestionDelegate,
-                                 public AddressDataManager::Observer {
+class AutofillExternalDelegate : public AutofillSuggestionDelegate {
  public:
   class ScopedSuggestionSelectionShortcut;
 
@@ -116,9 +114,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // Informs the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
   void DidEndTextFieldEditing();
-
-  // AddressDataManager::Observer:
-  void OnAddressDataChanged() override;
 
   const FormData& query_form() const { return query_form_; }
 
@@ -282,12 +277,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
 
   // The caret position of the focused field.
   gfx::Rect caret_bounds_;
-
-  // Autofill profile update and deletion are async operations. ADM observer is
-  // used to detect when these operations finish. These operations can happen at
-  // the same time.
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      adm_observation_{this};
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
 };
