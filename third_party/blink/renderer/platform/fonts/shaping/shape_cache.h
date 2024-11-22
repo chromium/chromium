@@ -24,16 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/weak_cell.h"
@@ -68,10 +64,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
       // Up-convert from LChar to UChar.
-      for (uint16_t i = 0; i < characters.size(); ++i) {
-        characters_[i] = characters[i];
-      }
-
+      base::ranges::copy(characters, characters_);
       hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
@@ -79,14 +72,16 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
         : length_(static_cast<uint16_t>(characters.size())),
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
-      memcpy(characters_, characters.data(), characters.size_bytes());
+      base::span(characters_).copy_prefix_from(characters);
       hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
-    const UChar* Characters() const { return characters_; }
     uint16_t length() const { return length_; }
     const UChar* begin() const { return characters_; }
-    const UChar* end() const { return characters_ + length_; }
+    const UChar* end() const {
+      // SAFETY: Constructors ensures `length_ <= kCapacity`.
+      return UNSAFE_BUFFERS(characters_ + length_);
+    }
     TextDirection Direction() const {
       return static_cast<TextDirection>(direction_);
     }
@@ -230,7 +225,7 @@ inline bool operator==(const ShapeCache::SmallStringKey& a,
                        const ShapeCache::SmallStringKey& b) {
   if (a.length() != b.length() || a.Direction() != b.Direction())
     return false;
-  return WTF::Equal(a.Characters(), base::span(b));
+  return base::span(a) == base::span(b);
 }
 
 }  // namespace blink
