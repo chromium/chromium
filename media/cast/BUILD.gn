@@ -131,8 +131,6 @@ source_set("sender") {
   sources = [
     "sender/audio_sender.cc",
     "sender/audio_sender.h",
-    "sender/congestion_control.cc",
-    "sender/congestion_control.h",
     "sender/frame_sender.cc",
     "sender/frame_sender.h",
     "sender/openscreen_frame_sender.cc",
@@ -205,7 +203,6 @@ test("cast_unittests") {
     "logging/simple_event_subscriber_unittest.cc",
     "logging/stats_event_subscriber_unittest.cc",
     "sender/audio_sender_unittest.cc",
-    "sender/congestion_control_unittest.cc",
     "sender/openscreen_frame_sender_unittest.cc",
     "sender/video_bitrate_suggester_unittest.cc",
     "sender/video_sender_unittest.cc",
