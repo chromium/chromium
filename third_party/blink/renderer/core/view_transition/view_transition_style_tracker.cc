@@ -1406,10 +1406,8 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     // large to fit into a texture but non-root elements clip in this case
     // instead. It would be better to clip the root like we do child elements,
     // rather than skipping (and that would comply better with the spec).
-
-    // For main frames the capture size should never be bigger than the
-    // window so we only expect to end up here due to large subframes.
-    CHECK(!document_->GetFrame()->IsOutermostMainFrame());
+    // Note that this can also happen for main frames, both in WebView and
+    // on Android Chrome. See crbug.com/365502351
     return false;
   }
 
