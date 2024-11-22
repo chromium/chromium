@@ -6,11 +6,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "printing/buildflags/buildflags.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/command_line.h"
-#endif
 
 namespace sandbox {
 namespace policy {
@@ -29,19 +24,19 @@ const char kOnDeviceModelExecutionSandbox[] = "on_device_model_execution";
 const char kPpapiSandbox[] = "ppapi";
 const char kUtilitySandbox[] = "utility";
 const char kCdmSandbox[] = "cdm";
-#if BUILDFLAG(ENABLE_PRINTING)
-const char kPrintBackendSandbox[] = "print_backend";
-#endif
 const char kPrintCompositorSandbox[] = "print_compositor";
 const char kAudioSandbox[] = "audio";
 const char kServiceSandbox[] = "service";
 const char kServiceSandboxWithJit[] = "service_with_jit";
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-const char kScreenAISandbox[] = "screen_ai";
-#endif
 const char kVideoEffectsSandbox[] = "video_effects";
 const char kSpeechRecognitionSandbox[] = "speech_recognition";
 const char kVideoCaptureSandbox[] = "video_capture";
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+const char kPrintBackendSandbox[] = "print_backend";
+const char kScreenAISandbox[] = "screen_ai";
+#endif
 
 #if BUILDFLAG(IS_WIN)
 const char kPdfConversionSandbox[] = "pdf_conversion";
@@ -66,9 +61,7 @@ const char kHardwareVideoEncodingSandbox[] = "hardware_video_encoding";
 const char kImeSandbox[] = "ime";
 const char kTtsSandbox[] = "tts";
 const char kNearbySandbox[] = "nearby";
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 const char kLibassistantSandbox[] = "libassistant";
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

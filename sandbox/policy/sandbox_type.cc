@@ -11,9 +11,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/assistant/buildflags.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sandbox {
 namespace policy {
@@ -71,9 +74,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kNetwork:
     case Sandbox::kOnDeviceModelExecution:
     case Sandbox::kCdm:
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-    case Sandbox::kPrintBackend:
-#endif
     case Sandbox::kPrintCompositor:
     case Sandbox::kAudio:
 #if BUILDFLAG(IS_FUCHSIA)
@@ -104,7 +104,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
 #endif  // BUILDFLAG(IS_MAC)
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+    case Sandbox::kPrintBackend:
     case Sandbox::kScreenAI:
 #endif
     case Sandbox::kSpeechRecognition:
@@ -197,10 +199,6 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #endif
     case Sandbox::kCdm:
       return switches::kCdmSandbox;
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-    case Sandbox::kPrintBackend:
-      return switches::kPrintBackendSandbox;
-#endif
     case Sandbox::kPrintCompositor:
       return switches::kPrintCompositorSandbox;
     case Sandbox::kUtility:
@@ -217,7 +215,10 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return switches::kServiceSandboxWithJit;
     case Sandbox::kSpeechRecognition:
       return switches::kSpeechRecognitionSandbox;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+    case Sandbox::kPrintBackend:
+      return switches::kPrintBackendSandbox;
     case Sandbox::kScreenAI:
       return switches::kScreenAISandbox;
 #endif
@@ -309,10 +310,6 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
 #endif
   if (sandbox_string == switches::kCdmSandbox)
     return Sandbox::kCdm;
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (sandbox_string == switches::kPrintBackendSandbox)
-    return Sandbox::kPrintBackend;
-#endif
   if (sandbox_string == switches::kPrintCompositorSandbox)
     return Sandbox::kPrintCompositor;
 #if BUILDFLAG(IS_WIN)
@@ -328,16 +325,22 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kWindowsSystemProxyResolver;
 #endif
 #if BUILDFLAG(IS_MAC)
-  if (sandbox_string == switches::kMirroringSandbox)
+  if (sandbox_string == switches::kMirroringSandbox) {
     return Sandbox::kMirroring;
+  }
 #endif
   if (sandbox_string == switches::kAudioSandbox)
     return Sandbox::kAudio;
   if (sandbox_string == switches::kSpeechRecognitionSandbox)
     return Sandbox::kSpeechRecognition;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (sandbox_string == switches::kScreenAISandbox)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+  if (sandbox_string == switches::kPrintBackendSandbox) {
+    return Sandbox::kPrintBackend;
+  }
+  if (sandbox_string == switches::kScreenAISandbox) {
     return Sandbox::kScreenAI;
+  }
 #endif
 #if BUILDFLAG(IS_LINUX)
   if (sandbox_string == switches::kVideoEffectsSandbox) {

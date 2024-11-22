@@ -64,10 +64,6 @@
 #include <sanitizer/common_interface_defs.h>
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace sandbox {
 namespace policy {
 

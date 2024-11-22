@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,7 +103,8 @@ TEST(SandboxTypeTest, Utility) {
             SandboxTypeFromCommandLine(command_line12));
 #endif
 
-#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
   base::CommandLine command_line13(command_line);
   SetCommandLineFlagsForSandboxType(&command_line13, Sandbox::kPrintBackend);
   EXPECT_EQ(Sandbox::kPrintBackend, SandboxTypeFromCommandLine(command_line13));

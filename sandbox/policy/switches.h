@@ -7,13 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/export.h"
-#include "services/screen_ai/buildflags/buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sandbox {
 namespace policy {
@@ -32,19 +26,19 @@ SANDBOX_POLICY_EXPORT extern const char kOnDeviceModelExecutionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPpapiSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kUtilitySandbox[];
 SANDBOX_POLICY_EXPORT extern const char kCdmSandbox[];
-#if BUILDFLAG(ENABLE_PRINTING)
-SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
-#endif
 SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kServiceSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kServiceSandboxWithJit[];
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-SANDBOX_POLICY_EXPORT extern const char kScreenAISandbox[];
-#endif
 SANDBOX_POLICY_EXPORT extern const char kVideoEffectsSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kSpeechRecognitionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
+SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kScreenAISandbox[];
+#endif
 
 #if BUILDFLAG(IS_WIN)
 SANDBOX_POLICY_EXPORT extern const char kPdfConversionSandbox[];
@@ -69,9 +63,7 @@ SANDBOX_POLICY_EXPORT extern const char kHardwareVideoEncodingSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kNearbySandbox[];
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 SANDBOX_POLICY_EXPORT extern const char kLibassistantSandbox[];
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)

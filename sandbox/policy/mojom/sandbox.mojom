@@ -67,9 +67,6 @@ enum Sandbox {
   // Like kService but allows loading of the optimization guide library.
   [EnableIf=is_linux] kVideoEffects,
 
-  // Like kUtility but allows loading of screen AI library.
-  [EnableIf=enable_screen_ai_service] kScreenAI,
-
   // The PPAPI plugin process. (Unsandboxed on Windows.)
   [EnableIf=enable_ppapi_sandbox] kPpapi,
 
@@ -93,7 +90,10 @@ enum Sandbox {
   [EnableIf=is_win] kPdfConversion,
 
   // Interfaces with operating system print drivers.
-  [EnableIf=enable_oop_printing] kPrintBackend,
+  [EnableIf=is_chromeos|is_linux|is_mac|is_win] kPrintBackend,
+
+  // Like kUtility but allows loading of screen AI library.
+  [EnableIf=is_chromeos|is_linux|is_mac|is_win] kScreenAI,
 
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win] kXrCompositing,
