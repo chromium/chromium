@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -55,6 +57,10 @@ namespace {
 class MockDiceWebSigninInterceptorDelegate
     : public WebSigninInterceptor::Delegate {
  public:
+  base::WeakPtr<MockDiceWebSigninInterceptorDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   bool IsSigninInterceptionSupported(
       const content::WebContents& web_contents) override {
     return true;
@@ -80,6 +86,10 @@ class MockDiceWebSigninInterceptorDelegate
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
   }
+
+ private:
+  base::WeakPtrFactory<MockDiceWebSigninInterceptorDelegate> weak_factory_{
+      this};
 };
 
 MATCHER_P(HasSameAccountIdAs, other, "") {
@@ -161,11 +171,11 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   ~DiceWebSigninInterceptorTest() override = default;
 
   DiceWebSigninInterceptor* interceptor() {
-    return dice_web_signin_interceptor_.get();
+    return DiceWebSigninInterceptorFactory::GetForProfile(profile());
   }
 
   MockDiceWebSigninInterceptorDelegate* mock_delegate() {
-    return mock_delegate_;
+    return mock_delegate_.get();
   }
 
   content::WebContents* web_contents() {
@@ -257,21 +267,25 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->SetTestURLLoaderFactory(&test_url_loader_factory_);
 
-    auto delegate = std::make_unique<
-        testing::StrictMock<MockDiceWebSigninInterceptorDelegate>>();
-    mock_delegate_ = delegate.get();
-    dice_web_signin_interceptor_ = std::make_unique<DiceWebSigninInterceptor>(
-        profile(), std::move(delegate));
-
     // Create the first tab so that web_contents() exists.
     AddTab(browser(), GURL("http://foo/1"));
   }
 
  private:
   void TearDown() override {
-    dice_web_signin_interceptor_->Shutdown();
     identity_test_env_profile_adaptor_.reset();
     BrowserWithTestWindowTest::TearDown();
+  }
+
+  std::unique_ptr<KeyedService> BuildDiceWebSigninInterceptor(
+      content::BrowserContext* browser_context) {
+    Profile* input_profile = Profile::FromBrowserContext(browser_context);
+    CHECK_EQ(input_profile, profile());
+    auto delegate = std::make_unique<
+        testing::StrictMock<MockDiceWebSigninInterceptorDelegate>>();
+    mock_delegate_ = delegate->GetWeakPtr();
+    return std::make_unique<DiceWebSigninInterceptor>(profile(),
+                                                      std::move(delegate));
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -282,6 +296,13 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &test_url_loader_factory_)});
+
+    factories.push_back(
+        {DiceWebSigninInterceptorFactory::GetInstance(),
+         base::BindRepeating(
+             &DiceWebSigninInterceptorTest::BuildDiceWebSigninInterceptor,
+             base::Unretained(this))});
+
     return factories;
   }
 
@@ -293,8 +314,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
-  std::unique_ptr<DiceWebSigninInterceptor> dice_web_signin_interceptor_;
-  raw_ptr<MockDiceWebSigninInterceptorDelegate> mock_delegate_ = nullptr;
+  base::WeakPtr<MockDiceWebSigninInterceptorDelegate> mock_delegate_;
 };
 
 TEST_F(DiceWebSigninInterceptorTest, ShouldShowProfileSwitchBubble) {

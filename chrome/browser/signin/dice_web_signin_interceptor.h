@@ -426,8 +426,8 @@ class DiceWebSigninInterceptor : public KeyedService,
         intercepted_account_profile_separation_policies_;
   };
 
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
-  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<WebSigninInterceptor::Delegate> delegate_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
