@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
@@ -29,7 +30,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 // TODO(crbug.com/374808149): Clean up the killswitch.

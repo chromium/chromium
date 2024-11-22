@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h",
-  "+ios/chrome/browser/ui/omnibox",
+  "+ios/chrome/browser/omnibox/ui_bundled",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",

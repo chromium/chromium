@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -22,7 +23,6 @@
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/coordinator/tab_group_indicator_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
-#import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 
 @interface PrimaryToolbarCoordinator ()
 
