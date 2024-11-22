@@ -8,6 +8,10 @@ import android.content.Context;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.metrics.RecordHistogram;
+
 /** Helper class for Direct writing feature support and settings. */
 public class DirectWritingSettingsHelper {
     private DirectWritingSettingsHelper() {}
@@ -18,6 +22,8 @@ public class DirectWritingSettingsHelper {
     private static final int DIRECT_WRITING_ENABLED = 1;
     private static final int DIRECT_WRITING_DISABLED = 0;
 
+    private static @Nullable Boolean sDirectWritingServiceCallbackAvailable;
+
     // Samsung keyboard package names.
     private static final String HONEYBOARD_SERVICE_PKG_NAME =
             DirectWritingConstants.SERVICE_PKG_NAME + "/.service.HoneyBoardService";
@@ -25,6 +31,8 @@ public class DirectWritingSettingsHelper {
     public static boolean isEnabled(Context context) {
         // Samsung keyboard supports handwriting in Chrome and Webview from Android S onwards.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false;
+        // Check to see if we are able to instantiate the DirectWritingServiceCallback.
+        if (!isDirectWritingServiceCallbackAvailable()) return false;
         return isHoneyboardDefault(context) && isFeatureEnabled(context);
     }
 
@@ -80,5 +88,28 @@ public class DirectWritingSettingsHelper {
         }
         return Settings.Secure.getString(
                 context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+    }
+
+    private static boolean isDirectWritingServiceCallbackAvailable() {
+        if (sDirectWritingServiceCallbackAvailable == null) {
+            try {
+                Class dwCallbackClass = Class.forName(
+                        "org.chromium.components.stylus_handwriting.DirectWritingServiceCallback");
+                // On some devices, the DirectWritingServiceCallback constructor is not available
+                // so this throws a NoSuchMethodException.
+                dwCallbackClass.getConstructor().isAccessible();
+                sDirectWritingServiceCallbackAvailable = true;
+                logDwServiceCallbackFailed(false);
+            } catch (ClassNotFoundException | NoSuchMethodException e) {
+                logDwServiceCallbackFailed(true);
+                sDirectWritingServiceCallbackAvailable = false;
+            }
+        }
+        return sDirectWritingServiceCallbackAvailable;
+    }
+
+    private static void logDwServiceCallbackFailed(boolean didFail) {
+        RecordHistogram.recordBooleanHistogram(
+                "InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed", didFail);
     }
 }
