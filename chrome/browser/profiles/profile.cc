@@ -355,6 +355,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kPartitionPerHostZoomLevels);
   registry->RegisterStringPref(prefs::kPreinstalledApps, "install");
   registry->RegisterIntegerPref(prefs::kProfileIconVersion, 0);
+  registry->RegisterBooleanPref(prefs::kProfileIconWin11Format, false);
   registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);

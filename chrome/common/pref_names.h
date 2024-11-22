@@ -133,6 +133,11 @@ inline constexpr char kNewTabPageLocationOverride[] =
 // determine the state of the profile icon for icon format changes.
 inline constexpr char kProfileIconVersion[] = "profile.icon_version";
 
+// A boolean that keeps track of whether or not the profile icon was constructed
+// with the Windows 11 compatible badging location (badge in the upper right
+// instead of lower right on the icon).
+inline constexpr char kProfileIconWin11Format[] = "profile.icon_win11_format";
+
 // A string pref whose values is one of the values defined by
 // |ProfileImpl::kPrefExitTypeXXX|. Set to |kPrefExitTypeCrashed| on startup and
 // one of |kPrefExitTypeNormal| or |kPrefExitTypeSessionEnded| during
