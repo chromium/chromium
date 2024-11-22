@@ -1183,6 +1183,18 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
           "runMochaSuite('AdMeasurementSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       AdMeasurementSubpageAdsApiUxEnhancements) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('AdMeasurementSubpageAdsApiUxEnhancements')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       AdMeasurementSubpageAdsApiUxEnhancementsDisabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('AdMeasurementSubpageAdsApiUxEnhancementsDisabled')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, ManageTopics) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('ManageTopics')");

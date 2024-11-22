@@ -1959,3 +1959,71 @@ suite('AdMeasurementSubpage', function() {
     assertTrue(page.$.adMeasurementToggle.controlDisabled());
   });
 });
+
+suite('AdMeasurementSubpageAdsApiUxEnhancementsDisabled', function() {
+  let page: SettingsPrivacySandboxAdMeasurementSubpageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement(
+        'settings-privacy-sandbox-ad-measurement-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('contentV2NotShown', async function() {
+    const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
+    assertFalse(isVisible(disclaimer));
+  });
+});
+
+suite('AdMeasurementSubpageAdsApiUxEnhancements', function() {
+  let page: SettingsPrivacySandboxAdMeasurementSubpageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement(
+        'settings-privacy-sandbox-ad-measurement-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('contentV2', async function() {
+    const disclaimer = page.shadowRoot!.querySelector('#disclaimer');
+    assertTrue(isVisible(disclaimer));
+  });
+});
