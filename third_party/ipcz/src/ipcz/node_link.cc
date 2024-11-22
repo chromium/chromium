@@ -772,6 +772,10 @@ bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {
 }
 
 bool NodeLink::OnRequestMemory(msg::RequestMemory& request) {
+  if (request.v0()->size == 0) {
+    return false;
+  }
+
   DriverMemory memory(node_->driver(), request.v0()->size);
   msg::ProvideMemory provide;
   provide.v0()->size = request.v0()->size;
