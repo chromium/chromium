@@ -2776,6 +2776,35 @@ Keychain.
 
       Якщо для цього правила вибрано значення False, на сторінці нової вкладки не з'являтимуться автоматично згенеровані пропозиції контенту.</translation>
 <translation id="3046192273793919231">Надсилати мережеві пакети на сервер керування, щоб відстежувати онлайн-статус</translation>
+<translation id="3046917616600522016">За допомогою цього правила можна вибрати налаштування проксі-сервера для Chrome і додатків ARC, які ігнорують усі опції проксі, указані в командному рядку.
+
+Якщо не вказати значення для цього правила, користувачі зможуть самостійно вибирати налаштування проксі-сервера.
+
+Якщо правило <ph name="PROXY_SETTINGS_POLICY_NAME" /> налаштовано, можна вказати такі поля:
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> – визначає проксі-сервер для Chrome і забороняє користувачам змінювати ці налаштування;
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" /> – URL-адреса файлу .pac проксі-сервера або PAC-скрипт, закодований як URL-адреса даних із MIME-типом application/x-ns-proxy-autoconfig;
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> – не дає мережевому стеку використовувати прямі підключення з недійсним або недоступним скриптом PAC;
+
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> – URL-адреса проксі-сервера;
+
+  * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> – список хостів, які працюватимуть в обхід проксі-сервера.
+
+Поле <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> застаріле. Замість нього використовується поле <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />. Якщо для параметра <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> вибрати значення:
+
+  * <ph name="PROXY_MODE_ENUM_DIRECT" />, проксі ніколи не використовуватиметься, а всі інші поля ігноруватимуться;
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" />, використовуватиметься проксі системи, а всі інші поля ігноруватимуться;
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, усі інші поля ігноруватимуться;
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, використовуватимуться поля <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> і <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />;
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, використовуватимуться поля <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> і <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />.
+
+Примітка: щоб переглянути детальніші приклади, відвідайте вебсайт проектів Chromium (https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings).</translation>
 <translation id="3047732214002457234">Визначає, як інструмент Очищення Chrome повідомляє дані в Google</translation>
 <translation id="3047864383610708617">Вимкнути залипання клавіш</translation>
 <translation id="3048744057455266684">Якщо це правило встановлено й URL-адреса пошуку, запропонована в універсальному вікні пошуку, містить цей параметр у рядку запиту або ідентифікаторі фрагмента, тоді пропозиція відображатиме пошукові терміни та пошукову систему, а не вихідну URL-адресу пошуку.

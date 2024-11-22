@@ -2773,7 +2773,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2904210161403910217">Dein Passwort hat sich seit deiner letzten Anmeldung geändert</translation>
 <translation id="2904506722835398619">Anmeldung und Synchronisierung erforderlich</translation>
 <translation id="2904845070985032877">Animationen pausieren</translation>
-<translation id="2905556994482999199">Chromebook mit Kopfbewegungen und Gesichtsausdrücken steuern</translation>
 <translation id="2907619724991574506">"Beim Start"-URLs</translation>
 <translation id="2907798539022650680">Fehler bei der Verbindung mit "<ph name="NAME" />": <ph name="DETAILS" />
 Servernachricht: <ph name="SERVER_MSG" /></translation>
@@ -3464,6 +3463,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3429174588714165399">Verknüpfung zu dieser Seite erstellen</translation>
 <translation id="3429271624041785769">Sprachen für Webinhalte</translation>
 <translation id="3429275422858276529">Seite als Lesezeichen speichern, um sie später schneller zu finden</translation>
+<translation id="3431530007831146102">Mauszeiger mit Kopfbewegungen steuern</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> freigegeben</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Beim Verlassen sperren</translation>

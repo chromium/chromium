@@ -2790,7 +2790,6 @@
 <translation id="2904210161403910217">Вашата лозинка е променета од последниот пат кога се најавивте</translation>
 <translation id="2904506722835398619">Потребно е да се најавите и да синхронизирате</translation>
 <translation id="2904845070985032877">Паузирај ги анимациите</translation>
-<translation id="2905556994482999199">Користете ги движењата на главата и изразите на ликот за да го контролирате вашиот Chromebook</translation>
 <translation id="2907619724991574506">URL-врски за стартување</translation>
 <translation id="2907798539022650680">Не успеа да се поврзе на „<ph name="NAME" />“: <ph name="DETAILS" />
     Порака од серверот: <ph name="SERVER_MSG" /></translation>
@@ -3483,6 +3482,7 @@
 <translation id="3429174588714165399">Создајте кратенка до страницава</translation>
 <translation id="3429271624041785769">Јазици за содржини од интернет</translation>
 <translation id="3429275422858276529">Обележете ја страницава за полесно да ја најдете подоцна</translation>
+<translation id="3431530007831146102">Користете ги движењата на главата за да го контролирате курсорот на глувчето</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - ослободено: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Заклучи при излегување</translation>

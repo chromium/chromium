@@ -2790,7 +2790,6 @@
 <translation id="2904210161403910217">আপনি শেষবার সাইন-ইন করার পর আপনার পাসওয়ার্ড পরিবর্তন করা হয়েছে</translation>
 <translation id="2904506722835398619">সাইন-ইন ও সিঙ্ক করতে হবে</translation>
 <translation id="2904845070985032877">অ্যানিমেশন পজ করুন</translation>
-<translation id="2905556994482999199">Chromebook নিয়ন্ত্রণ করার জন্য মাথা ঘোরান এবং মুখের বিভিন্ন প্রকার এক্সপ্রেশন ব্যবহার করুন</translation>
 <translation id="2907619724991574506">প্রারম্ভিক URLগুলি</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' এর সাথে সংযোগ করা ব্যর্থ হয়েছে: <ph name="DETAILS" />
     সার্ভার বার্তা: <ph name="SERVER_MSG" /></translation>
@@ -3483,6 +3482,7 @@
 <translation id="3429174588714165399">এই পৃষ্ঠার জন্য শর্টকাট তৈরি করুন</translation>
 <translation id="3429271624041785769">ওয়েব কন্টেন্টের ভাষা</translation>
 <translation id="3429275422858276529">এই পৃষ্ঠা পরে সহজে খুঁজে পেতে বুকমার্ক করুন</translation>
+<translation id="3431530007831146102">মাউসের কার্সর কন্ট্রোল করতে মাথা নাড়ান</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> খালি করা হয়েছে</translation>
 <translation id="3432762828853624962">শেয়ার্ড ওয়ার্কার</translation>
 <translation id="3433507769937235446">স্ক্রিন বন্ধ করার সময় লক করা</translation>

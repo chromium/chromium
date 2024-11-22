@@ -2789,7 +2789,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2904210161403910217">Sua senha foi alterada desde a última vez em que você fez login</translation>
 <translation id="2904506722835398619">É necessário fazer o login e a sincronização</translation>
 <translation id="2904845070985032877">Pausar animações</translation>
-<translation id="2905556994482999199">Use movimentos da cabeça e expressões faciais para controlar o Chromebook</translation>
 <translation id="2907619724991574506">URLs de inicialização</translation>
 <translation id="2907798539022650680">Falha na conexão com '<ph name="NAME" />': <ph name="DETAILS" />
     Mensagem do servidor: <ph name="SERVER_MSG" /></translation>
@@ -3419,7 +3418,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3384362484379805487">Os arquivos de idioma são compartilhados entre os usuários para economizar espaço em disco.</translation>
 <translation id="3385053436247851142">Fazer login com a Microsoft</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3385172418915595177">A Precisão de local fornece dados mais precisos para apps e serviços. Para isso, o Google processa periodicamente as informações sobre sensores de dispositivos e sinais sem fio do seu dispositivo para contribuir para a localização de sinais sem fio. Essas informações são usadas sem identificar você para melhorar a precisão e os serviços com base na localização e para melhorar, fornecer e manter os Serviços do Google com base nos interesses legítimos próprios e de terceiros para atender às necessidades dos usuários.</translation>
+<translation id="3385172418915595177">O recurso de precisão da localização fornece dados mais exatos para apps e serviços. Para isso ocorrer, o Google processa periodicamente as informações sobre sensores e sinais do seu dispositivo e, com isso, contribui para a localização de sinais sem fio. Essas informações são usadas sem identificação de usuário para aprimorar a precisão e os serviços que usam a localização. Além disso, esses dados são usados para melhorar, fornecer e manter os Serviços do Google, com base em interesses legítimos próprios e de terceiros, para atender às necessidades dos usuários.</translation>
 <translation id="338583716107319301">Separador</translation>
 <translation id="3385916046075724800">Agora seus grupos de guias são salvos automaticamente.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3483,6 +3482,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3429174588714165399">Criar um atalho para esta página</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo da Web</translation>
 <translation id="3429275422858276529">Adicionar esta página aos favoritos para encontrá-la mais facilmente depois</translation>
+<translation id="3431530007831146102">Use os movimentos da cabeça para controlar o cursor do mouse</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> liberados</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear ao sair</translation>

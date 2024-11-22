@@ -2777,7 +2777,6 @@
 <translation id="2904210161403910217">З моманту апошняга ўваходу ваш пароль быў зменены</translation>
 <translation id="2904506722835398619">Неабходна ўвайсці і ўключыць сінхранізацыю</translation>
 <translation id="2904845070985032877">Прыпыніць анімацыю</translation>
-<translation id="2905556994482999199">Кіраваць прыладай Chromebook рухамі галавой і мімікай твару</translation>
 <translation id="2907619724991574506">Пачатковыя URL-адрасы</translation>
 <translation id="2907798539022650680">Не ўдалося падключыцца да "<ph name="NAME" />": <ph name="DETAILS" />
     Паведамленне сервера: <ph name="SERVER_MSG" /></translation>
@@ -3470,6 +3469,7 @@
 <translation id="3429174588714165399">Стварыце ярлык для гэтай старонкі</translation>
 <translation id="3429271624041785769">Мовы вэб-змесціва</translation>
 <translation id="3429275422858276529">Дадайце гэту старонку ў закладкі, каб палегчыць яе пошук у далейшым</translation>
+<translation id="3431530007831146102">Перамяшчаць курсор мышы рухамі галавы</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – вызвалена <ph name="MEMORY_VALUE" /></translation>
 <translation id="3432762828853624962">Сумесныя рабочыя працэсы</translation>
 <translation id="3433507769937235446">Блакіроўка пры аддаленні</translation>
@@ -11207,7 +11207,7 @@
 <translation id="8962083179518285172">Схаваць падрабязнасці</translation>
 <translation id="8962863356073277855">URL-адрас павінен мець фармат https://www.example.com</translation>
 <translation id="8962918469425892674">Гэты сайт выкарыстоўвае датчыкі руху або святла.</translation>
-<translation id="8963117664422609631">Перайсці ў налады сайта</translation>
+<translation id="8963117664422609631">Перайсці ў налады сайтаў</translation>
 <translation id="8965037249707889821">Увядзіце стары пароль</translation>
 <translation id="8966809848145604011">Іншыя профілі</translation>
 <translation id="8967427617812342790">Дадаць у спіс чытання</translation>

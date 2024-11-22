@@ -2793,6 +2793,34 @@ Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı bu kay
 
       Politikayı Yanlış (False) değerine ayarlarsanız Yeni Sekme sayfasında otomatik oluşturulan içerik önerilerinin gösterilmesi engellenir.</translation>
 <translation id="3046192273793919231">Çevrimiçi durumu izlemek için ağ paketlerini yönetim sunucusuna gönder</translation>
+<translation id="3046917616600522016">Politikanın ayarlanması, komut satırında proxy ile ilgili belirtilen tüm seçenekleri yok sayan Chrome ve ARC-uygulamaları için proxy ayarlarını yapılandırır.
+
+Politika ayarlanmazsa kullanıcılar kendi proxy ayarlarını seçebilir.
+
+<ph name="PROXY_SETTINGS_POLICY_NAME" /> politikasının ayarlamak için aşağıdaki alanlar kullanılabilir:
+
+  * <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" />, Chrome'un kullandığı proxy sunucusunu belirtmenizi sağlar ve kullanıcıların proxy ayarlarını değiştirmesini önler
+
+  * <ph name="PROXY_PAC_URL_PROXY_SETTINGS_FIELD" />, proxy .pac dosyası için URL veya application/x-ns-proxy-autoconfig MIME türü ile veri URL'si olarak kodlanmış bir PAC komut dosyası
+
+  * <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" />, ağ yığınının geçersiz veya kullanılamayan PAC komut dosyasıyla doğrudan bağlantılara geri dönmesini önler
+  * <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" />, proxy sunucu URL'si
+
+  * <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" />, proxy'nin atlanacağı ana makinelerin listesi
+
+  <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> alanının desteği sonlandırılmış, yerine <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> alanı getirilmiştir. <ph name="PROXY_MODE_PROXY_SETTINGS_FIELD" /> için aşağıdaki değerleri seçerseniz:
+
+  * <ph name="PROXY_MODE_ENUM_DIRECT" />, proxy hiçbir zaman kullanılmaz ve diğer tüm alanlar yoksayılır.
+
+  * <ph name="PROXY_MODE_ENUM_SYSTEM" />, sisteme ait proxy kullanılır ve diğer tüm alanlar yoksayılır.
+
+  * <ph name="PROXY_MODE_ENUM_AUTO_DETECT" />, diğer tüm alanlar yoksayılır.
+
+  * <ph name="PROXY_MODE_ENUM_FIXED_SERVERS" />, <ph name="PROXY_SERVER_PROXY_SETTINGS_FIELD" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
+
+  * <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />, <ph name="PROXY_BYPASS_LIST_PROXY_PAC_URL" />, <ph name="PROXY_PAC_MANDATORY_PROXY_SETTINGS_FIELD" /> ve <ph name="PROXY_BYPASS_LIST_PROXY_SETTINGS_FIELD" /> alanları kullanılır.
+
+Not: Daha ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin (https://www.chromium.org/developers/design-documents/network-settings/#command-line-options-for-proxy-settings).</translation>
 <translation id="3047732214002457234">Chrome Temizleme Aracı'nın verileri Google'a raporlama şeklini kontrol etme</translation>
 <translation id="3047864383610708617">Yapışkan tuşları devre dışı bırak</translation>
 <translation id="3048744057455266684">Bu politika ayarlanırsa ve çok amaçlı adres çubuğundan önerilen bir arama URL'sinde, sorgu dizesinde veya parça tanımlayıcısında bu parametre bulunursa, öneri, ham arama URL'si yerine arama terimlerini ve arama sağlayıcısını gösterir.

@@ -2776,7 +2776,6 @@
 <translation id="2904210161403910217">Վերջին անգամ ձեր հաշիվ մտնելուց հետո ձեր գաղտնաբառը փոխվել է</translation>
 <translation id="2904506722835398619">Մուտք գործեք ձեր հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="2904845070985032877">Դադարեցնել շարժանկարները</translation>
-<translation id="2905556994482999199">Կառավարեք ձեր Chromebook-ը գլխի շարժումների և դեմքի միմիկաների միջոցով</translation>
 <translation id="2907619724991574506">Մեկնարկի URL-հասցեներ</translation>
 <translation id="2907798539022650680">Չհաջողվեց միանալ «<ph name="NAME" />»-ին՝ <ph name="DETAILS" />
     Սերվերի հաղորդագրությունը՝ <ph name="SERVER_MSG" /></translation>
@@ -5745,6 +5744,7 @@
 <translation id="5045367873597907704">HID սարքերի մասին</translation>
 <translation id="5045550434625856497">Գաղտնաբառը սխալ է</translation>
 <translation id="504561833207953641">Բացվում է դիտարկիչի ընթացիկ աշխատաշրջանում։</translation>
+<translation id="504953514574706691">Ներդիրը հեռացվեց առաջարկվող խմբից</translation>
 <translation id="5049614114599109018">Օգտագործել ներածման պատմությունը</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Այս կայքը վերջերս շատ ծանուցումներ է ուղարկել։ Դուք կարող եք արգելել դրան դա անել։}one{Այս կայքը վերջերս շատ ծանուցումներ է ուղարկել։ Դուք կարող եք արգելել դրան դա անել։}other{Այս կայքերը վերջերս շատ ծանուցումներ են ուղարկել։ Դուք կարող եք արգելել դրանց դա անել։}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5796,6 +5796,7 @@
 <translation id="5079950360618752063">Օգտագործել առաջարկված գաղտնաբառը</translation>
 <translation id="508059534790499809">Թարմացնել Kerberos տոմսը</translation>
 <translation id="5081124414979006563">&amp;Բացել հյուրի պրոֆիլը</translation>
+<translation id="508209203623347828">Եթե այս քարտն անջատեք, Microsoft քարտերը (օրինակ՝ Sharepoint-ը և Outlook Calendar-ը) նույնպես կանջատվեն։</translation>
 <translation id="5083035541015925118">ctrl + alt + վերև սլաք</translation>
 <translation id="5084328598860513926">Համաժամացումն ընդհատվել է։ Փորձեք նորից կամ կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="5084622689760736648">Կայքերն ամենայն հավանականությամբ կաշխատեն պատշաճ կերպով</translation>
@@ -5993,6 +5994,7 @@
 <translation id="5216674789212441076">Ավտոմատ թարգմանում է կենդանի ենթագրերը։ Թարգմանության համար ենթագրերն ուղարկվում են Google-ին։</translation>
 <translation id="5220011581825921581">որոնում + վերև սլաք</translation>
 <translation id="5221516927483787768">Չհաջողվեց հեռարձակել <ph name="HOST_NAME" /> կայքից։</translation>
+<translation id="5221834113325601057">Ներդիրը հեռացվեց ցուցակից</translation>
 <translation id="5222403284441421673">Վտանգավոր ներբեռնումն արգելափակված է</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5225324770654022472">Ցուցադրել հավելվածների դյուրանցումը</translation>
@@ -6472,6 +6474,7 @@
 <translation id="5571066253365925590">Bluetooth-ը միացված է</translation>
 <translation id="5571092938913434726">Մեդիաֆայլերի կառավարման ընդհանուր տարրեր</translation>
 <translation id="5571832155627049070">Անհատականացրեք ձեր պրոֆիլը</translation>
+<translation id="5572000034319109899">Մաքրել չօգտագործվող ներդիրները</translation>
 <translation id="5572166921642484567">Ընտրեք գունային սխեմայի ռեժիմը</translation>
 <translation id="5572252023412311448">Ցույց տալ <ph name="SITE_GROUP" /> կայքի մանրամասները</translation>
 <translation id="557506220935336383">Դիտել ընդլայնումների թույլտվություններն այլ կայքերի համար</translation>
@@ -8035,6 +8038,7 @@
 <translation id="6723839937902243910">Սնուցում</translation>
 <translation id="6725073593266469338">Միջերեսի ծառայություն</translation>
 <translation id="6725206449694821596">Ինտերնետի միջոցով տպման հաղորդակարգ (IPP)</translation>
+<translation id="6725627354629889015">Մաքրե՞լ չօգտագործվող ներդիրները</translation>
 <translation id="6725970970008349185">Մեկ էջում ցուցադրվող տարբերակների թիվը</translation>
 <translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
 <translation id="6726800386221816228">Հատուկ նշաններ</translation>

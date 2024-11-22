@@ -2774,7 +2774,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2904210161403910217">Şifreniz, son oturum açmanızdan bu yana değişti</translation>
 <translation id="2904506722835398619">Oturum açılması ve senkronizasyon gerekiyor</translation>
 <translation id="2904845070985032877">Animasyonları duraklat</translation>
-<translation id="2905556994482999199">Chromebook'unuzu kontrol etmek için baş hareketlerini ve yüz ifadelerini kullanın</translation>
 <translation id="2907619724991574506">Başlangıç URL'leri</translation>
 <translation id="2907798539022650680">"<ph name="NAME" />" ile bağlantı kurulamadı: <ph name="DETAILS" />
 Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
@@ -3465,6 +3464,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3429174588714165399">Bu sayfa için kısayol oluşturun</translation>
 <translation id="3429271624041785769">Web içerik dilleri</translation>
 <translation id="3429275422858276529">Bu sayfayı daha sonra kolayca bulmak için sayfaya yer işareti koyun</translation>
+<translation id="3431530007831146102">Fare imlecini kontrol etmek için baş hareketlerini kullanın</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> yer açıldı</translation>
 <translation id="3432762828853624962">Ortak Çalışanlar</translation>
 <translation id="3433507769937235446">Ekran başından ayrılınca kilitle</translation>

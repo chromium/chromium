@@ -2779,7 +2779,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2904210161403910217">Votre mot de passe a changé depuis votre dernière connexion</translation>
 <translation id="2904506722835398619">Connexion et synchronisation nécessaires</translation>
 <translation id="2904845070985032877">Suspendre les animations</translation>
-<translation id="2905556994482999199">Utilisez les mouvements de la tête et les expressions faciales pour contrôler votre Chromebook</translation>
 <translation id="2907619724991574506">Adresses URL de démarrage</translation>
 <translation id="2907798539022650680">Échec de la connexion à « <ph name="NAME" /> » : <ph name="DETAILS" />
     Message du serveur : <ph name="SERVER_MSG" /></translation>
@@ -3472,6 +3471,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3429174588714165399">Créer un raccourci vers cette page</translation>
 <translation id="3429271624041785769">Langues pour le contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver plus facilement plus tard</translation>
+<translation id="3431530007831146102">Utiliser les mouvements de la tête pour contrôler le curseur de la souris</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> libérés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Verrouiller après utilisation</translation>

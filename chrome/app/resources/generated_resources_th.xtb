@@ -2776,7 +2776,6 @@
 <translation id="2904210161403910217">มีการเปลี่ยนแปลงรหัสผ่านในการลงชื่อเข้าใช้ครั้งล่าสุด</translation>
 <translation id="2904506722835398619">ต้องลงชื่อเข้าใช้และซิงค์</translation>
 <translation id="2904845070985032877">หยุดภาพเคลื่อนไหวชั่วคราว</translation>
-<translation id="2905556994482999199">ใช้การเคลื่อนไหวของศีรษะและการแสดงสีหน้าเพื่อควบคุม Chromebook</translation>
 <translation id="2907619724991574506">URL เริ่มต้นทำงาน</translation>
 <translation id="2907798539022650680">การเชื่อมต่อกับ "<ph name="NAME" />" ล้มเหลว: <ph name="DETAILS" />
     ข้อความเซิร์ฟเวอร์: <ph name="SERVER_MSG" /></translation>
@@ -5744,6 +5743,7 @@
 <translation id="5045367873597907704">เกี่ยวกับอุปกรณ์ HID</translation>
 <translation id="5045550434625856497">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="504561833207953641">กำลังเปิดในเซสชันเบราว์เซอร์ที่มีอยู่</translation>
+<translation id="504953514574706691">ยกเว้นแท็บออกจากกลุ่มที่แนะนำแล้ว</translation>
 <translation id="5049614114599109018">ใช้ประวัติการป้อนข้อมูล</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{เว็บไซต์นี้ส่งการแจ้งเตือนจำนวนมากเมื่อเร็วๆ นี้ คุณป้องกันไม่ให้เว็บไซต์ส่งการแจ้งเตือนในอนาคตได้}other{เว็บไซต์เหล่านี้ส่งการแจ้งเตือนจำนวนมากเมื่อเร็วๆ นี้ คุณป้องกันไม่ให้เว็บไซต์ส่งการแจ้งเตือนในอนาคตได้}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5795,6 +5795,7 @@
 <translation id="5079950360618752063">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="508059534790499809">รีเฟรชตั๋ว Kerberos</translation>
 <translation id="5081124414979006563">&amp;เปิดโปรไฟล์ผู้ใช้ชั่วคราว</translation>
+<translation id="508209203623347828">หากปิดใช้การ์ดนี้ การ์ด Microsoft เช่น Sharepoint และ Outlook Calendar จะปิดใช้ด้วย</translation>
 <translation id="5083035541015925118">Ctrl + Alt + ลูกศรขึ้น</translation>
 <translation id="5084328598860513926">ขั้นตอนการตั้งค่าถูกขัดจังหวะ โปรดลองอีกครั้งหรือติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="5084622689760736648">เว็บไซต์มีแนวโน้มจะทำงานได้ตามที่คุณต้องการ</translation>
@@ -5992,6 +5993,7 @@
 <translation id="5216674789212441076">แปลคำบรรยายสดโดยอัตโนมัติ ระบบจะส่งคำบรรยายแทนเสียงไปยัง Google เพื่อแปลภาษา</translation>
 <translation id="5220011581825921581">ค้นหา + ลูกศรขึ้น</translation>
 <translation id="5221516927483787768">แคสต์ <ph name="HOST_NAME" /> ไม่ได้</translation>
+<translation id="5221834113325601057">ยกเว้นแท็บออกจากรายการแล้ว</translation>
 <translation id="5222403284441421673">บล็อกการดาวน์โหลดที่ไม่ปลอดภัยแล้ว</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5225324770654022472">แสดงทางลัดแอป</translation>
@@ -6471,6 +6473,7 @@
 <translation id="5571066253365925590">เปิดใช้งานบลูทูธแล้ว</translation>
 <translation id="5571092938913434726">การควบคุมสื่อส่วนกลาง</translation>
 <translation id="5571832155627049070">กำหนดค่าโปรไฟล์ของคุณ</translation>
+<translation id="5572000034319109899">ล้างแท็บที่ไม่ได้ใช้</translation>
 <translation id="5572166921642484567">เลือกโหมดรูปแบบสี</translation>
 <translation id="5572252023412311448">แสดงรายละเอียดเว็บไซต์สำหรับ <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">ดูสิทธิ์ของส่วนขยายสำหรับเว็บไซต์อื่นๆ</translation>
@@ -8032,6 +8035,7 @@
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="6725073593266469338">บริการ UI</translation>
 <translation id="6725206449694821596">โปรโตคอลการพิมพ์ผ่านอินเทอร์เน็ต (IPP)</translation>
+<translation id="6725627354629889015">ล้างแท็บที่ไม่ได้ใช้ใช่ไหม</translation>
 <translation id="6725970970008349185">จำนวนตัวเลือกที่จะแสดงต่อหนึ่งหน้า</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
 <translation id="6726800386221816228">สัญลักษณ์พิเศษ</translation>

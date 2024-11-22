@@ -2181,6 +2181,7 @@
 <translation id="2477065602824695373">आपने एक से ज़्यादा स्विच सेट अप किए हैं, इसलिए अपने-आप स्कैन होने की सुविधा बंद हो गई है.</translation>
 <translation id="2478176599153288112">"<ph name="EXTENSION" />" के लिए मीडिया-फ़ाइल अनुमतियां</translation>
 <translation id="24786041351753425">डेटा रिकवर करने की सेवा चालू करें.</translation>
+<translation id="2479541499757560845">कीबोर्ड की सुलभता सेटिंग</translation>
 <translation id="2480868415629598489">अपने कॉपी किए हुए और चिपकाए हुए डेटा में बदलाव करें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2482895651873876648">टैब को <ph name="GROUP_NAME" /> ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
@@ -2790,7 +2791,6 @@
 <translation id="2904210161403910217">पिछली बार साइन इन करने के बाद से, आपका पासवर्ड बदल गया है</translation>
 <translation id="2904506722835398619">साइन इन और सिंक करना ज़रूरी है</translation>
 <translation id="2904845070985032877">ऐनिमेशन रोकें</translation>
-<translation id="2905556994482999199">Chromebook को कंट्रोल करने के लिए, सिर को घुमाएं और चेहरे के हाव-भाव का इस्तेमाल करें</translation>
 <translation id="2907619724991574506">स्टार्टअप यूआरएल</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' से कनेक्ट करने में विफल: <ph name="DETAILS" />
     सर्वर का संदेश: <ph name="SERVER_MSG" /></translation>
@@ -3100,6 +3100,7 @@
 <translation id="3132277757485842847">डिवाइस आपके फ़ोन से बार-बार डिसकनेक्ट हो रहा है. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="3132896062549112541">नियम</translation>
 <translation id="3132996321662585180">हर रोज़ रीफ्रेश करें</translation>
+<translation id="3134312457920437826">एक्सटेंशन इंस्टॉल नहीं किया जा सकता, क्योंकि इसमें ऐसे मेनिफ़ेस्ट वर्शन का इस्तेमाल किया है जो काम नहीं करता.</translation>
 <translation id="3134393957315651797">एक्सपेरिमेंट <ph name="EXPERIMENT_NAME" /> के लिए, एक्सपेरिमेंट की स्थिति चुनें. एक्सपेरिमेंट का ब्यौरा: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">डिफ़ॉल्ट पीला अवतार</translation>
 <translation id="3141093262818886744">फिर भी खोलें</translation>
@@ -3483,6 +3484,7 @@
 <translation id="3429174588714165399">इस पेज का शॉर्टकट बनाएं</translation>
 <translation id="3429271624041785769">वेब कॉन्टेंट की भाषाएं</translation>
 <translation id="3429275422858276529">बाद में इस पेज को आसानी से पाने के लिए इसे बुकमार्क करें</translation>
+<translation id="3431530007831146102">माउस कर्सर को कंट्रोल करने के लिए, सिर को घुमाएं</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> मेमोरी खाली की गई</translation>
 <translation id="3432762828853624962">शेयर किए गए वर्कर</translation>
 <translation id="3433507769937235446">Lock-on-leave</translation>
@@ -4368,6 +4370,7 @@
 <translation id="4012509903424054869">PDF फ़ाइलें अपने-आप टेक्स्ट में बदल जाती हैं, ताकि आप टेक्स्ट को खोज सकें और उसे चुन सकें</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" को ठीक करें?</translation>
 <translation id="4015163439792426608">एक्सटेंशन मिल गए? एक ही जगह पर आसानी से अपने <ph name="BEGIN_LINK" />एक्सटेंशन प्रबंधित करें<ph name="END_LINK" />.</translation>
+<translation id="4015250302257349679">इस बबल पर फ़ोकस करने के लिए, <ph name="ACCELERATOR" /> दबाएं. इसे दोबारा दबाकर उस एलिमेंट पर फ़ोकस करें जिसकी ओर यह बबल इशारा कर रहा है.</translation>
 <translation id="4016762287427926315">आपने <ph name="APP_NAME" /> को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="BEGIN_LINK" />मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">इस लिंक के लिए क्यूआर कोड बनाएं</translation>
 <translation id="4019983356493507433">बुकमार्क की सूची में बदलाव करें</translation>
@@ -5926,6 +5929,8 @@
 <translation id="5157250307065481244">साइट की जानकारी देखें</translation>
 <translation id="5158206172605340248">उच्चारण चिह्न वाला मेन्यू खारिज किया गया.</translation>
 <translation id="5159094275429367735">Crostini सेट अप करें</translation>
+<translation id="5159236862360390997">निर्देशों के साथ ट्यूटोरियल वाले कई बबल दिखाए जाएंगे.
+          सहायता वाले इस बबल पर फ़ोकस करने के लिए <ph name="ACCELERATOR" /> दबाएं. इसे दोबारा दबाकर उस एलिमेंट पर फ़ोकस करें जिसकी ओर यह इशारा कर रहा है.</translation>
 <translation id="5159419673777902220">आपके पैरंट ने एक्सटेंशन की अनुमतियां बंद कर दी हैं</translation>
 <translation id="5160634252433617617">सामान्य कीबोर्ड के विकल्प</translation>
 <translation id="5160857336552977725">अपने <ph name="DEVICE_TYPE" /> में साइन इन करें</translation>
@@ -6205,6 +6210,7 @@
 <translation id="5372579129492968947">एक्सटेंशन अनपिन करें</translation>
 <translation id="5372632722660566343">बिना खाते के जारी रखें</translation>
 <translation id="5372990315769030589">क्या "<ph name="EXTENSION_NAME" />" को इंस्टॉल रखना है?</translation>
+<translation id="5374324662289354619">फ़िलहाल, इंटरनल डिबगिंग पेजों को लोड करने की सुविधा बंद है.</translation>
 <translation id="5375318608039113175">इन संपर्कों के साथ, आस-पास शेयर करने की सुविधा का इस्तेमाल करने के लिए, इन संपर्कों के Google खाते से जुड़े ईमेल पते अपने संपर्कों में जोड़ें.</translation>
 <translation id="5375374982898812658">आपके लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे आपके सभी डिवाइसों से मिटा दिया जाएगा</translation>
 <translation id="5375577102295339548">साइटें इस बात की पुष्टि करने में आपकी मदद कर सकती हैं कि आप बॉट नहीं हैं</translation>
@@ -9462,6 +9468,7 @@
 <translation id="7737846262459425222">आप जब चाहें, सेटिंग &gt; Google Assistant &gt; स्क्रीन पर दिखने वाली सामग्री इस्तेमाल करें, में जाकर बदलाव कर सकते हैं.</translation>
 <translation id="7737948071472253612">कैमरा इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="77381465218432215">उच्चारण के चिह्न और विशेष वर्ण दिखाएं</translation>
+<translation id="7739524723876359011">इस बबल पर फ़ोकस करने के लिए, <ph name="ACCELERATOR" /> दबाएं.</translation>
 <translation id="7740996059027112821">स्टैंडर्ड</translation>
 <translation id="7742706086992565332">आप तय कर सकते हैं कि कुछ वेबसाइटों पर आप कितना ज़ूम इन या ज़ूम आउट करेंगे</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{हैक या चोरी हुआ 1 पासवर्ड मिला}one{हैक या चोरी हुआ {NUM_SITES} पासवर्ड मिला}other{हैक या चोरी हए {NUM_SITES} पासवर्ड मिले}}</translation>

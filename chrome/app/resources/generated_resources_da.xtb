@@ -2790,7 +2790,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2904210161403910217">Din adgangskode er blevet ændret, siden sidste gang du loggede ind</translation>
 <translation id="2904506722835398619">Login og synkronisering er påkrævet</translation>
 <translation id="2904845070985032877">Sæt animationer på pause</translation>
-<translation id="2905556994482999199">Brug hovedbevægelser og ansigtsudtryk til at styre din Chromebook</translation>
 <translation id="2907619724991574506">Startwebadresser</translation>
 <translation id="2907798539022650680">Der kunne ikke oprettes forbindelse til "<ph name="NAME" />": <ph name="DETAILS" />
     Servermeddelelse: <ph name="SERVER_MSG" /></translation>
@@ -3483,6 +3482,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3429174588714165399">Opret en genvej til denne side</translation>
 <translation id="3429271624041785769">Sprog for webindhold</translation>
 <translation id="3429275422858276529">Tilføj denne side som bogmærke, så du nemt kan finde den igen</translation>
+<translation id="3431530007831146102">Brug hovedbevægelser til at styre musemarkøren</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> er frigjort</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Lås ved manglende tilstedeværelse</translation>

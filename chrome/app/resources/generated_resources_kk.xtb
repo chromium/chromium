@@ -2773,7 +2773,6 @@
 <translation id="2904210161403910217">Құпия сөзіңіз аккаунтқа соңғы рет кіргеніңізден бері өзгерді</translation>
 <translation id="2904506722835398619">Аккаунтқа кіру және синхрондау қажет</translation>
 <translation id="2904845070985032877">Анимацияларды кідірту</translation>
-<translation id="2905556994482999199">Chromebook-ты басқару үшін басыңызды қозғалтып, мимика қолданыңыз.</translation>
 <translation id="2907619724991574506">Бастау URL сілтемелері</translation>
 <translation id="2907798539022650680">"<ph name="NAME" />" қызметіне қосылмады: <ph name="DETAILS" />
     Сервер хабары: <ph name="SERVER_MSG" /></translation>
@@ -3464,6 +3463,7 @@
 <translation id="3429174588714165399">Бұл бетті ашатын пернелер тіркесімін жасау</translation>
 <translation id="3429271624041785769">Веб-контент тілдері</translation>
 <translation id="3429275422858276529">Бетті кейінірек табу үшін оған бетбелгі қою</translation>
+<translation id="3431530007831146102">Тінтуір курсорын басқару үшін басыңызды қозғалтыңыз.</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> – <ph name="MEMORY_VALUE" /> босатылды</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Компьютерден алыстағанда құлыптау</translation>

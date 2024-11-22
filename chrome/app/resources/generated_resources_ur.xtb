@@ -2778,7 +2778,6 @@
 <translation id="2904210161403910217">پچھلی بار آپ کے سائن ان کرنے کے بعد سے آپ کا پاس ورڈ تبدیل کر دیا گیا ہے</translation>
 <translation id="2904506722835398619">سائن ان اور سنک کرنے کی ضرورت ہے</translation>
 <translation id="2904845070985032877">اینیمیشنز روکیں</translation>
-<translation id="2905556994482999199">‏اپنے Chromebook کو کنٹرول کرنے کے لیے سر کی حرکتوں اور چہرے کے تاثرات کا استعمال کریں</translation>
 <translation id="2907619724991574506">‏شروعاتی URLs</translation>
 <translation id="2907798539022650680">'<ph name="NAME" />' سے منسلک ہونے میں ناکام: <ph name="DETAILS" />
     سرور کا پیغام: <ph name="SERVER_MSG" /></translation>
@@ -3469,6 +3468,7 @@
 <translation id="3429174588714165399">اس صفحہ کے لیے ایک شارٹ کٹ تخلیق کریں</translation>
 <translation id="3429271624041785769">ویب مواد کی زبانیں</translation>
 <translation id="3429275422858276529">بعد میں اسے تلاش کرنے کے لیے اس صفحے کو بُک مارک کریں</translation>
+<translation id="3431530007831146102">ماؤس کرسر کو کنٹرول کرنے کے لیے سر کی حرکت کا استعمال کریں</translation>
 <translation id="3431715928297727378"><ph name="WINDOW_TITLE" /> - <ph name="MEMORY_VALUE" /> خالی کیا گیا</translation>
 <translation id="3432762828853624962">اشتراک کردہ ورکرز</translation>
 <translation id="3433507769937235446">چھوڑنے پر مقفل کریں</translation>
@@ -5745,6 +5745,7 @@
 <translation id="5045367873597907704">‏HID آلات کے بارے میں</translation>
 <translation id="5045550434625856497">غلط پاس ورڈ</translation>
 <translation id="504561833207953641">موجودہ براؤزر کے سیشن میں کھل رہا ہے۔</translation>
+<translation id="504953514574706691">ٹیب کو تجویز کردہ گروپ سے خارج کر دیا گیا</translation>
 <translation id="5049614114599109018">ان پٹ کی سرگزشت استعمال کریں</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{اس سائٹ نے بہت ساری اطلاعات بھیجی ہیں۔ آپ اسے مستقبل میں اطلاعات بھیجنے سے روک سکتے ہیں۔}other{ان سائٹس نے حال ہی میں بہت ساری اطلاعات بھیجی ہیں۔ آپ انہیں مستقبل میں اطلاعات بھیجنے سے روک سکتے ہیں۔}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5796,6 +5797,7 @@
 <translation id="5079950360618752063">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="508059534790499809">‏Kerberos ٹکٹ ریفریش کریں</translation>
 <translation id="5081124414979006563">مہمان پروفائل &amp;کھولیں</translation>
+<translation id="508209203623347828">‏اگر یہ کارڈ غیر فعال ہے تو آپ کے مائیکروسافٹ کارڈز جیسے Sharepoint اور Outlook کیلنڈر بھی غیر فعال ہو جائیں گے۔</translation>
 <translation id="5083035541015925118">‏ctrl + alt + اوپر تیر کا نشان</translation>
 <translation id="5084328598860513926">فراہمی کے بہاؤ میں مداخلت ہو گئی۔ براہ کرم دوبارہ کوشش کریں یا اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5084622689760736648">آپ کی توقع کے مطابق سائٹس کے کام کرنے کا زیادہ امکان ہے</translation>
@@ -5993,6 +5995,7 @@
 <translation id="5216674789212441076">‏لائیو کیپشنز کا خودکار طور پر ترجمہ کرتی ہے۔ ترجمے کیلئے کیپشنز کو Google کو بھیجا جاتا ہے۔</translation>
 <translation id="5220011581825921581">‏search + اوپر تیر کا نشان</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر</translation>
+<translation id="5221834113325601057">ٹیب کو فہرست سے خارج کر دیا گیا</translation>
 <translation id="5222403284441421673">غیر محفوظ ڈاؤن لوڈ مسدود ہو گیا</translation>
 <translation id="5222676887888702881">سائن آؤٹ</translation>
 <translation id="5225324770654022472">ایپس شارٹ کٹ دکھائیں</translation>
@@ -6471,6 +6474,7 @@
 <translation id="5571066253365925590">بلوٹوتھ فعال ہے</translation>
 <translation id="5571092938913434726">گلوبل میڈیا کنٹرولز</translation>
 <translation id="5571832155627049070">اپنی پروفائل حسب ضرورت بنائیں</translation>
+<translation id="5572000034319109899">غیر استعمال شدہ ٹیبز صاف کریں</translation>
 <translation id="5572166921642484567">رنگ کی اسکیم منتخب کریں وضع</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> کے لیے سائٹ کی تفصیلات دکھائیں</translation>
 <translation id="557506220935336383">دیگر سائٹس کے لیے ایکسٹینشن کی اجازتیں دیکھیں</translation>
@@ -8035,6 +8039,7 @@
 <translation id="6723839937902243910">پاور</translation>
 <translation id="6725073593266469338">‏UI سروس</translation>
 <translation id="6725206449694821596">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPP)</translation>
+<translation id="6725627354629889015">غیر استعمال شدہ ٹیبز صاف کریں؟</translation>
 <translation id="6725970970008349185">فی صفحہ ڈسپلے کرنے کیلئے امیدواروں کی تعداد</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
 <translation id="6726800386221816228">مخصوص حروف</translation>

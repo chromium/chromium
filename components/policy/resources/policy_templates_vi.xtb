@@ -198,6 +198,19 @@ Bạn có thể tuỳ chỉnh nhãn thông qua chính sách <ph name="ENTERPRISE
 <translation id="1110426799149444997">Tắt tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Không hiển thị màn hình cài đặt kích thước trên màn hình trong khi đăng nhập</translation>
 <translation id="1111824532252882775">Bật: Theo mặc định, trình cuộn có thể lấy tiêu điểm.</translation>
+<translation id="1112125878718482033">Các tính năng này trong Công cụ cho nhà phát triển của <ph name="PRODUCT_NAME" /> sử dụng mô hình AI tạo sinh để cung cấp thêm thông tin gỡ lỗi. Để sử dụng các tính năng này, <ph name="PRODUCT_NAME" /> phải thu thập các dữ liệu như thông báo lỗi, dấu vết ngăn xếp, đoạn mã và yêu cầu về mạng, rồi gửi dữ liệu đó đến một máy chủ do Google sở hữu. Máy chủ này chạy một mô hình AI tạo sinh. Dữ liệu gửi đến máy chủ này không bao gồm nội dung phản hồi hoặc thông tin xác thực và tiêu đề cookie trong yêu cầu về mạng.
+
+0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. Dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Các nhân viên có thể sẽ xem xét dữ liệu này nhằm mục đích duy nhất là cải tiến mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Tắt tính năng này.
+
+Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm:
+
+– Thông tin chuyên sâu về bảng điều khiển: giải thích các thông báo trên bảng điều khiển và gợi ý cách khắc phục lỗi trên bảng điều khiển.
+
+– Trợ giúp AI: giúp tìm hiểu về các kiểu CSS (từ phiên bản 131 trở đi), yêu cầu về mạng, hiệu suất và tệp (tất cả đều từ phiên bản 132 trở đi).</translation>
 <translation id="1117535567637097036">Trình xử lý giao thức được đặt qua chính sách này không được sử dụng khi xử lý các cơ chế của Android.</translation>
 <translation id="1118093128235245168">Cho phép các trang web yêu cầu người dùng cấp quyền truy cập vào một thiết bị USB đã kết nối</translation>
 <translation id="111910763555783249">Cài đặt thông báo</translation>
@@ -10229,6 +10242,11 @@ Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượ
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Tắt lưu nhật ký duyệt web</translation>
 <translation id="8499172469244085141">Cài đặt mặc định (người dùng có thể ghi đè)</translation>
+<translation id="8499359456965625209">Chính sách này không được dùng nữa.
+
+Nếu bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, thì phần mềm bên thứ ba sẽ không thể chèn mã thực thi vào các quy trình của <ph name="PRODUCT_NAME" />.
+
+      Nếu bạn đặt chính sách này thành Disabled (Tắt), thì phần mềm bên thứ ba có thể chèn mã đó vào các quy trình của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8503018573167958506">Xác định xem người dùng có được phép định cấu hình tên máy chủ của thiết bị hay không.
 
       Nếu bạn đặt chính sách <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />, thì quản trị viên sẽ đặt tên máy chủ và người dùng không thể đặt tên bất kể chế độ thiết lập nào của chính sách này.
