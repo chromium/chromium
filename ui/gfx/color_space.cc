@@ -177,26 +177,6 @@ ColorSpace ColorSpace::CreateExtendedSRGB10Bit() {
 }
 
 // static
-ColorSpace ColorSpace::CreatePiecewiseHDR(
-    PrimaryID primaries,
-    float sdr_joint,
-    float hdr_level,
-    const skcms_Matrix3x3* custom_primary_matrix) {
-  // If |sdr_joint| is 1, then this is just sRGB (and so |hdr_level| must be 1).
-  // An |sdr_joint| higher than 1 breaks.
-  DCHECK_LE(sdr_joint, 1.f);
-  if (sdr_joint == 1.f)
-    DCHECK_EQ(hdr_level, 1.f);
-  // An |hdr_level| of 1 has no HDR. An |hdr_level| less than 1 breaks.
-  DCHECK_GE(hdr_level, 1.f);
-  ColorSpace result(primaries, TransferID::PIECEWISE_HDR, MatrixID::RGB,
-                    RangeID::FULL, custom_primary_matrix, nullptr);
-  result.transfer_params_[0] = sdr_joint;
-  result.transfer_params_[1] = hdr_level;
-  return result;
-}
-
-// static
 ColorSpace ColorSpace::CreateCustom(const skcms_Matrix3x3& to_XYZD50,
                                     const skcms_TransferFunction& fn) {
   ColorSpace result(ColorSpace::PrimaryID::CUSTOM,
@@ -306,8 +286,6 @@ size_t ColorSpace::TransferParamCount(TransferID transfer) {
       return 7;
     case TransferID::CUSTOM_HDR:
       return 7;
-    case TransferID::PIECEWISE_HDR:
-      return 2;
     case TransferID::PQ:
       return 1;
     default:
@@ -359,7 +337,6 @@ bool ColorSpace::IsHDR() const {
          transfer_ == TransferID::LINEAR_HDR ||
          transfer_ == TransferID::SRGB_HDR ||
          transfer_ == TransferID::CUSTOM_HDR ||
-         transfer_ == TransferID::PIECEWISE_HDR ||
          transfer_ == TransferID::SCRGB_LINEAR_80_NITS;
 }
 
@@ -388,7 +365,6 @@ bool ColorSpace::FullRangeEncodedValues() const {
   return transfer_ == TransferID::LINEAR_HDR ||
          transfer_ == TransferID::SRGB_HDR ||
          transfer_ == TransferID::CUSTOM_HDR ||
-         transfer_ == TransferID::PIECEWISE_HDR ||
          transfer_ == TransferID::SCRGB_LINEAR_80_NITS ||
          transfer_ == TransferID::BT1361_ECG ||
          transfer_ == TransferID::IEC61966_2_4;
@@ -541,13 +517,6 @@ std::string ColorSpace::ToString() const {
         break;
       }
       ss << skia::SkcmsTransferFunctionToString(fn);
-      break;
-    }
-    case TransferID::PIECEWISE_HDR: {
-      skcms_TransferFunction fn;
-      GetTransferFunction(&fn);
-      ss << "sRGB to 1 at " << transfer_params_[0] << ", linear to "
-         << transfer_params_[1] << " at 1";
       break;
     }
     case TransferID::SCRGB_LINEAR_80_NITS:
@@ -968,7 +937,6 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
     case ColorSpace::TransferID::PQ:
     case ColorSpace::TransferID::CUSTOM:
     case ColorSpace::TransferID::CUSTOM_HDR:
-    case ColorSpace::TransferID::PIECEWISE_HDR:
     case ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
     case ColorSpace::TransferID::INVALID:
       break;
@@ -1017,15 +985,6 @@ bool ColorSpace::GetInverseTransferFunction(
   if (!GetTransferFunction(fn, sdr_white_level))
     return false;
   *fn = SkTransferFnInverse(*fn);
-  return true;
-}
-
-bool ColorSpace::GetPiecewiseHDRParams(float* sdr_joint,
-                                       float* hdr_level) const {
-  if (transfer_ != TransferID::PIECEWISE_HDR)
-    return false;
-  *sdr_joint = transfer_params_[0];
-  *hdr_level = transfer_params_[1];
   return true;
 }
 

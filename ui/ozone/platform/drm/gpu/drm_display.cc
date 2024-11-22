@@ -459,7 +459,6 @@ gfx::HDRStaticMetadata::Eotf DrmDisplay::GetEotf(
     case gfx::ColorSpace::TransferID::SRGB_HDR:
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       return gfx::HDRStaticMetadata::Eotf::kGammaHdrRange;
     default:

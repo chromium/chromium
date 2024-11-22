@@ -131,7 +131,6 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::TransferID::GAMMA24:
     case gfx::ColorSpace::TransferID::CUSTOM:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::INVALID:
       // Not handled
       break;
@@ -232,7 +231,6 @@ bool ColorSpaceWin::CanConvertToDXGIColorSpace(const ColorSpace& color_space) {
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
     case gfx::ColorSpace::TransferID::CUSTOM:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       // Not supported.
       return false;

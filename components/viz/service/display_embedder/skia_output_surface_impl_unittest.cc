@@ -294,8 +294,9 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
   output_surface_->Reshape(reshape_params);
 
   constexpr gfx::Rect output_rect(0, 0, 10, 10);
-  const gfx::ColorSpace color_space = gfx::ColorSpace::CreatePiecewiseHDR(
-      gfx::ColorSpace::PrimaryID::BT2020, 0.5, 1.5);
+  const gfx::ColorSpace color_space =
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                      gfx::ColorSpace::TransferID::LOG_SQRT);
   base::RunLoop run_loop;
   std::unique_ptr<CopyOutputResult> result;
   auto request = std::make_unique<CopyOutputRequest>(
