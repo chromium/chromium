@@ -18,49 +18,6 @@
     background-color: transparent;
   }
 
-  #advancedButton {
-    --ink-color: var(--cros-text-color-primary);
-    align-items: center;
-    background: none;
-    border: none;
-    border-radius: initial;
-    box-shadow: none;
-    color: var(--cros-text-color-primary);
-    display: flex;
-    font: var(--cros-button-1-font);
-    height: unset;
-    margin-inline-end: 2px;
-    margin-top: 8px;
-    padding-inline-end: 0;
-    padding-inline-start: 20px;
-    text-transform: none;
-  }
-
-  #advancedButton:focus {
-    outline: none;
-  }
-
-  :host-context(.focus-outline-visible) #advancedButton:focus {
-    border-radius: 0 20px 20px 0;
-    outline: var(--settings-menu-item-border-width) solid
-        var(--cros-focus-ring-color);
-  }
-
-  :host-context([dir=rtl]):host-context(.focus-outline-visible)
-      #advancedButton:focus {
-    border-radius: 20px 0 0 20px;
-  }
-
-  #advancedButton > span {
-    flex: 1;
-  }
-
-  #advancedButton > iron-icon {
-    height: var(--cr-icon-size);
-    margin-inline-end: 14px;  /* 16px - 2px from margin for outline. */
-    width: var(--cr-icon-size);
-  }
-
   #menuSeparator {
     border-bottom: var(--cr-separator-line);
     margin-bottom: 8px;

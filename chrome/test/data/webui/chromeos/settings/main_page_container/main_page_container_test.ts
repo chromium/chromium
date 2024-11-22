@@ -11,16 +11,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeContactManager} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_contact_manager.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_share_settings.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 const {Section} = routesMojom;
 
 suite('<main-page-container>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-
   let mainPageContainer: MainPageContainerElement;
   let prefElement: SettingsPrefsElement;
   let fakeContactManager: FakeContactManager;
@@ -80,119 +76,56 @@ suite('<main-page-container>', () => {
       elementName: string;
     }
 
-    let pages: Pages[];
-    if (isRevampWayfindingEnabled) {
-      pages = [
-        {
-          pageName: 'kNetwork',
-          elementName: 'settings-internet-page',
-        },
-        {
-          pageName: 'kBluetooth',
-          elementName: 'os-settings-bluetooth-page',
-        },
-        {
-          pageName: 'kMultiDevice',
-          elementName: 'settings-multidevice-page',
-        },
-        {
-          pageName: 'kKerberos',
-          elementName: 'settings-kerberos-page',
-        },
-        {
-          pageName: 'kPeople',
-          elementName: 'os-settings-people-page',
-        },
-        {
-          pageName: 'kDevice',
-          elementName: 'settings-device-page',
-        },
-        {
-          pageName: 'kPersonalization',
-          elementName: 'settings-personalization-page',
-        },
-        {
-          pageName: 'kPrivacyAndSecurity',
-          elementName: 'os-settings-privacy-page',
-        },
-        {
-          pageName: 'kApps',
-          elementName: 'os-settings-apps-page',
-        },
-        {
-          pageName: 'kSystemPreferences',
-          elementName: 'settings-system-preferences-page',
-        },
-        {
-          pageName: 'kAccessibility',
-          elementName: 'os-settings-a11y-page',
-        },
-        {
-          pageName: 'kAboutChromeOs',
-          elementName: 'os-about-page',
-        },
-      ];
-    } else {
-      pages = [
-        // Basic pages
-        {
-          pageName: 'kNetwork',
-          elementName: 'settings-internet-page',
-        },
-        {
-          pageName: 'kBluetooth',
-          elementName: 'os-settings-bluetooth-page',
-        },
-        {
-          pageName: 'kMultiDevice',
-          elementName: 'settings-multidevice-page',
-        },
-        {
-          pageName: 'kKerberos',
-          elementName: 'settings-kerberos-page',
-        },
-        {
-          pageName: 'kPeople',
-          elementName: 'os-settings-people-page',
-        },
-        {
-          pageName: 'kDevice',
-          elementName: 'settings-device-page',
-        },
-        {
-          pageName: 'kPersonalization',
-          elementName: 'settings-personalization-page',
-        },
-        {
-          pageName: 'kPrivacyAndSecurity',
-          elementName: 'os-settings-privacy-page',
-        },
-        {
-          pageName: 'kApps',
-          elementName: 'os-settings-apps-page',
-        },
-        {
-          pageName: 'kAccessibility',
-          elementName: 'os-settings-a11y-page',
-        },
-
-        // Advanced section pages
-        {
-          pageName: 'kLanguagesAndInput',
-          elementName: 'os-settings-languages-section',
-        },
-        {
-          pageName: 'kFiles',
-          elementName: 'os-settings-files-page',
-        },
-
-        // About page
-        {
-          pageName: 'kAboutChromeOs',
-          elementName: 'os-about-page',
-        },
-      ];
-    }
+    const pages: Pages[] = [
+      {
+        pageName: 'kNetwork',
+        elementName: 'settings-internet-page',
+      },
+      {
+        pageName: 'kBluetooth',
+        elementName: 'os-settings-bluetooth-page',
+      },
+      {
+        pageName: 'kMultiDevice',
+        elementName: 'settings-multidevice-page',
+      },
+      {
+        pageName: 'kKerberos',
+        elementName: 'settings-kerberos-page',
+      },
+      {
+        pageName: 'kPeople',
+        elementName: 'os-settings-people-page',
+      },
+      {
+        pageName: 'kDevice',
+        elementName: 'settings-device-page',
+      },
+      {
+        pageName: 'kPersonalization',
+        elementName: 'settings-personalization-page',
+      },
+      {
+        pageName: 'kPrivacyAndSecurity',
+        elementName: 'os-settings-privacy-page',
+      },
+      {
+        pageName: 'kApps',
+        elementName: 'os-settings-apps-page',
+      },
+      {
+        pageName: 'kSystemPreferences',
+        elementName: 'settings-system-preferences-page',
+      },
+      {
+        pageName: 'kAccessibility',
+        elementName: 'os-settings-a11y-page',
+      },
+      {
+        pageName: 'kAboutChromeOs',
+        elementName: 'os-about-page',
+      },
+    ];
 
     pages.forEach(({pageName, elementName}) => {
       test(`${String(pageName)} page is controlled by pageAvailability`, () => {
@@ -218,31 +151,5 @@ suite('<main-page-container>', () => {
         assertNull(pageElement, `<${elementName}> should not exist.`);
       });
     });
-  });
-
-  suite('Advanced toggle', () => {
-    suiteSetup(() => {
-      mainPageContainer = init();
-    });
-
-    suiteTeardown(() => {
-      mainPageContainer.remove();
-      CrSettingsPrefs.resetForTesting();
-      Router.getInstance().resetRouteForTesting();
-    });
-
-    if (isRevampWayfindingEnabled) {
-      test('Advanced toggle should not be stamped', () => {
-        const advancedToggle =
-            mainPageContainer.shadowRoot!.querySelector('#advancedToggle');
-        assertNull(advancedToggle);
-      });
-    } else {
-      test('Advanced toggle should be visible', () => {
-        const advancedToggle =
-            mainPageContainer.shadowRoot!.querySelector('#advancedToggle');
-        assertTrue(isVisible(advancedToggle));
-      });
-    }
   });
 });

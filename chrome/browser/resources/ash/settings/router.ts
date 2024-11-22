@@ -325,16 +325,6 @@ window.addEventListener('popstate', () => {
 });
 
 /**
- * @returns true if this route exists under the Advanced section.
- */
-export function isAdvancedRoute(route: Route|null): boolean {
-  if (!route) {
-    return false;
-  }
-  return routes.ADVANCED.contains(route);
-}
-
-/**
  * @returns true if this route exists under the Basic section (not advanced
  * section).
  */

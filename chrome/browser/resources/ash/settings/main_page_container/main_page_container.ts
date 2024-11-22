@@ -40,10 +40,8 @@ import './page_displayer.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {castExists} from '../assert_extras.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
@@ -52,7 +50,7 @@ import {AndroidAppsBrowserProxyImpl} from '../os_apps_page/android_apps_browser_
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
 import type {OsPageAvailability} from '../os_page_availability.js';
 import type {Route} from '../router.js';
-import {isAboutRoute, isAdvancedRoute, isBasicRoute, Router} from '../router.js';
+import {isAboutRoute, isBasicRoute, Router} from '../router.js';
 
 import {getTemplate} from './main_page_container.html.js';
 import {MainPageMixin} from './main_page_mixin.js';
@@ -90,13 +88,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
        */
       pageAvailability: {
         type: Object,
-      },
-
-      advancedToggleExpanded: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        observer: 'advancedToggleExpandedChanged_',
       },
 
       /**
@@ -142,36 +133,14 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
         value: false,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       shouldShowBasicPageContainer_: {
         type: Boolean,
-        computed: 'computeShouldShowBasicPageContainer_(' +
-            'currentRoute_, isShowingSubpage_, isRevampWayfindingEnabled_)',
-      },
-
-      shouldShowAdvancedPageContainer_: {
-        type: Boolean,
-        computed: 'computeShouldShowAdvancedPageContainer(' +
-            'advancedToggleExpanded, currentRoute_, isShowingSubpage_, ' +
-            'isRevampWayfindingEnabled_)',
-      },
-
-      shouldShowAdvancedToggle_: {
-        type: Boolean,
-        computed: 'computeShouldShowAdvancedToggle(' +
-            'currentRoute_, isShowingSubpage_, isRevampWayfindingEnabled_)',
+        computed: 'computeShouldShowBasicPageContainer_(currentRoute_)',
       },
 
       shouldShowAboutPageContainer_: {
         type: Boolean,
-        computed: 'computeShouldShowAboutPageContainer(' +
-            'currentRoute_, isRevampWayfindingEnabled_)',
+        computed: 'computeShouldShowAboutPageContainer_(currentRoute_)',
       },
 
       /**
@@ -189,7 +158,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   }
 
   prefs: PrefsState;
-  advancedToggleExpanded: boolean;
   androidAppsInfo?: AndroidAppsInfo;
   pageAvailability: OsPageAvailability;
 
@@ -201,22 +169,10 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
   private currentRoute_: Route|null;
-  /**
-   * Used to avoid handling a new toggle while currently toggling.
-   */
-  private advancedTogglingInProgress_: boolean;
   private showEolIncentive_: boolean;
   private shouldShowOfferText_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private shouldShowBasicPageContainer_: boolean;
-  private shouldShowAdvancedPageContainer_: boolean;
-  private shouldShowAdvancedToggle_: boolean;
   private shouldShowAboutPageContainer_: boolean;
-
-  constructor() {
-    super();
-    this.advancedTogglingInProgress_ = false;
-  }
 
   override ready(): void {
     super.ready();
@@ -243,10 +199,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
     this.currentRoute_ = newRoute;
-
-    if (isAdvancedRoute(newRoute)) {
-      this.advancedToggleExpanded = true;
-    }
 
     if (oldRoute?.isSubpage()) {
       // If the new route isn't the same expanded section, reset
@@ -303,118 +255,11 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     this.isShowingSubpage_ = true;
   }
 
-  /**
-   * Render the advanced page now (don't wait for idle).
-   */
-  private advancedToggleExpandedChanged_(): void {
-    if (!this.advancedToggleExpanded) {
-      return;
-    }
-
-    // In Polymer2, async() does not wait long enough for layout to complete.
-    // beforeNextRender() must be used instead.
-    beforeNextRender(this, () => {
-      this.loadAdvancedPage();
-    });
-  }
-
-  private advancedToggleClicked_(): void {
-    if (this.advancedTogglingInProgress_) {
-      return;
-    }
-
-    this.advancedTogglingInProgress_ = true;
-    const toggle =
-        castExists(this.shadowRoot!.getElementById('toggleContainer'));
-
-    if (!this.advancedToggleExpanded) {
-      this.advancedToggleExpanded = true;
-      microTask.run(() => {
-        this.loadAdvancedPage().then(() => {
-          const event = new CustomEvent('scroll-to-top', {
-            bubbles: true,
-            composed: true,
-            detail: {
-              top: toggle.offsetTop,
-              callback: () => {
-                this.advancedTogglingInProgress_ = false;
-              },
-            },
-          });
-          this.dispatchEvent(event);
-        });
-      });
-    } else {
-      const event = new CustomEvent('scroll-to-bottom', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          bottom: toggle.offsetTop + toggle.offsetHeight + 24,
-          callback: () => {
-            this.advancedToggleExpanded = false;
-            this.advancedTogglingInProgress_ = false;
-          },
-        },
-      });
-      this.dispatchEvent(event);
-    }
-  }
-
   private computeShouldShowBasicPageContainer_(): boolean {
-    if (this.isRevampWayfindingEnabled_) {
-      return isBasicRoute(this.currentRoute_);
-    }
-
-    // When infinite scroll exists, never show when the about page is visible.
-    if (isAboutRoute(this.currentRoute_)) {
-      return false;
-    }
-
-    // Show if:
-    // 1. On the main page (not a subpage)
-    // 2. OR if the current subpage exists within the basic page
-    if (this.isShowingSubpage_) {
-      return isBasicRoute(this.currentRoute_);
-    }
-    return true;
+    return isBasicRoute(this.currentRoute_);
   }
 
-  private computeShouldShowAdvancedPageContainer(): boolean {
-    if (this.isRevampWayfindingEnabled_) {
-      return isAdvancedRoute(this.currentRoute_);
-    }
-
-    // When infinite scroll exists, never show when the about page is visible.
-    if (isAboutRoute(this.currentRoute_)) {
-      return false;
-    }
-
-    // Show if:
-    // 1. On the main page and the advanced toggle is expanded
-    // 2. OR if the current subpage exists within the advanced page
-    if (this.isShowingSubpage_) {
-      return isAdvancedRoute(this.currentRoute_);
-    }
-    return this.advancedToggleExpanded;
-  }
-
-  private computeShouldShowAdvancedToggle(): boolean {
-    if (this.isRevampWayfindingEnabled_) {
-      // Under the Settings Revamp, the advanced toggle should never show.
-      return false;
-    }
-
-    // When infinite scroll exists, never show when the about page is visible.
-    if (isAboutRoute(this.currentRoute_)) {
-      return false;
-    }
-
-    // Only show if on the main page (not a subpage)
-    return !this.isShowingSubpage_;
-  }
-
-  private computeShouldShowAboutPageContainer(): boolean {
-    // Only show if the current route exists within the about page
+  private computeShouldShowAboutPageContainer_(): boolean {
     return isAboutRoute(this.currentRoute_);
   }
 
@@ -424,10 +269,6 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
    */
   private getArrowIcon_(opened: boolean): string {
     return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  }
-
-  private boolToString_(bool: boolean): string {
-    return bool.toString();
   }
 }
 

@@ -1,28 +1,25 @@
 <style include="cr-hidden-style settings-shared">
   :host {
-    box-sizing: border-box;
-    display: block;
-    position: relative;
-  }
-
-  :host-context(body.revamp-wayfinding-enabled):host {
     --page-backdrop-bg-color: var(--cros-sys-surface1);
 
     background-color: var(--page-backdrop-bg-color);
     border-radius: 20px;
+    box-sizing: border-box;
+    display: block;
     padding-bottom: 16px;
     padding-inline-end: 16px;
     padding-inline-start: 16px;
+    position: relative;
   }
 
   @media (prefers-color-scheme: dark) {
-    :host-context(body.revamp-wayfinding-enabled):host {
+    :host {
       --page-backdrop-bg-color: var(--cros-sys-app_base);
     }
   }
 
   /* L1 page-specific style */
-  :host-context(body.revamp-wayfinding-enabled):host(:not(.showing-subpage)) {
+  :host(:not(.showing-subpage)) {
     padding-top: 8px;
   }
 
@@ -64,25 +61,6 @@
   .eol-warning-icon iron-icon {
     --iron-icon-fill-color: var(--cros-icon-color-warning);
     margin: 0;
-  }
-
-  #advancedToggle {
-    --ink-color: currentColor;
-    align-items: center;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    color: currentColor;
-    display: flex;
-    font-weight: 400;
-    margin-bottom: 3px;
-    margin-top: 12px;  /* Part of a 48px spacer (33px + 12px + 3px). */
-    min-height: 32px;
-    padding: 0 12px;
-  }
-
-  :host-context(.focus-outline-visible) #advancedToggle:focus {
-    outline: 2px solid var(--cros-focus-ring-color);
   }
 
   #openInNewBrowserSettingsIcon {
@@ -268,52 +246,8 @@
     </template>
 </div>
 
-<template is="dom-if" if="[[shouldShowAdvancedToggle_]]">
-  <div id="toggleSpacer"></div>
-  <h2 id="toggleContainer">
-    <cr-button id="advancedToggle" on-click="advancedToggleClicked_"
-        aria-expanded$="[[boolToString_(advancedToggleExpanded)]]">
-      <span>$i18n{advancedPageTitle}</span>
-      <iron-icon
-        icon="[[getArrowIcon_(advancedToggleExpanded)]]"
-        slot="suffix-icon">
-      </iron-icon>
-    </cr-button>
-  </h2>
-</template>
-
 <settings-idle-load id="advancedPageTemplate">
   <template>
-    <div id="advancedPageContainer"
-        hidden$="[[!shouldShowAdvancedPageContainer_]]">
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability,
-              Section.kLanguagesAndInput)]]"
-          restamp>
-        <page-displayer section="[[Section.kLanguagesAndInput]]">
-          <os-settings-languages-section prefs="{{prefs}}"
-              languages="[[languages_]]"
-              language-helper="[[languageHelper_]]">
-          </os-settings-languages-section>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kFiles)]]"
-          restamp>
-        <page-displayer section="[[Section.kFiles]]">
-          <os-settings-files-page prefs="{{prefs}}">
-          </os-settings-files-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kReset)]]"
-          restamp>
-        <page-displayer section="[[Section.kReset]]">
-          <os-settings-reset-page></os-settings-reset-page>
-        </page-displayer>
-      </template>
-    </div>
-
     <div id="aboutPageContainer"
         hidden$="[[!shouldShowAboutPageContainer_]]">
       <template is="dom-if"

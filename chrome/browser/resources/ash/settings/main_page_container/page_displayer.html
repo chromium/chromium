@@ -4,8 +4,8 @@
     outline: none;
   }
 
-  /* When infinite scroll is removed, only active pages should be visible. */
-  :host-context(body.revamp-wayfinding-enabled):host(:not([active])) {
+  /* Only active pages should be visible. */
+  :host(:not([active])) {
     display: none;
   }
 </style>
