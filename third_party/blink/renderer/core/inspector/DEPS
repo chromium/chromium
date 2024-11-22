@@ -43,7 +43,4 @@ specific_include_rules = {
   "inspector_network_agent.h": [
     "+net/filter/source_stream.h",
   ],
-  "inspector_network_agent.cc": [
-    "+third_party/boringssl/src/include",
-  ],
 }

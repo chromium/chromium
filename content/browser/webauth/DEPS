@@ -1,5 +1,5 @@
 include_rules = [
-  "+device/fido",
+  "+device",
   "+third_party/boringssl/src/pki",
 ]
 

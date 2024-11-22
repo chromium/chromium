@@ -99,20 +99,3 @@ directory and then take away permissions from sub-parts, or the reverse.
 Note that all directory separators must be `/` slashes (Unix-style) and not
 backslashes. All directories should be relative to the source root and use
 only lowercase.
-
-# Reviews
-
-`DEPS` files can be used to require a review when someone adds an
-`include_rules` entry on a directory. To do so, use:
-
-```
-new_usages_require_reviews = True
-```
-
-For example, if `//foo/bar/DEPS` sets `new_usages_require_reviews=True`, then:
-
-1) `include_rules` for `//foo` will not allow includes for files in `//foo/bar`
-2) A `PRESUBMIT.py` check will enforce that an `OWNER` of `//foo/bar` must +1
-   the change that adds the `include_rules` entry.
-
-This behavior was the default until fall 2024, when it was switch to opt-in.

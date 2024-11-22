@@ -4,7 +4,6 @@ include_rules = [
   "+components/system_cpu",
   "+components/variations",
   "+device",
-  "+device/fido",
   "+net/base",
   "+services/device/usb/jni_headers",
   "+services/network/public/cpp",
