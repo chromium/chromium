@@ -595,8 +595,7 @@ void DataSharingServiceImpl::GetSharedEntitiesPreview(
 
 void DataSharingServiceImpl::SetSDKDelegate(
     std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {
-  CHECK(sdk_delegate);
-  CHECK(!sdk_delegate_);
+  CHECK(!sdk_delegate || (sdk_delegate && !sdk_delegate_));
 
   sdk_delegate_ = std::move(sdk_delegate);
 
