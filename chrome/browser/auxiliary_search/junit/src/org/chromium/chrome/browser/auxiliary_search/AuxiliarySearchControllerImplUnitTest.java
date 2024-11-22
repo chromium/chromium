@@ -70,6 +70,7 @@ public class AuxiliarySearchControllerImplUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
+    @Mock private AuxiliarySearchHooks mHooks;
 
     @Captor private ArgumentCaptor<Callback<List<Tab>>> mCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mDeleteCallbackCaptor;
@@ -83,6 +84,12 @@ public class AuxiliarySearchControllerImplUnitTest {
     @Before
     public void setUp() {
         when(mContext.getResources()).thenReturn(mResources);
+
+        when(mHooks.isEnabled()).thenReturn(true);
+        when(mHooks.isSettingDefaultEnabledByOs()).thenReturn(true);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(mHooks);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
+        assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
         mAuxiliarySearchControllerImpl =
                 new AuxiliarySearchControllerImpl(

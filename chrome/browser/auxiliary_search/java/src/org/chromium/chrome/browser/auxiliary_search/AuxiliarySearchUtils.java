@@ -88,7 +88,9 @@ public class AuxiliarySearchUtils {
     /** Returns whether sharing Tabs with the system is enabled in settings. */
     public static boolean isShareTabsWithOsEnabled() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        return prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true);
+        return prefsManager.readBoolean(
+                ChromePreferenceKeys.SHARING_TABS_WITH_OS,
+                AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
     }
 
     /** Sets whether sharing Tabs with the system is enabled by users. */

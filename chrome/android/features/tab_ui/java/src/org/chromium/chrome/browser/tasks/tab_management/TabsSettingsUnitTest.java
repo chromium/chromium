@@ -230,7 +230,9 @@ public class TabsSettingsUnitTest {
     public void testLaunchTabsSettingsShareTabs() {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
         AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+        assertTrue(AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs());
         assertTrue(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
 
         TabsSettings tabsSettings = launchFragment();
@@ -254,9 +256,40 @@ public class TabsSettingsUnitTest {
 
     @Test
     @SmallTest
+    public void testLaunchTabsSettingsShareTabs_DefaultDisabled() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(true);
+        // Sets the setting as default disabled.
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
+        AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
+        assertFalse(AuxiliarySearchUtils.isShareTabsWithOsEnabled());
+
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference shareTitlesAndUrlsWithOsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_SWITCH);
+        TextMessagePreference learnMoreTextMessagePreference =
+                tabsSettings.findPreference(
+                        TabsSettings.PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
+        assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
+        assertFalse(shareTitlesAndUrlsWithOsSwitch.isChecked());
+        assertTrue(learnMoreTextMessagePreference.isVisible());
+
+        var listener =
+                Mockito.mock(AuxiliarySearchConfigManager.ShareTabsWithOsStateListener.class);
+        AuxiliarySearchConfigManager.getInstance().addListener(listener);
+        shareTitlesAndUrlsWithOsSwitch.onClick();
+
+        assertTrue(shareTitlesAndUrlsWithOsSwitch.isChecked());
+        verify(listener).onConfigChanged(eq(true));
+        AuxiliarySearchConfigManager.getInstance().removeListener(listener);
+    }
+
+    @Test
+    @SmallTest
     public void testLaunchTabsSettingsShareTabs_LearnMore() {
         AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
         when(hooksMock.isEnabled()).thenReturn(true);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
         AuxiliarySearchControllerFactory.getInstance().setHooksForTesting(hooksMock);
 
         TabsSettings tabsSettings = launchFragment();

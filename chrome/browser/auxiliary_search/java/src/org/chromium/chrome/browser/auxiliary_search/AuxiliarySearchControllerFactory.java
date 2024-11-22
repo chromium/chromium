@@ -45,6 +45,15 @@ public class AuxiliarySearchControllerFactory {
         return mHooks != null && mHooks.isEnabled();
     }
 
+    /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
+    public boolean isSettingDefaultEnabledByOs() {
+        if (mHooksForTesting != null) {
+            return mHooksForTesting.isSettingDefaultEnabledByOs();
+        }
+
+        return mHooks != null && mHooks.isSettingDefaultEnabledByOs();
+    }
+
     /** Creates a {@link AuxiliarySearchController} instance if enabled. */
     public @Nullable AuxiliarySearchController createAuxiliarySearchController(
             @NonNull Context context,

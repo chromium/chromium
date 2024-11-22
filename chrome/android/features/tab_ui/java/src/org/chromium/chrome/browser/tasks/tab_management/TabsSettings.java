@@ -18,14 +18,13 @@ import androidx.preference.Preference;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -163,9 +162,7 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
             return;
         }
 
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        boolean isEnabled =
-                prefsManager.readBoolean(ChromePreferenceKeys.SHARING_TABS_WITH_OS, true);
+        boolean isEnabled = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
         shareTitlesAndUrlsWithOsSwitch.setChecked(isEnabled);
         shareTitlesAndUrlsWithOsSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {

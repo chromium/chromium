@@ -122,4 +122,18 @@ public class AuxiliarySearchControllerFactoryUnitTest {
         verify(hooksMock, never())
                 .createAuxiliarySearchController(eq(mContext), eq(mProfile), eq(mTabModelSelector));
     }
+
+    @Test
+    @SmallTest
+    public void testIsSettingDefaultEnabledByOs() {
+        AuxiliarySearchHooks hooksMock = Mockito.mock(AuxiliarySearchHooks.class);
+        when(hooksMock.isEnabled()).thenReturn(false);
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(true);
+        mFactory.setHooksForTesting(hooksMock);
+
+        assertTrue(mFactory.isSettingDefaultEnabledByOs());
+
+        when(hooksMock.isSettingDefaultEnabledByOs()).thenReturn(false);
+        assertFalse(mFactory.isSettingDefaultEnabledByOs());
+    }
 }
