@@ -1031,6 +1031,7 @@
 -virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/popovers/popover-open-overflow-display.tentative.html
 -virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-focus.html
 -virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
+-virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 -virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 -virtual/produce-compile-hints/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 -virtual/produce-compile-hints/external/wpt/fetch/fetch-later/new-window.tentative.https.window.html
@@ -1123,6 +1124,7 @@
 -virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/animation-with-display-none.html
 -virtual/threaded-prefer-compositing/external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html
 -virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/delay-load-event.html
+-virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/microtasks/basic.any.html
 -virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/after-prepare-*
 -virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/*
 -virtual/url-non-special/external/wpt/url/failure.html
