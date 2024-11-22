@@ -580,6 +580,12 @@ void PrivacySandboxServiceImpl::OnExtendedAccountInfoRemoved(
 PrivacySandboxService::PromptType
 // TODO(crbug.com/352575567): Use the SurfaceType passed in.
 PrivacySandboxServiceImpl::GetRequiredPromptType(SurfaceType surface_type) {
+  // We delay emitting the metrics here so the profile manager can finish
+  // setting up and retrieving the profile buckets.
+  if (should_emit_dark_launch_startup_metrics_) {
+    MaybeEmitPromptStartupAccountMetrics();
+    should_emit_dark_launch_startup_metrics_ = false;
+  }
   bool third_party_cookies_blocked = AreAllThirdPartyCookiesBlocked(
       cookie_settings_.get(), pref_service_, tracking_protection_settings_);
   return GetRequiredPromptTypeInternal(
@@ -827,9 +833,11 @@ void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
   force_chrome_build_for_tests_ = force_chrome_build;
 }
 
-// TODO(crbug.com/376285112): Create a bridge for this and use it in clank.
-void PrivacySandboxServiceImpl::
-    EmitPrivacySandboxAccountPromptStartupMetrics() {
+void PrivacySandboxServiceImpl::MaybeEmitPromptStartupAccountMetrics() {
+  // No Startup Metrics emitted if the profile isn't regular.
+  if (!IsRegularProfile(profile_type_)) {
+    return;
+  }
   std::string profile_bucket = privacy_sandbox::GetProfileBucketName(profile_);
   if (profile_bucket.empty()) {
     return;

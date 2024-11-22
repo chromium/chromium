@@ -589,111 +589,6 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
                                          std::tuple(false, true, false),
                                          std::tuple(false, false, false)));
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PrivacySandboxServiceTest, PrimaryAccountSignedOutOnStartup) {
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              base::Time());
-  EXPECT_THAT(
-      histograms,
-      testing::Not(testing::AnyOf(
-          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration")));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedOut, 1);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-TEST_F(PrivacySandboxServiceTest,
-       PrimaryAccountSignedInCapabilityUnknownOnStartup) {
-  EnableSignIn();
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              testing::Not(base::Time()));
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedInCapabilityUnknown, 1);
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       PrimaryAccountSignedInCapabilityFalseOnStartup) {
-  EnableSignInU18();
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              testing::Not(base::Time()));
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
-}
-
-TEST_F(PrivacySandboxServiceTest,
-       PrimaryAccountSignedInCapabilityTrueOnStartup) {
-  EnableSignInOver18();
-  // Mimics the emit call after initial sign in
-  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
-
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-  histogram_tester()->ExpectBucketCount(
-      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
-      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
-}
-
-TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignIn) {
-  EnableSignIn();
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(histograms,
-              testing::ContainsRegex(
-                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
-
-  auto sign_in_time =
-      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
-  EXPECT_THAT(sign_in_time, testing::Not(base::Time()));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Signing in again should not change the metrics.
-  SignOut();
-  EnableSignIn();
-  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
-              sign_in_time);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignOut) {
-  EnableSignIn();
-  SignOut();
-
-  EXPECT_THAT(
-      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime),
-      testing::Not(base::Time()));
-
-  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
-  EXPECT_THAT(
-      histograms,
-      testing::ContainsRegex(
-          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignOutDuration"));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
   // actions is correctly converted into a list of eTLD+1s.
@@ -1262,6 +1157,137 @@ TEST_F(PrivacySandboxDarkLaunchMetrics,
   histogram_tester.ExpectTotalCount(
       "PrivacySandbox.DarkLaunch.IdentityManagerSuccess", 1);
 }
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       NoDarkLaunchStartupMetricsIfNotRegularProfile) {
+  SetProfileType(profile_metrics::BrowserProfileType::kIncognito);
+  CreateService();
+  base::HistogramTester histogram_tester;
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup", 0);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       NoDarkLaunchStartupMetricsOnSubsequentGetRequiredPromptCalls) {
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+  base::HistogramTester histogram_tester;
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+  histogram_tester.ExpectTotalCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup", 0);
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxDarkLaunchMetrics, PrimaryAccountSignedOutOnStartup) {
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              base::Time());
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::AnyOf(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration")));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedOut, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountSignedInCapabilityUnknownOnStartup) {
+  EnableSignIn();
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityUnknown, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountSignedInCapabilityFalseOnStartup) {
+  EnableSignInU18();
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics,
+       PrimaryAccountSignedInCapabilityTrueOnStartup) {
+  EnableSignInOver18();
+  // First GetRequiredPromptType call triggers startup histograms
+  privacy_sandbox_service()->GetRequiredPromptType(
+      PrivacySandboxService::SurfaceType::kDesktop);
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
+}
+
+TEST_F(PrivacySandboxDarkLaunchMetrics, OnPrimaryAccountChangedSignIn) {
+  EnableSignIn();
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+
+  auto sign_in_time =
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
+  EXPECT_THAT(sign_in_time, testing::Not(base::Time()));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing in again should not change the metrics.
+  SignOut();
+  EnableSignIn();
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              sign_in_time);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxDarkLaunchMetrics, OnPrimaryAccountChangedSignOut) {
+  EnableSignIn();
+  SignOut();
+
+  EXPECT_THAT(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime),
+      testing::Not(base::Time()));
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignOutDuration"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 using PrivacySandboxServiceDeathTest = PrivacySandboxServiceTest;
 

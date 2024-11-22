@@ -54,10 +54,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
 #endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
   // Mock this method to enable opening the settings page in tests.
-  MOCK_METHOD(void,
-              EmitPrivacySandboxAccountPromptStartupMetrics,
-              (),
-              (override));
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
   MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override));
   MOCK_METHOD(void, SetRelatedWebsiteSetsDataAccessEnabled, (bool), (override));

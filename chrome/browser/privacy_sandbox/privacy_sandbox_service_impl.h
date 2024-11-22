@@ -85,7 +85,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   bool IsHoldingHandle() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
-  void EmitPrivacySandboxAccountPromptStartupMetrics() override;
   bool IsPrivacySandboxRestricted() override;
   bool IsRestrictedNoticeEnabled() override;
   void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) override;
@@ -422,7 +421,11 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService,
   // the prompt was suppressed via policy.
   static bool IsM1PrivacySandboxEffectivelyManaged(PrefService* pref_service);
 
+  // Emits startup histograms relating to the user's sign in status.
+  void MaybeEmitPromptStartupAccountMetrics();
+
   bool force_chrome_build_for_tests_ = false;
+  bool should_emit_dark_launch_startup_metrics_ = true;
 
   base::WeakPtrFactory<PrivacySandboxServiceImpl> weak_factory_{this};
 };
