@@ -196,6 +196,10 @@ void SeedReaderWriter::DeleteSeedFile() {
 
 void SeedReaderWriter::ReadSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const std::string histogram_suffix =
+      base::Contains(seed_writer_->path().BaseName().MaybeAsASCII(), "Safe")
+          ? "Safe"
+          : "Latest";
   std::string seed_file_data;
   const bool success =
       base::ReadFileToString(seed_writer_->path(), &seed_file_data);
@@ -204,10 +208,10 @@ void SeedReaderWriter::ReadSeedFile() {
     seed_data_ = std::move(seed_file_data);
   } else {
     // Export seed data from Local State to a seed file in the following cases.
-    // 1. Seed file does not exists because this is the first run for Windows
-    // OS. In this case, the first run seed may be stored in Local State, see
+    // 1. Seed file does not exist because this is the first run. For Windows,
+    // the first run seed may be stored in Local State, see
     // https://crsrc.org/s?q=file:chrome_feature_list_creator.cc+symbol:SetupInitialPrefs.
-    // 2. Seed file does not exists because this is the first time a client is
+    // 2. Seed file does not exist because this is the first time a client is
     // in the seed file experiment's treatment group.
     // 3. Seed file exists and read failed.
     std::string decoded_data;
@@ -215,16 +219,27 @@ void SeedReaderWriter::ReadSeedFile() {
                            &decoded_data)) {
       // Write will only occur if ShouldUseSeedFile() is true.
       ScheduleSeedFileWrite(decoded_data);
+
+      // Record whether empty data is written to the seed file. This can happen
+      // in the following cases.
+      // 1. It is the first time a client is in the seed file experiment's
+      // treatment group. The seed file does not exist and the local state seed
+      // is empty.
+      // 2. It is not the first time a client is in the treatment group. A
+      // seed file exists, but cannot be read, and since local state is no
+      // longer maintained and has been cleared in previous runs, the local
+      // state seed written is cleared/ empty.
+      // 3. It is not the first time a client is in the treatment group. The
+      // seed file was deleted.
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"Variations.SeedFileWriteEmptySeed.", histogram_suffix}),
+          decoded_data.empty());
     }
   }
 
   base::UmaHistogramBoolean(
-      base::StrCat({"Variations.SeedFileRead.",
-                    base::Contains(
-                        seed_writer_->path().BaseName().MaybeAsASCII(), "Safe")
-                        ? "Safe"
-                        : "Latest"}),
-      success);
+      base::StrCat({"Variations.SeedFileRead.", histogram_suffix}), success);
 
   // Clients using a seed file should clear seed from local state as it will no
   // longer be used.

@@ -596,6 +596,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Variations.SeedFileWriteEmptySeed.{SeedFile}"
+    enum="BooleanEmpty" expires_after="2025-05-06">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether a seed copied from local state to the {SeedFile} is empty. Emitted
+    by clients in the seed file experiment's treatment group when creating the
+    {SeedFile}'s SeedReaderWriter if the file (a) does not exist or (b) exists
+    but cannot be read.
+  </summary>
+  <token key="SeedFile">
+    <variant name="Latest" summary="latest seed file"/>
+    <variant name="Safe" summary="safe seed file"/>
+  </token>
+</histogram>
+
 <histogram name="Variations.SeedFreshness" units="minutes"
     expires_after="2025-05-11">
   <owner>asvitkine@chromium.org</owner>
