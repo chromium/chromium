@@ -203,6 +203,13 @@ public class MismatchNotificationController
                     };
         }
         onClose.onResult(closeType.getNumber());
+
+        destroy();
+    }
+
+    private void destroy() {
+        mAccountManagerFacade.removeObserver(this);
+        mSigninManager.removeSignInStateObserver(this);
     }
 
     @Override
@@ -222,9 +229,8 @@ public class MismatchNotificationController
 
     private void dismissMessage() {
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
+        assert dispatcher != null;
         dispatcher.dismissMessage(mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
-        mAccountManagerFacade.removeObserver(this);
-        mSigninManager.removeSignInStateObserver(this);
     }
 
     public static void setInstanceForTesting(
