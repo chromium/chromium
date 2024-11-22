@@ -40,6 +40,12 @@ BatchUploadUI::BatchUploadUI(content::WebUI* web_ui)
       {"batchUploadTitle", IDS_BATCH_UPLOAD_TITLE},
       {"saveToAccount", IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL},
       {"cancel", IDS_CANCEL},
+      {"lastItemSelectedScreenReader",
+       IDS_BATCH_UPLOAD_LAST_ITEM_SELECTED_SCREEN_READER},
+      {"itemCountSelectedScreenReader",
+       IDS_BATCH_UPLOAD_SCREEN_READER_ITEM_COUNT_SELECTED},
+      {"selectAllScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_ALL},
+      {"selectNoneScreenReader", IDS_BATCH_UPLOAD_SCREEN_READER_SELECT_NONE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
