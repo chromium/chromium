@@ -698,6 +698,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
     State new_state) {
+  SCOPED_CRASH_KEY_NUMBER("SWRace", "current_state", static_cast<int>(state_));
   switch (new_state) {
     case State::kWaitForBody:
       NOTREACHED();
