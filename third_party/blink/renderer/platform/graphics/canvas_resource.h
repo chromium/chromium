@@ -274,9 +274,9 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
  public:
   static scoped_refptr<CanvasResourceSharedBitmap> Create(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      gfx::ColorSpace color_space,
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
       cc::PaintFlags::FilterQuality);
@@ -302,9 +302,9 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
  private:
   CanvasResourceSharedBitmap(
       gfx::Size size,
-      SkColorType sk_color_type,
+      viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
+      gfx::ColorSpace color_space,
       base::WeakPtr<CanvasResourceProvider>,
       base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>,
       cc::PaintFlags::FilterQuality);

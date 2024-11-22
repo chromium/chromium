@@ -256,8 +256,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   platform->RunUntilIdle();
 
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
-      GetSize(), kN32_SkColorType, kPremul_SkAlphaType,
-      /*sk_color_space=*/nullptr,
+      GetSize(), viz::SinglePlaneFormat::kRGBA_8888, kPremul_SkAlphaType,
+      gfx::ColorSpace::CreateSRGB(),
       /*provider=*/nullptr, shared_image_interface_provider(),
       cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);

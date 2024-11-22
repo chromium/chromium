@@ -98,6 +98,12 @@ static FlushForImageListener* GetFlushForImageListener() {
 
 namespace {
 
+gfx::ColorSpace SkColorSpaceToGfxColorSpace(
+    sk_sp<SkColorSpace> sk_color_space) {
+  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
+                        : gfx::ColorSpace::CreateSRGB();
+}
+
 bool IsGMBAllowed(const SkImageInfo& info, const gpu::Capabilities& caps) {
   const gfx::Size size(info.width(), info.height());
   const gfx::BufferFormat buffer_format =
@@ -243,8 +249,11 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
     }
 
     return CanvasResourceSharedBitmap::Create(
-        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
-        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        gfx::Size(info.width(), info.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            info.colorInfo().colorType()),
+        info.colorInfo().alphaType(),
+        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
         CreateWeakPtr(), shared_image_interface_provider_, FilterQuality());
   }
 

@@ -266,20 +266,19 @@ gfx::ColorSpace CanvasResource::GetColorSpace() const {
 
 CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    gfx::ColorSpace color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider,
     cc::PaintFlags::FilterQuality filter_quality)
-    : CanvasResource(
-          std::move(provider),
-          filter_quality,
-          size,
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-          alpha_type,
-          SkColorSpaceToGfxColorSpace(std::move(sk_color_space))) {
+    : CanvasResource(std::move(provider),
+                     filter_quality,
+                     size,
+                     format,
+                     alpha_type,
+                     color_space) {
   if (!shared_image_interface_provider) {
     return;
   }
@@ -340,17 +339,16 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
 
 scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    gfx::ColorSpace color_space,
     base::WeakPtr<CanvasResourceProvider> provider,
     base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
         shared_image_interface_provider,
     cc::PaintFlags::FilterQuality filter_quality) {
   auto resource = AdoptRef(new CanvasResourceSharedBitmap(
-      size, sk_color_type, alpha_type, std::move(sk_color_space),
-      std::move(provider), std::move(shared_image_interface_provider),
-      filter_quality));
+      size, format, alpha_type, color_space, std::move(provider),
+      std::move(shared_image_interface_provider), filter_quality));
   return resource->IsValid() ? resource : nullptr;
 }
 
