@@ -252,7 +252,7 @@
 #include "components/upload_list/crash_upload_list.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/mock_extension_special_storage_policy.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -311,7 +311,7 @@ const char kTestRegisterableDomain3[] = "host3.com";
 const char kTestRealm[] = "TestRealm";
 
 // Shorthands for origin types.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 const uint64_t kExtension = constants::ORIGIN_TYPE_EXTENSION;
 #endif
 const uint64_t kProtected =
@@ -3844,7 +3844,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 
 // TODO(crbug.com/371426261)): Enable this for ENABLE_EXTENSIONS_CORE, but first
 // MockExtensionSpecialStoragePolicy must compile on Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasks) {
   const GURL kOriginProtected("http://protected.com");
   const GURL kOriginUnprotected("http://unprotected.com");
@@ -3922,7 +3922,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasksNoPolicy) {
   EXPECT_FALSE(Match(kOriginExtension, kProtected, nullptr));
   EXPECT_FALSE(Match(kOriginDevTools, kProtected, nullptr));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_FALSE(Match(kOriginStandard, kExtension, nullptr));
   EXPECT_TRUE(Match(kOriginExtension, kExtension, nullptr));
   EXPECT_FALSE(Match(kOriginDevTools, kExtension, nullptr));
