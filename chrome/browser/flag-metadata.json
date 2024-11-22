@@ -4257,11 +4257,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-zstd-content-encoding",
-    "owners": ["nidhijaju@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enforce-system-aec",
     "owners": [ "peah@chromium.org" ],
     "expiry_milestone": 128

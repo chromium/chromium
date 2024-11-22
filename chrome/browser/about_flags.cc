@@ -10098,11 +10098,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kComputePressureBreakCalibrationMitigation)},
 
-    {"enable-zstd-content-encoding",
-     flag_descriptions::kZstdContentEncodingName,
-     flag_descriptions::kZstdContentEncodingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kZstdContentEncoding)},
-
     {"enable-shared-zstd", flag_descriptions::kSharedZstdName,
      flag_descriptions::kSharedZstdDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kSharedZstd)},

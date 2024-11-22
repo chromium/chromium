@@ -24615,7 +24615,6 @@ from previous Chrome versions.
   <int value="1724706885" label="EnableEdgeDetection:disabled"/>
   <int value="1724800383" label="AsmJsToWebAssembly:disabled"/>
   <int value="1725438666" label="NewStyleNotifications:enabled"/>
-  <int value="1726144143" label="ZstdContentEncoding:enabled"/>
   <int value="1726197412" label="FencedFramesDefaultMode:disabled"/>
   <int value="1726474125"
       label="AccessibilityDictationKeyboardImprovements:disabled"/>
@@ -24641,7 +24640,6 @@ from previous Chrome versions.
   <int value="1739456903" label="PWAFullCodeCache:enabled"/>
   <int value="1739507233" label="EarlyEstablishGpuChannel:enabled"/>
   <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
-  <int value="1739919484" label="ZstdContentEncoding:disabled"/>
   <int value="1740660782" label="VideoPictureInPictureMinimizeButton:disabled"/>
   <int value="1741751043"
       label="MinorModeRestrictionsForHistorySyncOptIn:enabled"/>

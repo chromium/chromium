@@ -4,7 +4,6 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,9 +22,7 @@ namespace policy {
 
 class ZstdContentEncodingPolicyTest : public PolicyTest {
  public:
-  ZstdContentEncodingPolicyTest() {
-    feature_list_.InitAndEnableFeature(net::features::kZstdContentEncoding);
-  }
+  ZstdContentEncodingPolicyTest() = default;
   ~ZstdContentEncodingPolicyTest() override = default;
 
   void SetUp() override {
@@ -78,8 +75,6 @@ class ZstdContentEncodingPolicyTest : public PolicyTest {
     }
     return false;
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ZstdContentEncodingPolicyTest,

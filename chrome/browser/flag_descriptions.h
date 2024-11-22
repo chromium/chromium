@@ -2352,9 +2352,6 @@ extern const char kWebXrIncubationsDescription[];
 extern const char kZeroCopyName[];
 extern const char kZeroCopyDescription[];
 
-extern const char kZstdContentEncodingName[];
-extern const char kZstdContentEncodingDescription[];
-
 extern const char kEnableVulkanName[];
 extern const char kEnableVulkanDescription[];
 
