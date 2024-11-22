@@ -8899,10 +8899,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
 // specialized to the chosen credential ID and post-request account selection UI
 // to be skipped.
 TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
-  device::VirtualCtap2Device::Config config;
-  config.resident_key_support = true;
-  config.internal_uv_support = true;
-  virtual_device_factory_->SetCtap2Config(config);
   virtual_device_factory_->SetTransport(
       device::FidoTransportProtocol::kInternal);
   virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
@@ -8920,19 +8916,28 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       kSecondCredentialId, kTestRelyingPartyId, kSecondUserId, std::nullopt,
       std::nullopt));
+  for (bool has_pin_uv_auth_token : {false, true}) {
+    SCOPED_TRACE(has_pin_uv_auth_token);
+    device::VirtualCtap2Device::Config config;
+    config.pin_uv_auth_token_support = has_pin_uv_auth_token;
+    config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+    config.resident_key_support = true;
+    config.internal_uv_support = true;
+    virtual_device_factory_->SetCtap2Config(std::move(config));
 
-  // |SelectAccount| should not be called if an account was chosen from
-  // pre-select UI.
-  test_client_.delegate_config.expected_accounts = "<invalid>";
+    // |SelectAccount| should not be called if an account was chosen from
+    // pre-select UI.
+    test_client_.delegate_config.expected_accounts = "<invalid>";
 
-  for (const auto& id : {kFirstCredentialId, kSecondCredentialId}) {
-    test_client_.delegate_config.preselected_credential_id = id;
-    test_client_.delegate_config.preselected_authenticator_id =
-        kAuthenticatorId;
-    PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
-    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
-    EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
-    EXPECT_EQ(result.response->info->raw_id, id);
+    for (const auto& id : {kFirstCredentialId, kSecondCredentialId}) {
+      test_client_.delegate_config.preselected_credential_id = id;
+      test_client_.delegate_config.preselected_authenticator_id =
+          kAuthenticatorId;
+      PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+      GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+      EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      EXPECT_EQ(result.response->info->raw_id, id);
+    }
   }
 }
 

@@ -230,7 +230,9 @@ UserVerificationRequirement AtLeastUVPreferred(UserVerificationRequirement uv) {
 CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
-    const FidoAuthenticator& authenticator) {
+    const FidoAuthenticator& authenticator,
+    const std::optional<DiscoverableCredentialMetadata>&
+        preselected_credential) {
   CtapGetAssertionRequest specialized_request(request);
 
   if (request.allow_list.empty() && authenticator.AuthenticatorTransport() !=
@@ -258,6 +260,13 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     // is needed if supported by the authenticator.
     specialized_request.user_verification =
         AtLeastUVPreferred(specialized_request.user_verification);
+  }
+  if (preselected_credential) {
+    specialized_request.allow_list = {PublicKeyCredentialDescriptor(
+        CredentialType::kPublicKey, preselected_credential->cred_id,
+        {preselected_credential->source == device::AuthenticatorType::kPhone
+             ? FidoTransportProtocol::kHybrid
+             : FidoTransportProtocol::kInternal})};
   }
   return specialized_request;
 }
@@ -432,8 +441,8 @@ void GetAssertionRequestHandler::DispatchRequest(
     }
   }
 
-  CtapGetAssertionRequest request =
-      SpecializeRequestForAuthenticator(request_, options_, *authenticator);
+  CtapGetAssertionRequest request = SpecializeRequestForAuthenticator(
+      request_, options_, *authenticator, preselected_credential_);
   CtapGetAssertionOptions options =
       SpecializeOptionsForAuthenticator(options_, *authenticator);
   PINUVDisposition uv_disposition =
@@ -465,14 +474,6 @@ void GetAssertionRequestHandler::DispatchRequest(
           &GetAssertionRequestHandler::TerminateUnsatisfiableRequestPostTouch,
           weak_factory_.GetWeakPtr(), authenticator));
       return;
-  }
-
-  if (preselected_credential_) {
-    request.allow_list = {PublicKeyCredentialDescriptor(
-        CredentialType::kPublicKey, preselected_credential_->cred_id,
-        {preselected_credential_->source == device::AuthenticatorType::kPhone
-             ? FidoTransportProtocol::kHybrid
-             : FidoTransportProtocol::kInternal})};
   }
 
   ReportGetAssertionRequestTransport(authenticator);
@@ -773,7 +774,8 @@ void GetAssertionRequestHandler::DispatchRequestWithToken(
   options_.pin_uv_auth_token = std::move(token);
   state_ = State::kWaitingForResponseWithToken;
   CtapGetAssertionRequest request = SpecializeRequestForAuthenticator(
-      request_, options_, *selected_authenticator_for_pin_uv_auth_token_);
+      request_, options_, *selected_authenticator_for_pin_uv_auth_token_,
+      preselected_credential_);
   CtapGetAssertionOptions options = SpecializeOptionsForAuthenticator(
       options_, *selected_authenticator_for_pin_uv_auth_token_);
 
