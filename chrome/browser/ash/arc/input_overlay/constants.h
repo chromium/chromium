@@ -17,8 +17,8 @@ constexpr char kHoverMove[] = "hover_move";
 constexpr char kPrimaryDragMove[] = "primary_drag_move";
 constexpr char kSecondaryDragMove[] = "secondary_drag_move";
 
-// System version for AlphaV2.
-constexpr char kSystemVersionAlphaV2[] = "0.2";
+// System version for AlphaV2+.
+constexpr char kSystemVersionAlphaV2Plus[] = "0.2";
 
 // The coordinates number, including Axis x and y.
 constexpr int kAxisSize = 2;
