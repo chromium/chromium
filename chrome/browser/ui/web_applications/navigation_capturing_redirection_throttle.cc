@@ -88,7 +88,8 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
   // Create a new browser window if the navigation was triggered via a
   // shift-click, or if there are no open tabbed browser windows at the moment.
   Browser* target_browser_window =
-      (disposition == WindowOpenDisposition::NEW_WINDOW || !source_browser)
+      (disposition == WindowOpenDisposition::NEW_WINDOW ||
+       !existing_browser_window)
           ? Browser::Create(Browser::CreateParams(source_browser->profile(),
                                                   /*user_gesture=*/true))
           : existing_browser_window;
