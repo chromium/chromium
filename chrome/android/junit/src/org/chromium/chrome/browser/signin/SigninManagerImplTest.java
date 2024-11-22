@@ -494,7 +494,6 @@ public class SigninManagerImplTest {
                 .clearBrowsingData(
                         any(),
                         any(),
-                        any(),
                         eq(expectedClearedTypes),
                         eq(TimePeriod.ALL_TIME),
                         any(),
@@ -527,7 +526,6 @@ public class SigninManagerImplTest {
                 };
         verify(mBrowsingDataBridgeNativeMock)
                 .clearBrowsingData(
-                        any(),
                         any(),
                         any(),
                         eq(expectedClearedTypes),
@@ -563,7 +561,6 @@ public class SigninManagerImplTest {
                 .clearBrowsingData(
                         any(),
                         any(),
-                        any(),
                         eq(expectedClearedTypes),
                         eq(TimePeriod.ALL_TIME),
                         any(),
@@ -594,7 +591,6 @@ public class SigninManagerImplTest {
                 };
         verify(mBrowsingDataBridgeNativeMock)
                 .clearBrowsingData(
-                        any(),
                         any(),
                         any(),
                         eq(expectedClearedTypes),

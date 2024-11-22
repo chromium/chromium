@@ -104,14 +104,13 @@ public class QuickDeleteControllerTest {
                         (Answer<Void>)
                                 invocation -> {
                                     ((BrowsingDataBridge.OnClearBrowsingDataListener)
-                                                    invocation.getArgument(2))
+                                                    invocation.getArgument(1))
                                             .onBrowsingDataCleared();
                                     mCallbackHelper.notifyCalled();
                                     return null;
                                 })
                 .when(mBrowsingDataBridgeMock)
-                .clearBrowsingData(
-                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         // Set the time for the initial tab to be outside of the quick delete time span.
         Tab initialTab = mActivity.getActivityTab();
@@ -161,7 +160,7 @@ public class QuickDeleteControllerTest {
     private void assertDataTypesCleared(@TimePeriod int timePeriod, int... types) {
         verify(mBrowsingDataBridgeMock)
                 .clearBrowsingData(
-                        any(), any(), any(), eq(types), eq(timePeriod), any(), any(), any(), any());
+                        any(), any(), eq(types), eq(timePeriod), any(), any(), any(), any());
     }
 
     @Test
@@ -340,8 +339,7 @@ public class QuickDeleteControllerTest {
         onViewWaiting(withId(R.id.negative_button)).perform(click());
 
         verify(mBrowsingDataBridgeMock, never())
-                .clearBrowsingData(
-                        any(), any(), any(), any(), anyInt(), any(), any(), any(), any());
+                .clearBrowsingData(any(), any(), any(), anyInt(), any(), any(), any(), any());
 
         histogramWatcher.assertExpected();
     }

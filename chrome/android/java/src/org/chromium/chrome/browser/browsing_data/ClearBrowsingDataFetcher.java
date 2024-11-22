@@ -10,8 +10,6 @@ import android.os.Parcelable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
 
-import java.util.Arrays;
-
 /** Requests information about important sites and other forms of browsing data. */
 public class ClearBrowsingDataFetcher
         implements BrowsingDataBridge.ImportantSitesCallback,
@@ -127,7 +125,7 @@ public class ClearBrowsingDataFetcher
             String[] exampleOrigins,
             int[] importantReasons,
             boolean dialogDisabled) {
-        if (domains == null || dialogDisabled) return;
+        if (dialogDisabled) return;
         // mMaxImportantSites is a constant on the C++ side. While 0 is valid, use 1 as the minimum
         // because histogram code assumes a min >= 1; the underflow bucket will record the 0s.
         RecordHistogram.recordLinearCountHistogram(
@@ -136,9 +134,9 @@ public class ClearBrowsingDataFetcher
                 1,
                 mMaxImportantSites + 1,
                 mMaxImportantSites + 1);
-        mSortedImportantDomains = Arrays.copyOf(domains, domains.length);
-        mSortedImportantDomainReasons = Arrays.copyOf(importantReasons, importantReasons.length);
-        mSortedExampleOrigins = Arrays.copyOf(exampleOrigins, exampleOrigins.length);
+        mSortedImportantDomains = domains;
+        mSortedImportantDomainReasons = importantReasons;
+        mSortedExampleOrigins = exampleOrigins;
     }
 
     @Override
