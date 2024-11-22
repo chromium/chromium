@@ -261,7 +261,7 @@ public class EphemeralTabMediator {
                 return R.drawable.omnibox_not_secure_warning;
             case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
-                return R.drawable.omnibox_https_valid;
+                return R.drawable.omnibox_https_valid_lock;
             default:
                 assert false;
         }

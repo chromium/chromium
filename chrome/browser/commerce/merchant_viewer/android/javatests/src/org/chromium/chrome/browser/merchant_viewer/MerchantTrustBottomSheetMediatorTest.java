@@ -197,7 +197,7 @@ public class MerchantTrustBottomSheetMediatorTest {
         mWebContentsDelegateCaptor.getValue().visibleSSLStateChanged();
         assertEquals(mMockDestinationGurl, mToolbarModel.get(BottomSheetToolbarProperties.URL));
         assertEquals(
-                R.drawable.omnibox_https_valid,
+                R.drawable.omnibox_https_valid_lock,
                 mToolbarModel.get(BottomSheetToolbarProperties.SECURITY_ICON));
     }
 

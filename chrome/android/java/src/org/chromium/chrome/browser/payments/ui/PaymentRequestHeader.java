@@ -82,7 +82,7 @@ public class PaymentRequestHeader extends FrameLayout {
             // Add a lock icon.
             hostName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     TintedDrawable.constructTintedDrawable(
-                            mContext, R.drawable.omnibox_https_valid, R.color.default_green),
+                            mContext, R.drawable.omnibox_https_valid_lock, R.color.default_green),
                     null,
                     null,
                     null);
