@@ -301,6 +301,15 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       .PreProfileInit(
           /*in_memory_database=*/false);
 
+  // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
+  // blocking pool, which is disabled until the CreateThreads phase of startup.
+  // TODO(crbug.com/41356264): Investigate whether metrics recording can be
+  // initialized consistently across iOS and non-iOS platforms
+  SetupMetrics();
+
+  // Now that the file thread has been started, start recording.
+  StartMetricsRecording();
+
   // Ensure that the KeyedService factories are registered.
   EnsureProfileKeyedServiceFactoriesBuilt();
   BrowserStateDependencyManager::GetInstance()
@@ -313,15 +322,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Load all Profiles.
   profile_manager->LoadProfiles();
-
-  // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
-  // blocking pool, which is disabled until the CreateThreads phase of startup.
-  // TODO(crbug.com/41356264): Investigate whether metrics recording can be
-  // initialized consistently across iOS and non-iOS platforms
-  SetupMetrics();
-
-  // Now that the file thread has been started, start recording.
-  StartMetricsRecording();
 
   // Because the CleanExitBeacon flag takes 2 restarts to take effect, register
   // a synthetic field trial when the user defaults beacon is set. Called
