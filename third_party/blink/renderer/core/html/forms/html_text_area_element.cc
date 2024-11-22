@@ -374,8 +374,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
   SetAutofillState(WebAutofillState::kNotFilled);
   UpdatePlaceholderVisibility();
 
-  if (HasDirectionAuto() ||
-      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+  if (HasDirectionAuto()) {
     // When typing in a textarea, childrenChanged is not called, so we need to
     // force the directionality check.
     CalculateAndAdjustAutoDirectionality();

@@ -623,8 +623,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 void HTMLInputElement::SubtreeHasChanged() {
   input_type_view_->SubtreeHasChanged();
 
-  if (HasDirectionAuto() ||
-      !RuntimeEnabledFeatures::TextInputNotAlwaysDirAutoEnabled()) {
+  if (HasDirectionAuto()) {
     // When typing in an input field, childrenChanged is not called, so we
     // need to force the directionality check.
     CalculateAndAdjustAutoDirectionality();

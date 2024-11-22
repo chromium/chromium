@@ -4286,10 +4286,6 @@
       status: {"Android": "stable"},
     },
     {
-      name: "TextInputNotAlwaysDirAuto",
-      status: "stable",
-    },
-    {
       name: "TextMetricsBaselines",
       status: "stable",
     },
