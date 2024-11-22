@@ -52,9 +52,12 @@ void FileSystemAccessObservationGroup::Observer::NotifyOfChanges(
 
 FileSystemAccessObservationGroup::FileSystemAccessObservationGroup(
     FileSystemAccessWatcherManager& watcher_manager,
+    blink::StorageKey storage_key,
     FileSystemAccessWatchScope scope,
     base::PassKey<FileSystemAccessWatcherManager> pass_key)
-    : scope_(std::move(scope)), watcher_manager_(watcher_manager) {
+    : storage_key_(std::move(storage_key)),
+      scope_(std::move(scope)),
+      watcher_manager_(watcher_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   watcher_manager_->AddObserver(this);
@@ -86,7 +89,7 @@ void FileSystemAccessObservationGroup::RemoveObserver(Observer* observation) {
   // destroy this when there are no more observations.
   if (observations_.empty()) {
     // `this` is destroyed after `RemoveObservationGroup` is called.
-    watcher_manager_->RemoveObservationGroup(scope_);
+    watcher_manager_->RemoveObservationGroup(storage_key_, scope_);
   }
 }
 

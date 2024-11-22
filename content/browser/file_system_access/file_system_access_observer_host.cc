@@ -197,14 +197,14 @@ void FileSystemAccessObserverHost::DidCheckItemExists(
   switch (handle.index()) {
     case 0u:
       watcher_manager()->GetDirectoryObservation(
-          std::move(url), is_recursive,
+          binding_context_.storage_key, std::move(url), is_recursive,
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));
       break;
     case 1u:
       watcher_manager()->GetFileObservation(
-          std::move(url),
+          binding_context_.storage_key, std::move(url),
           base::BindOnce(&FileSystemAccessObserverHost::GotObservation,
                          weak_factory_.GetWeakPtr(), std::move(handle),
                          std::move(callback)));

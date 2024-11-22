@@ -72,15 +72,17 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
           host_receiver);
   void RemoveObserverHost(FileSystemAccessObserverHost* host);
 
-  // Prepares to watch the given file or directory. This may create a new
-  // `FileSystemAccessChangeSource` if one does not already cover the scope of
-  // the requested observation.
+  // Prepares to watch the given file or directory for the `storage_key`. This
+  // may create a new `FileSystemAccessChangeSource` if one does not already
+  // cover the scope of the requested observation.
   //
   // `get_observation_callback` returns an `Observation`, or an appropriate
   // error if the given file or directory cannot be watched as requested.
-  void GetFileObservation(const storage::FileSystemURL& file_url,
+  void GetFileObservation(const blink::StorageKey& storage_key,
+                          const storage::FileSystemURL& file_url,
                           GetObservationCallback get_observation_callback);
-  void GetDirectoryObservation(const storage::FileSystemURL& directory_url,
+  void GetDirectoryObservation(const blink::StorageKey& storage_key,
+                               const storage::FileSystemURL& directory_url,
                                bool is_recursive,
                                GetObservationCallback get_observation_callback);
 
@@ -131,7 +133,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   void RemoveObserver(FileSystemAccessObservationGroup* observation_group);
 
   // Called by `FileSystemAccessObservationGroup` to destroy itself.
-  void RemoveObservationGroup(const FileSystemAccessWatchScope& scope);
+  void RemoveObservationGroup(const blink::StorageKey& storage_key,
+                              const FileSystemAccessWatchScope& scope);
 
   // Attempts to create a change source for `scope` if it does not exist.
   void EnsureSourceIsInitializedForScope(
@@ -145,9 +148,11 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       blink::mojom::FileSystemAccessErrorPtr result);
 
   FileSystemAccessObservationGroup& GetOrCreateObservationGroup(
+      blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope);
 
   void PrepareObservationForScope(
+      blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope,
       GetObservationCallback callback,
       blink::mojom::FileSystemAccessErrorPtr source_initialization_result);
@@ -174,7 +179,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // TODO(crbug.com/321980367): Make more efficient mappings to observers
   // and sources. For now, most actions requires iterating through lists.
 
-  std::map<FileSystemAccessWatchScope, FileSystemAccessObservationGroup>
+  std::map<std::pair<blink::StorageKey, FileSystemAccessWatchScope>,
+           FileSystemAccessObservationGroup>
       watch_scope_obs_groups_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Observations to which this instance will notify of changes within their

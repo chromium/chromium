@@ -88,6 +88,7 @@ void FileSystemAccessWatcherManager::RemoveObserverHost(
 }
 
 void FileSystemAccessWatcherManager::GetFileObservation(
+    const blink::StorageKey& storage_key,
     const storage::FileSystemURL& file_url,
     GetObservationCallback get_observation_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -96,11 +97,12 @@ void FileSystemAccessWatcherManager::GetFileObservation(
   EnsureSourceIsInitializedForScope(
       scope, base::BindOnce(
                  &FileSystemAccessWatcherManager::PrepareObservationForScope,
-                 weak_factory_.GetWeakPtr(), scope,
+                 weak_factory_.GetWeakPtr(), storage_key, scope,
                  std::move(get_observation_callback)));
 }
 
 void FileSystemAccessWatcherManager::GetDirectoryObservation(
+    const blink::StorageKey& storage_key,
     const storage::FileSystemURL& directory_url,
     bool is_recursive,
     GetObservationCallback get_observation_callback) {
@@ -112,7 +114,7 @@ void FileSystemAccessWatcherManager::GetDirectoryObservation(
   EnsureSourceIsInitializedForScope(
       scope, base::BindOnce(
                  &FileSystemAccessWatcherManager::PrepareObservationForScope,
-                 weak_factory_.GetWeakPtr(), scope,
+                 weak_factory_.GetWeakPtr(), storage_key, scope,
                  std::move(get_observation_callback)));
 }
 
@@ -299,10 +301,11 @@ void FileSystemAccessWatcherManager::RemoveObserver(
 }
 
 void FileSystemAccessWatcherManager::RemoveObservationGroup(
+    const blink::StorageKey& storage_key,
     const FileSystemAccessWatchScope& scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  watch_scope_obs_groups_map_.erase(scope);
+  watch_scope_obs_groups_map_.erase({storage_key, scope});
 }
 
 bool FileSystemAccessWatcherManager::HasSourceContainingScopeForTesting(
@@ -389,25 +392,31 @@ void FileSystemAccessWatcherManager::DidInitializeSource(
 
 FileSystemAccessObservationGroup&
 FileSystemAccessWatcherManager::GetOrCreateObservationGroup(
+    blink::StorageKey storage_key,
     FileSystemAccessWatchScope scope) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto observation_group_iter = watch_scope_obs_groups_map_.find(scope);
+  std::pair<blink::StorageKey, FileSystemAccessWatchScope> key(storage_key,
+                                                               scope);
+
+  auto observation_group_iter = watch_scope_obs_groups_map_.find(key);
   if (observation_group_iter != watch_scope_obs_groups_map_.end()) {
     return observation_group_iter->second;
   }
 
   auto [created_observation_group_iter, inserted] =
       watch_scope_obs_groups_map_.emplace(
-          std::piecewise_construct, std::forward_as_tuple(scope),
+          std::piecewise_construct, std::forward_as_tuple(key),
           std::forward_as_tuple(
-              *this, scope, base::PassKey<FileSystemAccessWatcherManager>()));
+              *this, std::move(storage_key), std::move(scope),
+              base::PassKey<FileSystemAccessWatcherManager>()));
   CHECK(inserted);
 
   return created_observation_group_iter->second;
 }
 
 void FileSystemAccessWatcherManager::PrepareObservationForScope(
+    blink::StorageKey storage_key,
     FileSystemAccessWatchScope scope,
     GetObservationCallback get_observation_callback,
     blink::mojom::FileSystemAccessErrorPtr source_initialization_result) {
@@ -421,7 +430,8 @@ void FileSystemAccessWatcherManager::PrepareObservationForScope(
   }
 
   std::move(get_observation_callback)
-      .Run(GetOrCreateObservationGroup(std::move(scope)).CreateObserver());
+      .Run(GetOrCreateObservationGroup(std::move(storage_key), std::move(scope))
+               .CreateObserver());
 }
 
 std::unique_ptr<FileSystemAccessChangeSource>

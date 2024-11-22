@@ -386,10 +386,17 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   base::expected<std::unique_ptr<Observation>,
                  blink::mojom::FileSystemAccessErrorPtr>
   ObserveFile(const storage::FileSystemURL& file_url) {
+    return ObserveFile(kTestStorageKey, file_url);
+  }
+
+  base::expected<std::unique_ptr<Observation>,
+                 blink::mojom::FileSystemAccessErrorPtr>
+  ObserveFile(const blink::StorageKey& storage_key,
+              const storage::FileSystemURL& file_url) {
     base::test::TestFuture<base::expected<
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
         get_observation_future;
-    watcher_manager().GetFileObservation(file_url,
+    watcher_manager().GetFileObservation(storage_key, file_url,
                                          get_observation_future.GetCallback());
 
     CheckObserveResult(get_observation_future);
@@ -400,11 +407,20 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   base::expected<std::unique_ptr<Observation>,
                  blink::mojom::FileSystemAccessErrorPtr>
   ObserveDirectory(const storage::FileSystemURL& dir_url, bool is_recursive) {
+    return ObserveDirectory(kTestStorageKey, dir_url, is_recursive);
+  }
+
+  base::expected<std::unique_ptr<Observation>,
+                 blink::mojom::FileSystemAccessErrorPtr>
+  ObserveDirectory(const blink::StorageKey& storage_key,
+                   const storage::FileSystemURL& dir_url,
+                   bool is_recursive) {
     base::test::TestFuture<base::expected<
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
         get_observation_future;
     watcher_manager().GetDirectoryObservation(
-        dir_url, is_recursive, get_observation_future.GetCallback());
+        storage_key, dir_url, is_recursive,
+        get_observation_future.GetCallback());
 
     CheckObserveResult(get_observation_future);
 
@@ -473,7 +489,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>
         get_observation_future;
     watcher_manager().GetDirectoryObservation(
-        dir_url,
+        kTestStorageKey, dir_url,
         /*is_recursive=*/false, get_observation_future.GetCallback());
     ASSERT_TRUE(get_observation_future.Get().has_value());
 
@@ -1206,7 +1222,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest,
-       ObservationGroupsAreSharedByAllObservationsWithSameScope) {
+       ObservationGroupsAreSharedByAllObservationsWithSameStorageKeyAndScope) {
+  blink::StorageKey foo_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://foo.com/");
+  blink::StorageKey bar_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://bar.com/");
+
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
   auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
   FakeChangeSource file_source(
@@ -1222,28 +1243,43 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       file_system_context_);
   watcher_manager().RegisterSource(&dir_source);
 
-  std::unique_ptr<Observation> file_observation1 =
-      std::move(ObserveFile(file_url)).value();
-  FileSystemAccessObservationGroup& file_observation1_group =
-      file_observation1->GetObservationGroupForTesting();
+  std::unique_ptr<Observation> foo_file_observation1 =
+      std::move(ObserveFile(foo_storage_key, file_url)).value();
+  FileSystemAccessObservationGroup& foo_file_observation1_group =
+      foo_file_observation1->GetObservationGroupForTesting();
 
-  std::unique_ptr<Observation> file_observation2 =
-      std::move(ObserveFile(file_url)).value();
-  FileSystemAccessObservationGroup& file_observation2_group =
-      file_observation2->GetObservationGroupForTesting();
+  std::unique_ptr<Observation> foo_file_observation2 =
+      std::move(ObserveFile(foo_storage_key, file_url)).value();
+  FileSystemAccessObservationGroup& foo_file_observation2_group =
+      foo_file_observation2->GetObservationGroupForTesting();
 
-  std::unique_ptr<Observation> dir_observation =
-      std::move(ObserveDirectory(dir_url, /*is_recursive=*/false)).value();
-  FileSystemAccessObservationGroup& dir_observation_group =
-      dir_observation->GetObservationGroupForTesting();
+  std::unique_ptr<Observation> bar_file_observation =
+      std::move(ObserveFile(bar_storage_key, file_url)).value();
+  FileSystemAccessObservationGroup& bar_file_observation_group =
+      bar_file_observation->GetObservationGroupForTesting();
 
-  // Both file observations have the same scope, so they should be a part of the
-  // observation group.
-  EXPECT_EQ(&file_observation1_group, &file_observation2_group);
+  std::unique_ptr<Observation> foo_dir_observation =
+      std::move(
+          ObserveDirectory(foo_storage_key, dir_url, /*is_recursive=*/false))
+          .value();
+  FileSystemAccessObservationGroup& foo_dir_observation_group =
+      foo_dir_observation->GetObservationGroupForTesting();
 
-  // The file and dir observations have different scopes, so they should be in
-  // different observation groups.
-  EXPECT_NE(&dir_observation_group, &file_observation1_group);
+  // Both foo file observations have the same storage_key and scope, so they
+  // should be a part of the observation group.
+  EXPECT_EQ(&foo_file_observation1_group, &foo_file_observation2_group);
+
+  // The bar and foo file observations have the same scope but different storage
+  // keys, so they should be in different observation groups.
+  EXPECT_NE(&foo_file_observation1_group, &bar_file_observation_group);
+
+  // The foo file and dir have the same storage key but different scopes, so
+  // they should be in different observation groups.
+  EXPECT_NE(&foo_dir_observation_group, &foo_file_observation1_group);
+
+  // The bar file and foo dir neither have the same storage key or scope, so
+  // they should be in different observation groups.
+  EXPECT_NE(&foo_dir_observation_group, &bar_file_observation_group);
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {

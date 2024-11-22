@@ -18,15 +18,11 @@ namespace content {
 class FileSystemAccessWatcherManager;
 
 // Represents a group of observations that all have the same
-// `FileSystemAccessChangeSource`. This is created and maintained by the
-// `FileSystemAccessWatcherManager`.
+// `FileSystemAccessChangeSource` and `base::StorageKey`. This is created and
+// maintained by the `FileSystemAccessWatcherManager`.
 //
 // Instances of this class must be accessed exclusively on the UI thread. Owned
-// by the `FileSystemAccessManagerImpl`.
-//
-// TODO(crbug.com/338457523): All observations in the group should also have the
-// same storage key. And this class should also be associated with an
-// observation quota manager for the storage key.
+// by the `FileSystemAccessWatcherManager`.
 //
 // TODO(crbug.com/376134535): Once the watcher manager layer is removed, the
 // base class should be `FileSystemAccessChangeSource::RawChangeObserver` rather
@@ -113,6 +109,7 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
 
   explicit FileSystemAccessObservationGroup(
       FileSystemAccessWatcherManager& watcher_manager,
+      blink::StorageKey storage_key,
       FileSystemAccessWatchScope scope,
       base::PassKey<FileSystemAccessWatcherManager> pass_key);
   ~FileSystemAccessObservationGroup() override;
@@ -150,6 +147,7 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const blink::StorageKey storage_key_;
   const FileSystemAccessWatchScope scope_;
 
   // Observations to which this instance will notify of changes within their
