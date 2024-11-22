@@ -11,7 +11,8 @@ import PRESUBMIT
 
 file_dir_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(file_dir_path, '..', '..', '..', '..'))
-from PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
+from PRESUBMIT_test_mocks import MockFile, MockAffectedFile
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
 class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
     # Test that no warning is raised when the Android file is also modified.
@@ -34,7 +35,7 @@ class AccessibilityEventsTestsAreIncludedForAndroidTest(unittest.TestCase):
             0, len(msgs),
             'Expected %d messages, found %d: %s' % (0, len(msgs), msgs))
 
-    # Test that Android change is not required when no html file is added/removed.
+    # Test Android change is not required when no html file is added/removed.
     def testIgnoreNonHtmlFiles(self):
         mock_input_api = MockInputApi()
 
@@ -167,7 +168,8 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
             1, len(msgs),
             'Expected %d messages, found %d: %s' % (1, len(msgs), msgs))
 
-    # Test that Android change is not required when no platform expectations files are changed.
+    # Test that Android change is not required when no platform expectations
+    # files are changed.
     def testAndroidChangNotMissing(self):
         mock_input_api = MockInputApi()
 
@@ -198,7 +200,8 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
             0, len(msgs),
             'Expected %d messages, found %d: %s' % (0, len(msgs), msgs))
 
-    # Test that Android change is not required when no blink expectations files are changed.
+    # Test that Android change is not required when no blink expectations
+    # files are changed.
     def testAndroidChangNotMissing(self):
         mock_input_api = MockInputApi()
 
@@ -261,6 +264,61 @@ class AccessibilityTreeTestsAreIncludedForAndroidTest(unittest.TestCase):
             0, len(msgs),
             'Expected %d messages, found %d: %s' % (0, len(msgs), msgs))
 
+
+class CheckAccessibilityTestExpectationFilenamesTest(unittest.TestCase):
+
+    # Test that files with the correct naming are not flagged,
+    # nor are modified files.
+    def testValidFilenames(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/foo-expected-android-external.txt", []),
+            MockFile("content/test/data/accessibility/event/bar-expected-android.txt", []),
+            MockFile("content/test/data/accessibility/html/baz-expected-android-assist-data.txt", []),
+            MockFile("content/test/data/accessibility/accname/qux-expected-auralinux.txt", []),
+            MockFile("content/test/data/accessibility/css/foobar-expected-mac.txt", []),
+            MockFile("content/test/data/accessibility/tree/barbaz-expected-uia-win.txt", []),
+            MockFile("content/test/data/accessibility/table/quxfoo-expected-win.txt", []),
+
+             # Existing files don't require updating, so they are not checked.
+            MockFile("content/test/data/accessibility/aria/existing_file_bad_name.txt", [], action='M'),
+        ]
+        results = PRESUBMIT.CheckAccessibilityTestExpectationFilenames(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test that newly added files with incorrect naming are flagged,
+    # but only text files.
+    def testInvalidFilenames(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/accessibility/aria/foo-expected-android-foo.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/event/bar-expected-ios.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/html/baz-actual-android.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/event/invalid.txt", [], action='A'),
+            MockFile("content/test/data/accessibility/event/invalid-expected-win.html", [], action='A'),
+            MockFile("content/test/data/accessibility/event/invalid-actual-win.html", [], action='A'),
+        ]
+        results = PRESUBMIT.CheckAccessibilityTestExpectationFilenames(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(4, len(results[0].items))
+        self.assertIn("foo-expected-android-foo.txt", results[0].items[0])
+        self.assertIn("bar-expected-ios.txt", results[0].items[1])
+        self.assertIn("baz-actual-android.txt", results[0].items[2])
+        self.assertIn("invalid.txt", results[0].items[3])
+
+    # Test files outside the //content/test/data/accessibility directory
+    # are not relevant.
+    def testNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile("content/test/data/foo.txt", []),
+            MockFile("foo/bar.txt", []),
+        ]
+        results = PRESUBMIT.CheckAccessibilityTestExpectationFilenames(
+            mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
 
 if __name__ == '__main__':
     unittest.main()

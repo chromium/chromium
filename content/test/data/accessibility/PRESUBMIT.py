@@ -152,3 +152,49 @@ def CheckAccessibilityTreeTestsAreIncludedForAndroid(input_api, output_api):
         return []
 
     return [output_api.PresubmitPromptWarning(message)]
+
+
+def CheckAccessibilityTestExpectationFilenames(input_api, output_api):
+    """Checks that commits that include a newly added file use the correct
+    naming convention for expectation files to prevent shadow failures."""
+
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_check=[r"content/test/data/accessibility/.+\.txt"],
+        )
+
+    valid_suffixes = [
+        "-expected-android-external.txt",
+        "-expected-android.txt",
+        "-expected-android-assist-data.txt",
+        "-expected-auralinux.txt",
+        "-expected-mac.txt",
+        "-expected-uia-win.txt",
+        "-expected-win.txt",
+    ]
+    problems = []
+
+    for f in input_api.AffectedFiles(file_filter=FileFilter):
+      if f.Action() != 'A':
+        continue
+      if not any(f.LocalPath().endswith(suffix) for suffix in valid_suffixes):
+        problems.append(f.LocalPath())
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                "Accessibility platform expectation filenames should follow the"
+                "\npattern [name]-expected-[platform].txt. Accepted formats"
+                " are:\n  [name]-expected-android.txt"
+                "\n  [name]-expected-android-assist-data.txt"
+                "\n  [name]-expected-android-external.txt"
+                "\n  [name]-expected-auralinux.txt"
+                "\n  [name]-expected-mac.txt"
+                "\n  [name]-expected-uia-win.txt"
+                "\n  [name]-expected-win.txt"
+                "\nInvalid filenames:\n",
+                problems,
+            )
+        ]
+    return []
