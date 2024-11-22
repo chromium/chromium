@@ -6,8 +6,10 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/data_sharing/public/data_sharing_service.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_ui_delegate_ios.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -16,8 +18,15 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 
 TestShareKitService::TestShareKitService(
+    data_sharing::DataSharingService* data_sharing_service,
     tab_groups::TabGroupSyncService* sync_service)
-    : sync_service_(sync_service) {}
+    : data_sharing_service_(data_sharing_service), sync_service_(sync_service) {
+  if (data_sharing_service_) {
+    std::unique_ptr<data_sharing::DataSharingUIDelegateIOS> ui_delegate =
+        std::make_unique<data_sharing::DataSharingUIDelegateIOS>(this);
+    data_sharing_service_->SetUIDelegate(std::move(ui_delegate));
+  }
+}
 
 TestShareKitService::~TestShareKitService() {}
 
@@ -105,6 +114,10 @@ id<ShareKitAvatarPrimitive> TestShareKitService::AvatarImage(
     ShareKitAvatarConfiguration* config) {
   // TODO(crbug.com/375366568): add fake implementation.
   return nil;
+}
+
+void TestShareKitService::Shutdown() {
+  data_sharing_service_->SetUIDelegate(nullptr);
 }
 
 void TestShareKitService::SetTabGroupCollabID(

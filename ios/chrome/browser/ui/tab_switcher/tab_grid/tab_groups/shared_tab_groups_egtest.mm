@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/feature_list.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using chrome_test_util::CreateTabGroupAtIndex;
@@ -39,6 +41,27 @@ id<GREYMatcher> FakeShareFlowView() {
 // Matcher for the Manage flow view.
 id<GREYMatcher> FakeManageFlowView() {
   return grey_accessibilityID(kFakeManageFlowIdentifier);
+}
+
+// Matcher for the Join flow view.
+id<GREYMatcher> FakeJoinFlowView() {
+  return grey_accessibilityID(kFakeJoinFlowIdentifier);
+}
+
+// Returns the completely configured AppLaunchConfiguration (i.e. setting all
+// the underlying feature dependencies), with the Shared Tab Groups flavor as a
+// parameter.
+AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
+    const base::Feature& shared_tab_group_flavor) {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(kTabGroupsIPad);
+  config.features_enabled.push_back(kModernTabStrip);
+  config.features_enabled.push_back(kTabGroupSync);
+  config.features_enabled.push_back(shared_tab_group_flavor);
+  // Add the flag to use FakeTabGroupSyncService.
+  config.additional_args.push_back(
+      "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
+  return config;
 }
 
 // Shares the group at `index`.
@@ -67,16 +90,8 @@ void ShareGroupAtIndex(int index) {
 @implementation SharedTabGroupsTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
-  config.features_enabled.push_back(kTabGroupSync);
-  config.features_enabled.push_back(
+  return SharedTabGroupAppLaunchConfiguration(
       data_sharing::features::kDataSharingFeature);
-  // Add the flag to use FakeTabGroupSyncService.
-  config.additional_args.push_back(
-      "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
-  return config;
 }
 
 - (void)setUp {
@@ -214,6 +229,27 @@ void ShareGroupAtIndex(int index) {
       assertWithMatcher:grey_notVisible()];
 }
 
+// Checks that the user with JoinOnly can trigger the Join flow.
+- (void)testJoinGroup {
+  GURL joinGroupURL =
+      GURL("https://www.chromium.org/data_sharing/"
+           "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
+           "token_blob=CggHBicxA_slvxIWR2RvcXIzclJGR1E5eXQ0RUdpN2M3Zw");
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  // Verify that it opened the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the Join flow.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end
 
 // Test Shared Tab Groups feature (with group joining access only.).
@@ -223,13 +259,8 @@ void ShareGroupAtIndex(int index) {
 @implementation SharedTabGroupsJoinOnlyTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
-  config.features_enabled.push_back(kTabGroupSync);
-  config.features_enabled.push_back(
+  return SharedTabGroupAppLaunchConfiguration(
       data_sharing::features::kDataSharingJoinOnly);
-  return config;
 }
 
 // Checks that the user with JoinOnly rights can't start the Share flow from
@@ -250,6 +281,27 @@ void ShareGroupAtIndex(int index) {
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:ManageGroupButton()]
       assertWithMatcher:grey_nil()];
+}
+
+// Checks that the user with JoinOnly can trigger the Join flow.
+- (void)testJoinGroup {
+  GURL joinGroupURL =
+      GURL("https://www.chromium.org/data_sharing/"
+           "?group_id=resources%2F3bebf45000000000%2Fe%2F50cc3ac28e000000&"
+           "token_blob=CggHBicxA_slvxIWR2RvcXIzclJGR1E5eXQ0RUdpN2M3Zw");
+  [ChromeEarlGrey loadURL:joinGroupURL waitForCompletion:NO];
+
+  // Verify that it opened the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Close the Join flow.
+  [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
+      performAction:grey_tap()];
+
+  // Verify that it closed the Join flow.
+  [[EarlGrey selectElementWithMatcher:FakeJoinFlowView()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
