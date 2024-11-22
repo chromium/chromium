@@ -359,21 +359,21 @@ bool HasSingularTransform(int transform_tree_index, const TransformTree& tree) {
 
 int LowestCommonAncestor(int clip_id_1,
                          int clip_id_2,
-                         const ClipTree* clip_tree) {
-  const ClipNode* clip_node_1 = clip_tree->Node(clip_id_1);
-  const ClipNode* clip_node_2 = clip_tree->Node(clip_id_2);
+                         const ClipTree& clip_tree) {
+  const ClipNode* clip_node_1 = clip_tree.Node(clip_id_1);
+  const ClipNode* clip_node_2 = clip_tree.Node(clip_id_2);
   while (clip_node_1->id != clip_node_2->id) {
-    if (clip_node_1->id < clip_node_2->id)
-      clip_node_2 = clip_tree->parent(clip_node_2);
-    else
-      clip_node_1 = clip_tree->parent(clip_node_1);
+    if (clip_node_1->id < clip_node_2->id) {
+      clip_node_2 = clip_tree.parent(clip_node_2);
+    } else {
+      clip_node_1 = clip_tree.parent(clip_node_1);
+    }
   }
   return clip_node_1->id;
 }
 
 void UpdateRenderSurfaceCommonAncestorClip(LayerImpl* layer,
-                                           const ClipTree* clip_tree,
-                                           EffectTree* effect_tree) {
+                                           const ClipTree& clip_tree) {
   RenderSurfaceImpl* render_surface = layer->render_target();
   CHECK(render_surface);
   int clip_id = layer->clip_tree_index();
@@ -614,8 +614,7 @@ gfx::Transform ScreenSpaceTransformInternal(LayerType* layer,
   return xform;
 }
 
-void SetSurfaceClipRect(const ClipNode* parent_clip_node,
-                        PropertyTrees* property_trees,
+void SetSurfaceClipRect(PropertyTrees* property_trees,
                         RenderSurfaceImpl* render_surface) {
   if (!render_surface->is_clipped()) {
     render_surface->SetClipRect(gfx::Rect());
@@ -909,9 +908,7 @@ void ComputeSurfaceDrawProperties(PropertyTrees* property_trees,
           render_surface->TransformTreeIndex(),
           render_surface->EffectTreeIndex()));
 
-  const ClipNode* clip_node =
-      property_trees->clip_tree().Node(render_surface->ClipTreeIndex());
-  SetSurfaceClipRect(clip_node, property_trees, render_surface);
+  SetSurfaceClipRect(property_trees, render_surface);
 }
 
 void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
@@ -1358,9 +1355,7 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
   for (LayerImpl* layer : *layer_list) {
     layer->draw_properties().opacity =
         LayerDrawOpacity(layer, property_trees->effect_tree());
-    UpdateRenderSurfaceCommonAncestorClip(
-        layer, &property_trees->clip_tree(),
-        &property_trees->effect_tree_mutable());
+    UpdateRenderSurfaceCommonAncestorClip(layer, property_trees->clip_tree());
   }
 
   // Compute clips and visible rects
