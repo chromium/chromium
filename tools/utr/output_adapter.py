@@ -39,6 +39,8 @@ class LegacyOutputAdapter:
   ANNOTATOR_PREFIX_SUFIX = '@@@'
   TRIGGER_STEP_PREFIX = 'test_pre_run.[trigger] '
   TRIGGER_LINK_TEXT = '@@@STEP_LINK@task UI:'
+  # Special sub-log names added by the UTR recipe to surface to users.
+  UTR_LOG_NAME = 'utr_log'
 
   def __init__(self):
     self._trigger_link_re = re.compile(r'.+@(https://.+)@@@$')
@@ -111,13 +113,17 @@ class LegacyOutputAdapter:
     logging.log(log_level, '\n[cyan]Running: %s[/]', self._current_step_name)
 
   def _StdoutProcessLine(self, line):
-    if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
-      # Pass through any non-engine text
-      is_urlish = re.match(r'^http[s]?://\S+$', line)
-      if is_urlish:
-        logging.log(self._current_log_level, line)
-      else:
-        basic_logger.log(self._current_log_level, line)
+    # Pass through any non-engine or utr-log text.
+    if line.startswith(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):
+      # '-3' corresponds to the trailing @@@ on every sub-log line.
+      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):-3]
+    if line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
+      return
+    is_urlish = re.match(r'^http[s]?://\S+$', line)
+    if is_urlish:
+      logging.log(self._current_log_level, line)
+    else:
+      basic_logger.log(self._current_log_level, line)
 
   def _StepNameProcessLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):

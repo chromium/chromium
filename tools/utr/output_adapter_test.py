@@ -59,13 +59,17 @@ class LegacyOutputAdapterTests(unittest.TestCase):
 @@@STEP_LOG_END@run_recipe@@@
 @@@STEP_LOG_END@memory_profile@@@
 fake std_out text
+@@@STEP_LOG_LINE@utr_log@utr-specific log line@@@
+@@@STEP_LOG_END@utr_log@@@
 @@@STEP_CLOSED@@@"""
         for line in fake_output.split('\n'):
           adapter.ProcessLine(line)
         self.assertEqual(root_log.output,
                          ['INFO:root:\n[cyan]Running: fake_step[/]'])
-        self.assertEqual(info_log.output,
-                         ['INFO:basic_logger:fake std_out text'])
+        self.assertEqual(info_log.output, [
+            'INFO:basic_logger:fake std_out text',
+            'INFO:basic_logger:utr-specific log line'
+        ])
 
   def testStepNameProcessor(self):
     adapter = output_adapter.LegacyOutputAdapter()
