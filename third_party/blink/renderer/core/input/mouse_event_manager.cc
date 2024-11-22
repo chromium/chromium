@@ -535,18 +535,6 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kFocus);
 
   Element* element = element_under_mouse_;
-
-  if (!RuntimeEnabledFeatures::LabelAndDelegatesFocusNewHandlingEnabled()) {
-    // When clicking on a <label> for a form associated custom element with
-    // delegatesFocus, we should focus the custom element's focus delegate.
-    if (auto* label = DynamicTo<HTMLLabelElement>(element)) {
-      auto* control = label->Control();
-      if (control && control->IsShadowHostWithDelegatesFocus()) {
-        element = control;
-      }
-    }
-  }
-
   while (element) {
     if (element->IsMouseFocusable() && element->IsFocusedElementInDocument()) {
       return WebInputEventResult::kNotHandled;

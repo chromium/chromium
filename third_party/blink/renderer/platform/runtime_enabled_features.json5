@@ -2537,11 +2537,6 @@
       origin_trial_allows_third_party: true,
     },
     {
-      // This is a killswitch for a bug fix that is shipping in M128.
-      name: "LabelAndDelegatesFocusNewHandling",
-      status: "stable",
-    },
-    {
       name: "LangAttributeAwareFormControlUI",
       settable_from_internals: true,
     },
