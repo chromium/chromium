@@ -415,7 +415,7 @@ gn_args.config(
         "use_partition_alloc": False,
         "enable_reporting": True,
         "use_hashed_jni_names": True,
-        "default_min_sdk_version": 21,
+        "default_min_sdk_version": 23,
         "enable_base_tracing": False,
         "clang_use_default_sample_profile": False,
         "media_use_ffmpeg": False,
