@@ -1719,6 +1719,7 @@ if (is_android) {
     if (enable_desktop_android_extensions) {
       sources += [
         "../browser/extensions/api/alarms/alarms_apitest.cc",
+        "../browser/extensions/api/browsing_data/browsing_data_test.cc",
         "../browser/extensions/api/i18n/i18n_apitest.cc",
         "../browser/extensions/api/idle/idle_apitest.cc",
         "../browser/extensions/api/notifications/notifications_apitest.cc",
