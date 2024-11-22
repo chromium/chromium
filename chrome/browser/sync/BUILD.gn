@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
@@ -117,8 +118,6 @@ source_set("sync") {
     "//components/spellcheck:buildflags",
     "//components/spellcheck/browser",
     "//components/strings:components_strings_grit",
-    "//components/supervised_user/core/browser",
-    "//components/supervised_user/core/common",
     "//components/sync_bookmarks",
     "//components/sync_user_events",
     "//components/user_manager",
@@ -133,6 +132,13 @@ source_set("sync") {
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/web_applications" ]
+  }
+
+  if (enable_supervised_users) {
+    deps += [
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/common",
+    ]
   }
 
   if (is_android) {
