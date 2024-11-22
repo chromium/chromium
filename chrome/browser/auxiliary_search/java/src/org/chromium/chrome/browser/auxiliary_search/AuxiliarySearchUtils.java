@@ -53,6 +53,13 @@ public class AuxiliarySearchUtils {
                     SCHEDULE_DELAY_TIME_MS_PARAM,
                     AuxiliarySearchProvider.DEFAULT_SCHEDULE_DELAY_TIME_MS);
 
+    @VisibleForTesting static final String SKIP_DEVICE_CHECK_PARAM = "skip_device_check";
+    public static final BooleanCachedFieldTrialParameter SKIP_DEVICE_CHECK =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
+                    SKIP_DEVICE_CHECK_PARAM,
+                    false);
+
     /** Convert a Bitmap instance to a byte array. */
     @Nullable
     public static byte[] bitmapToBytes(Bitmap bitmap) {

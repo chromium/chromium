@@ -100,6 +100,7 @@ public class ChromeCachedFlags {
                         AuthTabVerifier.VERIFICATION_TIMEOUT_MS,
                         AuxiliarySearchUtils.CONTENT_TTL_HOURS,
                         AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS,
+                        AuxiliarySearchUtils.SKIP_DEVICE_CHECK,
                         AuxiliarySearchUtils.USE_LARGE_FAVICON,
                         AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER,
                         ChimeFeatures.ALWAYS_REGISTER,
