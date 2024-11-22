@@ -8,6 +8,7 @@
 #import "base/containers/contains.h"
 #import "base/json/values_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/threading/thread_restrictions.h"
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
@@ -1149,6 +1150,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
+  // This function is not allowed to block.
+  base::ScopedDisallowBlocking disallow_blocking;
 
   // Added 01/2024.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
@@ -1197,8 +1200,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 }
 
 // This method should be periodically pruned of year+ old migrations.
-void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
-                                 PrefService* prefs) {
+void MigrateObsoleteProfilePrefs(PrefService* prefs) {
+  // This function is not allowed to block.
+  base::ScopedDisallowBlocking disallow_blocking;
+
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
 
@@ -1389,12 +1394,6 @@ void MigrateObsoleteProfilePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kIncognitoInterstitialEnabled, prefs);
-
-  // Updated 09/2024. DO NOT REMOVE after the usual year!
-  // TODO(crbug.com/369296278): Remove ~one year after full launch of
-  // kForceMigrateSyncingUserToSignedIn. Also remove the
-  // signinAndEnableLegacySyncFeature test helper and corresponding tests.
-  browser_sync::MaybeMigrateSyncingUserToSignedIn(state_path, prefs);
 
   // Added 09/2024.
   MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(

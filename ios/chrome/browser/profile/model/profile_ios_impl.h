@@ -61,6 +61,12 @@ class ProfileIOSImpl final : public ProfileIOS {
  private:
   friend class ProfileIOS;
 
+  // Store information about the profile initialisation.
+  struct InitInfo {
+    CreationMode creation_mode;
+    bool is_new_profile;
+  };
+
   ProfileIOSImpl(const base::FilePath& state_path,
                  std::string_view profile_name,
                  scoped_refptr<base::SequencedTaskRunner> io_task_runner,
@@ -70,11 +76,10 @@ class ProfileIOSImpl final : public ProfileIOS {
   // Sets the OffTheRecordProfileIOS.
   void SetOffTheRecordProfileIOS(std::unique_ptr<ProfileIOS> otr_state);
 
-  // Called when the PrefService is done loading (may be called synchronously
-  // if the creation is done with `CreationMode::kSynchronous`).
-  void OnPrefsLoaded(CreationMode creation_mode,
-                     bool is_new_profile,
-                     bool success);
+  // Corresponds to the successives stages of the preferences initialisation.
+  void PrefsInitStage1(InitInfo init_info, bool success);
+  void PrefsInitStage2(InitInfo init_info, bool success);
+  void PrefsInitStage3(InitInfo init_info, bool success);
 
   // The ProfileIOS::Delegate that will be notified of the progress
   // of the initialisation if not null.
