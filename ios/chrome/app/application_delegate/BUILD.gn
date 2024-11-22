@@ -195,6 +195,7 @@ source_set("url_opener") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//url",
   ]
