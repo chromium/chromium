@@ -629,11 +629,6 @@ BASE_FEATURE(kWebUIJSErrorReportingExtended,
             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Flag guard for fix for crbug.com/1504324.
-BASE_FEATURE(kWindowOpenFileSelectFix,
-             "WindowOpenFileSelectFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Flag guard for fix for crbug.com/40942531.
 BASE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding,
              "LimitCrossOriginNonActivatedPaintHolding",

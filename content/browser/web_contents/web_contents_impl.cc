@@ -5150,8 +5150,7 @@ void WebContentsImpl::ShowCreatedWindow(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kWindowOpenFileSelectFix) &&
-      active_file_chooser_) {
+  if (active_file_chooser_) {
     // Do not allow opening a new window or tab while a file select is active
     // file chooser to avoid user confusion over which tab triggered the file
     // chooser.
