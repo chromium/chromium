@@ -157,4 +157,11 @@ TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
   EXPECT_EQ(0, notification_count_);
 }
 
+TEST_F(LowDiskNotificationTest, DemoModeSkipNotification) {
+  GetCrosSettingsHelper()->InstallAttributes()->SetDemoMode();
+  SetNotificationThrottlingInterval(-1);
+  low_disk_notification_->LowDiskSpace(high_message_);
+  EXPECT_EQ(0, notification_count_);
+}
+
 }  // namespace ash

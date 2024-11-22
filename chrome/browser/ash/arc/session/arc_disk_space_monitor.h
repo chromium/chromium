@@ -61,6 +61,10 @@ class ArcDiskSpaceMonitor : public ArcSessionManagerObserver {
   ArcDiskSpaceMonitor& operator=(const ArcDiskSpaceMonitor&) = delete;
 
   bool IsTimerRunningForTesting() { return timer_.IsRunning(); }
+  void SetOnGetFreeDiskSpaceCallbackForTesting(
+      base::OnceCallback<void()> callback) {
+    on_get_free_disk_space_callback_for_testing_ = std::move(callback);
+  }
   base::TimeDelta GetTimerCurrentDelayForTesting() {
     return timer_.GetCurrentDelay();
   }
@@ -90,6 +94,8 @@ class ArcDiskSpaceMonitor : public ArcSessionManagerObserver {
 
   // Used for periodically calling CheckDiskSpace().
   base::OneShotTimer timer_;
+
+  base::OnceCallback<void()> on_get_free_disk_space_callback_for_testing_;
 
   // WeakPtrFactory to use callbacks.
   base::WeakPtrFactory<ArcDiskSpaceMonitor> weak_ptr_factory_{this};
