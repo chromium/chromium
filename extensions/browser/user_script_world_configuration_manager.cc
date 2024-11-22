@@ -55,9 +55,9 @@ class UserScriptWorldConfigurationManagerFactory
     return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
         context);
   }
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
-    return new UserScriptWorldConfigurationManager(context);
+    return std::make_unique<UserScriptWorldConfigurationManager>(context);
   }
 };
 
