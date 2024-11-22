@@ -25,6 +25,15 @@ ProfileAttributesStorageIOS::ProfileAttributesStorageIOS(PrefService* prefs)
     sorted_keys_.push_back(pair.first);
   }
   base::ranges::sort(sorted_keys_);
+
+  // If the personal profile name is set, ensure a profile entry with that name
+  // actually exists. Note: Can't use `GetPersonalProfileName()` since that
+  // DCHECKs that the entry exists.
+  const std::string& personal_profile =
+      prefs_->GetString(prefs::kPersonalProfileName);
+  if (!personal_profile.empty() && !HasProfileWithName(personal_profile)) {
+    AddProfile(personal_profile);
+  }
 }
 
 ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
@@ -46,6 +55,9 @@ void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
 }
 
 void ProfileAttributesStorageIOS::RemoveProfile(std::string_view name) {
+  // The personal profile must always exist, and thus mustn't be deleted.
+  DCHECK_NE(name, GetPersonalProfileName());
+
   // Remove the profile name from the sorted dictionary.
   auto iterator = base::ranges::find(sorted_keys_, name);
   CHECK(iterator != sorted_keys_.end() && *iterator == name);
@@ -135,11 +147,15 @@ const std::string& ProfileAttributesStorageIOS::GetProfileNameForSceneID(
 }
 
 const std::string& ProfileAttributesStorageIOS::GetPersonalProfileName() const {
-  return prefs_->GetString(prefs::kPersonalProfileName);
+  const std::string& name = prefs_->GetString(prefs::kPersonalProfileName);
+  DCHECK(name.empty() || HasProfileWithName(name));
+  return name;
 }
 
 void ProfileAttributesStorageIOS::SetPersonalProfileName(
     std::string_view profile_name) {
+  DCHECK(!profile_name.empty());
+  DCHECK(HasProfileWithName(profile_name));
   prefs_->SetString(prefs::kPersonalProfileName, profile_name);
 }
 

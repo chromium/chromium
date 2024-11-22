@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #include "testing/platform_test.h"
 
@@ -210,5 +211,54 @@ TEST_F(ProfileAttributesStorageIOSTest, GetAttributesForProfileWithName) {
     EXPECT_EQ(attr.GetUserName(), "");
     EXPECT_EQ(attr.IsAuthenticated(), false);
     EXPECT_EQ(attr.GetAttachedGaiaIds().size(), 0ul);
+  }
+}
+
+TEST_F(ProfileAttributesStorageIOSTest, FixInvalidPersonalProfileName) {
+  {
+    // Setup: Register some profiles.
+    ProfileAttributesStorageIOS storage(pref_service());
+    for (const TestAccount& account : kTestAccounts) {
+      storage.AddProfile(account.name);
+    }
+    ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+    // Set a personal profile name.
+    storage.SetPersonalProfileName(kTestAccounts[0].name);
+  }
+
+  // For some reason, the prefs get corrupted, and the personal profile name
+  // now points to a profile that doesn't actually exist. (Either the personal
+  // profile name pref itself got corrupted somehow, or the profile entry got
+  // removed.)
+  const std::string kOtherProfileName = "other";
+  pref_service()->SetString(prefs::kPersonalProfileName, kOtherProfileName);
+
+  {
+    ProfileAttributesStorageIOS storage(pref_service());
+
+    EXPECT_EQ(storage.GetPersonalProfileName(), kOtherProfileName);
+    EXPECT_TRUE(storage.HasProfileWithName(kOtherProfileName));
+    EXPECT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts) + 1);
+  }
+}
+
+TEST_F(ProfileAttributesStorageIOSTest, AllowEmptyInvalidPersonalProfileName) {
+  {
+    // Setup: Register some profiles.
+    ProfileAttributesStorageIOS storage(pref_service());
+    for (const TestAccount& account : kTestAccounts) {
+      storage.AddProfile(account.name);
+    }
+    ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+    // The personal profile name wasn't set yet.
+    ASSERT_TRUE(storage.GetPersonalProfileName().empty());
+  }
+
+  {
+    ProfileAttributesStorageIOS storage(pref_service());
+    ASSERT_EQ(storage.GetNumberOfProfiles(), std::size(kTestAccounts));
+
+    // The personal profile name should still be empty.
+    EXPECT_TRUE(storage.GetPersonalProfileName().empty());
   }
 }

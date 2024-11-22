@@ -666,6 +666,68 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfile) {
   EXPECT_EQ(profile, profile_manager().CreateProfile(kProfileName1));
 }
 
+TEST_F(ProfileManagerIOSImplTest, AssignPersonalProfileName_Default) {
+  ASSERT_TRUE(GetLoadedProfileNames().empty());
+  ASSERT_TRUE(profile_attributes_storage().GetPersonalProfileName().empty());
+
+  // Load the Profiles, this will implicitly add `kIOSChromeInitialProfile` (aka
+  // "Default") as a Profile, and should populate the personal profile name.
+  profile_manager().LoadProfiles();
+
+  // The `kIOSChromeInitialProfile` should've been marked as the personal
+  // profile.
+  EXPECT_EQ(profile_attributes_storage().GetPersonalProfileName(),
+            kIOSChromeInitialProfile);
+}
+
+TEST_F(ProfileManagerIOSImplTest, AssignPersonalProfileName_NonDefault) {
+  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
+
+  ASSERT_TRUE(GetLoadedProfileNames().empty());
+  ASSERT_TRUE(profile_attributes_storage().GetPersonalProfileName().empty());
+
+  // Mark a non-"Default" profile as last-used.
+  profile_attributes_storage().AddProfile(kProfileName1);
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
+  local_state->SetList(prefs::kLastActiveProfiles,
+                       base::Value::List().Append(kProfileName1));
+
+  // Load the Profiles. This should also populate the personal profile name.
+  profile_manager().LoadProfiles();
+
+  // The `kProfileName1` profile should've been marked as the personal profile.
+  EXPECT_EQ(profile_attributes_storage().GetPersonalProfileName(),
+            kProfileName1);
+}
+
+TEST_F(ProfileManagerIOSImplTest, AssignPersonalProfileName_KeepValidValue) {
+  ASSERT_NE(kProfileName1, kIOSChromeInitialProfile);
+
+  ASSERT_TRUE(GetLoadedProfileNames().empty());
+  ASSERT_TRUE(profile_attributes_storage().GetPersonalProfileName().empty());
+
+  // The "Default" profile is the personal profile, but another profile was
+  // last used.
+  profile_attributes_storage().AddProfile(kIOSChromeInitialProfile);
+  profile_attributes_storage().SetPersonalProfileName(kIOSChromeInitialProfile);
+
+  profile_attributes_storage().AddProfile(kProfileName1);
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetString(prefs::kLastUsedProfile, kProfileName1);
+  local_state->SetList(prefs::kLastActiveProfiles,
+                       base::Value::List()
+                           .Append(kProfileName1)
+                           .Append(kIOSChromeInitialProfile));
+
+  // Load the Profiles.
+  profile_manager().LoadProfiles();
+
+  // The personal profile name should be unchanged.
+  EXPECT_EQ(profile_attributes_storage().GetPersonalProfileName(),
+            kIOSChromeInitialProfile);
+}
+
 using ProfileManagerIOSImplTest_HideLegacyProfile =
     ConfigurableProfileManagerIOSImplTest<FeatureState::kEnabled>;
 

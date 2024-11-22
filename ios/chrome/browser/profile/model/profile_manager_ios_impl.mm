@@ -452,8 +452,6 @@ bool ProfileManagerIOSImpl::CreateProfileWithMode(
 
     // If this is the first profile ever loaded, mark it as the personal
     // profile.
-    // TODO(crbug.com/331783685): Handle the (theoretical) case where the pref
-    // does have a value, but no profile with that name actually exists.
     if (profile_attributes_storage_.GetPersonalProfileName().empty()) {
       profile_attributes_storage_.SetPersonalProfileName(name);
     }
