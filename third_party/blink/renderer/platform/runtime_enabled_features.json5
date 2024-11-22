@@ -3848,6 +3848,20 @@
       status: "experimental",
     },
     {
+      // This flag is used to relax the rules used to slot elements into a
+      // select with the multiple attribute or size >1. This could be enabled
+      // in the case that SelectParserRelaxation causes a breaking change for
+      // websites which were relying on the parser throwing away tags which
+      // couldn't be slotted otherwise, like this:
+      // <select multiple>
+      //   <ul>
+      //     <option>hello</option>
+      // When the SelectParserRelaxation flag is removed, then this flag can be
+      // safely removed as well.
+      name: "SelectListBoxSlotAnything",
+      depends_on: ["SelectParserRelaxation"],
+    },
+    {
       // Sets the minimum target size of <option> in <select> to 24x24 CSS
       // pixels to meet Accessibility standards.
       // https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html

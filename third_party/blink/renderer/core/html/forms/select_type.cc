@@ -92,6 +92,10 @@ bool CanAssignToSelectSlot(const Node& node) {
 }
 
 bool CanAssignToCustomizableSelectSlot(const Node& node) {
+  if (RuntimeEnabledFeatures::SelectListBoxSlotAnythingEnabled()) {
+    DCHECK(RuntimeEnabledFeatures::SelectParserRelaxationEnabled());
+    return IsA<Element>(node) && !IsA<HTMLFormControlElement>(node);
+  }
   // Elements which are valid in <select>'s new content model as proposed for
   // customizable select.
   return IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node) ||
@@ -1825,7 +1829,7 @@ void ListBoxSelectType::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*select_)) {
     if (child.IsSlotable() &&
         (CanAssignToSelectSlot(child) ||
-         (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+         (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
           CanAssignToCustomizableSelectSlot(child)))) {
       option_nodes.push_back(child);
     }

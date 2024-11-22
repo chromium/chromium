@@ -5879,7 +5879,6 @@ crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-no-button-custom-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-custom-button-no-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-no-button-no-datalist.tentative.html [ Failure ]
-crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-size-multiple-new-content.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-lr.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-writing-mode-vertical-rl.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-keyboard-hidden-option.tentative.html [ Failure ]
