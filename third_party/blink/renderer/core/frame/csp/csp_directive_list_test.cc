@@ -856,10 +856,6 @@ TEST_F(CSPDirectiveListTest, ReportURIInMeta) {
   EXPECT_FALSE(directive_list->report_endpoints.empty());
 }
 
-MATCHER_P(HasSubstr, s, "") {
-  return arg.Contains(s);
-}
-
 TEST_F(CSPDirectiveListTest, StrictDynamicIgnoresAllowlistWarning) {
   KURL blocked_url = KURL("https://blocked.com");
   KURL other_blocked_url = KURL("https://other-blocked.com");
@@ -935,10 +931,12 @@ TEST_F(CSPDirectiveListTest, StrictDynamicIgnoresAllowlistWarning) {
         "host-based allowlisting is disabled.";
     if (testCase.console_message) {
       EXPECT_THAT(test_delegate->console_messages(),
-                  testing::Contains(HasSubstr(message)));
+                  testing::Contains(
+                      HasConsole(message, ConsoleMessage::Level::kError)));
     } else {
       EXPECT_THAT(test_delegate->console_messages(),
-                  testing::Not(testing::Contains(HasSubstr(message))));
+                  testing::Not(testing::Contains(
+                      HasConsole(message, ConsoleMessage::Level::kError))));
     }
   }
 }

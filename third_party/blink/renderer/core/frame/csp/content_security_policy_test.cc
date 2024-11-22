@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -143,10 +144,6 @@ TEST_F(ContentSecurityPolicyTest, ParseInsecureRequestPolicy) {
   }
 }
 
-MATCHER_P(HasSubstr, s, "") {
-  return arg.Contains(s);
-}
-
 TEST_F(ContentSecurityPolicyTest, AddPolicies) {
   csp->AddPolicies(ParseContentSecurityPolicies(
       "script-src 'none'", ContentSecurityPolicyType::kReport,
@@ -170,7 +167,8 @@ TEST_F(ContentSecurityPolicyTest, AddPolicies) {
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
   EXPECT_THAT(
       test_delegate->console_messages(),
-      Contains(HasSubstr("Refused to load the script 'http://example.com/'")));
+      Contains(HasConsole("Refused to load the script 'http://example.com/'",
+                          ConsoleMessage::Level::kInfo)));
 
   test_delegate->console_messages().clear();
   EXPECT_TRUE(csp2->AllowImageFromSource(
@@ -185,9 +183,10 @@ TEST_F(ContentSecurityPolicyTest, AddPolicies) {
       ResourceRequest::RedirectStatus::kNoRedirect,
       ReportingDisposition::kReport,
       ContentSecurityPolicy::CheckHeaderType::kCheckReportOnly));
-  EXPECT_THAT(test_delegate->console_messages(),
-              Contains(HasSubstr(
-                  "Refused to load the image 'http://not-example.com/'")));
+  EXPECT_THAT(
+      test_delegate->console_messages(),
+      Contains(HasConsole("Refused to load the image 'http://not-example.com/'",
+                          ConsoleMessage::Level::kInfo)));
 }
 
 TEST_F(ContentSecurityPolicyTest, IsActiveForConnectionsWithConnectSrc) {
