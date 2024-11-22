@@ -347,6 +347,7 @@ void LogPriceDropMetrics(web::WebState* web_state) {
   params.in_incognito = self.profile->IsOffTheRecord();
   params.append_to = OpenPosition::kSpecifiedIndex;
   params.insertion_index = webStateListIndex;
+  params.switch_mode_if_needed = false;
   self.URLLoader->Load(params);
 }
 

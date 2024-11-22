@@ -118,6 +118,17 @@ constexpr base::TimeDelta kSyncUKMOperationsTimeout = base::Seconds(10);
 + (NSError*)expectSum:(NSInteger)sum
          forHistogram:(NSString*)histogram [[nodiscard]];
 
+// Creates a chrome_test_util::UserActionTester that will record every user
+// action sent during test.
++ (NSError*)setupUserActionTester [[nodiscard]];
+
+// Releases the chrome_test_util::UserActionTester.
++ (NSError*)releaseUserActionTester [[nodiscard]];
+
+// Checks the count of the `userAction`.
++ (NSError*)expectCount:(int)expectedCount
+          forUserAction:(NSString*)userAction [[nodiscard]];
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_METRICS_APP_INTERFACE_H_

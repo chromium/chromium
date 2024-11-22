@@ -3337,6 +3337,13 @@ using UserFeedbackDataCallback =
   return self.currentInterface.browser;
 }
 
+- (UrlLoadingBrowserAgent*)browserAgentForIncognito:(BOOL)incognito {
+  if (incognito) {
+    return UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser);
+  }
+  return UrlLoadingBrowserAgent::FromBrowser(self.mainInterface.browser);
+}
+
 // Asks the respective Snapshot helper to update the snapshot for the active
 // WebState.
 - (void)updateActiveWebStateSnapshot {

@@ -65,6 +65,7 @@ using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridEditMenuCloseAllButton;
 using chrome_test_util::TabGridInactiveTabsButton;
 using chrome_test_util::TabGridIncognitoTabsPanelButton;
+using chrome_test_util::TabGridNewIncognitoTabButton;
 using chrome_test_util::TabGridNormalModePageControl;
 using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::TabGridOtherDevicesPanelButton;
@@ -3490,6 +3491,34 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   // Verify that the Tab Grid is closed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks opening a new incognito tab after entering the tab grid in regular.
+- (void)testSwitchModeFromTabGrid {
+  GREYAssertNil([MetricsAppInterface setupUserActionTester],
+                @"Cannot setup user action tester.");
+
+  // Go to incognito from the TabGrid.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Open a new incognito tab.
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  GREYAssertNil(
+      [MetricsAppInterface expectCount:1
+                         forUserAction:@"MobileTabGridCreateIncognitoTab"],
+      @"No successful new tab recorded");
+  GREYAssertNil([MetricsAppInterface
+                      expectCount:0
+                    forUserAction:@"MobileTabGridFailedCreateIncognitoTab"],
+                @"Failed new tab recorded");
+
+  GREYAssertNil([MetricsAppInterface releaseUserActionTester],
+                @"Cannot release user action tester.");
 }
 
 #pragma mark - Helper Methods
