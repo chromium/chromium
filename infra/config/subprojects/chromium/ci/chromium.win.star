@@ -871,7 +871,7 @@ ci.builder(
         ],
     ),
     builderless = False,
-    cores = 16,
+    cores = 32,
     ssd = True,
     console_view_entry = consoles.console_view_entry(
         category = "misc",
