@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
 
 namespace media {
 
@@ -56,15 +57,10 @@ void VideoFrameSharedImageCache::ReleaseCachedData() {
     return;
   }
 
-  auto* ri = provider_->RasterInterface();
-  DCHECK(ri);
-  gpu::SyncToken token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(token.GetData());
-
   auto* sii = provider_->SharedImageInterface();
   DCHECK(sii);
   if (shared_image_) {
-    sii->DestroySharedImage(token, std::move(shared_image_));
+    sii->DestroySharedImage(sync_token_, std::move(shared_image_));
   }
 }
 
@@ -80,14 +76,14 @@ VideoFrameSharedImageCache::GetSharedImage(
   if (shared_image_ && provider_ == raster_context_provider) {
     // Return the cached shared image if it is the same video frame.
     if (video_frame_id_ == video_frame->unique_id()) {
-      return {shared_image_, Status::kMatchedVideoFrameId};
+      return {shared_image_, sync_token_, Status::kMatchedVideoFrameId};
     }
     // Return the cached shared image if the video frame data matches the shared
     // image data.
     if (video_frame->coded_size() == shared_image_->size() &&
         video_frame->ColorSpace() == shared_image_->color_space() &&
         format == shared_image_->format() && usage == shared_image_->usage()) {
-      return {shared_image_, Status::kMatchedSharedImageMetaData};
+      return {shared_image_, sync_token_, Status::kMatchedSharedImageMetaData};
     }
   }
 
@@ -96,8 +92,6 @@ VideoFrameSharedImageCache::GetSharedImage(
   ReleaseCachedData();
   provider_ = raster_context_provider;
   CHECK(provider_);
-  auto* ri = provider_->RasterInterface();
-  CHECK(ri);
   auto* sii = provider_->SharedImageInterface();
   CHECK(sii);
 
@@ -108,16 +102,23 @@ VideoFrameSharedImageCache::GetSharedImage(
       gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   video_frame_id_ = video_frame->unique_id();
+  sync_token_ = sii->GenUnverifiedSyncToken();
 
-  ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  return {shared_image_, sync_token_, Status::kCreatedNewSharedImage};
+}
 
-  return {shared_image_, Status::kCreatedNewSharedImage};
+void VideoFrameSharedImageCache::UpdateSyncToken(
+    const gpu::SyncToken& sync_token) {
+  sync_token_ = sync_token;
 }
 
 VideoFrameSharedImageCache::CachedData::CachedData(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
+    const gpu::SyncToken& sync_token,
     Status status)
-    : shared_image(std::move(shared_image)), status(status) {}
+    : shared_image(std::move(shared_image)),
+      sync_token(sync_token),
+      status(status) {}
 VideoFrameSharedImageCache::CachedData::~CachedData() = default;
 
 }  // namespace media

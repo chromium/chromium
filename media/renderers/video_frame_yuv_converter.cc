@@ -128,8 +128,9 @@ void ConvertYuvVideoFrameToRgbSharedImage(
 
   // For pure software pixel upload path with video frame that does not have
   // textures.
-  auto [src_shared_image, status] = shared_image_cache->GetSharedImage(
-      video_frame, raster_context_provider, src_usage);
+  auto [src_shared_image, si_sync_token, status] =
+      shared_image_cache->GetSharedImage(video_frame, raster_context_provider,
+                                         src_usage);
   CHECK(src_shared_image);
   if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
     // Since the video frame id matches, no need to upload pixels or copy shared
@@ -137,6 +138,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
     return;
   }
 
+  ri->WaitSyncTokenCHROMIUM(si_sync_token.GetConstData());
   const viz::SharedImageFormat si_format = src_shared_image->format();
   constexpr SkAlphaType kPlaneAlphaType = kUnpremul_SkAlphaType;
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
@@ -171,6 +173,11 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   ri->CopySharedImage(src_shared_image->mailbox(), dest_mailbox_holder.mailbox,
                       0, 0, source_rect.x(), source_rect.y(),
                       source_rect.width(), source_rect.height());
+
+  gpu::SyncToken ri_sync_token;
+  ri->GenUnverifiedSyncTokenCHROMIUM(ri_sync_token.GetData());
+
+  shared_image_cache->UpdateSyncToken(ri_sync_token);
 }
 
 }  // namespace media::internals

@@ -10,6 +10,7 @@
 
 namespace gpu {
 class ClientSharedImage;
+struct SyncToken;
 }  // namespace gpu
 
 namespace viz {
@@ -34,10 +35,12 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
 
   struct CachedData {
     CachedData(scoped_refptr<gpu::ClientSharedImage> shared_image,
+               const gpu::SyncToken& sync_token,
                Status status);
     ~CachedData();
 
     scoped_refptr<gpu::ClientSharedImage> shared_image;
+    gpu::SyncToken sync_token;
     Status status;
   };
 
@@ -55,12 +58,20 @@ class MEDIA_EXPORT VideoFrameSharedImageCache {
                             viz::RasterContextProvider* raster_context_provider,
                             gpu::SharedImageUsageSet usage);
 
+  // Update the `sync_token_` to wait for after performing raster/gles tasks.
+  void UpdateSyncToken(const gpu::SyncToken& sync_token);
+
  private:
   scoped_refptr<viz::RasterContextProvider> provider_;
 
   // Populated by GetSharedImage.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   VideoFrame::ID video_frame_id_;
+  // The sync token initially generated on SharedImageInterface that can be
+  // updated through UpdateSyncToken by the client based on raster/gles usages.
+  // This allows to makes sure that on shared image destruction, we wait on
+  // previous raster/gles tasks to be completed properly.
+  gpu::SyncToken sync_token_;
 };
 
 }  // namespace media
