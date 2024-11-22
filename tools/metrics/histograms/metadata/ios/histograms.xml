@@ -1829,6 +1829,14 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.IncognitoLockImpression"
+    enum="IncognitoLockImpressionType" expires_after="2025-03-31">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>Logged when the Incognito lock overlay is displayed.</summary>
+</histogram>
+
 <histogram name="IOS.IncognitoLockOverlayInteraction"
     enum="IncognitoLockOverlayInteractionType" expires_after="2025-03-31">
   <owner>rubindl@chromium.org</owner>
