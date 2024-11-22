@@ -129,8 +129,14 @@ void TextureLayer::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
   bool requires_commit = true;
-  SetTransferableResourceInternal(resource, std::move(release_callback),
-                                  requires_commit);
+
+  // TODO(crbug.com/378688985): Move this further to the caller side.
+  auto adjusted_resource = resource;
+  adjusted_resource.origin = flipped_.Read(*this) ? kBottomLeft_GrSurfaceOrigin
+                                                  : kTopLeft_GrSurfaceOrigin;
+
+  SetTransferableResourceInternal(adjusted_resource,
+                                  std::move(release_callback), requires_commit);
 }
 
 void TextureLayer::SetNeedsSetTransferableResource() {
@@ -197,6 +203,10 @@ bool TextureLayer::Update() {
                                                           &release_callback)) {
       // Already within a commit, no need to do another one immediately.
       bool requires_commit = false;
+
+      // TODO(crbug.com/378688985): Move this further to the caller side.
+      resource.origin = flipped_.Read(*this) ? kBottomLeft_GrSurfaceOrigin
+                                             : kTopLeft_GrSurfaceOrigin;
       SetTransferableResourceInternal(resource, std::move(release_callback),
                                       requires_commit);
       updated = true;
@@ -226,7 +236,6 @@ void TextureLayer::PushPropertiesTo(
   TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
 
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
-  texture_layer->SetFlipped(flipped_.Read(*this));
   texture_layer->SetNearestNeighbor(nearest_neighbor_.Read(*this));
   texture_layer->SetUVTopLeft(uv_top_left_.Read(*this));
   texture_layer->SetUVBottomRight(uv_bottom_right_.Read(*this));

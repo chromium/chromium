@@ -60,7 +60,6 @@ bool TextureLayerImpl::IsSnappedToPixelGridInTarget() {
 void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   LayerImpl::PushPropertiesTo(layer);
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
-  texture_layer->SetFlipped(flipped_);
   texture_layer->SetUVTopLeft(uv_top_left_);
   texture_layer->SetUVBottomRight(uv_bottom_right_);
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
@@ -104,9 +103,6 @@ bool TextureLayerImpl::WillDraw(
   if (own_resource_) {
     DCHECK(!resource_id_);
     if (!transferable_resource_.is_empty()) {
-      transferable_resource_.origin =
-          flipped_ ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
-
       // Currently only Canvas supports releases resources in response to
       // eviction. Other sources will be add once they can support this. Some
       // complexity arises here from WebGL/WebGPU textures, as they do not
@@ -243,10 +239,6 @@ void TextureLayerImpl::SetBlendBackgroundColor(bool blend) {
 
 void TextureLayerImpl::SetForceTextureToOpaque(bool opaque) {
   force_texture_to_opaque_ = opaque;
-}
-
-void TextureLayerImpl::SetFlipped(bool flipped) {
-  flipped_ = flipped;
 }
 
 void TextureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
