@@ -72,7 +72,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/permissions/test/permission_request_observer.h"
@@ -3224,7 +3224,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByInvocationSource.AppMenu.SessionDuration",
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.ByDocumentType.Web.Invoked",
+  histogram_tester.ExpectTotalCount("Lens.Overlay.ByDocumentType.Html.Invoked",
                                     /*expected_count=*/1);
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_SessionEnd::kEntryName);
@@ -4092,7 +4092,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
 
   // Histograms shouldn't be recorded if CSB isn't shown in session.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession",
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession",
@@ -4181,7 +4181,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
           controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_FALSE(
       fake_query_controller->last_sent_underlying_content_bytes().empty());
-  ASSERT_EQ(lens::PageContentMimeType::kPdf,
+  ASSERT_EQ(lens::MimeType::kPdf,
             fake_query_controller->last_sent_underlying_content_type());
 
   // Verify the searchbox was shown.
@@ -4263,19 +4263,19 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !fake_query_controller->last_sent_underlying_content_bytes().empty();
   }));
-  ASSERT_EQ(lens::PageContentMimeType::kPdf,
+  ASSERT_EQ(lens::MimeType::kPdf,
             fake_query_controller->last_sent_underlying_content_type());
 
   // Verify the histogram recorded the new byte size.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByContentType.Pdf.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Pdf.DocumentSize",
       /*expected_count=*/2);
   // Verify the histogram two documents of one page.
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ByDocumentType.Pdf.PageCount", /*sample*/ 1,
+      "Lens.Overlay.ByPageContentType.Pdf.PageCount", /*sample*/ 1,
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf."
       "TimeFromNavigationToFirstInteraction",
       /*expected_count=*/1);
 }
@@ -4322,7 +4322,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
   // Verify the histogram recorded the searchbox was not shown.
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.Shown",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.Shown",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
 }
@@ -4351,14 +4351,14 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                                       /*sample*/ true,
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.Shown",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.Pdf.Shown",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByContentType.Pdf.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Pdf.DocumentSize",
       /*expected_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ByDocumentType.Pdf.PageCount", /*sample*/ 1,
+      "Lens.Overlay.ByPageContentType.Pdf.PageCount", /*sample*/ 1,
       /*expected_bucket_count=*/1);
 }
 
@@ -4408,7 +4408,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !fake_query_controller->last_sent_underlying_content_bytes().empty();
   }));
-  ASSERT_EQ(lens::PageContentMimeType::kPdf,
+  ASSERT_EQ(lens::MimeType::kPdf,
             fake_query_controller->last_sent_underlying_content_type());
   controller->OnFocusChangedForTesting(true);
 
@@ -4416,16 +4416,18 @@ IN_PROC_BROWSER_TEST_P(
                             LensOverlayDismissalSource::kOverlayCloseButton);
   // Even after navigation, histograms should still be recorded.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession", true,
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession", true,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "FocusedInSession",
       true, /*expected_count=*/1);
 }
 
@@ -4716,7 +4718,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
           controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_FALSE(
       fake_query_controller->last_sent_underlying_content_bytes().empty());
-  ASSERT_EQ(lens::PageContentMimeType::kPlainText,
+  ASSERT_EQ(lens::MimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type());
 
   // Verify the bytes are actually what we expect them to be.
@@ -4771,22 +4773,23 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !fake_query_controller->last_sent_underlying_content_bytes().empty();
   }));
-  ASSERT_EQ(lens::PageContentMimeType::kPlainText,
+  ASSERT_EQ(lens::MimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type());
 
   // Verify the size histograms recorded the new bytes.
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByContentType.PlainText.DocumentSize",
+      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize",
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByContentType.Html.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Html.DocumentSize",
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web."
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
       "TimeFromNavigationToFirstInteraction",
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("Lens.Overlay.ByDocumentType.Pdf.PageCount",
-                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.ByPageContentType.Pdf.PageCount",
+      /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -4805,21 +4808,22 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
-  histogram_tester.ExpectUniqueSample("Lens.Overlay.ByDocumentType.Web.Invoked",
-                                      /*sample*/ true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ByDocumentType.Html.Invoked",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample("Lens.Overlay.ContextualSearchBox.Shown",
                                       /*sample*/ true,
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web.Shown",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText.Shown",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByContentType.PlainText.DocumentSize",
+      "Lens.Overlay.ByPageContentType.PlainText.DocumentSize",
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByContentType.Html.DocumentSize",
+      "Lens.Overlay.ByPageContentType.Html.DocumentSize",
       /*expected_count=*/1);
 }
 
@@ -4853,16 +4857,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession", true,
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession", true,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "FocusedInSession",
       true, /*expected_count=*/1);
 }
 
@@ -4893,16 +4899,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession", false,
+      "Lens.Overlay.ContextualSearchBox.FocusedInSession", false,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "FocusedInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText."
+      "FocusedInSession",
       false, /*expected_count=*/1);
 }
 
@@ -4941,10 +4949,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession", true,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType.Web.ShownInSession",
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "ShownInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType.Web.ShownInSession",
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "ShownInSession",
       true, /*expected_count=*/1);
 }
 
@@ -4981,10 +4991,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSuggest.ZPS.ShownInSession", false,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType.Web.ShownInSession",
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "ShownInSession",
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType.Web.ShownInSession",
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.PlainText."
+      "ShownInSession",
       false, /*expected_count=*/1);
 }
 
@@ -5159,7 +5171,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Verify inner text was not updated.
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_bytes().empty());
-  ASSERT_EQ(lens::PageContentMimeType::kNone,
+  ASSERT_EQ(lens::MimeType::kUnknown,
             fake_query_controller->last_sent_underlying_content_type());
 }
 
@@ -5220,7 +5232,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
 
   // Verify the histogram recorded the searchbox was not shown.
   histogram_tester.ExpectUniqueSample(
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web.Shown",
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType.PlainText.Shown",
       /*sample*/ false,
       /*expected_bucket_count=*/1);
 }
@@ -5286,7 +5298,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
           controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_FALSE(
       fake_query_controller->last_sent_underlying_content_bytes().empty());
-  ASSERT_EQ(lens::PageContentMimeType::kHtml,
+  ASSERT_EQ(lens::MimeType::kHtml,
             fake_query_controller->last_sent_underlying_content_type());
 
   // Verify the bytes are actually what we expect them to be.
@@ -5464,7 +5476,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
           controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_bytes().empty());
-  ASSERT_EQ(lens::PageContentMimeType::kNone,
+  ASSERT_EQ(lens::MimeType::kUnknown,
             fake_query_controller->last_sent_underlying_content_type());
 }
 

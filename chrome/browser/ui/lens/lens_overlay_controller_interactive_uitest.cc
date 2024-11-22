@@ -29,7 +29,6 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"

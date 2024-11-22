@@ -37,7 +37,7 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"
@@ -103,7 +103,7 @@ extern void* kLensOverlayPreselectionWidgetIdentifier;
 // the PDF, while `bytes` could be empty because the PDF is too large.
 using PageContentRetrievedCallback =
     base::OnceCallback<void(std::vector<uint8_t> bytes,
-                            lens::PageContentMimeType content_type,
+                            lens::MimeType content_type,
                             std::optional<uint32_t> pdf_page_count)>;
 
 // Manages all state associated with the lens overlay.
@@ -585,8 +585,7 @@ class LensOverlayController : public LensSearchboxClient,
 
     // The mime type of page_content_bytes_. kNone if page_content_bytes_is
     // empty.
-    lens::PageContentMimeType page_content_type_ =
-        lens::PageContentMimeType::kNone;
+    lens::MimeType page_content_type_ = lens::MimeType::kUnknown;
 
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;
@@ -671,7 +670,7 @@ class LensOverlayController : public LensSearchboxClient,
   void StorePageContentAndContinueInitialization(
       std::unique_ptr<OverlayInitializationData> initialization_data,
       std::vector<uint8_t> bytes,
-      lens::PageContentMimeType content_type,
+      lens::MimeType content_type,
       std::optional<uint32_t> pdf_page_count);
 
   // Tries to fetch the underlying page content bytes to use for
@@ -709,7 +708,7 @@ class LensOverlayController : public LensSearchboxClient,
   // Updates the query flow with the new page content bytes. A request will only
   // be sent if the bytes are different from the previous bytes sent.
   void UpdatePageContextualization(std::vector<uint8_t> bytes,
-                                   lens::PageContentMimeType content_type,
+                                   lens::MimeType content_type,
                                    std::optional<uint32_t> pdf_page_count);
 
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
@@ -1109,12 +1108,21 @@ class LensOverlayController : public LensSearchboxClient,
   // Set if contextual searchbox is shown.
   std::optional<bool> contextual_searchbox_focused_in_session_;
 
-  // The page content type when the lens overlay was initialized. This is used
-  // when recording contextual searchbox metrics at the end of sessions, since
-  // the initialization data can change on page contextualization updates and
-  // these metrics only want to record the initial invocation page content type.
-  lens::PageContentMimeType initial_page_content_type_ =
-      lens::PageContentMimeType::kNone;
+  // The type of the page content extracted from the page when the lens overlay
+  // was initialized. This is used when recording contextual searchbox metrics
+  // at the end of sessions, since the initialization data can change on page
+  // contextualization updates and these metrics only want to record the initial
+  // invocation page content type.
+  lens::MimeType initial_page_content_type_ = lens::MimeType::kUnknown;
+
+  // The type of the document that the lens overlay was initialized on as
+  // determined by the mime type reported by the tab web contents. This differs
+  // from initial_page_content_type_ in that the document type is the type of
+  // the top level document, while the intial_page_content_type_ is the type of
+  // the content extracted from the page that we are contextualizing to. This is
+  // used when recording invocation document metrics, since the document type
+  // can change on page contextualization updates.
+  lens::MimeType initial_document_type_ = lens::MimeType::kUnknown;
 
   // The time at which the overlay was invoked. Used to compute timing metrics.
   base::TimeTicks invocation_time_;

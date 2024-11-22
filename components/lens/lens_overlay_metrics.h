@@ -13,7 +13,7 @@
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
-#include "components/lens/lens_overlay_page_content_mime_type.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -24,7 +24,7 @@ std::string InvocationSourceToString(
     LensOverlayInvocationSource invocation_source);
 
 // Returns the string representation of the page content type.
-std::string DocumentTypeToString(lens::PageContentMimeType page_content_type);
+std::string DocumentTypeToString(lens::MimeType page_content_type);
 
 // Recorded when lens permission is requested to be shown. Both sliced and
 // unsliced.
@@ -38,7 +38,7 @@ void RecordPermissionUserAction(LensPermissionUserAction user_action,
 
 // Records lens overlay invocation.
 void RecordInvocation(LensOverlayInvocationSource invocation_source,
-                      lens::PageContentMimeType page_content_type);
+                      lens::MimeType page_content_type);
 
 // Records lens overlay dismissal.
 void RecordDismissal(LensOverlayDismissalSource dismissal_source);
@@ -58,7 +58,7 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 void RecordContextualSearchboxSessionEndMetrics(
     bool contextual_searchbox_focused_in_session,
     bool contextual_zps_shown_in_session,
-    lens::PageContentMimeType page_content_type);
+    lens::MimeType page_content_type);
 
 // Records the time in foreground of a lens overlay. Both sliced and unsliced.
 void RecordSessionForegroundDuration(
@@ -99,17 +99,17 @@ void RecordLensResponseTime(base::TimeDelta response_time);
 // box feature is enabled.
 void MaybeRecordContextualSearchBoxShown(
     bool shown,
-    lens::PageContentMimeType page_content_type);
+    lens::MimeType page_content_type);
 
 // Records the time from the time the user navigates the document to when the
 // contextual search box is interacted with, sliced by content type.
 void RecordContextualSearchboxTimeToInteractionAfterNavigation(
     base::TimeDelta time_to_interaction,
-    lens::PageContentMimeType page_content_type);
+    lens::MimeType page_content_type);
 
 // Records the size of the document where the contextual search box was shown,
 // sliced by content type.
-void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
+void RecordDocumentSizeBytes(lens::MimeType page_content_type,
                              size_t document_size_bytes);
 
 // Record the number of pages in a PDF.

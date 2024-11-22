@@ -111,7 +111,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     return last_sent_underlying_content_bytes_;
   }
 
-  const lens::PageContentMimeType& last_sent_underlying_content_type() const {
+  const lens::MimeType& last_sent_underlying_content_type() const {
     return last_sent_underlying_content_type_;
   }
 
@@ -143,7 +143,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
-      lens::PageContentMimeType underlying_content_type,
+      lens::MimeType underlying_content_type,
       float ui_scale_factor) override;
 
   void SendTaskCompletionGen204IfEnabled(
@@ -174,7 +174,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       override;
 
   void SendPageContentUpdateRequest(base::span<const uint8_t> new_content_bytes,
-                                    lens::PageContentMimeType new_content_type,
+                                    lens::MimeType new_content_type,
                                     GURL new_page_url) override;
 
   // Resets the test state.
@@ -247,7 +247,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
       last_sent_underlying_content_bytes_;
 
   // The last underlying content type sent by the query controller.
-  lens::PageContentMimeType last_sent_underlying_content_type_;
+  lens::MimeType last_sent_underlying_content_type_;
 
   // The last page url sent by the query controller.
   GURL last_sent_page_url_;

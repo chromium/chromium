@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace lens {
@@ -48,25 +49,13 @@ std::string FirstInteractionTypeToString(
   }
 }
 
-std::string DocumentTypeToString(lens::PageContentMimeType page_content_type) {
-  switch (page_content_type) {
-    case lens::PageContentMimeType::kPdf:
+std::string MimeTypeToMetricString(lens::MimeType mime_type) {
+  switch (mime_type) {
+    case lens::MimeType::kPdf:
       return "Pdf";
-    case lens::PageContentMimeType::kHtml:
-    case lens::PageContentMimeType::kPlainText:
-      return "Web";
-    default:
-      return "Unspecified";
-  }
-}
-
-std::string ContentTypeToString(lens::PageContentMimeType page_content_type) {
-  switch (page_content_type) {
-    case lens::PageContentMimeType::kPdf:
-      return "Pdf";
-    case lens::PageContentMimeType::kHtml:
+    case lens::MimeType::kHtml:
       return "Html";
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kPlainText:
       return "PlainText";
     default:
       return "None";
@@ -94,13 +83,13 @@ void RecordPermissionUserAction(LensPermissionUserAction user_action,
 }
 
 void RecordInvocation(LensOverlayInvocationSource invocation_source,
-                      lens::PageContentMimeType page_content_type) {
+                      lens::MimeType document_content_type) {
   base::UmaHistogramEnumeration("Lens.Overlay.Invoked", invocation_source);
 
   // UMA Invocation sliced by document type.
   const auto sliced_invoked_histogram_name =
-      "Lens.Overlay.ByDocumentType." + DocumentTypeToString(page_content_type) +
-      ".Invoked";
+      "Lens.Overlay.ByDocumentType." +
+      MimeTypeToMetricString(document_content_type) + ".Invoked";
   base::UmaHistogramBoolean(sliced_invoked_histogram_name, true);
 }
 
@@ -144,14 +133,14 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
 void RecordContextualSearchboxSessionEndMetrics(
     bool contextual_searchbox_focused_in_session,
     bool contextual_zps_shown_in_session,
-    lens::PageContentMimeType page_content_type) {
+    lens::MimeType page_content_type) {
   // UMA contextual searchbox focused in session.
-  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchbox.FocusedInSession",
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.FocusedInSession",
                             contextual_searchbox_focused_in_session);
   // UMA contextual searchbox focused in session sliced by document type.
   const auto sliced_focused_histogram_name =
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType." +
-      DocumentTypeToString(page_content_type) + ".FocusedInSession";
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".FocusedInSession";
   base::UmaHistogramBoolean(sliced_focused_histogram_name,
                             contextual_searchbox_focused_in_session);
 
@@ -160,8 +149,8 @@ void RecordContextualSearchboxSessionEndMetrics(
                             contextual_zps_shown_in_session);
   // UMA contextual suggest shown in session sliced by document type.
   const auto sliced_contextual_zps_histogram_name =
-      "Lens.Overlay.ContextualSuggest.ZPS.ByDocumentType." +
-      DocumentTypeToString(page_content_type) + ".ShownInSession";
+      "Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".ShownInSession";
   base::UmaHistogramBoolean(sliced_contextual_zps_histogram_name,
                             contextual_zps_shown_in_session);
 }
@@ -292,9 +281,8 @@ void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
 }
 
-void MaybeRecordContextualSearchBoxShown(
-    bool shown,
-    lens::PageContentMimeType page_content_type) {
+void MaybeRecordContextualSearchBoxShown(bool shown,
+                                         lens::MimeType page_content_type) {
   // Only record if the contextual search box feature is enabled.
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     return;
@@ -303,17 +291,17 @@ void MaybeRecordContextualSearchBoxShown(
 
   // UMA Invocation sliced by document type.
   const auto sliced_invoked_histogram_name =
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
-      DocumentTypeToString(page_content_type) + ".Shown";
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".Shown";
   base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
 }
 
 void RecordContextualSearchboxTimeToInteractionAfterNavigation(
     base::TimeDelta time_to_interaction,
-    lens::PageContentMimeType page_content_type) {
+    lens::MimeType page_content_type) {
   const auto sliced_time_to_interaction_histogram_name =
-      "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
-      DocumentTypeToString(page_content_type) +
+      "Lens.Overlay.ContextualSearchBox.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) +
       ".TimeFromNavigationToFirstInteraction";
   base::UmaHistogramCustomTimes(sliced_time_to_interaction_histogram_name,
                                 time_to_interaction,
@@ -321,17 +309,17 @@ void RecordContextualSearchboxTimeToInteractionAfterNavigation(
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
-void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
+void RecordDocumentSizeBytes(lens::MimeType page_content_type,
                              size_t document_size_bytes) {
   const auto sliced_invoked_histogram_name =
-      "Lens.Overlay.ByContentType." + ContentTypeToString(page_content_type) +
-      ".DocumentSize";
+      "Lens.Overlay.ByPageContentType." +
+      MimeTypeToMetricString(page_content_type) + ".DocumentSize";
   base::UmaHistogramMemoryKB(sliced_invoked_histogram_name,
                              document_size_bytes / 1000);
 }
 
 void RecordPdfPageCount(uint32_t page_count) {
-  base::UmaHistogramCounts1000("Lens.Overlay.ByDocumentType.Pdf.PageCount",
+  base::UmaHistogramCounts1000("Lens.Overlay.ByPageContentType.Pdf.PageCount",
                                page_count);
 }
 

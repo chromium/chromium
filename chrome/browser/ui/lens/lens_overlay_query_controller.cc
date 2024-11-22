@@ -193,22 +193,22 @@ std::map<std::string, std::string> AddStartTimeQueryParam(
 
 std::map<std::string, std::string> AddVisualInputTypeQueryParam(
     std::map<std::string, std::string> additional_search_query_params,
-    lens::PageContentMimeType content_type) {
+    lens::MimeType content_type) {
   // Default contextual visual input type.
   std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
   switch (content_type) {
-    case lens::PageContentMimeType::kPdf:
+    case lens::MimeType::kPdf:
       if (lens::features::UsePdfVitParam()) {
         vitValue = kPdfVisualInputTypeQueryParameterValue;
       }
       break;
-    case lens::PageContentMimeType::kHtml:
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kHtml:
+    case lens::MimeType::kPlainText:
       if (lens::features::UseWebpageVitParam()) {
         vitValue = kWebpageVisualInputTypeQueryParameterValue;
       }
       break;
-    case lens::PageContentMimeType::kNone:
+    case lens::MimeType::kUnknown:
       break;
   }
   additional_search_query_params.insert(
@@ -216,34 +216,34 @@ std::map<std::string, std::string> AddVisualInputTypeQueryParam(
   return additional_search_query_params;
 }
 
-std::string ContentTypeToString(lens::PageContentMimeType content_type) {
+std::string ContentTypeToString(lens::MimeType content_type) {
   switch (content_type) {
-    case lens::PageContentMimeType::kPdf:
+    case lens::MimeType::kPdf:
       return kPdfMimeType;
-    case lens::PageContentMimeType::kHtml:
+    case lens::MimeType::kHtml:
       return kHtmlMimeType;
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kPlainText:
       return kPlainTextMimeType;
-    case lens::PageContentMimeType::kNone:
+    case lens::MimeType::kUnknown:
       return "";
   }
 }
 
 lens::LensOverlayInteractionRequestMetadata::Type ContentTypeToInteractionType(
-    lens::PageContentMimeType content_type) {
+    lens::MimeType content_type) {
   switch (content_type) {
-    case lens::PageContentMimeType::kPdf:
+    case lens::MimeType::kPdf:
       if (lens::features::UsePdfInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::PDF_QUERY;
       }
       break;
-    case lens::PageContentMimeType::kHtml:
-    case lens::PageContentMimeType::kPlainText:
+    case lens::MimeType::kHtml:
+    case lens::MimeType::kPlainText:
       if (lens::features::UseWebpageInteractionType()) {
         return lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY;
       }
       break;
-    case lens::PageContentMimeType::kNone:
+    case lens::MimeType::kUnknown:
       break;
   }
   return lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY;
@@ -310,7 +310,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    lens::PageContentMimeType underlying_content_type,
+    lens::MimeType underlying_content_type,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
@@ -364,7 +364,7 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
 
 void LensOverlayQueryController::SendPageContentUpdateRequest(
     base::span<const uint8_t> new_content_bytes,
-    lens::PageContentMimeType new_content_type,
+    lens::MimeType new_content_type,
     GURL new_page_url) {
   if (new_content_bytes == underlying_content_bytes_ &&
       new_content_type == underlying_content_type_) {
@@ -651,8 +651,8 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // flow since the request flow for contextual searchbox will fail without the
   // cluster info handshake.
   if (!cluster_info_ &&
-      (lens::features::IsLensOverlayClusterInfoOptimizationEnabled()
-      || lens::features::IsLensOverlayContextualSearchboxEnabled())) {
+      (lens::features::IsLensOverlayClusterInfoOptimizationEnabled() ||
+       lens::features::IsLensOverlayContextualSearchboxEnabled())) {
     FetchClusterInfoRequest();
     return;
   }
@@ -960,7 +960,7 @@ void LensOverlayQueryController::PageContentResponseHandler(
       base::TimeTicks::Now() -
       latest_full_image_request_data_->query_start_time_;
   std::string vit_param_value =
-      underlying_content_type_ == lens::PageContentMimeType::kPdf
+      underlying_content_type_ == lens::MimeType::kPdf
           ? kPdfVisualInputTypeQueryParameterValue
           : kWebpageVisualInputTypeQueryParameterValue;
   SendLatencyGen204IfEnabled(elapsed_time, translate_options_.has_value(),
