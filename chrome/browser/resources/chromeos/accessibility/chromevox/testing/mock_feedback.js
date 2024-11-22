@@ -115,7 +115,7 @@ MockFeedback = class {
 
     const MockBraille = function() {};
     MockBraille.prototype = {
-      __proto__: BrailleInterface.prototype,
+      __proto__: BrailleBackground.prototype,
       write: (...args) => this.addBraille_(...args),
       thaw: () => {},
     };

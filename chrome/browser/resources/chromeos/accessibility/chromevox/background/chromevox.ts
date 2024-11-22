@@ -11,7 +11,9 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
+import {EarconId} from '../common/earcon_id.js';
 import {Spannable} from '../common/spannable.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
@@ -20,24 +22,22 @@ import {ChromeVoxState} from './chromevox_state.js';
 import {TtsInterface} from './tts_interface.js';
 
 /** A central access point for the different modes of output. */
-export const ChromeVox = {
-  /** @type {BrailleInterface} */
-  braille: null,
-  /** @type {AbstractEarcons} */
-  earcons: null,
-  /** @type {TtsInterface} */
-  tts: null,
+export class ChromeVox {
+  static braille: BrailleInterface;
+  static earcons: AbstractEarcons;
+  static tts: TtsInterface;
 };
 
 // Braille bridge functions.
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET,
     BridgeConstants.Braille.Action.BACK_TRANSLATE,
-    cells => Promise.resolve(ChromeVox.braille?.backTranslate(cells)));
+    (cells: ArrayBuffer) =>
+        Promise.resolve(ChromeVox.braille?.backTranslate(cells)));
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.SET_BYPASS,
-    async bypass => {
+    async (bypass: boolean) => {
       await ChromeVoxState.ready();
       BrailleCommandHandler.setBypass(bypass);
     });
@@ -52,24 +52,24 @@ BridgeHelper.registerHandler(
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.WRITE,
-    text =>
+    (text: Spannable) =>
         ChromeVox.braille?.write(new NavBraille({text: new Spannable(text)})));
 
 // Earcon bridge functions.
 BridgeHelper.registerHandler(
     BridgeConstants.Earcons.TARGET,
     BridgeConstants.Earcons.Action.CANCEL_EARCON,
-    earconId => ChromeVox.earcons?.cancelEarcon(earconId));
+    (earconId: EarconId) => ChromeVox.earcons?.cancelEarcon(earconId));
 
 BridgeHelper.registerHandler(
     BridgeConstants.Earcons.TARGET, BridgeConstants.Earcons.Action.PLAY_EARCON,
-    earconId => ChromeVox.earcons?.playEarcon(earconId));
+    (earconId: EarconId) => ChromeVox.earcons?.playEarcon(earconId));
 
 // TTS bridge functions.
 BridgeHelper.registerHandler(
     BridgeConstants.TtsBackground.TARGET,
     BridgeConstants.TtsBackground.Action.SPEAK,
-    (text, queueMode, properties) =>
+    (text: string, queueMode: QueueMode, properties: TtsSpeechProperties) =>
         ChromeVox.tts?.speak(text, queueMode, properties));
 
 TestImportManager.exportForTesting(['ChromeVox', ChromeVox]);
