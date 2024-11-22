@@ -589,9 +589,10 @@ void MessagePumpEpoll::OnEpollEvent(EpollEventEntry& entry, uint32_t events) {
       continue;
     }
 
+    const bool one_shot = interest->params().one_shot;
     const bool can_read = (readable || disconnected) && interest->params().read;
-    const bool can_write =
-        (writable || disconnected) && interest->params().write;
+    const bool can_write = (writable || disconnected) &&
+                           interest->params().write && (!one_shot || !can_read);
     if (!can_read && !can_write) {
       // If this Interest is active but not watching for whichever event was
       // raised here, there's nothing to do. This can occur if a descriptor has
