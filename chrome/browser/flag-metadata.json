@@ -4949,15 +4949,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "hide-incognito-media-metadata",
-    "owners": [
-      "fsenra@google.com",
-      "zalmashni@google.com",
-      "chrome-incognito@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "hide-tablet-toolbar-download-button",
     "owners": [ "polardz@google.com", "pnoland@chromium.org"],
     "expiry_milestone": 140
@@ -5305,7 +5296,7 @@
       "chrome-browser-privacy-team@google.com",
       "bling-flags@google.com"
     ],
-    "expiry_milestone": 132
+    "expiry_milestone": 137
   },
   {
     "name": "ios-password-bottom-sheet-autofocus",
@@ -5382,7 +5373,7 @@
       "fsenra@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 137
   },
   {
     "name": "ios-reactivation-notifications",
