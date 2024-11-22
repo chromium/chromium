@@ -987,6 +987,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/settings/FragmentDependencyProvider.java",
   "java/src/org/chromium/chrome/browser/settings/MainSettings.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsActivity.java",
+  "java/src/org/chromium/chrome/browser/settings/SettingsCustomTabLauncherImpl.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsIntentUtil.java",
   "java/src/org/chromium/chrome/browser/settings/SettingsNavigationImpl.java",
   "java/src/org/chromium/chrome/browser/settings/WideDisplayPadding.java",

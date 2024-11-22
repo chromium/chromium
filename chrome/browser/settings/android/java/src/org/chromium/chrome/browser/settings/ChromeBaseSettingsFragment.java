@@ -19,8 +19,11 @@ import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
  * convenience.
  */
 public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompat
-        implements EmbeddableSettingsPage, ProfileDependentSetting {
+        implements EmbeddableSettingsPage,
+                ProfileDependentSetting,
+                SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
     private Profile mProfile;
+    private SettingsCustomTabLauncher mCustomTabLauncher;
 
     /**
      * @return The profile associated with the current Settings screen.
@@ -35,10 +38,22 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
         mProfile = profile;
     }
 
+    @Override
+    public void setCustomTabLauncher(SettingsCustomTabLauncher customTabLauncher) {
+        mCustomTabLauncher = customTabLauncher;
+    }
+
     /**
      * @return The launcher for help and feedback actions.
      */
     public HelpAndFeedbackLauncher getHelpAndFeedbackLauncher() {
         return HelpAndFeedbackLauncherFactory.getForProfile(mProfile);
+    }
+
+    /**
+     * @return The launcher for CCT.
+     */
+    public SettingsCustomTabLauncher getCustomTabLauncher() {
+        return mCustomTabLauncher;
     }
 }

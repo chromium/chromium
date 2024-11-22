@@ -108,6 +108,10 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             fragmentSettingsNavigation.setSettingsNavigation(
                     SettingsNavigationFactory.createSettingsNavigation());
         }
+        if (fragment instanceof SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) {
+            ((SettingsCustomTabLauncher.SettingsCustomTabLauncherClient) fragment)
+                    .setCustomTabLauncher(new SettingsCustomTabLauncherImpl());
+        }
 
         // Settings screen specific attachments.
         if (fragment instanceof MainSettings) {
