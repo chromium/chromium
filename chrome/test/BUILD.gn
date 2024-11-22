@@ -5576,6 +5576,7 @@ template("performance_test_suite_template_base") {
     } else {
       args = [ "../../tools/perf/run_benchmark" ]
     }
+    args += [ "--chromium-output-directory=@WrappedPath(.)" ]
 
     data_deps += [
       "//components:components_perftests",
