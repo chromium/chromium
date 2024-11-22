@@ -275,37 +275,6 @@ class GraphImplTflite::ComputeResources {
   }
 
  private:
-  void InitializeBuffersForCompute() {
-    if (compute_buffers_.size() > 0) {
-      return;
-    }
-
-    std::vector<std::pair<int, std::unique_ptr<BufferContent>>> buffers;
-    buffers.reserve(interpreter_->inputs().size() +
-                    interpreter_->outputs().size());
-
-    for (int tensor_idx : interpreter_->inputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      buffers.emplace_back(tensor_idx,
-                           std::make_unique<BufferContent>(tensor->bytes));
-    }
-
-    for (int tensor_idx : interpreter_->outputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      if (tensor->allocation_type == kTfLitePersistentRo) {
-        // The initial `AllocateTensors()` call has marked this output as a
-        // constant. It cannot be replaced with a custom allocation.
-        continue;
-      }
-
-      buffers.emplace_back(tensor_idx,
-                           std::make_unique<BufferContent>(tensor->bytes));
-    }
-
-    compute_buffers_ =
-        base::flat_map<int, std::unique_ptr<BufferContent>>(std::move(buffers));
-  }
-
   flatbuffers::DetachedBuffer model_content_;
 
   // `model_` depends on `model_content_` outliving it.
@@ -313,9 +282,6 @@ class GraphImplTflite::ComputeResources {
 
   // `interpreter_` depends on `model_` outliving it.
   std::unique_ptr<::tflite::Interpreter> interpreter_;
-
-  // Input and output buffers used for compute().
-  base::flat_map<int, std::unique_ptr<BufferContent>> compute_buffers_;
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
   ::tflite::profiling::BufferedProfiler profiler_{/*max_num_entries=*/1024};
