@@ -68,6 +68,7 @@ export class DataSectionElement extends CrLitElement {
     return {
       dataContainer: {type: Object},
       title_: {type: String},
+      titleWithoutCount_: {type: String},
       expanded_: {type: Boolean},
       disabled_: {type: Boolean},
       dataSelectedCount_: {type: Number},
@@ -80,6 +81,8 @@ export class DataSectionElement extends CrLitElement {
   // Title of the section, updated on each item checkbox selection based on the
   // number of selected items.
   protected title_: string = '';
+  // Computed once on page load as it does not contain the selected item count.
+  protected titleWithoutCount_: string = '';
 
   // If the collapse section is exapnded.
   protected expanded_: boolean = false;
@@ -98,10 +101,18 @@ export class DataSectionElement extends CrLitElement {
   private intervalDurationOfUpdateHeightRequests_: number|null = null;
   private collapseAnimationDuration_: number = 0;
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
 
     this.initializeSectionOutput_();
+
+    // In tests this id may be empty.
+    if (this.dataContainer.sectionTitle &&
+        this.dataContainer.sectionTitle.length > 0) {
+      this.titleWithoutCount_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              this.dataContainer.sectionTitle, 0);
+    }
   }
 
   override firstUpdated() {
@@ -227,9 +238,11 @@ export class DataSectionElement extends CrLitElement {
     // Checkbox off.
     this.dataSelected.delete(itemId);
     this.dataSelectedCount_ = this.dataSelected.size;
-    // If this is the last item unchecked then disable and reset the section.
+    // If this is the last item unchecked then disable and reset the section
+    // and focus the toggle since its value changed indirectly.
     if (this.dataSelectedCount_ === 0) {
       this.resetWithState_(/*disabled=*/ true);
+      this.$.toggle.focus();
     }
   }
 

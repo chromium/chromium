@@ -90,8 +90,9 @@
       restamp>
     <cr-link-row class="cr-row" non-clickable label="[[movePasswordsLabel_]]"
         sub-label="$i18n{movePasswordsInSettingsSubLabel}" hide-icon>
-      <cr-button id="movePasswordsButton" on-click="onMovePasswordsClicked_">
-          $i18n{moveSinglePasswordButton}
+      <cr-button id="movePasswordsButton" on-click="onMovePasswordsClicked_"
+          aria-label="[[getAriaLabelMovePasswordsButton_(movePasswordsLabel_)]]">
+        $i18n{moveSinglePasswordButton}
       </cr-button>
     </cr-link-row>
   </template>
