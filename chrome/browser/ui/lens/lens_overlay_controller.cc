@@ -625,6 +625,11 @@ views::WebView* LensOverlayController::GetOverlayWebViewForTesting() {
 }
 
 void LensOverlayController::SendText(lens::mojom::TextPtr text) {
+  if (!page_) {
+    // Store the text to send once the page is bound.
+    initialization_data_->text_ = std::move(text);
+    return;
+  }
   page_->TextReceived(std::move(text));
 }
 
@@ -650,6 +655,11 @@ lens::mojom::OverlayThemePtr LensOverlayController::CreateTheme(
 
 void LensOverlayController::SendObjects(
     std::vector<lens::mojom::OverlayObjectPtr> objects) {
+  if (!page_) {
+    // Store the objects to send once the page is bound.
+    initialization_data_->objects_ = std::move(objects);
+    return;
+  }
   page_->ObjectsReceived(std::move(objects));
 }
 
@@ -1412,6 +1422,16 @@ void LensOverlayController::DidCaptureScreenshot(
     return;
   }
 
+  if (lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
+    // Start the query as soon as the image is ready since it is the only
+    // critical asynchronous flow. This optimization parallelizes the query flow
+    // with other async startup processes.
+    lens_overlay_query_controller_->StartQueryFlow(
+        bitmap, GetPageURL(), GetPageTitle(),
+        ConvertSignificantRegionBoxes(all_bounds), std::vector<uint8_t>(),
+        lens::MimeType::kUnknown, GetUiScaleFactor());
+  }
+
   // The following two methods happen async to parallelize the two bottlenecks
   // in our invocation flow.
   CreateInitializationData(bitmap, all_bounds);
@@ -1459,18 +1479,11 @@ void LensOverlayController::ContinueCreateInitializationData(
     }
   }
 
-  content::WebContents* active_web_contents = tab_->GetContents();
-
-  std::optional<std::string> page_title;
-  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
-    page_title = std::make_optional<std::string>(
-        base::UTF16ToUTF8(active_web_contents->GetTitle()));
-  }
-
   auto initialization_data = std::make_unique<OverlayInitializationData>(
       screenshot, std::move(rgb_screenshot), color_palette, GetPageURL(),
-      page_title);
-  AddBoundingBoxesToInitializationData(initialization_data.get(), all_bounds);
+      GetPageTitle());
+  initialization_data->significant_region_boxes_ =
+      ConvertSignificantRegionBoxes(all_bounds);
 
   GetPageContextualization(base::BindOnce(
       &LensOverlayController::StorePageContentAndContinueInitialization,
@@ -1580,18 +1593,17 @@ void LensOverlayController::OnInnerHtmlReceived(
                           lens::MimeType::kHtml, std::nullopt);
 }
 
-void LensOverlayController::AddBoundingBoxesToInitializationData(
-    OverlayInitializationData* initialization_data,
+std::vector<lens::mojom::CenterRotatedBoxPtr>
+LensOverlayController::ConvertSignificantRegionBoxes(
     const std::vector<gfx::Rect>& all_bounds) {
-  CHECK(initialization_data);
+  std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes;
   int max_regions = lens::features::GetLensOverlayMaxSignificantRegions();
   if (max_regions == 0) {
-    return;
+    return significant_region_boxes;
   }
   content::RenderFrameHost* render_frame_host =
       tab_->GetContents()->GetPrimaryMainFrame();
   auto view_bounds = render_frame_host->GetView()->GetViewBounds();
-  std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes;
   for (auto& image_bounds : all_bounds) {
     // Check the original area of the images against the minimum area.
     if (image_bounds.width() * image_bounds.height() >=
@@ -1619,8 +1631,8 @@ void LensOverlayController::AddBoundingBoxesToInitializationData(
       significant_region_boxes.size() > (unsigned long)max_regions) {
     significant_region_boxes.resize(max_regions);
   }
-  initialization_data->significant_region_boxes_ =
-      std::move(significant_region_boxes);
+
+  return significant_region_boxes;
 }
 
 void LensOverlayController::TryUpdatePageContextualization() {
@@ -1852,6 +1864,15 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
+  // If the StartQueryFlow optimization is enabled, the page contents will not
+  // be sent with the initial image request, so we need to send it here.
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+      lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
+    lens_overlay_query_controller_->SendPageContentUpdateRequest(
+        initialization_data_->page_content_bytes_,
+        initialization_data_->page_content_type_, GetPageURL());
+  }
+
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
   if (!pending_region_) {
@@ -1874,14 +1895,9 @@ void LensOverlayController::InitializeOverlay(
   state_ = State::kOverlay;
 
   // Only start the query flow again if we don't already have a full image
-  // response.
-  if (!initialization_data_->has_full_image_response()) {
-    int device_scale_factor =
-        tab_->GetContents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
-    float page_scale_factor =
-        zoom::ZoomController::FromWebContents(tab_->GetContents())
-            ->GetZoomPercent() /
-        100.0f;
+  // response, unless the early start query flow optimization is enabled.
+  if (!initialization_data_->has_full_image_response() &&
+      !lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
     // Use std::move because significant_region_boxes_ is only used in this
     // call, which should only occur once in the lifetime of
     // LensOverlayQueryController and thus of LensOverlayController.
@@ -1890,9 +1906,9 @@ void LensOverlayController::InitializeOverlay(
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
         initialization_data_->page_content_bytes_,
-        initialization_data_->page_content_type_,
-        device_scale_factor * page_scale_factor);
+        initialization_data_->page_content_type_, GetUiScaleFactor());
   }
+
   // TODO(b/352622136): We should not start the lens request until the overlay
   // is open to prevent the side panel from opening while the overlay UI is
   // rendering.
@@ -2194,6 +2210,26 @@ void LensOverlayController::OnZeroSuggestShown() {
   if (IsContextualSearchbox()) {
     contextual_zps_shown_in_session_ = true;
   }
+}
+
+std::optional<std::string> LensOverlayController::GetPageTitle() {
+  std::optional<std::string> page_title;
+  content::WebContents* active_web_contents = tab_->GetContents();
+  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
+    page_title = std::make_optional<std::string>(
+        base::UTF16ToUTF8(active_web_contents->GetTitle()));
+  }
+  return page_title;
+}
+
+float LensOverlayController::GetUiScaleFactor() {
+  int device_scale_factor =
+      tab_->GetContents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+  float page_scale_factor =
+      zoom::ZoomController::FromWebContents(tab_->GetContents())
+          ->GetZoomPercent() /
+      100.0f;
+  return device_scale_factor * page_scale_factor;
 }
 
 void LensOverlayController::OnSidePanelDidOpen() {
@@ -2641,8 +2677,6 @@ void LensOverlayController::HandleStartQueryResponse(
     std::vector<lens::mojom::OverlayObjectPtr> objects,
     lens::mojom::TextPtr text,
     bool is_error) {
-  CHECK(page_);
-
   // If the full image response fails, the side panel should show the error page
   // since interaction requests will not work.
   SetSidePanelShowErrorPage(/*should_show_error_page=*/is_error);

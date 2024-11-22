@@ -3876,6 +3876,58 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
+class LensOverlayControllerBrowserStartQueryFlowOptimization
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"results-search-url", kResultsSearchBaseUrl},
+           {"use-dynamic-theme", "true"},
+           {"use-dynamic-theme-min-population-pct", "0.002"},
+           {"use-dynamic-theme-min-chroma", "3.0"}}},
+         {lens::features::kLensOverlayContextualSearchbox,
+          {
+              {"use-inner-text-as-context", "true"},
+              {"use-inner-html-as-context", "true"},
+          }},
+         {lens::features::kLensOverlaySurvey, {}},
+         {lens::features::kLensOverlayLatencyOptimizations,
+          {{"enable-early-start-query-flow-optimization", "true"}}}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserStartQueryFlowOptimization,
+                       CsbPageContentsAreStillUploaded) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state. This also tests that
+  // the start query flow optimization doesn't break the overlay initialization
+  // flow.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          controller->get_lens_overlay_query_controller_for_testing());
+
+  // With the start query flow optimization, the page contents will not be
+  // uploaded with the full image request. This checks that that the page
+  // contents are still uploaded at some point after the overlay is
+  // initialized.
+  EXPECT_FALSE(
+      fake_query_controller->sent_full_image_objects_request().has_payload());
+  EXPECT_EQ(fake_query_controller->last_sent_underlying_content_type(),
+            lens::MimeType::kPlainText);
+}
+
 class LensOverlayControllerBrowserFullscreenDisabled
     : public LensOverlayControllerBrowserTest {
  protected:

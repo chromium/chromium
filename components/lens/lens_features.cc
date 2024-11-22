@@ -239,11 +239,16 @@ constexpr base::FeatureParam<int>
         &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
 
 constexpr base::FeatureParam<bool> kEnableClusterInfoOptimization{
-    &kLensOverlayLatencyOptimizations, "enable-cluster-info-optimization", true};
+    &kLensOverlayLatencyOptimizations, "enable-cluster-info-optimization",
+    true};
 
 constexpr base::FeatureParam<bool> kEnableEarlyInteractionOptimization{
     &kLensOverlayLatencyOptimizations, "enable-early-interaction-optimization",
     true};
+
+constexpr base::FeatureParam<bool> kEnableEarlyStartQueryFlowOptimization{
+    &kLensOverlayLatencyOptimizations,
+    "enable-early-start-query-flow-optimization", true};
 
 constexpr base::FeatureParam<bool> kUsePdfsAsContext{
     &kLensOverlayContextualSearchbox, "use-pdfs-as-context", false};
@@ -775,6 +780,11 @@ bool IsLensOverlayClusterInfoOptimizationEnabled() {
 bool IsLensOverlayEarlyInteractionOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
          kEnableEarlyInteractionOptimization.Get();
+}
+
+bool IsLensOverlayEarlyStartQueryFlowOptimizationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayLatencyOptimizations) &&
+         kEnableEarlyStartQueryFlowOptimization.Get();
 }
 
 base::TimeDelta GetLensOverlaySurveyResultsTime() {

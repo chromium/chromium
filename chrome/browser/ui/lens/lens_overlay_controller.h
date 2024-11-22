@@ -338,13 +338,15 @@ class LensOverlayController : public LensSearchboxClient,
   // Testing helper method for checking web view.
   views::WebView* GetOverlayWebViewForTesting();
 
-  // Send text data to the WebUI.
+  // Send text data to the WebUI, or stores it to be sent when the WebUI is
+  // ready.
   void SendText(lens::mojom::TextPtr text);
 
   // Creates theme with data obtained from `palette_id` to be sent to the WebUI.
   lens::mojom::OverlayThemePtr CreateTheme(lens::PaletteId palette_id);
 
-  // Send overlay object data to the WebUI.
+  // Send overlay object data to the WebUI, or stores it to be sent when the
+  // WebUI is ready.
   void SendObjects(std::vector<lens::mojom::OverlayObjectPtr> objects);
 
   // Send message to overlay notifying that the results side panel opened.
@@ -696,10 +698,9 @@ class LensOverlayController : public LensSearchboxClient,
   void OnInnerHtmlReceived(PageContentRetrievedCallback callback,
                            const std::optional<std::string>& result);
 
-  // Adds bounding boxes to the initialization data.
-  void AddBoundingBoxesToInitializationData(
-      OverlayInitializationData* initialization_data,
-      const std::vector<gfx::Rect>& bounds);
+  // Creates the mojo bounding boxes for the significant regions.
+  std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(
+      const std::vector<gfx::Rect>& all_bounds);
 
   // Tries to fetch the underlying page content bytes and update the query flow
   // with them.
@@ -802,6 +803,12 @@ class LensOverlayController : public LensSearchboxClient,
   void OnPageBound() override;
   void ShowGhostLoaderErrorState() override;
   void OnZeroSuggestShown() override;
+
+  // Gets the page title.
+  std::optional<std::string> GetPageTitle();
+
+  // Gets the ui scale factor of the page.
+  float GetUiScaleFactor();
 
   // Called anytime the side panel opens. Used to close lens overlay when
   // another side panel opens.
