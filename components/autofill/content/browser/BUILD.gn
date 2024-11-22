@@ -47,7 +47,6 @@ static_library("browser") {
     ":autofill_shared_storage_proto",
     "//base:i18n",
     "//components/autofill/content/common:features",
-    "//components/os_crypt/sync",
     "//components/prefs",
     "//components/profile_metrics",
     "//components/resources",
