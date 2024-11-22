@@ -315,7 +315,7 @@ interface LensSidePanelPage {
 // WebUI page handler for request from Browser side.
 // (C++ -> TypeScript)
 interface LensGhostLoaderPage {
-  // Notify the ghost loader that the autocomplete stop timer has triggered.
-  // This will hide the ghost loader and show the error state.
-  NotifyAutocompleteStopTimerTriggered();
+  // Notify the ghost loader to show error state. This can happen when the
+  // autocomplete stop timer triggers or when empty results are returned.
+  ShowErrorState();
 };
