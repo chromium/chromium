@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -129,6 +130,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
@@ -144,6 +146,7 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -741,6 +744,12 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   ValidateStateStack(c);
 }
 
+void BaseRenderingContext2D::OnPlaceElementStateChanged(Element& element) {
+  element.SetNeedsStyleRecalc(
+      StyleChangeType::kLocalStyleChange,
+      StyleChangeReasonForTracing::Create("placeElement"));
+}
+
 void BaseRenderingContext2D::ResetInternal() {
   if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kReset);
@@ -750,6 +759,12 @@ void BaseRenderingContext2D::ResetInternal() {
   state_stack_.front() = MakeGarbageCollected<CanvasRenderingContext2DState>();
   layer_count_ = 0;
   SetIsTransformInvertible(true);
+
+  for (Element* element : placed_elements_.Keys()) {
+    OnPlaceElementStateChanged(*element);
+  }
+  placed_elements_.clear();
+
   CanvasPath::Clear();
   if (MemoryManagedPaintRecorder* recorder = Recorder(); recorder != nullptr) {
     recorder->RestartRecording();
@@ -2010,6 +2025,67 @@ static inline void ClipRectsToImageRect(const gfx::RectF& image_rect,
   dst_rect->Offset(offset);
 }
 
+void BaseRenderingContext2D::placeElement(Element* element,
+                                          double x,
+                                          double y,
+                                          ExceptionState& exception_state) {
+  HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
+  DCHECK(canvas);
+
+  if (element->parentElement() != canvas) {
+    exception_state.ThrowTypeError(
+        "Only immediate children of the <canvas> element can be used with "
+        "placeElement().");
+    return;
+  }
+
+  if (IsA<HTMLCanvasElement>(element)) {
+    exception_state.ThrowTypeError(
+        "<canvas> elements cannot be used with placeElement().");
+    return;
+  }
+
+  // TODO(crbug.com/380277045): Only taint for x-origin content.
+  SetOriginTaintedByContent();
+
+  if (!canvas->HasPlacedElements()) {
+    // If this is the first time placeElement() is called, its possible that the
+    // canvas contains fallback content that has been ignored and needs to be
+    // laid out.
+    canvas->SetForceReattachLayoutTree();
+    canvas->SetNeedsStyleRecalc(
+        StyleChangeType::kLocalStyleChange,
+        StyleChangeReasonForTracing::Create("placeElement"));
+  }
+
+  if (placed_elements_.Contains(element)) {
+    // Clear the old deferred paint record so it does not appear.
+    placed_elements_.at(element)->Clear();
+  }
+
+  scoped_refptr<CanvasDeferredPaintRecord> deferred_paint_record =
+      base::MakeRefCounted<CanvasDeferredPaintRecord>();
+
+  cc::PaintImage paint_image =
+      PaintImageBuilder::WithDefault()
+          .set_id(PaintImage::GetNextId())
+          .set_deferred_paint_record(deferred_paint_record)
+          .TakePaintImage();
+
+  placed_elements_.Set(element, deferred_paint_record);
+  deferred_paint_record->SetIsDirty(true);
+  element->SetNeedsStyleRecalc(
+      StyleChangeType::kLocalStyleChange,
+      StyleChangeReasonForTracing::Create("placeElement"));
+
+  // TODO(https://issues.chromium.org/379143301): Figure out the actual visual
+  // rect of the element.
+  WillDraw(SkIRect::MakeXYWH(0, 0, Width(), Height()),
+           CanvasPerformanceMonitor::DrawType::kOther);
+
+  GetOrCreatePaintCanvas()->drawImage(paint_image, x, y);
+}
+
 void BaseRenderingContext2D::drawImage(const V8CanvasImageSource* image_source,
                                        double x,
                                        double y,
@@ -2344,22 +2420,6 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
                                : CanvasRenderingContext2DState::kNonOpaqueImage,
       CanvasPerformanceMonitor::DrawType::kImage);
-}
-
-// TODO(b/349835587): This is just a stub for now.
-void BaseRenderingContext2D::placeElement(Element* element,
-                                          double x,
-                                          double y,
-                                          ExceptionState& exception_state) {
-  HTMLCanvasElement* canvas = HostAsHTMLCanvasElement();
-  if (!element->IsDescendantOf(canvas)) {
-    exception_state.ThrowTypeError(
-        "Only elements that are part of the canvas fallback content subtree "
-        "(i.e. children of the <canvas> element) can be used with "
-        "placeElement().");
-  }
-
-  canvas->SetHasPlacedElements();
 }
 
 bool BaseRenderingContext2D::RectContainsTransformedRect(

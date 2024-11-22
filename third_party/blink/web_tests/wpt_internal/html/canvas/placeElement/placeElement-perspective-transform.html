@@ -4,11 +4,13 @@
   <title>CanvasRenderingContext2D.PlaceElement()</title>
   <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
   <link rel="help" href="https://github.com/WICG/canvas-place-element" />
-  <link rel="match" href="placeElement-ref.html">
+  <meta name="assert" content="Checks that canvas placed elements are
+    affected by perspective transforms.">
+  <link rel="match" href="placeElement-perspective-transform-ref.html">
   <style>
     #fallback {
       background-color: green;
-      width: auto;
+      transform: perspective(1cm) rotateY(30deg);
     }
   </style>
 </head>
@@ -21,5 +23,11 @@
 
 <script>
   const ctx = document.querySelector("canvas").getContext("2d");
-  ctx.placeElement(document.getElementById("fallback"), 0, 0);
+  const fallback = document.getElementById("fallback");
+  ctx.placeElement(fallback, 100, 50);
+
+  function setTransform() {
+    fallback.style.transform = "perspective(5cm) rotateY(30deg)";
+  }
+  requestAnimationFrame(setTransform);
 </script>

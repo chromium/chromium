@@ -51,6 +51,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
 
   bool IsComposited() const;
   bool IsResourceValid();
+  virtual bool HasPlacedElements() const { return false; }
   gfx::Size Size() const { return size_; }
   virtual void SetSize(gfx::Size size) { size_ = size; }
 

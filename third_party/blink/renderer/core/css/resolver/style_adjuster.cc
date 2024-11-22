@@ -669,12 +669,25 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
 // g-issues.chromium.org/issues/349835587
 // https://github.com/WICG/canvas-place-element
 static bool IsCanvasPlacedElement(const Element* element) {
-  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element) {
-    // Only want to do the different layout if placeElement has been called.
+  if (RuntimeEnabledFeatures::CanvasPlaceElementEnabled() && element &&
+      element->IsInCanvasSubtree()) {
+    // Placed elements are always immediate children of the canvas.
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
       return canvas->HasPlacedElements();
     }
+  }
+
+  return false;
+}
+
+static bool IsCanvasWithPlacedElements(const Element* element) {
+  if (!RuntimeEnabledFeatures::CanvasPlaceElementEnabled() || !element) {
+    return false;
+  }
+
+  if (const auto* canvas = DynamicTo<HTMLCanvasElement>(element)) {
+    return canvas->HasPlacedElements();
   }
 
   return false;
@@ -1114,7 +1127,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.Overlay() == EOverlay::kAuto ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasPlacedElement(element)) {
+      IsCanvasPlacedElement(element) || IsCanvasWithPlacedElements(element)) {
     builder.SetForcesStackingContext(true);
   }
 

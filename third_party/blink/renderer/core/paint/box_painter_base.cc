@@ -460,7 +460,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
     BackgroundBleedAvoidance bleed_avoidance,
     PhysicalBoxSides sides_to_include,
     bool is_inline,
-    bool is_painting_background_in_contents_space)
+    bool is_painting_background_in_contents_space,
+    PaintFlags paint_flags)
     : image(layer.GetImage()),
       color(bg_color),
       respect_image_orientation(style.ImageOrientation()),
@@ -520,7 +521,8 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   bool composite_bgcolor_animation =
       RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
       style.HasCurrentBackgroundColorAnimation() &&
-      layer.GetType() == EFillLayerType::kBackground;
+      layer.GetType() == EFillLayerType::kBackground &&
+      !(PaintFlag::kPlacedElement & paint_flags);
   // When background color animation is running on the compositor thread, we
   // need to trigger repaint even if the background is transparent to collect
   // artifacts in order to run the animation on the compositor.
@@ -1158,7 +1160,8 @@ void BoxPainterBase::PaintFillLayer(
 
   const FillLayerInfo fill_layer_info =
       GetFillLayerInfo(color, bg_layer, bleed_avoidance,
-                       paint_info.IsPaintingBackgroundInContentsSpace());
+                       paint_info.IsPaintingBackgroundInContentsSpace(),
+                       paint_info.GetPaintFlags());
   // If we're not actually going to paint anything, abort early.
   if (!fill_layer_info.should_paint_image &&
       !fill_layer_info.should_paint_color)

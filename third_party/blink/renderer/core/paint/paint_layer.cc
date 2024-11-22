@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
@@ -72,7 +73,9 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
+#include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -2333,6 +2336,31 @@ bool PaintLayer::ComputeHasFilterThatMovesPixels() const {
   return false;
 }
 
+void InvalidateParentCanvasForPlacedElement(PaintLayer* layer) {
+  // The placed element itself is guaranteed to be the direct descendant of a
+  // canvas and both will have their own paint layers.
+  PaintLayer* child_layer;
+  while (layer) {
+    if (layer->GetLayoutObject().IsCanvas()) {
+      layer->SetNeedsRepaint();
+      Element* placed_element =
+          To<Element>(child_layer->GetLayoutObject().GetNode());
+      To<LayoutHTMLCanvas>(layer->GetLayoutObject())
+          .DidInvalidatePaintForPlacedElement(placed_element);
+      return;
+    }
+    child_layer = layer;
+    layer = layer->Parent();
+  }
+}
+
+static bool IsCanvasDescendant(LayoutObject* layout_object) {
+  return layout_object && layout_object->GetNode() &&
+         layout_object->GetNode()->IsHTMLElement() &&
+         !layout_object->IsCanvas() &&
+         To<HTMLElement>(layout_object->GetNode())->IsInCanvasSubtree();
+}
+
 void PaintLayer::SetNeedsRepaint() {
   if (self_needs_repaint_)
     return;
@@ -2340,6 +2368,12 @@ void PaintLayer::SetNeedsRepaint() {
   // Invalidate as a display item client.
   static_cast<DisplayItemClient*>(this)->Invalidate();
   MarkCompositingContainerChainForNeedsRepaint();
+
+  // If this layer is a descendant of a canvas then it may be part of a placed
+  // element subtree and the canvas itself needs to be invalidated.
+  if (IsCanvasDescendant(layout_object_)) {
+    InvalidateParentCanvasForPlacedElement(this);
+  }
 }
 
 void PaintLayer::SetDescendantNeedsRepaint() {

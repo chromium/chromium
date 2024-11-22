@@ -42,6 +42,7 @@ const char kLinkColorChange[] = "LinkColorChange";
 const char kNodeInserted[] = "Node was inserted into tree";
 const char kPictureSourceChanged[] = "PictureSourceChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
+const char kPlaceElement[] = "placeElement";
 const char kPluginChanged[] = "Plugin Changed";
 const char kPopoverVisibilityChange[] = "Popover Visibility Change";
 const char kPositionTryChange[] = "@position-try change";

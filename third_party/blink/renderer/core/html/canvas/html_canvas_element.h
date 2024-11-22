@@ -67,6 +67,7 @@ class CanvasHighDynamicRangeOptions;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
 class CanvasResourceProvider;
+class Element;
 class GraphicsContext;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
@@ -288,9 +289,9 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void UpdateSuspendOffscreenCanvasAnimation();
 
-  void SetHasPlacedElements();
-
-  bool HasPlacedElements() const { return has_placed_elements_; }
+  bool HasPlacedElements() const final;
+  void PaintPlacedElements() const;
+  void MarkPlacedElementDirty(Element* placedElement);
 
   // Gets the settings of this Html Canvas Element. If there is a frame, it will
   // return the settings from the frame. If it is a frameless element it will
@@ -432,10 +433,6 @@ class CORE_EXPORT HTMLCanvasElement final
   mutable intptr_t externally_allocated_memory_;
 
   scoped_refptr<StaticBitmapImage> transparent_image_;
-
-  // When the underlying context uses placeElement() layout needs to be run on
-  // the fallback content.
-  bool has_placed_elements_ = false;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

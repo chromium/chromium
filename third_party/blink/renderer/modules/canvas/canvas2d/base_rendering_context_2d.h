@@ -258,11 +258,12 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void fillRect(double x, double y, double width, double height);
   void strokeRect(double x, double y, double width, double height);
 
-  // https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md
+  // https://github.com/WICG/canvas-place-element
   void placeElement(Element* element,
                     double x,
                     double y,
                     ExceptionState& exception_state);
+  void OnPlaceElementStateChanged(Element& element);
   void drawImage(const V8CanvasImageSource* image_source,
                  double x,
                  double y,

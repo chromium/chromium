@@ -3,11 +3,12 @@
 <head>
   <title>CanvasRenderingContext2D.PlaceElement() respects context transform</title>
   <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
-  <link rel="help" href="https://github.com/Igalia/explainers/blob/main/canvas-formatted-text/html-in-canvas.md" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
   <link rel="match" href="placeElement-transform-ref.html">
+  <!-- Anti-aliasing differences need fuzzy matching -->
+  <meta name=fuzzy content="maxDifference=0-255;totalPixels=0-400">
   <style>
     #fallback {
-      will-change: transform;
       background-color: green;
       width: 100px;
       height: 50px;

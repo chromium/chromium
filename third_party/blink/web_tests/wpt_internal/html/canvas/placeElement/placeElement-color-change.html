@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 
+<html class="reftest-wait">
+
 <head>
-  <title>CanvasRenderingContext2D.PlaceElement()</title>
+  <title>CanvasRenderingContext2D.PlaceElement(): Color change invalidations work.</title>
   <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
   <link rel="help" href="https://github.com/WICG/canvas-place-element" />
   <link rel="match" href="placeElement-ref.html">
   <style>
     #fallback {
       background-color: green;
-      width: auto;
+      color: magenta;
     }
   </style>
 </head>
@@ -21,5 +23,15 @@
 
 <script>
   const ctx = document.querySelector("canvas").getContext("2d");
-  ctx.placeElement(document.getElementById("fallback"), 0, 0);
+  const fallback = document.getElementById("fallback");
+  ctx.placeElement(fallback, 0, 0);
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      fallback.style.color = "black";
+      document.documentElement.classList.remove("reftest-wait");
+    }, 0);
+  });
 </script>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<head>
+  <title>CanvasRenderingContext2D.PlaceElement() taints canvas</title>
+  <link rel="author" title="Aaron Krajeski" href="mailto:aaronhk@chromium.org" />
+  <link rel="help" href="https://github.com/WICG/canvas-place-element" />
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+</head>
+
+<body>
+  <canvas>
+    <!-- An x-origin image -->
+    <img id="placedImage" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTirmtQgndziW4ni4Rxud431QLqxAPHqnXJSQ&s">
+  </canvas>
+</body>
+
+<script>
+  const canvas = document.querySelector("canvas");
+  const ctx = canvas.getContext("2d");
+  const xOriginImageElement = document.getElementById("placedImage");
+  const image = new Image();
+  image.src = xOriginImageElement.src;
+
+  // TODO(crbug.com/380277045): Test that non-x-origin content does not taint.
+  promise_test(async (t) => {
+    image.onload = function() {
+      ctx.placeElement(xOriginImageElement, 0, 0);
+      assert_throws_dom('SecurityError', () => { canvas.toDataURL(); });
+    }
+  }, 'Canvases with x-origin placed elements are considered tainted');
+</script>

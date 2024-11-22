@@ -19,8 +19,8 @@ void CanvasDeferredPaintRecord::SetPaintRecord(cc::PaintRecord record,
 }
 
 void CanvasDeferredPaintRecord::Clear() {
-  paint_record_.empty();
   size_ = gfx::SizeF(0, 0);
+  is_dirty_ = false;
 }
 
 gfx::SizeF CanvasDeferredPaintRecord::GetSize() const {

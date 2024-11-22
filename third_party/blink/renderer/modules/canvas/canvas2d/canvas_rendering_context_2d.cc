@@ -39,17 +39,18 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "cc/layers/texture_layer.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "third_party/blink/public/common/features.h"
@@ -82,6 +83,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -93,6 +95,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -101,7 +104,8 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"  // IWYU pragma: keep (https://github.com/clangd/clangd/issues/2044)
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
@@ -776,6 +780,75 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
           CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   return BaseRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
+}
+
+bool CanvasRenderingContext2D::HasPlacedElements() const {
+  return !placed_elements_.empty();
+}
+
+void CanvasRenderingContext2D::PaintPlacedElements() {
+  bool placed_elements_need_repainting = false;
+  for (auto deferred_paint_record : placed_elements_.Values()) {
+    if (deferred_paint_record->IsDirty()) {
+      placed_elements_need_repainting = true;
+      break;
+    }
+  }
+
+  if (!placed_elements_need_repainting) {
+    return;
+  }
+
+  DCHECK_EQ(canvas()->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::LifecycleState::kInPaint);
+
+  for (auto& [element, deferred_paint_image] : placed_elements_) {
+    if (!element->GetLayoutBox() || element->parentElement() != canvas()) {
+      // The element is no longer visible or has been reparented.
+      deferred_paint_image->Clear();
+      continue;
+    }
+
+    if (!deferred_paint_image->IsDirty()) {
+      continue;
+    }
+
+    PaintRecordBuilder builder;
+    LayoutBox* layout_box = element->GetLayoutBox();
+    // All placed elements should have their own stacking contexts.
+    CHECK(layout_box->HasLayer());
+    CHECK(layout_box->IsStacked());
+    PaintLayer* layer = layout_box->EnclosingLayer();
+
+    PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
+    paint_layer_painter.Paint(builder.Context(), PaintFlag::kPlacedElement);
+
+    PropertyTreeState property_tree_state = layer->GetLayoutObject()
+                                                .FirstFragment()
+                                                .LocalBorderBoxProperties()
+                                                .Unalias();
+
+    cc::PaintRecord placed_element_picture =
+        builder.EndRecording(property_tree_state);
+
+    cc::RecordPaintCanvas canvas;
+    canvas.drawPicture(placed_element_picture);
+
+    // TODO(https://issues.chromium.org/379143302): Take the border box bounds
+    // of the layout object by walking over the paint chunks to compute the
+    // painted size.
+    deferred_paint_image->SetPaintRecord(
+        placed_element_picture, gfx::SizeF(layer->GetLayoutBox()->Size()));
+    deferred_paint_image->SetIsDirty(false);
+  }
+}
+
+void CanvasRenderingContext2D::MarkPlacedElementDirty(Element* placedElement) {
+  if (!placed_elements_.Contains(placedElement)) {
+    return;
+  }
+
+  placed_elements_.at(placedElement)->SetIsDirty(true);
 }
 
 void CanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {

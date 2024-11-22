@@ -533,6 +533,14 @@ static bool NeedsPaintOffsetTranslation(
     return true;
   }
 
+  // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
+  // IsCanvasPlacedElement() funciton?
+  if (object.Parent() && object.Parent()->IsCanvas()) {
+    // The object is being drawn by placeElement and should ignore the ignore
+    // the paint offset.
+    return true;
+  }
+
   if (NeedsIsolationNodes(box_model)) {
     DCHECK(box_model.HasLayer());
     return true;

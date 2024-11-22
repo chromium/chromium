@@ -128,6 +128,19 @@ class CORE_EXPORT CanvasRenderingContext
     return canvas_rendering_type_ == CanvasRenderingAPI::kWebgpu;
   }
 
+  // ---------------------------------------------------------------------- //
+  // ctx.placeElement() API. Used exclusively with CanvasRenderingContext2D.
+
+  // Elements placed with ctx.placeElement() hold CanvasDeferredPaintRecords,
+  // which are painted into with this function during
+  // HTMLCanvasElement::PaintInternal.
+  virtual void PaintPlacedElements() {}
+  // Returns true if any element has been drawn to the canvas.
+  virtual bool HasPlacedElements() const { return false; }
+  // Element needs to be redrawn
+  virtual void MarkPlacedElementDirty(Element* element) {}
+  // ---------------------------------------------------------------------- //
+
   // ActiveScriptWrappable
   // As this class inherits from ActiveScriptWrappable, as long as
   // HasPendingActivity returns true, we can ensure that the Garbage Collector
