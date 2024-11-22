@@ -171,13 +171,7 @@ std::string Base64DecodeData(const std::string& data) {
 
 // Returns true if a local state seed should be used.
 bool ShouldUseLocalStateSeed() {
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  return true;
-#else
   return base::FieldTrialList::FindFullName(kSeedFileTrial) != kSeedFilesGroup;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Sample seeds and the server produced delta between them to verify that the
@@ -766,14 +760,6 @@ TEST_P(StoreSeedDataSeedFilesGroupTest, StoreSeedData) {
   ASSERT_TRUE(StoreSeedData(seed_store, serialized_seed));
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
-
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  // Make sure seed in local state prefs matches the one created.
-  EXPECT_EQ(prefs_.GetString(prefs::kVariationsCompressedSeed),
-            GzipAndBase64Encode(serialized_seed));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Make sure seed in seed file matches the one created.
   std::string seed_file_data;
@@ -1476,15 +1462,6 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest, StoreSafeSeed_ValidSignature) {
   EXPECT_EQ(seed_file_data, Gzip(expected_seed));
 
   // Verify that safe-seed-related prefs were successfully stored.
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  std::string decoded_compressed_seed;
-  ASSERT_TRUE(
-      base::Base64Decode(prefs_.GetString(prefs::kVariationsSafeCompressedSeed),
-                         &decoded_compressed_seed));
-  EXPECT_EQ(Gzip(expected_seed), decoded_compressed_seed);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedSignature),
             expected_signature);
   EXPECT_EQ(prefs_.GetString(prefs::kVariationsSafeSeedLocale),
@@ -1539,12 +1516,6 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
 
   // Verify the latest seed value was copied before the safe seed was
   // overwritten.
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(base64_old_seed,
-            prefs_.GetString(prefs::kVariationsCompressedSeed));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(compressed_old_seed,
             seed_store.GetSeedReaderWriterForTesting()->GetSeedData().data);
   // Verify that loading the stored seed returns the old seed value.
@@ -1558,12 +1529,6 @@ TEST_P(StoreSafeSeedDataSeedFilesGroupTest,
   EXPECT_EQ(old_seed_data, loaded_seed_data);
 
   // Verify that the seed file indeed contains the new seed's serialized value.
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(GzipAndBase64Encode(new_seed_data),
-            prefs_.GetString(prefs::kVariationsSafeCompressedSeed));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(Gzip(new_seed_data),
             seed_store.GetSafeSeedReaderWriterForTesting()->GetSeedData().data);
   VariationsSeed loaded_safe_seed;

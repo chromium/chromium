@@ -116,15 +116,6 @@ void SeedReaderWriter::StoreValidatedSeed(std::string_view compressed_seed_data,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(compressed_seed_data);
-    // TODO(crbug.com/379327745): Remove build flag directive when early boot
-    // can participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-    // Maintain local state for CrOS clients because CrOS early boot code paths
-    // do not provide entropy providers. Without entropy, clients use a
-    // local-state-based seed during early boot despite possibly being in the
-    // treatment group when using Chrome.
-    local_state_->SetString(seed_pref_, base64_seed_data);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   } else {
     local_state_->SetString(seed_pref_, base64_seed_data);
   }
@@ -135,15 +126,6 @@ void SeedReaderWriter::ClearSeed() {
   // TODO(crbug.com/372009105): Remove if-statements when experiment has ended.
   if (ShouldUseSeedFile()) {
     ScheduleSeedFileWrite(std::string());
-    // TODO(crbug.com/379327745): Remove build flag directive when early boot
-    // can participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-    // Maintain local state for CrOS clients because CrOS early boot code paths
-    // do not provide entropy providers. Without entropy, clients use a
-    // local-state-based seed during early boot despite possibly being in the
-    // treatment group when using Chrome.
-    local_state_->ClearPref(seed_pref_);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   } else {
     local_state_->ClearPref(seed_pref_);
     // Although only clients in the treatment group write seeds to dedicated
@@ -244,20 +226,9 @@ void SeedReaderWriter::ReadSeedFile() {
                         : "Latest"}),
       success);
 
-  // Maintain local state regardless of client's trial group for CrOS because
-  // CrOS clients cannot be in the treatment during early boot as the code path
-  // does not provide an entropy provider. This may lead to a case where a
-  // client is inelligible for the treatment group during early boot and uses a
-  // local-state-based seed. The same client may then launch Chrome, join the
-  // treatment group, and clear their local-state-based seed. Upon booting CrOS,
-  // that client will then be using an empty/ cleared local-state-based seed.
-  // TODO(crbug.com/379327745): Remove build flag directive when early boot can
-  // participate in treatment group behavior.
-#if !BUILDFLAG(IS_CHROMEOS)
   // Clients using a seed file should clear seed from local state as it will no
   // longer be used.
   local_state_->ClearPref(seed_pref_);
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool SeedReaderWriter::ShouldUseSeedFile() const {

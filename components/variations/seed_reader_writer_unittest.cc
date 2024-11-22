@@ -232,12 +232,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_EQ(seed_file_data, compressed_seed);
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(local_state_.GetString(GetParam().seed_pref),
-            base64_compressed_seed);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Verifies that a seed is cleared from a seed file for clients in the SeedFiles
@@ -255,12 +249,7 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   // Create and store seed.
   const std::string compressed_seed = CreateCompressedVariationsSeed();
   ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, compressed_seed));
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  local_state_.SetString(GetParam().seed_pref,
-                         base::Base64Encode(compressed_seed));
-#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Clear seed and force write.
   seed_reader_writer.ClearSeed();
   timer_.Fire();
@@ -270,11 +259,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ClearSeed) {
   std::string seed_file_data;
   ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_THAT(seed_file_data, IsEmpty());
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Verifies clients in SeedFiles group read seeds from the seed file.
@@ -293,12 +277,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadSeedFileBasedSeed) {
       GetParam().seed_pref, GetParam().channel, entropy_providers_.get(),
       file_writer_thread_.task_runner());
 
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Ensure local state seed is cleared.
-  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   // Ensure seed data loaded from seed file.
   ASSERT_EQ(StoredSeed::StorageFormat::kCompressed,
             seed_reader_writer.GetSeedData().storage_format);
@@ -326,12 +304,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadEmptySeedFile) {
       GetParam().seed_pref, GetParam().channel, entropy_providers_.get(),
       file_writer_thread_.task_runner());
 
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Ensure local state seed is cleared.
-  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {"Variations.SeedFileRead.",
@@ -361,12 +333,6 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadMissingSeedFile) {
       GetParam().seed_pref, GetParam().channel, entropy_providers_.get(),
       file_writer_thread_.task_runner());
 
-// TODO(crbug.com/379327745): Remove build flag directive when early boot can
-// participate in treatment group behavior.
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Ensure local state seed is cleared.
-  EXPECT_THAT(local_state_.GetString(GetParam().seed_pref), IsEmpty());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
   // Ensure read failed due to seed file not existing.
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
