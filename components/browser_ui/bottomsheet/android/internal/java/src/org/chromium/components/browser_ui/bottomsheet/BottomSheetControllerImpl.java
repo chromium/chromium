@@ -37,7 +37,7 @@ import java.util.PriorityQueue;
  * and call {@link #requestShowContent(BottomSheetContent, boolean)} which will return true if the
  * content was actually shown (see full doc on method).
  */
-class BottomSheetControllerImpl implements ManagedBottomSheetController {
+class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCoordinator.Observer {
     /** The initial capacity for the priority queue handling pending content show requests. */
     private static final int INITIAL_QUEUE_CAPACITY = 1;
 
@@ -243,11 +243,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheet.addObserver(
                 new EmptyBottomSheetObserver() {
                     /**
-                     * Whether the scrim was shown for the last content.
-                     * TODO(mdjones): We should try to make sure the content in the sheet is not nulled
-                     *                prior to the close event occurring; sheets that don't have a peek
-                     *                state make this difficult since the sheet needs to be hidden before it
-                     *                is closed.
+                     * Whether the scrim was shown for the last content. TODO(mdjones): We should
+                     * try to make sure the content in the sheet is not nulled prior to the close
+                     * event occurring; sheets that don't have a peek state make this difficult
+                     * since the sheet needs to be hidden before it is closed.
                      */
                     private boolean mScrimShown;
 
@@ -322,6 +321,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                     }
                 });
 
+        mScrimCoordinatorSupplier.get().addObserver(this);
         // Add any of the pending observers that were added prior to the sheet being created.
         for (int i = 0; i < mPendingSheetObservers.size(); i++) {
             mBottomSheet.addObserver(mPendingSheetObservers.get(i));
@@ -671,8 +671,23 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         return mBottomSheet.isSmallScreen();
     }
 
+    // ScrimCoordinator.Observer
+    @Override
+    public void scrimVisibilityChanged(boolean scrimVisible) {
+        if (mBottomSheet == null) return;
+        if (scrimVisible && mBottomSheet.isSheetOpen()) {
+            // Scrimmed bottom sheet. Draw the bottom sheet container on top of all sibling views.
+            mBottomSheetContainer.setZ(1.0f);
+        } else {
+            // Unscrimmed bottom sheet. Draw the bottom sheet container in its "natural" order; i.e.
+            // in the order specified in res_app/layout/main.xml.
+            mBottomSheetContainer.setZ(0.0f);
+        }
+    }
+
     /**
      * Remove all contents from {@code iterator} that don't have a custom lifecycle.
+     *
      * @param iterator The iterator whose items must be removed.
      */
     private void clearRequests(Iterator<BottomSheetContent> iterator) {

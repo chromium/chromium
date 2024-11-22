@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.PayloadCallbackHelper;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.Observer;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
@@ -492,6 +493,46 @@ public class ScrimTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> firstModel.set(ScrimProperties.BACKGROUND_COLOR, Color.GREEN));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Scrim"})
+    public void testScrimVisibilityObserver() throws TimeoutException {
+        class TestScrimVisibilityObserver implements Observer {
+            public boolean mVisible;
+
+            @Override
+            public void scrimVisibilityChanged(boolean scrimVisible) {
+                mVisible = scrimVisible;
+            }
+        }
+        TestScrimVisibilityObserver o1 = new TestScrimVisibilityObserver();
+        TestScrimVisibilityObserver o2 = new TestScrimVisibilityObserver();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o1));
+        PropertyModel firstModel = buildModel(false, false, true, Color.RED);
+        showScrim(firstModel, false);
+
+        assertTrue(o1.mVisible);
+        assertFalse(o2.mVisible);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.addObserver(o2));
+
+        showScrim(buildModel(false, false, true, Color.BLUE), false);
+
+        assertTrue(o1.mVisible);
+        // No update for o2 yet since the visibility hasn't changed.
+        assertFalse(o2.mVisible);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mScrimCoordinator.hideScrim(false));
+        assertFalse(o1.mVisible);
+        assertFalse(o2.mVisible);
+
+        showScrim(buildModel(false, false, true, Color.BLUE), false);
+
+        assertTrue(o1.mVisible);
+        assertTrue(o2.mVisible);
     }
 
     /**

@@ -123,26 +123,27 @@ public class BottomSheetObserverTest {
         ViewGroup rootView = sTestRule.getActivity().findViewById(android.R.id.content);
         ThreadUtils.runOnUiThreadBlocking(() -> rootView.removeAllViews());
 
-        mScrimCoordinator =
-                new ScrimCoordinator(
-                        sTestRule.getActivity(),
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {
-                                // Intentional noop
-                            }
-                        },
-                        rootView,
-                        Color.WHITE);
-
         mBottomSheetController =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
+                            mScrimCoordinator =
+                                    new ScrimCoordinator(
+                                            sTestRule.getActivity(),
+                                            new ScrimCoordinator.SystemUiScrimDelegate() {
+                                                @Override
+                                                public void setStatusBarScrimFraction(
+                                                        float scrimFraction) {
+                                                    // Intentional noop
+                                                }
+
+                                                @Override
+                                                public void setNavigationBarScrimFraction(
+                                                        float scrimFraction) {
+                                                    // Intentional noop
+                                                }
+                                            },
+                                            rootView,
+                                            Color.WHITE);
                             Supplier<ScrimCoordinator> scrimSupplier = () -> mScrimCoordinator;
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(

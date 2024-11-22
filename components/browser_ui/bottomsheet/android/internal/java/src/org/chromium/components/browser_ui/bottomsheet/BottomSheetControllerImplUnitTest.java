@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -121,5 +122,17 @@ public class BottomSheetControllerImplUnitTest {
         when(mAppHeaderState.getUnoccludedRectWidth()).thenReturn(100);
         mController.onAppHeaderStateChanged(newAppHeaderState);
         verify(mBottomSheet, times(1)).onAppHeaderHeightChanged(APP_HEADER_HEIGHT);
+    }
+
+    @Test
+    public void testScrimZOrdering() {
+        mController.runSheetInitializerForTesting();
+        doReturn(true).when(mBottomSheet).isSheetOpen();
+
+        mController.scrimVisibilityChanged(true);
+        verify(mRoot).setZ(1.0f);
+
+        mController.scrimVisibilityChanged(false);
+        verify(mRoot).setZ(0.0f);
     }
 }
