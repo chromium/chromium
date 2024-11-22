@@ -1473,8 +1473,7 @@ void PasswordManager::ProcessAutofillPredictions(
   if (password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
         client_->GetLogManager());
-    logger->LogFormDataWithServerPredictions(Logger::STRING_SERVER_PREDICTIONS,
-                                             form, predictions);
+    logger->LogFormDataWithServerPredictions(form, predictions);
   }
 
   // `driver` might be null in tests.
@@ -1536,6 +1535,13 @@ void PasswordManager::ProcessClassificationModelPredictions(
         field_predictions) {
   classifier_model_predictions_[std::make_pair(driver, form.renderer_id())] =
       std::move(field_predictions);
+
+  std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
+  if (password_manager_util::IsLoggingActive(client_)) {
+    logger = std::make_unique<BrowserSavePasswordProgressLogger>(
+        client_->GetLogManager());
+    logger->LogFormDataWithModelPredictions(form, field_predictions);
+  }
   // TODO(crbug.com/371933424): Utilize these predictions for parsing.
 }
 
