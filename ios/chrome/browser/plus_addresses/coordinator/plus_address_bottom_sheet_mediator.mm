@@ -145,6 +145,8 @@ enum class PlusAddressAction {
 #pragma mark - PlusAddressErrorAlertDelegate
 
 - (void)didAcceptAffiliatedPlusAddressSuggestion {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.AffiliationErrorFilledExisting"));
   [_delegate runAutofillCallback:_reservedPlusAddress];
   [_consumer dismissBottomSheet];
 }

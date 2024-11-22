@@ -186,3 +186,17 @@ TEST_F(PlusAddressBottomSheetMediatorTest, DidTapRefresh) {
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
+
+// Ensure the consumer is notified when affiliated suggestion is accepted during
+// creation.
+TEST_F(PlusAddressBottomSheetMediatorTest,
+       DidAcceptAffiliatedPlusAddressSuggestion) {
+  base::UserActionTester user_action_tester;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  OCMExpect([consumer_ dismissBottomSheet]);
+  [mediator() didAcceptAffiliatedPlusAddressSuggestion];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.AffiliationErrorFilledExisting"),
+            1);
+}
