@@ -3437,7 +3437,10 @@ source_set("browser") {
       "tracing/trace_report/trace_report_internals_ui.h",
     ]
 
-    deps += [ "//content/browser/devtools:devtools_resources_extern" ]
+    deps += [
+      "//content/browser/devtools:devtools_resources",
+      "//content/browser/devtools:devtools_resources_extern",
+    ]
   }
 
   if (is_win) {
