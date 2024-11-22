@@ -212,7 +212,7 @@ void BrowserActions::InitializeBrowserActions() {
 
           // Toggle the Lens overlay. There's no need to show or hide the side
           // panel as the overlay controller will handle that.
-          if (controller->IsOverlayShowing()) {
+          if (controller->IsOverlayActive()) {
             controller->CloseUIAsync(
                 lens::LensOverlayDismissalSource::kToolbar);
           } else {
