@@ -231,6 +231,7 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
       // Virtual cards can appear on their own when filling the CVC for a card
       // that a merchant has saved. This indicates there could be Autofill
       // suggestions related to standalone CVC fields.
@@ -714,6 +715,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kRetrievePredictionImprovements:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kShowAccountCards:
@@ -763,6 +765,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
     case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kBnplEntry:
@@ -1041,6 +1044,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case SuggestionType::kFillExistingPlusAddress:
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kIbanEntry:
@@ -1447,6 +1451,9 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
           ->OpenPromoCodeOfferDetailsURL(suggestion.GetPayload<GURL>());
       manager_->OnSingleFieldSuggestionSelected(suggestion, query_form_,
                                                 query_field_);
+      break;
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+      // TODO(crbug.com/378165178): Add save and fill action handling.
       break;
     case SuggestionType::kShowAccountCards:
       autofill_metrics::LogAutofillShowCardsFromGoogleAccountButtonEventMetric(

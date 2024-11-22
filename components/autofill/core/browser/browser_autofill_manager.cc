@@ -268,6 +268,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kTitle:
     case SuggestionType::kSeparator:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kVirtualCreditCardEntry:
     case SuggestionType::kWebauthnCredential:

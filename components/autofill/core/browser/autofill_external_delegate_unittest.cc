@@ -585,6 +585,14 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
       {test::CreateAutofillSuggestion(SuggestionType::kMixedFormMessage,
                                       u"no autofill available")});
   EXPECT_EQ(external_delegate().GetMainFillingProduct(), FillingProduct::kNone);
+
+  // Show save and fill suggestion in the popup.
+  OnSuggestionsReturned(queried_field().global_id(),
+                        {test::CreateAutofillSuggestion(
+                            SuggestionType::kSaveAndFillCreditCardEntry,
+                            u"save and fill suggestion")});
+  EXPECT_EQ(external_delegate().GetMainFillingProduct(),
+            FillingProduct::kCreditCard);
 }
 
 // Test that our external delegate called the virtual methods at the right time.

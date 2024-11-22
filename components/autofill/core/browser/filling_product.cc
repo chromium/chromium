@@ -62,6 +62,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
       return FillingProduct::kAddress;
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kManageCreditCard:

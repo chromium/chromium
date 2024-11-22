@@ -95,6 +95,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kSeparator:
     case SuggestionType::kTitle:
     case SuggestionType::kVirtualCreditCardEntry:

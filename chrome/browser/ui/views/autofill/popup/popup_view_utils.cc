@@ -497,6 +497,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPlusAddressError:
     case SuggestionType::kPredictionImprovementsFeedback:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
     case SuggestionType::kSeparator:

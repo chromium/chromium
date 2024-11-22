@@ -80,6 +80,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kCreditCardEntry";
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
       return "kInsecureContextPaymentDisabledMessage";
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+      return "KSaveAndFillCreditCardEntry";
     case SuggestionType::kScanCreditCard:
       return "kScanCreditCard";
     case SuggestionType::kVirtualCreditCardEntry:
