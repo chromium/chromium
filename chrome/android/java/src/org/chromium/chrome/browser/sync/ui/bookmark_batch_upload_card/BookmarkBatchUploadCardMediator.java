@@ -182,21 +182,24 @@ class BookmarkBatchUploadCardMediator
                         : Set.of(DataType.BOOKMARKS, DataType.READING_LIST, DataType.PASSWORDS),
                 localDataDescriptionsMap -> {
                     mLocalDataDescriptionsMap = localDataDescriptionsMap;
-                    int bookmarksAndReadingListSum =
-                            mLocalDataDescriptionsMap.entrySet().stream()
-                                    .filter(entry -> entry.getKey() != DataType.PASSWORDS)
-                                    .mapToInt(entry -> entry.getValue().itemCount())
-                                    .sum();
                     // There should be at lease one bookmark or reading list item to show the batch
                     // upload card.
-                    if (bookmarksAndReadingListSum > 0) {
-                        mShouldBeVisible = true;
+                    mShouldBeVisible = countItemsNotOfType(DataType.PASSWORDS) > 0;
+                    if (mShouldBeVisible) {
                         setupBatchUploadCardPropertyModel();
-                    } else {
-                        mShouldBeVisible = false;
                     }
                     mBatchUploadCardChangeAction.run();
                 });
+    }
+
+    private int countItemsNotOfType(@DataType int type) {
+        int ret = 0;
+        for (var entry : mLocalDataDescriptionsMap.entrySet()) {
+            if (entry.getKey() != type) {
+                ret += entry.getValue().itemCount();
+            }
+        }
+        return ret;
     }
 
     private void setupBatchUploadCardPropertyModel() {
@@ -226,11 +229,7 @@ class BookmarkBatchUploadCardMediator
             localBookmarksCount = bookmarksLocalDataDescription.itemCount();
         }
 
-        int localItemsCountExcludingBookmarks =
-                mLocalDataDescriptionsMap.entrySet().stream()
-                        .filter(entry -> entry.getKey() != DataType.BOOKMARKS)
-                        .mapToInt(entry -> entry.getValue().itemCount())
-                        .sum();
+        int localItemsCountExcludingBookmarks = countItemsNotOfType(DataType.BOOKMARKS);
 
         if (localItemsCountExcludingBookmarks == 0) {
             mModel.set(

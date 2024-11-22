@@ -14,7 +14,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /** Simple implementation of {@link BookmarkQueryHandler} that fetches children. */
 public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
@@ -58,17 +57,19 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     @Override
     public List<BookmarkListEntry> buildBookmarkListForSearch(
             String query, Set<PowerBookmarkType> powerFilter) {
-        final List<BookmarkId> searchIdList =
+        List<BookmarkId> searchIdList =
                 mBookmarkModel.searchBookmarks(query, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
-        final boolean isFilterEmpty = powerFilter == null || powerFilter.isEmpty();
-        return bookmarkIdListToBookmarkListEntryList(searchIdList).stream()
-                .filter(
-                        entry -> {
-                            return isFilterEmpty
-                                    || powerFilter.contains(
-                                            getTypeFromMeta(entry.getPowerBookmarkMeta()));
-                        })
-                .collect(Collectors.toList());
+        List<BookmarkListEntry> allEntries = bookmarkIdListToBookmarkListEntryList(searchIdList);
+        if (powerFilter == null || powerFilter.isEmpty()) {
+            return allEntries;
+        }
+        List<BookmarkListEntry> ret = new ArrayList<>();
+        for (BookmarkListEntry entry : allEntries) {
+            if (powerFilter.contains(getTypeFromMeta(entry.getPowerBookmarkMeta()))) {
+                ret.add(entry);
+            }
+        }
+        return ret;
     }
 
     @Override
@@ -79,12 +80,13 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
                         : mBookmarkModel.getChildIds(parentId);
         List<BookmarkListEntry> bookmarkListEntries =
                 bookmarkIdListToBookmarkListEntryList(childIdList);
-        bookmarkListEntries =
-                bookmarkListEntries.stream()
-                        .filter(this::isFolderEntry)
-                        .filter(entry -> isValidFolder(entry))
-                        .collect(Collectors.toList());
-        return bookmarkListEntries;
+        List<BookmarkListEntry> ret = new ArrayList<>();
+        for (BookmarkListEntry entry : bookmarkListEntries) {
+            if (isFolderEntry(entry) && isValidFolder(entry)) {
+                ret.add(entry);
+            }
+        }
+        return ret;
     }
 
     /** Returns whether the given {@link BookmarkListEntry} is a folder. */
