@@ -26,11 +26,15 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+
+static_assert(BUILDFLAG(ENABLE_VIDEO_EFFECTS),
+              "enable_video_effects must be true.");
 
 namespace media {
 

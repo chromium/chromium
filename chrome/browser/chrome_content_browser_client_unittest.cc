@@ -84,9 +84,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/test/test_network_context.h"
-#include "services/video_effects/public/cpp/video_effects_service_host.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_service.mojom.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -105,13 +103,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
-// `gn check` is failing on Android for this particular include even though
-// the (conditional) dependency path exists, adding `nogncheck`:
-#include "components/media_effects/media_effects_service.h"  // nogncheck
 #include "components/password_manager/core/common/password_manager_features.h"
-// `gn check` is failing on Android for this particular include even though
-// the (conditional) dependency path exists, adding `nogncheck`:
-#include "services/video_effects/test/fake_video_effects_service.h"  // nogncheck
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #include "ui/base/page_transition_types.h"
 #else
@@ -121,6 +113,14 @@
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "media/capture/mojom/video_effects_manager.mojom.h"
+#include "services/video_effects/public/cpp/video_effects_service_host.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+#include "services/video_effects/public/mojom/video_effects_service.mojom.h"
+#include "services/video_effects/test/fake_video_effects_service.h"
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -706,7 +706,7 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsManager) {
   TestChromeContentBrowserClient test_content_browser_client;
   mojo::Remote<media::mojom::VideoEffectsManager> video_effects_manager;
@@ -742,7 +742,7 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
   EXPECT_TRUE(effects_processor_future->Wait());
   EXPECT_TRUE(video_effects_processor.is_connected());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 TEST_F(ChromeContentBrowserClientTest, PreferenceRankAudioDeviceInfos) {
   blink::WebMediaDeviceInfoArray infos{

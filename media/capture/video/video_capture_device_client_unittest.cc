@@ -31,6 +31,7 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/test/fake_video_effects_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -589,7 +590,7 @@ TEST_F(VideoCaptureDeviceClientTest, CheckRotationsAndCrops) {
   Cleanup();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 // Tests that the VideoEffectsManager remote is closed on the correct task
 // runner. Destruction on the wrong task runner will cause a crash.
 TEST_F(VideoCaptureDeviceClientTest, DestructionClosesVideoEffectsManager) {
@@ -601,5 +602,6 @@ TEST_F(VideoCaptureDeviceClientTest, DestructionClosesVideoEffectsManager) {
   EXPECT_NO_FATAL_FAILURE(device_client_.reset());
   run_loop.Run();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+
 }  // namespace media

@@ -497,6 +497,7 @@ test("capture_unittests") {
     "//media/capture/mojom:image_capture_types",
     "//mojo/core/embedder",
     "//services/video_capture/public/mojom",
+    "//services/video_effects/buildflags",
     "//services/video_effects/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

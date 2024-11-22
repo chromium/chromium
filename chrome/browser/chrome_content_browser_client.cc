@@ -399,7 +399,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -575,7 +575,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/headless/chrome_browser_main_extra_parts_headless.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
-#include "chrome/browser/media_effects/media_effects_manager_binder.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/page_info/site_side_panel_throttle.h"
@@ -719,6 +718,12 @@
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
 #include "chrome/browser/media/cast_remoting_connector.h"
 #endif
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "chrome/browser/media_effects/media_effects_manager_binder.h"
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 #include "chrome/browser/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck crbug.com/1125897
@@ -8590,7 +8595,7 @@ bool ChromeContentBrowserClient::
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 void ChromeContentBrowserClient::BindVideoEffectsManager(
     const std::string& device_id,
     content::BrowserContext* browser_context,
@@ -8608,7 +8613,7 @@ void ChromeContentBrowserClient::BindVideoEffectsProcessor(
   media_effects::BindVideoEffectsProcessor(device_id, browser_context,
                                            std::move(video_effects_processor));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 void ChromeContentBrowserClient::PreferenceRankAudioDeviceInfos(
     content::BrowserContext* browser_context,

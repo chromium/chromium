@@ -40,6 +40,7 @@ import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//sandbox/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
+import("//services/video_effects/args.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -696,8 +697,6 @@ static_library("browser") {
     "media/media_storage_id_salt.h",
     "media/output_protection_proxy.cc",
     "media/output_protection_proxy.h",
-    "media_effects/media_effects_manager_binder.cc",
-    "media_effects/media_effects_manager_binder.h",
     "media_effects/media_effects_service_factory.cc",
     "media_effects/media_effects_service_factory.h",
     "memory/chrome_browser_main_extra_parts_memory.cc",
@@ -2454,6 +2453,7 @@ static_library("browser") {
     "//services/service_manager/public/cpp",
     "//services/shape_detection/public/mojom",
     "//services/strings",
+    "//services/video_effects/buildflags",
     "//services/webnn/public/mojom",
     "//skia",
     "//skia:rusty_png_feature_detection",
@@ -8256,6 +8256,17 @@ static_library("browser") {
         "supervised_user/chromeos/parent_access_extension_approvals_manager.h",
       ]
     }
+  }
+
+  if (enable_video_effects) {
+    sources += [
+      "media_effects/media_effects_manager_binder.cc",
+      "media_effects/media_effects_manager_binder.h",
+    ]
+    deps += [
+      "//media/capture/mojom:video_effects_manager",
+      "//services/video_effects/public/mojom",
+    ]
   }
 
   if (enable_vr) {

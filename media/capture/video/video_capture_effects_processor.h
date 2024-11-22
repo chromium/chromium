@@ -19,7 +19,11 @@
 #include "media/capture/video/video_capture_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
+
+static_assert(BUILDFLAG(ENABLE_VIDEO_EFFECTS),
+              "enable_video_effects must be true.");
 
 namespace media {
 

@@ -44,8 +44,13 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
@@ -1038,7 +1043,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
   void BindVideoEffectsManager(
       const std::string& device_id,
       content::BrowserContext* browser_context,
@@ -1050,7 +1055,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
           video_effects_processor) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   void PreferenceRankAudioDeviceInfos(
       content::BrowserContext* browser_context,

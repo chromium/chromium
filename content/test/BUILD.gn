@@ -3201,6 +3201,7 @@ test("content_unittests") {
     "//services/video_capture/public/cpp:mocks",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
+    "//services/video_effects/buildflags",
     "//services/viz/public/cpp/gpu",
     "//skia",
     "//sql",
