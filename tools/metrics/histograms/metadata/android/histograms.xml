@@ -898,6 +898,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Compositor.IsRequestingOpaqueSurface" enum="Boolean"
+    expires_after="2025-04-13">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records whether CopmositorSurfaceManager.requestSurface a surface with
+    PixelFormat.OPAQUE when the method is called. Used to idicate how often an
+    opaque SurfaceView is used.
+  </summary>
+</histogram>
+
 <histogram name="Android.ContactsPicker.ContactCount" units="Contacts"
     expires_after="2024-08-04">
   <owner>finnur@chromium.org</owner>
