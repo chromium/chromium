@@ -17,6 +17,7 @@ _proto_files = [
   "lens_overlay_interaction_request_metadata.proto",
   "lens_overlay_knowledge_intent_query.proto",
   "lens_overlay_knowledge_query.proto",
+  "lens_overlay_math_solver_query.proto",
   "lens_overlay_message_set.proto",
   "lens_overlay_overlay_object.proto",
   "lens_overlay_payload.proto",
