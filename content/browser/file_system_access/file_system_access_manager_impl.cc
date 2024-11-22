@@ -221,6 +221,7 @@ void ShowFilePickerOnUIThread(
         params.accept_types.push_back(u"." + base::UTF8ToUTF16(ext));
       }
     }
+    params.open_writable = true;
     auto listener =
         base::MakeRefCounted<WebContentsDelegateListener>(std::move(callback));
     delegate->RunFileChooser(rfh, std::move(listener), params);

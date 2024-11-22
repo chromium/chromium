@@ -46,6 +46,7 @@ import org.chromium.android_webview.BrowserSafeModeActionList;
 import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.DeveloperModeUtils;
@@ -544,6 +545,11 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             }
 
             mShouldDisableThreadChecking = shouldDisableThreadChecking(ctx);
+
+            FlagOverrideHelper helper =
+                    new FlagOverrideHelper(ProductionSupportedFlagList.sFlagList);
+            helper.applyFlagOverrides(
+                    Map.of(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS, shouldEnableFileSystemAccess()));
 
             setSingleton(this);
         }

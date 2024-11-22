@@ -125,8 +125,6 @@ void AwWebContentsDelegate::RunFileChooser(
   }
 
   // Only allow Open, OpenMultiple and UploadFolder for pre-FSA code.
-  // TODO(b/364980165): Add check for
-  // base::android::BuildInfo::GetInstance()->target_sdk_version()
   if (!base::FeatureList::IsEnabled(features::kWebViewFileSystemAccess) &&
       params.mode != FileChooserParams::Mode::kOpen &&
       params.mode != FileChooserParams::Mode::kOpenMultiple &&
@@ -139,7 +137,7 @@ void AwWebContentsDelegate::RunFileChooser(
   file_select_listener_ = std::move(listener);
   Java_AwWebContentsDelegate_runFileChooser(
       env, java_delegate, render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID(), params.mode,
+      render_frame_host->GetRoutingID(), params.mode, params.open_writable,
       ConvertUTF16ToJavaString(env,
                                base::JoinString(params.accept_types, u",")),
       params.title.empty() ? nullptr

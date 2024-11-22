@@ -225,6 +225,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
       /*accept_types=*/{u".txt"},
       /*need_local_path=*/true,
       /*use_media_capture=*/false,
+      /*open_writable=*/false,
       /*requestor=*/GURL());
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   base::RunLoop run_loop_listener;

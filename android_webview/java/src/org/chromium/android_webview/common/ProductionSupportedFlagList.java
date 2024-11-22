@@ -490,6 +490,8 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_DRAG_DROP_FILES,
                 "If enabled, files can be dropped into WebView"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS, "Enables JS File System Access API"),
+        Flag.baseFeature(
                 BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
                 "Combines WebRTC's worker thread and network thread onto a single thread."),
         Flag.baseFeature(
