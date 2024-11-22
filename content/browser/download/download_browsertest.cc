@@ -4819,8 +4819,8 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, UploadBytes) {
           shell()->web_contents(), url, TRAFFIC_ANNOTATION_FOR_TESTS));
 
   download_parameters->set_post_body(
-      network::ResourceRequestBody::CreateFromBytes(kUploadString.data(),
-                                                    kUploadString.size()));
+      network::ResourceRequestBody::CreateFromCopyOfBytes(
+          base::as_byte_span(kUploadString)));
 
   DownloadManager* download_manager = DownloadManagerForShell(shell());
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
