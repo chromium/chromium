@@ -189,7 +189,8 @@ std::tuple<bool, user_manager::MultiUserSignInPolicy> GetMultiUserSignInPolicy(
     const user_manager::User* user) {
   const std::string& user_id = user->GetAccountId().GetUserEmail();
   user_manager::MultiUserSignInPolicyController* controller =
-      user_manager::UserManager::Get()->GetMultiUserSignInPolicyController();
+      g_browser_process->platform_part()
+          ->multi_user_sign_in_policy_controller();
   return {
       controller->IsUserAllowedInSession(user_id),
       controller->GetCachedValue(user_id),

@@ -30,6 +30,8 @@ void UserManager::Observer::OnUserImageIsEnterpriseManagedChanged(
 
 void UserManager::Observer::OnUserProfileCreated(const User& user) {}
 
+void UserManager::Observer::OnUserProfileWillBeDestroyed(const User& user) {}
+
 void UserManager::Observer::OnUserProfileImageUpdateFailed(const User& user) {}
 
 void UserManager::Observer::OnUserProfileImageUpdated(

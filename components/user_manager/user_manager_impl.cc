@@ -43,7 +43,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
@@ -168,14 +167,12 @@ void UserManagerImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
-UserManagerImpl::UserManagerImpl(
-    std::unique_ptr<Delegate> delegate,
-    PrefService* local_state,
-    ash::CrosSettings* cros_settings)
+UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,
+                                 PrefService* local_state,
+                                 ash::CrosSettings* cros_settings)
     : delegate_(std::move(delegate)),
       local_state_(local_state),
-      cros_settings_(cros_settings),
-      multi_user_sign_in_policy_controller_(local_state, this) {
+      cros_settings_(cros_settings) {
   // |local_state| can be nullptr only for testing.
   if (!local_state) {
     CHECK_IS_TEST();
@@ -1566,13 +1563,7 @@ bool UserManagerImpl::OnUserProfileCreated(const AccountId& account_id,
 
   user->SetProfileIsCreated();
 
-  if (IsUserLoggedIn() && !IsLoggedInAsGuest() && !IsLoggedInAsAnyKioskApp()) {
-    multi_user_sign_in_policy_controller_.StartObserving(user);
-  }
-
-  for (auto& observer : observer_list_) {
-    observer.OnUserProfileCreated(*user);
-  }
+  observer_list_.Notify(&UserManager::Observer::OnUserProfileCreated, *user);
 
   ProcessPendingUserSwitchId();
   return true;
@@ -1587,7 +1578,8 @@ void UserManagerImpl::OnUserProfileWillBeDestroyed(
   auto* user = it == user_storage_.end() ? nullptr : it->get();
   CHECK(user);
 
-  multi_user_sign_in_policy_controller_.StopObserving(user);
+  observer_list_.Notify(&UserManager::Observer::OnUserProfileWillBeDestroyed,
+                        *user);
 
   user->SetProfilePrefs(nullptr);
 }
@@ -1644,9 +1636,6 @@ bool UserManagerImpl::LoadForceOnlineSignin(const AccountId& account_id) const {
 }
 
 void UserManagerImpl::RemoveNonCryptohomeData(const AccountId& account_id) {
-  multi_user_sign_in_policy_controller_.RemoveCachedValues(
-      account_id.GetUserEmail());
-
   ScopedDictPrefUpdate(local_state_.get(), prefs::kUserDisplayName)
       ->Remove(account_id.GetUserEmail());
 
@@ -1726,11 +1715,6 @@ bool UserManagerImpl::HasBrowserRestarted() const {
   return base::SysInfo::IsRunningOnChromeOS() &&
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              ash::switches::kLoginUser);
-}
-
-MultiUserSignInPolicyController*
-UserManagerImpl::GetMultiUserSignInPolicyController() {
-  return &multi_user_sign_in_policy_controller_;
 }
 
 void UserManagerImpl::Initialize() {

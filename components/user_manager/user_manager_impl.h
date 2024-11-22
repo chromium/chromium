@@ -253,8 +253,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override;
   bool HasBrowserRestarted() const final;
-  MultiUserSignInPolicyController* GetMultiUserSignInPolicyController()
-      override;
 
   void Initialize() override;
 
@@ -460,9 +458,6 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
 
   // Interface to the signed settings store.
   const raw_ptr<ash::CrosSettings> cros_settings_;
-
-  // Handles multi-user sign-in policy.
-  MultiUserSignInPolicyController multi_user_sign_in_policy_controller_;
 
   // Cached flag of whether the currently logged-in user existed before this
   // login.
