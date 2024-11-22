@@ -629,6 +629,20 @@ suite('FlagsDisabled', function() {
     assertFalse(isChildVisible(page, '#passwordsLeakToggle'));
   });
 
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
+  // launched.
+  test('ESBBulletExistsWithoutPasswordLeakToggle', async () => {
+    assertFalse(loadTimeData.getBoolean('enablePasswordLeakToggleMove'));
+
+    // Make sure ESB description is visible.
+    page.$.safeBrowsingEnhanced.$.expandButton.click();
+    await microtasksFinished();
+    assertTrue(page.$.safeBrowsingEnhanced.expanded);
+
+    // Password Leak bullet point should be visible.
+    assertTrue(isChildVisible(page, '#whenOnBulFive'));
+  });
+
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -1077,6 +1091,20 @@ suite('SafeBrowsing', function() {
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
+  // launched.
+  test('ESBBulletRemovedWithPasswordLeakToggle', async () => {
+    assertTrue(loadTimeData.getBoolean('enablePasswordLeakToggleMove'));
+
+    // Make sure ESB description is visible.
+    page.$.safeBrowsingEnhanced.$.expandButton.click();
+    await microtasksFinished();
+    assertTrue(page.$.safeBrowsingEnhanced.expanded);
+
+    // Password Leak bullet point should be gone.
+    assertFalse(isChildVisible(page, '#whenOnBulFive'));
   });
 
   test('NoProtectionText', async () => {
