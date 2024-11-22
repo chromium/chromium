@@ -242,3 +242,73 @@ def CheckAccessibilityHtmlSvgPair(input_api, output_api):
             )
         ]
     return []
+
+def CheckAccessibilityHtmlFileTest(input_api, output_api):
+    """Checks that new HTML accessibility test files have corresponding test references."""
+
+    def FileFilter(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file, files_to_check=[r"content/test/data/accessibility/.+\.(html|txt)"]
+        )
+
+    html_files = {}  # Store added HTML files and their base names
+    android_txt_files = {} # Store all added android txt files
+    problems = []
+
+    for f in input_api.AffectedFiles(file_filter=FileFilter):
+        if f.LocalPath().endswith(".html") and f.Action() == 'A':
+          html_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
+        if f.LocalPath().endswith(".txt") and f.Action() == 'A':
+            if "-expected-android" in f.LocalPath():
+                android_txt_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
+
+    # If any Android txt files were added, check for Java file changes
+    for basename, html_path in android_txt_files.items():
+        name, ext = input_api.os_path.splitext(basename)
+        name = name.split("-")[0]
+        test_file = None
+
+        if "event" in html_path:
+            test_file = "content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityEventsTest.java"
+        elif any(subdir in html_path for subdir in ["accname", "html", "aria", "css"]):
+            test_file = "content/public/android/javatests/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityTreeTest.java"
+
+        if test_file is not None:
+            try:
+                test_contents = input_api.ReadFile(test_file)
+                expected_addition = f"{name}.html"
+                if expected_addition not in test_contents:
+                    problems.append(f"{expected_addition} (missing reference in {test_file})")
+            except Exception as e:
+                problems.append(f"Error reading {test_file}: {e}")
+
+    # Check for cc changes for the remaining files
+    for basename, html_path in html_files.items():
+        test_file = None
+
+        if "node" in html_path:
+            test_file = "content/browser/accessibility/dump_accessibility_node_browsertest.cc"
+        elif "event" in html_path:
+            test_file = "content/browser/accessibility/dump_accessibility_events_browsertest.cc"
+        elif "mac" in html_path:
+            test_file = "content/browser/accessibility/dump_accessibility_scripts_browsertest.cc"
+        else:
+            test_file = "content/browser/accessibility/dump_accessibility_tree_browsertest.cc"
+
+        try:
+            test_contents = input_api.ReadFile(test_file)
+            if basename not in test_contents:
+                problems.append(f"{html_path} (missing reference in {test_file})")
+        except Exception as e:
+            problems.append(f"Error reading {test_file}: {e}")
+
+    if problems:
+        return [
+            output_api.PresubmitPromptWarning(
+                "New HTML accessibility test files should have a corresponding "
+                "reference in the associated browsertest file.\n"
+                "Problems found:\n",
+                problems,
+            )
+        ]
+    return []
