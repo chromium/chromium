@@ -68,11 +68,6 @@ namespace WTF {
 enum TextCaseSensitivity {
   kTextCaseSensitive,
   kTextCaseASCIIInsensitive,
-
-  // Unicode aware case insensitive matching. Non-ASCII characters might match
-  // to ASCII characters. This flag is rarely used to implement web platform
-  // features.
-  kTextCaseUnicodeInsensitive
 };
 
 // Computes a standard StringHasher string for the given buffer,
@@ -976,7 +971,6 @@ using WTF::Equal;
 using WTF::EqualNonNull;
 using WTF::kTextCaseASCIIInsensitive;
 using WTF::kTextCaseSensitive;
-using WTF::kTextCaseUnicodeInsensitive;
 using WTF::LengthOfNullTerminatedString;
 using WTF::ReverseFind;
 using WTF::StringImpl;

@@ -50,12 +50,9 @@ namespace WTF {
 
 class CodePointIterator;
 
-#define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
-  ((caseSensitivity == kTextCaseSensitive)              \
-       ? op args                                        \
-       : (caseSensitivity == kTextCaseASCIIInsensitive) \
-             ? op##IgnoringASCIICase args               \
-             : op##IgnoringCase args)
+#define DISPATCH_CASE_OP(case_sensitivity, op, args)  \
+  ((case_sensitivity == kTextCaseSensitive) ? op args \
+                                            : op##IgnoringASCIICase args)
 
 // You can find documentation about this class in README.md in this directory.
 class WTF_EXPORT String {

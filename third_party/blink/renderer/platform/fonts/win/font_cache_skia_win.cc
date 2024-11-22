@@ -384,7 +384,7 @@ static bool TypefacesHasWeightSuffix(const AtomicString& family,
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyWeightSuffix& entry = kVariantForSuffix[i];
-    if (family.EndsWith(entry.suffix, kTextCaseUnicodeInsensitive)) {
+    if (family.DeprecatedEndsWithIgnoringCase(entry.suffix)) {
       String family_name = family.GetString();
       family_name.Truncate(family.length() - entry.length);
       adjusted_name = AtomicString(family_name);
@@ -421,7 +421,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
   size_t num_variants = std::size(kVariantForSuffix);
   for (size_t i = 0; i < num_variants; i++) {
     const FamilyStretchSuffix& entry = kVariantForSuffix[i];
-    if (family.EndsWith(entry.suffix, kTextCaseUnicodeInsensitive)) {
+    if (family.DeprecatedEndsWithIgnoringCase(entry.suffix)) {
       String family_name = family.GetString();
       family_name.Truncate(family.length() - entry.length);
       adjusted_name = AtomicString(family_name);

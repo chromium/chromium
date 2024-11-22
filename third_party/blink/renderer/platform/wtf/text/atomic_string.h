@@ -165,6 +165,9 @@ class WTF_EXPORT AtomicString {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return string_.EndsWith(suffix, case_sensitivity);
   }
+  bool DeprecatedEndsWithIgnoringCase(const StringView& suffix) const {
+    return string_.EndsWithIgnoringCase(suffix);
+  }
   bool EndsWith(UChar character) const { return string_.EndsWith(character); }
 
   // Returns a lowercase/uppercase version of the string.
