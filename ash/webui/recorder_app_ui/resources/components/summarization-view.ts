@@ -319,13 +319,16 @@ export class SummarizationView extends ReactiveLitElement {
     >
       ${i18n.summaryDownloadFinishedStatusMessage}
     </spoken-message>`;
-    // TODO(hsuanling): add tooltip to arrow button once `cros-accordion`
-    // exposes an anchor slot.
+    const tooltipLabel = this.summaryOpened.value ?
+      i18n.summaryCollapseTooltip :
+      i18n.summaryExpandTooltip;
     return html`
       <cros-accordion variant="compact">
         <cros-accordion-item
           @cros-accordion-item-expanded=${this.onSummaryExpanded}
           @cros-accordion-item-collapsed=${this.onSummaryCollapsed}
+          show-button-tooltip
+          button-tooltip-label=${tooltipLabel}
         >
           <cra-icon name="summarize_auto" slot="leading"></cra-icon>
           <div slot="title">
