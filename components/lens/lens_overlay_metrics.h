@@ -100,6 +100,10 @@ void MaybeRecordContextualSearchBoxShown(
     bool shown,
     lens::PageContentMimeType page_content_type);
 
+// Records the size of the document where the contextual search box was shown,
+// sliced by content type.
+void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
+                             size_t document_size_bytes);
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_

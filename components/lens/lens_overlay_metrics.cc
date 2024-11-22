@@ -4,6 +4,8 @@
 
 #include "components/lens/lens_overlay_metrics.h"
 
+#include <cstddef>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -55,6 +57,19 @@ std::string DocumentTypeToString(lens::PageContentMimeType page_content_type) {
       return "Web";
     default:
       return "Unspecified";
+  }
+}
+
+std::string ContentTypeToString(lens::PageContentMimeType page_content_type) {
+  switch (page_content_type) {
+    case lens::PageContentMimeType::kPdf:
+      return "Pdf";
+    case lens::PageContentMimeType::kHtml:
+      return "Html";
+    case lens::PageContentMimeType::kPlainText:
+      return "PlainText";
+    default:
+      return "None";
   }
 }
 
@@ -278,6 +293,15 @@ void MaybeRecordContextualSearchBoxShown(
       "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
       DocumentTypeToString(page_content_type) + ".Shown";
   base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
+}
+
+void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
+                             size_t document_size_bytes) {
+  const auto sliced_invoked_histogram_name =
+      "Lens.Overlay.ByContentType." + ContentTypeToString(page_content_type) +
+      ".DocumentSize";
+  base::UmaHistogramMemoryKB(sliced_invoked_histogram_name,
+                             document_size_bytes / 1000);
 }
 
 }  // namespace lens

@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- Represents the MIME types that are retrieved from the page content.
+       Corresponds to the content type set in the request to the server. -->
+
+<variants name="ContentTypes">
+  <variant name="Html"/>
+  <variant name="None"/>
+  <variant name="Pdf"/>
+  <variant name="PlainText"/>
+</variants>
+
 <variants name="DocumentTypes">
   <variant name="Pdf"/>
   <variant name="Unspecified"/>
@@ -100,6 +110,18 @@ chromium-metrics-reviews@google.com.
     not, the reason why. Recorded only if the feature is enabled when the
     omnibox or the new tab page is loaded.
   </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.ByContentType.{ContentType}.DocumentSize"
+    units="KB" expires_after="M136">
+  <owner>mercerd@google.com</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when bytes are retrieved from the underlying page content. For web,
+    both the innerText and the innerHtml are logged to help estimate the delta
+    between the two.
+  </summary>
+  <token key="ContentType" variants="ContentTypes"/>
 </histogram>
 
 <histogram name="Lens.Overlay.ByDocumentType.{DocumentType}.Invoked"
