@@ -149,6 +149,8 @@ class VIEWS_EXPORT WidgetDelegate {
   // Can be used as an alternative to specifying a custom ClientView with
   // the CanClose() method, or in widget types which do not support a
   // ClientView.
+  //
+  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous().
   virtual bool OnCloseRequested(Widget::ClosedReason close_reason);
 
   // Returns the view that should have the focus when the widget is shown.  If
@@ -389,9 +391,12 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetHasWindowSizeControls(bool has_controls);
 
   void RegisterWidgetInitializedCallback(base::OnceClosure callback);
-  void RegisterWindowWillCloseCallback(base::OnceClosure callback);
   void RegisterWindowClosingCallback(base::OnceClosure callback);
   void RegisterDeleteDelegateCallback(base::OnceClosure callback);
+
+  // DEPRECATED. Don't use this. See Widget::MakeCloseSynchronous() for
+  // details.
+  void RegisterWindowWillCloseCallback(base::OnceClosure callback);
 
   void SetClientViewFactory(ClientViewFactory factory);
   void SetOverlayViewFactory(OverlayViewFactory factory);
