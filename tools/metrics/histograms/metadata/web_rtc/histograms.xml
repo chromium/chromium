@@ -1510,13 +1510,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.UsagePattern"
-    enum="WebRtcPeerConnectionUsagePattern" expires_after="2023-11-12">
+    enum="WebRtcPeerConnectionUsagePattern" expires_after="2025-05-22">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Capsule history of a WebRTC PeerConnection, encoded as a sequence of bits
-    encapsulated in an integer. Only a few values will be deemed interesting,
-    but the interesting values may change over time.
+    encapsulated in an integer. Values to record may be filtered. Warning: this
+    histogram was expired from 2023-11-12 to 2024-11-22; data may be missing.
   </summary>
 </histogram>
 
