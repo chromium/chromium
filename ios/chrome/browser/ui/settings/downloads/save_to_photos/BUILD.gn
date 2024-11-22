@@ -29,6 +29,7 @@ source_set("save_to_photos") {
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/common/ui/colors",

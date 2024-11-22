@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_account_confirmation_consumer.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_account_selection_consumer.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/save_to_photos_settings_mediator_delegate.h"
@@ -119,11 +120,19 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  [self updateConsumers];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onAccountsOnDeviceChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
 }
 
 - (void)identityUpdated:(id<SystemIdentity>)identity {
-  [self updateConsumers];
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `onExtendedAccountInfoUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated];
 }
 
 #pragma mark - PrefObserverDelegate
@@ -144,7 +153,31 @@
   [self updateConsumers];
 }
 
+- (void)onAccountsOnDeviceChanged {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityListChanged` instead.
+    return;
+  }
+  [self handleIdentityListChanged];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    // Listening to `identityUpdated` instead.
+    return;
+  }
+  [self handleIdentityUpdated];
+}
+
 #pragma mark - Private
+
+- (void)handleIdentityListChanged {
+  [self updateConsumers];
+}
+
+- (void)handleIdentityUpdated {
+  [self updateConsumers];
+}
 
 // Update consumers with information from `_prefService` and
 // `_accountManagerService`.
@@ -152,13 +185,14 @@
   const std::string savedGaiaID =
       _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId);
   id<SystemIdentity> savedIdentity =
-      _accountManagerService->GetIdentityWithGaiaID(savedGaiaID);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(savedGaiaID);
 
   // Get signed-in identity.
   const CoreAccountInfo primaryAccountInfo =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   id<SystemIdentity> primaryAccount =
-      _accountManagerService->GetIdentityWithGaiaID(primaryAccountInfo.gaia);
+      _accountManagerService->GetIdentityOnDeviceWithGaiaID(
+          primaryAccountInfo.gaia);
 
   // Update primary consumer with the currently selected Save to Photos account,
   // if any.
@@ -188,11 +222,11 @@
 
   // Update secondary consumer with the list of accounts on the device and which
   // one is currently saved as default to save images to Google Photos, if any.
-  NSArray<id<SystemIdentity>>* systemIdentities =
-      _accountManagerService->GetAllIdentities();
+  NSArray<id<SystemIdentity>>* identitiesOnDevice =
+      signin::GetIdentitiesOnDevice(_identityManager, _accountManagerService);
   NSMutableArray<AccountPickerSelectionScreenIdentityItemConfigurator*>*
       identityItemConfigurators = [[NSMutableArray alloc] init];
-  for (id<SystemIdentity> systemIdentity in systemIdentities) {
+  for (id<SystemIdentity> systemIdentity in identitiesOnDevice) {
     AccountPickerSelectionScreenIdentityItemConfigurator* configurator =
         [[AccountPickerSelectionScreenIdentityItemConfigurator alloc] init];
     configurator.gaiaID = systemIdentity.gaiaID;
