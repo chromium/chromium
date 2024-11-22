@@ -572,6 +572,9 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
 #endif
       ContentSettingsType::SENSORS,
       ContentSettingsType::SERIAL_GUARD,
+#if BUILDFLAG(IS_CHROMEOS)
+      ContentSettingsType::SMART_CARD_GUARD,
+#endif
       ContentSettingsType::SOUND,
       ContentSettingsType::STORAGE_ACCESS,
       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,

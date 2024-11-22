@@ -564,9 +564,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kAutomaticFullscreenContentSetting));
 
+#if BUILDFLAG(IS_CHROMEOS)
   html_source->AddBoolean(
       "enableSmartCardReadersContentSetting",
       base::FeatureList::IsEnabled(blink::features::kSmartCard));
+#endif
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // System

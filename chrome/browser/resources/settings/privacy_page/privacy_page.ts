@@ -166,6 +166,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         },
       },
 
+      // <if expr="is_chromeos">
       enableSmartCardReadersContentSetting_: {
         type: Boolean,
         value() {
@@ -173,6 +174,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
               'enableSmartCardReadersContentSetting');
         },
       },
+      // </if>
 
       enableWebBluetoothNewPermissionsBackend_: {
         type: Boolean,
@@ -374,7 +376,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableHandTrackingContentSetting_: boolean;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
+  // <if expr="is_chromeos">
   private enableSmartCardReadersContentSetting_: boolean;
+  // </if>
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;

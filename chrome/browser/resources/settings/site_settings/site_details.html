@@ -193,6 +193,15 @@
           icon="privacy:usb" label="$i18n{siteSettingsUsbDevices}"
           chooser-type="[[chooserTypeEnum_.USB_DEVICES]]">
       </site-details-permission>
+<if expr="is_chromeos">
+      <template is="dom-if" if="[[enableSmartCardReadersContentSetting_]]">
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.SMART_CARD_READERS]]"
+            icon="privacy:smart-card-reader"
+            label="$i18n{siteSettingsSmartCardReaders}">
+        </site-details-permission>
+      </template>
+</if>
       <site-details-permission category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
           icon="privacy:developer-board" label="$i18n{siteSettingsSerialPorts}"
           chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">

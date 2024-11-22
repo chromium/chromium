@@ -2720,6 +2720,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsSerialPorts", IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS},
       {"siteSettingsSerialPortsMidSentence",
        IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE},
+#if BUILDFLAG(IS_CHROMEOS)
+      {"siteSettingsSmartCardReaders",
+       IDS_SITE_SETTINGS_TYPE_SMART_CARD_READERS},
+#endif
       {"siteSettingsUsbDevices", IDS_SITE_SETTINGS_TYPE_USB_DEVICES},
       {"siteSettingsUsbDevicesMidSentence",
        IDS_SITE_SETTINGS_TYPE_USB_DEVICES_MID_SENTENCE},

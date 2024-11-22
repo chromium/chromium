@@ -265,6 +265,11 @@
   <message name="IDS_SITE_SETTINGS_TYPE_SERIAL_PORTS_MID_SENTENCE" desc="The label used for the serial ports site settings controls when used mid-sentence.">
     serial ports
   </message>
+<if expr="is_chromeos">
+  <message name="IDS_SITE_SETTINGS_TYPE_SMART_CARD_READERS" desc="The label used for the smart card readers site settings controls.">
+    Smart card readers
+  </message>
+</if>
   <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS" desc="The label used for the zoom levels site settings controls.">
     Zoom levels
   </message>
