@@ -295,9 +295,6 @@ constexpr auto as_byte_span(
       reinterpret_cast<ByteType*>(s.data()), s.size_bytes()));
 }
 
-template <class T, size_t N>
-constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
-
 }  // namespace internal
 
 // [span], class template span
@@ -1378,62 +1375,63 @@ constexpr std::wstring_view as_string_view(span<const wchar_t> s) noexcept {
 
 namespace internal {
 
-template <class T>
+template <typename T>
 concept SpanConvertsToStringView = requires {
   { as_string_view(span<T>()) };
 };
 
-template <class T>
-concept StringViewCanStreamToCharStream = requires(std::ostream& s) {
-  { s << as_string_view(span<T>()) };
-};
-
-// Template helper for implementing printing.
-template <class T, size_t N>
-constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
-  l << "[";
-  if constexpr (SpanConvertsToStringView<T>) {
-    // Note: Since we don't always have that header included, we can't branch on
-    // whether streaming is available, as it would create UB if different parts
-    // of the TU see a different answer. So we just try catch it with an assert.
-    static_assert(StringViewCanStreamToCharStream<T>,
-                  "include base/strings/utf_ostream_operators.h when streaming "
-                  "spans of wide chars");
-    if constexpr (std::same_as<wchar_t, std::remove_cvref_t<T>>) {
-      l << "L";
-    } else if constexpr (std::same_as<char16_t, std::remove_cvref_t<T>>) {
-      l << "u";
-    } else if constexpr (std::same_as<char32_t, std::remove_cvref_t<T>>) {
-      l << "U";
-    }
-    l << '\"';
-    l << as_string_view(r);
-    l << '\"';
-  } else if constexpr (N != 0) {
-    if (!r.empty()) {
-      l << ToString(r.front());
-      for (const T& e : r.template subspan<1>()) {
-        l << ", ";
-        l << ToString(e);
-      }
-    }
-  }
-  l << "]";
-  return l;
-}
-
 }  // namespace internal
 
-// span can be printed and will print each of its values, including in Gtests.
+// Stream output that prints a byte representation.
+//
+// (Not in `std::`; convenient for debugging.)
 //
 // TODO(danakj): This could move to a ToString() member method if gtest printers
 // were hooked up to ToString().
-template <class T, size_t N>
-  requires internal::SpanConvertsToStringView<T> || requires(T t) {
-    { ToString(t) };
+template <typename ElementType, size_t Extent, typename InternalPtrType>
+  requires(internal::SpanConvertsToStringView<ElementType> ||
+           requires(const ElementType& t) {
+             { ToString(t) };
+           })
+constexpr std::ostream& operator<<(
+    std::ostream& l,
+    span<ElementType, Extent, InternalPtrType> r) {
+  l << '[';
+  if constexpr (internal::SpanConvertsToStringView<ElementType>) {
+    const auto sv = as_string_view(r);
+    if constexpr (requires { l << sv; }) {
+      using T = std::remove_cvref_t<ElementType>;
+      if constexpr (std::same_as<wchar_t, T>) {
+        l << 'L';
+      } else if constexpr (std::same_as<char16_t, T>) {
+        l << 'u';
+      } else if constexpr (std::same_as<char32_t, T>) {
+        l << 'U';
+      }
+      l << '\"' << sv << '\"';
+    } else {
+      // base/strings/utf_ostream_operators.h provides streaming support for
+      // wchar_t/char16_t, so branching on whether streaming is available will
+      // give different results depending on whether code has included that,
+      // which can lead to UB due to violating the ODR. We don't want to
+      // unconditionally include this header above for compile time reasons, so
+      // instead force the rare caller that wants this to do it themselves.
+      static_assert(
+          requires { l << sv; },
+          "include base/strings/utf_ostream_operators.h when streaming spans "
+          "of wide chars");
+    }
+  } else if constexpr (Extent != 0) {
+    // It would be nice to use `JoinString()` here, but making that `constexpr`
+    // is more trouble than it's worth.
+    if (!r.empty()) {
+      l << ToString(r.front());
+      for (const ElementType& e : r.template subspan<1>()) {
+        l << ", " << ToString(e);
+      }
+    }
   }
-constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
-  return internal::span_stream(l, r);
+  return l << ']';
 }
 
 // `span_from_ref` converts a reference to T into a span of length 1.  This is a
