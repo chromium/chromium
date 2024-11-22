@@ -765,4 +765,37 @@ TEST_P(AXPlatformNodeCocoaTest, AccessibilityRowAndColumnCount) {
   EXPECT_EQ([row accessibilityRowCount], NSNotFound);
 }
 
+// Tests that the string keys returned in
+// newAccessibilityAPIMethodToAttributeMap are all selectors supported on an
+// AXPlatformNodeCocoa instance.
+TEST_P(AXPlatformNodeCocoaTestNewAPI,
+       AccessibilityAPIToAttributeMapKeysAreSelectors) {
+  NSDictionary* map =
+      [AXPlatformNodeCocoa newAccessibilityAPIMethodToAttributeMap];
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc] initWithNode:nil];
+  for (NSString* selector_string in map) {
+    EXPECT_TRUE(
+        [node respondsToSelector:NSSelectorFromString(selector_string)]);
+  }
+}
+
+// Test that supportsNewAccessibilityAPIMethod returns true for a
+// new accessibility API that is supported on all role types
+// (isAccessibilityFocused) by testing whether it available
+// for an arbitrary role.
+TEST_P(AXPlatformNodeCocoaTest, SupportsNewAccessibilityAPIMethod) {
+  AXNodeData root = AXNodeData();
+  root.id = 1;
+  root.role = ax::mojom::Role::kHeading;
+  Init(root);
+  TestAXNodeWrapper* wrapper =
+      TestAXNodeWrapper::GetOrCreate(GetTree(), GetRoot());
+  AXPlatformNodeCocoa* node = [[AXPlatformNodeCocoa alloc]
+      initWithNode:(ui::AXPlatformNodeBase*)wrapper->ax_platform_node()];
+  EXPECT_TRUE([[node accessibilityRole] isEqualToString:@"AXHeading"]);
+  EXPECT_EQ([node internalRole], ax::mojom::Role::kHeading);
+  EXPECT_TRUE(
+      [node supportsNewAccessibilityAPIMethod:@"isAccessibilityFocused"]);
+}
+
 }  // namespace ui

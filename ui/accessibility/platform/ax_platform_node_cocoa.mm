@@ -328,7 +328,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return set;
 }
 
-// Returns true if `method` has been implemented in the transition to the new
+// Returns YES if `method` has been implemented in the transition to the new
 // accessibility API.
 + (BOOL)isMethodImplementedForNewAccessibilityAPI:(NSString*)method {
   if (features::IsMacAccessibilityAPIMigrationEnabled()) {
