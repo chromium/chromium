@@ -18,6 +18,9 @@ void CreateTabGroupAtIndex(int index,
                            NSString* group_name,
                            bool first_group = true);
 
+// Opens the tab group at `group_cell_index`.
+void OpenTabGroupAtIndex(int group_cell_index);
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUPS_EG_UTILS_H_

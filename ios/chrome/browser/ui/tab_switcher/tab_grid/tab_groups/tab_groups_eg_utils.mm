@@ -13,6 +13,7 @@
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
 using chrome_test_util::CreateTabGroupTextField;
 using chrome_test_util::TabGridCellAtIndex;
+using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGroupCreationView;
 
 namespace {
@@ -73,6 +74,14 @@ void CreateTabGroupAtIndex(int index, NSString* group_name, bool first_group) {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+}
+
+void OpenTabGroupAtIndex(int group_cell_index) {
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(
+                                                          group_cell_index)];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(0)];
 }
 
 }  // namespace chrome_test_util

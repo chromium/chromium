@@ -7,7 +7,10 @@
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_eg_utils.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -18,6 +21,7 @@ using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
+using chrome_test_util::OpenTabGroupAtIndex;
 using chrome_test_util::ShareGroupButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 
@@ -35,6 +39,23 @@ id<GREYMatcher> FakeShareFlowView() {
 // Matcher for the Manage flow view.
 id<GREYMatcher> FakeManageFlowView() {
   return grey_accessibilityID(kFakeManageFlowIdentifier);
+}
+
+// Shares the group at `index`.
+void ShareGroupAtIndex(int index) {
+  // Share the first group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(index)]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
+      performAction:grey_tap()];
+
+  // Verify that this opened the fake Share flow.
+  [[EarlGrey selectElementWithMatcher:FakeShareFlowView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Actually share the group.
+  [[EarlGrey selectElementWithMatcher:NavigationBarSaveButton()]
+      performAction:grey_tap()];
 }
 
 }  // namespace
@@ -56,6 +77,52 @@ id<GREYMatcher> FakeManageFlowView() {
   config.additional_args.push_back(
       "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
   return config;
+}
+
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey
+      setUserDefaultsObject:@YES
+                     forKey:kSharedTabGroupUserEducationShownOnceKey];
+}
+
+// Tests that the user education is shown in the grid only once.
+- (void)testUserEducationInGrid {
+  [ChromeEarlGrey
+      removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
+
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(0, kGroup1Name);
+
+  ShareGroupAtIndex(0);
+
+  OpenTabGroupAtIndex(0);
+
+  id<GREYMatcher> educationScreen =
+      grey_accessibilityID(kSharedTabGroupUserEducationAccessibilityIdentifier);
+
+  // The user education screen is shown.
+  [[EarlGrey selectElementWithMatcher:educationScreen]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss it, go back and re-enter.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kConfirmationAlertPrimaryActionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:educationScreen];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupBackButton()]
+      performAction:grey_tap()];
+  OpenTabGroupAtIndex(0);
+
+  // The user education screen is not shown.
+  [[EarlGrey selectElementWithMatcher:educationScreen]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssert(
+      [ChromeEarlGrey
+          userDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey],
+      @"The user default hasn't been updated");
 }
 
 // Checks opening the Share flow from the Tab Grid and cancelling.

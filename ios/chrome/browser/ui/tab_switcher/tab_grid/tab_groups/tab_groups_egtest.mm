@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_eg_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -43,6 +44,7 @@ using chrome_test_util::CreateTabGroupTextField;
 using chrome_test_util::CreateTabGroupTextFieldClearButton;
 using chrome_test_util::DeleteGroupButton;
 using chrome_test_util::DeleteGroupConfirmationButton;
+using chrome_test_util::OpenTabGroupAtIndex;
 using chrome_test_util::RenameGroupButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridEditAddToButton;
@@ -148,15 +150,6 @@ void MoveTabToGroup(int tab_cell_index, NSString* title) {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
                                           title)] performAction:grey_tap()];
-}
-
-// Opens the tab group at `group_cell_index`.
-void OpenTabGroupAtIndex(int group_cell_index) {
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(
-                                                          group_cell_index)];
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(0)];
 }
 
 // Opens the tab group creation view using the long press context menu for the

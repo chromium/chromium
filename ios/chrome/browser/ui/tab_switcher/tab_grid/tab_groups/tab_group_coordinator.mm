@@ -28,10 +28,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/shared_tab_group_user_education_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_positioner.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_presentation_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_constants.h"
 #import "ios/web/public/web_state_id.h"
 
 namespace {
@@ -40,8 +42,10 @@ constexpr CGFloat kTabGroupDismissalDuration = 0.25;
 constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 }  // namespace
 
-@interface TabGroupCoordinator () <GridViewControllerDelegate,
-                                   TabGroupPresentationCommands>
+@interface TabGroupCoordinator () <
+    GridViewControllerDelegate,
+    SharedTabGroupUserEducationCoordinatorDelegate,
+    TabGroupPresentationCommands>
 @end
 
 @implementation TabGroupCoordinator {
@@ -53,6 +57,8 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   TabContextMenuHelper* _tabContextMenuHelper;
   // Tab group to display.
   raw_ptr<const TabGroup> _tabGroup;
+  // The coordinator for the user education half screen.
+  SharedTabGroupUserEducationCoordinator* _userEducationCoordinator;
 }
 
 #pragma mark - Public
@@ -78,6 +84,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)stopChildCoordinators {
   [_viewController.gridViewController dismissModals];
+  [_userEducationCoordinator stop];
 }
 
 #pragma mark - ChromeCoordinator
@@ -113,6 +120,9 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   [_mediator disconnect];
   _mediator = nil;
   _tabContextMenuHelper = nil;
+
+  [_userEducationCoordinator stop];
+  _userEducationCoordinator = nil;
 
   [self hideViewControllerAnimated:YES];
 
@@ -174,6 +184,10 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
                      [viewController animateGridPresentation];
                    }
                    completion:nil];
+
+  // Start the user education if there is an animation to avoid showing it at
+  // startup.
+  [self startUserEducationIfNeeded];
 
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   nil);
@@ -342,6 +356,14 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   [self shareGroup];
 }
 
+#pragma mark - SharedTabGroupUserEducationCoordinatorDelegate
+
+- (void)userEducationCoordinatorDidDismiss:
+    (SharedTabGroupUserEducationCoordinator*)coordinator {
+  [_userEducationCoordinator stop];
+  _userEducationCoordinator = nil;
+}
+
 #pragma mark - Private
 
 // Share the current group.
@@ -417,6 +439,31 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       [[ShareKitFacePileConfiguration alloc] init];
   config.collabID = savedCollabID;
   _viewController.facePile = shareKitService->FacePile(config);
+}
+
+// Called when the tab group is presented, to show the user education
+// coordinator if necessary.
+- (void)startUserEducationIfNeeded {
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          self.browser->GetProfile());
+
+  if (!tab_groups::utils::IsTabGroupShared(_tabGroup, syncService)) {
+    return;
+  }
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  if ([defaults boolForKey:kSharedTabGroupUserEducationShownOnceKey]) {
+    return;
+  }
+
+  _userEducationCoordinator = [[SharedTabGroupUserEducationCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _userEducationCoordinator.delegate = self;
+  [_userEducationCoordinator start];
+
+  // Record the presentation.
+  [defaults setBool:YES forKey:kSharedTabGroupUserEducationShownOnceKey];
 }
 
 @end

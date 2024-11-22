@@ -26,3 +26,8 @@ NSString* const kTabGroupsPanelIdentifier = @"kTabGroupsPanelIdentifier";
 
 NSString* const kTabGroupsPanelCellIdentifierPrefix =
     @"kTabGroupsPanelCellIdentifier";
+
+NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier =
+    @"SharedTabGroupUserEducationAccessibilityIdentifier";
+NSString* const kSharedTabGroupUserEducationShownOnceKey =
+    @"SharedTabGroupUserEducationShownOnceKey";

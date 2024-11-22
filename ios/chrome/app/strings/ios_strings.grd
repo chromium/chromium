@@ -5152,6 +5152,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP_BUTTON_TEXT" desc="Button text allowing the user to share a group.">
         Share
       </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_GOT_IT" desc="The title of the button to mark the understanding of the user education about shared tab groups">
+            Got it
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_SUBTITLE" desc="The title of the half sheet displaying informations about the shared tab group">
+            Changes made are seen by everyone in the group
+      </message>
+      <message name="IDS_IOS_SHARED_GROUP_USER_EDUCATION_SHEET_TITLE" desc="The subtitle of the half sheet displaying informations about the shared tab group">
+            Everyone can make changes to your shared tab groups
+      </message>
       <message name="IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. When selected, the user will be taken to a help article explaining how the highlighting feature works. [Length: 25em]">
         Learn more…
       </message>

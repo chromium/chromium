@@ -26,4 +26,9 @@ extern NSString* const kTabGroupsPanelIdentifier;
 // Accessibility identifier prefix of a cell in the tab groups panel.
 extern NSString* const kTabGroupsPanelCellIdentifierPrefix;
 
+// Accessibility identifier of the Shared Tab Groups user education screen.
+extern NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier;
+// Name of the pref storing whether the user education has been shown or not.
+extern NSString* const kSharedTabGroupUserEducationShownOnceKey;
+
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUPS_CONSTANTS_H_
