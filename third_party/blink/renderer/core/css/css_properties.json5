@@ -4785,6 +4785,7 @@
       ],
       typedom_types: ["Keyword"],
       invalidate: ["layout"],
+      field_group: "*",
     },
     {
       name: "scrollbar-width",
