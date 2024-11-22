@@ -174,7 +174,15 @@ bool ArcRevenHardwareChecker::CheckMemoryRequirements(
     LOG(WARNING) << "No memory info in response from cros_healthd.";
     return false;
   }
-  return memory_info->total_memory_kib >= kMinMemorySizeInKiB;
+
+  if (memory_info->total_memory_kib < kMinMemorySizeInKiB) {
+    LOG(WARNING) << "Memory fails arcvm hardware requirements on reven: "
+                 << memory_info->total_memory_kib << " KiB available, "
+                 << kMinMemorySizeInKiB << " KiB required.";
+    return false;
+  }
+
+  return true;
 }
 
 bool ArcRevenHardwareChecker::CheckCpuRequirements(
@@ -189,7 +197,13 @@ bool ArcRevenHardwareChecker::CheckCpuRequirements(
     return false;
   }
 
-  return cpu_info->virtualization && cpu_info->virtualization->has_kvm_device;
+  if (!cpu_info->virtualization || !cpu_info->virtualization->has_kvm_device) {
+    LOG(WARNING) << "CPU fails arcvm hardware requirements on reven: no KVM "
+                    "virtualization.";
+    return false;
+  }
+
+  return true;
 }
 
 bool ArcRevenHardwareChecker::CheckStorageRequirements(
@@ -209,15 +223,26 @@ bool ArcRevenHardwareChecker::CheckStorageRequirements(
   // Check for a suitable boot device with minimum storage size and that is not
   // a spinning HDD.
   for (const auto& device : block_devices_info) {
-    if (device->purpose == mojom::StorageDevicePurpose::kBootDevice &&
-        device->size >= kMinStorageSizeInBytes &&
-        device->is_rotational.has_value() && !device->is_rotational.value()) {
+    if (device->purpose == mojom::StorageDevicePurpose::kBootDevice) {
+      if (device->size < kMinStorageSizeInBytes) {
+        LOG(WARNING) << "Boot disk fails arcvm hardware requirements on reven: "
+                     << device->size << " bytes available, "
+                     << kMinStorageSizeInBytes << " bytes required.";
+        continue;
+      }
+
+      if (device->is_rotational.has_value() && device->is_rotational.value()) {
+        LOG(WARNING) << "Boot disk fails arcvm hardware requirements on reven: "
+                        "Spinning HDD.";
+        continue;
+      }
+
       return true;
     }
   }
 
-  LOG(WARNING)
-      << "No suitable boot device found among non-removable block devices.";
+  LOG(WARNING) << "Boot disk fails arcvm hardware requirements on reven: no "
+                  "suitable boot device.";
   return false;
 }
 
@@ -252,6 +277,17 @@ bool ArcRevenHardwareChecker::CheckPciRequirements(
       }
     }
   }
+
+  if (!is_wifi_compatible) {
+    LOG(WARNING) << "WiFi fails arcvm hardware requirements on reven: no "
+                    "compatible device found.";
+  }
+
+  if (!is_gpu_compatible) {
+    LOG(WARNING) << "GPU fails arcvm hardware requirements on reven: no "
+                    "compatible device found.";
+  }
+
   return is_wifi_compatible && is_gpu_compatible;
 }
 

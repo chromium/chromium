@@ -189,6 +189,7 @@ TEST_F(ArcRevenHardwareCheckerTest, StorageRequirementNotMet) {
   info->cpu_result = CreateCpuResult(kHasKvmDevice);
   info->block_device_result =
       CreateBlockDeviceResult(kStorageSizeBelowRequirementInBytes);
+  info->bus_result = CreateBusResult(kAllowGpuDeviceId, kAllowWiFiDeviceId);
   SetFakeTelemetryInfoResponse(std::move(info));
   RunCheckerAndExpect(kNotMeetHwRequirement);
 }
