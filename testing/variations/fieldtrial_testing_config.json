@@ -16139,6 +16139,21 @@
             ]
         }
     ],
+    "PageInfoLastVisitedIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoLastVisitedIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaintHoldingCrossOrigin": [
         {
             "platforms": [

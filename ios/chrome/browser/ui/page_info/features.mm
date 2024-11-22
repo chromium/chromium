@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/ui/page_info/features.h"
 
 BASE_FEATURE(kPageInfoLastVisitedIOS,
-             "kPageInfoLastVisitedIOS",
+             "PageInfoLastVisitedIOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAboutThisSiteFeatureEnabled() {
