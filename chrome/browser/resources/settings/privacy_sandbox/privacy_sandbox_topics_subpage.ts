@@ -118,6 +118,17 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         computed: 'computeEmptyState_(' +
             'prefs.privacy_sandbox.m1.topics_enabled.value)',
       },
+
+      /**
+       * If true, the Ads API UX Enhancement should be shown.
+       */
+      shouldShowV2_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isPrivacySandboxAdsApiUxEnhancementsEnabled');
+        },
+      },
     };
   }
 
@@ -325,6 +336,10 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     const toast = this.shadowRoot!.querySelector('cr-toast');
     assert(toast);
     toast.hide();
+  }
+
+  private onPrivacyPolicyLinkClicked_() {
+    // TODO(crbug.com/377977285): Add metrics
   }
 }
 

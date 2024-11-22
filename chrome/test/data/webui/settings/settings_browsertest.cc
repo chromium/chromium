@@ -1155,6 +1155,18 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, TopicsSubpage) {
           "runMochaSuite('TopicsSubpage')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageAdsApiUxEnhancementsDisabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageAdsApiUxEnhancementsDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest,
+                       TopicsSubpageAdsApiUxEnhancements) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageAdsApiUxEnhancements')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, FledgeSubpageEmpty) {
   RunTest("settings/privacy_sandbox_page_test.js",
           "runMochaSuite('FledgeSubpageEmpty')");

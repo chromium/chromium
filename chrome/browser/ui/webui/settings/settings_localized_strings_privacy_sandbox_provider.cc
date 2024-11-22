@@ -298,6 +298,18 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc));
+  // Ad Topics Page - Ads API UX Enhancements
+  html_source->AddString(
+      "adTopicsPageDisclaimer",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER,
+          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
+                                 GURL(chrome::kPrivacyPolicyURL),
+                                 g_browser_process->GetApplicationLocale())
+                                 .spec()),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc));
 }
 
 }  // namespace settings

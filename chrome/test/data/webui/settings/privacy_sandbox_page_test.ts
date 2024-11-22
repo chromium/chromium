@@ -958,6 +958,92 @@ suite('TopicsSubpage', function() {
   });
 });
 
+suite('TopicsSubpageAdsApiUxEnhancementsDisabled', function() {
+  let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('TopicsPageContentV2NotShown', async function() {
+    const footerDisclaimer =
+        page.shadowRoot!.querySelector('#footerDisclaimer');
+    assertFalse(isVisible(footerDisclaimer));
+  });
+});
+
+suite('TopicsSubpageAdsApiUxEnhancements', function() {
+  let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
+  let settingsPrefs: SettingsPrefsElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxAdsApiUxEnhancementsEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(async function() {
+    testPrivacySandboxBrowserProxy = new TestPrivacySandboxBrowserProxy();
+    PrivacySandboxBrowserProxyImpl.setInstance(testPrivacySandboxBrowserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.privacy_sandbox.m1.topics_enabled', {value: true});
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
+    document.body.appendChild(page);
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('TopicsPageContentV2', async function() {
+    const footerDisclaimer =
+        page.shadowRoot!.querySelector('#footerDisclaimer');
+    assertTrue(isVisible(footerDisclaimer));
+  });
+});
+
 suite('ManageTopics', function() {
   let page: SettingsPrivacySandboxManageTopicsSubpageElement;
   let testPrivacySandboxBrowserProxy: TestPrivacySandboxBrowserProxy;
