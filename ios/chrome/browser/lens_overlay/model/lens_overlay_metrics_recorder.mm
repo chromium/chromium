@@ -133,12 +133,14 @@ lens::PageContentMimeType PageContentMimeTypeFromWebState(
 }
 
 - (void)recordPermissionsAccepted {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Accepted"));
   lens::RecordPermissionUserAction(
       lens::LensPermissionUserAction::kAcceptButtonPressed, _invocationSource);
   [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
                                    kPermissionDialog];
 }
 - (void)recordPermissionsDenied {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Consent.Denied"));
   lens::RecordPermissionUserAction(
       lens::LensPermissionUserAction::kCancelButtonPressed, _invocationSource);
   [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::
