@@ -38,9 +38,6 @@ BASE_DECLARE_FEATURE(kMediaRouter);
 // https://crbug.com/813974.
 BASE_DECLARE_FEATURE(kCastAllowAllIPsFeature);
 
-// Determine whether global media controls are used to start and stop casting.
-BASE_DECLARE_FEATURE(kGlobalMediaControlsCastStartStop);
-
 // If enabled, allows all websites to request to start mirroring via
 // Presentation API. If disabled, only the allowlisted sites can do so.
 BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
@@ -100,10 +97,6 @@ std::string GetReceiverIdHashToken(PrefService* pref_service);
 // Returns true if support for DIAL devices is enabled.  Disabling DIAL support
 // also disables SSDP-based discovery for Cast devices.
 bool DialMediaRouteProviderEnabled();
-
-// Returns true if global media controls are used to start and stop casting and
-// Media Router is enabled for |context|.
-bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 
 // Returns the optional value to use for mirroring playout delay from the
 // relevant command line flag or feature, if any are set.

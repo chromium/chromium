@@ -2962,9 +2962,6 @@ extern const char kReadAnythingDocsIntegrationDescription[];
 extern const char kReadAnythingDocsLoadMoreButtonName[];
 extern const char kReadAnythingDocsLoadMoreButtonDescription[];
 
-extern const char kGlobalMediaControlsCastStartStopName[];
-extern const char kGlobalMediaControlsCastStartStopDescription[];
-
 extern const char kLinkPreviewName[];
 extern const char kLinkPreviewDescription[];
 
