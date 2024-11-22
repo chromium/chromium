@@ -548,8 +548,10 @@ void HTMLAnchorElementBase::NavigateToHyperlink(
     BlinkSchemefulSite top_level_site =
         window->GetStorageKey().GetTopLevelSite();
     if (top_level_site != blob_url_site) {
-      // TODO (crbug.com/361751872): Add implementation for enforcing noopener
-      // on a / area clicks.
+      if (base::FeatureList::IsEnabled(
+              features::kEnforceNoopenerOnBlobURLNavigation)) {
+        frame_request.SetNoOpener();
+      }
       UseCounter::Count(GetDocument(),
                         WebFeature::kCrossTopLevelSiteBlobURLNavigation);
     }
