@@ -81,12 +81,14 @@ lens::PageContentMimeType PageContentMimeTypeFromWebState(
     return;
   }
 
-  if (!lensOverlayInForeground) {
+  if (!lensOverlayInForeground && _foregroundTime != base::TimeTicks()) {
     // Add the foreground duration and reset the timer.
     _foregroundDuration =
         _foregroundDuration + (base::TimeTicks::Now() - _foregroundTime);
+    _foregroundTime = base::TimeTicks();
+  } else {
+    _foregroundTime = base::TimeTicks::Now();
   }
-  _foregroundTime = base::TimeTicks();
 }
 
 - (void)recordOverflowMenuOpened {
