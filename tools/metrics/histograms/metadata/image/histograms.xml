@@ -62,6 +62,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".ContextualSuggestions"
       summary="Showing cache patterns only for ContextualSuggestions."/>
   <variant name=".Cryptids" summary="Asset fetcher for cryptid rendering."/>
+  <variant name=".DataSharing"
+      summary="Avatar image fetcher for data sharing flows."/>
   <variant name=".EduAccountLoginProfileImageFetcher"
       summary="Profile image fetcher for EDU account login flow"/>
   <variant name=".EntitySuggestions"
