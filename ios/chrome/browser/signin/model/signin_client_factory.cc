@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/content_settings/model/cookie_settings_factory.h"
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"
@@ -28,7 +27,6 @@ SigninClientFactory::SigninClientFactory()
     : BrowserStateKeyedServiceFactory(
           "SigninClient",
           BrowserStateDependencyManager::GetInstance()) {
-  DependsOn(ios::CookieSettingsFactory::GetInstance());
   DependsOn(ios::HostContentSettingsMapFactory::GetInstance());
 }
 
@@ -38,6 +36,5 @@ std::unique_ptr<KeyedService> SigninClientFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<IOSChromeSigninClient>(
-      profile, ios::CookieSettingsFactory::GetForProfile(profile),
-      ios::HostContentSettingsMapFactory::GetForProfile(profile));
+      profile, ios::HostContentSettingsMapFactory::GetForProfile(profile));
 }

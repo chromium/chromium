@@ -6,7 +6,6 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "components/metrics/metrics_service.h"
-#import "components/signin/core/browser/cookie_settings_util.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -22,12 +21,10 @@
 
 IOSChromeSigninClient::IOSChromeSigninClient(
     ProfileIOS* profile,
-    scoped_refptr<content_settings::CookieSettings> cookie_settings,
     scoped_refptr<HostContentSettingsMap> host_content_settings_map)
     : network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       profile_(profile),
-      cookie_settings_(cookie_settings),
       host_content_settings_map_(host_content_settings_map) {}
 
 IOSChromeSigninClient::~IOSChromeSigninClient() {
@@ -57,11 +54,15 @@ network::mojom::NetworkContext* IOSChromeSigninClient::GetNetworkContext() {
 void IOSChromeSigninClient::DoFinalInit() {}
 
 bool IOSChromeSigninClient::AreSigninCookiesAllowed() {
-  return signin::SettingsAllowSigninCookies(cookie_settings_.get());
+  // There is no way for users to set the cookies content setting in iOS so
+  // sign-in cookies will always be allowed.
+  return true;
 }
 
 bool IOSChromeSigninClient::AreSigninCookiesDeletedOnExit() {
-  return signin::SettingsDeleteSigninCookiesOnExit(cookie_settings_.get());
+  // There is no way for users to set the cookies content setting in iOS so
+  // sign-in cookies will not be deleted.
+  return false;
 }
 
 void IOSChromeSigninClient::AddContentSettingsObserver(

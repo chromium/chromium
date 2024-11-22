@@ -254,6 +254,8 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorHeaderForYoutubekids) {
   CheckMirrorCookieRequest(GURL("https://youtubekids.com"), "0123456789", "");
 }
 
+// Does not apply to iOS as users cannot set cookies settings in iOS.
+#if !BUILDFLAG(IS_IOS)
 // Tests that no Mirror request is returned when the cookies aren't allowed to
 // be set.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
@@ -263,6 +265,7 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
                            /*is_child_account=*/Tribool::kUnknown, "");
   CheckMirrorCookieRequest(GURL("https://docs.google.com"), "0123456789", "");
 }
+#endif
 
 // Tests that no Mirror request is returned when the target is a non-Google URL.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestExternalURL) {
