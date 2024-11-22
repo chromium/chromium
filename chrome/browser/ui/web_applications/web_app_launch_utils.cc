@@ -1366,7 +1366,8 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   if (!AreWebAppsEnabled(profile) ||
       Browser::GetCreationStatusForProfile(profile) !=
-          Browser::CreationStatus::kOk) {
+          Browser::CreationStatus::kOk ||
+      !params.url.is_valid()) {
     return AppNavigationResult::CapturingDisabled();
   }
   base::Value::Dict debug_data;
