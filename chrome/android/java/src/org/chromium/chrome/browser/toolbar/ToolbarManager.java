@@ -159,7 +159,6 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
@@ -169,12 +168,9 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -239,6 +235,7 @@ public class ToolbarManager
     private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ValueChangedCallback<BookmarkModel> mBookmarkModelSupplierObserver =
             new ValueChangedCallback<>(this::setBookmarkModel);
+    private final ToolbarIphController mIphController;
     private TemplateUrlService mTemplateUrlService;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
@@ -706,6 +703,8 @@ public class ToolbarManager
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mBookmarkModelSupplier.addObserver(mBookmarkModelSupplierObserver);
+
+        mIphController = new ToolbarIphController(activity, mUserEducationHelper);
 
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
@@ -2482,30 +2481,6 @@ public class ToolbarManager
         checkIfNtpLoaded();
     }
 
-    @VisibleForTesting
-    public void showPriceDropIph() {
-        ToggleTabStackButton toggleTabStackButton =
-                mControlContainer.findViewById(R.id.tab_switcher_button);
-        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
-        params.setBoundsRespectPadding(true);
-        int yInset =
-                mControlContainer
-                        .getResources()
-                        .getDimensionPixelOffset(
-                                R.dimen.price_drop_spotted_iph_ntp_tabswitcher_y_inset);
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mControlContainer.getResources(),
-                                FeatureConstants.PRICE_DROP_NTP_FEATURE,
-                                R.string.price_drop_spotted_iph,
-                                R.string.price_drop_spotted_iph)
-                        .setInsetRect(new Rect(0, 0, 0, -yInset))
-                        .setAnchorView(toggleTabStackButton)
-                        .setHighlightParams(params)
-                        .setDismissOnTouch(true)
-                        .build());
-    }
-
     /**
      * Checks to to see if there are any unseen price drops, and if so attempts to show the price
      * drop IPH. An unseen price drop occurs when there is a tab with a price drop that has not been
@@ -2528,7 +2503,8 @@ public class ToolbarManager
                         if (shoppingPersistedTabData != null
                                 && shoppingPersistedTabData.getPriceDrop() != null
                                 && !shoppingPersistedTabData.getIsCurrentPriceDropSeen()) {
-                            showPriceDropIph();
+                            mIphController.showPriceDropIph(
+                                    mControlContainer.findViewById(R.id.tab_switcher_button));
                         }
                     });
         }
