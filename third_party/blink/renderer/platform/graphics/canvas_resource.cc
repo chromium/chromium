@@ -934,6 +934,9 @@ bool ExternalCanvasResource::
       "ExternalCanvasResource::PrepareAcceleratedTransferableResource");
   GenOrFlushSyncToken();
   *out_resource = transferable_resource_;
+  out_resource->origin = IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                           : kBottomLeft_GrSurfaceOrigin;
+
   return true;
 }
 

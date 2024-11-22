@@ -276,10 +276,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
       &resource, &frame_resource->release_callback,
       /*needs_verified_synctoken=*/true);
 
-  resource.origin = canvas_resource->IsOriginTopLeft()
-                        ? kTopLeft_GrSurfaceOrigin
-                        : kBottomLeft_GrSurfaceOrigin;
-
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;
 
