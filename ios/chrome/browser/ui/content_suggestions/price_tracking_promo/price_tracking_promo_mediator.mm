@@ -87,6 +87,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   PrefChangeRegistrar _prefChangeRegistrar;
   raw_ptr<FaviconLoader> _faviconLoader;
+  bool _faviconCallbackCalledOnce;
 }
 
 - (instancetype)
@@ -137,6 +138,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 }
 
 - (void)reset {
+  _faviconCallbackCalledOnce = false;
   _priceTrackingPromoItem = nil;
 }
 
@@ -144,6 +146,7 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
   if (self->_priceTrackingPromoItem) {
     return;
   }
+  _faviconCallbackCalledOnce = false;
   __weak PriceTrackingPromoMediator* weakSelf = self;
   GetAllPriceTrackedBookmarks(
       _shoppingService, _bookmarkModel,
@@ -386,6 +389,12 @@ void LogOptInFlowHistogram(PriceTrackingPromoOptInFlow opt_in_flow) {
 }
 
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
+  // Return early without calling the delegate, if callback already called.
+  // Can't condition on faviconImage, because it may be null.
+  if (_faviconCallbackCalledOnce) {
+    return;
+  }
+  _faviconCallbackCalledOnce = true;
   if (attributes.faviconImage && !attributes.usesDefaultImage) {
     self->_priceTrackingPromoItem.faviconImage = attributes.faviconImage;
   }
