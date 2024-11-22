@@ -295,10 +295,10 @@ class FormParserTest : public testing::Test {
   }
 
   // Creates a FormData to be fed to the parser. Includes FormFieldData as
-  // described in `fields_description`. Generates `fill_result` and
-  // `save_result` expectations about the result in FILLING and SAVING mode,
-  // respectively. Also fills `server_predictions` with the server predictions
-  // contained in `FieldDataDescription`.
+  // described in `fields_description`. Populates `fill_result` and
+  // `save_result`, if provided, with expectations about the result in FILLING
+  // and SAVING mode, respectively. Also fills `server_predictions`, if
+  // provided, with the server predictions contained in `FieldDataDescription`.
   FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
                                      FormPredictions* server_predictions,
                                      ParseResultIds* fill_result,
@@ -342,19 +342,21 @@ class FormParserTest : public testing::Test {
         field.set_user_input(field_description.user_input);
       }
       test_api(form_data).Append(field);
-      if (field_description.role == ElementRole::NONE) {
-        UpdateResultWithIdByRole(fill_result, renderer_id,
-                                 field_description.role_filling);
-        UpdateResultWithIdByRole(save_result, renderer_id,
-                                 field_description.role_saving);
-      } else {
-        UpdateResultWithIdByRole(fill_result, renderer_id,
-                                 field_description.role);
-        UpdateResultWithIdByRole(save_result, renderer_id,
-                                 field_description.role);
+      if (fill_result && save_result) {
+        if (field_description.role == ElementRole::NONE) {
+          UpdateResultWithIdByRole(fill_result, renderer_id,
+                                   field_description.role_filling);
+          UpdateResultWithIdByRole(save_result, renderer_id,
+                                   field_description.role_saving);
+        } else {
+          UpdateResultWithIdByRole(fill_result, renderer_id,
+                                   field_description.role);
+          UpdateResultWithIdByRole(save_result, renderer_id,
+                                   field_description.role);
+        }
       }
-      if (field_description.server_predicted_type !=
-          autofill::MAX_VALID_FIELD_TYPE) {
+      if (server_predictions && (field_description.server_predicted_type !=
+                                 autofill::MAX_VALID_FIELD_TYPE)) {
         server_predictions->fields.emplace_back(
             renderer_id, autofill::FieldSignature(123),
             field_description.server_predicted_type,
@@ -3046,10 +3048,9 @@ TEST_F(FormParserTest, InvalidURL) {
               {.form_control_type = FormControlType::kInputPassword},
           },
   };
-  FormPredictions no_server_predictions;
-  ParseResultIds dummy;
   FormData form_data = GetFormDataAndExpectation(
-      form_desc, &no_server_predictions, &dummy, &dummy);
+      form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+      /*save_result=*/nullptr);
   // URL comes from https://crbug.com/1075515.
   form_data.set_url(GURL("FilEsysteM:htTp:E=/."));
   FormDataParser parser;
@@ -3077,10 +3078,9 @@ TEST_F(FormParserTest, FindUsernameInHtmlParserResult_SkipPrediction) {
           {.name = u"submit", .form_control_type = FormControlType::kInputText},
       }};
 
-  FormPredictions no_server_predictions;
-  ParseResultIds dummy;
   const FormData form_data = GetFormDataAndExpectation(
-      form_desc, &no_server_predictions, &dummy, &dummy);
+      form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+      /*save_result=*/nullptr);
 
   // Add all form fields in ProcessedField. A user typed only into
   // "id" and "password" fields. So, the prediction for "email" field
@@ -3147,10 +3147,9 @@ TEST_F(FormParserTest, SkipHiddenValueField) {
               },
       }};
   for (const auto& form_desc : test_cases) {
-    FormPredictions no_server_predictions;
-    ParseResultIds dummy;
     FormData form_data = GetFormDataAndExpectation(
-        form_desc, &no_server_predictions, &dummy, &dummy);
+        form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+        /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
                              /*stored_usernames=*/{}));
@@ -3198,10 +3197,9 @@ TEST_F(FormParserTest, DontSkipNotHiddenValues) {
       }};
 
   for (const auto& form_desc : test_cases) {
-    FormPredictions no_server_predictions;
-    ParseResultIds dummy;
     FormData form_data = GetFormDataAndExpectation(
-        form_desc, &no_server_predictions, &dummy, &dummy);
+        form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+        /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
                              /*stored_usernames=*/{}));
