@@ -109,7 +109,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   // Helper methods for building the menu.
   void BuildGuestIdentity();
   void BuildAutofillSettingsButton();
-  void MaybeBuildCustomizeProfileButton();
+  void BuildCustomizeProfileButton();
   void MaybeBuildChromeAccountSettingsButton();
   void MaybeBuildManageGoogleAccountButton();
   void MaybeBuildCloseBrowsersButton();

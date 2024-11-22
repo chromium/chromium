@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -179,55 +179,55 @@ void ProfileMenuView::BuildMenu() {
   Profile* profile = browser()->profile();
   if (profile->IsGuestSession()) {
     BuildGuestIdentity();
+    MaybeBuildCloseBrowsersButton();
+    return;
+  }
+
+  CHECK(!profile->IsOffTheRecord());
+  const bool is_web_app = web_app::AppBrowserController::IsWebApp(browser());
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    BuildIdentityWithCallToAction();
   } else {
-    CHECK(!profile->IsOffTheRecord());
+    BuildIdentity();
 
-    if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
-      BuildIdentityWithCallToAction();
-    } else {
-      BuildIdentity();
-
-      // Users should not be able to open chrome settings from WebApps.
-      if (!web_app::AppBrowserController::IsWebApp(browser())) {
-        BuildSyncInfo();
-        BuildAutofillButtons();
-      }
+    // Users should not be able to open chrome settings from WebApps.
+    if (!is_web_app) {
+      BuildSyncInfo();
+      BuildAutofillButtons();
     }
   }
 
-  // Users should not be able to use features from WebApps.
-  if (!web_app::AppBrowserController::IsWebApp(browser())) {
-    BuildFeatureButtons();
-  }
-
-  if (!(profile->IsGuestSession())) {
-    std::vector<ProfileAttributesEntry*> available_profiles;
-    bool show_guest_in_other_profiles_section = false;
-    GetProfilesForOtherProfilesSection(available_profiles,
-                                       show_guest_in_other_profiles_section);
-
-    if (!available_profiles.empty() || show_guest_in_other_profiles_section ||
-        !switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      SetProfileManagementHeading(l10n_util::GetStringUTF16(
-          switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-              ? IDS_PROFILE_MENU_PROFILES_LIST_TITLE
-              : IDS_PROFILES_LIST_PROFILES_TITLE));
-    }
-    BuildOtherProfilesSection(available_profiles,
-                              show_guest_in_other_profiles_section);
-    base::UmaHistogramBoolean("ProfileChooser.HasProfilesShown",
-                              !available_profiles.empty());
-
-    // Users should not be able to manage profiles from WebApps.
-    if (!web_app::AppBrowserController::IsWebApp(browser())) {
-      BuildProfileManagementFeatureButtons();
-    }
-  }
-
-  if (web_app::AppBrowserController::IsWebApp(browser())) {
+  if (is_web_app) {
     browser()->window()->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+
+  // Users should not be able to use features from WebApps.
+  if (!is_web_app) {
+    BuildFeatureButtons();
+  }
+
+  std::vector<ProfileAttributesEntry*> available_profiles;
+  bool show_guest_in_other_profiles_section = false;
+  GetProfilesForOtherProfilesSection(available_profiles,
+                                     show_guest_in_other_profiles_section);
+
+  if (!available_profiles.empty() || show_guest_in_other_profiles_section ||
+      !switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    SetProfileManagementHeading(l10n_util::GetStringUTF16(
+        switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
+            ? IDS_PROFILE_MENU_PROFILES_LIST_TITLE
+            : IDS_PROFILES_LIST_PROFILES_TITLE));
+  }
+  BuildOtherProfilesSection(available_profiles,
+                            show_guest_in_other_profiles_section);
+  base::UmaHistogramBoolean("ProfileChooser.HasProfilesShown",
+                            !available_profiles.empty());
+
+  // Users should not be able to manage profiles from WebApps.
+  if (!is_web_app) {
+    BuildProfileManagementFeatureButtons();
   }
 }
 
@@ -929,6 +929,7 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
 }
 
 void ProfileMenuView::BuildAutofillSettingsButton() {
+  CHECK(!browser()->profile()->IsGuestSession());
   AddFeatureButton(
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnAutofillSettingsButtonClicked,
@@ -936,11 +937,8 @@ void ProfileMenuView::BuildAutofillSettingsButton() {
       vector_icons::kPasswordManagerIcon);
 }
 
-void ProfileMenuView::MaybeBuildCustomizeProfileButton() {
-  Profile* profile = browser()->profile();
-  if (profile->IsGuestSession()) {
-    return;
-  }
+void ProfileMenuView::BuildCustomizeProfileButton() {
+  CHECK(!browser()->profile()->IsGuestSession());
   AddFeatureButton(
       l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
       base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
@@ -950,9 +948,7 @@ void ProfileMenuView::MaybeBuildCustomizeProfileButton() {
 
 void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
   Profile* profile = browser()->profile();
-  if (profile->IsGuestSession()) {
-    return;
-  }
+  CHECK(!profile->IsGuestSession());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -991,6 +987,7 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
 
 void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
   Profile* profile = browser()->profile();
+  CHECK(!profile->IsGuestSession());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -1039,50 +1036,44 @@ void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
 void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
   Profile* profile = browser()->profile();
   const int window_count = CountBrowsersFor(profile);
+  base::RepeatingClosure callback = base::BindRepeating(
+      &ProfileMenuView::OnExitProfileButtonClicked, base::Unretained(this));
   if (profile->IsGuestSession()) {
-    AddFeatureButton(
-        l10n_util::GetPluralStringFUTF16(IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON,
-                                         window_count),
-        base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
-                            base::Unretained(this)),
-        vector_icons::kCloseChromeRefreshIcon);
+    AddFeatureButton(l10n_util::GetPluralStringFUTF16(
+                         IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON, window_count),
+                     std::move(callback),
+                     vector_icons::kCloseChromeRefreshIcon);
   } else if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
              window_count > 0) {
     AddFeatureButton(
         l10n_util::GetPluralStringFUTF16(
             IDS_PROFILE_MENU_CLOSE_PROFILE_X_WINDOWS_BUTTON, window_count),
-        base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
-                            base::Unretained(this)),
-        vector_icons::kCloseChromeRefreshIcon);
+        std::move(callback), vector_icons::kCloseChromeRefreshIcon);
   } else if (window_count > 1) {
-    AddFeatureButton(
-        l10n_util::GetPluralStringFUTF16(IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON,
-                                         window_count),
-        base::BindRepeating(&ProfileMenuView::OnExitProfileButtonClicked,
-                            base::Unretained(this)),
-        vector_icons::kCloseChromeRefreshIcon);
+    AddFeatureButton(l10n_util::GetPluralStringFUTF16(
+                         IDS_PROFILES_CLOSE_X_WINDOWS_BUTTON, window_count),
+                     std::move(callback),
+                     vector_icons::kCloseChromeRefreshIcon);
   }
 }
 
 void ProfileMenuView::MaybeBuildSignoutButton() {
   Profile* profile = browser()->profile();
+  CHECK(!profile->IsGuestSession());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
     return;
   }
-  const bool has_sync_consent =
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  const bool has_primary_account =
-      !profile->IsGuestSession() && has_sync_consent;
 
   const bool hide_signout_button_for_managed_profiles =
       enterprise_util::UserAcceptedAccountManagement(profile) &&
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout);
 
-  const bool add_sign_out_button = HasUnconstentedProfile(profile) &&
-                                   !has_primary_account &&
-                                   !hide_signout_button_for_managed_profiles;
+  const bool add_sign_out_button =
+      HasUnconstentedProfile(profile) &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+      !hide_signout_button_for_managed_profiles;
   if (!add_sign_out_button) {
     return;
   }
@@ -1111,11 +1102,12 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
+  CHECK(!browser()->profile()->IsGuestSession());
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
       switches::IsImprovedSigninUIOnDesktopEnabled()) {
     BuildAutofillSettingsButton();
     MaybeBuildManageGoogleAccountButton();
-    MaybeBuildCustomizeProfileButton();
+    BuildCustomizeProfileButton();
     MaybeBuildChromeAccountSettingsButton();
     MaybeBuildCloseBrowsersButton();
     MaybeBuildSignoutButton();
@@ -1123,7 +1115,7 @@ void ProfileMenuView::BuildFeatureButtons() {
   }
 
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    MaybeBuildCustomizeProfileButton();
+    BuildCustomizeProfileButton();
     MaybeBuildChromeAccountSettingsButton();
   }
   MaybeBuildManageGoogleAccountButton();
@@ -1134,6 +1126,7 @@ void ProfileMenuView::BuildFeatureButtons() {
 void ProfileMenuView::GetProfilesForOtherProfilesSection(
     std::vector<ProfileAttributesEntry*>& available_profiles,
     bool& show_guest_in_other_profiles_section) const {
+  CHECK(!browser()->profile()->IsGuestSession());
 #if BUILDFLAG(IS_MAC)
   const bool is_regular_web_app =
       web_app::AppBrowserController::IsWebApp(browser()) &&
@@ -1169,7 +1162,6 @@ void ProfileMenuView::GetProfilesForOtherProfilesSection(
   }
 
   show_guest_in_other_profiles_section =
-      !browser()->profile()->IsGuestSession() &&
       profiles::IsGuestModeEnabled(*browser()->profile()) &&
       !web_app::AppBrowserController::IsWebApp(browser()) &&
       !switches::IsImprovedSigninUIOnDesktopEnabled();
@@ -1205,6 +1197,7 @@ void ProfileMenuView::BuildOtherProfilesSection(
 }
 
 void ProfileMenuView::BuildProfileManagementFeatureButtons() {
+  CHECK(!browser()->profile()->IsGuestSession());
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     AddProfileManagementFeaturesSeparator();
 
