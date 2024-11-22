@@ -310,10 +310,6 @@ BASE_FEATURE(kSuspiciousSiteTriggerQuotaFeature,
              "SafeBrowsingSuspiciousSiteTriggerQuota",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTailoredSecurityRetryForSyncUsers,
-             "TailoredSecurityRetryForSyncUsers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTailoredSecurityObserverRetries,
              "TailoredSecurityObserverRetries",

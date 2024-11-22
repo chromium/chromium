@@ -280,12 +280,6 @@ BASE_DECLARE_FEATURE(kSimplifiedUrlDisplay);
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 
-// Enable a retry for the tailored security dialogs when the dialog fails to
-// show for a user whose google account has sync turned on. This feature helps
-// run the tailored security logic for users where the integration failed in the
-// past.
-BASE_DECLARE_FEATURE(kTailoredSecurityRetryForSyncUsers);
-
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 

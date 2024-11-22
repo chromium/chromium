@@ -523,29 +523,23 @@ void TailoredSecurityService::Shutdown() {
 }
 
 void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
-    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
-                       TailoredSecurityRetryState::UNKNOWN);
-    prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
-                    base::Time::Now());
-    // If this method fails, then a retry is needed. If it succeeds, the
-    // ChromeTailoredSecurityService will set this value to NO_RETRY_NEEDED for
-    // us.
-    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
-                       TailoredSecurityRetryState::RETRY_NEEDED);
-  }
+  // TODO(crbug.com/40925236): remove sync flow last user interaction pref.
+  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowLastUserInteractionState,
+                     TailoredSecurityRetryState::UNKNOWN);
+  prefs_->SetTime(prefs::kTailoredSecuritySyncFlowLastRunTime,
+                  base::Time::Now());
+  // If this method fails, then a retry is needed. If it succeeds, the
+  // ChromeTailoredSecurityService will set this value to NO_RETRY_NEEDED for
+  // us.
+  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState,
+                     TailoredSecurityRetryState::RETRY_NEEDED);
 
   StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TailoredSecurityService::SaveRetryState(TailoredSecurityRetryState state) {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kTailoredSecurityRetryForSyncUsers)) {
-    prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState, state);
-  }
+  prefs_->SetInteger(prefs::kTailoredSecuritySyncFlowRetryState, state);
 }
 
 void TailoredSecurityService::SetCanQuery(bool can_query) {

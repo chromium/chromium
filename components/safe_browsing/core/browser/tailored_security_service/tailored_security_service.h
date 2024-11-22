@@ -176,14 +176,9 @@ class TailoredSecurityService : public KeyedService {
       HistorySyncEnabledForUserReturnsFalseWhenSyncServiceIsNull);
   FRIEND_TEST_ALL_PREFIXES(
       TailoredSecurityServiceTest,
-      RetryEnabledTimestampUpdateCallbackSetsStateToRetryNeeded);
+      RetryLogicTimestampUpdateCallbackSetsStateToRetryNeeded);
   FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
-                           RetryEnabledTimestampUpdateCallbackRecordsStartTime);
-  FRIEND_TEST_ALL_PREFIXES(
-      TailoredSecurityServiceTest,
-      RetryDisabledTimestampUpdateCallbackDoesNotRecordStartTime);
-  FRIEND_TEST_ALL_PREFIXES(TailoredSecurityServiceTest,
-                           RetryDisabledStateRemainsUnset);
+                           RetryLogicTimestampUpdateCallbackRecordsStartTime);
   friend class TailoredSecurityTabHelperTest;
 
   // Saves the supplied `TailoredSecurityRetryState` to preferences.
