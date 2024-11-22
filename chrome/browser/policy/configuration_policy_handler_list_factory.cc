@@ -2427,10 +2427,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(
-      std::make_unique<SiteSearchPolicyHandler>(chrome_schema));
-  handlers->AddHandler(
       std::make_unique<SearchAggregatorPolicyHandler>(chrome_schema));
-
+  handlers->AddHandler(
+      std::make_unique<SiteSearchPolicyHandler>(chrome_schema));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGenAILocalFoundationalModelSettings,
       optimization_guide::model_execution::prefs::localstate::

@@ -4,10 +4,14 @@
 
 #include "components/search_engines/enterprise/search_engine_fields_validators.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/search_engines/default_search_manager.h"
+#include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -111,6 +115,40 @@ bool ReplacementStringIsMissingFromUrl(const std::string& policy_name,
   errors->AddError(
       policy_name,
       IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT, url);
+  return true;
+}
+
+bool ShortcutEqualsSearchAggregatorProviderKeyword(const std::string& shortcut,
+                                                   const PolicyMap& policies,
+                                                   PolicyErrorMap* errors) {
+  // Early return if policy is disabled.
+  if (!base::FeatureList::GetInstance() ||
+      !base::FeatureList::IsEnabled(omnibox::kEnableSearchAggregatorPolicy)) {
+    return false;
+  }
+
+  if (!policies.IsPolicySet(key::kEnterpriseSearchAggregatorSettings) ||
+      !policies.GetValue(key::kEnterpriseSearchAggregatorSettings,
+                         base::Value::Type::DICT)) {
+    return false;
+  }
+  const base::Value::Dict& search_aggregator =
+      policies
+          .GetValue(key::kEnterpriseSearchAggregatorSettings,
+                    base::Value::Type::DICT)
+          ->GetDict();
+
+  const std::string* aggregator_shortcut =
+      search_aggregator.FindString(SearchAggregatorPolicyHandler::kShortcut);
+
+  if (!aggregator_shortcut || shortcut != *aggregator_shortcut) {
+    return false;
+  }
+
+  errors->AddError(
+      key::kSiteSearchSettings,
+      IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_SEARCH_AGGREGATOR_KEYWORD,
+      shortcut);
   return true;
 }
 

@@ -18,6 +18,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise/enterprise_search_manager.h"
+#include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/enterprise/search_engine_fields_validators.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
@@ -179,6 +180,9 @@ bool SiteSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
             policy_name(), shortcut, errors) ||
         search_engine_fields_validators::ShortcutStartsWithAtSymbol(
             policy_name(), shortcut, errors) ||
+        search_engine_fields_validators::
+            ShortcutEqualsSearchAggregatorProviderKeyword(shortcut, policies,
+                                                          errors) ||
         search_engine_fields_validators::
             ShortcutEqualsDefaultSearchProviderKeyword(policy_name(), shortcut,
                                                        policies, errors) ||
