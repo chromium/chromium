@@ -31,6 +31,7 @@ class IpProtectionTelemetryUma final : public IpProtectionTelemetry {
                                 bool is_cache_empty,
                                 bool does_requested_geo_match_current) override;
   void TokenBatchGenerationComplete(base::TimeDelta duration) override;
+  void TryGetAuthTokensError(uint32_t hash) override;
   void GeoChangeTokenPresence(bool) override;
   void ProxyListRefreshComplete(
       GetProxyListResult result,

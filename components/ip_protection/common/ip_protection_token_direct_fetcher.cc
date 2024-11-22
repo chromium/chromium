@@ -174,8 +174,7 @@ void IpProtectionTokenDirectFetcher::OnFetchBlindSignedTokenCompleted(
         result = kFailedBSAOther;
         break;
     }
-    base::UmaHistogramSparse(
-        "NetworkService.IpProtection.TryGetAuthTokensErrors",
+    ip_protection::Telemetry().TryGetAuthTokensError(
         base::PersistentHash(tokens.status().ToString()));
     TryGetAuthTokensComplete(std::nullopt, std::move(callback), result);
     return;

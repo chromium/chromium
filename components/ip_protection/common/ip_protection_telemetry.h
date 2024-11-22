@@ -137,6 +137,10 @@ class IpProtectionTelemetry {
   // `IpProtectionConfigGetter::TryGetAuthTokens` until `OnGotAuthTokens`.
   virtual void TokenBatchGenerationComplete(base::TimeDelta duration) = 0;
 
+  // Record the `base::PersistentHash` of an error string that resulted from a
+  // TryGetAuthTokens call.
+  virtual void TryGetAuthTokensError(uint32_t hash) = 0;
+
   // Whether tokens already exist for a new geo, as measured when current geo
   // changes.
   virtual void GeoChangeTokenPresence(bool) = 0;
