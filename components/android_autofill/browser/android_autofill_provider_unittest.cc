@@ -918,6 +918,56 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
   EXPECT_FALSE(keyboard_suppressor().is_suppressing());
 }
 
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       LogConditionalPasskeysFlowPasskeysAvailableMetricWithPasskeys) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kHasPasskeys));
+
+  // Focus the form field.
+  base::RepeatingCallback<void(bool)> completed_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&completed_callback));
+  FocusFormField(webauthn_email_field());
+
+  // Keyboard is suppressed while CredMan is showing.
+  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+
+  // Hide CredMan.
+  completed_callback.Run(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState",
+      webauthn::WebAuthnCredManDelegate::State::kHasPasskeys, 1);
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest,
+       LogConditionalPasskeysFlowPasskeysAvailableMetricWithoutPasskeys) {
+  base::HistogramTester histogram_tester;
+  ON_CALL(cred_man_delegate(), HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kNoPasskeys));
+
+  // Focus the form field.
+  base::RepeatingCallback<void(bool)> completed_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&completed_callback));
+  FocusFormField(webauthn_email_field());
+
+  // Keyboard is suppressed while CredMan is showing.
+  EXPECT_TRUE(keyboard_suppressor().is_suppressing());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
+
+  // Hide CredMan.
+  completed_callback.Run(/*success=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState",
+      webauthn::WebAuthnCredManDelegate::State::kNoPasskeys, 1);
+}
+
 TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
   EXPECT_CALL(provider_bridge(), OnFocusChanged);
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);

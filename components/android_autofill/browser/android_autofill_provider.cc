@@ -647,10 +647,10 @@ bool AndroidAutofillProvider::ShowCredManSheet(
   CHECK_EQ(credman_sheet_status_, CredManBottomSheetLifecycle::kNotShown);
   if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
     credman_sheet_status_ = CredManBottomSheetLifecycle::kIsShowing;
-    delegate->SetRequestCompletionCallback(
-        base::BindRepeating(&AndroidAutofillProvider::OnCredManUiClosed,
-                            weak_ptr_factory_.GetWeakPtr(), std::move(form_id),
-                            std::move(field_to_focus)));
+    delegate->SetRequestCompletionCallback(base::BindRepeating(
+        &AndroidAutofillProvider::OnCredManUiClosed,
+        weak_ptr_factory_.GetWeakPtr(), std::move(form_id),
+        std::move(field_to_focus), delegate->HasPasskeys()));
     delegate->TriggerCredManUi(RequestPasswords(false));
     return true;
   }
@@ -838,6 +838,7 @@ AndroidAutofillProvider::CachedData::~CachedData() = default;
 void AndroidAutofillProvider::OnCredManUiClosed(
     FormGlobalId form_id,
     std::optional<FieldInfo> field_to_focus,
+    WebAuthnCredManDelegate::State has_passkeys,
     bool success) {
   credman_sheet_status_ = CredManBottomSheetLifecycle::kClosed;
   if (keyboard_suppressor_) {
@@ -847,6 +848,8 @@ void AndroidAutofillProvider::OnCredManUiClosed(
     // TODO: crbug.com/332471454 - Open the keyboard.
     bridge_->OnFocusChanged(field_to_focus);
   }
+  base::UmaHistogramEnumeration(
+      "Autofill.ConditionalPasskeysFlow.PasskeysState", has_passkeys);
 }
 
 }  // namespace autofill

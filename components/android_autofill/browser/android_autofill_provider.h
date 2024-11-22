@@ -262,6 +262,7 @@ class AndroidAutofillProvider : public AutofillProvider,
   void OnCredManUiClosed(
       FormGlobalId form_id,
       std::optional<AndroidAutofillProviderBridge::FieldInfo> field_to_focus,
+      webauthn::WebAuthnCredManDelegate::State has_passkeys,
       bool success);
 
   // Returns true if CredMan *may* be shown for the given field. It only returns

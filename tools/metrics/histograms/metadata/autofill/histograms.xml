@@ -1433,6 +1433,18 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.ConditionalPasskeysFlow.PasskeysState"
+    enum="WebAuthnCredManDelegateState" expires_after="2025-04-18">
+  <owner>friedrichh@chromium.org</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Clank only. Logs the state of passkeys in a conditional passkey flow. It
+    could be that the passkeys were not ready, there were no saved passkeys or
+    there were passkeys. Emitted when the CredMan UI was closed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CreditCard.DisabledReason.PageLoad"
     enum="AutofillPreferenceSetter" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>

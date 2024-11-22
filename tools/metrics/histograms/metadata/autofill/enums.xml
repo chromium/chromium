@@ -5173,6 +5173,12 @@ Called by update_autofill_enums.py.-->
   <int value="7" label="Form submitted after suggestion filled (once)"/>
 </enum>
 
+<enum name="WebAuthnCredManDelegateState">
+  <int value="0" label="Not ready"/>
+  <int value="1" label="No passkeys"/>
+  <int value="2" label="Has passkeys"/>
+</enum>
+
 <enum name="WebauthnOptInPromoNotOfferedReason">
   <int value="0" label="Unknown"/>
   <int value="1"
