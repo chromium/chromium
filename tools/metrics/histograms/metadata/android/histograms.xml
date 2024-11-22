@@ -3721,6 +3721,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DocumentLoadTime.FirstPaired" units="ms"
+    expires_after="2025-05-11">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf document load time. Recorded when the pdf load is complete.
+    Records the first successful load for each explicit pdf load. Only record
+    when there is a paired Android.Pdf.DocumentLoad.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DocumentLoadTime.Paired" units="ms"
     expires_after="2025-03-02">
   <owner>shuyng@google.com</owner>
