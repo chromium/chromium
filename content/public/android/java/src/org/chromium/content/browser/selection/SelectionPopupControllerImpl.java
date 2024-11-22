@@ -954,7 +954,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         mClassificationResult,
                         isSelectionPassword(),
                         !isFocusedNodeEditable(),
-                        getSelectedText())) {
+                        getSelectedText(),
+                        mSelectionActionMenuDelegate)) {
             mSelectionMenuCachedResult =
                     new SelectionMenuCachedResult(
                             mClassificationResult,

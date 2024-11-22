@@ -64,6 +64,7 @@ import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
 import org.chromium.content_public.common.ContentFeatures;
@@ -1002,8 +1003,106 @@ public class SelectionPopupControllerTest {
     }
 
     @Test
-    public void testMenuIsCachedForSameSelectionState() {
+    public void testMenuIsCachedForSameSelectionStateIfDelegateIsNull() {
         Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+
+        // Called twice to check the selection menu has been cached properly.
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MOUSE,
+                mRenderFrameHost);
+
+        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MOUSE,
+                mRenderFrameHost);
+
+        Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
+        Assert.assertSame(result, mController.getMenuItems());
+    }
+
+    @Test
+    public void testMenuIsProcessedForSameSelectionStateIfCachingNotEnabledByDelegate() {
+        Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+        SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
+        mController.setSelectionActionMenuDelegate(delegate);
+        when(delegate.canReuseCachedSelectionMenu()).thenReturn(false);
+
+        // Called twice to check the selection menu has been cached properly.
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MOUSE,
+                mRenderFrameHost);
+
+        SortedSet<SelectionMenuGroup> result = mController.getMenuItems();
+        mController.showSelectionMenu(
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                /* isEditable= */ true,
+                /* isPasswordType= */ false,
+                AMPHITHEATRE_FULL,
+                /* selectionOffset= */ 0,
+                /* canSelectAll= */ true,
+                /* canRichlyEdit= */ true,
+                /* shouldSuggest= */ true,
+                MenuSourceType.MOUSE,
+                mRenderFrameHost);
+
+        Assert.assertNotNull(mController.getSelectionMenuCachedResultForTesting());
+        Assert.assertNotSame(result, mController.getMenuItems());
+    }
+
+    @Test
+    public void testMenuIsCachedForSameSelectionStateIfCachingEnabledByDelegate() {
+        Assert.assertNull(mController.getSelectionMenuCachedResultForTesting());
+        SelectionActionMenuDelegate delegate = Mockito.mock(SelectionActionMenuDelegate.class);
+        mController.setSelectionActionMenuDelegate(delegate);
+        when(delegate.canReuseCachedSelectionMenu()).thenReturn(true);
 
         // Called twice to check the selection menu has been cached properly.
         mController.showSelectionMenu(

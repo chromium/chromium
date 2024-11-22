@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMenuGroup;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 
 import java.util.Objects;
 import java.util.SortedSet;
@@ -56,13 +57,20 @@ public class SelectionMenuCachedResult {
      * @param isSelectionPassword true if the selection is password.
      * @param isSelectionReadOnly true if the selection is non-editable.
      * @param selectedText the current selected text.
+     * @param selectionActionMenuDelegate delegate implementation to decide if cached result can be
+     *     reused.
      * @return true if params are equivalent otherwise false.
      */
     public boolean canReuseResult(
             @Nullable SelectionClient.Result classificationResult,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
-            String selectedText) {
+            String selectedText,
+            SelectionActionMenuDelegate selectionActionMenuDelegate) {
+        if (selectionActionMenuDelegate != null
+                && !selectionActionMenuDelegate.canReuseCachedSelectionMenu()) {
+            return false;
+        }
         if (mIsSelectionPassword != isSelectionPassword
                 || mIsSelectionReadOnly != isSelectionReadOnly
                 || !Objects.equals(mSelectedText, selectedText)) {

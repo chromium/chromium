@@ -75,6 +75,7 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
             new ComponentName(
                     "com.samsung.android.honeyboard",
                     "com.samsung.android.writingtoolkit.view.WritingToolkitActivity");
+    private static Boolean sIsManageAppsSupported;
 
     /**
      * Android Intent size limitations prevent sending over a megabyte of data. Limit query lengths
@@ -242,6 +243,11 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
         return additionalItemBuilderList;
     }
 
+    @Override
+    public boolean canReuseCachedSelectionMenu() {
+        return !isManageAppsSupported();
+    }
+
     public String getTextFromAdditionalActivityResult(
             int requestCode, int resultCode, Intent data) {
         if (requestCode != WRITING_TOOLKIT_REQUEST_CODE) {
@@ -285,10 +291,14 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
     }
 
     private static boolean isManageAppsSupported() {
+        if (sIsManageAppsSupported != null) {
+            return sIsManageAppsSupported;
+        }
         if (!isSamsungDevice()
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE
                 || Build.VERSION.SDK_INT > Build.VERSION_CODES.VANILLA_ICE_CREAM
                 || !ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)) {
+            sIsManageAppsSupported = false;
             return false;
         }
         Context context = ContextUtils.getApplicationContext();
@@ -296,7 +306,8 @@ public class SamsungSelectionActionMenuDelegate extends AutofillSelectionActionM
                 context.getPackageManager()
                         .queryIntentActivities(
                                 createManageAppsIntent(), PackageManager.MATCH_DEFAULT_ONLY);
-        return !list.isEmpty();
+        sIsManageAppsSupported = !list.isEmpty();
+        return sIsManageAppsSupported;
     }
 
     private static Intent createManageAppsIntent() {

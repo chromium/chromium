@@ -103,6 +103,11 @@ public class SelectActionMenuHelperTest {
         public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
             return new ArrayList<>();
         }
+
+        @Override
+        public boolean canReuseCachedSelectionMenu() {
+            return true;
+        }
     }
 
     @Before
