@@ -616,6 +616,7 @@ void WindowPerformance::EventTimingProcessingEnd(
   CHECK(iter != event_timing_entries_.rend());
   PerformanceEventTiming* entry = *iter;
   CHECK(entry);
+  CHECK(entry->name() == event_type);
 
   PerformanceEventTiming::EventTimingReportingInfo* reporting_info =
       entry->GetEventTimingReportingInfo();
@@ -709,11 +710,16 @@ void WindowPerformance::ReportAllPendingEventTimingsOnPageHidden() {
 
   // For events which don't have an end_time yet, set a fallback time to the
   // processingEnd timestamp.
+  // Note: some events won't have a processingEnd time yet.  This can happen
+  // with nested event loops running in the middle of an event dispatch.
+  // Skip assigning a fallback when that happens.
   // Ideally the fallback time could be the last_hidden_timestamp_, but we don't
   // actually have an accurate value for that (it would need to come from
   // browser IPC).
   for (auto event_timing_entry : event_timing_entries_) {
-    if (!event_timing_entry->HasKnownEndTime()) {
+    if (!event_timing_entry->HasKnownEndTime() &&
+        !event_timing_entry->GetEventTimingReportingInfo()
+             ->processing_end_time.is_null()) {
       event_timing_entry->GetEventTimingReportingInfo()->fallback_time =
           event_timing_entry->GetEventTimingReportingInfo()
               ->processing_end_time;
@@ -819,6 +825,12 @@ void WindowPerformance::ReportEvent(
   SetFallbackTime(event_timing_entry);
 
   base::TimeTicks event_end_time = event_timing_entry->GetEndTime();
+
+  // event_creation_time might be null in certain tests.
+  // CHECK(!event_creation_time.is_null());
+  CHECK(!processing_start.is_null());
+  CHECK(!processing_end.is_null());
+  CHECK(!event_end_time.is_null());
 
   base::TimeDelta time_to_next_paint = event_end_time - processing_end;
 
