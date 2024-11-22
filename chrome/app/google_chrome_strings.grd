@@ -1225,6 +1225,9 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_PROFILE_MENU_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the Profile Menu.">
           Sign out of Chrome
         </message>
+        <message name="IDS_PROFILE_MENU_ADD_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+          Add Chrome profile
+        </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING" desc="The text label of the Sign out of Chrome button in the Profile Menu when the user is in sign in pending state.">
@@ -1238,6 +1241,9 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_PROFILE_MENU_SIGN_OUT" desc="The text label of the Sign out of Chrome button in the Profile Menu.">
           Sign Out of Chrome
+        </message>
+        <message name="IDS_PROFILE_MENU_ADD_PROFILE" desc="The text label of the add new profile item in the profile menu.">
+          Add Chrome Profile
         </message>
       </if>
 

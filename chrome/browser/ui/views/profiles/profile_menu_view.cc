@@ -1204,7 +1204,10 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
     if (profiles::IsProfileCreationAllowed()) {
       AddProfileManagementFeatureButton(
           kAccountAddChromeRefreshIcon,
-          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_ADD_NEW_PROFILE),
+          l10n_util::GetStringUTF16(
+              switches::IsImprovedSigninUIOnDesktopEnabled()
+                  ? IDS_PROFILE_MENU_ADD_PROFILE
+                  : IDS_PROFILE_MENU_ADD_NEW_PROFILE),
           base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
                               base::Unretained(this)));
     }
