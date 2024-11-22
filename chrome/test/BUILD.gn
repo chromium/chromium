@@ -9963,6 +9963,7 @@ test("unit_tests") {
   if (enterprise_data_controls) {
     sources += [ "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc" ]
     deps += [
+      "//chrome/browser/enterprise/data_controls:unit_tests",
       "//components/enterprise/data_controls/core/browser:features",
       "//components/enterprise/data_controls/core/browser:test_support",
     ]
@@ -9972,7 +9973,6 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",
     ]
-    deps += [ "../browser/enterprise/data_controls:unit_tests" ]
   }
 
   if (!is_android) {
