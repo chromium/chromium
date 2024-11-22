@@ -10,7 +10,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter languageModel
 [Worker]     getter rewriter
 [Worker]     getter summarizer
-[Worker]     getter translator
 [Worker]     getter writer
 [Worker]     method constructor
 [Worker] interface AICreateMonitor : EventTarget
@@ -102,10 +101,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker]     method translate
-[Worker] interface AITranslatorFactory
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method create
 [Worker] interface AIWriter
 [Worker]     attribute @@toStringTag
 [Worker]     getter sharedContext

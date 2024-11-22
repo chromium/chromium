@@ -45,6 +45,7 @@ interface AI {
   readonly attribute AILanguageDetectorFactory languageDetector;
 
   [
+    Exposed=(Window),
     RuntimeEnabled=TranslationAPI
   ]
   readonly attribute AITranslatorFactory translator;

@@ -5,7 +5,6 @@ interface AI
     getter languageModel
     getter rewriter
     getter summarizer
-    getter translator
     getter writer
     method constructor
 interface AICreateMonitor : EventTarget
@@ -97,10 +96,6 @@ interface AITranslator
     method constructor
     method destroy
     method translate
-interface AITranslatorFactory
-    attribute @@toStringTag
-    method constructor
-    method create
 interface AIWriter
     attribute @@toStringTag
     getter sharedContext
