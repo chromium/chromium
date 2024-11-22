@@ -36,7 +36,6 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.animation.AnimationUtils;
@@ -73,7 +72,6 @@ import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
 import org.chromium.android_webview.selection.SelectionActionMenuDelegateProvider;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
@@ -83,13 +81,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.FrameMetricsListener;
-import org.chromium.base.jank_tracker.FrameMetricsStore;
-import org.chromium.base.jank_tracker.JankReportingScheduler;
-import org.chromium.base.jank_tracker.JankScenario;
-import org.chromium.base.jank_tracker.JankTracker;
-import org.chromium.base.jank_tracker.JankTrackerImpl;
-import org.chromium.base.jank_tracker.JankTrackerStateController;
 import org.chromium.base.memory.MemoryInfoBridge;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
@@ -1158,126 +1149,6 @@ public class AwContents implements SmartClipProvider {
                             globalPercentage,
                             schemes.toArray(new String[schemes.size()]),
                             toIntArray(schemePercentages));
-        }
-    }
-
-    // A Webview class that implements the listener part of the JankTracker requirement. It mirrors
-    // JankActivityTracker in starting and stopping the listener and collection.
-    private static class AwFrameMetricsListener {
-        private static final WeakHashMap<Window, AwFrameMetricsListener> sWindowMap =
-                new WeakHashMap<>();
-
-        private boolean mAttached;
-        private JankTrackerStateController mController;
-        private JankTracker mJankTracker;
-        private WeakReference<Window> mWindow;
-        private int mAttachedWebviews;
-        private int mVisibleWebviews;
-
-        private static final WeakHashMap<Window, Integer> sNumActiveScrolls = new WeakHashMap<>();
-
-        private AwFrameMetricsListener() {
-            FrameMetricsStore metricsStore = new FrameMetricsStore();
-            mController =
-                    new JankTrackerStateController(
-                            new FrameMetricsListener(metricsStore),
-                            new JankReportingScheduler(metricsStore));
-            mJankTracker = new JankTrackerImpl(mController);
-            mAttached = false;
-        }
-
-        private void attachListener(Window window) {
-            if (mAttached) return;
-            mWindow = new WeakReference<Window>(window);
-            mController.startMetricCollection(window);
-            mAttached = true;
-        }
-
-        private void detachListener(Window window) {
-            if (!mAttached || window != mWindow.get()) return;
-            mController.stopMetricCollection(window);
-            mAttached = false;
-        }
-
-        private void incrementAttachedWebviews() {
-            mAttachedWebviews++;
-        }
-
-        private void decrementAttachedWebviews() {
-            mAttachedWebviews--;
-            assert mAttachedWebviews >= 0;
-        }
-
-        private int getAttachedWebviews() {
-            return mAttachedWebviews;
-        }
-
-        public static AwFrameMetricsListener onAttachedToWindow(Window window) {
-            AwFrameMetricsListener listener = sWindowMap.get(window);
-            if (listener == null) {
-                listener = new AwFrameMetricsListener();
-                listener.attachListener(window);
-                sWindowMap.put(window, listener);
-            }
-            listener.incrementAttachedWebviews();
-            return listener;
-        }
-
-        public static void onDetachedFromWindow(Window window) {
-            AwFrameMetricsListener listener = sWindowMap.get(window);
-            listener.decrementAttachedWebviews();
-            if (listener.getAttachedWebviews() >= 1) return;
-            listener.detachListener(window);
-            sWindowMap.remove(window);
-        }
-
-        public void onWebviewVisible() {
-            if (!mAttached) return;
-            mVisibleWebviews++;
-            if (mVisibleWebviews > 1) return;
-            mController.startPeriodicReporting();
-            mController.startMetricCollection(null);
-        }
-
-        public void onWebviewHidden() {
-            if (!mAttached) return;
-            mVisibleWebviews--;
-            assert mVisibleWebviews >= 0;
-            if (mVisibleWebviews == 0) {
-                mController.stopMetricCollection(null);
-                mController.stopPeriodicReporting();
-            }
-        }
-
-        public void onWebContentsScrollStateUpdate(boolean isScrolling, long scrollId) {
-            if (!mAttached) return;
-            // scrollIds are unique across multiple webviews in a window.
-            Window window = mWindow.get();
-            if (window == null) return;
-            int numActiveScrolls = sNumActiveScrolls.getOrDefault(window, 0);
-            if (isScrolling) {
-                numActiveScrolls += 1;
-                mJankTracker.startTrackingScenario(
-                        new JankScenario(JankScenario.Type.WEBVIEW_SCROLLING, scrollId));
-            } else {
-                assert numActiveScrolls >= 1;
-                numActiveScrolls -= 1;
-                mJankTracker.finishTrackingScenario(
-                        new JankScenario(JankScenario.Type.WEBVIEW_SCROLLING, scrollId),
-                        TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
-            }
-
-            if (numActiveScrolls == 0) {
-                mJankTracker.finishTrackingScenario(
-                        JankScenario.COMBINED_WEBVIEW_SCROLLING,
-                        TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
-                sNumActiveScrolls.remove(window);
-                return;
-            }
-            if (numActiveScrolls == 1 && isScrolling) {
-                mJankTracker.startTrackingScenario(JankScenario.COMBINED_WEBVIEW_SCROLLING);
-            }
-            sNumActiveScrolls.put(window, numActiveScrolls);
         }
     }
 
@@ -3651,12 +3522,8 @@ public class AwContents implements SmartClipProvider {
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
         }
 
-        if (AwFeatureMap.isEnabled(BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS)) {
-            Window window = mWindowAndroid.getWindowAndroid().getWindow();
-            if (window != null && mContainerView.isHardwareAccelerated()) {
-                mAwFrameMetricsListener = AwFrameMetricsListener.onAttachedToWindow(window);
-            }
-        }
+        mAwFrameMetricsListener = AwFrameMetricsListener
+                .maybeCreate(mContainerView, mWindowAndroid.getWindowAndroid());
 
         ViewGroup.LayoutParams viewGroupParams = mContainerView.getRootView().getLayoutParams();
         if (viewGroupParams instanceof WindowManager.LayoutParams params) {
@@ -3690,13 +3557,9 @@ public class AwContents implements SmartClipProvider {
         mWindowAndroid.getWindowAndroid().getDisplay().removeObserver(mDisplayObserver);
         mAwViewMethods.onDetachedFromWindow();
 
-        if (mAwFrameMetricsListener != null) {
-            Window window = mWindowAndroid.getWindowAndroid().getWindow();
-            if (window != null && mContainerView.isHardwareAccelerated()) {
-                AwFrameMetricsListener.onDetachedFromWindow(window);
-                mAwFrameMetricsListener = null;
-            }
-        }
+        mAwFrameMetricsListener = AwFrameMetricsListener
+                .maybeClear(mAwFrameMetricsListener, mContainerView,
+                        mWindowAndroid.getWindowAndroid());
     }
 
     /** @see android.view.View#onWindowFocusChanged() */
@@ -3759,9 +3622,9 @@ public class AwContents implements SmartClipProvider {
 
             if (mAwFrameMetricsListener != null) {
                 if (mIsWindowVisible) {
-                    mAwFrameMetricsListener.onWebviewVisible();
+                    mAwFrameMetricsListener.onWebViewVisible();
                 } else {
-                    mAwFrameMetricsListener.onWebviewHidden();
+                    mAwFrameMetricsListener.onWebViewHidden();
                 }
             }
         }
