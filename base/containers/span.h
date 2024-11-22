@@ -275,6 +275,26 @@ constexpr uintptr_t AsUintptrT(const T& t) {
   return reinterpret_cast<uintptr_t>(to_address(t));
 }
 
+template <typename ByteType,
+          typename ElementType,
+          size_t Extent,
+          typename InternalPtrType>
+  requires((std::same_as<std::remove_const_t<ByteType>, char> ||
+            std::same_as<std::remove_const_t<ByteType>, unsigned char>) &&
+           (std::is_const_v<ByteType> || !std::is_const_v<ElementType>))
+constexpr auto as_byte_span(
+    span<ElementType, Extent, InternalPtrType> s) noexcept {
+  constexpr size_t kByteExtent =
+      Extent == dynamic_extent ? dynamic_extent : sizeof(ElementType) * Extent;
+  // SAFETY: `s.data()` points to at least `s.size_bytes()` bytes' worth of
+  // valid elements, so the size computed below must only contain valid
+  // elements. Since `ByteType` is an alias to a character type, it has a size
+  // of 1 byte, the resulting pointer has no alignment concerns, and it is not
+  // UB to access memory contents inside the allocation through it.
+  return UNSAFE_BUFFERS(span<ByteType, kByteExtent>(
+      reinterpret_cast<ByteType*>(s.data()), s.size_bytes()));
+}
+
 template <class T, size_t N>
 constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r);
 
@@ -1301,29 +1321,13 @@ span(R&&) -> span<std::remove_reference_t<std::ranges::range_reference_t<R>>,
 // [span.objectrep], views of object representation
 template <typename T, size_t X, typename InternalPtrType>
 constexpr auto as_bytes(span<T, X, InternalPtrType> s) noexcept {
-  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
-  // SAFETY: span provides that data() points to at least size_bytes() many
-  // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is
-  // a valid size for a span at data() when viewed as `uint8_t*`.
-  //
-  // The reinterpret_cast is valid as the alignment of uint8_t (which is 1) is
-  // always less-than or equal to the alignment of T.
-  return UNSAFE_BUFFERS(span<const uint8_t, N>(
-      reinterpret_cast<const uint8_t*>(s.data()), s.size_bytes()));
+  return internal::as_byte_span<const uint8_t>(s);
 }
 
 template <typename T, size_t X, typename InternalPtrType>
   requires(!std::is_const_v<T>)
 constexpr auto as_writable_bytes(span<T, X, InternalPtrType> s) noexcept {
-  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
-  // SAFETY: span provides that data() points to at least size_bytes() many
-  // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is a
-  // valid size for a span at data() when viewed as `uint8_t*`.
-  //
-  // The reinterpret_cast is valid as the alignment of uint8_t (which is 1) is
-  // always less-than or equal to the alignment of T.
-  return UNSAFE_BUFFERS(
-      span<uint8_t, N>(reinterpret_cast<uint8_t*>(s.data()), s.size_bytes()));
+  return internal::as_byte_span<uint8_t>(s);
 }
 
 // as_chars() is the equivalent of as_bytes(), except that it returns a
@@ -1332,15 +1336,7 @@ constexpr auto as_writable_bytes(span<T, X, InternalPtrType> s) noexcept {
 // rightfully should be uint8_t.
 template <typename T, size_t X, typename InternalPtrType>
 constexpr auto as_chars(span<T, X, InternalPtrType> s) noexcept {
-  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
-  // SAFETY: span provides that data() points to at least size_bytes() many
-  // bytes. So since `char` has a size of 1 byte, the size_bytes() value is a
-  // valid size for a span at data() when viewed as `char*`.
-  //
-  // The reinterpret_cast is valid as the alignment of char (which is 1) is
-  // always less-than or equal to the alignment of T.
-  return UNSAFE_BUFFERS(span<const char, N>(
-      reinterpret_cast<const char*>(s.data()), s.size_bytes()));
+  return internal::as_byte_span<const char>(s);
 }
 
 // as_writable_chars() is the equivalent of as_writable_bytes(), except that
@@ -1350,15 +1346,7 @@ constexpr auto as_chars(span<T, X, InternalPtrType> s) noexcept {
 template <typename T, size_t X, typename InternalPtrType>
   requires(!std::is_const_v<T>)
 auto as_writable_chars(span<T, X, InternalPtrType> s) noexcept {
-  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
-  // SAFETY: span provides that data() points to at least size_bytes() many
-  // bytes. So since `char` has a size of 1 byte, the size_bytes() value is
-  // a valid size for a span at data() when viewed as `char*`.
-  //
-  // The reinterpret_cast is valid as the alignment of char (which is 1) is
-  // always less-than or equal to the alignment of T.
-  return UNSAFE_BUFFERS(
-      span<char, N>(reinterpret_cast<char*>(s.data()), s.size_bytes()));
+  return internal::as_byte_span<char>(s);
 }
 
 // as_string_view() converts a span over byte-sized primitives (holding chars or
