@@ -4044,6 +4044,24 @@ const FeatureEntry::FeatureVariation kAutofillVcnEnrollRequestTimeoutOptions[] =
       std::size(kAutofillVcnEnrollRequestTimeout_10Seconds), nullptr}};
 // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:AutofillVcnEnrollRequestTimeouts)
 
+const FeatureEntry::FeatureParam
+    kAutofillImprovedLabelsWithoutMainTextChanges[] = {
+        {"autofill_improved_labels_without_main_text_changes", "true"},
+        {"autofill_improved_labels_only_with_main_text_changes", "false"}};
+
+const FeatureEntry::FeatureParam
+    kAutofillImprovedLabelsOnlyWithMainTextChanges[] = {
+        {"autofill_improved_labels_without_main_text_changes", "false"},
+        {"autofill_improved_labels_only_with_main_text_changes", "true"}};
+
+const FeatureEntry::FeatureVariation kAutofillImprovedLabelsVariations[] = {
+    {"without main text changes", kAutofillImprovedLabelsWithoutMainTextChanges,
+     std::size(kAutofillImprovedLabelsWithoutMainTextChanges), nullptr},
+    {"with only main text changes",
+     kAutofillImprovedLabelsOnlyWithMainTextChanges,
+     std::size(kAutofillImprovedLabelsOnlyWithMainTextChanges), nullptr},
+};
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const FeatureEntry::FeatureParam
     kExtensionTelemetryEnterpriseReportingIntervalSeconds_20Seconds[] = {
@@ -11847,6 +11865,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableSaveAndFillName,
      flag_descriptions::kAutofillEnableSaveAndFillDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableSaveAndFill)},
+
+    {"autofill-improved-labels", flag_descriptions::kAutofillImprovedLabelsName,
+     flag_descriptions::kAutofillImprovedLabelsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillImprovedLabels,
+                                    kAutofillImprovedLabelsVariations,
+                                    "AutofillImprovedLabelsVariations")}
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

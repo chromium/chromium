@@ -2161,6 +2161,49 @@
             ]
         }
     ],
+    "AutofillImprovedLabelsVariations": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "autofill_improved_labels_only_with_main_text_changes": "false",
+                        "autofill_improved_labels_without_main_text_changes": "false"
+                    },
+                    "enable_features": [
+                        "AutofillImprovedLabels"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithoutMainTextChanges",
+                    "params": {
+                        "autofill_improved_labels_only_with_main_text_changes": "false",
+                        "autofill_improved_labels_without_main_text_changes": "true"
+                    },
+                    "enable_features": [
+                        "AutofillImprovedLabels"
+                    ]
+                },
+                {
+                    "name": "Enabled_WithOnlyMainTextChanges",
+                    "params": {
+                        "autofill_improved_labels_only_with_main_text_changes": "true",
+                        "autofill_improved_labels_without_main_text_changes": "false"
+                    },
+                    "enable_features": [
+                        "AutofillImprovedLabels"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillInferLabelFromDefaultSelectText": [
         {
             "platforms": [

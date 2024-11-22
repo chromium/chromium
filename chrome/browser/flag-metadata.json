@@ -770,6 +770,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "autofill-improved-labels",
+    "owners": [ "brunobraga@chromium.org", "theocristea@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "autofill-isolated-world-ios",
     "owners": [ "eic@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 135

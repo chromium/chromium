@@ -419,6 +419,9 @@ extern const char kAutofillEnableVirtualCardMetadataDescription[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
 
+extern const char kAutofillImprovedLabelsName[];
+extern const char kAutofillImprovedLabelsDescription[];
+
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 

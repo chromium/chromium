@@ -21761,6 +21761,7 @@ from previous Chrome versions.
   <int value="595371145" label="OmniboxRichEntitySuggestions:disabled"/>
   <int value="595372984"
       label="OmniboxMostVisitedTilesAddRecycledViewPool:disabled"/>
+  <int value="595541044" label="AutofillImprovedLabels:enabled"/>
   <int value="596056149" label="BiometricAuthIdentityCheck:enabled"/>
   <int value="596106994" label="CustomFeedbackUi:enabled"/>
   <int value="597542937" label="TabbedAppOverflowMenuRegroup:enabled"/>
@@ -22771,6 +22772,7 @@ from previous Chrome versions.
   <int value="1003002105" label="MaterialDesignBookmarks:disabled"/>
   <int value="1003006004" label="RichBubbleWithoutImage:disabled"/>
   <int value="1003081697" label="DesktopPWAsUnifiedInstall:enabled"/>
+  <int value="1003419905" label="AutofillImprovedLabels:disabled"/>
   <int value="1003612981"
       label="AutofillAutoTriggerManualFallbackForCards:enabled"/>
   <int value="1004141182" label="SurfaceSyncThrottling:enabled"/>

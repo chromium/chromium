@@ -718,6 +718,12 @@ const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[] =
     "and other values that are not changed by accepting the preview should "
     "not be highlighted.";
 
+const char kAutofillImprovedLabelsName[] =
+    "Autofill suggestions with improved labels";
+const char kAutofillImprovedLabelsDescription[] =
+    "When enabled, the autofill suggestion labels are more more descriptive "
+    "and relevant.";
+
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
     "Parse standalone CVC fields for VCN card on file in forms";
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
