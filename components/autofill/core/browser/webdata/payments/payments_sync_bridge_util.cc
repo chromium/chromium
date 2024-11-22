@@ -979,6 +979,13 @@ void PopulateWalletTypesFromSyncData(
                    IsEwalletAccountSupported()) {
           payment_instruments.push_back(
               autofill_specifics.payment_instrument());
+        } else if (autofill_specifics.payment_instrument()
+                           .instrument_details_case() ==
+                       sync_pb::PaymentInstrument::InstrumentDetailsCase::
+                           kBnplIssuerDetails &&
+                   IsBnplSupported()) {
+          payment_instruments.push_back(
+              autofill_specifics.payment_instrument());
         }
         break;
       // TODO(crbug.com/374767814): Implement PopulateWalletTypesFromSyncData
@@ -1146,6 +1153,17 @@ bool AreMaskedBankAccountSupported() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+bool IsBnplSupported() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+}
+
 bool IsEwalletAccountSupported() {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(features::kAutofillSyncEwalletAccounts);
@@ -1155,9 +1173,9 @@ bool IsEwalletAccountSupported() {
 }
 
 bool IsGenericPaymentInstrumentSupported() {
-  // Currently only eWallet account is using generic payment instrument proto
-  // for read/write.
-  return IsEwalletAccountSupported();
+  // Currently only eWallet accounts and BNPL are using the generic payment
+  // instrument proto for read/write.
+  return IsEwalletAccountSupported() || IsBnplSupported();
 }
 
 }  // namespace autofill

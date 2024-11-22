@@ -177,6 +177,8 @@ bool IsAutofillWalletCredentialDataSpecificsValid(
 
 bool AreMaskedBankAccountSupported();
 
+bool IsBnplSupported();
+
 bool IsEwalletAccountSupported();
 
 bool IsGenericPaymentInstrumentSupported();
