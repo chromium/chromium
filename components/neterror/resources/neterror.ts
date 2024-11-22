@@ -26,22 +26,8 @@ interface ErrorPageController {
   detailsButtonClick(): void;
   diagnoseErrorsButtonClick(): void;
   portalSigninButtonClick(): void;
-  launchDownloadsPage(): void;
-  launchOfflineItem(id: string, namespace: string): void;
   savePageForLater(): void;
   cancelSavePage(): void;
-  listVisibilityChanged(visible: boolean): void;
-}
-
-// Decodes a UTF16 string that is encoded as base64.
-function decodeUTF16Base64ToString(encodedText: string): string {
-  const data = atob(encodedText);
-  let result = '';
-  for (let i = 0; i < data.length; i += 2) {
-    result +=
-        String.fromCharCode(data.charCodeAt(i) * 256 + data.charCodeAt(i + 1));
-  }
-  return result;
 }
 
 interface WithDetailsText {
@@ -140,10 +126,6 @@ function downloadButtonClick() {
             'download-button');
     downloadButton.disabled = true;
     downloadButton.textContent = downloadButton.disabledText;
-
-    getRequiredElement('download-link-wrapper').classList.add(HIDDEN_CLASS);
-    getRequiredElement('download-link-clicked-wrapper')
-        .classList.remove(HIDDEN_CLASS);
   }
 }
 
@@ -182,182 +164,11 @@ function cancelSavePageClick() {
   setAutoFetchState(false, true);
 }
 
-function toggleErrorInformationPopup() {
-  getRequiredElement('error-information-popup-container')
-      .classList.toggle(HIDDEN_CLASS);
-}
-
-function launchOfflineItem(itemID: string, nameSpace: string) {
-  assert(window.errorPageController);
-  window.errorPageController.launchOfflineItem(itemID, nameSpace);
-}
-
-function launchDownloadsPage() {
-  assert(window.errorPageController);
-  window.errorPageController.launchDownloadsPage();
-}
-
-function getIconForSuggestedItem(item: AvailableOfflineContent): string {
-  // Note: |item.content_type| contains the enum values from
-  // chrome::mojom::AvailableContentType.
-  switch (item.content_type) {
-    case 1:  // kVideo
-      return 'image-video';
-    case 2:  // kAudio
-      return 'image-music-note';
-    case 0:  // kPrefetchedPage
-    case 3:  // kOtherPage
-      return 'image-earth';
-  }
-  return 'image-file';
-}
-
-function getSuggestedContentDiv(
-    item: AvailableOfflineContent, index: number): string {
-  // Note: See AvailableContentToValue in available_offline_content_helper.cc
-  // for the data contained in an |item|.
-  // TODO(carlosk): Present |snippet_base64| when that content becomes
-  // available.
-  let thumbnail = '';
-  const extraContainerClasses = [];
-  // html_inline.py will try to replace src attributes with data URIs using a
-  // simple regex. The following is obfuscated slightly to avoid that.
-  const source = 'src';
-  if (item.thumbnail_data_uri) {
-    extraContainerClasses.push('suggestion-with-image');
-    thumbnail = `<img ${source}="${item.thumbnail_data_uri}">`;
-  } else {
-    extraContainerClasses.push('suggestion-with-icon');
-    const iconClass = getIconForSuggestedItem(item);
-    thumbnail = `<div><img class="${iconClass}"></div>`;
-  }
-
-  let favicon = '';
-  if (item.favicon_data_uri) {
-    favicon = `<img ${source}="${item.favicon_data_uri}">`;
-  } else {
-    extraContainerClasses.push('no-favicon');
-  }
-
-  if (!item.attribution_base64) {
-    extraContainerClasses.push('no-attribution');
-  }
-
-  return `
-  <div class="offline-content-suggestion ${extraContainerClasses.join(' ')}"
-    onclick="launchOfflineItem('${item.ID}', '${item.name_space}')">
-      <div class="offline-content-suggestion-texts">
-        <div id="offline-content-suggestion-title-${index}"
-             class="offline-content-suggestion-title">
-        </div>
-        <div class="offline-content-suggestion-attribution-freshness">
-          <div id="offline-content-suggestion-favicon-${index}"
-               class="offline-content-suggestion-favicon">
-            ${favicon}
-          </div>
-          <div id="offline-content-suggestion-attribution-${index}"
-               class="offline-content-suggestion-attribution">
-          </div>
-          <div class="offline-content-suggestion-freshness">
-            ${item.date_modified}
-          </div>
-          <div class="offline-content-suggestion-pin-spacer"></div>
-          <div class="offline-content-suggestion-pin"></div>
-        </div>
-      </div>
-      <div class="offline-content-suggestion-thumbnail">
-        ${thumbnail}
-      </div>
-  </div>`;
-}
-
-interface AvailableOfflineContent {
-  ID: string;
-  name_space: string;
-  title_base64: string;
-  snippet_base64: string;
-  date_modified: string;
-  attribution_base64: string;
-  thumbnail_data_uri: string;
-  favicon_data_uri: string;
-  content_type: number;
-}
-
-// Populates a list of suggested offline content.
-// Note: For security reasons all content downloaded from the web is considered
-// unsafe and must be securely handled to be presented on the dino page. Images
-// have already been safely re-encoded but textual content -- like title and
-// attribution -- must be properly handled here.
-// TODO(crbug.com/380105411): Delete, no longer used.
-function offlineContentAvailable(
-    isShown: boolean, suggestions?: AvailableOfflineContent[]) {
-  if (!suggestions || !loadTimeData.valueExists('offlineContentList')) {
-    return;
-  }
-
-  const suggestionsHTML = suggestions.map((suggestion, index) => {
-    return getSuggestedContentDiv(suggestion, index);
-  });
-
-  getRequiredElement('offline-content-suggestions').innerHTML =
-      suggestionsHTML.join('\n');
-
-  // Sets textual web content using |textContent| to make sure it's handled as
-  // plain text.
-  suggestions.forEach((suggestion, index) => {
-    getRequiredElement(`offline-content-suggestion-title-${index}`)
-        .textContent = decodeUTF16Base64ToString(suggestion.title_base64);
-    getRequiredElement(`offline-content-suggestion-attribution-${index}`)
-        .textContent = decodeUTF16Base64ToString(suggestion.attribution_base64);
-  });
-
-  const contentListElement = getRequiredElement('offline-content-list');
-  if (document.dir === 'rtl') {
-    contentListElement.classList.add('is-rtl');
-  }
-  contentListElement.hidden = false;
-  // The list is configured as hidden by default. Show it if needed.
-  if (isShown) {
-    toggleOfflineContentListVisibility(false);
-  }
-}
-
-function toggleOfflineContentListVisibility(updatePref: boolean) {
-  if (!loadTimeData.valueExists('offlineContentList')) {
-    return;
-  }
-
-  const contentListElement = getRequiredElement('offline-content-list');
-  const isVisible = !contentListElement.classList.toggle('list-hidden');
-
-  if (updatePref && window.errorPageController) {
-    window.errorPageController.listVisibilityChanged(isVisible);
-  }
-}
-
 // Called on document load, and from updateForDnsProbe().
 function onDocumentLoadOrUpdate() {
   const downloadButtonVisible = loadTimeData.valueExists('downloadButton') &&
       loadTimeData.getValue('downloadButton').msg;
   const detailsButton = getRequiredElement('details-button');
-
-  // If offline content suggestions will be visible, the usual buttons will not
-  // be presented.
-  const offlineContentVisible =
-      loadTimeData.valueExists('suggestedOfflineContentPresentation');
-  if (offlineContentVisible) {
-    const wrapper = document.querySelector('.nav-wrapper');
-    assert(wrapper);
-    wrapper.classList.add(HIDDEN_CLASS);
-    detailsButton.classList.add(HIDDEN_CLASS);
-
-    getRequiredElement('download-link').hidden = !downloadButtonVisible;
-    getRequiredElement('download-links-wrapper').classList.remove(HIDDEN_CLASS);
-    getRequiredElement('error-information-popup-container')
-        .classList.add('use-popup-container', HIDDEN_CLASS);
-    getRequiredElement('error-information-button')
-        .classList.remove(HIDDEN_CLASS);
-  }
 
   const reloadButtonVisible = loadTimeData.valueExists('reloadButton') &&
       loadTimeData.getValue('reloadButton').msg;
@@ -371,8 +182,7 @@ function onDocumentLoadOrUpdate() {
 
   // Show or hide control buttons.
   const controlButtonDiv = getRequiredElement('control-buttons');
-  controlButtonDiv.hidden =
-      offlineContentVisible || !(reloadButtonVisible || downloadButtonVisible);
+  controlButtonDiv.hidden = !(reloadButtonVisible || downloadButtonVisible);
 
   const iconClass = loadTimeData.valueExists('iconClass') &&
       loadTimeData.getValue('iconClass');
@@ -412,15 +222,10 @@ Object.assign(window, {
   detailsButtonClick,
   diagnoseErrors,
   downloadButtonClick,
-  launchDownloadsPage,
-  launchOfflineItem,
-  offlineContentAvailable,
   portalSignin,
   reloadButtonClick,
   savePageLaterClick,
-  toggleErrorInformationPopup,
   toggleHelpBox,
-  toggleOfflineContentListVisibility,
   updateForDnsProbe,
 });
 

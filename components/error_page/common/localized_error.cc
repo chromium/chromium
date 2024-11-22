@@ -1157,10 +1157,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
           l10n_util::GetStringUTF16(IDS_ERRORPAGES_CANCEL_SAVE_PAGE_BUTTON));
     }
   }
-
-  result.strings.Set(
-      "closeDescriptionPopup",
-      l10n_util::GetStringUTF16(IDS_ERRORPAGES_SUGGESTION_CLOSE_POPUP_BUTTON));
 #endif  // BUILDFLAG(IS_ANDROID)
 
   result.strings.Set("suggestionsSummaryList",
