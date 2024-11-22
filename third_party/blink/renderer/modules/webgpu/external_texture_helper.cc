@@ -245,15 +245,6 @@ ExternalTexture CreateExternalTexture(
          visible_rect.width() >= 0 && visible_rect.height() >= 0);
   DCHECK(natural_size.width() >= 0 && natural_size.height() >= 0);
 
-  // TODO(377574981): Remove once Dawn starts using cropSize/Origin and
-  // apparentSize;
-  external_texture_desc.visibleOrigin = {
-      static_cast<uint32_t>(visible_rect.x()),
-      static_cast<uint32_t>(visible_rect.y())};
-  external_texture_desc.visibleSize = {
-      static_cast<uint32_t>(visible_rect.width()),
-      static_cast<uint32_t>(visible_rect.height())};
-
   // The visible_rect denotes the part of the coded image that's visible when
   // displaying the frame. For Dawn it is considered as a crop rectangle applied
   // in plane0 (and adapted for plane1 if present).
