@@ -484,7 +484,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistencePolicy.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabTaskDescriptionHelper.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabTaskDescriptionIconGenerator.java",
-  "java/src/org/chromium/chrome/browser/customtabs/CustomTabTopBarDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabTrustedCdnPublisherUrlVisibility.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabsClientFileProcessor.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java",

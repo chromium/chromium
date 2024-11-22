@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 
 import dagger.Subcomponent;
 
-import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
-import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
@@ -19,8 +17,4 @@ import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
  */
 @Subcomponent(modules = {ChromeActivityCommonsModule.class, BaseCustomTabActivityModule.class})
 @ActivityScope
-public interface BaseCustomTabActivityComponent extends ChromeActivityComponent {
-    CustomTabIncognitoManager resolveCustomTabIncognitoManager();
-
-    CustomTabSessionHandler resolveSessionHandler();
-}
+public interface BaseCustomTabActivityComponent extends ChromeActivityComponent {}

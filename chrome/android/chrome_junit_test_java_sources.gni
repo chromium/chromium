@@ -125,7 +125,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/webapps/WebappDisclosureControllerTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/trustedwebactivity/DisclosureAcceptanceBroadcastReceiverTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/trustedwebactivity/DisclosureUiPickerTest.java",
-  "junit/src/org/chromium/chrome/browser/browserservices/ui/trustedwebactivity/FilledLazy.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureInfobarTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureNotificationTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/view/DisclosureSnackbarTest.java",

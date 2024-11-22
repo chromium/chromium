@@ -361,7 +361,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected BaseCustomTabActivityComponent createComponent(
             ChromeActivityCommonsModule commonsModule) {
-        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule(this);
+        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule();
 
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent()
@@ -508,14 +508,26 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getCustomTabActivityNavigationController(),
                 BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
 
-        component.resolveSessionHandler();
+        new CustomTabSessionHandler(
+                getIntentDataProvider(),
+                getCustomTabActivityTabProvider(),
+                this::getCustomTabToolbarCoordinator,
+                this::getCustomTabBottomBarDelegate,
+                getCustomTabIntentHandler(),
+                this,
+                getLifecycleDispatcher());
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
 
         // We need the CustomTabIncognitoManager for all OffTheRecord profiles to ensure
         // that they are destroyed when a CCT session ends.
         if (intentDataProvider.isOffTheRecord()) {
-            component.resolveCustomTabIncognitoManager();
+            new CustomTabIncognitoManager(
+                    this,
+                    getCustomTabActivityNavigationController(),
+                    getIntentDataProvider(),
+                    getProfileProviderSupplier(),
+                    getLifecycleDispatcher());
         }
 
         if (intentDataProvider.isWebappOrWebApkActivity()) initializeForWebappOrWebApk();

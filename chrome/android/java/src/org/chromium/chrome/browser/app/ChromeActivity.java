@@ -495,7 +495,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         // Create component before calling super to give its members a chance to catch
         // onPreInflationStartup event.
-        mComponent = createComponent(new ChromeActivityCommonsModule(this));
+        mComponent = createComponent(new ChromeActivityCommonsModule());
 
         // Create the orchestrator that manages Tab models and persistence
         mTabModelOrchestrator = createTabModelOrchestrator();

@@ -21,7 +21,6 @@ import org.chromium.base.UserData;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -47,7 +46,6 @@ import org.chromium.ui.base.WindowAndroid;
  *
  * The engagement signal will reset in navigation.
  */
-@ActivityScope
 class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     private static final int SCROLL_STATE_MAX_PERCENTAGE_NOT_INCREASING = -1;
     // Limit the granularity of data the embedder receives.

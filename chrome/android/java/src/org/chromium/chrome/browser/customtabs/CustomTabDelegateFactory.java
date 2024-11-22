@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -74,7 +73,6 @@ import java.util.List;
  * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned by a {@link
  * CustomTabActivity}.
  */
-@ActivityScope
 public class CustomTabDelegateFactory implements TabDelegateFactory {
 
     /** A custom external navigation delegate that forbids the intent picker from showing up. */
