@@ -645,7 +645,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   AffiliationServiceFactory::GetInstance();
   AiDataKeyedServiceFactory::GetInstance();
-  if (base::FeatureList::IsEnabled(blink::features::kEnableBuiltInAIAPI)) {
+  if (base::FeatureList::IsEnabled(blink::features::kBuiltInAIAPI)) {
     AIManagerKeyedServiceFactory::GetInstance();
   }
   AnnouncementNotificationServiceFactory::GetInstance();

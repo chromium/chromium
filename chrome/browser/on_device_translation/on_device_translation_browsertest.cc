@@ -123,8 +123,7 @@ std::string_view GetCanCreateTranslatorResultString(
 class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
  public:
   OnDeviceTranslationBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kEnableTranslationAPI);
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kTranslationAPI);
     CHECK(tmp_dir_.CreateUniqueTempDir());
   }
   ~OnDeviceTranslationBrowserTest() override = default;
@@ -761,7 +760,7 @@ class OnDeviceTranslationCrashingLangBrowserTest
     // Need to set TranslationAPIAcceptLanguagesCheck to false to use a fake
     // language code `cause_crash` to trigger a crash.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableTranslationAPI,
+        {{blink::features::kTranslationAPI,
           {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
         {});
   }
@@ -1218,7 +1217,7 @@ class OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest
  public:
   OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableTranslationAPI,
+        {{blink::features::kTranslationAPI,
           {{"TranslationAPIAcceptLanguagesCheck", "false"}}}},
         {});
   }
@@ -1245,7 +1244,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
     // Use a reduced value for TranslationAPIMaxServiceCount to speed
     // up the test.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kEnableTranslationAPI,
+        {{blink::features::kTranslationAPI,
           {{"TranslationAPIMaxServiceCount", "2"}}}},
         {});
     CHECK_EQ(kTranslationAPIMaxServiceCount.Get(), 2u);
@@ -1722,7 +1721,7 @@ class OnDeviceTranslationOriginTrialKillSwitchBrowserTest
   OnDeviceTranslationOriginTrialKillSwitchBrowserTest() {
     // Disable the feature to enable the kill switch.
     scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kEnableTranslationAPI);
+        blink::features::kTranslationAPI);
   }
   ~OnDeviceTranslationOriginTrialKillSwitchBrowserTest() override = default;
 

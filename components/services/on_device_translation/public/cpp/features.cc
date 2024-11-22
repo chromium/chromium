@@ -22,20 +22,19 @@ base::FilePath GetPathFromCommandLine(const char* switch_name) {
 }  // namespace
 
 const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck{
-    &blink::features::kEnableTranslationAPI,
-    "TranslationAPIAcceptLanguagesCheck", true};
+    &blink::features::kTranslationAPI, "TranslationAPIAcceptLanguagesCheck",
+    true};
 
 const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount{
-    &blink::features::kEnableTranslationAPI,
-    "TranslationAPILimitLanguagePackCount", true};
+    &blink::features::kTranslationAPI, "TranslationAPILimitLanguagePackCount",
+    true};
 
 const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
-    &blink::features::kEnableTranslationAPI, "TranslationAPIServiceIdleTimeout",
+    &blink::features::kTranslationAPI, "TranslationAPIServiceIdleTimeout",
     base::Minutes(1)};
 
 const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
-    &blink::features::kEnableTranslationAPI, "TranslationAPIMaxServiceCount",
-    10};
+    &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount", 10};
 
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {

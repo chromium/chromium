@@ -446,7 +446,7 @@ bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
 bool IsPromptAPIEnabledForExtension(v8::Local<v8::Context> v8_context) {
   return blink::WebAIFeatures::IsPromptAPIEnabledForExtension(v8_context) &&
          base::FeatureList::IsEnabled(
-             blink::features::kEnableAIPromptAPIForExtension);
+             blink::features::kAIPromptAPIForExtension);
 }
 
 }  // namespace

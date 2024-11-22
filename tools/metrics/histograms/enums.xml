@@ -18360,6 +18360,7 @@ from previous Chrome versions.
   <int value="-777568290" label="FilesTransferDetails:disabled"/>
   <int value="-777126951" label="FontSrcLocalMatching:enabled"/>
   <int value="-776686417" label="SiteExplorationUi:disabled"/>
+  <int value="-776598844" label="AIRewriterAPI:disabled"/>
   <int value="-775952696" label="FeedStamp:enabled"/>
   <int value="-775361878" label="ReadAnythingImagesViaAlgorithm:disabled"/>
   <int value="-775321548" label="UseNewDoodleApi:disabled"/>
@@ -20052,6 +20053,7 @@ from previous Chrome versions.
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
   <int value="-94055083" label="RemoveUPMUnenrollment:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
+  <int value="-92507010" label="AISummarizationAPI:disabled"/>
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>
   <int value="-91999916" label="SysUiDownloadsIntegrationV2:enabled"/>
   <int value="-91928075" label="PasswordViewPageInSettings:disabled"/>
@@ -21427,6 +21429,7 @@ from previous Chrome versions.
   <int value="451196246" label="disable-impl-side-painting"/>
   <int value="452139294" label="VrShellExperimentalRendering:enabled"/>
   <int value="452395990" label="EnablePixDetection:disabled"/>
+  <int value="452950834" label="AISummarizationAPI:enabled"/>
   <int value="452955571" label="EnableFilesystemInIncognito:disabled"/>
   <int value="453017472"
       label="IntentBlockExternalFormRedirectsNoGesture:disabled"/>
@@ -21604,6 +21607,7 @@ from previous Chrome versions.
   <int value="529665808"
       label="AutofillEnableVirtualCardManagementInDesktopSettingsPage:disabled"/>
   <int value="530260251" label="TextSafetyClassifier:disabled"/>
+  <int value="530311761" label="AIPromptAPIForWebPlatform:disabled"/>
   <int value="530828403" label="AllowStartingServiceManagerOnly:disabled"/>
   <int value="531157579" label="EnterOverviewFromWallpaper:enabled"/>
   <int value="533064367" label="WebRtcHideLocalIpsWithMdns:disabled"/>
@@ -22292,6 +22296,7 @@ from previous Chrome versions.
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="798803191" label="ShareToGoogleCollections:disabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
+  <int value="800633951" label="AIPromptAPIForWebPlatform:enabled"/>
   <int value="801838630"
       label="EnableKeyboardBacklightControlInSettings:enabled"/>
   <int value="801865174" label="NetworkServiceInProcess2:enabled"/>
@@ -22698,6 +22703,7 @@ from previous Chrome versions.
   <int value="976809924"
       label="ConsolidateMetricsServiceInitialLogLogic:disabled"/>
   <int value="977140835" label="OmniboxMostVisitedTiles:disabled"/>
+  <int value="977297380" label="AIRewriterAPI:enabled"/>
   <int value="977728359" label="SysUiShouldHoldbackGifRecording:enabled"/>
   <int value="977968353" label="WebUITabStrip:disabled"/>
   <int value="978712907" label="PrintServerUi:disabled"/>
@@ -23446,6 +23452,7 @@ from previous Chrome versions.
   <int value="1276257375" label="UseIDNA2008NonTransitional:disabled"/>
   <int value="1277167761" label="EnableTouchscreensInDiagnosticsApp:enabled"/>
   <int value="1277386636" label="QueryInOmnibox:disabled"/>
+  <int value="1277695608" label="AIWriterAPI:disabled"/>
   <int value="1278193003" label="SegmentationSurveyPage:disabled"/>
   <int value="1278244152" label="AutofillFillMerchantPromoCodeFields:enabled"/>
   <int value="1278299178" label="PermissionPredictionsV3:enabled"/>
@@ -25101,6 +25108,7 @@ from previous Chrome versions.
   <int value="1915397372" label="WifiConcurrency:disabled"/>
   <int value="1916637435" label="TranslateSubFrames:enabled"/>
   <int value="1917650219" label="ClassifyUrlOnProcessResponseEvent:enabled"/>
+  <int value="1917756422" label="AIWriterAPI:enabled"/>
   <int value="1918061181" label="HoldingSpaceInProgressAnimationV2:enabled"/>
   <int value="1918229773"
       label="OmniboxMatchToolbarAndStatusBarColor:disabled"/>

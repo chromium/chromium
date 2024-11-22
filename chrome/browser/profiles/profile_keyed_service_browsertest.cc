@@ -192,7 +192,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           features::kEnableCertManagementUIV2Write,
 #endif
           blink::features::kBrowsingTopics,
-          blink::features::kEnableBuiltInAIAPI,
+          blink::features::kBuiltInAIAPI,
           net::features::kTopLevelTpcdOriginTrial,
           net::features::kTpcdTrialSettings,
           net::features::kTopLevelTpcdTrialSettings,

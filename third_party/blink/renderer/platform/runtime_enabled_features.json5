@@ -303,7 +303,6 @@
       name: "AIPromptAPI",
       public: true,
       status: "test",
-      base_feature: "EnableAIPromptAPI",
       implied_by: ["AIPromptAPIForWebPlatform"]
     },
     {
@@ -311,7 +310,6 @@
       public: true,
       origin_trial_feature_name: "AIPromptAPIForExtension",
       status: "test",
-      base_feature: "EnableAIPromptAPIForExtension",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
@@ -319,20 +317,17 @@
       name: "AIPromptAPIForWebPlatform",
       public: true,
       status: "test",
-      base_feature: "EnableAIPromptAPIForWebPlatform",
     },
     {
       name: "AIRewriterAPI",
       public: true,
       status: "test",
-      base_feature: "EnableAIRewriterAPI",
     },
     {
       name: "AISummarizationAPI",
       public: true,
       status: "test",
       origin_trial_feature_name: "AISummarizationAPI",
-      base_feature: "EnableAISummarizationAPI",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },
@@ -340,7 +335,6 @@
       name: "AIWriterAPI",
       public: true,
       status: "test",
-      base_feature: "EnableAIWriterAPI",
     },
     {
       name: "AllowContentInitiatedDataUrlNavigations",
@@ -623,7 +617,6 @@
     {
       name: "BuiltInAIAPI",
       status: "test",
-      base_feature: "EnableBuiltInAIAPI",
       base_feature_status: "enabled",
       // A origin trial is feature is required for the build to success.
       // The feature reuses the AISummarizationAPI. Any other origin trial
@@ -4417,7 +4410,6 @@
       name: "TranslationAPI",
       status: "test",
       origin_trial_feature_name: "TranslationAPI",
-      base_feature: "EnableTranslationAPI",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
     },

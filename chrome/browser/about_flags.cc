@@ -11114,25 +11114,25 @@ const FeatureEntry kFeatureEntries[] = {
     {"prompt-api-for-gemini-nano",
      flag_descriptions::kPromptAPIForGeminiNanoName,
      flag_descriptions::kPromptAPIForGeminiNanoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnableAIPromptAPIForWebPlatform),
+     FEATURE_VALUE_TYPE(blink::features::kAIPromptAPIForWebPlatform),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"summarization-api-for-gemini-nano",
      flag_descriptions::kSummarizationAPIForGeminiNanoName,
      flag_descriptions::kSummarizationAPIForGeminiNanoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnableAISummarizationAPI),
+     FEATURE_VALUE_TYPE(blink::features::kAISummarizationAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"writer-api-for-gemini-nano",
      flag_descriptions::kWriterAPIForGeminiNanoName,
      flag_descriptions::kWriterAPIForGeminiNanoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnableAIWriterAPI),
+     FEATURE_VALUE_TYPE(blink::features::kAIWriterAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"rewriter-api-for-gemini-nano",
      flag_descriptions::kRewriterAPIForGeminiNanoName,
      flag_descriptions::kRewriterAPIForGeminiNanoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEnableAIRewriterAPI),
+     FEATURE_VALUE_TYPE(blink::features::kAIRewriterAPI),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
     {"text-box-trim", flag_descriptions::kCssTextBoxTrimName,
@@ -11714,9 +11714,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"translation-api", flag_descriptions::kTranslationAPIName,
      flag_descriptions::kTranslationAPIDescription, kOsMac | kOsWin | kOsLinux,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kEnableTranslationAPI,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kTranslationAPI,
                                     kTranslationAPIVariations,
-                                    "EnableTranslationAPI")},
+                                    "TranslationAPI")},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
     {"password-form-grouped-affiliations",
