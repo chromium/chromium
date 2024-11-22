@@ -1374,6 +1374,9 @@ void ToggleAssistant() {
     case AssistantAllowedState::DISALLOWED_BY_NO_BINARY:
       // No need to show toast.
       return;
+    case AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT:
+      // No need to show toast.
+      return;
     case AssistantAllowedState::ALLOWED:
       // Nothing need to do if allowed.
       break;

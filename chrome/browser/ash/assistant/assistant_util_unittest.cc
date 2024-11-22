@@ -380,4 +380,16 @@ TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_DLCDisabled) {
             IsAssistantAllowedForProfile(profile()));
 }
 
+TEST_F(ChromeAssistantUtilTest, IsAssistantAllowed_NewEntryPointEnabled) {
+  feature_list_.InitAndEnableFeature(
+      ash::assistant::features::kEnableNewEntryPoint);
+
+  ScopedLogIn login(GetFakeUserManager(), identity_test_env(),
+                    GetGaiaUserAccountId("user2@googlemail.com", "0123456789"));
+
+  EXPECT_EQ(
+      ash::assistant::AssistantAllowedState::DISALLOWED_BY_NEW_ENTRY_POINT,
+      IsAssistantAllowedForProfile(profile()));
+}
+
 }  // namespace assistant
