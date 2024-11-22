@@ -20,7 +20,7 @@ include_rules = [
   "+ios/chrome/browser/ui/fullscreen",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/ui/omnibox",
-  "+ios/chrome/browser/ui/toolbar/public/toolbar_type.h",
+  "+ios/chrome/browser/toolbar/ui_bundled/public/toolbar_type.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
 ]

@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"

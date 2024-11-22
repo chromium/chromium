@@ -17,10 +17,10 @@
 #import "ios/chrome/browser/ntp/ui_bundled/logo_animation_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/ui/lens/lens_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/web/model/web_state_container_view_provider.h"
 
 @protocol ApplicationCommands;

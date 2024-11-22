@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "ios/chrome/browser/ui/toolbar/public/omnibox_position_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
 
 namespace {
 

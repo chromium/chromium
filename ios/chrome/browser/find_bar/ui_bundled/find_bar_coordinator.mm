@@ -14,8 +14,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_coordinator_delegate.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/accessory/toolbar_accessory_presenter.h"
 
 @interface FindBarCoordinator () <ContainedPresenterDelegate>
 
