@@ -5110,12 +5110,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_UNDO_BAR_MULTIPLE_DOWNLOADS_DELETE_MESSAGE" desc="Message shown when you can undo deleting several downloads.">
         <ph name="NUMBER_OF_DOWNLOADS">%1$s<ex>3</ex></ph> downloads deleted
       </message>
-      <message name="IDS_UNDO_BAR_DELETE_RESTORE_ACCESSIBILITY_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo a download deletion.">
-        Restored <ph name="ITEM_TITLE">%1$s<ex>YouTube</ex></ph>
-      </message>
-      <message name="IDS_UNDO_BAR_MULTIPLE_DOWNLOADS_DELETE_RESTORE_ACCESSIBILITY_MESSAGE" desc="Message spoken out loud for accessibility when a user decides to undo multiple download deletions at once.">
-        <ph name="NUMBER_OF_DOWNLOADS">%1$s<ex>3</ex></ph> downloads restored
-      </message>
 
       <!-- MultiWindow -->
       <message name="IDS_UNSUPPORTED_NUMBER_OF_WINDOWS" desc="Popup message for when the user has tried to start too many concurrent versions of Chrome.">
