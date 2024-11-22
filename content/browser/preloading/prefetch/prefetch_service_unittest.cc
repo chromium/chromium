@@ -281,9 +281,6 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     attempt_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
-
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDown() override {
@@ -1239,6 +1236,8 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     test_url_loader_factory_.ClearResponses();
   }
 
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
+
   std::unique_ptr<PrefetchFakeServiceWorkerContext> service_worker_context_;
   mojo::Remote<network::mojom::CookieManager> cookie_manager_;
 
@@ -1262,8 +1261,6 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
-
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 
   std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
 

@@ -330,7 +330,6 @@ class NoStatePrefetchBrowserTest
     link_rel_attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             content::preloading_predictor::kLinkRel);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -483,12 +482,12 @@ class NoStatePrefetchBrowserTest
   base::SimpleTestTickClock clock_;
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   // Disable sampling of UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       link_rel_attempt_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
   base::test::ScopedFeatureList feature_list_;
 };
 

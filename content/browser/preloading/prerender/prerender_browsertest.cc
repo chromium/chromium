@@ -377,8 +377,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     WebContentsObserver::Observe(shell()->web_contents());
 
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    scoped_test_timer_ =
-        std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDownOnMainThread() override {
@@ -844,6 +842,8 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     navigation_ids_.push_back(handle->GetNavigationId());
   }
 
+  base::ScopedMockElapsedTimersForTest scoped_test_timer_;
+
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -860,7 +860,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   std::unique_ptr<PreloadingPredictionPreviousPrimaryPageUkmEntryBuilder>
       prediction_previous_ukm_entry_builder_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };
 
 class NoVarySearchPrerenderBrowserTest : public PrerenderBrowserTest {

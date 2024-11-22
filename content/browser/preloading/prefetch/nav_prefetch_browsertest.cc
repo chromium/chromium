@@ -39,7 +39,6 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
     attempt_ukm_entry_builder_ =
         std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
             content_preloading_predictor::kSpeculationRules);
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void StartPrefetch(const GURL& url) {
@@ -88,13 +87,13 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_ukm_entry_builder_;
   // Disable sampling for UKM preloading logs.
   test::PreloadingConfigOverride preloading_config_override_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 
   base::Lock lock_;
 };

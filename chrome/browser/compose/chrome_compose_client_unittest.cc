@@ -244,8 +244,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
               metadata->SetAnyMetadataForTesting(compose_hint_metadata);
               return optimization_guide::OptimizationGuideDecision::kTrue;
             });
-
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDown() override {
@@ -467,6 +465,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   raw_ptr<ChromeComposeClient> client_;
   testing::NiceMock<optimization_guide::MockOptimizationGuideModelExecutor>
       model_executor_;
@@ -490,7 +489,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
       client_page_handler_;
   mojo::Remote<compose::mojom::ComposeSessionUntrustedPageHandler>
       page_handler_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
   ComposeEnabling::ScopedOverride scoped_compose_enabled_;
   raw_ptr<MockHatsService> mock_hats_service_;
 };

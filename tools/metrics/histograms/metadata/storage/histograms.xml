@@ -471,6 +471,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.Database.Success.OpenInternalTime.{DatabaseTag}"
+    units="microseconds" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time spent in OpenInternal, in microseconds, when opening the
+    {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Database.Success.SqliteOpenTime.{DatabaseTag}"
+    units="microseconds" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time spent in the sqlite3_open_v2 library call, in microseconds,
+    when opening the {DatabaseTag} database.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
     expires_after="2025-09-15">
   <owner>asully@chromium.org</owner>
@@ -514,6 +540,34 @@ chromium-metrics-reviews@google.com.
     recovery succeeded (see Sql.Recovery.Result for that information), since not
     all recoveries fail due to SQLite errors (e.g. if a version number could not
     be read from the meta table).
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.ExecutionTime.{DatabaseTag}"
+    units="microseconds" expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the total time spent stepping for a given statement in database
+    {DatabaseTag}, in microseconds. Recorded when the statement is
+    reset/destructed, but only includes the time spent in `StepInternal` since
+    the statement's last reset.
+
+    Only reported for clients with high-resolution clocks.
+  </summary>
+  <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Statement.StepTime.{DatabaseTag}" units="microseconds"
+    expires_after="2025-11-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Reports the time of a single step of a statement running against
+    {DatabaseTag}, in microseconds. Recorded every time `Step` is called.
+
+    Only reported for clients with high-resolution clocks.
   </summary>
   <token key="DatabaseTag" variants="DatabaseTag"/>
 </histogram>
