@@ -161,6 +161,11 @@ class AccountSelectionModalView : public views::DialogDelegateView,
                                const content::IdentityProviderData& idp_data,
                                const ui::Event& event);
 
+  // Notifies the observer of the use other account button being clicked.
+  void OnUseOtherAccountButtonClicked(const GURL& idp_config_url,
+                                      const GURL& idp_login_url,
+                                      const ui::Event& event);
+
   // Updates the button to have a spinner appear in the middle of it.
   void ReplaceButtonWithSpinner(
       views::MdTextButton* button,
@@ -187,6 +192,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
 
   // View containing the account chooser.
   raw_ptr<views::View> account_chooser_ = nullptr;
+
+  // View containing the view to focus on in the verifying sheet.
+  raw_ptr<views::View> verifying_focus_view_ = nullptr;
 
   // View containing the title.
   raw_ptr<views::Label> title_label_ = nullptr;

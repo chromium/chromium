@@ -438,8 +438,8 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
   if (idp_list[0]->idp_metadata.supports_add_account ||
       idp_list[0]->idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_), idp_list[0]->idp_metadata.config_url,
+        &AccountSelectionModalView::OnUseOtherAccountButtonClicked,
+        base::Unretained(this), idp_list[0]->idp_metadata.config_url,
         idp_list[0]->idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
@@ -457,7 +457,8 @@ void AccountSelectionModalView::ShowVerifyingSheet(
   // This might change if we choose to integrate auto re-authn with button mode.
   CHECK(dialog_widget_);
 
-  queued_announcement_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+  webid::SendAccessibilityEvent(
+      GetWidget(), l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 
   // Disable account chooser.
   CHECK(account_chooser_);
@@ -471,10 +472,12 @@ void AccountSelectionModalView::ShowVerifyingSheet(
       if (button->HasBeenClicked()) {
         has_spinner_ = true;
         button->ReplaceSecondaryViewWithSpinner();
+        verifying_focus_view_ = button;
+      } else {
+        button->SetEnabled(false);
+        button->SetDisabledOpacity();
       }
-      button->SetDisabledOpacity();
     }
-    child->SetEnabled(false);
   }
 
   // If no immediate HoverButton child was found, it means that this is a
@@ -489,15 +492,13 @@ void AccountSelectionModalView::ShowVerifyingSheet(
         if (button->HasBeenClicked()) {
           has_spinner_ = true;
           button->ReplaceSecondaryViewWithSpinner();
+          verifying_focus_view_ = button;
+        } else {
+          button->SetEnabled(false);
+          button->SetDisabledOpacity();
         }
-        button->SetDisabledOpacity();
       }
-      child->SetEnabled(false);
     }
-  }
-
-  if (continue_button_) {
-    continue_button_->SetEnabled(false);
   }
 
   if (use_other_account_button_) {
@@ -505,9 +506,21 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     // button, this verifying sheet must have been triggered as a result of use
     // other account so we show the spinner on this button.
     if (!has_spinner_) {
+      verifying_focus_view_ = use_other_account_button_;
       ReplaceButtonWithSpinner(use_other_account_button_);
+    } else {
+      use_other_account_button_->SetEnabled(false);
     }
-    use_other_account_button_->SetEnabled(false);
+  }
+
+  if (continue_button_) {
+    // If there is no focus view specified at this point, it must be that the
+    // user clicked on the continue button.
+    if (!verifying_focus_view_) {
+      verifying_focus_view_ = continue_button_;
+    } else {
+      continue_button_->SetEnabled(false);
+    }
   }
 
   if (back_button_) {
@@ -597,8 +610,8 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
   if (idp_data.idp_metadata.supports_add_account ||
       idp_data.idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_), idp_data.idp_metadata.config_url,
+        &AccountSelectionModalView::OnUseOtherAccountButtonClicked,
+        base::Unretained(this), idp_data.idp_metadata.config_url,
         idp_data.idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
@@ -734,12 +747,37 @@ void AccountSelectionModalView::OnContinueButtonClicked(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_data,
     const ui::Event& event) {
+  // In the verifying sheet, we do not disable the continue button if it has a
+  // spinner because otherwise the focus will land on the cancel button.
+  // Since the button is not disabled, it is possible for the button to be
+  // clicked again and we would ignore these future clicks.
+  if (verifying_focus_view_) {
+    return;
+  }
+
   observer_->OnAccountSelected(account, idp_data, event);
   has_spinner_ = true;
 
   ReplaceButtonWithSpinner(continue_button_,
                            ui::kColorButtonForegroundProminent,
                            ui::kColorButtonBackgroundProminent);
+}
+
+void AccountSelectionModalView::OnUseOtherAccountButtonClicked(
+    const GURL& idp_config_url,
+    const GURL& idp_login_url,
+    const ui::Event& event) {
+  // In the verifying sheet, we do not disable the use other account button if
+  // it has a spinner because otherwise the focus will land on the cancel
+  // button. The use other account button has a spinner if the user signs into a
+  // returning account via the pop-up. Since the button is not disabled, it is
+  // possible for the button to be clicked again and we would ignore these
+  // future clicks.
+  if (verifying_focus_view_) {
+    return;
+  }
+
+  observer_->OnLoginToIdP(idp_config_url, idp_login_url, event);
 }
 
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
@@ -950,10 +988,10 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
     queued_announcement_ = u"";
   }
 
-  // If there is a spinner and an account chooser, we are on the verifying sheet
-  // so focus on the cancel button.
-  if (has_spinner_ && account_chooser_) {
-    return cancel_button_;
+  // If there is a view that triggered the verifying sheet, focus on the last
+  // clicked view.
+  if (verifying_focus_view_) {
+    return verifying_focus_view_;
   }
 
   // If there is a continue button, focus on the continue button.

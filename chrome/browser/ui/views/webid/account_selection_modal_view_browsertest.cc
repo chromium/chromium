@@ -314,8 +314,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     ASSERT_TRUE(has_spinner);
   }
 
-  void CheckDisabledButtonRow(views::View* button_row,
-                              bool should_focus_cancel = false) {
+  void CheckDisabledButtonRow(views::View* button_row) {
     for (const auto& button : button_row->children()) {
       auto* text_button = static_cast<views::MdTextButton*>(
           std::string(button->GetClassName()) == "FlexLayoutView"
@@ -324,13 +323,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
       if (text_button->GetText() == l10n_util::GetStringUTF16(IDS_CANCEL)) {
         ASSERT_TRUE(text_button->GetEnabled());
-        if (should_focus_cancel) {
-          EXPECT_EQ(dialog()->GetInitiallyFocusedView(), text_button);
-        }
         continue;
       }
-
-      ASSERT_FALSE(text_button->GetEnabled());
     }
   }
 
@@ -483,15 +477,14 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // account_chooser section. e.g. accounts, disclosure text, scroll view etc.
     // and all of them should be disabled.
     for (const auto& item : account_chooser) {
-      ASSERT_FALSE(item->GetEnabled());
       if (std::string(item->GetClassName()) == "HoverButton") {
         AccountHoverButton* button = static_cast<AccountHoverButton*>(item);
+        ASSERT_FALSE(item->GetEnabled());
         ASSERT_TRUE(button->HasDisabledOpacity());
       }
     }
 
-    CheckDisabledButtonRow(dialog()->children()[2],
-                           /*should_focus_cancel=*/true);
+    CheckDisabledButtonRow(dialog()->children()[2]);
   }
 
   void TestLoadingDialog() {
