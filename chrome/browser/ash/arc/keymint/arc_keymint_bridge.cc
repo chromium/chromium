@@ -118,6 +118,15 @@ void ArcKeyMintBridge::SendSerialNumberToKeyMint() {
   cert_store_bridge_->SetSerialNumber(arcvm_serial_number_.value());
 }
 
+void ArcKeyMintBridge::SendSerialNumberToKeyMintForTesting() {
+  SendSerialNumberToKeyMint();
+}
+
+void ArcKeyMintBridge::SetCertStoreBridgeForTesting(
+    std::unique_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge) {
+  cert_store_bridge_ = std::move(cert_store_bridge);
+}
+
 void ArcKeyMintBridge::GetServer(GetServerCallback callback) {
   if (keymint_server_proxy_.is_bound()) {
     std::move(callback).Run(keymint_server_proxy_.Unbind());

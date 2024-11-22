@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 
+#include <gmock/gmock.h>
+
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
@@ -15,6 +17,18 @@
 namespace arc {
 namespace {
 
+class MockCertStoreBridgeKeyMint : public keymint::CertStoreBridgeKeyMint {
+ public:
+  explicit MockCertStoreBridgeKeyMint(content::BrowserContext* context)
+      : CertStoreBridgeKeyMint(context) {}
+  MockCertStoreBridgeKeyMint(const MockCertStoreBridgeKeyMint&) = delete;
+  MockCertStoreBridgeKeyMint& operator=(const MockCertStoreBridgeKeyMint&) =
+      delete;
+  ~MockCertStoreBridgeKeyMint() override = default;
+
+  MOCK_METHOD1(SetSerialNumber, void(const std::string& serial_number));
+};
+
 class ArcKeyMintBridgeTest : public testing::Test {
  protected:
   ArcKeyMintBridgeTest() = default;
@@ -24,6 +38,12 @@ class ArcKeyMintBridgeTest : public testing::Test {
 
   void SetUp() override {
     bridge_ = ArcKeyMintBridge::GetForBrowserContextForTesting(&profile_);
+
+    // Create the mock object.
+    auto cert_store_bridge =
+        std::make_unique<MockCertStoreBridgeKeyMint>(&profile_);
+    mock_cert_store_bridge_ = cert_store_bridge.get();
+    bridge_->SetCertStoreBridgeForTesting(std::move(cert_store_bridge));
 
     EXPECT_EQ(keymint_instance()->num_init_called(), 0u);
     // This results in ArcKeyMintBridge::OnInstanceReady being called.
@@ -41,16 +61,48 @@ class ArcKeyMintBridgeTest : public testing::Test {
     return &keymint_instance_;
   }
 
+  raw_ptr<keymint::CertStoreBridgeKeyMint> GetCertStoreBridge() {
+    return cert_store_bridge_;
+  }
+
+  MockCertStoreBridgeKeyMint* mock_cert_store_bridge() {
+    return mock_cert_store_bridge_;
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   ArcServiceManager arc_service_manager_;
   FakeKeyMintInstance keymint_instance_;
   TestingProfile profile_;
   raw_ptr<ArcKeyMintBridge> bridge_ = nullptr;
+  raw_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge_;
+  raw_ptr<MockCertStoreBridgeKeyMint> mock_cert_store_bridge_;
 };
 
 TEST_F(ArcKeyMintBridgeTest, ConstructDestruct) {
   EXPECT_NE(bridge(), nullptr);
+}
+
+TEST_F(ArcKeyMintBridgeTest, SetSerialNumberSuccess) {
+  // Prepare.
+  std::string serial_number = "3124712407124vnf09r23";
+  EXPECT_NE(mock_cert_store_bridge(), nullptr);
+  EXPECT_CALL(*mock_cert_store_bridge(), SetSerialNumber(serial_number))
+      .Times(1);
+
+  // Execute.
+  bridge()->SetSerialNumberInKeyMint(serial_number);
+  bridge()->SendSerialNumberToKeyMintForTesting();
+}
+
+TEST_F(ArcKeyMintBridgeTest, SetSerialNumberFailure) {
+  // Prepare.
+  EXPECT_NE(mock_cert_store_bridge(), nullptr);
+  EXPECT_CALL(*mock_cert_store_bridge(), SetSerialNumber(::testing::_))
+      .Times(0);
+
+  // Execute.
+  bridge()->SendSerialNumberToKeyMintForTesting();
 }
 
 }  // namespace

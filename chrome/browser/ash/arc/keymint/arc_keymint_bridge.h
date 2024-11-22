@@ -66,6 +66,9 @@ class ArcKeyMintBridge : public KeyedService,
   void GetServer(GetServerCallback callback) override;
 
   static void EnsureFactoryBuilt();
+  void SetCertStoreBridgeForTesting(
+      std::unique_ptr<keymint::CertStoreBridgeKeyMint> cert_store_bridge);
+  void SendSerialNumberToKeyMintForTesting();
 
  private:
   using BootstrapMojoConnectionCallback = base::OnceCallback<void(bool)>;
