@@ -276,14 +276,9 @@ bool CanvasResourceDispatcher::PrepareFrame(
       &resource, &frame_resource->release_callback,
       /*needs_verified_synctoken=*/true);
 
-  // Accelerated resources have the origin of coordinates in the upper left
-  // corner while canvases have it in the lower left corner. The DrawQuad is
-  // marked as vertically flipped unless someone else has done the flip for us.
-  // TODO(crbug.com/378688985) Remove gpu composition condition.
-  const bool yflipped = SharedGpuContext::IsGpuCompositingEnabled() &&
-                        !canvas_resource->IsOriginTopLeft();
-  resource.origin =
-      yflipped ? kBottomLeft_GrSurfaceOrigin : kTopLeft_GrSurfaceOrigin;
+  resource.origin = canvas_resource->IsOriginTopLeft()
+                        ? kTopLeft_GrSurfaceOrigin
+                        : kBottomLeft_GrSurfaceOrigin;
 
   const viz::ResourceId resource_id = next_resource_id;
   resource.id = resource_id;

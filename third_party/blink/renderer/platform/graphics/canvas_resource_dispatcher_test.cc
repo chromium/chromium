@@ -295,9 +295,8 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
             EXPECT_TRUE(texture_quad->premultiplied_alpha);
             EXPECT_EQ(texture_quad->uv_top_left, gfx::PointF(0.0f, 0.0f));
             EXPECT_EQ(texture_quad->uv_bottom_right, gfx::PointF(1.0f, 1.0f));
-            // `y_flipped` should follow CanvasResource::IsOriginTopLeft on GPU
-            // compositing; but we don't have that in unit tests, so it's always
-            // false.
+
+            // CanvasResourceSharedBitmap origin is top-left.
             EXPECT_EQ(frame->resource_list.front().origin,
                       kTopLeft_GrSurfaceOrigin);
           })));
