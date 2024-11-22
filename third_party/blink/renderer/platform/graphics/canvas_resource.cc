@@ -53,16 +53,6 @@
 
 namespace blink {
 
-namespace {
-
-gfx::ColorSpace SkColorSpaceToGfxColorSpace(
-    sk_sp<SkColorSpace> sk_color_space) {
-  return sk_color_space ? gfx::ColorSpace(*sk_color_space)
-                        : gfx::ColorSpace::CreateSRGB();
-}
-
-}  // namespace
-
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
                                cc::PaintFlags::FilterQuality filter_quality,
                                gfx::Size size,
@@ -400,21 +390,20 @@ void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    gfx::ColorSpace color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
-    : CanvasResource(
-          std::move(provider),
-          filter_quality,
-          size,
-          viz::SkColorTypeToSinglePlaneSharedImageFormat(sk_color_type),
-          alpha_type,
-          SkColorSpaceToGfxColorSpace(std::move(sk_color_space))),
+    : CanvasResource(std::move(provider),
+                     filter_quality,
+                     size,
+                     format,
+                     alpha_type,
+                     color_space),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       is_accelerated_(is_accelerated),
       is_overlay_candidate_(
@@ -506,9 +495,9 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 
 scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     gfx::Size size,
-    SkColorType sk_color_type,
+    viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    sk_sp<SkColorSpace> sk_color_space,
+    gfx::ColorSpace color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
@@ -516,7 +505,7 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
   auto resource = base::AdoptRef(new CanvasResourceSharedImage(
-      size, sk_color_type, alpha_type, std::move(sk_color_space),
+      size, format, alpha_type, color_space,
       std::move(context_provider_wrapper), std::move(provider), filter_quality,
       is_accelerated, shared_image_usage_flags));
   return resource->IsValid() ? resource : nullptr;

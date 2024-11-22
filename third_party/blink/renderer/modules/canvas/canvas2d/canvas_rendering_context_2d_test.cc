@@ -39,6 +39,7 @@
 #include "cc/paint/paint_op.h"
 #include "cc/test/paint_op_matchers.h"
 #include "components/viz/common/resources/release_callback.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/common/capabilities.h"
@@ -491,8 +492,13 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     const SkImageInfo& info = GetSkImageInfo();
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
-        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        gfx::Size(info.width(), info.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            info.colorInfo().colorType()),
+        info.colorInfo().alphaType(),
+        // TODO(crbug.com/371227617): Change this class to just take in the
+        // gfx::Size and hardcode the other info, as all callers pass N32Premul.
+        gfx::ColorSpace::CreateSRGB(),
         SharedGpuContext::ContextProviderWrapper(), CreateWeakPtr(),
         cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |

@@ -416,8 +416,11 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
 
     const SkImageInfo& info = GetSkImageInfo();
     return CanvasResourceSharedImage::Create(
-        gfx::Size(info.width(), info.height()), info.colorInfo().colorType(),
-        info.colorInfo().alphaType(), info.colorInfo().refColorSpace(),
+        gfx::Size(info.width(), info.height()),
+        viz::SkColorTypeToSinglePlaneSharedImageFormat(
+            info.colorInfo().colorType()),
+        info.colorInfo().alphaType(),
+        SkColorSpaceToGfxColorSpace(info.colorInfo().refColorSpace()),
         ContextProviderWrapper(), CreateWeakPtr(), FilterQuality(),
         is_accelerated_, shared_image_usage_flags_);
   }
