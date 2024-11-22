@@ -116,7 +116,7 @@ TranslateAgent::~TranslateAgent() = default;
 
 void TranslateAgent::SeedLanguageDetectionModelForTesting(
     base::File model_file) {
-  language_detection_agent_->UpdateLanguageDetectionModel(
+  translate_language_detection_model_->tflite_model().UpdateWithFile(
       std::move(model_file));
 }
 
