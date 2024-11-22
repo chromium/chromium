@@ -3751,6 +3751,10 @@
       base_feature: "none",
     },
     {
+      name: "ScriptRunIteratorCombiningMarks",
+      status: "stable",
+    },
+    {
       name: "ScrollbarColor",
       status: "stable",
     },
