@@ -2974,6 +2974,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.TimeToClose" units="ms"
+    expires_after="2025-07-08">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This metric measures the length of time the Tab Search bubble widget was
+    open, recorded on close.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.TimeToShow.{WarmUpLevel}" units="ms"
     expires_after="2025-07-08">
   <owner>kerenzhu@chromium.org</owner>
