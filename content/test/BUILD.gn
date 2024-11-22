@@ -678,6 +678,15 @@ static_library("test_support") {
       ]
       deps += [ "//components/soda:soda" ]
     }
+
+    if (is_win) {
+      sources += [
+        "../browser/renderer_host/input/mock_tfhandwriting.cc",
+        "../browser/renderer_host/input/mock_tfhandwriting.h",
+        "../browser/renderer_host/input/stylus_handwriting_win_test_helper.cc",
+        "../browser/renderer_host/input/stylus_handwriting_win_test_helper.h",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -2102,8 +2111,6 @@ test("content_browsertests") {
       "../browser/renderer_host/direct_manipulation_test_helper_win.cc",
       "../browser/renderer_host/direct_manipulation_test_helper_win.h",
       "../browser/renderer_host/direct_manipulation_win_browsertest.cc",
-      "../browser/renderer_host/input/mock_tfhandwriting.cc",
-      "../browser/renderer_host/input/mock_tfhandwriting.h",
       "../browser/renderer_host/input/stylus_handwriting_controller_win_browsertest.cc",
       "../browser/renderer_host/render_process_host_sandbox_policy_win_browsertest.cc",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest_win.cc",
@@ -3376,6 +3383,7 @@ test("content_unittests") {
     ]
     deps += [
       "//components/services/font_data/public/mojom",
+      "//components/stylus_handwriting/win:win",
       "//sandbox/policy:sandbox_test_utils",
       "//sandbox/win:sandbox",
       "//third_party/blink/public/common",

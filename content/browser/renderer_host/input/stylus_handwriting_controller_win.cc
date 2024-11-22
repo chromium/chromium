@@ -23,6 +23,7 @@ ITfThreadMgr* g_thread_manager_instance_for_testing = nullptr;
 // static
 base::ScopedClosureRunner StylusHandwritingControllerWin::InitializeForTesting(
     ITfThreadMgr* thread_manager) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // A RAII class that automatically disposes of test-only global state, to
   // hide all implementation details from the caller.
   class StateForTesting {

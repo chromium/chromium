@@ -1550,17 +1550,103 @@ gfx::Rect RenderWidgetHostViewAura::GetSelectionBoundingBox() const {
 #if BUILDFLAG(IS_WIN)
 std::optional<gfx::Rect> RenderWidgetHostViewAura::GetProximateCharacterBounds(
     const gfx::Range& range) const {
-  // TODO(crbug.com/355578906): Implement character bounds collection to satisfy
-  // ITextStoreACP::GetTextExt.
-  return std::nullopt;
+  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget()) {
+    return std::nullopt;
+  }
+  if (range.is_reversed()) {
+    return std::nullopt;
+  }
+  const blink::mojom::ProximateCharacterRangeBounds* proximate =
+      text_input_manager_->GetProximateCharacterBoundsInfo(*this);
+  if (!proximate || !proximate->range.Contains(range)) {
+    return std::nullopt;
+  }
+  std::optional<gfx::Rect> result;
+  for (size_t i = range.start(); i < range.end(); ++i) {
+    const gfx::Rect& rect_for_index =
+        proximate->bounds[i - proximate->range.start()];
+    if (result.has_value()) {
+      result->UnionEvenIfEmpty(rect_for_index);
+    } else {
+      result.emplace(rect_for_index);
+    }
+  }
+  if (result.has_value()) {
+    result = ConvertRectToScreen(result.value());
+  }
+  return result;
 }
 
 std::optional<size_t>
 RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
     const gfx::Point& point,
     ui::IndexFromPointFlags flags) const {
-  // TODO(crbug.com/355578906): Implement point to character offset collection
-  // to satisfy ITextStoreACP::GetACPFromPoint.
+  if (!text_input_manager_ || !text_input_manager_->GetActiveWidget()) {
+    return std::nullopt;
+  }
+  const blink::mojom::ProximateCharacterRangeBounds* proximate =
+      text_input_manager_->GetProximateCharacterBoundsInfo(*this);
+  if (!proximate) {
+    return std::nullopt;
+  }
+
+  const bool nearest_to_contained_point =
+      (flags & ui::IndexFromPointFlags::kNearestToContainedPoint) ==
+      ui::IndexFromPointFlags::kNearestToContainedPoint;
+  const bool nearest_to_uncontained_point =
+      (flags & ui::IndexFromPointFlags::kNearestToUncontainedPoint) ==
+      ui::IndexFromPointFlags::kNearestToUncontainedPoint;
+
+  bool any_contain_point = false;
+  size_t nearest_index = 0U;
+  int64_t nearest_distance_sq = std::numeric_limits<int64_t>::max();
+  const HWND host_hwnd = GetHostWindowHWND();
+
+  for (size_t i = 0; i < proximate->bounds.size(); ++i) {
+    const gfx::Rect bounds_in_screen_coord =
+        display::win::ScreenWin::DIPToScreenRect(
+            host_hwnd, ConvertRectToScreen(proximate->bounds[i]));
+    if (!any_contain_point) {
+      any_contain_point = bounds_in_screen_coord.Contains(point);
+    }
+    // When kNearestToContainedPoint is included, this can't early return
+    // because we need to check to see if there's a character that's closer to
+    // the point. kNearestToUncontainedPoint only applies when a character
+    // doesn't contain `point`, so this can early return when
+    // kNearestToContainedPoint isn't included.
+    if (any_contain_point && !nearest_to_contained_point) {
+      return proximate->range.start() + i;
+    }
+
+    // When either flag is provided, we need to perform distance checks in case
+    // either of them apply. Ideally this wouldn't need to iterate over all
+    // characters to determine whether one of them contains `point`, but the
+    // current implementation lacks any form of acceleration structures or
+    // such as spatial partitioning which could make this faster. There's no
+    // guarantee that character indices will be laid out spatially contiguously,
+    // so it's also not possible to reliably perform a any sort of binary search
+    // based on the character bounds. For example, nested `float: right;` text.
+    if (flags != ui::IndexFromPointFlags::kNone) {
+      // For kNearestToContainedPoint, it's unclear from the API documentation
+      // whether this expects the "nearest" to only consider characters on the
+      // same line that contains the point. Using `left_center` should be a good
+      // approximation. If text is laid out contiguously with the same
+      // font-size / line-height, this should always find a character on the
+      // same line that was hit, however since line height may vary between
+      // lines it's possible that a character offset for an adjacent line of
+      // text may be picked.
+      const int64_t distance_sq =
+          (bounds_in_screen_coord.left_center() - point).LengthSquared();
+      if (distance_sq < nearest_distance_sq) {
+        nearest_index = proximate->range.start() + i;
+        nearest_distance_sq = distance_sq;
+      }
+    }
+  }
+  if ((!any_contain_point && nearest_to_uncontained_point) ||
+      (any_contain_point && nearest_to_contained_point)) {
+    return nearest_index;
+  }
   return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -2294,13 +2380,14 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
     return;
   }
 
-  if (!focus_result) {
-    handwriting_controller->OnFocusFailed(*this);
-    return;
-  }
+  UpdateProximateCharacterBounds(
+      focus_result ? std::move(focus_result->proximate_bounds) : nullptr);
 
-  UpdateProximateCharacterBounds(std::move(focus_result->proximate_bounds));
-  handwriting_controller->OnFocusHandled(*this);
+  if (focus_result) {
+    handwriting_controller->OnFocusHandled(*this);
+  } else {
+    handwriting_controller->OnFocusFailed(*this);
+  }
 }
 
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(

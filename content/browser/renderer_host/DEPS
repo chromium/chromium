@@ -44,6 +44,7 @@ specific_include_rules = {
   ],
   "render_widget_host_view_aura_unittest\.cc": [
     "+ui/ozone/public/ozone_platform.h",
+    "+components/stylus_handwriting/win/features.h",
   ],
   "render_widget_host_view_aura\.cc": [
     "+ui/ozone/public/ozone_platform.h",

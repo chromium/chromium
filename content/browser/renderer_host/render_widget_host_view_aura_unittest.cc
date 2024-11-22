@@ -127,7 +127,11 @@
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
+#include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
 #endif
@@ -160,6 +164,24 @@ using viz::FrameEvictionManager;
   }
 
 namespace content {
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+blink::mojom::StylusWritingFocusResultPtr
+CreateStylusWritingFocusResultForTesting() {
+  blink::mojom::StylusWritingFocusResultPtr result =
+      blink::mojom::StylusWritingFocusResult::New();
+  result->focused_edit_bounds = gfx::Rect(0, 0, 100, 10);
+  result->caret_bounds = gfx::Rect(0, 0, 0, 10);
+  // Intentionally skipping [0] because this simulates the "proximate" behavior,
+  // where the range provided may not include the entire text.
+  result->proximate_bounds = blink::mojom::ProximateCharacterRangeBounds::New(
+      gfx::Range(1, 3), std::vector<gfx::Rect>{gfx::Rect(10, 0, 10, 10),
+                                               gfx::Rect(20, 0, 10, 10)});
+  return result;
+}
+}  // namespace
+#endif  // BUILDFLAG(IS_WIN)
 
 void ParentHostView(RenderWidgetHostView* host_view,
                     RenderWidgetHostView* parent_host_view,
@@ -6884,6 +6906,202 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
   EXPECT_EQ(keyboard_controller_observer_count(), 0u);
 }
 
+class InputMethodStateAuraHandwritingTest : public InputMethodStateAuraTest {
+ public:
+  InputMethodStateAuraHandwritingTest() = default;
+
+  InputMethodStateAuraHandwritingTest(
+      const InputMethodStateAuraHandwritingTest&) = delete;
+  InputMethodStateAuraHandwritingTest& operator=(
+      const InputMethodStateAuraHandwritingTest&) = delete;
+
+  ~InputMethodStateAuraHandwritingTest() override = default;
+
+  void SetUp() override {
+    InputMethodStateAuraTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        stylus_handwriting::win::kStylusHandwritingWin);
+    stylus_handwriting_win_test_helper_.SetUpDefaultMockInfrastructure();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  StylusHandwritingWinTestHelper stylus_handwriting_win_test_helper_;
+};
+
+// This test is for "proximate" character bounds GetTextExt behavior.
+TEST_F(InputMethodStateAuraHandwritingTest, GetProximateCharacterBounds) {
+  std::optional<gfx::Rect> bound;
+  // If there isn't an active view, there should be no bounds.
+  bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 2));
+  EXPECT_FALSE(bound.has_value());
+  for (auto index : active_view_sequence_) {
+    ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+
+    // If the cache hasn't been populated, there should be no bounds.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 2));
+    EXPECT_FALSE(bound.has_value());
+
+    // Simulate an IPC to set character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(
+        CreateStylusWritingFocusResultForTesting());
+    const bool cache_available_for_view = views_[index] == tab_view();
+
+    // No bounds for empty range.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 1));
+    EXPECT_FALSE(bound);
+
+    // No bounds for reversed range.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(2, 1));
+    EXPECT_FALSE(bound);
+
+    // No bounds at [0].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(0, 1));
+    EXPECT_FALSE(bound);
+
+    // Valid bounds at [1].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 2));
+    EXPECT_EQ(bound.has_value(), cache_available_for_view);
+    if (cache_available_for_view) {
+      EXPECT_EQ(bound.value(), gfx::Rect(10, 0, 10, 10));
+    }
+
+    // Valid bounds at [2].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(2, 3));
+    EXPECT_EQ(bound.has_value(), cache_available_for_view);
+    if (cache_available_for_view) {
+      EXPECT_EQ(bound.value(), gfx::Rect(20, 0, 10, 10));
+    }
+
+    // Valid bounds for the range [1, 3), joins both [1] and [2].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 3));
+    EXPECT_EQ(bound.has_value(), cache_available_for_view);
+    if (cache_available_for_view) {
+      EXPECT_EQ(bound.value(), gfx::Rect(10, 0, 20, 10));
+    }
+
+    // No bounds when range extends beyond "proximate" cache.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(0, 3));
+    EXPECT_FALSE(bound);
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 4));
+    EXPECT_FALSE(bound);
+
+    // Simulate an IPC to clear character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(nullptr);
+  }
+}
+
+// This test is for "proximate" character bounds GetACPFromPoint behavior.
+TEST_F(InputMethodStateAuraHandwritingTest,
+       GetProximateCharacterIndexFromPoint) {
+  constexpr gfx::Point kMissLeft(0, 0);
+  constexpr gfx::Point kMissRight(100, 0);
+  constexpr gfx::Point kHit1(15, 5);
+  constexpr gfx::Point kHit2(25, 5);
+  constexpr gfx::Point kHit1Right(18, 5);
+  constexpr gfx::Point kHit2Left(21, 5);
+  constexpr ui::IndexFromPointFlags kNoFlags = ui::IndexFromPointFlags::kNone;
+  constexpr ui::IndexFromPointFlags kNearestToContainedPoint =
+      ui::IndexFromPointFlags::kNearestToContainedPoint;
+  constexpr ui::IndexFromPointFlags kNearestToUncontainedPoint =
+      ui::IndexFromPointFlags::kNearestToUncontainedPoint;
+  constexpr ui::IndexFromPointFlags kNearestToPoint =
+      ui::IndexFromPointFlags::kNearestToPoint;
+  std::optional<size_t> acp_index;
+  // If there isn't an active view, there should be no bounds.
+  acp_index = text_input_client()->GetProximateCharacterIndexFromPoint(
+      kHit1, ui::IndexFromPointFlags::kNone);
+  EXPECT_FALSE(acp_index.has_value());
+  for (auto index : active_view_sequence_) {
+    ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+
+    // If the cache hasn't been populated, there should be no bounds.
+    acp_index = text_input_client()->GetProximateCharacterIndexFromPoint(
+        kHit1, ui::IndexFromPointFlags::kNone);
+    EXPECT_FALSE(acp_index.has_value());
+
+    // Simulate an IPC to set character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(
+        CreateStylusWritingFocusResultForTesting());
+    const bool cache_available_for_view = views_[index] == tab_view();
+
+    constexpr struct {
+      gfx::Point point;
+      const ui::IndexFromPointFlags flags;
+      const std::optional<size_t> expect_index;
+    } kTestCases[] = {
+        // [kNone] cases
+        {kMissLeft, kNoFlags, std::nullopt},
+        {kHit1, kNoFlags, {1}},
+        {kHit2, kNoFlags, {2}},
+        {kHit1Right, kNoFlags, {1}},
+        {kHit2Left, kNoFlags, {2}},
+        // [kNearestToContainedPoint] cases
+        {kMissLeft, kNearestToContainedPoint, std::nullopt},
+        {kHit1, kNearestToContainedPoint, {1}},
+        {kHit2, kNearestToContainedPoint, {2}},
+        {kHit1Right, kNearestToContainedPoint, {2}},  // Rounds to [2].
+        {kHit2Left, kNearestToContainedPoint, {2}},   // Closer to [2].
+        // [kNearestToUncontainedPoint] cases
+        {kMissLeft, kNearestToUncontainedPoint, {1}},
+        {kMissRight, kNearestToUncontainedPoint, {2}},
+        {kHit1, kNearestToUncontainedPoint, {1}},
+        {kHit2, kNearestToUncontainedPoint, {2}},
+        {kHit1Right, kNearestToUncontainedPoint, {1}},
+        {kHit2Left, kNearestToUncontainedPoint, {2}},
+        // [kNearestToPoint] cases
+        {kMissLeft, kNearestToPoint, {1}},
+        {kMissRight, kNearestToPoint, {2}},
+        {kHit1, kNearestToPoint, {1}},
+        {kHit2, kNearestToPoint, {2}},
+        {kHit1Right, kNearestToPoint, {2}},  // Rounds to [2].
+        {kHit2Left, kNearestToPoint, {2}},   // Closer to [2].
+    };
+
+    size_t iteration = 0;
+    for (const auto& test : kTestCases) {
+      acp_index = text_input_client()->GetProximateCharacterIndexFromPoint(
+          test.point, test.flags);
+      EXPECT_EQ(acp_index.has_value(),
+                cache_available_for_view && test.expect_index.has_value())
+          << "[" << index << ":" << iteration << "]";
+      if (cache_available_for_view) {
+        EXPECT_EQ(acp_index, test.expect_index)
+            << "[" << index << ":" << iteration << "]"
+            << " point: " << test.point.ToString() << ", flags: " << test.flags;
+      }
+      ++iteration;
+    }
+
+    // Simulate an IPC to clear character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(nullptr);
+  }
+}
+
+TEST(IndexFromPointFlagsTest, OStreamOperator) {
+  std::stringstream none;
+  none << ui::IndexFromPointFlags::kNone;
+  std::stringstream nearest_to_contained_point;
+  nearest_to_contained_point
+      << ui::IndexFromPointFlags::kNearestToContainedPoint;
+  std::stringstream nearest_to_uncontained_point;
+  nearest_to_uncontained_point
+      << ui::IndexFromPointFlags::kNearestToUncontainedPoint;
+  std::stringstream nearest_to_point;
+  nearest_to_point << ui::IndexFromPointFlags::kNearestToPoint;
+  std::stringstream oob_bit;
+  oob_bit << static_cast<ui::IndexFromPointFlags>(0x04);
+  std::stringstream all_bits;
+  all_bits << static_cast<ui::IndexFromPointFlags>(~static_cast<size_t>(0));
+  EXPECT_STREQ(none.str().c_str(), "None");
+  EXPECT_STREQ(nearest_to_contained_point.str().c_str(),
+               "NearestToContainedPoint");
+  EXPECT_STREQ(nearest_to_uncontained_point.str().c_str(),
+               "NearestToUncontainedPoint");
+  EXPECT_STREQ(nearest_to_point.str().c_str(), "NearestToPoint");
+  EXPECT_STREQ(oob_bit.str().c_str(), "Unknown(0x04)");
+  EXPECT_STREQ(all_bits.str().c_str(), "Unknown(0xff)");
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content
