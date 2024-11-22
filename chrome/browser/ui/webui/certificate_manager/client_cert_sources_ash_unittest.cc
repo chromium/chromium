@@ -356,7 +356,8 @@ TEST_P(ClientCertSourceAshUnitTest,
   EXPECT_FALSE(GetCertificateInfosContainsCertWithHash(kTestClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, PolicyAllAllowsDeletion) {
+// TODO(crbug.com/376923227): enable once test certificate has regenerated.
+TEST_P(ClientCertSourceAshUnitTest, DISABLED_PolicyAllAllowsDeletion) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
@@ -404,8 +405,9 @@ TEST_P(ClientCertSourceAshUnitTest, PolicyAllAllowsDeletion) {
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
+// TODO(crbug.com/376923227): enable once test certificate has regenerated.
 TEST_P(ClientCertSourceAshUnitTest,
-       PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
+       DISABLED_PolicyUserOnlyAllowsDeletionOfUserCertsOnly) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
@@ -467,7 +469,8 @@ TEST_P(ClientCertSourceAshUnitTest,
       GetCertificateInfosContainsCertWithHash(kTestEcClientCertHashHex));
 }
 
-TEST_P(ClientCertSourceAshUnitTest, PolicyNoneDoesNotAllowDeletion) {
+// TODO(crbug.com/376923227): enable once test certificate has regenerated.
+TEST_P(ClientCertSourceAshUnitTest, DISABLED_PolicyNoneDoesNotAllowDeletion) {
   ASSERT_TRUE(ImportToUserSlotForTesting(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "12345"));
   ASSERT_TRUE(ImportToSystemSlotForTesting(
