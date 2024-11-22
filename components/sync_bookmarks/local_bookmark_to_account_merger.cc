@@ -145,10 +145,8 @@ void LocalBookmarkToAccountMerger::MoveAndMerge() {
   // removed.
   for (const bookmarks::BookmarkNode* const permanent_node :
        GetLocalPermanentNodes(model_)) {
-    for (int i = static_cast<int>(permanent_node->children().size() - 1);
-         i >= 0; --i) {
-      model_->Remove(permanent_node->children()[i].get(), kEditSourceForMetrics,
-                     FROM_HERE);
+    while (!permanent_node->children().empty()) {
+      model_->RemoveLastChild(permanent_node, kEditSourceForMetrics, FROM_HERE);
     }
   }
 

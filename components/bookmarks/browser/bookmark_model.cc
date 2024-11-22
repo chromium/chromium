@@ -345,13 +345,21 @@ void BookmarkModel::Remove(const BookmarkNode* node,
   // that are difficult to trace back.
   CHECK(!is_permanent_node(node)) << "for type " << node->type();
 
-  std::unique_ptr<BookmarkNode> owned_node =
-      RemoveChildAt(parent, index.value(), location);
+  RemoveChildAt(parent, index.value(), location, source, /*is_undoable=*/true);
+}
 
-  client_->OnBookmarkNodeRemovedUndoable(parent, index.value(),
-                                         std::move(owned_node));
+void BookmarkModel::RemoveLastChild(const BookmarkNode* parent,
+                                    metrics::BookmarkEditSource source,
+                                    const base::Location& location) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(loaded_);
+  CHECK(parent);
+  CHECK(!is_root_node(parent));
+  CHECK(parent->is_folder());
+  CHECK(!parent->children().empty());
 
-  metrics::RecordBookmarkRemoved(source);
+  RemoveChildAt(parent, /*index=*/parent->children().size() - 1, location,
+                source, /*is_undoable=*/true);
 }
 
 void BookmarkModel::RemoveAllUserBookmarks(const base::Location& location) {
@@ -1243,10 +1251,12 @@ void BookmarkModel::AddNodeToIndicesRecursive(
   }
 }
 
-std::unique_ptr<BookmarkNode> BookmarkModel::RemoveChildAt(
+void BookmarkModel::RemoveChildAt(
     const BookmarkNode* parent,
     size_t index,
-    const base::Location& location) {
+    const base::Location& location,
+    std::optional<metrics::BookmarkEditSource> source,
+    bool is_undoable) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(parent);
@@ -1276,7 +1286,14 @@ std::unique_ptr<BookmarkNode> BookmarkModel::RemoveChildAt(
     observer.BookmarkNodeRemoved(parent, index, node, removed_urls, location);
   }
 
-  return owned_node;
+  if (is_undoable) {
+    client_->OnBookmarkNodeRemovedUndoable(parent, index,
+                                           std::move(owned_node));
+  }
+
+  if (source.has_value()) {
+    metrics::RecordBookmarkRemoved(*source);
+  }
 }
 
 void BookmarkModel::RemoveNodeFromIndicesRecursive(
@@ -1428,7 +1445,7 @@ void BookmarkModel::RemoveAccountPermanentFolders() {
 
   for (const BookmarkNode* node : account_permanent_folders) {
     RemoveChildAt(node->parent(), node->parent()->GetIndexOf(node).value(),
-                  FROM_HERE);
+                  FROM_HERE, /*source=*/std::nullopt, /*is_undoable=*/false);
   }
 }
 

@@ -911,6 +911,35 @@ TEST_F(BookmarkModelTest, RemoveFolder) {
   ASSERT_EQ(model_->GetMostRecentlyAddedUserNodeForURL(kUrl), nullptr);
 }
 
+TEST_F(BookmarkModelTest, RemoveLastChild) {
+  const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
+  const std::u16string kTitle1(u"foo1");
+  const std::u16string kTitle2(u"foo2");
+  const GURL kUrl1("http://foo1.com");
+  const GURL kUrl2("http://foo2.com");
+  const base::Location kLocation = FROM_HERE;
+
+  model_->AddURL(bookmark_bar_node, 0, kTitle1, kUrl1);
+  model_->AddURL(bookmark_bar_node, 1, kTitle2, kUrl2);
+  ClearCounts();
+
+  model_->RemoveLastChild(bookmark_bar_node,
+                          bookmarks::metrics::BookmarkEditSource::kOther,
+                          kLocation);
+  EXPECT_EQ(1u, bookmark_bar_node->children().size());
+  histogram_tester()->ExpectTotalCount("Bookmarks.RemovedSource", 1);
+  histogram_tester()->ExpectBucketCount(
+      "Bookmarks.RemovedSource",
+      static_cast<int>(metrics::BookmarkEditSource::kOther), 1);
+  AssertObserverCount(0, 0, 1, 0, 0, 1, 0, 0, 0);
+  observer_details_.ExpectEquals(bookmark_bar_node, nullptr, 1,
+                                 static_cast<size_t>(-1), false, kLocation);
+
+  ASSERT_NE(nullptr, model_->GetMostRecentlyAddedUserNodeForURL(kUrl1));
+  // Make sure there is no mapping for the removed URL.
+  EXPECT_EQ(nullptr, model_->GetMostRecentlyAddedUserNodeForURL(kUrl2));
+}
+
 TEST_F(BookmarkModelTest, RemoveAllUserBookmarks) {
   const BookmarkNode* bookmark_bar_node = model_->bookmark_bar_node();
 
