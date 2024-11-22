@@ -24,8 +24,10 @@ def _forwarding_method(sb, jni_mode, native, target_class_name):
         sb('return ')
       if jni_mode.is_muxing:
         sb(f'{target_class_name}.{native.muxed_name}')
-        sb.param_list([str(native.muxed_switch_num)] +
-                      [p.name for p in native.muxed_params])
+        with sb.param_list() as plist:
+          if native.muxed_switch_num != -1:
+            plist.append(str(native.muxed_switch_num))
+          plist.extend(p.name for p in native.muxed_params)
       else:
         sb(f'{target_class_name}.{native.hashed_name}')
         sb.param_list([p.name for p in native.proxy_params])
@@ -42,7 +44,8 @@ def _native_method(sb, jni_mode, native):
     sb(f'public static native {native.proxy_return_type.to_java()} {name}')
     with sb.param_list() as plist:
       if jni_mode.is_muxing:
-        plist.append('int _switchNum')
+        if native.muxed_switch_num != -1:
+          plist.append('int _switchNum')
         for i, p in enumerate(native.muxed_params):
           plist.append(f'{p.java_type.to_java()} p{i}')
       else:
