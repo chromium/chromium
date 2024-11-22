@@ -10848,6 +10848,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidOpenPdfInlineBackportName,
      flag_descriptions::kAndroidOpenPdfInlineBackportDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidOpenPdfInlineBackport)},
+
+    {"android-pdf-assist-content",
+     flag_descriptions::kAndroidPdfAssistContentName,
+     flag_descriptions::kAndroidPdfAssistContentDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidPdfAssistContent)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

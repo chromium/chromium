@@ -25,6 +25,7 @@ BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidHubFloatingActionButton);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOpenPdfInlineBackport);
+BASE_DECLARE_FEATURE(kAndroidPdfAssistContent);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutter);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveAllButActiveTab);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterRescueKillswitch);

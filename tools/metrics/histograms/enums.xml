@@ -19326,6 +19326,7 @@ from previous Chrome versions.
   <int value="-395259448" label="VideoPlayerJsModules:disabled"/>
   <int value="-394734604" label="FillingPasswordsFromAnyOrigin:disabled"/>
   <int value="-392813122" label="LibinputHandleTouchpad"/>
+  <int value="-391357412" label="AndroidPdfAssistContent:enabled"/>
   <int value="-390998835" label="(Obsolete) AllowDevtoolsInSystemUI:disabled"/>
   <int value="-390984438" label="FastPairHandshakeRefactor:disabled"/>
   <int value="-390798267" label="DynamicColorButtonsAndroid:disabled"/>
@@ -21404,6 +21405,7 @@ from previous Chrome versions.
       label="AutofillEnableVcnGrayOutForMerchantOptOut:disabled"/>
   <int value="432920820" label="OmniboxActionsInSuggest:enabled"/>
   <int value="433084321" label="WebPrinting:enabled"/>
+  <int value="433272479" label="AndroidPdfAssistContent:disabled"/>
   <int value="434033638" label="PwaPersistentNotification:disabled"/>
   <int value="434333410" label="DefaultMeetWebApp:disabled"/>
   <int value="434530296"

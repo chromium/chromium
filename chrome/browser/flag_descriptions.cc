@@ -4252,6 +4252,10 @@ const char kAndroidOpenPdfInlineBackportName[] =
 const char kAndroidOpenPdfInlineBackportDescription[] =
     "Enable Open PDF Inline on Android pre-V.";
 
+const char kAndroidPdfAssistContentName[] = "Provide assist content for PDF";
+const char kAndroidPdfAssistContentDescription[] =
+    "Provide assist content for PDF on Android.";
+
 const char kChromePageInfoSharingName[] = "Page Info Sharing";
 const char kChromePageInfoSharingDescription[] =
     "Enable Page Info Sharing on Android.";

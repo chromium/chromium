@@ -168,6 +168,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OPEN_PDF_INLINE_BACKPORT = "AndroidOpenPdfInlineBackport";
+    public static final String ANDROID_PDF_ASSIST_CONTENT = "AndroidPdfAssistContent";
     public static final String ANDROID_TAB_DECLUTTER = "AndroidTabDeclutter";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE =
             "AndroidTabDeclutterArchiveAllButActiveTab";

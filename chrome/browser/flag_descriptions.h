@@ -2460,6 +2460,9 @@ extern const char kAndroidOpenPdfInlineDescription[];
 extern const char kAndroidOpenPdfInlineBackportName[];
 extern const char kAndroidOpenPdfInlineBackportDescription[];
 
+extern const char kAndroidPdfAssistContentName[];
+extern const char kAndroidPdfAssistContentDescription[];
+
 extern const char kChromePageInfoSharingName[];
 extern const char kChromePageInfoSharingDescription[];
 

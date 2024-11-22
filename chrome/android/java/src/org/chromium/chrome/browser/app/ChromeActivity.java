@@ -131,6 +131,7 @@ import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.pdf.PdfPage;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -1455,6 +1456,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // No information is provided in incognito mode and overview mode.
         if (tab != null && !tab.isIncognito() && !isInOverviewMode()) {
             outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_PDF_ASSIST_CONTENT)
+                    && tab.getNativePage() instanceof PdfPage pdfPage) {
+                String structuredData = pdfPage.requestAssistContent();
+                if (structuredData != null) {
+                    outContent.setStructuredData(structuredData);
+                }
+            }
         }
     }
 

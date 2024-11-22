@@ -117,4 +117,9 @@ public class PdfPage extends BasicNativePage {
     public boolean findInPage() {
         return mPdfCoordinator.findInPage();
     }
+
+    /** Build structured data including content uri and grant permission. */
+    public String requestAssistContent() {
+        return mPdfCoordinator.requestAssistContent(getTitle());
+    }
 }

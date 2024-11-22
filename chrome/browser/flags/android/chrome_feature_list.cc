@@ -187,6 +187,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidHubFloatingActionButton,
     &kAndroidNoVisibleHintForDifferentTLD,
     &kAndroidOpenPdfInlineBackport,
+    &kAndroidPdfAssistContent,
     &kAndroidTabDeclutter,
     &kAndroidTabDeclutterArchiveAllButActiveTab,
     &kAndroidTabDeclutterDedupeTabIdsKillSwitch,
@@ -475,6 +476,10 @@ BASE_FEATURE(kAndroidNoVisibleHintForDifferentTLD,
 
 BASE_FEATURE(kAndroidOpenPdfInlineBackport,
              "AndroidOpenPdfInlineBackport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidPdfAssistContent,
+             "AndroidPdfAssistContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutter,
