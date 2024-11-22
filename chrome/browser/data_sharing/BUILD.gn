@@ -17,6 +17,7 @@ if (is_android) {
     ]
 
     deps = [
+      ":internal_library_java",
       ":java",
       "//base:base_java",
       "//base:service_loader_java",
@@ -26,6 +27,20 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:url_java",
+    ]
+  }
+
+  # TODO(crbug.com/380154734): Move this to collaboration/ directory near messages factory.
+  android_library("instant_message_delegate_factory_java") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java" ]
+
+    deps = [
+      ":factory_java",
+      ":internal_library_java",
+      "//base:base_java",
+      "//chrome/browser/profiles/android:java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 
@@ -42,7 +57,7 @@ if (is_android) {
     deps = [ "//components/browser_ui/styles/android:java_resources" ]
   }
 
-  android_library("tab_group_ui_java") {
+  android_library("data_sharing_public_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingMetrics.java",
@@ -53,7 +68,6 @@ if (is_android) {
     ]
 
     deps = [
-      ":factory_java",
       ":java_resources",
       "//base:base_java",
       "//chrome/browser/android/intents:java",
@@ -129,18 +143,18 @@ if (is_android) {
     ]
   }
 
-  android_library("messages_java") {
+  android_library("internal_library_java") {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImpl.java",
     ]
 
     deps = [
+      ":data_sharing_public_java",
+      ":java",
       ":java_resources",
-      ":tab_group_ui_java",
       "//base:base_java",
       "//base:service_loader_java",
       "//base:supplier_java",
@@ -191,10 +205,10 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/data_sharing/ui/shared_image_tiles/SharedImageTilesCoordinatorUnitTest.java",
     ]
     deps = [
+      ":data_sharing_public_java",
+      ":internal_library_java",
       ":java",
-      ":messages_java",
       ":shared_image_tiles_java",
-      ":tab_group_ui_java",
       "//base:base_java",
       "//base:base_junit_test_support",
       "//chrome/browser/collaboration:messaging_factory_java",
