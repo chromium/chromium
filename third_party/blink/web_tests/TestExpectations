@@ -2699,6 +2699,7 @@ crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-sa
 # ====== New tests from wpt-importer added here ======
 crbug.com/380327161 [ Mac13 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
 crbug.com/380327161 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
+crbug.com/380327161 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
 crbug.com/380287138 [ Mac13 ] external/wpt/webcodecs/image-decoder.https.any.html [ Crash Timeout ]
 crbug.com/380287138 [ Win11-arm64 ] external/wpt/webcodecs/image-decoder.https.any.html [ Crash Timeout ]
 crbug.com/380287138 [ Mac13 ] external/wpt/webcodecs/image-decoder.https.any.worker.html [ Crash Timeout ]
@@ -8657,6 +8658,5 @@ crbug.com/379418978 [ Debug Linux ] virtual/soft-navigation-fp-fcp/external/wpt/
 
 # Gardener 2024-11-21
 crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass ]
-crbug.com/380323589 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass ]
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Failure Pass ]
 crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Failure Pass ]

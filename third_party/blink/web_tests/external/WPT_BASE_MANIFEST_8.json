@@ -153449,6 +153449,19 @@
          {}
         ]
        ],
+       "clip-path-animation-forward-fill-positive-delay.html": [
+        "4f73a1fc8c9da816b8f838fd7611f998704ae0d1",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-forward-fill-positive-delay-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-animation-forward-fill.html": [
         "708896882822109bed14fd3c4fb9f977f28c3a1b",
         [
@@ -189249,6 +189262,58 @@
      ],
      "intrinsic-percent-replaced-023.html": [
       "b3d87a0972266b97d851170c5f9525ff24eb2af3",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-024.html": [
+      "d15369d71c7994ff2b07c31ae1a2b68317e1ce5e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-025.html": [
+      "8c35b2a5b8f9a5e8942a16dd912955d29448ff58",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-026.html": [
+      "594d6c326ee25c7b55cb80ca8587e9fdc0597fd2",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "intrinsic-percent-replaced-027.html": [
+      "39092eb38f7b3d1044fcdf9624c1c0a2bd4013ed",
       [
        null,
        [
@@ -340603,6 +340668,10 @@
        ],
        "clip-path-animation-font-size-ref.html": [
         "f4369b0f111ad591f020f1d6e2f675590e0357bb",
+        []
+       ],
+       "clip-path-animation-forward-fill-positive-delay-ref.html": [
+        "b054f2c20eda5e67dda686508aa48b990d8b595c",
         []
        ],
        "clip-path-animation-fragmented-ref.html": [
