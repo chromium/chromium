@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/menu/ui_bundled/tab_context_menu_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -368,6 +369,10 @@
                          browser:self.browser
                         tabGroup:tabGroup];
   [_tabGroupRecentActivityCoordinator start];
+}
+
+- (void)showManageForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  [self.tabContextMenuDelegate manageTabGroup:tabGroup];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

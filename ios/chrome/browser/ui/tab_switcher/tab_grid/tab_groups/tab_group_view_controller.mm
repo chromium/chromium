@@ -505,8 +505,9 @@ constexpr CGFloat kFacePileHeight = 44;
 
   if (_shared) {
     CHECK(IsTabGroupSyncEnabled());
-
-    // TODO(crbug.com/358533115): Add an entry point to the management UI.
+    [menuElements addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                    [weakSelf manageGroup];
+                  }]];
 
     [menuElements addObject:[actionFactory actionToShowRecentActivity:^{
                     [weakSelf showRecentActivity];
@@ -615,6 +616,12 @@ constexpr CGFloat kFacePileHeight = 44;
   safeAreaInsets.top = 0;
   safeAreaInsets.bottom += bottomToolbarInset;
   _gridViewController.contentInsets = safeAreaInsets;
+}
+
+// Starts managing the shared group.
+- (void)manageGroup {
+  CHECK(_shared);
+  [_handler showManageForGroup:_tabGroup->GetWeakPtr()];
 }
 
 #pragma mark - UIResponder
