@@ -581,19 +581,6 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2.GoogleDocsOffline"
-    enum="Boolean" expires_after="2024-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether content verification hashes found a hash mismatch when hash
-    fetching completes for the Google Docs Offline extension running on Manifest
-    Version 2. Hash fetching occurs both for a specific content verification job
-    and when the extension first loads.
-  </summary>
-</histogram>
-
-<histogram
     name="Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3"
     enum="Boolean" expires_after="2025-04-06">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -651,21 +638,6 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.ContentVerification.VerifyFailedOnFileMV2.GoogleDocsOffline{VerifiedFileType}"
-    enum="ContentVerifyJobResult" expires_after="2024-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The content verification failure reason for why a {VerifiedFileType} failed.
-    Emitted when content verification fails for a {VerifiedFileType} for the
-    Google Docs Offline extension running Manifest V2.
-  </summary>
-  <token key="VerifiedFileType" variants="VerifiedFileType">
-    <variant name=""/>
-  </token>
-</histogram>
-
-<histogram
     name="Extensions.ContentVerification.VerifyFailedOnFileMV2{VerifiedFileType}"
     enum="ContentVerifyJobResult" expires_after="2025-04-06">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -720,18 +692,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV2.GoogleDocsOffline"
-    enum="VerifiedFileType" expires_after="2024-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The type of file content verification failed to verify for the Google Docs
-    Offline extension running Manifest V2. Emitted at the time content
-    verification fails, once per file that failed.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ContentVerification.VerifyFailedOnFileTypeMV3"
     enum="VerifiedFileType" expires_after="2025-04-06">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -762,19 +722,6 @@ This is emitted for two scenarios when a worker may be unregistered:
     Reports the result of a given content verification job succeeded for a
     Manifest Version 2 extension. Emitted when the job is complete. A content
     verification job is started for a given extension resource request.
-  </summary>
-</histogram>
-
-<histogram
-    name="Extensions.ContentVerification.VerifyJobResultMV2.GoogleDocsOffline"
-    enum="ContentVerifyJobResult" expires_after="2024-12-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports the result of a given content verification job succeeded for the
-    Docs Offline extension running on Manifest Version 2. Emitted when the job
-    is complete. A content verification job is started for a given extension
-    resource request.
   </summary>
 </histogram>
 
