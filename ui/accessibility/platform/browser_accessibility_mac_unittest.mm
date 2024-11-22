@@ -763,4 +763,122 @@ TEST_F(BrowserAccessibilityMacTest,
   EXPECT_NSEQ([cell sortDirection], NSAccessibilityUnknownSortDirectionValue);
 }
 
+// Test that the header container can be retrieved on a table with column
+// headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnTableWithColumnHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 3;
+  const int kNumberOfColumns = 2;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::ColumnHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have six children: the three rows, the two columns,
+  // and the header group.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table children];
+  EXPECT_EQ(6U, [children count]);
+  id header = children[5];
+  EXPECT_NSEQ([header role], NSAccessibilityGroupRole);
+
+  // Asking for the header directly should return that last child, which should
+  // have two children, namely the header cell for each of the two columns.
+  EXPECT_EQ(header, [ax_table accessibilityHeader]);
+  EXPECT_EQ(2U, [[header children] count]);
+}
+
+// Test that the header container can be retrieved on a table with row headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnTableWithRowHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 5;
+  const int kNumberOfColumns = 7;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::RowHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have 13 children: the five rows, the seven columns,
+  // and the header group.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table children];
+  EXPECT_EQ(13U, [children count]);
+  id header = children[12];
+  EXPECT_NSEQ([header role], NSAccessibilityGroupRole);
+
+  // Asking for the header directly should return that last child, but it will
+  // not contain any children because only column headers are included. See
+  // the `TableWithRowHeaders` and `TableWithTwoRowHeaders` tests above.
+  EXPECT_EQ(header, [ax_table accessibilityHeader]);
+  EXPECT_EQ(0U, [[header children] count]);
+}
+
+// Test that the column header cells can be retrieved on a table with column
+// headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnColumnsWithColumnHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 3;
+  const int kNumberOfColumns = 2;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::ColumnHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have six children: the three rows, the two columns,
+  // and the header group for the table itself.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table children];
+  EXPECT_EQ(6U, [children count]);
+
+  // Asking for the header for a given column should return the first child of
+  // that column because the headers are in the first row.
+  id first_column = children[3];
+  EXPECT_NSEQ([first_column role], NSAccessibilityColumnRole);
+  EXPECT_EQ([first_column accessibilityHeader], [first_column children][0]);
+
+  id second_column = children[4];
+  EXPECT_NSEQ([second_column role], NSAccessibilityColumnRole);
+  EXPECT_EQ([second_column accessibilityHeader], [second_column children][0]);
+}
+
+// Test that the row header cells can be retrieved on a table with row headers.
+TEST_F(BrowserAccessibilityMacTest, AXHeaderOnRowsWithRowHeaders) {
+  AXTreeUpdate initial_state;
+  const int kNumberOfRows = 3;
+  const int kNumberOfColumns = 7;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::RowHeaders);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      initial_state, node_id_delegate_, nullptr);
+
+  // The native table will have 11 children: the three rows, the seven columns,
+  // and the header group for the table itself.
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* children = [ax_table children];
+  EXPECT_EQ(11U, [children count]);
+
+  // Asking for the header for a given row should return the first child of
+  // that row because the headers are in the first column. This fails outside
+  // of blink due to the failure to set `kTableRowHeaderId` on the row node
+  // in `ui::AXTableInfo`. See crbug.com/380211806 for details.
+  id first_row = children[0];
+  EXPECT_NSEQ([first_row role], NSAccessibilityRowRole);
+  EXPECT_NE([first_row accessibilityHeader], [first_row children][0])
+      << "These should be equal. See crbug.com/380211806";
+
+  id second_row = children[1];
+  EXPECT_NSEQ([second_row role], NSAccessibilityRowRole);
+  EXPECT_NE([second_row accessibilityHeader], [second_row children][0])
+      << "These should be equal. See crbug.com/380211806";
+
+  id third_row = children[2];
+  EXPECT_NSEQ([third_row role], NSAccessibilityRowRole);
+  EXPECT_NE([third_row accessibilityHeader], [third_row children][0])
+      << "These should be equal. See crbug.com/380211806";
+}
+
 }  // namespace ui

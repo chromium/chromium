@@ -388,7 +388,7 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
   NSArray<NSString*>* array = @[
     @"accessibilityColumnCount", @"accessibilityDisclosedByRow",
     @"accessibilityDisclosedRows", @"accessibilityDisclosureLevel",
-    @"accessibilityIndex", @"accessibilityRowCount",
+    @"accessibilityHeader", @"accessibilityIndex", @"accessibilityRowCount",
     @"accessibilitySortDirection", @"isAccessibilityDisclosed",
     @"isAccessibilityExpanded", @"isAccessibilityFocused"
   ];

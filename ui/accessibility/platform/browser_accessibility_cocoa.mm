@@ -739,6 +739,7 @@ bool ui::IsNSRange(id value) {
 }
 
 - (id)header {
+  // Keep logic consistent with `-[AXPlatformNodeCocoa accessibilityHeader]`
   if (![self instanceActive])
     return nil;
   int headerElementId = -1;

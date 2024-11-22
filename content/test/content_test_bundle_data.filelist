@@ -5597,6 +5597,8 @@ data/accessibility/mac/methods/accessibility-disclosed-rows-expected.txt
 data/accessibility/mac/methods/accessibility-disclosed-rows.html
 data/accessibility/mac/methods/accessibility-disclosure-level-expected.txt
 data/accessibility/mac/methods/accessibility-disclosure-level.html
+data/accessibility/mac/methods/accessibility-header-expected.txt
+data/accessibility/mac/methods/accessibility-header.html
 data/accessibility/mac/methods/accessibility-index-table-expected.txt
 data/accessibility/mac/methods/accessibility-index-table.html
 data/accessibility/mac/methods/accessibility-index-tree-expected.txt

@@ -279,6 +279,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
       @"accessibilityDisclosedByRow" : NSAccessibilityDisclosedByRowAttribute,
       @"accessibilityDisclosedRows" : NSAccessibilityDisclosedRowsAttribute,
       @"accessibilityDisclosureLevel" : NSAccessibilityDisclosureLevelAttribute,
+      @"accessibilityHeader" : NSAccessibilityHeaderAttribute,
       @"accessibilityIndex" : NSAccessibilityIndexAttribute,
       @"accessibilityRowCount" : NSAccessibilityRowCountAttribute,
       @"accessibilityRowIndexRange" : NSAccessibilityRowIndexRangeAttribute,
@@ -2637,6 +2638,49 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     }
   }
   return [ret count] ? ret : nil;
+}
+
+- (id)accessibilityHeader {
+  // Keep logic consistent with `-[BrowserAccessibilityCocoa header]`
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  if (ui::IsTableLike(_node->GetRole())) {
+    ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
+    DCHECK(delegate);
+    // The table header container is a special node in the accessibility tree
+    // only used on macOS. It has all of the table headers as its children, even
+    // though those cells are also children of rows in the table. Internally
+    // this is implemented using `AXTableInfo` and `indirect_child_ids` with the
+    // result retrievable via `AXNode::GetExtraMacNodes()`.
+    const std::vector<raw_ptr<ui::AXNode, VectorExperimental>>* nodes =
+        delegate->node()->GetExtraMacNodes();
+    if (nodes && !nodes->empty()) {
+      ui::AXNode* lastChild = nodes->back();
+      if (lastChild->GetRole() == ax::mojom::Role::kTableHeaderContainer) {
+        // TODO(crbug.com/363275809): This works for `BrowserAccessibilityCocoa`
+        // nodes but will otherwise fail with `-fromNodeID` returning nil. This
+        // is due to the fact that `BrowserAccessibilityMac` ensures that the
+        // internal "extra Mac nodes" are included in the platform accessibility
+        // tree. See `BrowserAccessibilityMac::PlatformChildCount` and
+        // `BrowserAccessibilityMac::PlatformGetChild` as examples.
+        return [self fromNodeID:lastChild->id()];
+      }
+    }
+    return nil;
+  }
+
+  int headerElementId = -1;
+  if ([self internalRole] == ax::mojom::Role::kColumn) {
+    _node->GetIntAttribute(ax::mojom::IntAttribute::kTableColumnHeaderId,
+                           &headerElementId);
+  } else if ([self internalRole] == ax::mojom::Role::kRow) {
+    _node->GetIntAttribute(ax::mojom::IntAttribute::kTableRowHeaderId,
+                           &headerElementId);
+  }
+
+  return headerElementId > 0 ? [self fromNodeID:headerElementId] : nil;
 }
 
 - (NSInteger)accessibilityColumnCount {

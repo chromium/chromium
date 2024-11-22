@@ -2305,8 +2305,8 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
   if (ui::IsTableRow(RoleValue())) {
     AXObject* header = HeaderObject();
     if (header && !header->IsDetached()) {
-      // TODO(accessibility): these should be computed by ui::AXTableInfo and
-      // removed here.
+      // TODO(crbug.com/380211806): these should be computed by ui::AXTableInfo
+      // and removed here.
       node_data->AddIntAttribute(
           ax::mojom::blink::IntAttribute::kTableRowHeaderId,
           header->AXObjectID());
