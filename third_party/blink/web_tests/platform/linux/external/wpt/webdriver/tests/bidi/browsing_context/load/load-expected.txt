@@ -1,0 +1,6 @@
+This is a wdspec test.
+[FAIL] test_new_context_not_emitted[tab]
+  Failed: DID NOT RAISE <class 'webdriver.error.TimeoutException'>
+[FAIL] test_new_context_not_emitted[window]
+  Failed: DID NOT RAISE <class 'webdriver.error.TimeoutException'>
+Harness: the test ran to completion.

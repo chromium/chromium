@@ -148413,7 +148413,7 @@
        ]
       ],
       "text-box-trim-accumulation-001.html": [
-       "cdcc86b0a9e5d37ac3b830116888844f31c6a4f6",
+       "0e6601e1b3b14aecfd9755b9b63abb5fd8961c09",
        [
         null,
         [
@@ -148426,7 +148426,7 @@
        ]
       ],
       "text-box-trim-accumulation-002.html": [
-       "cfb538123979a4087601c28802077aeec68359b7",
+       "eec3a4a9fc128361cdbda026d84a7685b67db609",
        [
         null,
         [
@@ -148439,7 +148439,7 @@
        ]
       ],
       "text-box-trim-accumulation-003.html": [
-       "7b843230664ac82c2a061860180a1eb6ab38ba2f",
+       "08e39d2de897d91b2b1072a21fb519b6b288aa6d",
        [
         null,
         [
@@ -148452,7 +148452,7 @@
        ]
       ],
       "text-box-trim-accumulation-004.html": [
-       "29cf380a87f14abbe5c5ed1c772e94f502f2c642",
+       "09680a9ea117a881f8067abbefe7c7f4983f42bb",
        [
         null,
         [
@@ -339660,19 +339660,19 @@
        ]
       },
       "text-box-trim-accumulation-001-ref.html": [
-       "268ad8ec5f9525453406f6fb5f9505bc203cab45",
+       "321ae0c1f7a7fda62929b5f2cb6c8566b5f18f93",
        []
       ],
       "text-box-trim-accumulation-002-ref.html": [
-       "505d2a5ebb76d9d5a57f23d79aff89f5df66a3d1",
+       "5a759de72be9f21e8f7c641b4897b26889f94f45",
        []
       ],
       "text-box-trim-accumulation-003-ref.html": [
-       "505d2a5ebb76d9d5a57f23d79aff89f5df66a3d1",
+       "5a759de72be9f21e8f7c641b4897b26889f94f45",
        []
       ],
       "text-box-trim-accumulation-004-ref.html": [
-       "67500c70481245526e4ec508722a6d7a8427e9eb",
+       "b2cb12b9f0ec7c83c1b558137608c06a15ae6e6d",
        []
       ],
       "text-box-trim-atomic-inline-001-ref.html": [
@@ -367094,22 +367094,6 @@
      ],
      "formatblock-preserving-selection.tentative_styleWithCSS=true_block=pre-expected.txt": [
       "57791138ad72c9464defb9d1f260de2971d4d1e5",
-      []
-     ],
-     "forwarddelete-before-invisible-line-break_white-space=normal-expected.txt": [
-      "77118c1af034eef70fe9aecec1dce1b22cd6f398",
-      []
-     ],
-     "forwarddelete-before-invisible-line-break_white-space=pre-expected.txt": [
-      "9fcf981459c33b9bc7244a5c012af4ff25bdfbcb",
-      []
-     ],
-     "forwarddelete-before-invisible-line-break_white-space=pre-line-expected.txt": [
-      "2e55393c162f5ac42d55bebe4c6b736c2c7452c8",
-      []
-     ],
-     "forwarddelete-before-invisible-line-break_white-space=pre-wrap-expected.txt": [
-      "9fcf981459c33b9bc7244a5c012af4ff25bdfbcb",
       []
      ],
      "insert-paragraph-in-void-element.tentative-expected.txt": [
@@ -496545,7 +496529,7 @@
       ]
      ],
      "attr-security.html": [
-      "4280bcaeff08e827c9ccc780fcfb3bed599ac8c1",
+      "b3c7dda9c5697b2bac81e17ee2a54c2e5ab8db69",
       [
        null,
        {}
@@ -511910,7 +511894,7 @@
       ]
      ],
      "forwarddelete-before-invisible-line-break.html": [
-      "aebfdc2899eeda47600ecf6c1b0758dbd67ac064",
+      "7ab0a6fabc7dfe7f9a05b62ab44fe5b5597ef4f7",
       [
        "editing/other/forwarddelete-before-invisible-line-break.html?white-space=normal",
        {
@@ -645499,7 +645483,7 @@
      ]
     ],
     "pointerevent_iframe-touch-action-none_touch.html": [
-     "109aec8dcd38cfadd8d8055b0a9b7d3b5a6dc791",
+     "3dd6a807c3c75b03dae81c9ca691e2346b6a5429",
      [
       null,
       {
@@ -783216,7 +783200,7 @@
        },
        "dom_content_loaded": {
         "dom_content_loaded.py": [
-         "b426724da538001db20d3e5d0b7e24e7182b107d",
+         "6cef36ca932aa7445cf8a5f7179571d20253de8b",
          [
           null,
           {}
@@ -783296,7 +783280,7 @@
        },
        "load": {
         "load.py": [
-         "0dcada337792247771eaf0e856ac9097580508ff",
+         "92148721874588a99fb2ba024955530c7c0d576e",
          [
           null,
           {}
@@ -784731,7 +784715,7 @@
          ]
         ],
         "events.py": [
-         "f9d5d6bc21b731045403ffe94c3a4ac97e42397c",
+         "fcd325648c251cc2e363f51c5be042bfe0494401",
          [
           null,
           {}
@@ -784754,7 +784738,7 @@
          ]
         ],
         "events.py": [
-         "bd7d064847062af5c5eb109c0284242bf37d4b8e",
+         "ecf8364a45503d4c6d4d6b8035ebcb593984579c",
          [
           null,
           {}

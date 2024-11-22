@@ -2699,6 +2699,8 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?7-8 [ Crash ]
+[ Mac14 ] external/wpt/webrtc/RTCRtpTransceiver-stopping.https.html [ Timeout ]
 crbug.com/380327161 [ Mac13 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
 crbug.com/380327161 [ Win10.20h2 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
 crbug.com/380327161 [ Win11-arm64 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Timeout ]
@@ -2755,6 +2757,7 @@ crbug.com/379418921 [ Mac14 ] external/wpt/webrtc/protocol/sctp-format.html [ Ti
 crbug.com/379519388 [ Mac12 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/379519388 [ Win10.20h2 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
 crbug.com/379519388 [ Mac15 ] external/wpt/svg/linking/reftests/view-viewbox-override.html [ Failure ]
+crbug.com/379414142 [ Mac14 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-audio.https.html [ Timeout ]
 crbug.com/379414142 [ Mac15 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-audio.https.html [ Timeout ]
 crbug.com/379414142 [ Mac15 ] external/wpt/webrtc-identity/RTCPeerConnection-getIdentityAssertion.sub.https.html [ Timeout ]
 crbug.com/379414142 [ Mac14 ] external/wpt/webrtc-priority/RTCRtpParameters-encodings.html [ Timeout ]
@@ -8567,7 +8570,7 @@ crbug.com/339041663 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-M
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-video.https.html [ Crash Failure Timeout ]
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Failure Timeout ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
-crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Timeout Pass ]
+crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Pass Timeout ]
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
