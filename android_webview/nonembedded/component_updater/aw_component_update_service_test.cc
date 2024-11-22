@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -501,9 +502,9 @@ TEST_F(AwComponentUpdateServiceTest, TestExtraMetadataFile) {
   EXPECT_TRUE(base::PathExists(metadata_file_path));
   ASSERT_TRUE(
       base::ReadFileToString(metadata_file_path, &metadata_file_contents));
-  EXPECT_EQ(metadata_file_contents, "{\"" + std::string(kComponentId) +
-                                        "\":\"" + std::string(kCohortId) +
-                                        "\"}");
+  EXPECT_EQ(metadata_file_contents,
+            "{\"" + std::string(component_updater::kMetadataFileCohortIdKey) +
+                "\":\"" + std::string(kCohortId) + "\"}");
 }
 
 }  // namespace android_webview

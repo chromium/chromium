@@ -31,6 +31,8 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/components_info_holder.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,6 +49,8 @@ constexpr uint8_t kSha256Hash[] = {
 
 constexpr char kMockComponentHistogramName[] =
     "ComponentUpdater.AndroidComponentLoader.LoadStatus.MockComponent";
+
+constexpr char kCohortId[] = "1:1vi9";
 
 void GetPkHash(std::vector<uint8_t>* hash) {
   hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));
@@ -159,8 +163,10 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestValidManifest) {
 
   WriteFile("file1.txt", "1");
   WriteFile("file2.txt", "2");
-  WriteFile("manifest.json",
+  WriteFile(kManifestFileName,
             "{\n\"manifest_version\": 2,\n\"version\": \"123.456.789\"\n}");
+  WriteFile(kMetadataFileName,
+            "{\"cohortId\":\"" + std::string(kCohortId) + "\"}");
 
   base::RunLoop run_loop;
   auto* android_policy =
@@ -178,6 +184,12 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestValidManifest) {
   histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
   EXPECT_EQ("ORIGIN_TRIALS-123.456.789",
             crash_reporter::GetCrashKeyValue("crx-components"));
+
+  std::vector<ComponentInfo> components =
+      ComponentsInfoHolder::GetInstance()->GetComponents();
+  EXPECT_EQ(components.size(), 1u);
+  EXPECT_EQ(components[0].id, kComponentId);
+  EXPECT_EQ(components[0].cohort_id, kCohortId);
 }
 
 TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {
@@ -210,7 +222,7 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidVersion) {
   base::test::TaskEnvironment task_environment;
 
   WriteFile("file.txt", "test");
-  WriteFile("manifest.json",
+  WriteFile(kManifestFileName,
             "{\n\"manifest_version\": 2,\n\"version\": \"\"\n}");
 
   base::RunLoop run_loop;
@@ -238,7 +250,7 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidManifest) {
   base::test::TaskEnvironment task_environment;
 
   WriteFile("file.txt", "test");
-  WriteFile("manifest.json", "{\n\"manifest_version\":}");
+  WriteFile(kManifestFileName, "{\n\"manifest_version\":}");
 
   base::RunLoop run_loop;
   auto* android_policy =
