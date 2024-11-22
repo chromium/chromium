@@ -78,6 +78,7 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_sync:factory_java",
       "//chrome/browser/tabmodel:java",
+      "//chrome/browser/ui/android/favicon:java",
       "//chrome/browser/ui/android/strings:ui_strings_grd",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/notifications/android:java",

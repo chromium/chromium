@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
@@ -67,7 +68,10 @@ import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.data_sharing.ParseUrlStatus;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
+import org.chromium.components.data_sharing.SharedDataPreview;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
+import org.chromium.components.data_sharing.SharedTabGroupPreview;
+import org.chromium.components.data_sharing.TabPreview;
 import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
 import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
@@ -87,6 +91,9 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -137,6 +144,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private TabModel mTabModel;
+    @Mock private FaviconHelper mFaviconHelper;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mOutcomeCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
@@ -193,6 +201,15 @@ public class DataSharingTabManagerUnitTest {
         when(mDataSharingService.parseDataSharingUrl(any())).thenReturn(result);
     }
 
+    private void mockPreviewApiFetch() {
+        mDataSharingTabManager.setFaviconHelperForTesting(mFaviconHelper);
+        ArgumentCaptor<Callback<DataSharingService.SharedDataPreviewOrFailureOutcome>>
+                previewCallbackCaptor = ArgumentCaptor.forClass(Callback.class);
+        verify(mDataSharingService)
+                .getSharedEntitiesPreview(any(), previewCallbackCaptor.capture());
+        previewCallbackCaptor.getValue().onResult(getPreviewData());
+    }
+
     private void mockUnsuccessfulParseDataSharingUrl(@ParseUrlStatus int status) {
         assertNotEquals(ParseUrlStatus.SUCCESS, status);
         ParseUrlResult result =
@@ -205,6 +222,14 @@ public class DataSharingTabManagerUnitTest {
                 .setGroupId(COLLABORATION_ID1)
                 .setDisplayName(TITLE)
                 .build();
+    }
+
+    private DataSharingService.SharedDataPreviewOrFailureOutcome getPreviewData() {
+        List<TabPreview> tabs = new ArrayList<>();
+        tabs.add(new TabPreview(new GURL("https://example.com"), "example.com"));
+        return new DataSharingService.SharedDataPreviewOrFailureOutcome(
+                new SharedDataPreview(new SharedTabGroupPreview("title", tabs)),
+                PeopleGroupActionFailure.UNKNOWN);
     }
 
     @Test
@@ -286,6 +311,8 @@ public class DataSharingTabManagerUnitTest {
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
 
+        mockPreviewApiFetch();
+
         ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
         verify(mDataSharingUiDelegate).showJoinFlow(uiConfigCaptor.capture());
@@ -316,6 +343,8 @@ public class DataSharingTabManagerUnitTest {
         mSyncedGroupTestHelper.removeTabGroup(SYNC_GROUP_ID1);
 
         mDataSharingTabManager.initiateJoinFlow(mActivity, TEST_URL);
+
+        mockPreviewApiFetch();
 
         ArgumentCaptor<DataSharingJoinUiConfig> uiConfigCaptor =
                 ArgumentCaptor.forClass(DataSharingJoinUiConfig.class);
