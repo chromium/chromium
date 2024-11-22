@@ -2151,6 +2151,7 @@ export class AppElement extends AppElementBase {
       const langCodeForVoicePackManager =
           convertLangOrLocaleForVoicePackManager(toggledLanguage);
       if (langCodeForVoicePackManager) {
+        this.notificationManager_.onCancelDownload(langCodeForVoicePackManager);
         this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
         // Uninstall the Natural voice when a language is deselected.
         chrome.readingMode.sendUninstallVoiceRequest(
