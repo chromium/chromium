@@ -266,6 +266,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
 
   bool operator==(const FileSystemURL& that) const;
 
+  bool operator!=(const FileSystemURL& that) const { return !(*this == that); }
+
   std::weak_ordering operator<=>(const FileSystemURL& that) const;
 
   struct COMPONENT_EXPORT(STORAGE_BROWSER) Comparator {

@@ -21,6 +21,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_observation_group.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -44,8 +45,8 @@
 
 namespace content {
 
-using Change = FileSystemAccessWatcherManager::Observation::Change;
-using Observation = FileSystemAccessWatcherManager::Observation;
+using Change = FileSystemAccessObservationGroup::Change;
+using Observation = FileSystemAccessObservationGroup::Observer;
 using ChangeInfo = FileSystemAccessChangeSource::ChangeInfo;
 using ChangeType = FileSystemAccessChangeSource::ChangeType;
 using FilePathType = FileSystemAccessChangeSource::FilePathType;
@@ -159,11 +160,12 @@ class ChangeAccumulator {
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
-// Accumulates usage changes it receives from the given `observation`.
+// Accumulates usage changes it receives from the given `observation_group`.
 class UsageChangeAccumulator {
  public:
-  explicit UsageChangeAccumulator(std::unique_ptr<Observation>& observation) {
-    observation->SetUsageCallback(base::BindRepeating(
+  explicit UsageChangeAccumulator(
+      FileSystemAccessObservationGroup& observation_group) {
+    observation_group.SetOnUsageCallbackForTesting(base::BindRepeating(
         &UsageChangeAccumulator::OnUsageChanges, weak_factory_.GetWeakPtr()));
   }
   UsageChangeAccumulator(const ChangeAccumulator&) = delete;
@@ -414,13 +416,18 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
           base::expected<std::unique_ptr<Observation>,
                          blink::mojom::FileSystemAccessErrorPtr>>&
           get_observation_future) {
-    if (!get_observation_future.Get().has_value()) {
+    auto& observation_or_error = get_observation_future.Get();
+    if (!observation_or_error.has_value()) {
       return;
     }
 
-    Observation* observation = get_observation_future.Get()->get();
+    const std::unique_ptr<Observation>& observation =
+        observation_or_error.value();
 
-    CHECK(watcher_manager().HasObservationForTesting(observation));
+    const FileSystemAccessObservationGroup& observation_group =
+        observation->GetObservationGroupForTesting();
+
+    CHECK(watcher_manager().HasObservationGroupForTesting(observation_group));
   }
 
  protected:
@@ -458,7 +465,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
   auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
-  EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
+  EXPECT_FALSE(watcher_manager().HasObservationGroupsForTesting());
 
   std::optional<FileSystemAccessWatchScope> observation_scope = std::nullopt;
   {
@@ -471,21 +478,28 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
     ASSERT_TRUE(get_observation_future.Get().has_value());
 
     // An observation should have been created.
-    auto observation = get_observation_future.Take();
+    std::unique_ptr<content::FileSystemAccessObservationGroup::Observer>
+        observation = get_observation_future.Take().value();
+    FileSystemAccessObservationGroup& observation_group =
+        observation->GetObservationGroupForTesting();
+
+    // An observation group should exist for the scope of the observation.
     EXPECT_TRUE(
-        watcher_manager().HasObservationForTesting(observation.value().get()));
+        watcher_manager().HasObservationGroupForTesting(observation_group));
 
     // A source should have been created to cover the scope of the observation
-    observation_scope = observation.value()->scope();
+    observation_scope = observation->scope();
     EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
         *observation_scope));
   }
 
-  // Destroying an observation unregisters it with the manager.
-  EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
+  // Destroying an observation unregisters it with the observation group. When
+  // the observation group has no more observations, the observation group is
+  // unregistered with the manager and destroyed.
+  EXPECT_FALSE(watcher_manager().HasObservationGroupsForTesting());
 
-  // The watcher manager removes a source when there are no observations for
-  // that source.
+  // The watcher manager removes a source when there are no observation groups
+  // for that source.
   EXPECT_FALSE(
       watcher_manager().HasSourceContainingScopeForTesting(*observation_scope));
 }
@@ -552,8 +566,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
   EXPECT_EQ(observation_or_error.error()->status,
             blink::mojom::FileSystemAccessStatus::kOperationFailed);
 
-  // No observations should have been created.
-  ASSERT_FALSE(watcher_manager().HasObservationsForTesting());
+  // No observation groups should have been created.
+  ASSERT_FALSE(watcher_manager().HasObservationGroupsForTesting());
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
@@ -634,8 +648,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
 
   {
     ChangeAccumulator accumulator(std::move(observation_or_error));
-    EXPECT_TRUE(
-        watcher_manager().HasObservationForTesting(accumulator.observation()));
+    EXPECT_TRUE(watcher_manager().HasObservationGroupForTesting(
+        accumulator.observation()->GetObservationGroupForTesting()));
 
     source.Signal();
 
@@ -648,7 +662,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
 
   // Signaling changes after the observation was removed should not crash.
   source.Signal();
-  EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
+  EXPECT_FALSE(watcher_manager().HasObservationGroupsForTesting());
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
@@ -1191,6 +1205,47 @@ TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
 }
 
+TEST_F(FileSystemAccessWatcherManagerTest,
+       ObservationGroupsAreSharedByAllObservationsWithSameScope) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
+  FakeChangeSource file_source(
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
+      file_system_context_);
+  watcher_manager().RegisterSource(&file_source);
+
+  base::FilePath dir_path = dir_.GetPath().AppendASCII("bar");
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
+  FakeChangeSource dir_source(
+      FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
+          dir_url, /*is_recursive=*/false),
+      file_system_context_);
+  watcher_manager().RegisterSource(&dir_source);
+
+  std::unique_ptr<Observation> file_observation1 =
+      std::move(ObserveFile(file_url)).value();
+  FileSystemAccessObservationGroup& file_observation1_group =
+      file_observation1->GetObservationGroupForTesting();
+
+  std::unique_ptr<Observation> file_observation2 =
+      std::move(ObserveFile(file_url)).value();
+  FileSystemAccessObservationGroup& file_observation2_group =
+      file_observation2->GetObservationGroupForTesting();
+
+  std::unique_ptr<Observation> dir_observation =
+      std::move(ObserveDirectory(dir_url, /*is_recursive=*/false)).value();
+  FileSystemAccessObservationGroup& dir_observation_group =
+      dir_observation->GetObservationGroupForTesting();
+
+  // Both file observations have the same scope, so they should be a part of the
+  // observation group.
+  EXPECT_EQ(&file_observation1_group, &file_observation2_group);
+
+  // The file and dir observations have different scopes, so they should be in
+  // different observation groups.
+  EXPECT_NE(&dir_observation_group, &file_observation1_group);
+}
+
 TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
   auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
@@ -1205,10 +1260,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, UsageChange) {
   auto observation_or_error = ObserveFile(file_url);
   ASSERT_TRUE(observation_or_error.has_value());
 
-  std::unique_ptr<Observation>& observation = observation_or_error.value();
+  FileSystemAccessObservationGroup& observation_group =
+      observation_or_error.value()->GetObservationGroupForTesting();
+  ASSERT_TRUE(
+      watcher_manager().HasObservationGroupForTesting(observation_group));
 
-  UsageChangeAccumulator accumulator(observation);
-  EXPECT_TRUE(watcher_manager().HasObservationForTesting(observation.get()));
+  UsageChangeAccumulator accumulator(observation_group);
 
   source.SignalUsageChange(50, 100);
   source.SignalUsageChange(100, 80);

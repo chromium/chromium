@@ -246,7 +246,7 @@ void FileSystemAccessObserverHost::GotObservation(
     absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
                   std::unique_ptr<FileSystemAccessFileHandleImpl>> handle,
     ObserveCallback callback,
-    base::expected<std::unique_ptr<FileSystemAccessWatcherManager::Observation>,
+    base::expected<std::unique_ptr<FileSystemAccessObservationGroup::Observer>,
                    blink::mojom::FileSystemAccessErrorPtr>
         observation_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_bucket_path_watcher.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
+#include "content/browser/file_system_access/file_system_access_observation_group.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
@@ -33,83 +34,27 @@ namespace content {
 class FileSystemAccessManagerImpl;
 class FileSystemAccessObserverHost;
 
-// Manages all watches to file system changes for a StoragePartition.
-//
-// Raw changes from the underlying file system are plumbed through this class,
-// to be filtered, batched, and transformed before being relayed to the
-// appropriate `Observer`s.
+// Manages browser side resources for the `FileSystemObserver` API.
 //
 // Instances of this class must be accessed exclusively on the UI thread. Owned
-// by the FileSystemAccessManagerImpl.
+// by the `FileSystemAccessManagerImpl`.
+//
+// TODO(crbug.com/376134535): Currently, raw changes from the underlying file
+// system are plumbed through this class, to be filtered, batched, and
+// transformed before being relayed to the appropriate
+// `FileSystemAccessObservationGroup`s. Once `FileSystemAccessObservationGroup`s
+// observe their change source directly, all this logic should be moved to the
+// `FileSystemAccessObservationGroup`.
 class CONTENT_EXPORT FileSystemAccessWatcherManager
     : public FileSystemAccessChangeSource::RawChangeObserver {
  public:
-  // Notifies of changes to a file system which occur in the given `scope`.
-  // These events may be consumed by other components.
-  class CONTENT_EXPORT Observation : public base::CheckedObserver {
-   public:
-    // Describes a change to some location in a file system.
-    struct CONTENT_EXPORT Change {
-      Change(storage::FileSystemURL url,
-             FileSystemAccessChangeSource::ChangeInfo change_info);
-      ~Change();
-
-      // Copyable and movable.
-      Change(const Change&);
-      Change(Change&&) noexcept;
-      Change& operator=(const Change&);
-      Change& operator=(Change&&) noexcept;
-
-      storage::FileSystemURL url;
-      FileSystemAccessChangeSource::ChangeInfo change_info;
-
-      bool operator==(const Change& other) const {
-        return url == other.url && change_info == other.change_info;
-      }
-    };
-
-    using OnChangesCallback = base::RepeatingCallback<void(
-        const std::optional<std::list<Change>>& changes_or_error)>;
-    using OnUsageChangesCallback = FilePathWatcher::UsageChangeCallback;
-
-    Observation(FileSystemAccessWatcherManager* watcher_manager,
-                FileSystemAccessWatchScope scope,
-                base::PassKey<FileSystemAccessWatcherManager> pass_key);
-    ~Observation() override;
-
-    // Set the callback to which changes will be reported.
-    // It is illegal to call this method more than once.
-    void SetCallback(OnChangesCallback on_change_callback);
-
-    // Set the callback to which usage changes will be reported.
-    // It is illegal to call this method more than once.
-    void SetUsageCallback(OnUsageChangesCallback on_usage_change_callback);
-
-    const FileSystemAccessWatchScope& scope() const { return scope_; }
-
-    void NotifyOfChanges(
-        const std::optional<std::list<Change>>& changes_or_error,
-        base::PassKey<FileSystemAccessWatcherManager> pass_key);
-
-    void NotifyOfUsageChange(size_t old_usage, size_t new_usage);
-
-   private:
-    SEQUENCE_CHECKER(sequence_checker_);
-
-    OnChangesCallback on_change_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-    OnUsageChangesCallback on_usage_change_callback_
-        GUARDED_BY_CONTEXT(sequence_checker_);
-
-    const FileSystemAccessWatchScope scope_;
-    base::ScopedObservation<FileSystemAccessWatcherManager, Observation> obs_
-        GUARDED_BY_CONTEXT(sequence_checker_){this};
-  };
-
+  using Change = FileSystemAccessObservationGroup::Change;
   using BindingContext = FileSystemAccessEntryFactory::BindingContext;
   using GetObservationCallback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<Observation>,
-                     blink::mojom::FileSystemAccessErrorPtr>)>;
+      base::expected<
+          std::unique_ptr<FileSystemAccessObservationGroup::Observer>,
+          blink::mojom::FileSystemAccessErrorPtr>)>;
+  using OnUsageChangeCallback = FilePathWatcher::UsageChangeCallback;
 
   FileSystemAccessWatcherManager(
       FileSystemAccessManagerImpl* manager,
@@ -152,18 +97,14 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // Subscriber this instance to raw changes from `source`.
   void RegisterSource(FileSystemAccessChangeSource* source);
 
-  // For use with `ScopedObservation`. Do not otherwise call these methods
-  // directly.
-  void AddObserver(Observation* observation);
-  void RemoveObserver(Observation* observation);
-
-  bool HasObservationsForTesting() const {
+  bool HasObservationGroupsForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return !observations_.empty();
+    return !observation_groups_.empty();
   }
-  bool HasObservationForTesting(Observation* observation) const {
+  bool HasObservationGroupForTesting(
+      const FileSystemAccessObservationGroup& observation_group) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return observations_.HasObserver(observation);
+    return observation_groups_.HasObserver(&observation_group);
   }
   bool HasSourceForTesting(FileSystemAccessChangeSource* source) const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,6 +116,23 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   FileSystemAccessManagerImpl* manager() { return manager_; }
 
  private:
+  friend FileSystemAccessObservationGroup;
+  // Called by `FileSystemAccessObservationGroup` to receive raw change events.
+  //
+  // TODO(crbug.com/376134535): Remove this once observation groups directly
+  // observe their change source.
+  void AddObserver(FileSystemAccessObservationGroup* observation_group);
+
+  // Called by `FileSystemAccessObservationGroup` to stop receiving raw change
+  // events.
+  //
+  // TODO(crbug.com/376134535): Remove this once observation groups directly
+  // observe their change source.
+  void RemoveObserver(FileSystemAccessObservationGroup* observation_group);
+
+  // Called by `FileSystemAccessObservationGroup` to destroy itself.
+  void RemoveObservationGroup(const FileSystemAccessWatchScope& scope);
+
   // Attempts to create a change source for `scope` if it does not exist.
   void EnsureSourceIsInitializedForScope(
       FileSystemAccessWatchScope scope,
@@ -185,6 +143,9 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
           on_source_initialized,
       blink::mojom::FileSystemAccessErrorPtr result);
+
+  FileSystemAccessObservationGroup& GetOrCreateObservationGroup(
+      FileSystemAccessWatchScope scope);
 
   void PrepareObservationForScope(
       FileSystemAccessWatchScope scope,
@@ -213,9 +174,15 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
   // TODO(crbug.com/321980367): Make more efficient mappings to observers
   // and sources. For now, most actions requires iterating through lists.
 
+  std::map<FileSystemAccessWatchScope, FileSystemAccessObservationGroup>
+      watch_scope_obs_groups_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Observations to which this instance will notify of changes within their
   // respective scope.
-  base::ObserverList<Observation> observations_
+  //
+  // TODO(crbug.com/376134535): Remove this once observation groups directly
+  // observe their change source.
+  base::ObserverList<FileSystemAccessObservationGroup> observation_groups_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Sources created by this instance in response to a request to observe a
