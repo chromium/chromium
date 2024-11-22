@@ -110,6 +110,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -463,6 +464,11 @@ class ProfileSubMenuModel : public ui::SimpleMenuModel,
  private:
   bool BuildSyncSection();
 
+  void BuildGuestProfileRow(Profile* profile);
+  void BuildCustomizeProfileRow(Profile* profile);
+  void BuildCloseProfileRow(Profile* profile);
+  void BuildManageGoogleAccountRow(Profile* profile);
+
   ui::ImageModel avatar_image_model_;
   std::u16string profile_name_;
   raw_ptr<Profile> profile_;
@@ -521,37 +527,24 @@ ProfileSubMenuModel::ProfileSubMenuModel(
     }
   }
 
-  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_CUSTOMIZE_CHROME,
-                                     IDS_CUSTOMIZE_CHROME,
-                                     vector_icons::kEditChromeRefreshIcon);
+  if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    BuildManageGoogleAccountRow(profile);
+    BuildCustomizeProfileRow(profile);
+    BuildCloseProfileRow(profile);
+  } else {
+    BuildCustomizeProfileRow(profile);
+    BuildCloseProfileRow(profile);
+    BuildManageGoogleAccountRow(profile);
   }
 
-  AddItemWithIcon(
-      IDC_CLOSE_PROFILE,
-      l10n_util::GetPluralStringFUTF16(IDS_CLOSE_PROFILE,
-                                       CountBrowsersFor(profile)),
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
-                                     ui::kColorMenuIcon, kDefaultIconSize));
-
-  if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
-      !profile->IsIncognitoProfile()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    const gfx::VectorIcon& manage_account_icon =
-        vector_icons::kGoogleGLogoMonochromeIcon;
-#else
-    const gfx::VectorIcon& manage_account_icon =
-        kAccountManageChromeRefreshIcon;
-#endif
-    AddItemWithStringIdAndVectorIcon(this, IDC_MANAGE_GOOGLE_ACCOUNT,
-                                     IDS_MANAGE_GOOGLE_ACCOUNT,
-                                     manage_account_icon);
-  }
+  bool needs_separator = false;
+  const bool is_guest_mode_enabled = profiles::IsGuestModeEnabled(*profile);
 
   if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddTitle(l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
     auto profile_entries = GetAllOtherProfileEntriesForProfileSubMenu(profile);
+    needs_separator = !profile_entries.empty();
     profiles::PlaceholderAvatarIconParams icon_params =
         GetPlaceholderAvatarIconParamsVisibleAgainstColor(
             color_provider->GetColor(ui::kColorMenuBackground));
@@ -571,20 +564,25 @@ ProfileSubMenuModel::ProfileSubMenuModel(
       other_profiles_.insert({menu_id, profile_entry->GetPath()});
     }
 
-    if (profiles::IsGuestModeEnabled(*profile)) {
-      AddItemWithStringIdAndVectorIcon(
-          this, IDC_OPEN_GUEST_PROFILE, IDS_OPEN_GUEST_PROFILE,
-          vector_icons::kAccountCircleChromeRefreshIcon);
-      SetElementIdentifierAt(
-          GetIndexOfCommandId(IDC_OPEN_GUEST_PROFILE).value(),
-          AppMenuModel::kProfileOpenGuestItem);
+    if (is_guest_mode_enabled &&
+        !switches::IsImprovedSigninUIOnDesktopEnabled()) {
+      needs_separator = true;
+      BuildGuestProfileRow(profile);
     }
-    AddSeparator(ui::NORMAL_SEPARATOR);
+    if (needs_separator) {
+      AddSeparator(ui::NORMAL_SEPARATOR);
+    }
+
     if (profiles::IsProfileCreationAllowed()) {
       AddItemWithStringIdAndVectorIcon(this, IDC_ADD_NEW_PROFILE,
                                        IDS_ADD_NEW_PROFILE,
                                        kAccountAddChromeRefreshIcon);
     }
+    if (switches::IsImprovedSigninUIOnDesktopEnabled() &&
+        is_guest_mode_enabled) {
+      BuildGuestProfileRow(profile);
+    }
+
     AddItemWithStringIdAndVectorIcon(this, IDC_MANAGE_CHROME_PROFILES,
                                      IDS_MANAGE_CHROME_PROFILES,
                                      kAccountManageChromeRefreshIcon);
@@ -674,6 +672,49 @@ bool ProfileSubMenuModel::BuildSyncSection() {
                                      vector_icons::kSyncOffChromeRefreshIcon);
   }
   return true;
+}
+
+void ProfileSubMenuModel::BuildGuestProfileRow(Profile* profile) {
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_OPEN_GUEST_PROFILE, IDS_OPEN_GUEST_PROFILE,
+      switches::IsImprovedSigninUIOnDesktopEnabled()
+          ? kAccountBoxIcon
+          : vector_icons::kAccountCircleChromeRefreshIcon);
+  SetElementIdentifierAt(GetIndexOfCommandId(IDC_OPEN_GUEST_PROFILE).value(),
+                         AppMenuModel::kProfileOpenGuestItem);
+}
+
+void ProfileSubMenuModel::BuildCustomizeProfileRow(Profile* profile) {
+  if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
+    AddItemWithStringIdAndVectorIcon(this, IDC_CUSTOMIZE_CHROME,
+                                     IDS_CUSTOMIZE_CHROME,
+                                     vector_icons::kEditChromeRefreshIcon);
+  }
+}
+
+void ProfileSubMenuModel::BuildCloseProfileRow(Profile* profile) {
+  AddItemWithIcon(
+      IDC_CLOSE_PROFILE,
+      l10n_util::GetPluralStringFUTF16(IDS_CLOSE_PROFILE,
+                                       CountBrowsersFor(profile)),
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
+}
+
+void ProfileSubMenuModel::BuildManageGoogleAccountRow(Profile* profile) {
+  if (HasUnconstentedProfile(profile) && !IsSyncPaused(profile) &&
+      !profile->IsIncognitoProfile()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    const gfx::VectorIcon& manage_account_icon =
+        vector_icons::kGoogleGLogoMonochromeIcon;
+#else
+    const gfx::VectorIcon& manage_account_icon =
+        kAccountManageChromeRefreshIcon;
+#endif
+    AddItemWithStringIdAndVectorIcon(this, IDC_MANAGE_GOOGLE_ACCOUNT,
+                                     IDS_MANAGE_GOOGLE_ACCOUNT,
+                                     manage_account_icon);
+  }
 }
 
 class PasswordsAndAutofillSubMenuModel : public ui::SimpleMenuModel {
