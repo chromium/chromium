@@ -2645,7 +2645,7 @@ crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-di
 
 # These tests crash due to DCHECKs. Only CQ/debug CI builders enable DCHECKs;
 # `*-blink-rel` builders don't.
-crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash Failure ]
+crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash Pass ]
 crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-associated.window.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.html [ Crash Failure Timeout ]
 
@@ -7113,7 +7113,7 @@ crbug.com/1456690 http/tests/devtools/console/console-viewport-control.js [ Fail
 crbug.com/391068 http/tests/websocket/close-code-and-reason.html [ Failure Pass ]
 
 # Fix importer 2023-07-05
-crbug.com/626703 external/wpt/css/css-highlight-api/highlight-priority.html [ Crash ]
+crbug.com/626703 external/wpt/css/css-highlight-api/highlight-priority.html [ Crash Pass ]
 
 # Gardening 2023-07-06
 crbug.com/1462500 [ Win ] media/picture-in-picture/picture-in-picture-interstitial-sizing.html [ Failure Pass ]
@@ -8034,8 +8034,8 @@ crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-047.h
 crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-049.html [ Failure ]
 crbug.com/371033184 external/wpt/css/css-writing-modes/wm-propagation-body-054.html [ Failure ]
 
-crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Failure Timeout ]
-crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Failure Timeout ]
+crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-029.xht [ Crash Pass Timeout ]
+crbug.com/351117372 external/wpt/css/css-writing-modes/vertical-alignment-slr-035.xht [ Crash Pass Timeout ]
 
 # disable-css-line-clamp
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-040.html [ Failure ]
@@ -8563,7 +8563,7 @@ crbug.com/339041663 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-M
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackGenerator-video.https.html [ Crash Failure Timeout ]
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Failure Timeout ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
-crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Timeout ]
+crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Timeout Pass ]
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
