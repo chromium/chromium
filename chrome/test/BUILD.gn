@@ -2682,6 +2682,8 @@ if (!is_android) {
       "../browser/attribution_reporting/chrome_attribution_browsertest.cc",
       "../browser/autocomplete/autocomplete_browsertest.cc",
       "../browser/autofill/content_autofill_shared_storage_handler_browsertest.cc",
+      "../browser/background/background_contents_test_waiter.cc",
+      "../browser/background/background_contents_test_waiter.h",
       "../browser/background_fetch/background_fetch_browsertest.cc",
       "../browser/background_sync/background_sync_browsertest.cc",
       "../browser/background_sync/background_sync_content_setting_browsertest.cc",
