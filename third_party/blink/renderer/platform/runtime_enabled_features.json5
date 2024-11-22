@@ -2634,10 +2634,6 @@
       status:"stable",
     },
     {
-      name: "MediaCapabilitiesDynamicRange",
-      status: "stable",
-    },
-    {
       name: "MediaCapabilitiesEncodingInfo",
       status: "experimental",
     },
@@ -4137,10 +4133,6 @@
     },
     {
       name: "SvgContextPaint",
-      status: "stable",
-    },
-    {
-      name: "SvgCrossOriginAttribute",
       status: "stable",
     },
     {
