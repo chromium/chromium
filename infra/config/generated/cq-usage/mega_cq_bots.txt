@@ -5,6 +5,7 @@ chromium/try/android-12l-x64-dbg
 chromium/try/android-12l-x64-rel-cq
 chromium/try/android-13-x64-rel
 chromium/try/android-14-arm64-rel
+chromium/try/android-14-tablet-landscape-arm64-rel
 chromium/try/android-15-x64-rel
 chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-all-targets-dbg

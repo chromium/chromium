@@ -4157,6 +4157,7 @@ ci.builder(
 
 ci.builder(
     name = "android-14-tablet-landscape-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     description_html = "Run chromium tests on Android 14 tablets in Landscape Mode.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
@@ -4266,9 +4267,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
-    # TODO(crbug.com/371224006 ): Enable gardening and tree closing once tests are stable
-    gardener_rotations = args.ignore_default(None),
-    # tree_closing = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "14T-L",

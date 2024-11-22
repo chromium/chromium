@@ -180,6 +180,7 @@ try_.builder(
 
 try_.builder(
     name = "android-14-tablet-landscape-arm64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
     mirrors = [
         "ci/android-14-tablet-landscape-arm64-rel",
     ],
