@@ -76,7 +76,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/assist_ranker/predictor_config_definitions.h"
-#include "components/autofill/content/common/content_autofill_features.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"

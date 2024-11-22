@@ -264,6 +264,11 @@ BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
              "AutofillRemovePaymentsButterDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, we will store autofill server card data in shared storage.
+BASE_FEATURE(kAutofillSharedStorageServerCardData,
+             "AutofillSharedStorageServerCardData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_IOS)
 // When enabled, manual fill view will be shown directly from form focusing
 // events, if a virtual card has been retrieved previously.

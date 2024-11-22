@@ -2087,7 +2087,6 @@ if (!is_android) {
       "//components/autofill/content/browser:autofill_shared_storage_proto",
       "//components/autofill/content/browser:risk_proto",
       "//components/autofill/content/browser:test_support",
-      "//components/autofill/content/common:features",
       "//components/autofill/content/common/mojom",
       "//components/autofill/content/renderer:test_support",
       "//components/autofill_ai/core/browser:browser",
