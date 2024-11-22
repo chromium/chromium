@@ -1289,6 +1289,95 @@ class AccessibilityRelnotesFieldTest(unittest.TestCase):
             'Expected %d messages, found %d: %s' % (0, len(msgs), msgs))
 
 
+class AccessibilityAriaElementAttributeGettersTest(unittest.TestCase):
+
+    # Test warning is surfaced for various possible uses of bad methods.
+    def testMatchingLines(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                "third_party/blink/renderer/core/accessibility/ax_object.h",
+                [
+                    "->getAttribute(html_names::kAriaCheckedAttr)",
+                    "node->hasAttribute(html_names::kRoleAttr)",
+                    "->FastHasAttribute(html_names::kAriaLabelAttr)",
+                    "        .FastGetAttribute(html_names::kAriaCurrentAttr);",
+
+                ],
+                action='M'
+            ),
+            MockFile(
+                "third_party/blink/renderer/core/accessibility/ax_table.cc",
+                [
+                    "bool result = node->hasAttribute(html_names::kFooAttr);",
+                    "foo->getAttribute(html_names::kAriaInvalidValueAttr)",
+                    "foo->GetAriaCurrentState(html_names::kAriaCurrentStateAttr)",
+                ],
+                action='M'
+            ),
+        ]
+
+        results = PRESUBMIT.CheckAccessibilityAriaElementAttributeGetters(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+        self.assertEqual(5, len(results[0].items))
+        self.assertIn("ax_object.h:1", results[0].items[0])
+        self.assertIn("ax_object.h:2", results[0].items[1])
+        self.assertIn("ax_object.h:3", results[0].items[2])
+        self.assertIn("ax_object.h:4", results[0].items[3])
+        self.assertIn("ax_table.cc:2", results[0].items[4])
+        self.assertIn("Please use ARIA-specific attribute access", results[0].message)
+
+    # Test no warnings for files that are not accessibility related.
+    def testNonMatchingFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                "content/browser/foobar/foo.cc",
+                ["->getAttribute(html_names::kAriaCheckedAttr)"],
+                action='M'),
+            MockFile(
+                "third_party/blink/renderer/core/foo.cc",
+                ["node->hasAttribute(html_names::kRoleAttr)"],
+                action='M'),
+        ]
+        results = PRESUBMIT.CheckAccessibilityAriaElementAttributeGetters(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test no warning when methods are used with different attribute params.
+    def testNoBadParam(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                "third_party/blink/renderer/core/accessibility/ax_object.h",
+                [
+                    "->getAttribute(html_names::kCheckedAttr)",
+                    "->hasAttribute(html_names::kIdAttr)",
+                ],
+                action='M'
+            )
+        ]
+
+        results = PRESUBMIT.CheckAccessibilityAriaElementAttributeGetters(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    # Test no warning when attribute params are used for different methods.
+    def testNoMethod(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile(
+                "third_party/blink/renderer/core/accessibility/ax_object.cc",
+                [
+                    "foo(html_names::kAriaCheckedAttr)",
+                    "bar(html_names::kRoleAttr)"
+                ],
+                action='M'
+            )
+        ]
+
+        results = PRESUBMIT.CheckAccessibilityAriaElementAttributeGetters(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+
 class AndroidDeprecatedTestAnnotationTest(unittest.TestCase):
 
     def testCheckAndroidTestAnnotationUsage(self):
