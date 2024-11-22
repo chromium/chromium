@@ -733,6 +733,7 @@
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/button-in-popover.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/select-mouse-behavior.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html
+-external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/select-pseudo-light-dismiss-invalidation.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html
 -external/wpt/html/semantics/forms/the-select-element/reset-algorithm-rendering.html
