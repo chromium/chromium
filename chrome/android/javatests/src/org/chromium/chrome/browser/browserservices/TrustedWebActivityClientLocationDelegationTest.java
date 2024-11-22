@@ -23,9 +23,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
-import org.chromium.chrome.browser.dependency_injection.ChromeAppComponent;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.concurrent.TimeoutException;
@@ -57,7 +55,6 @@ public class TrustedWebActivityClientLocationDelegationTest {
 
     @Before
     public void setUp() throws TimeoutException, RemoteException {
-        ChromeAppComponent component = ChromeApplicationImpl.getComponent();
         mClient = TrustedWebActivityClient.getInstance();
 
         // TestTrustedWebActivityService is in the test support apk.

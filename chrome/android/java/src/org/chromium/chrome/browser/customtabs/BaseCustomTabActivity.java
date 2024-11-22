@@ -31,7 +31,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -76,8 +75,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStr
 import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHandlingStrategy;
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.ImmersiveModeController;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
@@ -86,7 +83,6 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarColorController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
@@ -125,7 +121,7 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
  * CustomTabActivity}. Purpose of the class is to simplify merging {@link WebappActivity} and {@link
  * CustomTabActivity}.
  */
-public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTabActivityComponent> {
+public abstract class BaseCustomTabActivity extends ChromeActivity {
     protected static Integer sOverrideCoreCountForTesting;
 
     private final CipherFactory mCipherFactory = new CipherFactory();
@@ -358,188 +354,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 intent, TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, false);
     }
 
-    @Override
-    protected BaseCustomTabActivityComponent createComponent(
-            ChromeActivityCommonsModule commonsModule) {
-        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule();
-
-        BaseCustomTabActivityComponent component =
-                ChromeApplicationImpl.getComponent()
-                        .createBaseCustomTabActivityComponent(commonsModule, baseCustomTabsModule);
-
-        mCustomTabToolbarColorController =
-                new CustomTabToolbarColorController(
-                        this,
-                        getIntentDataProvider(),
-                        getCustomTabActivityTabProvider(),
-                        getTabObserverRegistrar(),
-                        getTopUiThemeColorProvider());
-
-        mCustomTabCompositorContentInitializer =
-                new CustomTabCompositorContentInitializer(
-                        this,
-                        getCompositorViewHolderSupplier(),
-                        getTabContentManagerSupplier(),
-                        /* compositorViewHolderInitializer= */ this,
-                        getTopUiThemeColorProvider(),
-                        getLifecycleDispatcher());
-
-        mCustomTabBottomBarDelegate =
-                new CustomTabBottomBarDelegate(
-                        this,
-                        getWindowAndroid(),
-                        getIntentDataProvider(),
-                        getBrowserControlsManager(),
-                        getCustomTabNightModeStateController(),
-                        getCustomTabActivityTabProvider(),
-                        getCustomTabCompositorContentInitializer());
-
-        mDelegateFactory =
-                new CustomTabDelegateFactory(
-                        this,
-                        getIntentDataProvider(),
-                        getCustomTabBrowserControlsVisibilityDelegate(),
-                        getVerifier(),
-                        this,
-                        getBrowserControlsManager(),
-                        getFullscreenManager(),
-                        this,
-                        getTabModelSelectorSupplier(),
-                        getCompositorViewHolderSupplier(),
-                        getModalDialogManagerSupplier(),
-                        this::getSnackbarManager,
-                        getShareDelegateSupplier(),
-                        getActivityType(),
-                        getBottomSheetController(),
-                        getAuthTabVerifier(),
-                        getBrowserControlsManager());
-
-        mTabFactory =
-                new CustomTabActivityTabFactory(
-                        this,
-                        getCustomTabTabPersistencePolicy(),
-                        getWindowAndroid(),
-                        getProfileProviderSupplier(),
-                        getCustomTabDelegateFactory(),
-                        getIntentDataProvider(),
-                        this,
-                        getTabModelSelectorSupplier(),
-                        getCompositorViewHolderSupplier(),
-                        getCipherFactory());
-
-        mTabController =
-                new CustomTabActivityTabController(
-                        this,
-                        getProfileProviderSupplier(),
-                        getCustomTabDelegateFactory(),
-                        getIntentDataProvider(),
-                        getTabObserverRegistrar(),
-                        getCompositorViewHolderSupplier(),
-                        getCustomTabTabPersistencePolicy(),
-                        getCustomTabActivityTabFactory(),
-                        getCustomTabObserver(),
-                        getCustomTabNavigationEventObserver(),
-                        getActivityTabProvider(),
-                        getCustomTabActivityTabProvider(),
-                        this::getSavedInstanceState,
-                        getWindowAndroid(),
-                        this,
-                        getCipherFactory(),
-                        getLifecycleDispatcher());
-
-        mMinimizationManagerHolder =
-                new CustomTabMinimizationManagerHolder(
-                        this,
-                        this::getCustomTabActivityNavigationController,
-                        getActivityTabProvider(),
-                        getIntentDataProvider(),
-                        this::getSavedInstanceState,
-                        getLifecycleDispatcher(),
-                        getCustomTabFeatureOverridesManager());
-
-        CloseButtonNavigator closeButtonNavigator =
-                new CloseButtonNavigator(
-                        getCustomTabActivityTabController(), getCustomTabActivityTabProvider(),
-                        getIntentDataProvider(), getCustomTabMinimizationManagerHolder());
-
-        mNavigationController =
-                new CustomTabActivityNavigationController(
-                        getCustomTabActivityTabController(),
-                        getCustomTabActivityTabProvider(),
-                        getIntentDataProvider(),
-                        getCustomTabObserver(),
-                        closeButtonNavigator,
-                        this,
-                        getLifecycleDispatcher());
-
-        mToolbarCoordinator =
-                new CustomTabToolbarCoordinator(
-                        getIntentDataProvider(),
-                        getCustomTabActivityTabProvider(),
-                        this,
-                        getWindowAndroid(),
-                        getBrowserControlsManager(),
-                        getCustomTabActivityNavigationController(),
-                        getCloseButtonVisibilityManager(),
-                        getCustomTabBrowserControlsVisibilityDelegate(),
-                        getCustomTabToolbarColorController(),
-                        getCustomTabCompositorContentInitializer());
-
-        mCustomTabIntentHandler =
-                new CustomTabIntentHandler(
-                        getCustomTabActivityTabProvider(),
-                        getIntentDataProvider(),
-                        getCustomTabIntentHandlingStrategy(),
-                        this,
-                        getCustomTabMinimizationManagerHolder());
-
-        getCustomTabActivityNavigationController()
-                .setFinishHandler(
-                        (reason, warmupOnFinish) -> {
-                            if (reason == USER_NAVIGATION) {
-                                getCustomTabActivityClientConnectionKeeper()
-                                        .recordClientConnectionStatus();
-                            }
-                            handleFinishAndClose(warmupOnFinish);
-                        });
-
-        mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
-        mBackPressManager.addHandler(
-                getCustomTabActivityNavigationController(),
-                BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
-
-        new CustomTabSessionHandler(
-                getIntentDataProvider(),
-                getCustomTabActivityTabProvider(),
-                this::getCustomTabToolbarCoordinator,
-                this::getCustomTabBottomBarDelegate,
-                getCustomTabIntentHandler(),
-                this,
-                getLifecycleDispatcher());
-
-        BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
-
-        // We need the CustomTabIncognitoManager for all OffTheRecord profiles to ensure
-        // that they are destroyed when a CCT session ends.
-        if (intentDataProvider.isOffTheRecord()) {
-            new CustomTabIncognitoManager(
-                    this,
-                    getCustomTabActivityNavigationController(),
-                    getIntentDataProvider(),
-                    getProfileProviderSupplier(),
-                    getLifecycleDispatcher());
-        }
-
-        if (intentDataProvider.isWebappOrWebApkActivity()) initializeForWebappOrWebApk();
-        if (mIntentDataProvider.isTrustedWebActivity()) initializeForTwa();
-
-        getCustomTabActivityTabFactory().setActivityType(getActivityType());
-        getCustomTabDelegateFactory()
-                .setEphemeralTabCoordinatorSupplier(
-                        mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
-        return component;
-    }
-
     private void initializeForWebappOrWebApk() {
         mWebappActivityCoordinator =
                 new WebappActivityCoordinator(
@@ -669,6 +483,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                         getVerifier(),
                         getTabObserverRegistrar(),
                         getLifecycleDispatcher());
+
         if (mIntentDataProvider.isAuthTab()) {
             mAuthTabVerifier =
                     new AuthTabVerifier(
@@ -691,6 +506,144 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getLifecycleDispatcher());
 
         super.performPreInflationStartup();
+
+        mCustomTabToolbarColorController =
+                new CustomTabToolbarColorController(
+                        this,
+                        getIntentDataProvider(),
+                        getCustomTabActivityTabProvider(),
+                        getTabObserverRegistrar(),
+                        getTopUiThemeColorProvider());
+
+        mCustomTabCompositorContentInitializer =
+                new CustomTabCompositorContentInitializer(
+                        this,
+                        getCompositorViewHolderSupplier(),
+                        getTabContentManagerSupplier(),
+                        /* compositorViewHolderInitializer= */ this,
+                        getTopUiThemeColorProvider(),
+                        getLifecycleDispatcher());
+
+        mCustomTabBottomBarDelegate =
+                new CustomTabBottomBarDelegate(
+                        this,
+                        getWindowAndroid(),
+                        getIntentDataProvider(),
+                        getBrowserControlsManager(),
+                        getCustomTabNightModeStateController(),
+                        getCustomTabActivityTabProvider(),
+                        getCustomTabCompositorContentInitializer());
+
+        mTabController =
+                new CustomTabActivityTabController(
+                        this,
+                        getProfileProviderSupplier(),
+                        getCustomTabDelegateFactory(),
+                        getIntentDataProvider(),
+                        getTabObserverRegistrar(),
+                        getCompositorViewHolderSupplier(),
+                        getCustomTabTabPersistencePolicy(),
+                        getCustomTabActivityTabFactory(),
+                        getCustomTabObserver(),
+                        getCustomTabNavigationEventObserver(),
+                        getActivityTabProvider(),
+                        getCustomTabActivityTabProvider(),
+                        this::getSavedInstanceState,
+                        getWindowAndroid(),
+                        this,
+                        getCipherFactory(),
+                        getLifecycleDispatcher());
+
+        mMinimizationManagerHolder =
+                new CustomTabMinimizationManagerHolder(
+                        this,
+                        this::getCustomTabActivityNavigationController,
+                        getActivityTabProvider(),
+                        getIntentDataProvider(),
+                        this::getSavedInstanceState,
+                        getLifecycleDispatcher(),
+                        getCustomTabFeatureOverridesManager());
+
+        CloseButtonNavigator closeButtonNavigator =
+                new CloseButtonNavigator(
+                        getCustomTabActivityTabController(), getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(), getCustomTabMinimizationManagerHolder());
+
+        mNavigationController =
+                new CustomTabActivityNavigationController(
+                        getCustomTabActivityTabController(),
+                        getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(),
+                        getCustomTabObserver(),
+                        closeButtonNavigator,
+                        this,
+                        getLifecycleDispatcher());
+
+        mToolbarCoordinator =
+                new CustomTabToolbarCoordinator(
+                        getIntentDataProvider(),
+                        getCustomTabActivityTabProvider(),
+                        this,
+                        getWindowAndroid(),
+                        getBrowserControlsManager(),
+                        getCustomTabActivityNavigationController(),
+                        getCloseButtonVisibilityManager(),
+                        getCustomTabBrowserControlsVisibilityDelegate(),
+                        getCustomTabToolbarColorController(),
+                        getCustomTabCompositorContentInitializer());
+
+        mCustomTabIntentHandler =
+                new CustomTabIntentHandler(
+                        getCustomTabActivityTabProvider(),
+                        getIntentDataProvider(),
+                        getCustomTabIntentHandlingStrategy(),
+                        this,
+                        getCustomTabMinimizationManagerHolder());
+
+        getCustomTabActivityNavigationController()
+                .setFinishHandler(
+                        (reason, warmupOnFinish) -> {
+                            if (reason == USER_NAVIGATION) {
+                                getCustomTabActivityClientConnectionKeeper()
+                                        .recordClientConnectionStatus();
+                            }
+                            handleFinishAndClose(warmupOnFinish);
+                        });
+
+        mBackPressManager.setFallbackOnBackPressed(this::handleBackPressed);
+        mBackPressManager.addHandler(
+                getCustomTabActivityNavigationController(),
+                BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
+
+        new CustomTabSessionHandler(
+                getIntentDataProvider(),
+                getCustomTabActivityTabProvider(),
+                this::getCustomTabToolbarCoordinator,
+                this::getCustomTabBottomBarDelegate,
+                getCustomTabIntentHandler(),
+                this,
+                getLifecycleDispatcher());
+
+        BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
+
+        // We need the CustomTabIncognitoManager for all OffTheRecord profiles to ensure
+        // that they are destroyed when a CCT session ends.
+        if (intentDataProvider.isOffTheRecord()) {
+            new CustomTabIncognitoManager(
+                    this,
+                    getCustomTabActivityNavigationController(),
+                    getIntentDataProvider(),
+                    getProfileProviderSupplier(),
+                    getLifecycleDispatcher());
+        }
+
+        if (intentDataProvider.isWebappOrWebApkActivity()) initializeForWebappOrWebApk();
+        if (mIntentDataProvider.isTrustedWebActivity()) initializeForTwa();
+
+        getCustomTabActivityTabFactory().setActivityType(getActivityType());
+        getCustomTabDelegateFactory()
+                .setEphemeralTabCoordinatorSupplier(
+                        mRootUiCoordinator.getEphemeralTabCoordinatorSupplier());
 
         new CustomTabDownloadObserver(this, getTabObserverRegistrar());
 
@@ -826,8 +779,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     @Override
     protected void destroyTabModels() {
-        if (getCustomTabActivityTabFactory() != null) {
-            getCustomTabActivityTabFactory().destroyTabModelOrchestrator();
+        if (mTabFactory != null) {
+            mTabFactory.destroyTabModelOrchestrator();
         }
     }
 
@@ -1299,6 +1252,27 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     public CustomTabDelegateFactory getCustomTabDelegateFactory() {
+        if (mDelegateFactory == null) {
+            mDelegateFactory =
+                    new CustomTabDelegateFactory(
+                            this,
+                            getIntentDataProvider(),
+                            getCustomTabBrowserControlsVisibilityDelegate(),
+                            getVerifier(),
+                            this,
+                            getBrowserControlsManager(),
+                            getFullscreenManager(),
+                            this,
+                            getTabModelSelectorSupplier(),
+                            getCompositorViewHolderSupplier(),
+                            getModalDialogManagerSupplier(),
+                            this::getSnackbarManager,
+                            getShareDelegateSupplier(),
+                            getActivityType(),
+                            getBottomSheetController(),
+                            getAuthTabVerifier(),
+                            getBrowserControlsManager());
+        }
         return mDelegateFactory;
     }
 
@@ -1320,6 +1294,20 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     }
 
     public CustomTabActivityTabFactory getCustomTabActivityTabFactory() {
+        if (mTabFactory == null) {
+            mTabFactory =
+                    new CustomTabActivityTabFactory(
+                            this,
+                            getCustomTabTabPersistencePolicy(),
+                            getWindowAndroid(),
+                            getProfileProviderSupplier(),
+                            getCustomTabDelegateFactory(),
+                            getIntentDataProvider(),
+                            this,
+                            getTabModelSelectorSupplier(),
+                            getCompositorViewHolderSupplier(),
+                            getCipherFactory());
+        }
         return mTabFactory;
     }
 

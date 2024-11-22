@@ -43,10 +43,8 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.backup.BackupSigninProcessor;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fonts.FontPreloader;
@@ -121,19 +119,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
-    protected BaseCustomTabActivityComponent createComponent(
-            ChromeActivityCommonsModule commonsModule) {
-        BaseCustomTabActivityComponent component = super.createComponent(commonsModule);
-        mOpenTimeRecorder =
-                new CustomTabsOpenTimeRecorder(
-                        getLifecycleDispatcher(),
-                        getCustomTabActivityNavigationController(),
-                        this::isFinishing,
-                        mIntentDataProvider);
-        return component;
-    }
-
-    @Override
     protected Drawable getBackgroundDrawable() {
         int initialBackgroundColor =
                 mIntentDataProvider.getColorProvider().getInitialBackgroundColor();
@@ -154,6 +139,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
+        mOpenTimeRecorder =
+                new CustomTabsOpenTimeRecorder(
+                        getLifecycleDispatcher(),
+                        getCustomTabActivityNavigationController(),
+                        this::isFinishing,
+                        mIntentDataProvider);
         getCustomTabActivityTabProvider().addObserver(mTabChangeObserver);
         // We might have missed an onInitialTabCreated event.
         onTabInitOrSwapped(getCustomTabActivityTabProvider().getTab());

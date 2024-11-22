@@ -81,8 +81,6 @@ public class SplashController extends CustomTabTabObserver
     /** The duration of the splash hide animation. */
     private long mSplashHideAnimationDurationMs;
 
-    private boolean mDidPreInflationStartup;
-
     /** Whether the splash hide animation was started. */
     private boolean mWasSplashHideAnimationStarted;
 
@@ -126,9 +124,7 @@ public class SplashController extends CustomTabTabObserver
     public void setConfig(SplashDelegate delegate, long splashHideAnimationDurationMs) {
         mDelegate = delegate;
         mSplashHideAnimationDurationMs = splashHideAnimationDurationMs;
-        if (mDidPreInflationStartup) {
-            showSplash();
-        }
+        showSplash();
     }
 
     /**
@@ -153,12 +149,7 @@ public class SplashController extends CustomTabTabObserver
     }
 
     @Override
-    public void onPreInflationStartup() {
-        mDidPreInflationStartup = true;
-        if (mDelegate != null) {
-            showSplash();
-        }
-    }
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {

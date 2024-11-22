@@ -90,8 +90,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerHandler;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerUiUtils;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -242,11 +240,8 @@ import java.util.List;
 /**
  * A {@link AsyncInitializationActivity} that builds and manages a {@link CompositorViewHolder} and
  * associated classes.
- *
- * @param <C> - type of associated Dagger component.
  */
-public abstract class ChromeActivity<C extends ChromeActivityComponent>
-        extends AsyncInitializationActivity
+public abstract class ChromeActivity extends AsyncInitializationActivity
         implements TabCreatorManager,
                 PolicyChangeListener,
                 SnackbarManageable,
@@ -261,7 +256,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private static final int CONTENT_VIS_DELAY_MS = 5;
     public static final String UNFOLD_LATENCY_BEGIN_TIMESTAMP = "unfold_latency_begin_timestamp";
     public static final String IS_FROM_RECREATING = "is_from_recreating";
-    private C mComponent;
 
     /** Used to generate a unique ID for each ChromeActivity. */
     private static long sNextActivityId;
@@ -493,10 +487,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 new StylusWritingCoordinator(
                         this, getLifecycleDispatcher(), getActivityTabProvider());
 
-        // Create component before calling super to give its members a chance to catch
-        // onPreInflationStartup event.
-        mComponent = createComponent(new ChromeActivityCommonsModule());
-
         // Create the orchestrator that manages Tab models and persistence
         mTabModelOrchestrator = createTabModelOrchestrator();
         mTabModelOrchestratorSupplier.set(mTabModelOrchestrator);
@@ -563,27 +553,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Subclasses must create a {@link RootUiCoordinator}. */
     protected abstract RootUiCoordinator createRootUiCoordinator();
-
-    /**
-     * Override this to create a component that represents a richer dependency graph for a
-     * particular subclass of ChromeActivity. The specialized component should be activity-scoped
-     * and include all modules for ChromeActivityComponent, such as {@link
-     * ChromeActivityCommonsModule}, along with any additional modules.
-     *
-     * <p>You may immediately resolve some of the classes belonging to the component in this method.
-     */
-    @SuppressWarnings("unchecked")
-    protected C createComponent(ChromeActivityCommonsModule commonsModule) {
-        return (C)
-                ChromeApplicationImpl.getComponent().createChromeActivityComponent(commonsModule);
-    }
-
-    /**
-     * @return the activity-scoped component associated with this instance of activity.
-     */
-    public final C getComponent() {
-        return mComponent;
-    }
 
     @SuppressLint("NewApi")
     @Override
@@ -1639,8 +1608,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         warmupManager.clearViewHierarchy();
 
         mActivityTabProvider.destroy();
-
-        mComponent = null;
 
         super.onDestroy();
     }

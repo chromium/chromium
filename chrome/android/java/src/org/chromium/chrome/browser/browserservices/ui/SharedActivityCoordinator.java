@@ -60,6 +60,9 @@ public class SharedActivityCoordinator implements InflationObserver {
 
         mCurrentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
         lifecycleDispatcher.register(this);
+        if (mCurrentPageVerifier.getState() == null) {
+            updateImmersiveMode(true); // Set immersive mode ASAP, before layout inflation.
+        }
     }
 
     public boolean shouldUseAppModeUi() {
@@ -67,11 +70,7 @@ public class SharedActivityCoordinator implements InflationObserver {
     }
 
     @Override
-    public void onPreInflationStartup() {
-        if (mCurrentPageVerifier.getState() == null) {
-            updateImmersiveMode(true); // Set immersive mode ASAP, before layout inflation.
-        }
-    }
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {

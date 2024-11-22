@@ -72,17 +72,7 @@ public class WebApkActivityLifecycleUmaTracker
                     WebApkUmaRecorder.recordShellApkVersion(
                             webApkExtras.shellApkVersion, webApkExtras.distributor);
                 });
-    }
 
-    @Override
-    public void onActivityStateChange(Activity activity, @ActivityState int newState) {
-        if (newState == ActivityState.RESUMED) {
-            mStartTime = SystemClock.elapsedRealtime();
-        }
-    }
-
-    @Override
-    public void onPreInflationStartup() {
         // Decide whether to record startup UMA histograms. This is a similar check to the one done
         // in ChromeTabbedActivity.performPreInflationStartup refer to the comment there for why.
         if (!LibraryLoader.getInstance().isInitialized()) {
@@ -103,6 +93,16 @@ public class WebApkActivityLifecycleUmaTracker
             }
         }
     }
+
+    @Override
+    public void onActivityStateChange(Activity activity, @ActivityState int newState) {
+        if (newState == ActivityState.RESUMED) {
+            mStartTime = SystemClock.elapsedRealtime();
+        }
+    }
+
+    @Override
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {}

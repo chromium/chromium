@@ -99,7 +99,6 @@ import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingNotificationManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
-import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.download.DownloadNotificationService;
@@ -282,8 +281,7 @@ import java.util.function.DoubleConsumer;
  * This is the main activity for ChromeMobile when not running in document mode. All the tabs are
  * accessible via a chrome specific tab switching UI.
  */
-public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent>
-        implements MismatchedIndicesHandler {
+public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIndicesHandler {
     private static final String TAG = "ChromeTabbedActivity";
 
     protected static final String WINDOW_INDEX = "window_index";

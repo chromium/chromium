@@ -54,6 +54,8 @@ public class WebappActivityCoordinator
         // avoid a violation.
         WebappRegistry.getInstance();
         WebappRegistry.warmUpSharedPrefsForId(mWebappInfo.id());
+
+        LaunchMetrics.recordHomeScreenLaunchIntoStandaloneActivity(mWebappInfo);
     }
 
     /** Invoked to add deferred startup tasks to queue. */
@@ -62,9 +64,7 @@ public class WebappActivityCoordinator
     }
 
     @Override
-    public void onPreInflationStartup() {
-        LaunchMetrics.recordHomeScreenLaunchIntoStandaloneActivity(mWebappInfo);
-    }
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {}
