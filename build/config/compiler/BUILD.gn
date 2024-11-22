@@ -2434,7 +2434,6 @@ if (is_win) {
 
   if (is_official_build) {
     common_optimize_on_ldflags += [ "/OPT:REF" ]  # Remove unreferenced data.
-    # TODO(thakis): Add LTO/PGO clang flags eventually, https://crbug.com/598772
   }
 
   if (is_clang) {
