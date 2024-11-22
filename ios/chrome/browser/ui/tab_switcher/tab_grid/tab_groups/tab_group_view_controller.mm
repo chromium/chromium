@@ -329,7 +329,9 @@ constexpr CGFloat kFacePileHeight = 44;
   UIBarButtonItem* facePileBarButton;
   UIViewController* facePile = self.facePile;
   if (facePile) {
+    [self addChildViewController:facePile];
     facePile.view.userInteractionEnabled = NO;
+
     UIButton* facePileButton =
         [[UIButton alloc] initWithFrame:facePile.view.bounds];
     [facePileButton addTarget:self
