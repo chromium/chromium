@@ -561,7 +561,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
       continue;
     }
 
-    std::string app_id = item_id;
+    const std::string& app_id = item_id;
 
     // All sync items must be valid app service apps to be added to the shelf
     // with the exception of ash-chrome, which for legacy reasons does not use
@@ -580,7 +580,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
       policy_delta_remove_from_shelf.push_back(item_id);
       continue;
     }
-    pin_infos.emplace_back(std::move(app_id), sync_item->item_pin_ordinal);
+    pin_infos.emplace_back(app_id, sync_item->item_pin_ordinal);
   }
 
   for (const auto& item_id : policy_delta_remove_from_shelf) {
@@ -620,7 +620,7 @@ void ChromeShelfPrefs::SetPinPosition(
     const ash::ShelfID& shelf_id_before,
     base::span<const ash::ShelfID> shelf_ids_after,
     bool pinned_by_policy) {
-  const std::string app_id = shelf_id.app_id;
+  const std::string& app_id = shelf_id.app_id;
 
   if (!shelf_id.launch_id.empty()) {
     VLOG(2) << "Syncing set pin for '" << app_id
@@ -629,7 +629,7 @@ void ChromeShelfPrefs::SetPinPosition(
     return;
   }
 
-  const std::string app_id_before = shelf_id_before.app_id;
+  const std::string& app_id_before = shelf_id_before.app_id;
 
   DCHECK(!app_id.empty());
   DCHECK_NE(app_id, app_id_before);
@@ -645,7 +645,7 @@ void ChromeShelfPrefs::SetPinPosition(
                             : syncable_service->GetPinPosition(app_id_before);
   syncer::StringOrdinal position_after;
   for (const auto& shelf_id_after : shelf_ids_after) {
-    std::string app_id_after = shelf_id_after.app_id;
+    const std::string& app_id_after = shelf_id_after.app_id;
     DCHECK_NE(app_id_after, app_id);
     DCHECK_NE(app_id_after, app_id_before);
     syncer::StringOrdinal position =
