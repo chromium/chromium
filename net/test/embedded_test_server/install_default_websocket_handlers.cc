@@ -6,6 +6,8 @@
 
 #include <string_view>
 
+#include "base/check.h"
+#include "base/path_service.h"
 #include "net/test/embedded_test_server/create_websocket_handler.h"
 #include "net/test/embedded_test_server/websocket_check_origin_handler.h"
 #include "net/test/embedded_test_server/websocket_close_handler.h"
@@ -13,11 +15,22 @@
 #include "net/test/embedded_test_server/websocket_echo_handler.h"
 #include "net/test/embedded_test_server/websocket_echo_request_headers_handler.h"
 #include "net/test/embedded_test_server/websocket_split_packet_close_handler.h"
+#include "net/test/test_data_directory.h"
 #include "url/url_constants.h"
 
 namespace net::test_server {
 
-void InstallDefaultWebSocketHandlers(EmbeddedTestServer* server) {
+void InstallDefaultWebSocketHandlers(EmbeddedTestServer* server,
+                                     bool serve_websocket_test_data) {
+  CHECK(server);
+
+  // Optionally serve WebSocket test data.
+  if (serve_websocket_test_data) {
+    const base::FilePath websocket_data_dir = GetWebSocketTestDataDirectory();
+    server->ServeFilesFromDirectory(websocket_data_dir);
+  }
+
+  // Register default WebSocket handlers.
   RegisterWebSocketHandler<WebSocketCheckOriginHandler>(server,
                                                         "/check-origin");
   RegisterWebSocketHandler<WebSocketCloseHandler>(server, "/close");
