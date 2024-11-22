@@ -36,10 +36,11 @@ BASE_FEATURE(kAllowAmbientEQ,
              "AllowAmbientEQ",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Cross-Device features, e.g. Nearby Share, Smart Lock, Fast Pair, etc.
-// This flag is used to disable Cross-Device on platforms where we cannot yet
-// guarantee a good experience with the stock Bluetooth hardware (e.g. Reven /
-// ChromeOS Flex). Access through IsCrossDeviceFeatureSuiteAllowed().
+// Enables Cross-Device features, e.g. Nearby Share, Smart Lock, Fast Pair,
+// Quick Start, etc. This flag is used to disable Cross-Device on platforms
+// where we cannot yet guarantee a good experience with the stock Bluetooth
+// hardware (e.g. Reven / ChromeOS Flex). Access through
+// IsCrossDeviceFeatureSuiteAllowed().
 BASE_FEATURE(kAllowCrossDeviceFeatureSuite,
              "AllowCrossDeviceFeatureSuite",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2099,11 +2100,6 @@ BASE_FEATURE(kFeatureManagementOobeSimon,
 // Enables Skipping the assistant setup screen in OOBE.
 BASE_FEATURE(kOobeSkipAssistant,
              "OobeSkipAssistant",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables the OOBE QuickStart flow.
-BASE_FEATURE(kOobeQuickStart,
-             "OobeQuickStart",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the OOBE QuickStart flow on the login screen.
@@ -4214,13 +4210,8 @@ bool IsOobePerksDiscoveryEnabled() {
   return base::FeatureList::IsEnabled(kOobePerksDiscovery);
 }
 
-bool IsOobeQuickStartEnabled() {
-  return IsCrossDeviceFeatureSuiteAllowed() &&
-         base::FeatureList::IsEnabled(kOobeQuickStart);
-}
-
 bool IsOobeQuickStartOnLoginScreenEnabled() {
-  return IsOobeQuickStartEnabled() &&
+  return IsCrossDeviceFeatureSuiteAllowed() &&
          base::FeatureList::IsEnabled(kOobeQuickStartOnLoginScreen);
 }
 

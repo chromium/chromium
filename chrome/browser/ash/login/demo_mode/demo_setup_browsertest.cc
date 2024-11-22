@@ -1432,14 +1432,9 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
  */
 class DemoSetupQuickStartEnabledTest : public DemoSetupArcSupportedTest {
  public:
+  DemoSetupQuickStartEnabledTest() = default;
+
   ~DemoSetupQuickStartEnabledTest() override = default;
-
-  DemoSetupQuickStartEnabledTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupQuickStartEnabledTest, QuickStartButton) {
