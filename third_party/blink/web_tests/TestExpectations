@@ -8660,5 +8660,5 @@ crbug.com/379418978 [ Debug Linux ] virtual/soft-navigation-fp-fcp/external/wpt/
 
 # Gardener 2024-11-21
 crbug.com/380323589 [ Win11 ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Failure Pass ]
-crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Pass ]
-crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Pass ]
+crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-creation-with-gc.html [ Crash Failure Pass ]
+crbug.com/380327348 [ Mac ] media/encrypted-media/encrypted-media-async-setcert-with-gc.html [ Crash Failure Pass ]
