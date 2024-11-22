@@ -364,8 +364,6 @@ static_library("renderer") {
 
   if (is_android) {
     sources += [
-      "net/available_offline_content_helper.cc",
-      "net/available_offline_content_helper.h",
       "net/page_auto_fetcher_helper_android.cc",
       "net/page_auto_fetcher_helper_android.h",
       "sandbox_status_extension_android.cc",

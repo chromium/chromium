@@ -89,16 +89,6 @@ bool IsExtensionExtendedErrorCode(int extended_error_code) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool IsOfflineContentOnNetErrorFeatureEnabled() {
-  return  base::FeatureList::IsEnabled(features::kOfflineContentOnNetError);
-}
-#else   // BUILDFLAG(IS_ANDROID)
-bool IsOfflineContentOnNetErrorFeatureEnabled() {
-  return false;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 bool IsAutoFetchFeatureEnabled() {
   return  base::FeatureList::IsEnabled(features::kOfflineAutoFetch);
 }
@@ -135,25 +125,12 @@ void NetErrorHelper::ButtonPressed(NetErrorHelperCore::Button button) {
   core_->ExecuteButtonPress(button);
 }
 
-void NetErrorHelper::LaunchOfflineItem(const std::string& id,
-                                       const std::string& name_space) {
-  core_->LaunchOfflineItem(id, name_space);
-}
-
-void NetErrorHelper::LaunchDownloadsPage() {
-  core_->LaunchDownloadsPage();
-}
-
 void NetErrorHelper::SavePageForLater() {
   core_->SavePageForLater();
 }
 
 void NetErrorHelper::CancelSavePage() {
   core_->CancelSavePage();
-}
-
-void NetErrorHelper::ListVisibilityChanged(bool is_visible) {
-  core_->ListVisibilityChanged(is_visible);
 }
 
 content::RenderFrame* NetErrorHelper::GetRenderFrame() {
@@ -249,9 +226,8 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
-        IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
-        RenderThread::Get()->GetLocale(),
+        IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
+        IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
         &error_page_params_);
   }
@@ -278,9 +254,8 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
-      IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
-      RenderThread::Get()->GetLocale(),
+      IsIncognitoProcess(), IsAutoFetchFeatureEnabled(),
+      IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),
       &error_page_params_);
 
@@ -351,19 +326,6 @@ void NetErrorHelper::SetIsShowingDownloadButton(bool show) {
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   GetRemoteNetErrorPageSupport()->SetIsShowingDownloadButtonInErrorPage(show);
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
-}
-
-void NetErrorHelper::OfflineContentAvailable(
-    bool list_visible_by_prefs,
-    const std::string& offline_content_json) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!offline_content_json.empty()) {
-    std::string isShownParam(list_visible_by_prefs ? "true" : "false");
-    render_frame()->ExecuteJavaScript(base::UTF8ToUTF16(
-        base::StrCat({"offlineContentAvailable(", isShownParam, ", ",
-                      offline_content_json, ");"})));
-  }
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

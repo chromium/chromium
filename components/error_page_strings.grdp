@@ -26,18 +26,6 @@
     <message name="IDS_ERRORPAGES_SUGGESTION_CLOSE_POPUP_BUTTON" desc="Label for the button on the error page popup that describes detailed error status and debugging tips">
       OK
     </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_TITLE" desc="Title of the offline content list shown in an error page presenting content available while offline">
-      Explore while offline
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_LIST_OPEN_ALL_BUTTON" desc="Label for the button on the 'no connection' error page. Button will take the user to the downloads home, attached the offline content list shown in an error page">
-      See all
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_SUMMARY_DESCRIPTION" desc="Description of the offline content summary card shown in an error page, offering the user access to content available while offline">
-      While waiting for a connection, you can visit Downloads to read offline articles.
-    </message>
-    <message name="IDS_ERRORPAGES_OFFLINE_CONTENT_SUMMARY_BUTTON" desc="Label for the button that will take the user to the downloads home, attached to the offline content summary card shown in an error page">
-      Take me there now
-    </message>
     <message name="IDS_ERRORPAGES_SAVE_PAGE_BUTTON" desc="Label for the button that will save the page for later. The saved page is not retained in Downloads, unlike with the DOWNLOAD button.">
       Load page later
     </message>

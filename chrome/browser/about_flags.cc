@@ -10652,13 +10652,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kOfflineAutoFetch)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"offline-content-on-net-error",
-     flag_descriptions::kOfflineContentOnNetErrorName,
-     flag_descriptions::kOfflineContentOnNetErrorDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kOfflineContentOnNetError)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kAssistantIphInternalName, flag_descriptions::kAssistantIphName,
      flag_descriptions::kAssistantIphDescription, kOsCrOS,

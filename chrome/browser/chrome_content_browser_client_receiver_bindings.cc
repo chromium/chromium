@@ -55,7 +55,6 @@
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/android/available_offline_content_provider.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #elif BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/conflicts/module_database.h"
@@ -270,12 +269,6 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
           content::PROCESS_TYPE_RENDERER,
           base::BindRepeating(&ModuleDatabase::HandleModuleLoadEvent)),
       ui_task_runner);
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  registry->AddInterface<chrome::mojom::AvailableOfflineContentProvider>(
-      base::BindRepeating(&android::AvailableOfflineContentProvider::Create,
-                          render_process_host->GetID()),
-      content::GetUIThreadTaskRunner({}));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

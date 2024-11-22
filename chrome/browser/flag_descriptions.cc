@@ -4673,11 +4673,6 @@ const char kOfflineAutoFetchName[] = "Offline Auto Fetch";
 const char kOfflineAutoFetchDescription[] =
     "Enables auto fetch of content when Chrome is online";
 
-const char kOfflineContentOnNetErrorName[] =
-    "Offline Content allowed on net errors";
-const char kOfflineContentOnNetErrorDescription[] =
-    "Enables use of Offline Content on network errors";
-
 const char kOmniboxShortcutsAndroidName[] = "Omnibox shortcuts on Android";
 const char kOmniboxShortcutsAndroidDescription[] =
     "Enables storing successful query/match in the omnibox shortcut database "

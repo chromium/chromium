@@ -2704,9 +2704,6 @@ extern const char kNotificationPermissionRationaleBottomSheetDescription[];
 extern const char kOfflineAutoFetchName[];
 extern const char kOfflineAutoFetchDescription[];
 
-extern const char kOfflineContentOnNetErrorName[];
-extern const char kOfflineContentOnNetErrorDescription[];
-
 extern const char kOmahaMinSdkVersionAndroidName[];
 extern const char kOmahaMinSdkVersionAndroidDescription[];
 extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];

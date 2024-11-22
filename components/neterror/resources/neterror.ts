@@ -288,6 +288,7 @@ interface AvailableOfflineContent {
 // unsafe and must be securely handled to be presented on the dino page. Images
 // have already been safely re-encoded but textual content -- like title and
 // attribution -- must be properly handled here.
+// TODO(crbug.com/380105411): Delete, no longer used.
 function offlineContentAvailable(
     isShown: boolean, suggestions?: AvailableOfflineContent[]) {
   if (!suggestions || !loadTimeData.valueExists('offlineContentList')) {
