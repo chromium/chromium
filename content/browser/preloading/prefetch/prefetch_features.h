@@ -81,6 +81,11 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
 // `PrefetchMatchResolver2` instead of `PrefetchService`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewWaitLoop);
 
+// Fix for prefetching a URL controlled by a ServiceWorker without fetch
+// handler. Currently this stops prefetching for such cases
+// (https://crbug.com/379076354).
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorkerNoFetchHandlerFix);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

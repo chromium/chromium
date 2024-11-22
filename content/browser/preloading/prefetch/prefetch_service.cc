@@ -723,7 +723,15 @@ void PrefetchService::OnGotServiceWorkerResult(
   }
   switch (service_worker_capability) {
     case ServiceWorkerCapability::NO_SERVICE_WORKER:
+      break;
     case ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER:
+      if (base::FeatureList::IsEnabled(
+              features::kPrefetchServiceWorkerNoFetchHandlerFix)) {
+        OnGotEligibility(std::move(prefetch_container),
+                         std::move(redirect_data),
+                         PreloadingEligibility::kUserHasServiceWorker);
+        return;
+      }
       break;
     case ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER:
       OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
