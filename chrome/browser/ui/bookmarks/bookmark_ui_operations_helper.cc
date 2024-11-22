@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 
 #include <cstddef>
+#include <unordered_set>
 
 #include "base/files/file_path.h"
 #include "base/i18n/case_conversion.h"
@@ -79,6 +80,27 @@ void MakeTitleUnique(
   NOTREACHED();
 }
 
+// This traces node up to root, determines if it is a descendant of one of
+// selected nodes.
+bool HasAncestorInSelectedNodes(
+    BookmarkModel* model,
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
+        selected_nodes,
+    const BookmarkNode* node) {
+  std::unordered_set selected_nodes_set(selected_nodes.begin(),
+                                        selected_nodes.end());
+  const BookmarkNode* current_node = node;
+  while (current_node != nullptr) {
+    // Ancestor of `node` is already is the selected nodes. Copying the ancestor
+    // node, will include all descendants.
+    if (selected_nodes_set.find(current_node) != selected_nodes_set.end()) {
+      return true;
+    }
+    current_node = current_node->parent();
+  }
+  return false;
+}
+
 }  // namespace
 
 namespace internal {
@@ -142,6 +164,58 @@ ui::mojom::DragOperation BookmarkUIOperationsHelper::DropBookmarks(
 
   MoveBookmarkNodeData(data, profile->GetPath(), index);
   return DragOperation::kMove;
+}
+
+// static
+void BookmarkUIOperationsHelper::CopyToClipboard(
+    bookmarks::BookmarkModel* model,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+    bookmarks::metrics::BookmarkEditSource source,
+    bool is_off_the_record) {
+  CopyOrCutToClipboard(model, nodes, /*remove_nodes=*/false, source,
+                       is_off_the_record);
+}
+
+// static
+void BookmarkUIOperationsHelper::CutToClipboard(
+    bookmarks::BookmarkModel* model,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+    bookmarks::metrics::BookmarkEditSource source,
+    bool is_off_the_record) {
+  CopyOrCutToClipboard(model, nodes, /*remove_nodes=*/true, source,
+                       is_off_the_record);
+}
+
+// static
+void BookmarkUIOperationsHelper::CopyOrCutToClipboard(
+    bookmarks::BookmarkModel* model,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+    bool remove_nodes,
+    bookmarks::metrics::BookmarkEditSource source,
+    bool is_off_the_record) {
+  if (nodes.empty()) {
+    return;
+  }
+
+  // Create array of selected nodes with descendants filtered out.
+  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> filtered_nodes;
+  for (const BookmarkNode* node : nodes) {
+    if (!HasAncestorInSelectedNodes(model, nodes, node->parent())) {
+      filtered_nodes.push_back(node);
+    }
+  }
+  CHECK(!filtered_nodes.empty());
+  BookmarkNodeData(filtered_nodes).WriteToClipboard(is_off_the_record);
+
+  if (remove_nodes) {
+    bookmarks::ScopedGroupBookmarkActions group_cut(model);
+    for (const bookmarks::BookmarkNode* node : filtered_nodes) {
+      model->Remove(node, source, FROM_HERE);
+    }
+  }
 }
 
 bool BookmarkUIOperationsHelper::CanPasteFromClipboard() const {

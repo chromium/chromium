@@ -411,17 +411,17 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CUT:
-      bookmarks::CopyToClipboard(bookmark_service_->bookmark_model(),
-                                 selection_, true,
-                                 bookmarks::metrics::BookmarkEditSource::kUser,
-                                 profile_->IsOffTheRecord());
+      BookmarkUIOperationsHelperMergedSurfaces::CutToClipboard(
+          bookmark_service_->bookmark_model(), selection_,
+          bookmarks::metrics::BookmarkEditSource::kUser,
+          profile_->IsOffTheRecord());
       break;
 
     case IDC_COPY:
-      bookmarks::CopyToClipboard(bookmark_service_->bookmark_model(),
-                                 selection_, false,
-                                 bookmarks::metrics::BookmarkEditSource::kUser,
-                                 profile_->IsOffTheRecord());
+      BookmarkUIOperationsHelperMergedSurfaces::CopyToClipboard(
+          bookmark_service_->bookmark_model(), selection_,
+          bookmarks::metrics::BookmarkEditSource::kUser,
+          profile_->IsOffTheRecord());
       break;
 
     case IDC_PASTE: {

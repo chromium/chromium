@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 class BookmarkMergedSurfaceService;
@@ -47,6 +48,25 @@ class BookmarkUIOperationsHelper {
       bool copy,
       chrome::BookmarkReorderDropTarget target);
 
+  // Copies nodes onto the clipboard. The nodes are copied in such a way that if
+  // pasted again new nodes can be created. Pass the calling context through as
+  // `source`.
+  static void CopyToClipboard(
+      bookmarks::BookmarkModel* model,
+      const std::vector<
+          raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+      bookmarks::metrics::BookmarkEditSource source,
+      bool is_off_the_record);
+
+  // Copies nodes onto the clipboard then removes them from the bookmark model.
+  // Pass the calling context through as `source`.
+  static void CutToClipboard(
+      bookmarks::BookmarkModel* model,
+      const std::vector<
+          raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+      bookmarks::metrics::BookmarkEditSource source,
+      bool is_off_the_record);
+
   // Returns true if the user can paste from the clipboard a bookmark url/node
   // into `target_parent()`.
   bool CanPasteFromClipboard() const;
@@ -77,6 +97,15 @@ class BookmarkUIOperationsHelper {
                                     const base::FilePath& profile_path,
                                     size_t index_to_add_at) = 0;
   virtual const TargetParent* target_parent() const = 0;
+
+ private:
+  static void CopyOrCutToClipboard(
+      bookmarks::BookmarkModel* model,
+      const std::vector<
+          raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
+      bool remove_nodes,
+      bookmarks::metrics::BookmarkEditSource source,
+      bool is_off_the_record);
 };
 
 }  // namespace internal

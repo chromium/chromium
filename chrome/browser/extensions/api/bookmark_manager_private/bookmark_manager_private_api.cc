@@ -376,9 +376,16 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
     return Error(bookmarks_errors::kModifyManagedError);
   if (cut && HasPermanentNodes(nodes))
     return Error(bookmarks_errors::kModifySpecialError);
-  bookmarks::CopyToClipboard(model, nodes, cut,
-                             bookmarks::metrics::BookmarkEditSource::kExtension,
-                             GetProfile()->IsOffTheRecord());
+
+  if (cut) {
+    BookmarkUIOperationsHelperNonMergedSurfaces::CutToClipboard(
+        model, nodes, bookmarks::metrics::BookmarkEditSource::kExtension,
+        GetProfile()->IsOffTheRecord());
+  } else {
+    BookmarkUIOperationsHelperNonMergedSurfaces::CopyToClipboard(
+        model, nodes, bookmarks::metrics::BookmarkEditSource::kExtension,
+        GetProfile()->IsOffTheRecord());
+  }
   return NoArguments();
 }
 

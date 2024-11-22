@@ -24,7 +24,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -277,9 +276,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, MakeTitleUnique) {
 
   // Copy a node to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
-  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
-                             bookmarks::metrics::BookmarkEditSource::kOther,
-                             /*is_off_the_record=*/false);
+  internal::BookmarkUIOperationsHelper::CopyToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
 
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(bookmark_bar_node);
@@ -306,9 +305,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPasteMetaInfo) {
 
   // Copy a node to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
-  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
-                             bookmarks::metrics::BookmarkEditSource::kOther,
-                             /*is_off_the_record=*/false);
+  internal::BookmarkUIOperationsHelper::CopyToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
 
   // Paste node to a different folder.
   const BookmarkNode* folder =
@@ -340,9 +339,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CopyPaste) {
 
   // Copy a node to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
-  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
-                             bookmarks::metrics::BookmarkEditSource::kOther,
-                             /*is_off_the_record=*/false);
+  internal::BookmarkUIOperationsHelper::CopyToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
 
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(model->bookmark_bar_node());
@@ -376,9 +375,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, CutToClipboard) {
   EXPECT_CALL(observer, GroupedBookmarkChangesEnded());
   // Cut the nodes to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{n1, n2};
-  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/true,
-                             bookmarks::metrics::BookmarkEditSource::kOther,
-                             /*is_off_the_record=*/false);
+  internal::BookmarkUIOperationsHelper::CutToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
 
   // Make sure the nodes were removed.
   EXPECT_EQ(0u, model->other_node()->children().size());
@@ -397,9 +396,9 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteNonEditableNodes) {
 
   // Copy a node to the clipboard.
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes{node};
-  bookmarks::CopyToClipboard(model, nodes, /*remove_nodes=*/false,
-                             bookmarks::metrics::BookmarkEditSource::kOther,
-                             /*is_off_the_record=*/false);
+  internal::BookmarkUIOperationsHelper::CopyToClipboard(
+      model, nodes, bookmarks::metrics::BookmarkEditSource::kOther,
+      /*is_off_the_record=*/false);
 
   internal::BookmarkUIOperationsHelper* helper =
       this->CreateHelper(model->bookmark_bar_node());

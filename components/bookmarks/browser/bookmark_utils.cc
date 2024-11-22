@@ -96,23 +96,6 @@ bool PruneInvisibleFolders(const BookmarkNode* node) {
   return !node->IsVisible();
 }
 
-// This traces parents up to root, determines if node is contained in a
-// selected folder.
-bool HasSelectedAncestor(
-    BookmarkModel* model,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selected_nodes,
-    const BookmarkNode* node) {
-  if (!node || model->is_permanent_node(node))
-    return false;
-
-  for (size_t i = 0; i < selected_nodes.size(); ++i)
-    if (node->id() == selected_nodes[i]->id())
-      return true;
-
-  return HasSelectedAncestor(model, selected_nodes, node->parent());
-}
-
 // Recursively searches for a node satisfying the functor `pred` . Returns
 // nullptr if not found.
 template <typename Predicate>
@@ -236,32 +219,6 @@ void CloneBookmarkNode(BookmarkModel* model,
   }
 
   metrics::RecordCloneBookmarkNode(elements.size());
-}
-
-void CopyToClipboard(
-    BookmarkModel* model,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
-    bool remove_nodes,
-    metrics::BookmarkEditSource source,
-    bool is_off_the_record) {
-  if (nodes.empty())
-    return;
-
-  // Create array of selected nodes with descendants filtered out.
-  std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> filtered_nodes;
-  for (const bookmarks::BookmarkNode* node : nodes) {
-    if (!HasSelectedAncestor(model, nodes, node->parent()))
-      filtered_nodes.push_back(node);
-  }
-
-  BookmarkNodeData(filtered_nodes).WriteToClipboard(is_off_the_record);
-
-  if (remove_nodes) {
-    ScopedGroupBookmarkActions group_cut(model);
-    for (const bookmarks::BookmarkNode* node : filtered_nodes) {
-      model->Remove(node, source, FROM_HERE);
-    }
-  }
 }
 
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
