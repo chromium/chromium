@@ -11,12 +11,12 @@ actions using facial gestures.
 FaceGaze can be enabled either in the accessibility quick settings menu or in
 the ChromeOS settings app under the route Accessibility > Cursor and touchpad >
 Face control. Once FaceGaze is enabled, the face recognition model and backing
-web assembly will be downloaded via DLC. When the download succeeds, the face
-model gets initialized and the webcam is turned on. The user can then move the
-cursor with their head and perform actions with facial gestures. When
-recognized, gestures and their associated actions will be posted to the FaceGaze
-bubble UI, which is a floating UI component positioned at the top of the
-display.
+web assembly will be downloaded via DLC (downloadable content). When the
+download succeeds, the face model gets initialized and the webcam is turned on.
+The user can then move the cursor with their head and perform actions with
+facial gestures. When recognized, gestures and their associated actions will be
+posted to the FaceGaze bubble UI, which is a floating UI component positioned at
+the top of the display.
 
 FaceGaze has several actions that temporarily put FaceGaze into a different
 state. Examples include enter/exit scroll mode, start/end long click, pause/
@@ -31,8 +31,8 @@ notification will be shown with a failure message.
 ### Technical overview
 
 FaceGaze is implemented primarily as a Chrome extension in TypeScript. It also
-has a few browser-side components, such as the UI, DLC, and APIs. The high-level
-components of the feature are:
+has a few browser-side components (DLC hook and APIs), as well as ash-side
+components (bubble UI). The high-level components of the feature are:
 
 1. The Chrome extension, which is where most of the logic lives
 2. A hook in the extension to connect to the device's webcam
@@ -43,7 +43,7 @@ rotation. This is the technology that makes FaceGaze possible.
 4. Extension APIs to update the cursor position, send synthetic mouse and key
 events, and interact with the FaceGaze bubble in the browser (among other
 things)
-5. The browser-side implementation for the bubble UI
+5. The ash-side implementation for the bubble UI
 6. Settings page implementation, where users can configure their cursor
 settings and update their gesture-to-action bindings
 
@@ -105,12 +105,14 @@ movements instead of jumpy cursor movements.
 * `BubbleController`, which controls all interaction with the FaceGaze bubble
 UI.
 
-### FaceGaze browser-side classes
+### FaceGaze ash-side classes
 
-* `FaceGazeBubbleController` manages the FaceGaze UI from the browser and
-provides an entry point for updating/changing the UI.
+* `FaceGazeBubbleController` manages the FaceGaze UI from ash and provides an
+entry point for updating/changing the UI.
 
 * `FaceGazeBubbleView` is the actual implementation of the FaceGaze UI.
+
+### FaceGaze browser-side classes
 
 * `AccessibilityManager` contains logic for setting up/tearing down the
 extension, forwarding requests and results for DLC downloads, and showing
