@@ -62,10 +62,6 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
-BASE_FEATURE(kPaymentHandlerRequireLinkHeader,
-             "PaymentHandlerRequireLinkHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(USE_BLINK)
 const base::FeatureParam<std::string>
     kSecurePaymentConfirmationNetworkAndIssuerIconsOptions(
