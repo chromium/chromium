@@ -112,6 +112,11 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   [self.window makeKeyAndVisible];
 }
 
+- (void)setWindowUserInterfaceStyle:
+    (UIUserInterfaceStyle)windowUserInterfaceStyle {
+  self.window.overrideUserInterfaceStyle = windowUserInterfaceStyle;
+}
+
 #pragma mark - Setters & Getters.
 
 - (UIWindow*)window {

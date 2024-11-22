@@ -535,8 +535,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   }
 
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  sceneState.rootView.overrideUserInterfaceStyle =
-      UIUserInterfaceStyleUnspecified;
+  [sceneState setWindowUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
 
   // If another BVC is already being presented, swap this one into the
   // container.
@@ -730,8 +729,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [self displayBringAndroidTabsPrompt];
   }
 
+  // Make sure that the tab grid and its context menu are in dark mode.
+  // Modifying the user interface in the view alone is not enough, and causes
+  // the context menu to be displayed in light mode. Note that view presented on
+  // top of the tab grid are in dark mode too.
   SceneState* sceneState = self.regularBrowser->GetSceneState();
-  sceneState.rootView.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  [sceneState setWindowUserInterfaceStyle:UIUserInterfaceStyleDark];
 }
 
 // Creates a transition handler with `animationEnabled` parameter.
