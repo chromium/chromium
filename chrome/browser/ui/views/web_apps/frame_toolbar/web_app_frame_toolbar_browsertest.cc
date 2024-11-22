@@ -1898,6 +1898,32 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
 #endif
   }
 
+  void EnterTabFullscreenThroughWebAPI() {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = true});
+    EXPECT_TRUE(ExecJs(helper()->browser_view()->GetActiveWebContents(),
+                       "document.documentElement.requestFullscreen();"));
+    waiter.Wait();
+  }
+
+  void ExitTabFullscreenThroughWebAPI() {
+    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
+                                           {.tab_fullscreen = false});
+    EXPECT_TRUE(ExecJs(helper()->browser_view()->GetActiveWebContents(),
+                       "document.exitFullscreen();"));
+    waiter.Wait();
+  }
+
+  void ToggleBrowserFullscreen(bool user_initiated) {
+    bool was_fullscreen = helper()->browser_view()->IsFullscreen();
+    ui_test_utils::FullscreenWaiter waiter(
+        helper()->app_browser(),
+        {.browser_fullscreen = !was_fullscreen, .tab_fullscreen = false});
+    chrome::ToggleFullscreenMode(helper()->app_browser(), user_initiated);
+    waiter.Wait();
+    EXPECT_EQ(helper()->browser_view()->IsFullscreen(), !was_fullscreen);
+  }
+
   GURL second_page_url() { return second_page_url_; }
 
  private:
@@ -2194,31 +2220,43 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    WindowSetResizableDoNotBlockRequestFullscreen) {
+    WindowSetResizableDoNotBlockFullscreenWebAPI) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* browser_view = helper()->browser_view();
   auto* web_contents = browser_view->GetActiveWebContents();
 
-  SetResizableAndWait(web_contents, false, false);
-  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
-  {
-    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
-                                           {.tab_fullscreen = true});
-    EXPECT_TRUE(ExecJs(web_contents,
-                       "(async () => {await "
-                       "document.documentElement.requestFullscreen();})()"));
-    waiter.Wait();
-  }
-  EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
-  {
-    ui_test_utils::FullscreenWaiter waiter(helper()->app_browser(),
-                                           {.tab_fullscreen = false});
-    EXPECT_TRUE(ExecJs(web_contents,
-                       "(async () => {await document.exitFullscreen();})()"));
-    waiter.Wait();
-  }
-  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_FALSE(browser_view->IsFullscreen());
+
+  EnterTabFullscreenThroughWebAPI();
+  EXPECT_TRUE(browser_view->IsFullscreen());
+
+  ExitTabFullscreenThroughWebAPI();
+  EXPECT_FALSE(browser_view->IsFullscreen());
+}
+
+// Ensure user is not trapped in the fullscreen mode
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableDoNotBlockExitingFullscreen) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* browser_view = helper()->browser_view();
+  auto* web_contents = browser_view->GetActiveWebContents();
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+
+  // User can escape not user-initiated browser fullscreen
+  ToggleBrowserFullscreen(/*user_initiated=*/false);
+  EXPECT_TRUE(browser_view->IsFullscreen());
+  ToggleBrowserFullscreen(/*user_initiated=*/true);
+  EXPECT_FALSE(browser_view->IsFullscreen());
+
+  // User can escape not user-initiated tab fullscreen
+  EnterTabFullscreenThroughWebAPI();
+  EXPECT_TRUE(browser_view->IsFullscreen());
+  ToggleBrowserFullscreen(/*user_initiated=*/true);
+  EXPECT_FALSE(browser_view->IsFullscreen());
 }
 
 IN_PROC_BROWSER_TEST_F(
