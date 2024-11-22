@@ -1008,7 +1008,7 @@ deps = {
         'version': Var('reclient_version'),
       }
     ],
-    'condition': '(checkout_x64 or (host_os == "mac" and host_cpu == "arm64")) and non_git_source',
+    'condition': 'non_git_source',
     'dep_type': 'cipd',
   },
 
