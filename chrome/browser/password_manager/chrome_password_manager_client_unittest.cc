@@ -607,8 +607,9 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
       &Observer::OnFieldTypesDetermined, form.global_id(),
       Observer::FieldTypeSource::kAutofillServer);
 
-  EXPECT_THAT(GetClient()->GetPasswordManager()->GetFormPredictionsForTesting(),
-              UnorderedElementsAre(Key(CalculateFormSignature(form))));
+  EXPECT_THAT(
+      GetClient()->GetPasswordManager()->GetServerPredictionsForTesting(),
+      UnorderedElementsAre(Key(CalculateFormSignature(form))));
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -714,7 +715,7 @@ TEST_F(ChromePasswordManagerClientTest,
   // receives predictions for both the main and the child form.
   EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
                   GetClient()->GetPasswordManager())
-                  ->GetFormPredictionsForTesting(),
+                  ->GetServerPredictionsForTesting(),
               UnorderedElementsAre(Key(CalculateFormSignature(main_form)),
                                    Key(CalculateFormSignature(child_form))));
 }

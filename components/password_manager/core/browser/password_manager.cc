@@ -583,7 +583,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
   // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
   // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
-  predictions_.clear();
+  server_predictions_.clear();
   store_password_called_ = false;
 }
 
@@ -627,7 +627,7 @@ void PasswordManager::DropFormManagers() {
   // TODO(crbug.com/40925827): Decide on whether to keep or clean-up calls of
   // `TryToFindPredictionsToPossibleUsernames`.
   TryToFindPredictionsToPossibleUsernames();
-  predictions_.clear();
+  server_predictions_.clear();
 }
 
 base::span<const PasswordForm> PasswordManager::GetBestMatches(
@@ -794,7 +794,7 @@ void PasswordManager::OnUserModifiedNonPasswordField(
     field_info_manager->AddFieldInfo(
         {driver_id, renderer_id, GetSignonRealm(driver->GetLastCommittedURL()),
          value, is_likely_otp},
-        FindPredictionsForField(renderer_id, driver_id));
+        FindServerPredictionsForField(renderer_id, driver_id));
 }
 
 void PasswordManager::OnInformAboutUserInput(PasswordManagerDriver* driver,
@@ -883,7 +883,7 @@ void PasswordManager::CreateFormManagers(
     }
 
     if (HasObservedFormChanged(form_data, *manager)) {
-      manager->UpdateFormManagerWithFormChanges(form_data, predictions_);
+      manager->UpdateFormManagerWithFormChanges(form_data, server_predictions_);
     }
     // Call fill regardless of whether the form was updated. In the no-update
     // case, this call provides extra redundancy to handle cases in which the
@@ -906,7 +906,7 @@ PasswordFormManager* PasswordManager::CreateFormManager(
       form, /*form_fetcher=*/nullptr,
       std::make_unique<PasswordSaveManagerImpl>(client_),
       /*metrics_recorder=*/nullptr);
-  manager->ProcessServerPredictions(predictions_);
+  manager->ProcessServerPredictions(server_predictions_);
   password_form_cache_.AddFormManager(std::move(manager));
   return password_form_cache_.GetMatchedManager(driver, form.renderer_id());
 }
@@ -1479,9 +1479,9 @@ void PasswordManager::ProcessAutofillPredictions(
 
   // `driver` might be null in tests.
   int driver_id = driver ? driver->GetId() : 0;
-  // Update the `predictions_` stored as a member.
+  // Update the `server_predictions_` stored as a member.
   const FormPredictions& form_predictions =
-      predictions_
+      server_predictions_
           .insert_or_assign(
               CalculateFormSignature(form),
               ConvertToFormPredictions(driver_id, form, predictions))
@@ -1495,7 +1495,7 @@ void PasswordManager::ProcessAutofillPredictions(
   // Process predictions in case they arrived after the user interacted with
   // potential username fields. The manager might not exist in incognito.
   if (FieldInfoManager* field_info_manager = client_->GetFieldInfoManager()) {
-    field_info_manager->ProcessServerPredictions(predictions_);
+    field_info_manager->ProcessServerPredictions(server_predictions_);
   }
   TryToFindPredictionsToPossibleUsernames();
 
@@ -1511,7 +1511,7 @@ void PasswordManager::ProcessAutofillPredictions(
     }
     // Otherwise, create it and use predictions (which may trigger filling).
     manager = CreateFormManager(driver, form);
-    manager->ProcessServerPredictions(predictions_);
+    manager->ProcessServerPredictions(server_predictions_);
     return;
   }
 
@@ -1520,13 +1520,13 @@ void PasswordManager::ProcessAutofillPredictions(
   if (IsRelevantForPasswordManagerButNotRecognizedByRenderer(
           form, form_predictions) &&
       HasObservedFormChanged(form, *manager)) {
-    manager->UpdateFormManagerWithFormChanges(form, predictions_);
+    manager->UpdateFormManagerWithFormChanges(form, server_predictions_);
     manager->Fill();
     return;
   }
 
   // Otherwise, just process predictions (which may also trigger filling).
-  manager->ProcessServerPredictions(predictions_);
+  manager->ProcessServerPredictions(server_predictions_);
 }
 
 void PasswordManager::ProcessClassificationModelPredictions(
@@ -1621,10 +1621,10 @@ PasswordFormManager* PasswordManager::GetMatchedManagerForField(
   return password_form_cache_.GetMatchedManager(driver, field_id);
 }
 
-std::optional<FormPredictions> PasswordManager::FindPredictionsForField(
+std::optional<FormPredictions> PasswordManager::FindServerPredictionsForField(
     FieldRendererId field_id,
     int driver_id) {
-  for (const auto& form : predictions_) {
+  for (const auto& form : server_predictions_) {
     if (form.second.driver_id != driver_id) {
       continue;
     }
@@ -1642,7 +1642,7 @@ void PasswordManager::TryToFindPredictionsToPossibleUsernames() {
     if (possible_username.form_predictions) {
       continue;
     }
-    possible_username.form_predictions = FindPredictionsForField(
+    possible_username.form_predictions = FindServerPredictionsForField(
         unique_identifier.renderer_id, unique_identifier.driver_id);
   }
 }

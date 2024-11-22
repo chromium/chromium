@@ -231,8 +231,8 @@ class PasswordManager : public PasswordManagerInterface {
   }
 
   const std::map<autofill::FormSignature, FormPredictions>&
-  GetFormPredictionsForTesting() const {
-    return predictions_;
+  GetServerPredictionsForTesting() const {
+    return server_predictions_;
   }
 
   const std::map<std::pair<PasswordManagerDriver*, autofill::FormRendererId>,
@@ -355,15 +355,15 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       autofill::FieldRendererId field_id);
 
-  // Finds FormPredictions for a form containing field identified by |field_id|
-  // and |driver_id|.
-  std::optional<FormPredictions> FindPredictionsForField(
+  // Finds server FormPredictions for a form containing field identified by
+  // `field_id` and `driver_id`.
+  std::optional<FormPredictions> FindServerPredictionsForField(
       autofill::FieldRendererId field_id,
       int driver_id);
 
-  //  If |possible_username_.form_predictions| is missing, this functions tries
-  //  to find predictions for the forms which contains |possible_usernames_| in
-  //  |predictions_|.
+  //  If `possible_username_.form_predictions` is missing, this functions tries
+  //  to find predictions for the forms which contains `possible_usernames_` in
+  //  `server_predictions_`.
   void TryToFindPredictionsToPossibleUsernames();
 
   // Handles a request to show manual fallback for password saving, i.e. the
@@ -446,7 +446,7 @@ class PasswordManager : public PasswordManagerInterface {
   std::vector<autofill::FormData> visible_forms_data_;
 
   // Server predictions for the forms on the page.
-  std::map<autofill::FormSignature, FormPredictions> predictions_;
+  std::map<autofill::FormSignature, FormPredictions> server_predictions_;
 
   // Classification model predictions for the forms on the page, keyed by
   // the combination of the driver and the renderer id of the form, that allow
