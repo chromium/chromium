@@ -61,6 +61,8 @@ class ColorSpaceDataView;
 // between any processes.
 class COLOR_SPACE_EXPORT ColorSpace {
  public:
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedPrimaries::CicpId` instead.
   enum class PrimaryID : uint8_t {
     // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
     // add them at the end and increment kMaxValue.
@@ -89,6 +91,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
     kMaxValue = EBU_3213_E,
   };
 
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedTransferFn::CicpId` instead.
   enum class TransferID : uint8_t {
     // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
     // add them at the end and increment kMaxValue.
