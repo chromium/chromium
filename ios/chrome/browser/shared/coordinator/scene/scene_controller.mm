@@ -856,6 +856,18 @@ void OnListFamilyMembersResponse(
   [self.passwordCheckupCoordinator start];
 }
 
+// Shows the Password Checkup page for `referrer`.
+- (void)showPasswordCheckupPageForReferrer:
+    (password_manager::PasswordCheckReferrer)referrer {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+
+  [self startPasswordCheckupCoordinator:referrer];
+
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 // Shows the Incognito interstitial on top of `activeViewController`.
 // Assumes the Incognito interstitial coordinator is currently not instantiated.
 // Runs `completion` once the Incognito interstitial is presented.
@@ -2274,16 +2286,12 @@ using UserFeedbackDataCallback =
   }];
 }
 
-// Shows the Password Checkup page for `referrer`.
-- (void)showPasswordCheckupPageForReferrer:
+- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
     (password_manager::PasswordCheckReferrer)referrer {
-  UIViewController* baseViewController = self.currentInterface.viewController;
-
-  [self startPasswordCheckupCoordinator:referrer];
-
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  __weak SceneController* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showPasswordCheckupPageForReferrer:referrer];
+  }];
 }
 
 - (void)showPasswordDetailsForCredential:
