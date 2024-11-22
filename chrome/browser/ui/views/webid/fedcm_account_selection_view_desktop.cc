@@ -223,11 +223,16 @@ bool FedCmAccountSelectionView::Show(
     // account and its IDP.
     DCHECK_EQ(idp_list_.size(), 1u);
     DCHECK_EQ(accounts.size(), 1u);
-    // If ShowVerifyingSheet returns false, `this` got deleted, so just
-    // return.
-    if (!ShowVerifyingSheet(*accounts[0], *idp_list_[0])) {
+    if (!NotifyDelegateOfAccountSelection(*accounts[0], *idp_list_[0])) {
+      // `this` has been deleted.
       return false;
     }
+
+    // Auto re-authn in active mode does not update the loading UI.
+    if (GetDialogType() == DialogType::MODAL) {
+      return false;
+    }
+    ShowVerifyingSheet(*accounts[0]);
   } else if (!new_accounts.empty()) {
     // When we just logged in to an account that is not a single returning
     // account: on the modal, we'd show all the accounts and on the bubble, we'd
@@ -254,10 +259,12 @@ bool FedCmAccountSelectionView::Show(
 
       if (should_show_verifying_sheet) {
         state_ = State::VERIFYING;
-        // ShowVerifyingSheet will call delegate_->OnAccountSelected to proceed.
-        if (!ShowVerifyingSheet(*new_accounts_[0], new_idp_data)) {
+        if (!NotifyDelegateOfAccountSelection(*new_accounts_[0],
+                                              new_idp_data)) {
+          // `this` has been deleted.
           return false;
         }
+        ShowVerifyingSheet(*new_accounts_[0]);
       } else if (should_show_request_permission_dialog) {
         state_ = State::REQUEST_PERMISSION;
         account_selection_view_->ShowRequestPermissionDialog(*new_accounts_[0],
@@ -631,7 +638,11 @@ void FedCmAccountSelectionView::OnAccountSelected(
        GetDialogType() == DialogType::BUBBLE) ||
       idp_data.disclosure_fields.empty()) {
     state_ = State::VERIFYING;
-    ShowVerifyingSheet(account, idp_data);
+    if (!NotifyDelegateOfAccountSelection(account, idp_data)) {
+      // `this` was deleted.
+      return;
+    }
+    ShowVerifyingSheet(account);
     return;
   }
 
@@ -947,8 +958,7 @@ void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
   // This triggers the OnDismiss call to notify delegate_
   Close();
 }
-
-bool FedCmAccountSelectionView::ShowVerifyingSheet(
+bool FedCmAccountSelectionView::NotifyDelegateOfAccountSelection(
     const Account& account,
     const content::IdentityProviderData& idp_data) {
   DCHECK(state_ == State::VERIFYING || state_ == State::AUTO_REAUTHN);
@@ -960,22 +970,16 @@ bool FedCmAccountSelectionView::ShowVerifyingSheet(
 
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.
-  if (!weak_ptr) {
-    return false;
-  }
+  return static_cast<bool>(weak_ptr);
+}
 
-  // Auto re-authn in active mode does not update the loading UI.
-  if (GetDialogType() == DialogType::MODAL && state_ == State::AUTO_REAUTHN) {
-    return false;
-  }
-
+void FedCmAccountSelectionView::ShowVerifyingSheet(const Account& account) {
   const std::u16string title =
       state_ == State::AUTO_REAUTHN
           ? l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE_AUTO_REAUTHN)
           : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
   account_selection_view_->ShowVerifyingSheet(account, title);
   InitDialogWidget();
-  return true;
 }
 
 SheetType FedCmAccountSelectionView::GetSheetType() {

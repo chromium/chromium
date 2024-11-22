@@ -355,10 +355,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
-  // Returns false if `this` got deleted. In that case, the caller should not
-  // access any further member variables.
-  bool ShowVerifyingSheet(const Account& account,
-                          const content::IdentityProviderData& idp_data);
+  // Returns false if `this` got deleted. In that case, the caller must early
+  // return.
+  bool NotifyDelegateOfAccountSelection(
+      const Account& account,
+      const content::IdentityProviderData& idp_data);
+
+  // Shows the verifying sheet.
+  void ShowVerifyingSheet(const Account& account);
 
   // Shows the dialog widget.
   void ShowDialogWidget();
