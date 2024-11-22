@@ -11,6 +11,7 @@ source_set("public") {
     "magic_stack_module_container_delegate.h",
   ]
   deps = [
+    "//base",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions:constants",
   ]

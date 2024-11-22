@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_CONSUMER_H_
 
+#import "base/ios/block_types.h"
+
 @class MagicStackModule;
 
 // Supports setting and updating the Magic Stack's datasource.
@@ -19,8 +21,10 @@
 // Insert `item` at `index` in the Magic Stack.
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index;
 
-// Remove `item` from the Magic Stack.
-- (void)removeItem:(MagicStackModule*)item;
+// Remove `item` from the Magic Stack. The `completion` will be executed after
+// the item is removed.
+- (void)removeItem:(MagicStackModule*)item
+    withCompletion:(ProceduralBlock)completion;
 
 // Reconfigure existing item.
 - (void)reconfigureItem:(MagicStackModule*)item;

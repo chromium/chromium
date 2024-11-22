@@ -33,6 +33,9 @@ const float kCornerRadius = 24;
 
 @property(nonatomic, assign) ContentSuggestionsModuleType type;
 
+// Indicates whether the user has chosen to hide this module type.
+@property(nonatomic, assign) BOOL shouldHide;
+
 @end
 
 @implementation MagicStackModuleCollectionViewCell {
@@ -83,6 +86,7 @@ const float kCornerRadius = 24;
     [self removeInteraction:_contextMenuInteraction];
     _contextMenuInteraction = nil;
   }
+  _shouldHide = NO;
   [_moduleContainer resetView];
 }
 
@@ -102,6 +106,18 @@ const float kCornerRadius = 24;
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (configuration && _shouldHide) {
+    __weak MagicStackModuleCollectionViewCell* weakSelf = self;
+
+    [animator addCompletion:^{
+      [weakSelf.delegate neverShowModuleType:weakSelf.type];
+    }];
+  }
 }
 
 #pragma mark - Helpers
@@ -132,14 +148,17 @@ const float kCornerRadius = 24;
 // Returns the menu action to hide this module type.
 - (UIAction*)hideAction {
   __weak __typeof(self) weakSelf = self;
+
   UIAction* hideAction = [UIAction
       actionWithTitle:[self contextMenuHideDescription]
                 image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
            identifier:nil
               handler:^(UIAction* action) {
-                [weakSelf.delegate neverShowModuleType:weakSelf.type];
+                weakSelf.shouldHide = YES;
               }];
+
   hideAction.attributes = UIMenuElementAttributesDestructive;
+
   return hideAction;
 }
 

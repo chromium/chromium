@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -623,6 +624,19 @@ using segmentation_platform::TipIdentifier;
   CHECK(IsTipsMagicStackEnabled());
   CHECK(_tipsMediator);
 
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock completion = ^{
+    [weakSelf openTipDestination:tip];
+  };
+
+  [_tipsMediator removeModuleWithCompletion:completion];
+}
+
+- (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {
+  CHECK(IsTipsMagicStackEnabled());
+  CHECK(_tipsMediator);
+
   // Log the Tips (Magic Stack) Module that the user tapped on.
   base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram, tip);
   switch (tip) {
@@ -702,7 +716,6 @@ using segmentation_platform::TipIdentifier;
   }
 
   [self.NTPActionsDelegate tipsOpened];
-  [_tipsMediator removeModule];
 
   std::optional<std::string_view> name = OutputLabelForTipIdentifier(tip);
 
