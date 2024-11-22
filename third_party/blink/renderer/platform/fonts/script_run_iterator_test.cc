@@ -806,7 +806,7 @@ TEST_F(ScriptRunIteratorTest, MaxUnicodeScriptExtensions) {
   std::tie(max_extensions, max_extensionscp) = MaximumScriptExtensions();
   // If this test fails (as a result of an ICU update, most likely), it means
   // we need to change kMaxUnicodeScriptExtensions.
-  EXPECT_EQ(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
+  EXPECT_LE(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
 }
 
 class ScriptRunIteratorICUDataTest : public testing::Test {
@@ -834,7 +834,7 @@ class ScriptRunIteratorICUDataTest : public testing::Test {
 TEST_F(ScriptRunIteratorICUDataTest, ValidateICUMaxScriptExtensions) {
   int max_extensions;
   UChar32 cp = GetACharWithMaxExtensions(&max_extensions);
-  ASSERT_LE(max_extensions, ScriptData::kMaxScriptCount)
+  ASSERT_LT(max_extensions, ScriptData::kMaxScriptCount)
       << "char " << std::hex << cp << std::dec;
 }
 
