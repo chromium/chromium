@@ -1216,18 +1216,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackingProtection.Redirect" enum="BooleanRedirected"
-    expires_after="2025-05-04">
-  <owner>fmacintosh@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Whether or not navigations to the tracking protection page occured because
-    the user was redirected from the cookies page. Records true on redirect from
-    chrome://settings/cookies to chrome://settings/trackingProtection. Records
-    false on standard navigation to chrome://settings/trackingProtection.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

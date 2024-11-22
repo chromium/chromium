@@ -203,15 +203,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('isPrivacySandboxRestrictedNoticeEnabled'),
       },
 
-      is3pcdRedesignEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-                     'is3pcdCookieSettingsRedesignEnabled') &&
-              loadTimeData.getBoolean('isTrackingProtectionUxEnabled');
-        },
-      },
-
       privateStateTokensEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('privateStateTokensEnabled'),
@@ -385,7 +376,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   private enableAutomaticFullscreenContentSetting_: boolean;
-  private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private capturedSurfaceControlEnabled_: boolean;

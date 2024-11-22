@@ -7249,33 +7249,13 @@ bool ChromeContentBrowserClient::HandleWebUI(
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
 #if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(profile);
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kTrackingProtection3pcdUx) &&
-      tracking_protection_settings &&
-      tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
-    // Redirect from cookies to trackingProtection in experiment.
-    if (url->SchemeIs(content::kChromeUIScheme) &&
-        url->host() == chrome::kChromeUISettingsHost &&
-        url->path() == chrome::kCookiesSubPagePath) {
-      GURL::Replacements replacements;
-      replacements.SetPathStr(chrome::kTrackingProtectionSubPagePath);
-      *url = url->ReplaceComponents(replacements);
-      UMA_HISTOGRAM_BOOLEAN("Settings.TrackingProtection.Redirect", true);
-    } else if (url->path() == chrome::kTrackingProtectionSubPagePath) {
-      UMA_HISTOGRAM_BOOLEAN("Settings.TrackingProtection.Redirect", false);
-    }
-  } else {
-    // Redirect from trackingProtection to cookies outside experiment.
-    if (url->SchemeIs(content::kChromeUIScheme) &&
-        url->host() == chrome::kChromeUISettingsHost &&
-        url->path() == chrome::kTrackingProtectionSubPagePath) {
-      GURL::Replacements replacements;
-      replacements.SetPathStr(chrome::kCookiesSubPagePath);
-      *url = url->ReplaceComponents(replacements);
-    }
+  // Redirect from deprecated trackingProtection subpage to cookies.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kTrackingProtectionSubPagePath) {
+    GURL::Replacements replacements;
+    replacements.SetPathStr(chrome::kCookiesSubPagePath);
+    *url = url->ReplaceComponents(replacements);
   }
 #endif
 

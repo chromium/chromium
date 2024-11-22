@@ -467,7 +467,6 @@ suite(`TrackingProtectionSubpage`, function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
       is3pcdCookieSettingsRedesignEnabled: true,
-      isTrackingProtectionUxEnabled: true,
     });
     resetRouterForTesting();
 
@@ -491,70 +490,6 @@ suite(`TrackingProtectionSubpage`, function() {
     resetRouterForTesting();
   });
 
-  test('trackingProtectionSubpageAttributes', async function() {
-    // The subpage is only in the DOM if the corresponding route is open.
-    const trackingProtectionLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#trackingProtectionLinkRow');
-    assertTrue(!!trackingProtectionLinkRow);
-    trackingProtectionLinkRow.click();
-    await flushTasks();
-
-    const trackingProtectionSubpage =
-        page.shadowRoot!.querySelector<PolymerElement>('#trackingProtection');
-    assertTrue(!!trackingProtectionSubpage);
-    assertEquals(
-        page.i18n('trackingProtectionPageTitle'),
-        trackingProtectionSubpage.getAttribute('page-title'));
-    const associatedControl =
-        trackingProtectionSubpage.get('associatedControl');
-    assertTrue(!!associatedControl);
-    assertEquals('trackingProtectionLinkRow', associatedControl.id);
-  });
-
-  test('clickTrackingProtectionRow', async function() {
-    const trackingProtectionLinkRow =
-        page.shadowRoot!.querySelector<HTMLElement>(
-            '#trackingProtectionLinkRow');
-    assertTrue(!!trackingProtectionLinkRow);
-    trackingProtectionLinkRow.click();
-    // Ensure UMA is logged.
-    assertEquals(
-        'Settings.TrackingProtection.OpenedFromPrivacyPage',
-        await metricsBrowserProxy.whenCalled('recordAction'));
-    // Ensure we navigate to the correct page.
-    await flushTasks();
-    assertEquals(
-        routes.TRACKING_PROTECTION, Router.getInstance().getCurrentRoute());
-  });
-});
-
-suite(`TrackingProtectionUxDisabled`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-      // Covering the case where we are in Mode B without the Tracking
-      // Protection UX.
-      is3pcdCookieSettingsRedesignEnabled: true,
-      isTrackingProtectionUxEnabled: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
 
   test('cookiesSubpageAttributes', async function() {
     // The subpage is only in the DOM if the corresponding route is open.
