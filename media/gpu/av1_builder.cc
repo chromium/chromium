@@ -29,11 +29,20 @@ AV1BitstreamBuilder AV1BitstreamBuilder::BuildSequenceHeaderOBU(
   ret.WriteBool(false);  // Disable reduced still picture.
   ret.WriteBool(false);  // No timing info present.
   ret.WriteBool(false);  // No initial display delay.
-  ret.Write(0, 5);       // No operating point.
-  ret.Write(0, 12);  // No scalability information (operating_point_idc[0] = 0)
-  ret.Write(seq_hdr.level, 5);
-  if (seq_hdr.level > 7) {
-    ret.WriteBool(seq_hdr.tier);
+
+  CHECK_LT(seq_hdr.operating_points_cnt_minus_1, kMaxTemporalLayerNum);
+  ret.Write(seq_hdr.operating_points_cnt_minus_1, 5);
+  for (uint8_t i = 0; i <= seq_hdr.operating_points_cnt_minus_1; i++) {
+    if (seq_hdr.operating_points_cnt_minus_1 == 0) {
+      ret.Write(0, 12);  // No scalability information.
+    } else {
+      ret.Write(1, 4);  // Spatial layer 1 should be decoded.
+      ret.Write((1 << (seq_hdr.operating_points_cnt_minus_1 + 1 - i)) - 1, 8);
+    }
+    ret.Write(seq_hdr.level[i], 5);
+    if (seq_hdr.level[i] > 7) {
+      ret.WriteBool(seq_hdr.tier[i]);
+    }
   }
 
   ret.Write(seq_hdr.frame_width_bits_minus_1, 4);
@@ -263,8 +272,9 @@ void AV1BitstreamBuilder::PutTrailingBits() {
 }
 
 void AV1BitstreamBuilder::WriteOBUHeader(libgav1::ObuType type,
+                                         bool has_size,
                                          bool extension_flag,
-                                         bool has_size) {
+                                         std::optional<uint8_t> temporal_id) {
   DCHECK_LE(1, type);
   DCHECK_LE(type, 8);
   WriteBool(false);  // forbidden bit must be set to 0.
@@ -272,6 +282,12 @@ void AV1BitstreamBuilder::WriteOBUHeader(libgav1::ObuType type,
   WriteBool(extension_flag);
   WriteBool(has_size);
   WriteBool(false);  // reserved bit must be set to 0.
+  if (extension_flag) {
+    CHECK(temporal_id.has_value());
+    Write(temporal_id.value(), 3);
+    Write(0, 2);  // spatial layer must be zero.
+    Write(0, 3);  // reserved bits must be set to 0.
+  }
 }
 
 // Encode a variable length unsigned integer of up to 4 bytes.

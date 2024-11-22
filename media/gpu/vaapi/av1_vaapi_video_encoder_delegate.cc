@@ -266,8 +266,9 @@ AV1BitstreamBuilder::SequenceHeader FillAV1BuilderSequenceHeader(
 
   // The only known hardware that supports AV1 encoding only uses profile 0.
   sequence_header.profile = 0;
-  sequence_header.level = level_idx;
-  sequence_header.tier = 0;
+  sequence_header.operating_points_cnt_minus_1 = 0;
+  sequence_header.level[0] = level_idx;
+  sequence_header.tier[0] = 0;
   sequence_header.frame_width_bits_minus_1 = 15;
   sequence_header.frame_height_bits_minus_1 = 15;
   sequence_header.width = visible_size.width();
@@ -561,7 +562,6 @@ bool AV1VaapiVideoEncoderDelegate::SubmitTemporalDelimiter(
   AV1BitstreamBuilder temporal_delimiter_obu;
   temporal_delimiter_obu.WriteOBUHeader(
       /*type=*/libgav1::ObuType::kObuTemporalDelimiter,
-      /*extension_flag=*/false,
       /*has_size=*/true);
   temporal_delimiter_obu.WriteValueInLeb128(0);
 
@@ -593,8 +593,8 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceParam() {
 
   // The only known hardware that supports AV1 encoding only uses profile 0.
   seq_param.seq_profile = sequence_header_.profile;
-  seq_param.seq_level_idx = sequence_header_.level;
-  seq_param.seq_tier = sequence_header_.tier;
+  seq_param.seq_level_idx = sequence_header_.level[0];
+  seq_param.seq_tier = sequence_header_.tier[0];
 #if VA_CHECK_VERSION(1, 16, 0)
   seq_param.hierarchical_flag = 0;
 #endif
@@ -650,7 +650,6 @@ bool AV1VaapiVideoEncoderDelegate::SubmitSequenceHeaderOBU(
 
   sequence_header_obu.WriteOBUHeader(
       /*type=*/libgav1::ObuType::kObuSequenceHeader,
-      /*extension_flag=*/false,
       /*has_size=*/true);
 
   AV1BitstreamBuilder obu_data =
@@ -919,7 +918,6 @@ bool AV1VaapiVideoEncoderDelegate::SubmitFrameOBU(
     size_t& frame_header_obu_size_offset) {
   AV1BitstreamBuilder frame_obu;
   frame_obu.WriteOBUHeader(/*type=*/libgav1::ObuType::kObuFrame,
-                           /*extension_flag=*/false,
                            /*has_size=*/true);
   frame_header_obu_size_offset = frame_obu.OutstandingBits() / 8;
 
