@@ -230,7 +230,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|x64",
+        category = "debug|mac (x64)",
         short_name = "bld",
     ),
     contact_team_email = "omaha@google.com",
@@ -272,7 +272,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|x64",
+        category = "release|mac (x64)",
         short_name = "bld",
     ),
     contact_team_email = "omaha@google.com",
@@ -314,7 +314,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|arm64",
+        category = "debug|mac (arm64)",
         short_name = "bld",
     ),
     contact_team_email = "omaha@google.com",
@@ -356,7 +356,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|arm64",
+        category = "release|mac (arm64)",
         short_name = "bld",
     ),
     contact_team_email = "omaha@google.com",
@@ -399,7 +399,7 @@ ci.builder(
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|x64",
+        category = "debug|mac (x64)",
         short_name = "bld-asan",
     ),
     contact_team_email = "omaha@google.com",
@@ -433,7 +433,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|arm64",
+        category = "debug|mac (arm64)",
         short_name = "11",
     ),
     contact_team_email = "omaha@google.com",
@@ -467,7 +467,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|arm64",
+        category = "release|mac (arm64)",
         short_name = "11",
     ),
     contact_team_email = "omaha@google.com",
@@ -501,7 +501,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|x64",
+        category = "debug|mac (x64)",
         short_name = "11",
     ),
     contact_team_email = "omaha@google.com",
@@ -535,7 +535,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|x64",
+        category = "release|mac (x64)",
         short_name = "11",
     ),
     contact_team_email = "omaha@google.com",
@@ -569,7 +569,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|arm64",
+        category = "release|mac (arm64)",
         short_name = "12",
     ),
     contact_team_email = "omaha@google.com",
@@ -603,7 +603,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|x64",
+        category = "debug|mac (x64)",
         short_name = "12 asan",
     ),
     contact_team_email = "omaha@google.com",
@@ -637,7 +637,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "debug|mac|arm64",
+        category = "debug|mac (arm64)",
         short_name = "13",
     ),
     contact_team_email = "omaha@google.com",
@@ -671,7 +671,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|x64",
+        category = "release|mac (x64)",
         short_name = "13",
     ),
     contact_team_email = "omaha@google.com",
@@ -705,7 +705,7 @@ ci.thin_tester(
         ],
     ),
     console_view_entry = consoles.console_view_entry(
-        category = "release|mac|arm64",
+        category = "release|mac (arm64)",
         short_name = "15",
     ),
     contact_team_email = "omaha@google.com",
