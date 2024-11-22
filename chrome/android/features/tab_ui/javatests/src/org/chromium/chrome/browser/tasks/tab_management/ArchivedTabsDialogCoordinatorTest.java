@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -564,6 +565,7 @@ public class ArchivedTabsDialogCoordinatorTest {
                     mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
                 });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertNull(mActivityTestRule.getActivity().findViewById(R.id.archived_tabs_dialog));
     }
 
     @Test

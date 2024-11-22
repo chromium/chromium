@@ -216,7 +216,9 @@ public class ArchivedTabsMessageService extends MessageService
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
     }
 
+    @Override
     public void destroy() {
+        super.destroy();
         if (mTabArchiveSettings != null) {
             mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
         }

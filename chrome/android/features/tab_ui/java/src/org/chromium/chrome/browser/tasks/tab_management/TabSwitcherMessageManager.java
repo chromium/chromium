@@ -388,6 +388,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
         if (mArchivedTabsMessageService != null) {
             mArchivedTabsMessageService.destroy();
+            mArchivedTabsMessageService = null;
         }
     }
 

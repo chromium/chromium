@@ -135,7 +135,9 @@ public class IncognitoReauthPromoMessageService extends MessageService
         activityLifecycleDispatcher.register(this);
     }
 
-    void destroy() {
+    @Override
+    public void destroy() {
+        super.destroy();
         mIncognitoReauthManager.destroy();
         // Duplicate unregister is safe if dismiss() was invoked.
         mActivityLifecycleDispatcher.unregister(this);

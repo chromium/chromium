@@ -8,6 +8,8 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.text.SpannableString;
@@ -235,7 +237,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     animateOut(
                             /* duration= */ 0,
                             /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
-                    mRootView.removeView(mDialogView);
                 }
 
                 @Override
@@ -379,17 +380,34 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     /** Hides the dialog. */
     public void destroy() {
-        if (mTabListEditorCoordinator != null
-                && mTabListEditorCoordinator.getController().isVisible()) {
-            hide(
-                    /* animationDuration= */ 0,
-                    /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
+        if (mTabListEditorCoordinator != null) {
+            if (mTabListEditorCoordinator.getController().isVisible()) {
+                hide(/* animationDuration= */ 0, this::tearDownTabListEditorCoordinator);
+            } else {
+                tearDownTabListEditorCoordinator();
+            }
         }
 
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();
             mEdgeToEdgePadAdjuster = null;
         }
+
+        if (mDialogRecyclerView != null) {
+            mDialogRecyclerView.removeOnScrollListener(mRecyclerScrollListener);
+        }
+
+        if (mOnTabSelectingListener != null) {
+            mOnTabSelectingListener = null;
+        }
+
+        mTabArchiveSettings.removeObserver(mTabArchiveSettingsObserver);
+        mUndoBarController.destroy();
+    }
+
+    private void tearDownTabListEditorCoordinator() {
+        mTabListEditorCoordinator.destroy();
+        mTabListEditorCoordinator = null;
     }
 
     /**
@@ -463,51 +481,66 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private void animateIn(int duration) {
         mDialogView.setVisibility(View.INVISIBLE);
         mRootView.addView(mDialogView);
+
         mDialogView.post(
                 () -> {
-                    mDialogView.setTranslationX(mDialogView.getWidth());
                     mDialogView.setVisibility(View.VISIBLE);
-                    // TODO(crbug.com/358430208): Use AnimatorSet here.
-                    mDialogView
-                            .animate()
-                            .translationX(0f)
-                            .setDuration(duration)
-                            .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
-                            .start();
-                    mTabSwitcherView
-                            .animate()
-                            .translationX(-mTabSwitcherView.getWidth())
-                            .setDuration(duration)
-                            .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
-                            .start();
+                    mDialogView.setTranslationX(mDialogView.getWidth());
+
+                    AnimatorSet animatorSet = new AnimatorSet();
+                    animatorSet.setDuration(duration);
+                    animatorSet.playTogether(getAnimateInAnimators());
+                    animatorSet.start();
 
                     RecordUserAction.record("Tabs.ArchivedTabsDialogShown");
                 });
     }
 
+    private List<Animator> getAnimateInAnimators() {
+        List<Animator> animators = new ArrayList<>(2);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(mDialogView, View.TRANSLATION_X, 0f);
+        animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
+        animators.add(animator);
+
+        animator =
+                ObjectAnimator.ofFloat(
+                        mTabSwitcherView, View.TRANSLATION_X, -mTabSwitcherView.getWidth());
+        animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
+        animators.add(animator);
+
+        return animators;
+    }
+
     private void animateOut(int duration, Runnable animationFinishCallback) {
         mDialogRecyclerView.setBlockTouchInput(true);
-        // TODO(crbug.com/358430208): Use AnimatorSet here.
-        mDialogView
-                .animate()
-                .translationX(mDialogView.getWidth())
-                .setDuration(duration)
-                .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
-                .start();
-        mTabSwitcherView
-                .animate()
-                .translationX(0)
-                .setDuration(duration)
-                .setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR)
-                .setListener(
-                        new AnimatorListenerAdapter() {
-                            @Override
-                            public void onAnimationEnd(@NonNull Animator animator) {
-                                animationFinishCallback.run();
-                                mDialogRecyclerView.setBlockTouchInput(false);
-                            }
-                        })
-                .start();
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.setDuration(duration);
+        animatorSet.playTogether(getAnimateOutAnimators());
+        animatorSet.addListener(
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mRootView.removeView(mDialogView);
+                        animationFinishCallback.run();
+                        mDialogRecyclerView.setBlockTouchInput(false);
+                        animation.removeAllListeners();
+                    }
+                });
+        animatorSet.start();
+    }
+
+    private List<Animator> getAnimateOutAnimators() {
+        List<Animator> animators = new ArrayList<>(2);
+        ObjectAnimator animator =
+                ObjectAnimator.ofFloat(mDialogView, View.TRANSLATION_X, mDialogView.getWidth());
+        animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
+        animators.add(animator);
+
+        animator = ObjectAnimator.ofFloat(mTabSwitcherView, View.TRANSLATION_X, 0f);
+        animator.setInterpolator(Interpolators.ACCELERATE_INTERPOLATOR);
+        animators.add(animator);
+        return animators;
     }
 
     /** Hides the dialog. */

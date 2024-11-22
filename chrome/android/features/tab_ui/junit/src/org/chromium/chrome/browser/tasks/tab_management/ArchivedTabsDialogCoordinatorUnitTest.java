@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
@@ -225,6 +226,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public void testLifecycleObserverHidesDialog() {
         mCoordinator.show(mOnTabSelectingListener);
         mCoordinator.getTabListEditorLifecycleObserver().willHide();
+
+        ShadowLooper.runUiThreadTasks();
         verify(mRootView).removeView(any());
 
         mCoordinator.getTabListEditorLifecycleObserver().didHide();
@@ -241,7 +244,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         // Allow animations to finish.
         ShadowLooper.runUiThreadTasks();
 
-        verify(mRootView).removeView(any());
+        verify(mRootView, atLeastOnce()).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());
     }
