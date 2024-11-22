@@ -4,6 +4,8 @@
 
 #include "content/test/test_aggregation_service_impl.h"
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <utility>
@@ -123,6 +125,8 @@ void TestAggregationServiceImpl::SetPublicKeys(
 void TestAggregationServiceImpl::AssembleReport(
     AssembleRequest request,
     base::OnceCallback<void(base::Value::Dict)> callback) {
+  constexpr size_t kDefaultFilteringIdMaxBytes = 1;
+
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation),
       {blink::mojom::AggregatableReportHistogramContribution(
@@ -132,7 +136,7 @@ void TestAggregationServiceImpl::AssembleReport(
       /*aggregation_coordinator_origin=*/std::nullopt,
       /*max_contributions_allowed=*/20u,
       // TODO(crbug.com/330744610): Allow setting.
-      /*filtering_id_max_bytes=*/std::nullopt);
+      /*filtering_id_max_bytes=*/kDefaultFilteringIdMaxBytes);
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
