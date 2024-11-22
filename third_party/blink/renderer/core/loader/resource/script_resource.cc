@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "third_party/blink/public/common/features.h"
@@ -538,8 +539,7 @@ void ScriptResource::AdvanceStreamingState(StreamingState new_state) {
       CHECK_EQ(new_state, StreamingState::kStreamingDisabled);
       break;
     case StreamingState::kStreamingDisabled:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   streaming_state_ = new_state;

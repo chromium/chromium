@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -324,8 +325,7 @@ void MockMediaStreamVideoRenderer::QueueFrames(
           gfx::Size(standard_size_.width() * 2, standard_size_.height() * 2);
     }
     if (token < static_cast<int>(FrameType::MIN_TYPE)) {
-      CHECK(false) << "Unrecognized frame type: " << token;
-      return;
+      NOTREACHED() << "Unrecognized frame type: " << token;
     }
 
     if (token < 0) {

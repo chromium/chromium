@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/svg_document_resource.h"
@@ -91,8 +92,7 @@ void SVGResourceDocumentContent::NotifyStartLoad() {
   // Check previous status.
   switch (status_) {
     case ResourceStatus::kPending:
-      CHECK(false);
-      break;
+      NOTREACHED();
 
     case ResourceStatus::kNotStarted:
       // Normal load start.
@@ -123,8 +123,7 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
       break;
 
     case ResourceStatus::kNotStarted:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
   status_ = new_status;
 }

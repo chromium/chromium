@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -185,8 +186,7 @@ FidoCableDiscovery::CreateV1HandshakeHandler(
 
     case CableDiscoveryData::Version::V2:
     case CableDiscoveryData::Version::INVALID:
-      CHECK(false);
-      return nullptr;
+      NOTREACHED();
   }
 }
 

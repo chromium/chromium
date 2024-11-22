@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -141,7 +142,7 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
   }
 
   void AssertAsyncReadEquals(const char* data, int len) override {
-    CHECK(false);
+    NOTREACHED();
   }
 
   void AssertReadStarts(const char* data, int len) override {

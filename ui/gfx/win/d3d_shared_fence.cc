@@ -6,6 +6,7 @@
 
 #include "base/debug/alias.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 
 namespace gfx {
 
@@ -34,7 +35,7 @@ base::win::ScopedHandle DuplicateSharedHandle(HANDLE shared_handle) {
   if (!result) {
     const DWORD last_error = ::GetLastError();
     base::debug::Alias(&last_error);
-    CHECK(false);
+    NOTREACHED();
   }
   return base::win::ScopedHandle(duplicated_handle);
 }

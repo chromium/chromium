@@ -156,7 +156,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       contact_callback_->Run(tunnel_id, pairing_id, client_nonce,
                              request_type_hint);
     } else {
-      CHECK(false) << "unexpected path: " << path;
+      NOTREACHED() << "unexpected path: " << path;
     }
   }
 
@@ -219,7 +219,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     void StartReceiving() override {}
     void StartClosingHandshake(uint16_t code,
                                const std::string& reason) override {
-      CHECK(false);
+      NOTREACHED();
     }
 
     void set_peer(std::unique_ptr<Connection> peer) {
@@ -329,7 +329,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       } else if (result == MOJO_RESULT_SHOULD_WAIT) {
         in_watcher_.Arm();
       } else {
-        CHECK(false) << static_cast<int>(result);
+        NOTREACHED() << static_cast<int>(result);
       }
     }
 
@@ -362,7 +362,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       } else if (result == MOJO_RESULT_FAILED_PRECONDITION) {
         // The reader has closed. Drop the message.
       } else {
-        CHECK(false) << static_cast<int>(result);
+        NOTREACHED() << static_cast<int>(result);
       }
     }
 
@@ -793,15 +793,13 @@ class LateLinkingDevice : public authenticator::Transaction {
             break;
 
           case MessageType::kUpdate:
-            CHECK(false);
-            break;
+            NOTREACHED();
         }
         break;
       }
 
       case State::kShutdownReceived:
-        CHECK(false);
-        break;
+        NOTREACHED();
     }
   }
 

@@ -5,6 +5,7 @@
 #include "ui/gl/gl_fence_egl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_bindings_autogen_gl.h"
@@ -92,9 +93,8 @@ EGLint GLFenceEGL::ClientWaitWithTimeoutNanos(EGLTimeKHR timeout) {
   EGLint flags = 0;
   EGLint result = eglClientWaitSyncKHR(display_, sync_, flags, timeout);
   if (result == EGL_FALSE) {
-    LOG(ERROR) << "Failed to wait for EGLSync. error:"
-               << ui::GetLastEGLErrorString();
-    CHECK(false);
+    NOTREACHED() << "Failed to wait for EGLSync. error:"
+                 << ui::GetLastEGLErrorString();
   }
   return result;
 }
@@ -116,9 +116,8 @@ void GLFenceEGL::ServerWait() {
   }
 
   if (!completed && eglWaitSyncKHR(display_, sync_, flags) == EGL_FALSE) {
-    LOG(ERROR) << "Failed to wait for EGLSync. error:"
-               << ui::GetLastEGLErrorString();
-    CHECK(false);
+    NOTREACHED() << "Failed to wait for EGLSync. error:"
+                 << ui::GetLastEGLErrorString();
   }
 }
 

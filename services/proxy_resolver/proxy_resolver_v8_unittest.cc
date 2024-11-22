@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -77,8 +78,7 @@ class MockJSBindings : public ProxyResolverV8::JSBindings {
       return !dns_resolve_ex_result.empty();
     }
 
-    CHECK(false);
-    return false;
+    NOTREACHED();
   }
 
   void OnError(int line_number, const std::u16string& message) override {

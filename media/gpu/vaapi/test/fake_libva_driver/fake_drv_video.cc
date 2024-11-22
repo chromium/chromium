@@ -15,6 +15,7 @@
 #include <set>
 
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_driver.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -385,9 +386,7 @@ VAStatus FakeCreateSurfaces(VADriverContextP ctx,
                             int format,
                             int num_surfaces,
                             VASurfaceID* surfaces) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakeDestroySurfaces(VADriverContextP ctx,
@@ -539,9 +538,7 @@ VAStatus FakeSyncSurface(VADriverContextP ctx, VASurfaceID render_target) {
 VAStatus FakeQuerySurfaceStatus(VADriverContextP ctx,
                                 VASurfaceID render_target,
                                 VASurfaceStatus* status) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakePutSurface(VADriverContextP ctx,
@@ -763,18 +760,14 @@ VAStatus FakeAssociateSubpicture(VADriverContextP ctx,
                                  uint16_t dest_width,
                                  uint16_t dest_height,
                                  uint32_t flags) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakeDeassociateSubpicture(VADriverContextP ctx,
                                    VASubpictureID subpicture,
                                    VASurfaceID* target_surfaces,
                                    int num_surfaces) {
-  CHECK(false);
-
-  return VA_STATUS_SUCCESS;
+  NOTREACHED();
 }
 
 VAStatus FakeQueryDisplayAttributes(VADriverContextP ctx,

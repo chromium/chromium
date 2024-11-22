@@ -713,8 +713,7 @@ struct StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
       gfx::GpuMemoryBufferHandle& input) {
     // We should not be trying to serialize a gfx::GpuMemoryBufferHandle for the
     // purposes of this interface outside of Linux and Chrome OS.
-    CHECK(false);
-    return media::stable::mojom::NativePixmapHandle::New();
+    NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 

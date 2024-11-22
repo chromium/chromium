@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <tuple>
-
 #include "ui/base/models/image_model.h"
 
+#include <tuple>
+
 #include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
@@ -174,7 +175,7 @@ gfx::ImageSkia ImageModel::Rasterize(
 
   if (IsVectorIcon()) {
 #if BUILDFLAG(IS_IOS)
-    CHECK(false);
+    NOTREACHED();
 #else
     DCHECK(color_provider);
     return ThemedVectorIcon(GetVectorIcon()).GetImageSkia(color_provider);

@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/notreached.h"
 #include "components/schema_org/common/metadata.mojom-blink.h"
 #include "third_party/blink/public/mojom/document_metadata/document_metadata.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -152,7 +153,7 @@ bool ParseRepeatedValue(const JSONArray& arr,
       }
       case JSONValue::ValueType::kTypeNull:
       case JSONValue::ValueType::kTypeArray:
-        CHECK(false);
+        NOTREACHED();
     }
   }
   return true;

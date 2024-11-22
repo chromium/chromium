@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -125,8 +126,7 @@ class GestureProviderTest : public testing::Test, public GestureProviderClient {
                                positions[2].x(),
                                positions[2].y());
       default:
-        CHECK(false) << "MockMotionEvent only supports 1-3 pointers";
-        return MockMotionEvent();
+        NOTREACHED() << "MockMotionEvent only supports 1-3 pointers";
     }
   }
 

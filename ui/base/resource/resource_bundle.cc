@@ -476,7 +476,7 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
                   std::size(path_copy));
     base::debug::Alias(path_copy);
 #endif  // BUILDFLAG(IS_WIN)
-    CHECK(false);
+    NOTREACHED();
   }
 
   locale_resources_data_ = std::move(data_pack);

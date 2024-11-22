@@ -6,6 +6,7 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
 #include "net/base/net_error_details.h"
@@ -143,8 +144,7 @@ int QuicSessionAttempt::DoLoop(int rv) {
     next_state_ = State::kNone;
     switch (state) {
       case State::kNone:
-        CHECK(false) << "Invalid state";
-        break;
+        NOTREACHED() << "Invalid state";
       case State::kCreateSession:
         rv = DoCreateSession();
         break;

@@ -929,8 +929,7 @@ void ResourceScriptStreamer::SendClientLoadFinishedCallback() {
 
   switch (loading_state_) {
     case LoadingState::kLoading:
-      CHECK(false);
-      break;
+      NOTREACHED();
     case LoadingState::kCancelled:
       response_body_loader_client_->DidCancelLoadingBody();
       break;
@@ -955,8 +954,7 @@ void ResourceScriptStreamer::AdvanceLoadingState(LoadingState new_state) {
     case LoadingState::kLoaded:
     case LoadingState::kFailed:
     case LoadingState::kCancelled:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   loading_state_ = new_state;

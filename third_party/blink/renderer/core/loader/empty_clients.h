@@ -442,10 +442,7 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     // should define their own subclass of LocalFrameClient or
     // EmptyLocalFrameClient and override the CreateURLLoaderForTesting method.
     // See also https://crbug.com/891872.
-    // We use CHECK(false) instead of NOTREACHED() here to catch errors on
-    // clusterfuzz and production.
-    CHECK(false);
-    return nullptr;
+    NOTREACHED();
   }
 
   std::unique_ptr<URLLoader> CreateURLLoaderForTesting() override {

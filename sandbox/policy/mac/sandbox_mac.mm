@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/features.h"
@@ -105,8 +106,7 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
       profile += kSeatbeltPolicyString_renderer;
       break;
     case sandbox::mojom::Sandbox::kNoSandbox:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
   return profile;
 }

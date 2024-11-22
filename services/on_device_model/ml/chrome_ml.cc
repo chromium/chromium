@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
@@ -57,7 +58,7 @@ void FatalGpuErrorFn(const char* msg) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
   if (error_reason == GpuErrorReason::kOther) {
     // Collect crash reports on unknown errors.
-    CHECK(false) << "ChromeML(GPU) Error: " << msg;
+    NOTREACHED() << "ChromeML(GPU) Error: " << msg;
   } else {
     base::Process::TerminateCurrentProcessImmediately(0);
   }
@@ -65,7 +66,7 @@ void FatalGpuErrorFn(const char* msg) {
 
 void FatalErrorFn(const char* msg) {
   SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
-  CHECK(false) << "ChromeML Error: " << msg;
+  NOTREACHED() << "ChromeML Error: " << msg;
 }
 
 // Helpers to disabiguate overloads in base.

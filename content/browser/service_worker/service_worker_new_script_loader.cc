@@ -221,7 +221,7 @@ void ServiceWorkerNewScriptLoader::FollowRedirect(
     const std::optional<GURL>& new_url) {
   // Resource requests for service worker scripts should not follow redirects.
   // See comments in OnReceiveRedirect().
-  CHECK(false);  // NOTREACHED
+  NOTREACHED();
 }
 
 void ServiceWorkerNewScriptLoader::SetPriority(net::RequestPriority priority,
@@ -460,7 +460,7 @@ void ServiceWorkerNewScriptLoader::OnComplete(
                       std::string() /* status_message */, nullptr);
       return;
   }
-  CHECK(false) << static_cast<int>(body_writer_state_);  // NOTREACHED
+  NOTREACHED() << static_cast<int>(body_writer_state_);
 }
 
 // End of URLLoaderClient ------------------------------------------------------
@@ -588,7 +588,7 @@ void ServiceWorkerNewScriptLoader::OnNetworkDataAvailable(MojoResult) {
       return;
     }
   }
-  CHECK(false) << static_cast<int>(result);  // NOTREACHED
+  NOTREACHED() << static_cast<int>(result);
 }
 
 void ServiceWorkerNewScriptLoader::WriteData(
@@ -633,8 +633,7 @@ void ServiceWorkerNewScriptLoader::WriteData(
       client_producer_watcher_.ArmOrNotify();
       return;
     default:
-      CHECK(false) << static_cast<int>(result);  // NOTREACHED
-      return;
+      NOTREACHED() << static_cast<int>(result);
   }
 
   // Write the buffer in the service worker script storage up to the size we

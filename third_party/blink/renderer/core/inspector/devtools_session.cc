@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -107,8 +108,9 @@ class DevToolsSession::IOSession : public mojom::blink::DevToolsSession {
                            TRACE_EVENT_FLAG_FLOW_OUT | TRACE_EVENT_FLAG_FLOW_IN,
                            "call_id", call_id);
     // Crash renderer.
-    if (method == "Page.crash")
-      CHECK(false);
+    if (method == "Page.crash") {
+      NOTREACHED();
+    }
     // Post a task to the worker or main renderer thread that will interrupt V8
     // and be run immediately. Only methods that do not run JS code are safe.
     Vector<uint8_t> message_copy;

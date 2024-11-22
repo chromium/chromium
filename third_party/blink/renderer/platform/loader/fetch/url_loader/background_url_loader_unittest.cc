@@ -748,7 +748,7 @@ TEST_F(BackgroundResourceFecherTest, CancelSoonAfterStart) {
                       mojo::PendingRemote<network::mojom::URLLoaderClient>
                           client) {
                     // CreateLoaderAndStart should not be called.
-                    CHECK(false);
+                    NOTREACHED();
                   }));
   std::unique_ptr<BackgroundURLLoader> background_url_loader =
       std::make_unique<BackgroundURLLoader>(
