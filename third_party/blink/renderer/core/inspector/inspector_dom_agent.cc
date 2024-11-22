@@ -1242,20 +1242,24 @@ protocol::Response InspectorDOMAgent::performSearch(
         case Node::kCommentNode:
         case Node::kCdataSectionNode: {
           String text = node->nodeValue();
-          if (text.FindIgnoringCase(whitespace_trimmed_query) != kNotFound)
+          if (text.DeprecatedFindIgnoringCase(whitespace_trimmed_query) !=
+              kNotFound) {
             result_collector.insert(node);
+          }
           break;
         }
         case Node::kElementNode: {
           if ((!start_tag_found && !end_tag_found &&
-               (node->nodeName().FindIgnoringCase(tag_name_query) !=
+               (node->nodeName().DeprecatedFindIgnoringCase(tag_name_query) !=
                 kNotFound)) ||
               (start_tag_found && end_tag_found &&
                DeprecatedEqualIgnoringCase(node->nodeName(), tag_name_query)) ||
               (start_tag_found && !end_tag_found &&
-               node->nodeName().StartsWithIgnoringCase(tag_name_query)) ||
+               node->nodeName().DeprecatedStartsWithIgnoringCase(
+                   tag_name_query)) ||
               (!start_tag_found && end_tag_found &&
-               node->nodeName().EndsWithIgnoringCase(tag_name_query))) {
+               node->nodeName().DeprecatedEndsWithIgnoringCase(
+                   tag_name_query))) {
             result_collector.insert(node);
             break;
           }
@@ -1264,13 +1268,13 @@ protocol::Response InspectorDOMAgent::performSearch(
           AttributeCollection attributes = element->Attributes();
           for (auto& attribute : attributes) {
             // Add attribute pair
-            if (attribute.LocalName().FindIgnoringCase(whitespace_trimmed_query,
-                                                       0) != kNotFound) {
+            if (attribute.LocalName().DeprecatedFindIgnoringCase(
+                    whitespace_trimmed_query) != kNotFound) {
               result_collector.insert(node);
               break;
             }
             size_t found_position =
-                attribute.Value().FindIgnoringCase(attribute_query, 0);
+                attribute.Value().DeprecatedFindIgnoringCase(attribute_query);
             if (found_position != kNotFound) {
               if (!exact_attribute_match ||
                   (!found_position &&

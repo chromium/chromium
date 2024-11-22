@@ -1024,8 +1024,9 @@ ALWAYS_INLINE static wtf_size_t FindIgnoringCaseInternal(
   return index + i;
 }
 
-wtf_size_t StringImpl::FindIgnoringCase(const StringView& match_string,
-                                        wtf_size_t index) const {
+wtf_size_t StringImpl::DeprecatedFindIgnoringCase(
+    const StringView& match_string,
+    wtf_size_t index) const {
   if (match_string.IsNull()) [[unlikely]] {
     return kNotFound;
   }
@@ -1208,9 +1209,10 @@ bool StringImpl::StartsWith(const StringView& prefix) const {
   }
   auto span = Span16().first(prefix.length());
   return prefix.Is8Bit() ? span == prefix.Span8() : span == prefix.Span16();
-  }
+}
 
-bool StringImpl::StartsWithIgnoringCase(const StringView& prefix) const {
+bool StringImpl::DeprecatedStartsWithIgnoringCase(
+    const StringView& prefix) const {
   if (prefix.length() > length())
     return false;
   if (Is8Bit()) {
@@ -1280,7 +1282,8 @@ bool StringImpl::EndsWith(const StringView& suffix) const {
   return suffix.Is8Bit() ? span == suffix.Span8() : span == suffix.Span16();
 }
 
-bool StringImpl::EndsWithIgnoringCase(const StringView& suffix) const {
+bool StringImpl::DeprecatedEndsWithIgnoringCase(
+    const StringView& suffix) const {
   if (suffix.length() > length())
     return false;
   wtf_size_t start_offset = length() - suffix.length();

@@ -261,7 +261,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
     } else {
       for (auto& request : old_requests) {
         String urlPath(request->url.GetPath().ToString());
-        if (urlPath.FindIgnoringCase(params_.path_filter) == WTF::kNotFound) {
+        if (urlPath.DeprecatedFindIgnoringCase(params_.path_filter) ==
+            WTF::kNotFound) {
           continue;
         }
         requests.push_back(std::move(request));

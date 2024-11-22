@@ -49,8 +49,8 @@ static WTF::String StripStyleTags(const WTF::String& html) {
   StringBuilder stripped_html;
   wtf_size_t pos = 0;
   for (;;) {
-    wtf_size_t style_start =
-        html.FindIgnoringCase("<style", pos);  // Allow <style id=" etc.
+    // Allow <style id=" etc.
+    wtf_size_t style_start = html.DeprecatedFindIgnoringCase("<style", pos);
     if (style_start == kNotFound) {
       // No more <style> tags, so append the rest of the string.
       stripped_html.Append(html.Substring(pos, html.length() - pos));
@@ -64,7 +64,8 @@ static WTF::String StripStyleTags(const WTF::String& html) {
       pos = style_start + 6;
       continue;
     }
-    wtf_size_t style_end = html.FindIgnoringCase("</style>", style_start);
+    wtf_size_t style_end =
+        html.DeprecatedFindIgnoringCase("</style>", style_start);
     if (style_end == kNotFound) {
       LOG(FATAL) << "Mismatched <style> tag";
     }
