@@ -42,7 +42,6 @@
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
@@ -590,35 +589,6 @@ TEST_F(PublisherTest, ArcApps_CapabilityAccess) {
   }
 
   arc_apps->Shutdown();
-}
-
-TEST_F(PublisherTest, BuiltinAppsOnApps) {
-  // Verify Builtin apps are added to AppRegistryCache.
-  for (const auto& internal_app : app_list::GetInternalAppList(profile())) {
-    if ((internal_app.app_id == nullptr) ||
-        (internal_app.name_string_resource_id == 0) ||
-        (internal_app.icon_resource_id <= 0)) {
-      continue;
-    }
-    std::vector<std::string> additional_search_terms;
-    if (internal_app.searchable_string_resource_id != 0) {
-      additional_search_terms.push_back(
-          l10n_util::GetStringUTF8(internal_app.searchable_string_resource_id));
-    }
-    VerifyApp(AppType::kBuiltIn, internal_app.app_id,
-              l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
-              Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem,
-              additional_search_terms, base::Time(), base::Time(),
-              apps::Permissions(),
-              /*is_platform_app=*/false, internal_app.recommendable,
-              internal_app.searchable, internal_app.show_in_launcher,
-              internal_app.searchable, internal_app.searchable,
-              /*show_in_management=*/false, internal_app.show_in_launcher,
-              /*allow_uninstall=*/false,
-              /*allow_close=*/true,
-              /*allow_window_mode_selection=*/std::nullopt);
-  }
-  VerifyAppTypeIsInitialized(AppType::kBuiltIn);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

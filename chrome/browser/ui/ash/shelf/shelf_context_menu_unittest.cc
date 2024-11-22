@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -570,62 +569,6 @@ TEST_F(ShelfContextMenuTest, ArcContextMenuOptions) {
 
   // Test that there are 9 items in an ARC app context menu.
   EXPECT_EQ(9u, menu->GetItemCount());
-}
-
-// Tests that the context menu of internal app  is correct.
-TEST_F(ShelfContextMenuTest, InternalAppShelfContextMenu) {
-  const std::vector<app_list::InternalApp> internal_apps(
-      app_list::GetInternalAppList(profile()));
-  for (const auto& internal_app : internal_apps) {
-    if (!internal_app.show_in_launcher)
-      continue;
-
-    const std::string app_id = internal_app.app_id;
-    const ash::ShelfID shelf_id(app_id);
-    // Pin internal app.
-    PinAppWithIDToShelf(app_id);
-    const ash::ShelfItem* item = controller()->GetItem(ash::ShelfID(app_id));
-    ASSERT_TRUE(item);
-    EXPECT_EQ(l10n_util::GetStringUTF16(internal_app.name_string_resource_id),
-              item->title);
-    ash::ShelfItemDelegate* item_delegate =
-        model()->GetShelfItemDelegate(shelf_id);
-    ASSERT_TRUE(item_delegate);
-
-    const int64_t display_id = GetPrimaryDisplay().id();
-    std::unique_ptr<ui::MenuModel> menu =
-        GetContextMenu(item_delegate, display_id);
-    ASSERT_TRUE(menu);
-
-    // Internal app is pinned but not running.
-    EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::LAUNCH_NEW));
-    EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::TOGGLE_PIN));
-    EXPECT_FALSE(IsItemPresentInMenu(menu.get(), ash::MENU_CLOSE));
-  }
-}
-
-// Tests that the number of context menu options of internal app is correct.
-TEST_F(ShelfContextMenuTest, InternalAppShelfContextMenuOptionsNumber) {
-  const std::vector<app_list::InternalApp> internal_apps(
-      app_list::GetInternalAppList(profile()));
-  for (const auto& internal_app : internal_apps) {
-    const std::string app_id = internal_app.app_id;
-    const ash::ShelfID shelf_id(app_id);
-    // Pin internal app.
-    PinAppWithIDToShelf(app_id);
-    const ash::ShelfItem* item = controller()->GetItem(ash::ShelfID(app_id));
-    ASSERT_TRUE(item);
-
-    ash::ShelfItemDelegate* item_delegate =
-        model()->GetShelfItemDelegate(shelf_id);
-    ASSERT_TRUE(item_delegate);
-    int64_t primary_id = GetPrimaryDisplay().id();
-    std::unique_ptr<ui::MenuModel> menu =
-        GetContextMenu(item_delegate, primary_id);
-
-    const size_t expected_options_num = internal_app.show_in_launcher ? 2 : 1;
-    EXPECT_EQ(expected_options_num, menu->GetItemCount());
-  }
 }
 
 // Checks the context menu for a "normal" crostini app (i.e. a registered one).

@@ -24,7 +24,7 @@ namespace apps {
 ENUM(AppType,
      kUnknown,
      kArc,                         // Android app.
-     kBuiltIn,                     // Built-in app.
+     kBuiltIn,                     // Built-in app. (No longer used)
      kCrostini,                    // Linux (via Crostini) app.
      kChromeApp,                   // Chrome app.
      kWeb,                         // Web app.

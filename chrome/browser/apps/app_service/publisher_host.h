@@ -20,7 +20,6 @@ namespace apps {
 #if BUILDFLAG(IS_CHROMEOS)
 class BorealisApps;
 class BruschettaApps;
-class BuiltInChromeOsApps;
 class CrostiniApps;
 class ExtensionAppsChromeOs;
 class PluginVmApps;
@@ -55,7 +54,6 @@ class PublisherHost {
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<BorealisApps> borealis_apps_;
   std::unique_ptr<BruschettaApps> bruschetta_apps_;
-  std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;
   std::unique_ptr<CrostiniApps> crostini_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> chrome_apps_;
   std::unique_ptr<ExtensionAppsChromeOs> extension_apps_;
@@ -79,19 +77,6 @@ class ScopedOmitBorealisAppsForTesting {
 
  private:
   const bool previous_omit_borealis_apps_for_testing_;
-};
-
-class ScopedOmitBuiltInAppsForTesting {
- public:
-  ScopedOmitBuiltInAppsForTesting();
-  ScopedOmitBuiltInAppsForTesting(const ScopedOmitBuiltInAppsForTesting&) =
-      delete;
-  ScopedOmitBuiltInAppsForTesting& operator=(
-      const ScopedOmitBuiltInAppsForTesting&) = delete;
-  ~ScopedOmitBuiltInAppsForTesting();
-
- private:
-  const bool previous_omit_built_in_apps_for_testing_;
 };
 
 class ScopedOmitPluginVmAppsForTesting {

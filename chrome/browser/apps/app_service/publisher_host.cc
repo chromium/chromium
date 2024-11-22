@@ -13,7 +13,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/publishers/borealis_apps.h"
 #include "chrome/browser/apps/app_service/publishers/bruschetta_apps.h"
-#include "chrome/browser/apps/app_service/publishers/built_in_chromeos_apps.h"
 #include "chrome/browser/apps/app_service/publishers/crostini_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/apps/app_service/publishers/plugin_vm_apps.h"
@@ -30,7 +29,6 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool g_omit_borealis_apps_for_testing_ = false;
-bool g_omit_built_in_apps_for_testing_ = false;
 bool g_omit_plugin_vm_apps_for_testing_ = false;
 #endif
 
@@ -55,10 +53,6 @@ void PublisherHost::ReInitializeCrostiniForTesting(AppServiceProxy* proxy) {
 
 void PublisherHost::RegisterPublishersForTesting() {
   DCHECK(proxy_);
-  if (built_in_chrome_os_apps_) {
-    proxy_->RegisterPublisher(AppType::kBuiltIn,
-                              built_in_chrome_os_apps_.get());
-  }
   if (crostini_apps_) {
     proxy_->RegisterPublisher(AppType::kCrostini, crostini_apps_.get());
   }
@@ -94,10 +88,6 @@ void PublisherHost::Shutdown() {
 void PublisherHost::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* profile = proxy_->profile();
-  if (!g_omit_built_in_apps_for_testing_) {
-    built_in_chrome_os_apps_ = std::make_unique<BuiltInChromeOsApps>(proxy_);
-    built_in_chrome_os_apps_->Initialize();
-  }
   // TODO(b/170591339): Allow borealis to provide apps for the non-primary
   // profile.
   if (guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile) &&
@@ -144,16 +134,6 @@ ScopedOmitBorealisAppsForTesting::ScopedOmitBorealisAppsForTesting()
 
 ScopedOmitBorealisAppsForTesting::~ScopedOmitBorealisAppsForTesting() {
   g_omit_borealis_apps_for_testing_ = previous_omit_borealis_apps_for_testing_;
-}
-
-ScopedOmitBuiltInAppsForTesting::ScopedOmitBuiltInAppsForTesting()
-    : previous_omit_built_in_apps_for_testing_(
-          g_omit_built_in_apps_for_testing_) {
-  g_omit_built_in_apps_for_testing_ = true;
-}
-
-ScopedOmitBuiltInAppsForTesting::~ScopedOmitBuiltInAppsForTesting() {
-  g_omit_built_in_apps_for_testing_ = previous_omit_built_in_apps_for_testing_;
 }
 
 ScopedOmitPluginVmAppsForTesting::ScopedOmitPluginVmAppsForTesting()

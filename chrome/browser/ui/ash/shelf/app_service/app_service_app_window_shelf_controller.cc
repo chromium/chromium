@@ -184,23 +184,6 @@ void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
     intptr_t old) {
   if (arc_tracker_)
     arc_tracker_->OnWindowPropertyChanged(window, key, old);
-
-  if (key != ash::kShelfIDKey)
-    return;
-
-  ash::ShelfID shelf_id =
-      ash::ShelfID::Deserialize(window->GetProperty(ash::kShelfIDKey));
-  if (shelf_id.IsNull())
-    return;
-
-  if (GetAppType(shelf_id.app_id) != apps::AppType::kBuiltIn)
-    return;
-
-  app_service_instance_helper_->OnInstances(shelf_id.app_id, window,
-                                            shelf_id.launch_id,
-                                            apps::InstanceState::kUnknown);
-
-  RegisterWindow(window, shelf_id);
 }
 
 void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(

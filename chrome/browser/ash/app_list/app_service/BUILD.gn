@@ -82,7 +82,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list:test_support",
     "//chrome/browser/ash/app_list/app_service",
-    "//chrome/browser/ash/app_list/internal_app",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/borealis/testing:test_support",

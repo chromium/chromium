@@ -300,9 +300,7 @@ std::vector<manta::AppsData> SparkyDelegateImpl::GetAppsList() {
           return;
         }
 
-        if (!update.ShowInSearch().value_or(false) &&
-            !(update.Recommendable().value_or(false) &&
-              update.AppType() == apps::AppType::kBuiltIn)) {
+        if (!update.ShowInSearch().value_or(false)) {
           return;
         }
 
