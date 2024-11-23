@@ -21701,6 +21701,7 @@ from previous Chrome versions.
   <int value="562111126" label="SidePanelBorder:enabled"/>
   <int value="562185887" label="PasswordSuggestionBottomSheetV2:enabled"/>
   <int value="562635337" label="EcheSWACheckAndroidNetworkInfo:disabled"/>
+  <int value="562699771" label="AndroidBookmarkBar:enabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
   <int value="563646930" label="AndroidGoogleSansText:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
@@ -22059,6 +22060,7 @@ from previous Chrome versions.
   <int value="708185835" label="WebViewThrottleBackgroundBeginFrame:enabled"/>
   <int value="709138900" label="InstantStart:enabled"/>
   <int value="709850261" label="disable-touch-editing"/>
+  <int value="710631017" label="AndroidBookmarkBar:disabled"/>
   <int value="710700286" label="ImmersiveFullscreen:disabled"/>
   <int value="711424932" label="enable-cloud-print-xps"/>
   <int value="711627544" label="ImeSwitchCheckConnectionStatus:enabled"/>

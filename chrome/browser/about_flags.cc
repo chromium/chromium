@@ -11874,7 +11874,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillImprovedLabelsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(autofill::features::kAutofillImprovedLabels,
                                     kAutofillImprovedLabelsVariations,
-                                    "AutofillImprovedLabelsVariations")}
+                                    "AutofillImprovedLabelsVariations")},
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-bookmark-bar", flag_descriptions::kAndroidBookmarkBarName,
+     flag_descriptions::kAndroidBookmarkBarDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBar)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

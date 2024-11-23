@@ -100,6 +100,13 @@ const char kAndroidBcivBottomControlsDescription[] =
     "Let viz move bottom browser controls when scrolling. If this flag is "
     "enabled, AndroidBrowserControlsInViz must also be enabled.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidBookmarkBarName[] = "Bookmark Bar";
+const char kAndroidBookmarkBarDescription[] =
+    "Enables the bookmark bar which provides users with bookmark access from "
+    "top chrome. Note that device form factor restrictions also apply.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kAndroidBottomToolbarName[] = "Bottom Toolbar";
 const char kAndroidBottomToolbarDescription[] =
     "If enabled, displays the toolbar at the bottom.";

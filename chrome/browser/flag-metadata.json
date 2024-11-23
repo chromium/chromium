@@ -170,6 +170,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-bookmark-bar",
+    "owners": [ "dmblack@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-bottom-toolbar",
     "owners": [ "pnoland@chromium.org","gangwu@chromium.org","lazzzis@google.com" ],
     "expiry_milestone": 150

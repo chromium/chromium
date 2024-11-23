@@ -189,6 +189,9 @@ found in the LICENSE file.
     <dimen name="bookmark_widget_min_width">64dp</dimen>
     <dimen name="bookmark_widget_min_height">48dp</dimen>
 
+    <!-- Bookmark bar -->
+    <dimen name="bookmark_bar_min_height">48dp</dimen>
+
     <!-- Custom Tabs dimensions -->
     <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>
     <dimen name="custom_tabs_drag_handle_padding_bottom">32dp</dimen>

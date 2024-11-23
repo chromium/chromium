@@ -182,6 +182,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAppIntegration,
     &kAndroidAppIntegrationV2,
     &kAndroidAppIntegrationWithFavicon,
+    &kAndroidBookmarkBar,
     &kAndroidBottomToolbar,
     &kAndroidElegantTextHeight,
     &kAndroidHubFloatingActionButton,
@@ -456,6 +457,10 @@ BASE_FEATURE(kAndroidAppIntegrationV2,
 
 BASE_FEATURE(kAndroidAppIntegrationWithFavicon,
              "AndroidAppIntegrationWithFavicon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidBookmarkBar,
+             "AndroidBookmarkBar",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidBottomToolbar,

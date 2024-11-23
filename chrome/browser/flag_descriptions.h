@@ -84,6 +84,11 @@ extern const char kAndroidAppIntegrationWithFaviconDescription[];
 extern const char kAndroidBcivBottomControlsName[];
 extern const char kAndroidBcivBottomControlsDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidBookmarkBarName[];
+extern const char kAndroidBookmarkBarDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kAndroidBottomToolbarName[];
 extern const char kAndroidBottomToolbarDescription[];
 

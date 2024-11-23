@@ -135,6 +135,14 @@ found in the LICENSE file.
             android:layout_height="wrap_content" />
 
         <ViewStub
+            android:id="@+id/bookmark_bar_stub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/bookmark_bar"
+            android:layout="@layout/bookmark_bar"
+            android:minHeight="@dimen/bookmark_bar_min_height" />
+
+        <ViewStub
             android:inflatedId="@+id/toolbar_progress_bar_container"
             android:id="@+id/progress_bar_stub"
             android:layout="@layout/toolbar_progress_bar"
