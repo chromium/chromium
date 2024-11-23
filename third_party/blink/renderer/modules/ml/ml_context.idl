@@ -264,7 +264,7 @@ dictionary MLOpSupportLimits {
   MLWhereSupportLimits where;
 };
 
-typedef record<DOMString, MLTensor> MLNamedTensors;
+typedef record<USVString, MLTensor> MLNamedTensors;
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
