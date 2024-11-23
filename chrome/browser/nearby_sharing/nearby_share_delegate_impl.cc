@@ -65,6 +65,11 @@ bool NearbyShareDelegateImpl::IsEnabled() {
          nearby_share_service_->GetSettings()->GetEnabled();
 }
 
+void NearbyShareDelegateImpl::SetEnabled(bool enabled) {
+  CHECK(nearby_share_service_);
+  nearby_share_service_->GetSettings()->SetEnabled(enabled);
+}
+
 bool NearbyShareDelegateImpl::IsPodButtonVisible() {
   return nearby_share_service_ != nullptr &&
          !nearby_share_service_->GetSettings()->IsDisabledByPolicy();
