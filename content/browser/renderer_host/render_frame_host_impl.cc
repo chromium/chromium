@@ -4865,7 +4865,24 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
   RuntimeFeatureStateDocumentData* rfs_document_data_for_storage_key =
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(
           main_frame_for_storage_partitioning);
-  if (rfs_document_data_for_storage_key) {
+
+  // `rfs_document_data_for_storage_key` should be available unless we are in
+  // a popin examining the main frame's data.
+  CHECK(rfs_document_data_for_storage_key ||
+        (ShouldPartitionAsPopin() &&
+         main_frame_for_storage_partitioning == this));
+
+  bool unpartitioned_key_allowed =
+      GetContentClient()
+          ->browser()
+          ->IsUnpartitionedStorageAccessAllowedByUserPreference(
+              GetSiteInstance()->GetBrowserContext(), new_rfh_origin.GetURL(),
+              ComputeSiteForCookies(), ComputeTopFrameOrigin(new_rfh_origin));
+
+  // Ignore deprecation trials if only partitioned access is allowed. We'll
+  // still respect enterprise policies which take precedence over the user's 3P
+  // cookie blocking preference.
+  if (rfs_document_data_for_storage_key && unpartitioned_key_allowed) {
     // If the deprecation trial is enabled, we have directive to override the
     // current value of net::features::ThirdPartyStoragePartitioning.
     if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
@@ -4889,11 +4906,6 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
                 third_party_origins)) {
       return false;
     }
-  } else {
-    // `rfs_document_data_for_storage_key` should be available unless we are in
-    // a popin examining the main frame's data
-    DCHECK(ShouldPartitionAsPopin() &&
-           main_frame_for_storage_partitioning == this);
   }
 
   // If the enterprise policy blocks, we have directive to override the

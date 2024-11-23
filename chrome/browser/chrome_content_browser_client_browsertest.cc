@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,7 +40,9 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -67,6 +70,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -2082,5 +2086,190 @@ IN_PROC_BROWSER_TEST_F(TopChromeChromeContentBrowserClientTest,
   EXPECT_FALSE(client()->ShouldTryToUseExistingProcessHost(browser()->profile(),
                                                            random_url));
 }
+
+class ThirdPartyStoragePartitioningOriginTrialTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ThirdPartyStoragePartitioningOriginTrialTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // The 3PCD tracking protection feature must be disabled so that we can
+    // disable third-party cookies by changing the prefs::kCookieControlsMode
+    // pref.
+    feature_.InitAndDisableFeature(
+        content_settings::features::kTrackingProtection3pcd);
+  }
+
+  // The URL that will be used to load third-party scripts.
+  static constexpr char kThirdPartyScriptUrl[] = "https://127.0.0.1:44445";
+  // A cross-site URL used for Origin Trials.
+  static constexpr char kCrossSiteOriginTrialUrl[] = "https://a.com";
+
+  bool BlockThirdPartyCookies() const { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(
+        "origin-trial-public-key",
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
+  }
+
+  void SetUpOnMainThread() override {
+    // Set up the framework that allows us to intercept and inspect any Origin
+    // Trial header requests.
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            &ThirdPartyStoragePartitioningOriginTrialTest::InterceptURLRequest,
+            base::Unretained(this)));
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  void SetOriginTrialToken(const std::string& token) {
+    origin_trial_token_ = token;
+  }
+
+  GURL cross_site_script_meta_tag_origin_trial_url() const {
+    return GURL(base::StrCat({kCrossSiteOriginTrialUrl, "/meta_script.html"}));
+  }
+
+  GURL meta_tag_injecting_javascript_url() const {
+    return GURL(base::StrCat({kThirdPartyScriptUrl, "/meta.js"}));
+  }
+
+  GURL empty_frame_meta_origin_trial_url() const {
+    return GURL(base::StrCat({kThirdPartyScriptUrl, "/empty.html"}));
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  bool RespondForEmptyUrl(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = "<html>This page has no title.</html>";
+    content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                 params->client.get());
+    return true;
+  }
+
+  bool RespondForScriptMetaTagOriginTrialUrl(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    // Construct the origin trial response.
+    std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
+    std::string body = base::StrCat(
+        {"<html><head><script src=\"",
+         meta_tag_injecting_javascript_url().spec(),
+         "\"></script></head><body>This page has no title.</body></html>"});
+    content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                 params->client.get());
+    return true;
+  }
+
+  bool RespondForMetaTagInjectingScriptUrl(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    CHECK(!origin_trial_token_.empty());
+    // Construct the origin trial response.
+    std::string headers =
+        "HTTP/1.1 200 OK\nContent-Type: application/javascript\n";
+    std::string body =
+        base::StrCat({"const otMeta = document.createElement('meta'); "
+                      "otMeta.httpEquiv = 'origin-trial'; "
+                      "otMeta.content = '",
+                      origin_trial_token_,
+                      "'; "
+                      "document.head.append(otMeta); ",
+                      "const iframe = document.createElement('iframe'); ",
+                      "document.head.appendChild(iframe); "});
+    content::URLLoaderInterceptor::WriteResponse(headers, body,
+                                                 params->client.get());
+    return true;
+  }
+
+  // Create the framework to intercept origin trial requests.
+  bool InterceptURLRequest(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    if (params->url_request.url ==
+        cross_site_script_meta_tag_origin_trial_url()) {
+      return RespondForScriptMetaTagOriginTrialUrl(params);
+    }
+    if (params->url_request.url == meta_tag_injecting_javascript_url()) {
+      return RespondForMetaTagInjectingScriptUrl(params);
+    }
+    if (params->url_request.url == empty_frame_meta_origin_trial_url()) {
+      return RespondForEmptyUrl(params);
+    }
+    return false;
+  }
+
+  base::test::ScopedFeatureList feature_;
+  net::EmbeddedTestServer https_server_;
+  std::string origin_trial_token_;
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+// Test that the 3PSP deprecation trial only enables third-party storage when
+// the user has explicitly opted into third-party cooking blocking (instead of
+// enabling first-party storage). This test is derived from
+// RenderFrameHostImplWithTokensBrowserTest.ReusedChildFrameNavigatedFromDeprecationTrialIsPartitioned.
+IN_PROC_BROWSER_TEST_P(ThirdPartyStoragePartitioningOriginTrialTest,
+                       ThirdPartyCookieSettingOverridesDeprecationTrial) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://127.0.0.1:44445
+  // DisableThirdPartyStoragePartitioning2 --expire-timestamp=2000000000
+  // --is-third-party
+  const char kValidThirdPartyToken[] =
+      "A1HN+j5dGwYe307k+"
+      "ljKWOpwMh6rXnk3mFDsOs0TG2ibF9tOnChGQCrhjn6oJXxmZxeU91hgMBfI48Cm+"
+      "iswgg8AAACFeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdHVyZ"
+      "SI6ICJEaXNhYmxlVGhpcmRQYXJ0eVN0b3JhZ2VQYXJ0aXRpb25pbmcyIiwgImV4cGlyeSI6I"
+      "DIwMDAwMDAwMDAsICJpc1RoaXJkUGFydHkiOiB0cnVlfQ==";
+
+  SetOriginTrialToken(kValidThirdPartyToken);
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      BlockThirdPartyCookies()
+          ? static_cast<int>(
+                content_settings::CookieControlsMode::kBlockThirdParty)
+          : static_cast<int>(content_settings::CookieControlsMode::kOff));
+
+  // Navigate to "a.test" and load a script from a third-party. In that script,
+  // the deprecation trial token above is added via <meta> tag. Then, the script
+  // adds an iframe.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), cross_site_script_meta_tag_origin_trial_url()));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(contents, nullptr);
+
+  content::RenderFrameHost* child_frame =
+      ChildFrameAt(contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_frame);
+  // Navigate the currently empty iframe to a URL that is same-site with the
+  // third-party script.
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame,
+                                        empty_frame_meta_origin_trial_url()));
+  // Execute a dummy roundtrip to ensure the <meta> tag trial token has time to
+  // parse and be applied to the iframe.
+  EXPECT_TRUE(content::ExecJs(contents, ";"));
+
+  // Re-obtain the iframe after confirming the navigation is complete.
+  child_frame = ChildFrameAt(contents->GetPrimaryMainFrame(), 0);
+
+  if (BlockThirdPartyCookies()) {
+    EXPECT_TRUE(child_frame->GetStorageKey().IsThirdPartyContext());
+  } else {
+    EXPECT_TRUE(child_frame->GetStorageKey().IsFirstPartyContext());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ThirdPartyStoragePartitioningOriginTrialTest,
+                         ::testing::Bool());
 
 }  // namespace
