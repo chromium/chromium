@@ -5929,9 +5929,7 @@ crbug.com/335458492 virtual/select-parser-relaxation/external/wpt/html/semantics
 
 crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 
-crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Failure ]
-
-
+crbug.com/380466909 virtual/popover-anchor-relationships-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-events.tentative.html [ Pass Failure ]
 
 
 ### Tests failing with CSSGapDecorations Enabled:
