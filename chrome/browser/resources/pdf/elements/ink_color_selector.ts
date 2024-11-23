@@ -21,44 +21,44 @@ interface ColorOption {
 
 const HIGHLIGHTER_COLORS: ColorOption[] = [
   // Row 1:
-  {name: 'highlighterColorRed300', color: '#f28b82'},
-  {name: 'highlighterColorYellow300', color: '#fdd663'},
-  {name: 'highlighterColorGreen300', color: '#34a853'},
-  {name: 'highlighterColorBlue', color: '#4285f4'},
-  {name: 'highlighterColorOrange', color: '#ffae80'},
+  {name: 'highlighterColorLightRed', color: '#f28b82'},
+  {name: 'highlighterColorLightYellow', color: '#fdd663'},
+  {name: 'highlighterColorLightGreen', color: '#34a853'},
+  {name: 'highlighterColorLightBlue', color: '#4285f4'},
+  {name: 'highlighterColorLightOrange', color: '#ffae80'},
   // Row 2:
-  {name: 'highlighterColorRed600', color: '#d93025'},
-  {name: 'highlighterColorLemon400', color: '#ddf300'},
-  {name: 'highlighterColorAloe400', color: '#25e387'},
-  {name: 'highlighterColorIndigo', color: '#5379ff'},
+  {name: 'highlighterColorRed', color: '#d93025'},
+  {name: 'highlighterColorYellow', color: '#ddf300'},
+  {name: 'highlighterColorGreen', color: '#25e387'},
+  {name: 'highlighterColorBlue', color: '#5379ff'},
   {name: 'highlighterColorOrange', color: '#ff630c'},
 ];
 
 const PEN_COLORS: ColorOption[] = [
   // Row 1:
   {name: 'penColorBlack', color: '#000000'},
-  {name: 'penColorGrey700', color: '#5f6368'},
-  {name: 'penColorGrey500', color: '#9aa0a6'},
-  {name: 'penColorGrey300', color: '#dadce0'},
+  {name: 'penColorDarkGrey2', color: '#5f6368'},
+  {name: 'penColorDarkGrey1', color: '#9aa0a6'},
+  {name: 'penColorLightGrey', color: '#dadce0'},
   {name: 'penColorWhite', color: '#ffffff'},
   // Row 2:
-  {name: 'penColorRed300', color: '#f28b82'},
-  {name: 'penColorYellow300', color: '#fdd663'},
-  {name: 'penColorGreen300', color: '#81c995'},
-  {name: 'penColorBlue300', color: '#8ab4f8'},
-  {name: 'penColorBrown1', color: '#eec9ae'},
+  {name: 'penColorRed1', color: '#f28b82'},
+  {name: 'penColorYellow1', color: '#fdd663'},
+  {name: 'penColorGreen1', color: '#81c995'},
+  {name: 'penColorBlue1', color: '#8ab4f8'},
+  {name: 'penColorTan1', color: '#eec9ae'},
   // Row 3:
-  {name: 'penColorRed500', color: '#ea4335'},
-  {name: 'penColorYellow500', color: '#fbbc04'},
-  {name: 'penColorGreen500', color: '#34a853'},
-  {name: 'penColorBlue500', color: '#4285f4'},
-  {name: 'penColorBrown2', color: '#e2a185'},
+  {name: 'penColorRed2', color: '#ea4335'},
+  {name: 'penColorYellow2', color: '#fbbc04'},
+  {name: 'penColorGreen2', color: '#34a853'},
+  {name: 'penColorBlue2', color: '#4285f4'},
+  {name: 'penColorTan2', color: '#e2a185'},
   // Row 4:
-  {name: 'penColorRed700', color: '#c5221f'},
-  {name: 'penColorYellow700', color: '#f29900'},
-  {name: 'penColorGreen700', color: '#188038'},
-  {name: 'penColorBlue700', color: '#1967d2'},
-  {name: 'penColorBrown3', color: '#885945'},
+  {name: 'penColorRed3', color: '#c5221f'},
+  {name: 'penColorYellow3', color: '#f29900'},
+  {name: 'penColorGreen3', color: '#188038'},
+  {name: 'penColorBlue3', color: '#1967d2'},
+  {name: 'penColorTan3', color: '#885945'},
 ];
 
 /**
