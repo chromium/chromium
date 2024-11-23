@@ -175,7 +175,7 @@ public class HubToolbarMediator {
             mActionButtonDataSupplier.removeObserver(mOnActionButtonChangeCallback);
             mActionButtonDataSupplier = null;
         }
-        mRemoveReferenceButtonObservers.stream().forEach(r -> r.run());
+        mRemoveReferenceButtonObservers.forEach(Runnable::run);
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
         if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {

@@ -65,9 +65,9 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Contains the logic for the TouchToFill component. It sets the state of the model and reacts to
@@ -139,11 +139,13 @@ class TouchToFillMediator {
                         .build();
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER, headerModel));
 
-        Set<GURL> avatarUrls =
-                getSharedPasswordsThatRequireNotification(credentials).stream()
-                        .map(Credential::getSenderProfileImageUrl)
-                        .collect(Collectors.toSet());
-        if (!avatarUrls.isEmpty()) {
+        List<Credential> passwordsThatRequireNotification =
+                getSharedPasswordsThatRequireNotification(credentials);
+        if (!passwordsThatRequireNotification.isEmpty()) {
+            Set<GURL> avatarUrls = new HashSet<>();
+            for (Credential credential : passwordsThatRequireNotification) {
+                avatarUrls.add(credential.getSenderProfileImageUrl());
+            }
             // Set a placeholder until the avatar images are loaded.
             headerModel.set(
                     AVATAR,
