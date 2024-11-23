@@ -111,8 +111,9 @@ TEST(SandboxTypeTest, Utility) {
 #endif
 
   base::CommandLine command_line14(command_line);
-  command_line14.AppendSwitchASCII(switches::kServiceSandboxType,
-                                   switches::kNoneSandbox);
+  command_line14.AppendSwitchASCII(
+      switches::kServiceSandboxType,
+      StringFromUtilitySandboxType(Sandbox::kNoSandbox));
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line14));
 
   base::CommandLine command_line15(command_line);
@@ -183,17 +184,15 @@ TEST(SandboxTypeTest, Nonesuch) {
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }
 
-TEST(SandboxTypeTest, ElevatedPrivileges) {
-  // Tests that the "no sandbox and elevated privileges" which is Windows
-  // specific default to no sandbox on non Windows platforms.
-  Sandbox elevated_type =
-      UtilitySandboxTypeFromString(switches::kNoneSandboxAndElevatedPrivileges);
+// This flag is impossible on non-Windows platforms where it crashes in
+// a NOTREACHED(), but validate that it does exist on Windows.
 #if BUILDFLAG(IS_WIN)
+TEST(SandboxTypeTest, ElevatedPrivileges) {
+  Sandbox elevated_type = UtilitySandboxTypeFromString(
+      StringFromUtilitySandboxType(Sandbox::kNoSandboxAndElevatedPrivileges));
   EXPECT_EQ(Sandbox::kNoSandboxAndElevatedPrivileges, elevated_type);
-#else
-  EXPECT_EQ(Sandbox::kNoSandbox, elevated_type);
-#endif
 }
+#endif
 
 }  // namespace policy
 }  // namespace sandbox
