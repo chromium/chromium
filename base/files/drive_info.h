@@ -6,6 +6,8 @@
 #define BASE_FILES_DRIVE_INFO_H_
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
@@ -16,6 +18,7 @@
 #endif
 
 namespace base {
+
 // Used to hold information about either a drive, or of a combination of a
 // partition residing on a drive and the drive itself, depending on how the
 // object was constructed. In general, when calling GetFileDriveInfo(), this
@@ -24,16 +27,18 @@ namespace base {
 // obtained via IOServiceGetMatchingService() with `kIOMediaWholeKey` set to
 // `true`.
 //
+// Each of these parameters can fail to be retrieved from the OS, and so they
+// can each be empty.
+//
 // If you add more fields to this structure (platform-specific fields are OK),
 // make sure to update all functions that use it in
 // file_util_{win|posix|apple}.{cc,mm}, too.
-class BASE_EXPORT DriveInfo {
- public:
+struct BASE_EXPORT DriveInfo {
   DriveInfo();
   DriveInfo(const DriveInfo&) = delete;
-  DriveInfo(DriveInfo&&);
+  DriveInfo(DriveInfo&&) noexcept;
   DriveInfo& operator=(const DriveInfo&) = delete;
-  DriveInfo& operator=(DriveInfo&&);
+  DriveInfo& operator=(DriveInfo&&) noexcept;
   ~DriveInfo();
 
   // Whether the drive has a seek penalty (i.e. is or is not a spinning disk).
@@ -73,16 +78,14 @@ class BASE_EXPORT DriveInfo {
 };
 
 // Returns information about the drive on which sits the given file. Also see
-// |DriveInfo| - in particular, both the drive itself as well as
-// individual attributes thereof can fail to be collected, depending on the
-// drive.
+// `DriveInfo`.
 BASE_EXPORT std::optional<DriveInfo> GetFileDriveInfo(
     const FilePath& file_path);
 
 #if BUILDFLAG(IS_MAC)
 // BSD name is the file found under `/dev`, not the full path including "/dev".
 BASE_EXPORT std::optional<DriveInfo> GetBSDNameDriveInfo(
-    const std::string_view bsd_name);
+    std::string_view bsd_name);
 
 // The IO Object is the underlying handle to the drive device. This function can
 // be used if already iterating over drives matching certain characteristics.

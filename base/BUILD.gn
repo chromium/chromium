@@ -1532,6 +1532,7 @@ component("base") {
       "debug/crash_logging.h",
       "debug/stack_trace.cc",
       "debug/stack_trace.h",
+      "files/drive_info.cc",
       "files/drive_info.h",
       "files/file_enumerator.cc",
       "files/file_enumerator.h",
