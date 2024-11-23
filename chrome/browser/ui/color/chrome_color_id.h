@@ -413,6 +413,11 @@
   E_CPONLY(kColorPipWindowForeground) \
   E_CPONLY(kColorPipWindowForegroundInactive) \
   E_CPONLY(kColorPipWindowHangUpButtonForeground) \
+  E_CPONLY(kColorPipWindowScrimFull) \
+  E_CPONLY(kColorPipWindowScrimTopGradientStart) \
+  E_CPONLY(kColorPipWindowScrimTopGradientEnd) \
+  E_CPONLY(kColorPipWindowScrimBottomGradientStart) \
+  E_CPONLY(kColorPipWindowScrimBottomGradientEnd) \
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* Product Specifications colors */ \

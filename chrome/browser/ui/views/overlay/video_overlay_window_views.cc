@@ -52,8 +52,10 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/resize_utils.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -176,6 +178,11 @@ T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
   return static_cast<T*>(views->back().get());
 }
 
+bool Use2024UI() {
+  return base::FeatureList::IsEnabled(
+      media::kVideoPictureInPictureControlsUpdate2024);
+}
+
 class WindowBackgroundView : public views::View {
   METADATA_HEADER(WindowBackgroundView, views::View)
 
@@ -205,8 +212,9 @@ class ControlsBackgroundView : public views::View {
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    const SkColor color =
-        GetColorProvider()->GetColor(kColorPipWindowControlsBackground);
+    const SkColor color = GetColorProvider()->GetColor(
+        Use2024UI() ? kColorPipWindowScrimFull
+                    : kColorPipWindowControlsBackground);
     layer()->SetColor(SkColorSetA(color, SK_AlphaOPAQUE));
     layer()->SetOpacity(static_cast<float>(SkColorGetA(color)) /
                         SK_AlphaOPAQUE);
@@ -216,10 +224,31 @@ class ControlsBackgroundView : public views::View {
 BEGIN_METADATA(ControlsBackgroundView)
 END_METADATA
 
-bool Use2024UI() {
-  return base::FeatureList::IsEnabled(
-      media::kVideoPictureInPictureControlsUpdate2024);
-}
+class GradientBackground : public views::Background {
+ public:
+  GradientBackground(SkColor4f top_color, SkColor4f bottom_color)
+      : top_color_(top_color), bottom_color_(bottom_color) {}
+  GradientBackground(const GradientBackground&) = delete;
+  GradientBackground& operator=(const GradientBackground&) = delete;
+  ~GradientBackground() override = default;
+
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    gfx::Rect draw_bounds = view->GetContentsBounds();
+    const SkColor4f colors[2] = {top_color_, bottom_color_};
+    const SkPoint points[2] = {
+        gfx::PointToSkPoint(draw_bounds.top_center()),
+        gfx::PointToSkPoint(draw_bounds.bottom_center())};
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setShader(cc::PaintShader::MakeLinearGradient(points, colors, nullptr,
+                                                        2, SkTileMode::kClamp));
+    canvas->DrawRect(draw_bounds, flags);
+  }
+
+  const SkColor4f top_color_;
+  const SkColor4f bottom_color_;
+};
 
 }  // namespace
 
@@ -886,6 +915,8 @@ void VideoOverlayWindowViews::SetUpViews() {
 
   // These controls may be different (or even nonexistent) depending on whether
   // the 2024 updated UI is enabled.
+  std::unique_ptr<views::View> controls_top_scrim_view;
+  std::unique_ptr<views::View> controls_bottom_scrim_view;
   std::unique_ptr<views::ImageView> favicon_view;
   std::unique_ptr<views::Label> origin;
   std::unique_ptr<OverlayWindowMinimizeButton> minimize_button;
@@ -907,6 +938,19 @@ void VideoOverlayWindowViews::SetUpViews() {
   if (Use2024UI()) {
     play_pause_controls_view->SetSize(
         {kPlaybackButtonSize, kPlaybackButtonSize});
+    controls_top_scrim_view = std::make_unique<views::View>();
+    controls_top_scrim_view->SetBackground(std::make_unique<GradientBackground>(
+        SkColor4f::FromColor(
+            GetColorProvider()->GetColor(kColorPipWindowScrimTopGradientStart)),
+        SkColor4f::FromColor(
+            GetColorProvider()->GetColor(kColorPipWindowScrimTopGradientEnd))));
+    controls_bottom_scrim_view = std::make_unique<views::View>();
+    controls_bottom_scrim_view->SetBackground(
+        std::make_unique<GradientBackground>(
+            SkColor4f::FromColor(GetColorProvider()->GetColor(
+                kColorPipWindowScrimBottomGradientStart)),
+            SkColor4f::FromColor(GetColorProvider()->GetColor(
+                kColorPipWindowScrimBottomGradientEnd))));
     favicon_view = std::make_unique<views::ImageView>();
     favicon_view->SetSize(kFaviconSize);
     origin = std::make_unique<views::Label>(std::u16string(),
@@ -1114,6 +1158,16 @@ void VideoOverlayWindowViews::SetUpViews() {
   close_controls_view->layer()->SetName("CloseControlsView");
 
   if (Use2024UI()) {
+    // The scrim for the top controls. ----------------------------------------
+    controls_top_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    controls_top_scrim_view->layer()->SetFillsBoundsOpaquely(false);
+    controls_top_scrim_view->layer()->SetName("ControlsTopScrimView");
+
+    // The scrim for the bottom controls. -------------------------------------
+    controls_bottom_scrim_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+    controls_bottom_scrim_view->layer()->SetFillsBoundsOpaquely(false);
+    controls_bottom_scrim_view->layer()->SetName("ControlsBottomScrimView");
+
     // views::View that displays the website's favicon. -----------------------
     favicon_view->SetPaintToLayer(ui::LAYER_TEXTURED);
     favicon_view->layer()->SetFillsBoundsOpaquely(false);
@@ -1216,6 +1270,12 @@ void VideoOverlayWindowViews::SetUpViews() {
   video_view_ = AddChildView(&view_holder_, std::move(video_view));
   controls_scrim_view_ =
       controls_container_view->AddChildView(std::move(controls_scrim_view));
+  if (Use2024UI()) {
+    controls_top_scrim_view_ = controls_container_view->AddChildView(
+        std::move(controls_top_scrim_view));
+    controls_bottom_scrim_view_ = controls_container_view->AddChildView(
+        std::move(controls_bottom_scrim_view));
+  }
 
   close_controls_view_ =
       controls_container_view->AddChildView(std::move(close_controls_view));
@@ -1370,6 +1430,8 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   if (Use2024UI()) {
     constexpr int kTopControlsHeight = 34;
     constexpr int kBottomControlsHeight = 64;
+    constexpr int kTopScrimHeight = 160;
+    constexpr int kBottomScrimHeight = 160;
     constexpr int kFaviconLeftMargin = 8;
     constexpr int kFaviconTopMargin = 5;
     constexpr int kFaviconRightMargin = 4;
@@ -1402,6 +1464,15 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     // The rest of the vertical space is used for the middle controls area.
     gfx::Rect middle_controls_bounds = gfx::BoundingRect(
         top_controls_bounds.bottom_left(), bottom_controls_bounds.top_right());
+
+    controls_top_scrim_view_->SetBoundsRect(
+        {top_controls_bounds.x(), top_controls_bounds.y(),
+         top_controls_bounds.width(), kTopScrimHeight});
+    controls_bottom_scrim_view_->SetBoundsRect(
+        {bottom_controls_bounds.x(),
+         bottom_controls_bounds.y() + bottom_controls_bounds.height() -
+             kBottomScrimHeight,
+         bottom_controls_bounds.width(), kBottomScrimHeight});
 
     gfx::Rect favicon_view_bounds({top_controls_bounds.x() + kFaviconLeftMargin,
                                    top_controls_bounds.y() + kFaviconTopMargin},
