@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient} from '../glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, TabData} from '../glic_api/glic_api.js';
 
 import {PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {WebClientRequestTypes} from './request_types.js';
@@ -13,9 +13,11 @@ import type {WebClientRequestTypes} from './request_types.js';
 
 class GlicHostRegistryImpl implements GlicHostRegistry {
   constructor(private windowProxy: WindowProxy) {}
-  registerWebClient(webClient: GlicWebClient): Promise<void> {
+
+  async registerWebClient(webClient: GlicWebClient): Promise<void> {
     const host = new GlicBrowserHostImpl(webClient, this.windowProxy);
-    return webClient.initialize(host);
+    await webClient.initialize(host);
+    host.webClientInitialized();
   }
 }
 
@@ -37,11 +39,16 @@ type WebClientMessageHandlerInterface = {
 class WebClientMessageHandler implements WebClientMessageHandlerInterface {
   constructor(private webClient: GlicWebClient) {}
 
-  async glicWebClientNotifyPanelOpened(request: {
-    dockedToWindowId: string|undefined,
-  }) {
+  glicWebClientNotifyPanelOpened(payload: {dockedToWindowId: string|undefined}):
+      void {
     if (this.webClient.notifyPanelOpened) {
-      return this.webClient.notifyPanelOpened(request.dockedToWindowId);
+      this.webClient.notifyPanelOpened(payload.dockedToWindowId);
+    }
+  }
+
+  glicWebClientNotifyPanelClosed(): void {
+    if (this.webClient.notifyPanelClosed) {
+      this.webClient.notifyPanelClosed();
     }
   }
 }
@@ -70,6 +77,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.receiver.destroy();
   }
 
+  webClientInitialized() {
+    this.sender.requestNoResponse('glicBrowserWebClientInitialized', {});
+  }
+
   async handleRawRequest(type: string, payload: any):
       Promise<{payload: any, transfer: Transferable[]}|undefined> {
     if (!this.handlerFunctionNames.has(type)) {
@@ -87,8 +98,27 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   // GlicBrowserHost implementation.
 
-  async getChromeVersion() {
+  getChromeVersion() {
     return this.sender.requestWithResponse('glicBrowserGetChromeVersion', {});
+  }
+
+  async createTab(
+      url: string,
+      options: {openInBackground?: boolean, windowId?: string},
+      ): Promise<TabData> {
+    const result =
+        await this.sender.requestWithResponse('glicBrowserCreateTab', {
+          url,
+          options,
+        });
+    if (!result.tabData) {
+      throw new Error('createTab: failed');
+    }
+    return result.tabData;
+  }
+
+  closePanel(): Promise<void> {
+    return this.sender.requestWithResponse('glicBrowserClosePanel', {});
   }
 }
 

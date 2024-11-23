@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TabData} from '//glic/glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -24,6 +25,12 @@ readability, and ensures that each name is unique.
 
 // Types of requests to the host (Chrome).
 export interface HostRequestTypes {
+  // This message is sent after the client returns successfully from
+  // initialize(). It is not part of the GlicBrowserHost public API.
+  'glicBrowserWebClientInitialized': {
+    request: {},
+    response: void,
+  };
   'glicBrowserGetChromeVersion': {
     request: {},
     response: {
@@ -33,6 +40,20 @@ export interface HostRequestTypes {
       patch: number,
     },
   };
+  'glicBrowserCreateTab': {
+    request: {
+      url: string,
+      options: {openInBackground?: boolean, windowId?: string},
+    },
+    response: {
+      // Undefined on failure.
+      tabData?: TabData,
+    },
+  };
+  'glicBrowserClosePanel': {
+    request: {},
+    response: void,
+  };
 }
 
 // Types of requests to the GlicWebClient.
@@ -41,6 +62,10 @@ export interface WebClientRequestTypes {
     request: {
       dockedToWindowId: string|undefined,
     },
+    response: void,
+  };
+  'glicWebClientNotifyPanelClosed': {
+    request: {},
     response: void,
   };
 }

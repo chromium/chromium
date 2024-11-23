@@ -5,18 +5,65 @@
 #include "chrome/browser/ui/webui/glic/glic_page_handler.h"
 
 #include "base/version_info/version_info.h"
+#include "chrome/browser/glic/glic_keyed_service.h"
+#include "chrome/browser/glic/glic_keyed_service_factory.h"
+#include "chrome/browser/ui/webui/glic/glic.mojom.h"
 
 namespace glic {
+class GlicWebClientHandler : public glic::mojom::WebClientHandler {
+ public:
+  explicit GlicWebClientHandler(
+      GlicKeyedService* glic_service,
+      mojo::PendingReceiver<glic::mojom::WebClientHandler> receiver)
+      : glic_service_(glic_service), receiver_(this, std::move(receiver)) {}
+
+  // glic::mojom::WebClientHandler implementation.
+  void WebClientInitialized(
+      ::mojo::PendingRemote<glic::mojom::WebClient> web_client) override {
+    web_client_.Bind(std::move(web_client));
+  }
+
+  void GetChromeVersion(GetChromeVersionCallback callback) override {
+    std::move(callback).Run(version_info::GetVersion());
+  }
+
+  void CreateTab(const ::GURL& url,
+                 bool open_in_background,
+                 const std::optional<int32_t> window_id,
+                 CreateTabCallback callback) override {
+    glic_service_->CreateTab(url, open_in_background, window_id,
+                             std::move(callback));
+  }
+
+  void ClosePanel() override { glic_service_->ClosePanel(); }
+
+  void GetContextFromFocusedTab(
+      bool include_inner_text,
+      bool include_viewport_screenshot,
+      GetContextFromFocusedTabCallback callback) override {
+    glic_service_->GetContextFromFocusedTab(
+        include_inner_text, include_viewport_screenshot, std::move(callback));
+  }
+
+ private:
+  raw_ptr<GlicKeyedService> glic_service_;
+  mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
+  mojo::Remote<glic::mojom::WebClient> web_client_;
+};
 
 GlicPageHandler::GlicPageHandler(
-    mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
-    mojo::PendingRemote<glic::mojom::Page> page)
-    : receiver_(this, std::move(receiver)), page_(std::move(page)) {}
+    content::BrowserContext* browser_context,
+    mojo::PendingReceiver<glic::mojom::PageHandler> receiver)
+    : browser_context_(browser_context), receiver_(this, std::move(receiver)) {}
 
 GlicPageHandler::~GlicPageHandler() = default;
 
-void GlicPageHandler::GetChromeVersion(GetChromeVersionCallback callback) {
-  std::move(callback).Run(version_info::GetVersion());
+void GlicPageHandler::CreateWebClient(
+    ::mojo::PendingReceiver<glic::mojom::WebClientHandler>
+        web_client_receiver) {
+  web_client_handler_ = std::make_unique<GlicWebClientHandler>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser_context_),
+      std::move(web_client_receiver));
 }
 
 }  // namespace glic

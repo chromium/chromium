@@ -9,12 +9,15 @@
 // TODO(crbug.com/379677413): Add tests for the API host.
 
 import type {PostMessageRequestHandler} from '//glic/glic_api_host/post_message_transport.js';
-import {PostMessageRequestReceiver} from '//glic/glic_api_host/post_message_transport.js';
+import {PostMessageRequestReceiver, PostMessageRequestSender} from '//glic/glic_api_host/post_message_transport.js';
 import type {HostRequestTypes} from '//glic/glic_api_host/request_types.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from './browser_proxy.js';
-import type {PageHandlerInterface} from './glic.mojom-webui.js';
+import type {WebClientHandlerInterface, WebClientInterface} from './glic.mojom-webui.js';
+import {WebClientHandlerRemote, WebClientReceiver} from './glic.mojom-webui.js';
+
 
 // Turn everything except void into a promise.
 type Promisify<T> = T extends void ? void : Promise<T>;
@@ -32,9 +35,40 @@ type HostMessageHandlerInterface = {
       Promisify<HostRequestTypes[Property]['response']>;
 };
 
+class WebClientImpl implements WebClientInterface {
+  constructor(private sender: PostMessageRequestSender) {}
+
+  notifyPanelOpened(dockedToWindowId: (number|null)): void {
+    this.sender.requestNoResponse('glicWebClientNotifyPanelOpened', {
+      dockedToWindowId: optionalWindowIdToClient(dockedToWindowId),
+    });
+  }
+
+  async notifyPanelClosed(): Promise<{success: boolean}> {
+    await this.sender.requestWithResponse('glicWebClientNotifyPanelClosed', {});
+    return {success: true};
+  }
+}
+
 // Handles all requests to the host.
 class HostMessageHandler implements HostMessageHandlerInterface {
-  constructor(private handler: PageHandlerInterface) {}
+  // Undefined until the web client is initialized.
+  private receiver: WebClientReceiver|undefined;
+  constructor(
+      private handler: WebClientHandlerInterface,
+      private sender: PostMessageRequestSender) {}
+
+  destroy() {
+    if (this.receiver) {
+      this.receiver.$.close();
+    }
+  }
+
+  glicBrowserWebClientInitialized() {
+    this.receiver = new WebClientReceiver(new WebClientImpl(this.sender));
+    this.handler.webClientInitialized(
+        this.receiver.$.bindNewPipeAndPassRemote());
+  }
 
   async glicBrowserGetChromeVersion() {
     const response = await this.handler.getChromeVersion();
@@ -46,19 +80,52 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       patch: c[3] || 0,
     };
   }
+
+  async glicBrowserCreateTab(request: {
+    url: string,
+    options: {openInBackground?: boolean, windowId?: string},
+  }) {
+    const response = await this.handler.createTab(
+        urlFromClient(request.url),
+        request.options.openInBackground !== undefined ?
+            request.options.openInBackground :
+            false,
+        optionalWindowIdFromClient(request.options.windowId));
+    const tabData = response.tabData;
+    if (tabData) {
+      return {
+        tabData: {
+          tabId: tabIdToClient(tabData.tabId),
+          windowId: windowIdToClient(tabData.windowId),
+          url: urlToClient(tabData.url),
+          title: optionalToClient(tabData.title),
+        },
+      };
+    }
+    return {};
+  }
+
+  glicBrowserClosePanel() {
+    return this.handler.closePanel();
+  }
 }
 
 export class GlicApiHost implements PostMessageRequestHandler {
   private messageHandler: HostMessageHandler;
   private readonly postMessageReceiver: PostMessageRequestReceiver;
+  private sender: PostMessageRequestSender;
+  private handler: WebClientHandlerRemote;
 
   constructor(
       private browserProxy: BrowserProxy, private windowProxy: WindowProxy,
       private embeddedOrigin: string) {
     this.postMessageReceiver =
         new PostMessageRequestReceiver(embeddedOrigin, windowProxy, this);
-    this.messageHandler = new HostMessageHandler(this.browserProxy.handler);
-
+    this.sender = new PostMessageRequestSender(windowProxy, embeddedOrigin);
+    this.handler = new WebClientHandlerRemote();
+    this.browserProxy.handler.createWebClient(
+        this.handler.$.bindNewPipeAndPassReceiver());
+    this.messageHandler = new HostMessageHandler(this.handler, this.sender);
     this.windowProxy.postMessage(
         {
           type: 'glic-bootstrap',
@@ -69,8 +136,11 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   destroy() {
     this.postMessageReceiver.destroy();
+    this.messageHandler.destroy();
+    this.sender.destroy();
   }
 
+  // PostMessageRequestHandler implementation.
   async handleRawRequest(type: string, payload: any):
       Promise<{payload: any, transfer: Transferable[]}|undefined> {
     const handlerFunction = (this.messageHandler as any)[type];
@@ -88,4 +158,53 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
     return {payload: response, transfer};
   }
+}
+
+
+// Utility functions for converting from mojom types to message types.
+// Summary of changes:
+// * Window and tab IDs are sent using int32 in mojo, but made opaque
+//   strings for the public API. This allows Chrome to change the ID
+//   representation later.
+// * Optional types in Mojo use null, but optional types in the public API use
+//   undefined.
+function windowIdToClient(windowId: number): string {
+  return `${windowId}`;
+}
+
+function windowIdFromClient(windowId: string): number {
+  return parseInt(windowId);
+}
+
+function tabIdToClient(tabId: number): string {
+  return `${tabId}`;
+}
+
+function optionalWindowIdToClient(windowId: number|null): string|undefined {
+  if (windowId === null) {
+    return undefined;
+  }
+  return windowIdToClient(windowId);
+}
+
+function optionalWindowIdFromClient(windowId: string|undefined): number|null {
+  if (windowId === undefined) {
+    return null;
+  }
+  return windowIdFromClient(windowId);
+}
+
+function optionalToClient<T>(value: T|null) {
+  if (value === null) {
+    return undefined;
+  }
+  return value;
+}
+
+function urlToClient(url: Url): string {
+  return url.url;
+}
+
+function urlFromClient(url: string): Url {
+  return {url};
 }

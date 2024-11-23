@@ -17,6 +17,11 @@ ts_library("request_types") {
   root_dir = "."
   in_files = [ "request_types.ts" ]
   composite = true
+  deps = [ "//chrome/browser/resources/glic:glic_api" ]
+
+  path_mappings = [ "//glic/glic_api/*|" +
+                    rebase_path("$root_gen_dir/chrome/browser/resources/glic/*",
+                                target_gen_dir) ]
 }
 
 ts_library("post_message_transport") {

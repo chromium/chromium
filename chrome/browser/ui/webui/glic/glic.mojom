@@ -5,20 +5,116 @@
 module glic.mojom;
 
 import "mojo/public/mojom/base/version.mojom";
+import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
 
 // Factory for PageHandler used in chrome://glic.
 interface PageHandlerFactory {
   // Creates the PageHandler.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> receiver);
+  CreatePageHandler(pending_receiver<PageHandler> receiver);
 };
 
-// Access to the browser from the glic WebUI.
+// Page handler for the glic WebUI.
 interface PageHandler {
+  // Creates a WebClientHandler, for use by a single web client instance.
+  CreateWebClient(pending_receiver<WebClientHandler> web_client_receiver);
+};
+
+// Access to the browser from the web client by proxy through the WebUI.
+// A single WebClientHandler will provide access to the browser for only
+// a single web client. If the webview navigates or refreshes, a new
+// WebClientHandler is created.
+interface WebClientHandler {
+  // Called when the web client loads and successfully returns from
+  // initialize(), indicating that it will support Chrome. `web_client` may
+  // be used to communicate with the client.
+  WebClientInitialized(pending_remote<WebClient> web_client);
   // Returns the Chrome version.
   GetChromeVersion() => (mojo_base.mojom.Version version);
+  // Creates a new tab. `url` must have a http or https protocol.
+  // `tab_data` is null if the tab could not be created, which may happen if the
+  // url or window_id is invalid.
+  CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
+    => (TabData? tab_data);
+  // Closes the Glic panel.
+  ClosePanel();
+  // Returns the context from the currently active tab.
+  // `tab_context_result` is null if tab content could not be captured.
+  // This may fail if the tab is navigated while collecting data, or closed
+  // before data is collected.
+  GetContextFromFocusedTab(bool include_inner_text,
+    bool include_viewport_screenshot) => (TabContextResult? tab_context_result);
 };
 
-// Access to the WebUI page from the browser.
-interface Page {
+// Access from the browser to the Glic web client by proxy of the WebUI page.
+interface WebClient {
+  // The user has requested activation of the web client.
+  // `docked_to_window_id` identifies the browser window to which the
+  // panel is docked to. It is undefined if it is floating free.
+  // The promise being resolved indicates the web client is ready to receive
+  // the user's input.
+  NotifyPanelOpened(int32? docked_to_window_id);
+  // The user has closed the web client window. The window may be activated
+  // again later. Returns when the web client has stored any needed
+  // information and stopped accepting the user's input.
+  NotifyPanelClosed() => (bool success);
 };
+
+// Information extracted from a tab.
+struct TabContextResult {
+  // Metadata about the tab that holds the page. Always provided.
+  TabData tab_data;
+  // Web page data, if requested.
+  WebPageData? web_page_data;
+  // A screenshot of the user-visible portion of the tab. Provided only if
+  // requested.
+  Screenshot? viewport_screenshot;
+};
+
+// Information about a web page being rendered in a tab.
+struct WebPageData {
+  // Main document of the page.
+  DocumentData main_document;
+};
+
+// Text information about a web document.
+struct DocumentData {
+  // Origin of the document.
+  url.mojom.Origin origin;
+  // The innerText of the document at its current state.
+  // Currently includes embedded same-origin iframes.
+  string inner_text;
+};
+
+// Data about a browser tab.
+struct TabData {
+  // Unique ID of the tab that owns the page.
+  int32 tab_id;
+  // Unique ID of the browser window holding the tab.
+  int32 window_id;
+  // URL of the page.
+  url.mojom.Url url;
+  // The title of the loaded page. Returned if the page is loaded enough for it
+  // to be available. It may be empty if the page did not define a title.
+  string? title;
+};
+
+// Annotates an image, providing security relevant information about the origins
+// from which image is composed.
+// TODO(crbug.com/380495633): Finalize and implement image annotations.
+struct ImageOriginAnnotations {
+};
+
+// An encoded screenshot image and associated metadata.
+struct Screenshot {
+  // Width and height of the image in pixels.
+  uint32 width_pixels;
+  uint32 height_pixels;
+  // Encoded image data.
+  array<uint8> data;
+  // The image encoding format represented as a MIME type.
+  string mime_type;
+  // Image annotations for this screenshot.
+  ImageOriginAnnotations origin_annotations;
+};
+

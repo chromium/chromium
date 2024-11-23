@@ -12,6 +12,7 @@ source_set("glic") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui/glic:mojo_bindings",
     "//content/public/browser",
     "//ui/views:views",
   ]

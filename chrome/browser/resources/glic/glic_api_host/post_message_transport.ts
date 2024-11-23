@@ -11,6 +11,8 @@ import type {HostRequestTypes, WebClientRequestTypes} from './request_types.js';
 
 // Requests sent over postMessage have this structure.
 interface RequestMessage {
+  // Present for any Glic request message.
+  glicRequest: true;
   // The type of request.
   type: string;
   // A unique ID of the request. Round-tripped in the response. `undefined` if a
@@ -46,10 +48,19 @@ export class PostMessageRequestSender {
   requestId = 1;
   responseHandlers: Map<number, (response: ResponseMessage) => void> =
       new Map();
+  onDestroy: () => void;
 
   constructor(
       private messageSender: PostMessageSender, private remoteOrigin: string) {
-    window.addEventListener('message', this.onMessage.bind(this));
+    const handler = this.onMessage.bind(this);
+    window.addEventListener('message', handler);
+    this.onDestroy = () => {
+      window.removeEventListener('message', handler);
+    };
+  }
+
+  destroy() {
+    this.onDestroy();
   }
 
   // Handles responses from the host.
@@ -82,6 +93,7 @@ export class PostMessageRequestSender {
     });
 
     const message: RequestMessage = {
+      glicRequest: true,
       requestId,
       type: requestType,
       requestPayload: request,
@@ -95,6 +107,7 @@ export class PostMessageRequestSender {
       requestType: T, request: AllRequestTypes[T]['request'],
       transfer: Transferable[] = []) {
     const message: RequestMessage = {
+      glicRequest: true,
       requestId: undefined,
       type: requestType,
       requestPayload: request,
@@ -130,19 +143,15 @@ export class PostMessageRequestReceiver {
   async onMessage(event: MessageEvent) {
     // This receives all messages to the window, so ignore them if they don't
     // look compatible.
-    if (event.origin !== this.embeddedOrigin || !event.source) {
+    if (event.origin !== this.embeddedOrigin || !event.source ||
+        !event.data.glicRequest) {
       return;
     }
-    const {requestId, type} = event.data;
-    const response =
-        await this.handler.handleRawRequest(type, event.data.payload);
+    const requestMessage = event.data as RequestMessage;
+    const {requestId, type, requestPayload} = requestMessage;
+    const response = await this.handler.handleRawRequest(type, requestPayload);
+
     // TODO(crbug.com/379684723): How should we handle rejected promises?
-    // TODO(crbug.com/379684723): Consider returning a response any time a
-    // requestId is sent. This would allow a caller to wait even if no response
-    // is expected.
-    if (!response) {
-      return;
-    }
 
     // If the message contains no `requestId`, a response is not requested.
     if (!requestId) {
@@ -151,12 +160,12 @@ export class PostMessageRequestReceiver {
     const responseMessage: ResponseMessage = {
       type,
       responseId: requestId,
-      responsePayload: response.payload,
+      responsePayload: response?.payload,
     };
     this.postMessageSender.postMessage(
         responseMessage,
         this.embeddedOrigin,
-        response.transfer,
+        response?.transfer,
     );
   }
 }

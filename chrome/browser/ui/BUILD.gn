@@ -5678,6 +5678,7 @@ static_library("ui") {
       "webui/glic/glic_ui.cc",
       "webui/glic/glic_ui.h",
     ]
+    deps += [ "//chrome/browser/glic" ]
   }
 
   if (enable_reporting) {
