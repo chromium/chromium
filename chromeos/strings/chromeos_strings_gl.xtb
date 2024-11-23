@@ -104,7 +104,7 @@
 <translation id="1452939186874918380">paraugas</translation>
 <translation id="145402479967797468">Controis de reprodución</translation>
 <translation id="1459693405370120464">O tempo</translation>
-<translation id="1463084054301832672">casa de campo</translation>
+<translation id="1463084054301832672">tipo casa de campo</translation>
 <translation id="1468664791493211953">Ofertas</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> xestiona este dispositivo e pode supervisar a túa actividade.</translation>
 <translation id="1478594628797167447">Escáner</translation>
@@ -399,12 +399,12 @@
 <translation id="2882230315487799269">Personalizar a solicitude de IA</translation>
 <translation id="2888298276507578975">Escribe unha solicitude como "redacta unha nota de agradecemento"</translation>
 <translation id="2890557891229184386">illa tropical</translation>
-<translation id="2895772081848316509">escuros</translation>
+<translation id="2895772081848316509">escura</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
 <translation id="2940811910881150316">Non se puido realizar a proba do dispositivo. Abre a tapa de novo para realizala.</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2956070106555335453">Resumo</translation>
-<translation id="299385721391037602">rosas e amarelos</translation>
+<translation id="299385721391037602">rosas e amarelas</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017079585324758401">Fondo</translation>
@@ -492,7 +492,7 @@
 <translation id="3486220673238053218">definición</translation>
 <translation id="3487866404496702283">Comentarios sobre a función mahi</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
-<translation id="3492882532495507361">Despacho de estilo <ph name="OFFICE_STYLE" /> con tons <ph name="OFFICE_COLOR" /></translation>
+<translation id="3492882532495507361">Despacho de aparencia <ph name="OFFICE_STYLE" /> cunha tonalidade <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">A medición dos datos provén do teu Chromebook. É posible que non coincidan cos datos do provedor.</translation>
 <translation id="3502426834823382181">mostra todas as aplicacións</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimento de rendemento<ph name="END_LINK1" /></translation>
@@ -527,7 +527,7 @@
 <translation id="3644695927181369554">Mala suxestión</translation>
 <translation id="3651050199673793219">Seleccionar unidade de temperatura</translation>
 <translation id="3661106764436337772">Escribe con máis rapidez e confianza</translation>
-<translation id="3662461537616691585">vermello escuro e granate</translation>
+<translation id="3662461537616691585">vermella escura e granate</translation>
 <translation id="3668449597372804501">Fondo de pantalla Fluxo das nubes</translation>
 <translation id="3668570675727296296">Configuración de idioma</translation>
 <translation id="3675132884790542448">porcos</translation>
@@ -845,7 +845,7 @@
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{A persoa administradora configurou <ph name="APP_NAME" /> para que arranque automaticamente cando inicies sesión.}=2{A persoa administradora configurou <ph name="APP_NAME" /> e 1 aplicación máis para que arranquen automaticamente cando inicies sesión.}other{A persoa administradora configurou <ph name="APP_NAME" /> e # aplicacións máis para que arranquen automaticamente cando inicies sesión.}}</translation>
 <translation id="5248419081947706722">azul</translation>
 <translation id="5252456968953390977">Itinerancia</translation>
-<translation id="5254600740122644523">Un estante para libros <ph name="SIMPLE_STYLE" /> nunha sala de cor <ph name="SIMPLE_TONE" /></translation>
+<translation id="5254600740122644523">Un estante para libros cunha fasquía <ph name="SIMPLE_STYLE" /> nunha sala de cor <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Activar modo de cores claras</translation>
 <translation id="5261479807286543505">Configuración de inicio do sistema</translation>
 <translation id="5264277876637023664">Realizar proba de CPU</translation>
@@ -902,7 +902,7 @@
 <translation id="5554741914132564590">O fabricante do dispositivo externo forneceu esta actualización, pero Google non a verificou.</translation>
 <translation id="5559898619118303662">Cambiar automaticamente ao tema escuro á hora do solpor</translation>
 <translation id="556042886152191864">Botón</translation>
-<translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tons <ph name="TERRAIN_COLOR" /></translation>
+<translation id="5562551811867441927"><ph name="TERRAIN_FEATURE" /> en tonalidades <ph name="TERRAIN_COLOR" /></translation>
 <translation id="5572169899491758844">Escanear</translation>
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver buscar</translation>
@@ -922,7 +922,7 @@
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5674943355143004615">Describe o fondo de pantalla que queres crear</translation>
-<translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> surrealista con <ph name="SURREAL_SUBJECT" /></translation>
+<translation id="5680504961595602662"><ph name="SURREAL_LANDSCAPE" /> de aspecto surrealista con <ph name="SURREAL_SUBJECT" /></translation>
 <translation id="5685478548317291523">cereixas</translation>
 <translation id="5691511426247308406">Familia</translation>
 <translation id="5692395212036914927">Resumo da gravación e creación de nomes</translation>
@@ -1076,7 +1076,7 @@
 <translation id="6394634179843537518">Engadir ficheiro</translation>
 <translation id="6396719002784938593">carrizo seco</translation>
 <translation id="639964859328803943">de té</translation>
-<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> de <ph name="DREAMSCAPES_MATERIAL" /> en <ph name="DREAMSCAPES_COLORS" /></translation>
+<translation id="6400680457268373900"><ph name="DREAMSCAPES_OBJECT" /> de <ph name="DREAMSCAPES_MATERIAL" /> de aspecto surrealista en cores <ph name="DREAMSCAPES_COLORS" /></translation>
 <translation id="6401427872449207797">busca do navegador</translation>
 <translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>
@@ -1192,7 +1192,7 @@
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
-<translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> con <ph name="GLOWSCAPES_FEATURE" /> brillantes</translation>
+<translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> con <ph name="GLOWSCAPES_FEATURE" /> de aspecto brillante</translation>
 <translation id="6975981640379148271">coalas</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
@@ -1275,7 +1275,7 @@
 <translation id="7311368985037279727">cor do teclado</translation>
 <translation id="7317831949569936035">Inscrición do centro educativo</translation>
 <translation id="7319430975418800333">A3</translation>
-<translation id="7321055305895875150">verde e verde azulado</translation>
+<translation id="7321055305895875150">verde e verde azulada</translation>
 <translation id="7328475450575141167">ave do paraíso</translation>
 <translation id="7331297744262591636">Debes ter 18 anos como mínimo e aceptar que o uso que fagas dos fondos de pantalla xerados por IA está suxeito ás <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Condicións de servizo de Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> e ás <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Condicións de servizo adicionais da IA xenerativa<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
@@ -1283,7 +1283,7 @@
           Só podes crear fondos de pantalla coa IA para uso persoal e non comercial. Cando solicites axuda para crear un fondo de pantalla, enviarase o texto aos servidores da IA de Google para xerar suxestións de fondos de pantalla, de acordo co establecido na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
-<translation id="7344788170842919262">terrosos</translation>
+<translation id="7344788170842919262">terrosa</translation>
 <translation id="7346768383111016081">Asigna un control a unha acción de xogo para xogar co teclado</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
 <translation id="7353413232959255829">Resultado da busca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Preme Introducir para navegar ata o atallo.</translation>
@@ -1373,7 +1373,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7813073042185856802">montaña</translation>
 <translation id="7819857487979277519">PSK (WPA ou RSN)</translation>
 <translation id="7824219488248240180">postimpresionista</translation>
-<translation id="7828503206075800057">Unha cafetaría <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /></translation>
+<translation id="7828503206075800057">Unha cafetaría <ph name="CAFE_TYPE" /> <ph name="CAFE_STYLE" /></translation>
 <translation id="7841134249932030522">Activar modo escuro</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7849030488395653706">auroras boreais</translation>
@@ -1517,7 +1517,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8508640263392900755">Detalles do APN</translation>
 <translation id="8522687886059337719">Xa podes acceder a novos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos<ph name="END_LINK_WALLPAPER_SUBPAGE" /> e <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />protectores de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
-<translation id="852896705346853285">casa de té</translation>
+<translation id="852896705346853285">tipo casa de té</translation>
 <translation id="8538236298648811558">Con tecnoloxía da IA de Google</translation>
 <translation id="8550364285433943656">Asigna controis a accións de xogo para xogar coas teclas do teclado</translation>
 <translation id="8557447961879934694">WPA2</translation>
@@ -1669,7 +1669,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="952992212772159698">Non activado</translation>
 <translation id="95718197892796296">arxila</translation>
 <translation id="960719561871045870">Código do operador</translation>
-<translation id="965918541715156800">amarelo e verde azulado</translation>
+<translation id="965918541715156800">amarela e verde azulada</translation>
 <translation id="966787709310836684">menú</translation>
 <translation id="979450713603643090">Rosa claro</translation>
 <translation id="982713511914535780">Realizar proba de descarga</translation>
