@@ -1146,6 +1146,25 @@ TEST_P(VideoDecoderStreamTest, FallbackDecoderDecodeError) {
   ReadAllFrames();
 }
 
+TEST_P(VideoDecoderStreamTest, FallbackDecoderDecodeErrorAfterReset) {
+  Initialize();
+  Reset();
+  decoder_->SimulateError();
+  ReadOneFrame();
+
+  // |video_decoder_stream_| should have fallen back to a new decoder.
+  ASSERT_EQ(GetDecoderId(1), decoder_->GetDecoderId());
+
+  ASSERT_FALSE(pending_read_);
+  ASSERT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
+
+  // Check that we fell back to Decoder2.
+  ASSERT_GT(decoder_->total_bytes_decoded(), 0);
+
+  // Verify no frame was dropped.
+  ReadAllFrames();
+}
+
 TEST_P(VideoDecoderStreamTest,
        FallbackDecoder_EndOfStreamReachedBeforeFallback) {
   // Only consider cases where there is a decoder delay. For test simplicity,
