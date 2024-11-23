@@ -717,7 +717,7 @@ void SingleThreadProxy::NotifyPaintWorkletStateChange(
   NOTREACHED();
 }
 
-void SingleThreadProxy::NotifyThroughputTrackerResults(
+void SingleThreadProxy::NotifyCompositorMetricsTrackerResults(
     CustomTrackerResults results) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
@@ -726,7 +726,7 @@ void SingleThreadProxy::NotifyThroughputTrackerResults(
   // destruction. Regardless, `layer_tree_host_` should be accessed from
   // MainThread side.
   DebugScopedSetMainThread main(task_runner_provider_);
-  layer_tree_host_->NotifyThroughputTrackerResults(std::move(results));
+  layer_tree_host_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 bool SingleThreadProxy::IsInSynchronousComposite() const {

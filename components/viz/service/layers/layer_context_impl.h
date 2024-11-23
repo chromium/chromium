@@ -88,7 +88,7 @@ class LayerContextImpl : public cc::LayerTreeHostImplClient,
       cc::ElementListType element_list_type) override;
   void NotifyPaintWorkletStateChange(
       cc::Scheduler::PaintWorkletState state) override;
-  void NotifyThroughputTrackerResults(
+  void NotifyCompositorMetricsTrackerResults(
       cc::CustomTrackerResults results) override;
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(

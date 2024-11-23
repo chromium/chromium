@@ -680,11 +680,13 @@ void ProxyImpl::NotifyPaintWorkletStateChange(
   scheduler_->NotifyPaintWorkletStateChange(state);
 }
 
-void ProxyImpl::NotifyThroughputTrackerResults(CustomTrackerResults results) {
+void ProxyImpl::NotifyCompositorMetricsTrackerResults(
+    CustomTrackerResults results) {
   DCHECK(IsImplThread());
   MainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ProxyMain::NotifyThroughputTrackerResults,
-                                proxy_main_weak_ptr_, std::move(results)));
+      FROM_HERE,
+      base::BindOnce(&ProxyMain::NotifyCompositorMetricsTrackerResults,
+                     proxy_main_weak_ptr_, std::move(results)));
 }
 
 void ProxyImpl::DidObserveFirstScrollDelay(

@@ -297,7 +297,8 @@ class LayerTreeHostImplTestBase : public testing::Test,
                                          ElementListType tree_type) override {}
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {}
-  void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
+  void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) override {}
 
   void DidObserveFirstScrollDelay(
       int source_frame_number,

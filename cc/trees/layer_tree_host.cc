@@ -1206,10 +1206,10 @@ void LayerTreeHost::RecordEndOfFrameMetrics(
   client_->RecordEndOfFrameMetrics(frame_begin_time, trackers);
 }
 
-void LayerTreeHost::NotifyThroughputTrackerResults(
+void LayerTreeHost::NotifyCompositorMetricsTrackerResults(
     CustomTrackerResults results) {
   DCHECK(IsMainThread());
-  client_->NotifyThroughputTrackerResults(std::move(results));
+  client_->NotifyCompositorMetricsTrackerResults(std::move(results));
 }
 
 const base::WeakPtr<CompositorDelegateForInput>&

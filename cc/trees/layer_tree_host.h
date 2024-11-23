@@ -786,7 +786,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void RecordStartOfFrameMetrics();
   void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time,
                                ActiveFrameSequenceTrackers trackers);
-  void NotifyThroughputTrackerResults(CustomTrackerResults results);
+  void NotifyCompositorMetricsTrackerResults(CustomTrackerResults results);
   void NotifyImageDecodeFinished(int request_id, bool decode_succeeded);
   void NotifyTransitionRequestsFinished(
       const uint32_t sequence_id,

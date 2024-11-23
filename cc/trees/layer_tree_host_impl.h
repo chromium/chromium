@@ -172,7 +172,8 @@ class LayerTreeHostImplClient {
   virtual void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) = 0;
 
-  virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
+  virtual void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) = 0;
 
   virtual void DidObserveFirstScrollDelay(
       int source_frame_number,
@@ -1069,7 +1070,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                            const viz::FrameTimingDetails& details);
 
   // Notifies client about the custom tracker results.
-  void NotifyThroughputTrackerResults(const CustomTrackerResults& results);
+  void NotifyCompositorMetricsTrackerResults(
+      const CustomTrackerResults& results);
 
   // Wrapper for checking and updating |contains_srgb_cache_|.
   bool CheckColorSpaceContainsSrgb(const gfx::ColorSpace& color_space) const;

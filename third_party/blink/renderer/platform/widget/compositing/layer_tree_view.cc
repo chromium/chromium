@@ -482,7 +482,7 @@ LayerTreeView::GetBeginMainFrameMetrics() {
   return delegate_->GetBeginMainFrameMetrics();
 }
 
-void LayerTreeView::NotifyThroughputTrackerResults(
+void LayerTreeView::NotifyCompositorMetricsTrackerResults(
     cc::CustomTrackerResults results) {
   NOTREACHED();
 }

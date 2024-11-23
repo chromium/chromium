@@ -526,9 +526,9 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   }
 
   dropped_frame_counter_.set_total_counter(&total_frame_counter_);
-  frame_trackers_.set_custom_tracker_results_added_callback(
-      base::BindRepeating(&LayerTreeHostImpl::NotifyThroughputTrackerResults,
-                          weak_factory_.GetWeakPtr()));
+  frame_trackers_.set_custom_tracker_results_added_callback(base::BindRepeating(
+      &LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults,
+      weak_factory_.GetWeakPtr()));
 }
 
 LayerTreeHostImpl::~LayerTreeHostImpl() {
@@ -789,7 +789,8 @@ void LayerTreeHostImpl::CommitComplete() {
     }
   }
 
-  for (const auto& info : mutator_host_->TakePendingThroughputTrackerInfos()) {
+  for (const auto& info :
+       mutator_host_->TakePendingCompositorMetricsTrackerInfos()) {
     const MutatorHost::TrackedAnimationSequenceId sequence_id = info.id;
     const bool start = info.start;
     if (start)
@@ -2240,9 +2241,9 @@ void LayerTreeHostImpl::LogAverageLagEvents(
   lag_tracking_manager_.DidPresentCompositorFrame(frame_token, details);
 }
 
-void LayerTreeHostImpl::NotifyThroughputTrackerResults(
+void LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults(
     const CustomTrackerResults& results) {
-  client_->NotifyThroughputTrackerResults(results);
+  client_->NotifyCompositorMetricsTrackerResults(results);
 }
 
 void LayerTreeHostImpl::DidNotNeedBeginFrame() {

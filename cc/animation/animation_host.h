@@ -224,16 +224,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasNativePropertyAnimation() const override;
   bool CurrentFrameHadRAF() const override;
   bool NextFrameHasPendingRAF() const override;
-  PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() override;
+  PendingCompositorMetricsTrackerInfos
+  TakePendingCompositorMetricsTrackerInfos() override;
   bool HasCanvasInvalidation() const override;
   bool HasJSAnimation() const override;
   bool HasSmilAnimation() const override;
   bool HasViewTransition() const override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
 
-  // Starts/stops throughput tracking represented by |sequence_id|.
-  void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);
-  void StopThroughputTracking(TrackedAnimationSequenceId sequnece_id);
+  // Starts/stops metrics tracking represented by `sequence_id`.
+  void StartCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
+  void StopCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
 
   void SetAnimationCounts(size_t total_animations_count);
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
@@ -314,8 +315,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<bool> has_smil_animation_{false};
   ProtectedSequenceReadable<bool> has_view_transition_{false};
 
-  ProtectedSequenceWritable<PendingThroughputTrackerInfos>
-      pending_throughput_tracker_infos_;
+  ProtectedSequenceWritable<PendingCompositorMetricsTrackerInfos>
+      pending_compositor_metrics_tracker_infos_;
 
   base::WeakPtrFactory<AnimationHost> weak_factory_{this};
 };

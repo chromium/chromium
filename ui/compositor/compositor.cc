@@ -809,7 +809,7 @@ Compositor::GetBeginMainFrameMetrics() {
 #endif
 }
 
-void Compositor::NotifyThroughputTrackerResults(
+void Compositor::NotifyCompositorMetricsTrackerResults(
     cc::CustomTrackerResults results) {
   for (auto& pair : results)
     ReportMetricsForTracker(pair.first, std::move(pair.second));
@@ -872,7 +872,7 @@ void Compositor::StartMetricsTracker(
   auto& tracker_state = compositor_metrics_tracker_map_[tracker_id];
   tracker_state.report_callback = std::move(callback);
 
-  animation_host_->StartThroughputTracking(tracker_id);
+  animation_host_->StartCompositorMetricsTracking(tracker_id);
 }
 
 bool Compositor::StopMetricsTracker(TrackerId tracker_id) {
@@ -887,7 +887,7 @@ bool Compositor::StopMetricsTracker(TrackerId tracker_id) {
   }
 
   it->second.should_report = true;
-  animation_host_->StopThroughputTracking(tracker_id);
+  animation_host_->StopCompositorMetricsTracking(tracker_id);
   return true;
 }
 
@@ -900,7 +900,7 @@ void Compositor::CancelMetricsTracker(TrackerId tracker_id) {
   compositor_metrics_tracker_map_.erase(it);
 
   if (should_stop)
-    animation_host_->StopThroughputTracking(tracker_id);
+    animation_host_->StopCompositorMetricsTracking(tracker_id);
 }
 
 void Compositor::OnResume() {

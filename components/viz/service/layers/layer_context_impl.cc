@@ -952,7 +952,7 @@ void LayerContextImpl::NotifyAnimationWorkletStateChange(
 void LayerContextImpl::NotifyPaintWorkletStateChange(
     cc::Scheduler::PaintWorkletState state) {}
 
-void LayerContextImpl::NotifyThroughputTrackerResults(
+void LayerContextImpl::NotifyCompositorMetricsTrackerResults(
     cc::CustomTrackerResults results) {}
 
 bool LayerContextImpl::IsInSynchronousComposite() const {

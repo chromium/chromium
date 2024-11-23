@@ -158,17 +158,20 @@ class MutatorHost {
   virtual base::TimeDelta MinimumTickInterval() const = 0;
 
   using TrackedAnimationSequenceId = size_t;
-  struct PendingThroughputTrackerInfo {
+  struct PendingCompositorMetricsTrackerInfo {
     // Id of a tracked animation sequence.
     TrackedAnimationSequenceId id = 0u;
+
     // True means the tracking for |id| is pending to start and false means
     // the tracking is pending to stop.
     bool start = false;
   };
-  // Takes info of throughput trackers that are pending start or stop.
-  using PendingThroughputTrackerInfos =
-      std::vector<PendingThroughputTrackerInfo>;
-  virtual PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() = 0;
+
+  // Takes info of compositor metrics trackers that are pending start or stop.
+  using PendingCompositorMetricsTrackerInfos =
+      std::vector<PendingCompositorMetricsTrackerInfo>;
+  virtual PendingCompositorMetricsTrackerInfos
+  TakePendingCompositorMetricsTrackerInfos() = 0;
 };
 
 class MutatorEvents {
