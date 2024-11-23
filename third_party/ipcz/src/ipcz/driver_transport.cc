@@ -85,10 +85,6 @@ DriverTransport::Pair DriverTransport::CreatePair(
   return {std::move(first), std::move(second)};
 }
 
-IpczDriverHandle DriverTransport::Release() {
-  return transport_.release();
-}
-
 IpczResult DriverTransport::Activate() {
   // Acquire a self-reference, balanced in NotifyTransport() when the driver
   // invokes its activity handler with IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED.

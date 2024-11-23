@@ -138,10 +138,6 @@ IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
         }
       });
   if (result != IPCZ_RESULT_OK) {
-    // On failure the caller retains ownership of `driver_transport`. Release
-    // it here so it doesn't get closed when `transport` is destroyed.
-    transport->Release();
-
     // Wipe out the routers we created, since they are invalid and effectively
     // not returned to the caller on failure.
     for (Ref<Router>& router : routers) {
