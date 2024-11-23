@@ -86,6 +86,15 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
     return false;
   }
 
+  // If there is an existing crafted or DIY app that has the same manifest_id,
+  // do not promote installation.
+  if (provider->registrar_unsafe().IsInstallState(
+          web_app::GenerateAppIdFromManifestId(manifest_id),
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
+    return true;
+  }
+
   // We cannot install if we are in scope of an installed crafted app, no matter
   // the user display type.
   // TODO(crbug.com/340952100): Evaluate call sites of FindBestAppWithUrlInScope
@@ -98,9 +107,11 @@ bool WebappsClientDesktop::DoesNewWebAppConflictWithExistingInstallation(
               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
           },
           {.include_open_in_browser_tab = true, .include_diy = false});
+
   if (non_diy_app_id) {
     return true;
   }
+
   // Otherwise there is no app installed here, or there is a DIY app that
   // controls this URL but that's fine.
   return false;

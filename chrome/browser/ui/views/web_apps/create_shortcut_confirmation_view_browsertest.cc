@@ -77,15 +77,15 @@ class CreateShortcutConfirmationViewBrowserTest
       case CreateShortcutViewParams::kTabStripEnabled:
         features.insert({blink::features::kDesktopPWAsTabStrip, true});
         features.insert({features::kDesktopPWAsTabStripSettings, true});
+        features.insert({features::kDisableShortcutsEnableDiy, false});
         break;
       case CreateShortcutViewParams::kTabStripDisabled:
         features.insert({blink::features::kDesktopPWAsTabStrip, false});
         features.insert({features::kDesktopPWAsTabStripSettings, false});
+        features.insert({features::kDisableShortcutsEnableDiy, false});
         break;
       case CreateShortcutViewParams::kCreateShortcutCreatesDiy:
-#if BUILDFLAG(IS_CHROMEOS)
         features.insert({features::kDisableShortcutsEnableDiy, true});
-#endif  // BUILDFLAG(IS_CHROMEOS)
         break;
     }
 
@@ -94,11 +94,7 @@ class CreateShortcutConfirmationViewBrowserTest
   }
 
   bool ShouldCreateDiyAppsForShortcutApps() {
-#if BUILDFLAG(IS_CHROMEOS)
     return GetParam() == CreateShortcutViewParams::kCreateShortcutCreatesDiy;
-#else
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
  private:

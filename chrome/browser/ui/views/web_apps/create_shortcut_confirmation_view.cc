@@ -240,11 +240,9 @@ void CreateShortcutConfirmationView::OnAccept() {
             : web_app::mojom::UserDisplayMode::kBrowser;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kDisableShortcutsEnableDiy)) {
     web_app_info_->is_diy_app = true;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class
