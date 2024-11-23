@@ -2153,6 +2153,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2477065602824695373">Automatyczne skanowanie zostało wyłączone, bo masz skonfigurowanych kilka przełączników.</translation>
 <translation id="2478176599153288112">Uprawnienia pliku multimedialnego dla rozszerzenia „<ph name="EXTENSION" />”</translation>
 <translation id="24786041351753425">Włącz usługę przywracania danych.</translation>
+<translation id="2479541499757560845">Ustawienia ułatwień dostępu dotyczące klawiatury</translation>
 <translation id="2480868415629598489">Modyfikowanie danych, które kopiujesz i wklejasz</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2482895651873876648">Karta została przeniesiona do grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3069,6 +3070,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3132277757485842847">Nie udało się utrzymać połączenia z Twoim telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
 <translation id="3132896062549112541">Reguła</translation>
 <translation id="3132996321662585180">Odświeżaj codziennie</translation>
+<translation id="3134312457920437826">Nie można zainstalować rozszerzenia, ponieważ używa ono nieobsługiwanej wersji pliku manifestu.</translation>
 <translation id="3134393957315651797">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />. Opis eksperymentu: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Domyślny żółty awatar</translation>
 <translation id="3141093262818886744">Otwórz mimo to</translation>
@@ -4335,6 +4337,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4012509903424054869">Pliki PDF są automatycznie konwertowane, dzięki czemu możesz wyszukiwać i wybierać tekst</translation>
 <translation id="4014432863917027322">Naprawić „<ph name="EXTENSION_NAME" />”?</translation>
 <translation id="4015163439792426608">Korzystasz z rozszerzeń? <ph name="BEGIN_LINK" />Zarządzaj nimi<ph name="END_LINK" /> w jednym, łatwo dostępnym miejscu.</translation>
+<translation id="4015250302257349679">Naciśnij <ph name="ACCELERATOR" /> raz, aby zaznaczyć ten dymek, a potem ponownie, aby zaznaczyć element, na który wskazuje dymek.</translation>
 <translation id="4016762287427926315">Uprawnienia przyznane aplikacji <ph name="APP_NAME" /> będą dotyczyć również tej aplikacji. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Utwórz kod QR powiązany z tym linkiem</translation>
 <translation id="4019983356493507433">Edytuj listę zakładek</translation>
@@ -5895,6 +5898,8 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5157250307065481244">Wyświetl szczegóły witryny</translation>
 <translation id="5158206172605340248">Menu znaków akcentu zostało zamknięte.</translation>
 <translation id="5159094275429367735">Skonfiguruj Crostini</translation>
+<translation id="5159236862360390997">Wyświetlą się kolejne dymki z instrukcjami.
+          Naciśnij <ph name="ACCELERATOR" /> raz, aby zaznaczyć dymek, a potem ponownie, aby zaznaczyć element, na który wskazuje dymek.</translation>
 <translation id="5159419673777902220">Uprawnienia rozszerzenia wyłączył rodzic</translation>
 <translation id="5160634252433617617">Klawiatura fizyczna</translation>
 <translation id="5160857336552977725">Zaloguj się na urządzeniu <ph name="DEVICE_TYPE" /></translation>
@@ -6175,6 +6180,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5372579129492968947">Odepnij rozszerzenie</translation>
 <translation id="5372632722660566343">Kontynuuj bez konta</translation>
 <translation id="5372990315769030589">Zachować „<ph name="EXTENSION_NAME" />”?</translation>
+<translation id="5374324662289354619">Wewnętrzne strony debugowania są obecnie wyłączone.</translation>
 <translation id="5375318608039113175">Aby używać tych kontaktów w połączeniu z funkcją Udostępnianie w pobliżu, dodaj do nich adresy e-mail połączone z ich kontami Google.</translation>
 <translation id="5375374982898812658">Natychmiast utracisz dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich Twoich urządzeń</translation>
 <translation id="5375577102295339548">Witryny mogą potwierdzać, że nie jesteś botem</translation>
@@ -9433,6 +9439,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7737846262459425222">W dowolnej chwili możesz to zmienić, klikając Ustawienia &gt; Asystent Google &gt; Kontekst z ekranu.</translation>
 <translation id="7737948071472253612">Nie zezwolono na używanie kamery</translation>
 <translation id="77381465218432215">Pokazuj znaki akcentu i znaki specjalne</translation>
+<translation id="7739524723876359011">Naciśnij <ph name="ACCELERATOR" />, aby zaznaczyć ten dymek.</translation>
 <translation id="7740996059027112821">Standardowa</translation>
 <translation id="7742706086992565332">Możesz ustawić stopień powiększenia lub pomniejszenia określonych stron</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Znaleziono 1 przejęte hasło}few{Znaleziono {NUM_SITES} przejęte hasła}many{Znaleziono {NUM_SITES} przejętych haseł}other{Znaleziono {NUM_SITES} przejętego hasła}}</translation>

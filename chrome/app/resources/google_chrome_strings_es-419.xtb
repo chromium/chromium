@@ -367,6 +367,7 @@
 <translation id="5602351063754773347">Chrome te recomienda quitarla. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome hace más para protegerte en línea</translation>
 <translation id="565744775970812598">Chrome bloqueó <ph name="FILE_NAME" /> porque es posible que sea un archivo peligroso.</translation>
+<translation id="566568153320186256">Chrome limita la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y las velocidades de fotogramas para conservar la batería. <ph name="BEGIN_LINK" />Obtén más información sobre el Ahorro de energía<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Tu administrador solicita que reinicies Chrome para aplicar esta actualización}=1{Tu administrador solicita que reinicies Chrome para aplicar esta actualización. No se volverá a abrir la ventana de incógnito.}other{Tu administrador solicita que reinicies Chrome para aplicar esta actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="5686916850681061684">Personalizar y controlar Google Chrome. Una alerta necesita tu atención: haz clic para ver los detalles.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -515,6 +516,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7477130805345743099">Chrome te advertirá antes de que cargues un sitio con una conexión no segura</translation>
 <translation id="7481213027396403996">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="749228101751499733">Mientras tengas acceso, puedes usar las contraseñas y otros elementos de tu Cuenta de Google en Chrome. <ph name="SHORTCUT" /> puede cambiar la configuración de tus servicios de Google.</translation>
+<translation id="7496017508659652909">Chrome precarga páginas, lo que agiliza la navegación y las búsquedas. <ph name="BEGIN_LINK" />Obtén más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome puede comprender más tipos de información y autocompletar tus formularios más rápido. Más información sobre <ph name="BEGIN_LINK" />Autocompletar de Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Servicio de Google Updater</translation>
 <translation id="7515191208480168435">Puedes fijar Google Lens para acceder fácilmente</translation>
@@ -631,6 +633,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8712767363896337380">Ya casi completas la actualización. Reinicia Chrome para completar la actualización.</translation>
 <translation id="8718062187489036808">Salir de Chrome</translation>
 <translation id="873133009373065397">Google Chrome no puede determinar ni establecer el navegador predeterminado</translation>
+<translation id="8748735421235723888">Chrome libera memoria de las pestañas inactivas. Esto brinda más recursos informáticos a las pestañas activas y a otras apps, y permite que Chrome siga funcionando rápido. Las pestañas inactivas se vuelven a activar automáticamente cuando regresas a ellas. <ph name="BEGIN_LINK" />Obtén más información sobre el Ahorro de memoria<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8781673607513845160">Para usar la cámara, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error de instalación: El administrador de red aplicó una política de grupo que impide la instalación (<ph name="INSTALL_ERROR" />).</translation>

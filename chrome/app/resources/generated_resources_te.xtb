@@ -5757,6 +5757,7 @@
 <translation id="5045367873597907704">HID పరికరాల గురించి</translation>
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="504561833207953641">ఇప్పటికే ఉన్న బ్రౌజర్ సెషన్‌లో తెరుస్తోంది.</translation>
+<translation id="504953514574706691">సూచించబడిన గ్రూప్ నుండి ట్యాబ్ మినహాయించబడింది</translation>
 <translation id="5049614114599109018">ఇన్‌పుట్ హిస్టరీని ఉపయోగించండి</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{ఈ సైట్ ఇటీవల చాలా నోటిఫికేషన్‌లను పంపింది. భవిష్యత్తు నోటిఫికేషన్‌లను పంపకుండా మీరు దానిని ఆపివేయవచ్చు.}other{ఈ సైట్‌లు ఇటీవల చాలా నోటిఫికేషన్‌లను పంపించాయి. భవిష్యత్తులో నోటిఫికేషన్‌లను పంపకుండా మీరు వాటిని ఆపివేయవచ్చు.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5808,6 +5809,7 @@
 <translation id="5079950360618752063">సూచించిన పాస్‌వర్డ్‌ని ఉపయోగించండి</translation>
 <translation id="508059534790499809">Kerberos టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="5081124414979006563">&amp;గెస్ట్ ప్రొఫైల్‌ను తెరవండి</translation>
+<translation id="508209203623347828">ఈ కార్డ్ డిజేబుల్ అయితే, Sharepoint, Outlook Calendar వంటి మీ Microsoft కార్డ్‌లు కూడా డిజేబుల్ అవుతాయి.</translation>
 <translation id="5083035541015925118">ctrl + alt + పై వైపు బాణం గుర్తు</translation>
 <translation id="5084328598860513926">కేటాయింపు విధానానికి అంతరాయం ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">సైట్‌లు ఎక్కువ శాతం మీరు ఊహించిన విధంగానే పని చేయవచ్చు</translation>
@@ -6005,6 +6007,7 @@
 <translation id="5216674789212441076">లైవ్ క్యాప్షన్‌లను ఆటోమేటిక్‌గా అనువదిస్తుంది. క్యాప్షన్‌లను అనువాదం కోసం Googleకు పంపుతారు.</translation>
 <translation id="5220011581825921581">సెర్చ్ + పై వైపు బాణం</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" />‌ను ప్రసారం చేయడం సాధ్యపడలేదు</translation>
+<translation id="5221834113325601057">లిస్ట్ నుండి ట్యాబ్ మినహాయించబడింది</translation>
 <translation id="5222403284441421673">సురక్షితం కాని డౌన్‌లోడ్‌ బ్లాక్ చేయబడింది</translation>
 <translation id="5222676887888702881">సైన్ ఔట్</translation>
 <translation id="5225324770654022472">యాప్‌ల షార్ట్‌కట్‌ను చూపండి</translation>
@@ -6484,6 +6487,7 @@
 <translation id="5571066253365925590">బ్లూటూత్‌ ప్రారంభించబడింది</translation>
 <translation id="5571092938913434726">గ్లోబల్ మీడియా నియంత్రణలు</translation>
 <translation id="5571832155627049070">మీ ప్రొఫైల్‌ను తగినట్టుగా మార్చుకోండి</translation>
+<translation id="5572000034319109899">ఉపయోగించని ట్యాబ్‌లను తీసివేయండి</translation>
 <translation id="5572166921642484567">రంగు స్కీమ్ మోడ్‌ను ఎంచుకోండి</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />కు సైట్ వివరాలను చూడండి</translation>
 <translation id="557506220935336383">ఇతర సైట్‌లకు ఎక్స్‌టెన్షన్ అనుమతులను చూడండి</translation>
@@ -7240,7 +7244,7 @@
 <translation id="6127598727646973981">సురక్షితమైన కనెక్షన్‌లు</translation>
 <translation id="6129691635767514872">ఎంచుకోబడిన డేటా- Chromeతో పాటు సింక్ చేసిన పరికరాల నుండి తీసివేయబడింది. మీ Google ఖాతా <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />లో ఇతర Google సేవల నుండి సెర్చ్‌లు, కార్య‌క‌లాపాలు వంటి ఇతర రూపాల బ్రౌజింగ్ హిస్టరీని కలిగి ఉండవచ్చు.</translation>
 <translation id="6129938384427316298">Netscape సర్టిఫికెట్ కామెంట్‌</translation>
-<translation id="6129953537138746214">ఖాళీ</translation>
+<translation id="6129953537138746214">స్పేస్</translation>
 <translation id="6130692320435119637">Wi-Fiను జోడించండి</translation>
 <translation id="6130807998512240230">ఫోన్ హబ్, సమీప షేరింగ్</translation>
 <translation id="6130887916931372608">కీబోర్డ్ కీ</translation>
@@ -8048,6 +8052,7 @@
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="6725073593266469338">UI సేవ</translation>
 <translation id="6725206449694821596">ఇంటర్నెట్ ముద్రణ ప్రోటోకాల్ (IPP)</translation>
+<translation id="6725627354629889015">ఉపయోగించని ట్యాబ్‌లను తీసివేయాలా?</translation>
 <translation id="6725970970008349185">ప్రతి పేజీకి ప్రదర్శించడానికి అభ్యర్థుల సంఖ్య</translation>
 <translation id="672609503628871915">కొత్తగా ఏమి ఉన్నాయో చూడండి</translation>
 <translation id="6726800386221816228">ప్రత్యేక అక్షరాలు</translation>

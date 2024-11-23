@@ -67,6 +67,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="1863308913976887472">Sites can store information with Chromium about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="1880677175115548835">Select text</translation>
 <translation id="1881322772814446296">You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chromium data separate. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium updater service</translation>
 <translation id="1911763535808217981">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chromium</translation>
 <translation id="1929939181775079593">Chromium is unresponsive. Relaunch now?</translation>
@@ -264,6 +265,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4544142686420020088">Chromium didn't update. Something went wrong. <ph name="BEGIN_LINK" />Fix Chromium update problems and failed updates.<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Chromium can make this tab inactive to improve your browsing experience and keep things fast.</translation>
 <translation id="454579500955453258">Continue in a new Chromium profile?</translation>
+<translation id="4548534452171747496">Chromium preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4570813286784708942">Chromium blocked this download because you turned Safe Browsing off and the file can't be verified</translation>
 <translation id="4594305310729380060">To Password Manager on this device</translation>
@@ -337,6 +339,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
 <translation id="5761096224651992291">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="5768371961535086509">Chromium frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chromium fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more about Memory Saver<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Customise and control Chromium. Set Chromium as your default.</translation>
 <translation id="5809516625706423866">Unable to connect to the Internet. HTTP 401 Unauthorised. Please check your proxy configuration.</translation>
 <translation id="5821520528363214608">To use and save Chromium data in your Google Account, update Chromium</translation>

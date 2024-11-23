@@ -7001,6 +7001,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5943127421590245687">Preverjanje je bilo uspešno. Če želite napravo odkleniti in obnoviti lokalne podatke vnesite staro geslo za napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> upravlja stran z novim zavihkom</translation>
 <translation id="5945002094477276055">Datoteka <ph name="FILE_NAME" /> je morda nevarna. Jo želite poslati Google Varnemu brskanju v pregled?</translation>
+<translation id="5945192511027649793">Onemogoči sledilno ploščico</translation>
 <translation id="5945363896952315544">V varnostni ključ ni mogoče shraniti več prstnih odtisov. Če želite dodati novega, najprej izbrišite obstoječi prstni odtis.</translation>
 <translation id="5946591249682680882">ID poročila: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Dvoklik z miško</translation>
@@ -7248,7 +7249,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6127598727646973981">Varne povezave</translation>
 <translation id="6129691635767514872">Izbrani podatki so bili odstranjeni iz Chroma in sinhroniziranih naprav. V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in dejavnosti iz drugih Googlovih storitev, na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Pripomba o Netscapeovem potrdilu</translation>
-<translation id="6129953537138746214">Presledek</translation>
+<translation id="6129953537138746214">Preslednica</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130807998512240230">Telefonsko središče, Deljenje v bližini</translation>
 <translation id="6130887916931372608">Tipka tipkovnice</translation>
@@ -8507,6 +8508,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7025190659207909717">Upravljanje mobilne podatkovne storitve</translation>
 <translation id="7025895441903756761">Varnost in zasebnost</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Odpiranje vseh v anonimnem &amp;oknu}=1{Odpiranje v anonimnem &amp;oknu}one{Odpiranje vseh ({COUNT}) v anonimnem &amp;oknu}two{Odpiranje vseh ({COUNT}) v anonimnem &amp;oknu}few{Odpiranje vseh ({COUNT}) v anonimnem &amp;oknu}other{Odpiranje vseh ({COUNT}) v anonimnem &amp;oknu}}</translation>
+<translation id="7027432471322992835">Onemogoči sledilno ploščico</translation>
 <translation id="7029307918966275733">Crostini ni nameščen. Namestite ga, če si želite ogledati datoteko z ustvarjalci.</translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7030304022046916278">Pošlje URL-je Varnemu brskanju, da jih ta preveri.</translation>
@@ -10040,6 +10042,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8119438628456698432">Ustvarjanje dnevniških datotek …</translation>
 <translation id="811994229154425014">Dvojni pritisk preslednice za vnos pike</translation>
 <translation id="8120505434908124087">Namestitev profila za eSIM</translation>
+<translation id="8121537075864592453">Celozaslonski način je onemogočen</translation>
 <translation id="8121750884985440809">Trenutno predvajate zaslon</translation>
 <translation id="8122898034710982882">Telefonsko središče, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Rumena in bela roža</translation>
@@ -10261,6 +10264,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8276560076771292512">Izbriši predpomnilnik in znova naloži brez predpomnilnika</translation>
 <translation id="8276850948802942358">Preberite več o dajanju začasnega dovoljenja za uporabo piškotkov tretjih oseb spletnemu mestu</translation>
 <translation id="8277907305629781277">Ta ključ za dostop ste ustvarili dne <ph name="DATE" /></translation>
+<translation id="827966378414194229">Upravljajte Chromebook s premiki glave in obraznimi potezami. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Spletna mesta v vaših jezikih</translation>
 <translation id="8280848878018088610">Bučanje morskih valov s fantastičnim mestom in gradom v ozadju ter temačnim vzdušjem.</translation>
 <translation id="828180235270931531">Drugi razpoložljivi tiskalniki</translation>

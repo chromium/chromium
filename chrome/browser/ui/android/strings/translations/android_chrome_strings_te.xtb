@@ -1112,6 +1112,7 @@
 <translation id="6108923351542677676">సెటప్ ప్రోగ్రెస్‌లో ఉంది...</translation>
 <translation id="6112702117600201073">పేజీని రిఫ్రెష్ చేస్తోంది</translation>
 <translation id="6122831415929794347">సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేయాలా?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />మరిన్ని వివరాలు<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">అంశాన్ని తీసివేశారు</translation>
 <translation id="6130303040046284160">ట్యాబ్‌ను కుదించండి</translation>
@@ -1610,6 +1611,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />మీ పరికరాలు<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>
 <translation id="820568752112382238">అత్యంత ఎక్కువగా సందర్శించిన సైట్‌లు</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUMBER_OF_OTHER_MEMBERS" /> వ్యక్తితో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}other{<ph name="OWNER_FIRST_NAME" />, ఇంకా మరో <ph name="NUMBER_OF_OTHER_MEMBERS" /> వ్యక్తులతో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి}}</translation>
 <translation id="8209050860603202033">చిత్రాన్ని తెరువు</translation>
 <translation id="8210770465353466621">మీ ట్యాబ్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="8211101263765532799">కొన్ని పాస్‌వర్డ్‌లు త్వరలో పని చేయడం ఆగిపోతాయి</translation>

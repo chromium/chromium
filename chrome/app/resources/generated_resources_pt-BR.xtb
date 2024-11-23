@@ -5760,6 +5760,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5045367873597907704">Sobre dispositivos HID</translation>
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="504561833207953641">Abrindo em uma sessão de navegador existente.</translation>
+<translation id="504953514574706691">A guia foi excluída do grupo sugerido</translation>
 <translation id="5049614114599109018">Usar o histórico de entrada</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Este site enviou muitas notificações recentemente. Você pode impedir que ele envie outras.}one{Este site enviou muitas notificações recentemente. Você pode impedir que ele envie outras.}other{Estes sites enviaram muitas notificações recentemente. Você pode impedir que eles enviem outras.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5811,6 +5812,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5079950360618752063">Usar senha sugerida</translation>
 <translation id="508059534790499809">Atualizar um tíquete do Kerberos</translation>
 <translation id="5081124414979006563">&amp;Abrir perfil de visitante</translation>
+<translation id="508209203623347828">Se este card for desativado, os da Microsoft, como o do SharePoint e o do Calendário do Outlook, também serão.</translation>
 <translation id="5083035541015925118">ctrl + alt + seta para cima</translation>
 <translation id="5084328598860513926">O fluxo de provisionamento foi interrompido. Tente novamente ou entre em contato com o proprietário ou administrador do dispositivo. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Os sites têm mais chances de funcionar conforme o esperado</translation>
@@ -6008,6 +6010,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5216674789212441076">Traduz legendas instantâneas automaticamente. As legendas são enviadas ao Google para tradução.</translation>
 <translation id="5220011581825921581">pesquisar + seta para cima</translation>
 <translation id="5221516927483787768">Não foi possível transmitir <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Guia excluída da lista</translation>
 <translation id="5222403284441421673">Download não seguro bloqueado</translation>
 <translation id="5222676887888702881">Sair</translation>
 <translation id="5225324770654022472">Mostrar atalho para aplicativos</translation>
@@ -6488,6 +6491,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5571066253365925590">Bluetooth ativado</translation>
 <translation id="5571092938913434726">Controles globais de mídia</translation>
 <translation id="5571832155627049070">Personalize seu perfil</translation>
+<translation id="5572000034319109899">Limpar guias não usadas</translation>
 <translation id="5572166921642484567">Escolha um modo de esquema de cores</translation>
 <translation id="5572252023412311448">Mostrar detalhes do site <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Ver permissões de extensões para outros sites</translation>
@@ -8055,6 +8059,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6723839937902243910">Energia</translation>
 <translation id="6725073593266469338">Serviço de interface</translation>
 <translation id="6725206449694821596">Protocolo de impressão via Internet (IPP)</translation>
+<translation id="6725627354629889015">Limpar guias não usadas?</translation>
 <translation id="6725970970008349185">Número de candidatos a serem exibidos por página</translation>
 <translation id="672609503628871915">Veja o que há de novo</translation>
 <translation id="6726800386221816228">Caracteres especiais</translation>

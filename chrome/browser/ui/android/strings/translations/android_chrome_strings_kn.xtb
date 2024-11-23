@@ -1111,6 +1111,7 @@
 <translation id="6108923351542677676">ಸೆಟಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
 <translation id="6112702117600201073">ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6122831415929794347">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕೆ?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> ಅವರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ವಿವರಗಳು<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="6130303040046284160">ಕುಗ್ಗಿಸುವ ಟ್ಯಾಬ್</translation>
@@ -1611,6 +1612,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">ಪುನರಾರಂಭಿಸು</translation>
 <translation id="820568752112382238">ಹೆಚ್ಚು ಭೇಟಿ ನೀಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_MEMBERS" /> ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಸೇರಿಕೊಳ್ಳಿ}one{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_MEMBERS" /> ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}other{<ph name="OWNER_FIRST_NAME" /> ಮತ್ತು <ph name="NUMBER_OF_OTHER_MEMBERS" /> ಇತರ ಸದಸ್ಯರೊಂದಿಗೆ ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿಕೊಳ್ಳಿ}}</translation>
 <translation id="8209050860603202033">ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8210770465353466621">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನೀವು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="8211101263765532799">ಕೆಲವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಶೀಘ್ರದಲ್ಲೇ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸುತ್ತವೆ</translation>

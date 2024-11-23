@@ -2167,6 +2167,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2477065602824695373">Uma vez que configurou vários interruptores, a análise automática foi desativada.</translation>
 <translation id="2478176599153288112">Autorizações de ficheiros multimédia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Ative o serviço de recuperação de dados.</translation>
+<translation id="2479541499757560845">Definições do teclado de acessibilidade</translation>
 <translation id="2480868415629598489">Modificar os dados que copia e cola</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2482895651873876648">Separador movido para o grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3086,6 +3087,7 @@ Quer pará-lo?</translation>
 <translation id="3132277757485842847">Não foi possível manter uma ligação ao seu telemóvel. Certifique-se de que o telemóvel está próximo, desbloqueado e com o Bluetooth e o Wi-Fi ativados.</translation>
 <translation id="3132896062549112541">Regra</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
+<translation id="3134312457920437826">Não é possível instalar a extensão porque usa uma versão de manifesto incompatível.</translation>
 <translation id="3134393957315651797">Selecione o estado da experiência <ph name="EXPERIMENT_NAME" />. Descrição da experiência: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predefinido</translation>
 <translation id="3141093262818886744">Abrir mesmo assim</translation>
@@ -4356,6 +4358,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4012509903424054869">Os PDFs são convertidos automaticamente para que possa pesquisar e selecionar texto</translation>
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tem extensões? <ph name="BEGIN_LINK" />Faça a gestão das suas extensões<ph name="END_LINK" /> num lugar acessível.</translation>
+<translation id="4015250302257349679">Prima <ph name="ACCELERATOR" /> para focar este balão e, em seguida, focar o elemento para o qual está a apontar.</translation>
 <translation id="4016762287427926315">As autorizações que permitir para a app <ph name="APP_NAME" /> também vão ser permitidas para esta app. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Criar código QR para este link</translation>
 <translation id="4019983356493507433">Editar lista de marcadores</translation>
@@ -5917,6 +5920,8 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5157250307065481244">Ver detalhes do site</translation>
 <translation id="5158206172605340248">Menu de acentos ignorado.</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
+<translation id="5159236862360390997">É apresentada uma série de balões de tutorial com instruções.
+          Prima <ph name="ACCELERATOR" /> para focar um balão e, em seguida, focar o elemento para o qual está a apontar.</translation>
 <translation id="5159419673777902220">O teu pai ou mãe desativou as autorizações das extensões.</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Inicie sessão no <ph name="DEVICE_TYPE" /></translation>
@@ -6198,6 +6203,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5372579129492968947">Soltar extensão</translation>
 <translation id="5372632722660566343">Continuar sem uma conta</translation>
 <translation id="5372990315769030589">Manter a extensão "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5374324662289354619">As páginas de depuração internas estão atualmente desativadas.</translation>
 <translation id="5375318608039113175">Para utilizar a funcionalidade Partilhar na proximidade com estes contactos, adicione o endereço de email associado às respetivas Contas Google aos contactos.</translation>
 <translation id="5375374982898812658">Vai perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e este vai ser eliminado de todos os seus dispositivos</translation>
 <translation id="5375577102295339548">Os sites podem ajudar a validar que não é um bot</translation>
@@ -9457,6 +9463,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7737846262459425222">Pode alterar esta opção em qualquer altura em Definições &gt; Assistente Google &gt; Contexto do ecrã.</translation>
 <translation id="7737948071472253612">Sem autorização para utilizar a sua câmara</translation>
 <translation id="77381465218432215">Mostrar acentos e carateres especiais</translation>
+<translation id="7739524723876359011">Prima <ph name="ACCELERATOR" /> para focar este balão.</translation>
 <translation id="7740996059027112821">Padrão</translation>
 <translation id="7742706086992565332">Pode definir o nível de aumento/diminuição do zoom em determinados Websites.</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{1 palavra-passe comprometida encontrada}other{{NUM_SITES} palavras-passe comprometidas encontradas}}</translation>

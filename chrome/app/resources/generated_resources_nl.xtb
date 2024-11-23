@@ -5742,6 +5742,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5045367873597907704">Over HID-apparaten</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="504561833207953641">Wordt geopend in een bestaande browsersessie.</translation>
+<translation id="504953514574706691">Tabblad uitgesloten van voorgestelde groep</translation>
 <translation id="5049614114599109018">Invoergeschiedenis gebruiken</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Deze site heeft onlangs een groot aantal meldingen gestuurd. Je kunt voorkomen dat de site in de toekomst meldingen stuurt.}other{Deze sites hebben onlangs een groot aantal meldingen gestuurd. Je kunt voorkomen dat ze in de toekomst meldingen sturen.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5793,6 +5794,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5079950360618752063">Voorgesteld wachtwoord gebruiken</translation>
 <translation id="508059534790499809">Een Kerberos-ticket vernieuwen</translation>
 <translation id="5081124414979006563">&amp;Gastprofiel openen</translation>
+<translation id="508209203623347828">Als deze kaart is uitgezet, worden je Microsoft-kaarten zoals Sharepoint en Outlook Agenda ook uitgezet.</translation>
 <translation id="5083035541015925118">ctrl + alt + pijl-omhoog</translation>
 <translation id="5084328598860513926">Het instelproces is onderbroken. Probeer het opnieuw of neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Sites werken waarschijnlijk zoals verwacht</translation>
@@ -5990,6 +5992,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5216674789212441076">Vertaalt live ondertiteling automatisch. Ondertiteling wordt naar Google gestuurd voor vertaling.</translation>
 <translation id="5220011581825921581">zoeken + pijl-omhoog</translation>
 <translation id="5221516927483787768">Kan <ph name="HOST_NAME" /> niet casten</translation>
+<translation id="5221834113325601057">Tabblad uitgesloten van lijst</translation>
 <translation id="5222403284441421673">Onveilige download geblokkeerd</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5225324770654022472">Snelle link voor apps bekijken</translation>
@@ -6469,6 +6472,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5571066253365925590">Bluetooth staat aan</translation>
 <translation id="5571092938913434726">Algemene mediabediening</translation>
 <translation id="5571832155627049070">Je profiel aanpassen</translation>
+<translation id="5572000034319109899">Ongebruikte tabbladen opruimen</translation>
 <translation id="5572166921642484567">Een kleurenschemamodus kiezen</translation>
 <translation id="5572252023412311448">Sitegegevens tonen voor <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Extensierechten voor andere sites bekijken</translation>
@@ -7222,7 +7226,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6127598727646973981">Beveiligde verbindingen</translation>
 <translation id="6129691635767514872">De geselecteerde gegevens zijn verwijderd uit Chrome en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6129938384427316298">Opmerking van Netscape-certificaat</translation>
-<translation id="6129953537138746214">Spatie</translation>
+<translation id="6129953537138746214">Spatiebalk</translation>
 <translation id="6130692320435119637">Wifi toevoegen</translation>
 <translation id="6130807998512240230">Telefoonhub, Dichtbij delen</translation>
 <translation id="6130887916931372608">Toetsenbordtoets</translation>
@@ -8030,6 +8034,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="6725073593266469338">UI-service</translation>
 <translation id="6725206449694821596">Internetafdrukprotocol (IPP)</translation>
+<translation id="6725627354629889015">Ongebruikte tabbladen opschonen?</translation>
 <translation id="6725970970008349185">Aantal kandidaten dat per pagina wordt weergegeven</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
 <translation id="6726800386221816228">Speciale tekens</translation>

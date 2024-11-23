@@ -189,6 +189,19 @@ Het label is aanpasbaar via het beleid <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_
 <translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Instellingenscherm voor de weergavegrootte niet tonen tijdens inloggen</translation>
 <translation id="1111824532252882775">Aangezet: Scrollers zijn standaard focusbaar.</translation>
+<translation id="1112125878718482033">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
+
+0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten.
+
+De functies van DevTools van generatieve AI zijn onder andere:
+
+- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.
+
+- AI-ondersteuning: Krijg hulp bij het begrijpen van css-stijlen (vanaf versie 131), netwerkverzoeken, prestaties en bestanden (allemaal vanaf versie 132).</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
@@ -9971,6 +9984,11 @@ Dit beleid wordt verwijderd in M75.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Opslag van browsegeschiedenis aanzetten</translation>
 <translation id="8499172469244085141">Standaardinstellingen (gebruikers kunnen overschrijven)</translation>
+<translation id="8499359456965625209">Dit beleid is beëindigd.
+
+Als je dit beleid toepast of niet instelt, wordt voorkomen dat software van derden uitvoerbare code in de processen van <ph name="PRODUCT_NAME" /> injecteert.
+
+      Als je het beleid niet toepast, kan deze software dergelijke code in de processen van <ph name="PRODUCT_NAME" /> injecteren.</translation>
 <translation id="8503018573167958506">Bepaal of een gebruiker de hostnaam van het apparaat mag instellen.
 
       Als je <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> instelt, stelt de beheerder de hostnaam in en kan de gebruiker geen hostnaam kiezen, ongeacht de instelling van dit beleid.

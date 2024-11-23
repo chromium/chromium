@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">ಡೆಲಿವರಿಯನ್ನು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ. ಮರುಪ್ರಯತ್ನಿಸುತ್ತೇವೆ</translation>
 <translation id="3557336313807607643">ಸಂಪರ್ಕಗಳಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="355765753469272474">ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="3562379378751492229">ನಿಮಗೆ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಸ್ಥಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="3565930036634619844">ಟ್ಯಾಬ್. <ph name="NUMBER_OF_TABS" /> ರಲ್ಲಿ <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">ಇನ್ನಷ್ಟು ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="3572607909481582402">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ</translation>
@@ -992,6 +993,7 @@
 <translation id="5611398002774823980">ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="5613297089029360427">ಇತ್ತೀಚಿನ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="5614553682702429503">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸುವುದೇ?</translation>
+<translation id="5614805397884895755">ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ನಿಂದ ವೇಗವಾದ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಿರಿ.</translation>
 <translation id="5619871095170816857">ಈ ಕಾರ್ಡ್ ಕಳೆದ 24 ಗಂಟೆಗಳಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಲ್ಲಿ ನೀವು ಕೊನೆಯದಾಗಿ ಬಳಸಿದ ತೆರೆದ ಟ್ಯಾಬ್ ಅನ್ನು ತೋರಿಸುತ್ತದೆ.</translation>
 <translation id="5624120631404540903">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5624637933505983014">ಸಿಂಕ್‌ ಅನ್ನು ಆನ್ ಮಾಡಬೇಡಿ</translation>
@@ -1496,6 +1498,7 @@
 <translation id="7812377703891978671"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಎಲ್ಲಾ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ನೀವು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="78146569776629510">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="7815852444315004084">ಸದ್ಯಕ್ಕೆ ಮರೆಮಾಡಿ</translation>
+<translation id="7831876841288640403">ನಿಮಗೆ ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯ ಸ್ಥಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7839994177130598711">ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7840771868269352570">ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಐಟಂಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="7841180087127694526">ಕಾಪಿ ಮಾಡಿದ ಪಠ್ಯವನ್ನು ಹುಡುಕಿ</translation>

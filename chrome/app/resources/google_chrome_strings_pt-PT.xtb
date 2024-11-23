@@ -367,6 +367,7 @@
 <translation id="5602351063754773347">O Chrome recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">O Chrome faz mais para manter a sua segurança online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
+<translation id="566568153320186256">O Chrome poupa a energia da bateria limitando a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de energia<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -515,6 +516,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7477130805345743099">O Chrome envia-lhe um aviso antes de carregar qualquer site através de uma ligação insegura</translation>
 <translation id="7481213027396403996">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="749228101751499733">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chrome. <ph name="SHORTCUT" /> pode alterar as suas definições dos serviços Google.</translation>
+<translation id="7496017508659652909">O Chrome pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">O Chrome pode compreender mais tipos de informações e preencher automaticamente os seus formulários mais rapidamente. Saiba mais sobre o <ph name="BEGIN_LINK" />preenchimento automático do Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Serviço do Google Updater</translation>
 <translation id="7515191208480168435">Pode fixar o Google Lens para acesso fácil</translation>
@@ -631,6 +633,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8712767363896337380">Quase atualizado! Reinicie o Chrome para concluir a atualização.</translation>
 <translation id="8718062187489036808">Terminar sessão no Chrome</translation>
 <translation id="873133009373065397">O Google Chrome não consegue determinar ou definir o navegador predefinido</translation>
+<translation id="8748735421235723888">O Chrome liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chrome rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa a eles. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de memória<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Quando escreve na barra de endereço ou caixa de pesquisa, o Chrome envia o que escreve para o motor de pesquisa predefinido de forma a obter melhores sugestões. Esta opção está desativada na Navegação anónima.</translation>
 <translation id="8781673607513845160">Para usar a câmara, dê acesso ao Chrome nas <ph name="BEGIN_LINK" />definições do sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erro de instalação: o administrador da rede aplicou uma política de grupo que impede a instalação: <ph name="INSTALL_ERROR" /></translation>

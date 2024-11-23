@@ -6992,6 +6992,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5943127421590245687">Hisobingiz tasdiqlandi. Qulfdan chiqarish va maʼlumotlarni tiklash uchun <ph name="DEVICE_TYPE" /> qurilmasining eski parolini kiriting.</translation>
 <translation id="5943209617717087975">Yangi varaq sahifasi <ph name="THIRD_PARTY_NTP_MANAGER" /> boshqaruvida</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshiruv uchun Google saytlar xavfsizligi tizimiga yuborilsinmi?</translation>
+<translation id="5945192511027649793">Sensorli panelni faolsizlantirish</translation>
 <translation id="5945363896952315544">Elektron kalitga boshqa barmoq izlari saqlanmaydi. Yangisini kiritish uchun mavjud barmoq izini oʻchiring.</translation>
 <translation id="5946591249682680882">Hisobot identifikatori: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Sichqonchada ikki martalik klik</translation>
@@ -8492,6 +8493,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7025190659207909717">Mobil internet xizmatini boshqarish</translation>
 <translation id="7025895441903756761">Xavfsizlik va maxfiylik</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Barchasini &amp;inkognito oynasida ochish}=1{&amp;Inkognito oynasida ochish}other{Barchasini ({COUNT}) &amp;inkognito oynasida ochish}}</translation>
+<translation id="7027432471322992835">Trekpadni faolsizlantirish</translation>
 <translation id="7029307918966275733">Crostini oʻrnatilmadi. Mualliflarni koʻrish uchun Crostini tizimini oʻrnating.</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="7030304022046916278">URL manzillarni Saytlarni xavfsiz kezish tizimi tekshiruviga yuboradi</translation>
@@ -10024,6 +10026,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8119438628456698432">Jurnal fayllari yaratilmoqda...</translation>
 <translation id="811994229154425014">Nuqtani avtomatik qo'yish</translation>
 <translation id="8120505434908124087">eSIM profilini oʻrnatish</translation>
+<translation id="8121537075864592453">Butun ekran rejimi yoqilmagan</translation>
 <translation id="8121750884985440809">Hozir ekran translatsiya qilinmoqda</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Moychechak</translation>
@@ -10245,6 +10248,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8276560076771292512">Keshni tozalash va qurilmani qaytadan ishga tushirish</translation>
 <translation id="8276850948802942358">Saytga tashqi cookie fayllaridan foydalanishga vaqtinchalik ruxsat berish haqida batafsil</translation>
 <translation id="8277907305629781277">Bu kalit ysatilgan sana: <ph name="DATE" /></translation>
+<translation id="827966378414194229">Chromebookni bosh harakatlari va chehra belgilari yordamida boshqaring. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Saytlar ona tilingizda</translation>
 <translation id="8280848878018088610">Dengiz toʻlqinlari, orqa fonda fantastik shahar va qasr, tungi kayfiyatda.</translation>
 <translation id="828180235270931531">Boshqa mavjud printerlar</translation>

@@ -200,6 +200,19 @@ O rótulo pode ser personalizado usando a política <ph name="ENTERPRISE_CUSTOM_
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1111324374369583989">Não mostrar a tela de configuração do tamanho de exibição durante o login</translation>
 <translation id="1111824532252882775">Ativada: os controles de rolagem podem ser focalizados por padrão.</translation>
+<translation id="1112125878718482033">Esses recursos no DevTools do <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para dar mais informações de depuração. Para usá-los, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviá-los a um servidor de propriedade do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
+
+0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = desativa o recurso.
+
+Os recursos de IA generativa do DevTools incluem:
+
+- Console Insights: explica as mensagens do console e oferece sugestões para corrigir erros.
+
+- Assistência de IA no Chrome DevTools: receba ajuda para entender os estilos CSS (desde a versão 131), as solicitações de rede, o desempenho e os arquivos (todos desde a versão 132).</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -10432,6 +10445,11 @@ O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade míni
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Desativar o salvamento do histórico do navegador</translation>
 <translation id="8499172469244085141">Configurações padrão (podem ser substituídas pelos usuários)</translation>
+<translation id="8499359456965625209">Essa política foi descontinuada.
+
+Se ela for ativada ou deixada sem definição, softwares de terceiros não poderão injetar código executável em processos do <ph name="PRODUCT_NAME" />.
+
+      Se ela for desativada, esses softwares poderão injetar códigos executáveis nos processos do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8503018573167958506">Determinar se um usuário tem permissão para configurar o nome do host do dispositivo.
 
       Se a <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" /> for configurada, o administrador definirá o nome do host e o usuário não poderá escolhê-lo, independentemente da definição desta política.

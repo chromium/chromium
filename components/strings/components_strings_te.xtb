@@ -1574,6 +1574,7 @@
 <translation id="3801265110651850478">మీ బ్రౌజింగ్ ట్రాఫిక్‌తో "Do Not Track" రిక్వెస్ట్‌ను పంపండి</translation>
 <translation id="3801297763951514916">మీరు తరచుగా సందర్శించినది</translation>
 <translation id="380329542618494757">పేరు</translation>
+<translation id="3803481123869276674">మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, ఈ-వాలెట్‌ను ఒక ఆప్షన్‌గా చూడండి</translation>
 <translation id="3803801106042434208">ఈ సెర్చ్ ఇంజిన్‌లు మీ ప్రాంతంలో ప్రసిద్ధి చెందినవి</translation>
 <translation id="380666903981445943">Chromeలో చేసిన కొనుగోళ్ల కోసం పేమెంట్ ఆప్షన్‌ను ఆటోఫిల్ చేయడానికి దాన్ని మీ Google ఖాతాలో సేవ్ చేయండి</translation>
 <translation id="3807366285948165054">చిత్రాన్ని X అక్షంలో జరపు</translation>
@@ -2188,6 +2189,7 @@
 <translation id="4930714375720679147">ఆన్ చేయి</translation>
 <translation id="4932035752129140860">మీరు పేస్ట్ చేసిన లేదా జోడించిన టెక్స్ట్ Google Cloudకు లేదా థర్డ్-పార్టీలకు విశ్లేషణ కోసం పంపబడుతుంది. ఉదాహరణకు, అది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీల ఆధారంగా స్టోర్ చేయబడవచ్చు, మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు.</translation>
 <translation id="4933468175699107356">ఏదైనా ఫారమ్‌లో మీ పేరు లేదా అడ్రస్ వంటి సేవ్ చేయబడిన సమాచారాన్ని ఆటోఫిల్ చేయడానికి కుడి క్లిక్ చేయండి</translation>
+<translation id="4933788293078559286">Pixతో పేమెంట్ చేయండి</translation>
 <translation id="4934780484581617878">విండో మేనేజ్‌మెంట్</translation>
 <translation id="4936134414789135531">ఇన్‌సర్ట్ చేసిన <ph name="VALUE_NAME" /> కనుగొనబడలేదు.</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />కు మీ ఫైల్ అప్‌లోడ్ కావడం 1 గంటలో ప్రారంభమవుతుంది</translation>
@@ -2463,6 +2465,7 @@
 <translation id="5443468954631487277">వ్యతిరేక క్రమంలో ఉన్న ఫేస్ అప్</translation>
 <translation id="5447235695608032700">పేజీలు మీ గురించి సేవ్ చేసిన సమాచారాన్ని ఉపయోగించడానికి <ph name="SITE" /> వెబ్‌సైట్‌ను అనుమతించండి</translation>
 <translation id="5452270690849572955">ఈ <ph name="HOST_NAME" /> పేజీ కనుగొనబడలేదు</translation>
+<translation id="5452923259299906094">eWallet, Pixతో పేమెంట్ చేయండి</translation>
 <translation id="5455374756549232013">చెల్లని విధాన సమయముద్ర</translation>
 <translation id="5456428544444655325">ఎప్పుడూ చూపవద్దు</translation>
 <translation id="5456839782162429664">మీరు ఆటోఫిల్‌ను ఉపయోగించి పేమెంట్ చేసిన ప్రతిసారీ మాన్యువల్‌గా వెరిఫై చేయండి</translation>
@@ -3278,6 +3281,7 @@
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> నిర్వహించని ఒక సైట్‌లో మీరు మీ పాస్‌వర్డ్‌ని నమోదు చేశారు. మీ ఖాతాని రక్షించడం కోసం, మీ పాస్‌వర్డ్‌ని ఇతర యాప్‌లు మరియు సైట్‌లలో తిరిగి ఉపయోగించవద్దు.</translation>
 <translation id="6946949206576443118">Chromeలోని వెబ్‌లో సెర్చ్ చేయండి</translation>
 <translation id="6948051842255602737">గేమ్ పూర్తయింది, మీ స్కోర్ <ph name="SCORE" />.</translation>
+<translation id="6948223029286835408">మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, Pixను ఒక ఆప్షన్‌గా చూడండి</translation>
 <translation id="6948701128805548767">పికప్ పద్ధతులు మరియు అవసరాలను చూడాలంటే, అడ్రస్‌ను ఎంచుకోండి</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">పాస్‌వర్డ్‌ను రీసెట్ చేయండి</translation>
@@ -3594,6 +3598,7 @@
 <translation id="7489392576326061356">షాంపూలు &amp; కండీషనర్‌లు</translation>
 <translation id="7495528107193238112">ఈ కంటెంట్ బ్లాక్ అయింది. ఈ సమస్య పరిష్కారం కోసం సైట్ ఓనర్‌ను సంప్రదించండి.</translation>
 <translation id="749865518782565832">ప్లంబింగ్</translation>
+<translation id="7499188644237027195">మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, eWallet, Pixను ఆప్షన్స్‌గా చూడండి</translation>
 <translation id="7500917112031739411">గ్రూప్ వారీగా చూడండి</translation>
 <translation id="7501663406926337752">ముందున్న సైట్ మీ సంస్థ ద్వారా ఫ్లాగ్ చేయబడింది</translation>
 <translation id="7507075214339298899">ఎన్వలప్ #9</translation>
@@ -3707,6 +3712,7 @@
 <translation id="767550629621587224">ప్రీ-కట్ ట్యాబ్స్</translation>
 <translation id="7675756033024037212">స్క్రోల్ చేయడానికి, జూమ్ చేయడానికి అనుమతి లేదు</translation>
 <translation id="7676643023259824263">క్లిప్‌బోర్డ్ వచనం, <ph name="TEXT" /> కోసం వెతకండి</translation>
+<translation id="7679287273775285018">eWalletతో పేమెంట్ చేయండి</translation>
 <translation id="7679367271685653708">Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీని చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="7679947978757153706">బేస్‌బాల్</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> తేదీన గడువు ముగుస్తుంది</translation>

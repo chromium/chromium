@@ -1113,6 +1113,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6108923351542677676">Configuração em andamento...</translation>
 <translation id="6112702117600201073">Atualizando página</translation>
 <translation id="6122831415929794347">Desativar "Navegação segura"?</translation>
+<translation id="6125202119952209826">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Mais detalhes<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6130303040046284160">Minimizar guia</translation>
@@ -1613,6 +1614,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Retomar</translation>
 <translation id="820568752112382238">Sites mais visitados</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUMBER_OF_OTHER_MEMBERS" /> pessoa}one{Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUMBER_OF_OTHER_MEMBERS" /> pessoa}other{Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUMBER_OF_OTHER_MEMBERS" /> pessoas}}</translation>
 <translation id="8209050860603202033">Abrir imagem</translation>
 <translation id="8210770465353466621">Suas guias serão mostradas aqui</translation>
 <translation id="8211101263765532799">Algumas senhas deixarão de funcionar em breve</translation>

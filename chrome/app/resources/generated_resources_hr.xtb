@@ -2170,6 +2170,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2477065602824695373">Budući da ste postavili više prekidača, automatsko skeniranje je isključeno.</translation>
 <translation id="2478176599153288112">Dozvole medijske datoteke za proširenje "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Omogući uslugu oporavka podataka.</translation>
+<translation id="2479541499757560845">Postavke tipkovnice za pristupačnost</translation>
 <translation id="2480868415629598489">izmjenjivati podatke koje kopirate i lijepite</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2482895651873876648">Kartica je premještena u grupu <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3088,6 +3089,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3132277757485842847">Nismo uspjeli održati vezu s vašim telefonom. Provjerite je li telefon u blizini, je li otključan i jesu li na njemu uključeni Bluetooth i Wi-Fi.</translation>
 <translation id="3132896062549112541">Pravilo</translation>
 <translation id="3132996321662585180">Osvježi svaki dan</translation>
+<translation id="3134312457920437826">Proširenje se ne može instalirati jer upotrebljava nepodržanu verziju manifesta.</translation>
 <translation id="3134393957315651797">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Zadani žuti avatar</translation>
 <translation id="3141093262818886744">Ipak otvori</translation>
@@ -4357,6 +4359,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="4012509903424054869">PDF-ovi se automatski konvertiraju kako biste mogli pretražiti i odabrati tekst</translation>
 <translation id="4014432863917027322">Popraviti "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Imate li proširenja? <ph name="BEGIN_LINK" />Upravljajte svojim proširenjima<ph name="END_LINK" /> na jednom mjestu.</translation>
+<translation id="4015250302257349679">Pritisnite <ph name="ACCELERATOR" /> da biste fokusirali ovaj oblačić, a zatim to ponovite da biste fokusirali element na koji se taj oblačić odnosi.</translation>
 <translation id="4016762287427926315">Dopuštenja koja date za aplikaciju <ph name="APP_NAME" /> vrijedit će i za ovu aplikaciju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Izradi QR kôd za ovu vezu</translation>
 <translation id="4019983356493507433">Uredite popis oznaka</translation>
@@ -5747,6 +5750,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5045367873597907704">O HID uređajima</translation>
 <translation id="5045550434625856497">Pogrešna zaporka</translation>
 <translation id="504561833207953641">Otvaranje u postojećoj sesiji preglednika.</translation>
+<translation id="504953514574706691">Kartica je izuzeta iz predložene grupe</translation>
 <translation id="5049614114599109018">Koristi povijest unosa</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Ova je web-lokacija nedavno poslala mnogo obavijesti. Možete spriječiti da ubuduće šalje obavijesti.}one{Te su web-lokacije nedavno poslale mnogo obavijesti. Možete spriječiti da ubuduće šalju obavijesti.}few{Te su web-lokacije nedavno poslale mnogo obavijesti. Možete spriječiti da ubuduće šalju obavijesti.}other{Te su web-lokacije nedavno poslale mnogo obavijesti. Možete spriječiti da ubuduće šalju obavijesti.}}</translation>
 <translation id="5050330054928994520">Pretvaranje teksta u govor</translation>
@@ -5798,6 +5802,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5079950360618752063">Upotrijebite predloženu zaporku</translation>
 <translation id="508059534790499809">Osvježite Kerberosov tiket</translation>
 <translation id="5081124414979006563">&amp;Otvori profil gosta</translation>
+<translation id="508209203623347828">Ako se kartica onemogući, onemogućit će se i vaše Microsoftove kartice kao što su Sharepoint i Outlook kalendar.</translation>
 <translation id="5083035541015925118">Ctrl + Alt + strelica prema gore</translation>
 <translation id="5084328598860513926">Prekinuo se tijek davanja pristupa. Pokušajte ponovo ili se obratite vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Vjerojatnije je da će web-lokacije funkcionirati kao što očekujete</translation>
@@ -5915,6 +5920,8 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5157250307065481244">Prikaz pojedinosti o web-lokaciji</translation>
 <translation id="5158206172605340248">Odbačen je izbornik naglasnih oznaka.</translation>
 <translation id="5159094275429367735">Postavljanje Crostinija</translation>
+<translation id="5159236862360390997">Prikazat će se serija oblačića vodiča s uputama.
+          Pritisnite <ph name="ACCELERATOR" /> da biste fokusirali oblačić, a zatim to ponovite da biste fokusirali element na koji se taj oblačić odnosi.</translation>
 <translation id="5159419673777902220">Tvoj je roditelj onemogućio dopuštenja za proširenja</translation>
 <translation id="5160634252433617617">Fizička tipkovnica</translation>
 <translation id="5160857336552977725">Prijavite se na uređaj <ph name="DEVICE_TYPE" /></translation>
@@ -5995,6 +6002,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5216674789212441076">Automatski prevodi titlove. Titlovi se šalju Googleu na prijevod.</translation>
 <translation id="5220011581825921581">pretraživanje + strelica prema gore</translation>
 <translation id="5221516927483787768">Nije uspjelo emitiranje web-lokacije <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Kartica je isključena s popisa</translation>
 <translation id="5222403284441421673">Nesigurno preuzimanje blokirano</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="5225324770654022472">Prikaži prečac za aplikacije</translation>
@@ -6194,6 +6202,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5372579129492968947">Otkvači proširenje</translation>
 <translation id="5372632722660566343">Nastaviti bez računa</translation>
 <translation id="5372990315769030589">Želite li zadržati proširenje <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5374324662289354619">Stranice za interno otklanjanje pogrešaka trenutačno su onemogućene.</translation>
 <translation id="5375318608039113175">Da biste s tim kontaktima koristili dijeljenje u blizini, u kontakte dodajte e-adrese povezane s njihovim Google računima.</translation>
 <translation id="5375374982898812658">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="5375577102295339548">Web-lokacije mogu vam pomoći da potvrdite da niste bot</translation>
@@ -6474,6 +6483,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5571066253365925590">Bluetooth omogućen</translation>
 <translation id="5571092938913434726">Globalne medijske kontrole</translation>
 <translation id="5571832155627049070">Prilagodite svoj profil</translation>
+<translation id="5572000034319109899">Uklonite kartice koje se ne upotrebljavaju</translation>
 <translation id="5572166921642484567">Odaberite način sheme boja</translation>
 <translation id="5572252023412311448">Prikaži pojedinosti web-lokacije za <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Vidi dopuštenja za proširenje za ostale web-lokacije</translation>
@@ -8039,6 +8049,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6723839937902243910">Napajanje</translation>
 <translation id="6725073593266469338">Usluga korisničkog sučelja</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
+<translation id="6725627354629889015">Želite li ukloniti kartice koje se ne upotrebljavaju?</translation>
 <translation id="6725970970008349185">Broj kandidata za prikazivanje po stranici</translation>
 <translation id="672609503628871915">Pogledajte što je novo</translation>
 <translation id="6726800386221816228">Posebni znakovi</translation>
@@ -9451,6 +9462,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7737846262459425222">To uvijek možete promijeniti u Postavkama &gt; Google asistent &gt; Kontekst na zaslonu.</translation>
 <translation id="7737948071472253612">Nije dopuštena upotreba kamere</translation>
 <translation id="77381465218432215">Prikaz naglasaka i posebnih znakova</translation>
+<translation id="7739524723876359011">Pritisnite <ph name="ACCELERATOR" /> da biste fokusirali ovaj oblačić.</translation>
 <translation id="7740996059027112821">Standardno</translation>
 <translation id="7742706086992565332">Na određenim web-lokacijama možete postaviti razinu zumiranja</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Pronađena je jedna ugrožena zaporka}one{Pronađena je {NUM_SITES} ugrožena zaporka}few{Pronađene su {NUM_SITES} ugrožene zaporke}other{Pronađeno je {NUM_SITES} ugroženih zaporki}}</translation>

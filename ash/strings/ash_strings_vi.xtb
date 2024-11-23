@@ -984,7 +984,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Đang kết nối…</translation>
 <translation id="4379531060876907730">Đây là các công cụ bút dành cho bút cảm ứng</translation>
-<translation id="4381031910344220229">Điều này cho phép sử dụng micrô đối với <ph name="APP_NAME" /> cũng như mọi ứng dụng và trang web có quyền sử dụng micrô</translation>
+<translation id="4381031910344220229">Điều này cho phép sử dụng micrô đối với <ph name="APP_NAME" /> cũng như mọi ứng dụng và trang web có quyền truy cập micrô</translation>
 <translation id="4382340674111381977">Quay lại trang trước</translation>
 <translation id="4389184120735010762">Bạn đã nhấn phím tắt của tính năng phóng to ở vị trí cố định. Bạn có muốn bật tính năng này không?</translation>
 <translation id="4394466652057229831">Nhấp chuột phải để tóm tắt</translation>
@@ -1529,7 +1529,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6121838516699723042">Xác nhận tải <ph name="FILENAME" /> xuống</translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
 <translation id="6127395413317891856">Bạn chưa kết nối mạng. Hãy kiểm tra kết nối rồi thử lại.</translation>
-<translation id="6129953537138746214">Dấu cách</translation>
+<translation id="6129953537138746214">Phím cách</translation>
 <translation id="6137566720514957455">Mở hộp thoại xóa tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Bạn muốn tập trung vào việc gì?</translation>
 <translation id="6141988275892716286">Xác nhận tải xuống</translation>
@@ -1873,7 +1873,7 @@ Mới cài đặt</translation>
 <translation id="736045644501761622">Cài đặt hình nền và phong cách</translation>
 <translation id="7371404428569700291">Ghi hình nội dung của cửa sổ</translation>
 <translation id="7372069265635026568">Còn trống <ph name="AVAILABLE_MEMORY" /> trong tổng <ph name="TOTAL_MEMORY" /> bộ nhớ</translation>
-<translation id="737315737514430195">Điều này cho phép sử dụng micrô đối với tất cả ứng dụng và trang web có quyền sử dụng micrô</translation>
+<translation id="737315737514430195">Điều này cho phép sử dụng micrô đối với tất cả ứng dụng và trang web có quyền truy cập micrô</translation>
 <translation id="7377169924702866686">Caps Lock đang bật.</translation>
 <translation id="7377481913241237033">Kết nối bằng mã</translation>
 <translation id="7378203170292176219">Kéo để chọn một vùng sẽ quay</translation>
@@ -1972,7 +1972,7 @@ Mới cài đặt</translation>
 <translation id="7682351277038250258">Dán nội dung trong bảng nhớ tạm dưới dạng văn bản thuần tuý</translation>
 <translation id="7684531502177797067">Đặt chế độ nhập dữ liệu bằng máy ảnh thành <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Bạn đã mở</translation>
-<translation id="7689817529363080918">Điều này cho phép sử dụng micrô đối với <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> cũng như mọi ứng dụng và trang web có quyền sử dụng micrô</translation>
+<translation id="7689817529363080918">Điều này cho phép sử dụng micrô đối với <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> cũng như mọi ứng dụng và trang web có quyền truy cập micrô</translation>
 <translation id="7704000866383261579">Làm lại thao tác thực hiện gần đây nhất</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Đang tạo GIF</translation>

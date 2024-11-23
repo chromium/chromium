@@ -366,6 +366,7 @@
 <translation id="5602351063754773347">Chrome zaleca jego usunięcie. <ph name="BEGIN_LINK" />Więcej informacji o obsługiwanych rozszerzeniach<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome robi więcej, aby dbać o Twoje bezpieczeństwo online</translation>
 <translation id="565744775970812598">Plik <ph name="FILE_NAME" /> może być niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
+<translation id="566568153320186256">Chrome oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu energii<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację}=1{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. Okno incognito nie otworzy się ponownie.}few{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. # okna incognito nie otworzą się ponownie.}many{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. # okien incognito nie otworzy się ponownie.}other{Administrator prosi o ponowne uruchomienie Chrome, by przeglądarka mogła zainstalować tę aktualizację. # okna incognito nie otworzy się ponownie.}}</translation>
 <translation id="5686916850681061684">Dostosuj i kontroluj Google Chrome. Pewna kwestia wymaga Twojej uwagi – kliknij, by przejść do szczegółów.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -514,6 +515,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7477130805345743099">Chrome będzie Cię ostrzegać przed wczytywaniem stron, które korzystają z niezabezpieczonego połączenia</translation>
 <translation id="7481213027396403996">Korzystaj z najlepszych zabezpieczeń Chrome</translation>
 <translation id="749228101751499733">Po zalogowaniu się w Chrome możesz używać haseł i innych danych z konta Google. Aby zmienić swoje ustawienia usług Google, możesz nacisnąć <ph name="SHORTCUT" />.</translation>
+<translation id="7496017508659652909">Chrome wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie. <ph name="BEGIN_LINK" />Więcej informacji o wstępnym wczytywaniu stron<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome rozumie więcej rodzajów informacji i szybciej uzupełnia automatycznie formularze. Więcej informacji o <ph name="BEGIN_LINK" />autouzupełnianiu w Chrome<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Usługa aktualizatora Google</translation>
 <translation id="7515191208480168435">Możesz przypiąć Obiektyw Google, aby mieć do niego łatwy dostęp</translation>
@@ -630,6 +632,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8712767363896337380">Prawie gotowe. Aby dokończyć aktualizowanie, uruchom ponownie Chrome.</translation>
 <translation id="8718062187489036808">Wyloguj się z Chrome</translation>
 <translation id="873133009373065397">Google Chrome nie może określić ani ustawić domyślnej przeglądarki</translation>
+<translation id="8748735421235723888">Chrome zwalnia pamięć zajętą przez nieaktywne karty. Dzięki temu aktywne karty i inne aplikacje mają więcej zasobów komputerowych, a Chrome działa szybciej. Nieaktywne karty zostaną automatycznie włączone, gdy ponownie je otworzysz. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu pamięci<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chrome wysyła to, co piszesz, do domyślnej wyszukiwarki, aby podawać Ci lepsze sugestie. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="8781673607513845160">Aby używać kamery, przyznaj Chrome dostęp w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Błąd instalacji: administrator sieci zastosował zasady grupy, które uniemożliwiają instalację: <ph name="INSTALL_ERROR" /></translation>

@@ -2180,6 +2180,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2477065602824695373">Since you set up multiple switches, auto-scan has been turned off.</translation>
 <translation id="2478176599153288112">Media-File Permissions for "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Enable data recovery service.</translation>
+<translation id="2479541499757560845">Accessibility keyboard settings</translation>
 <translation id="2480868415629598489">Modify data that you copy and paste</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2482895651873876648">Tab moved into group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3098,6 +3099,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3132277757485842847">We were unable to maintain a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="3132896062549112541">Rule</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
+<translation id="3134312457920437826">Cannot install extension because it uses an unsupported manifest version.</translation>
 <translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
 <translation id="3141093262818886744">Open anyway</translation>
@@ -4368,6 +4370,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4012509903424054869">PDFs automatically get converted so that you can search and select text</translation>
 <translation id="4014432863917027322">Repair "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Got extensions? <ph name="BEGIN_LINK" />Manage your extensions<ph name="END_LINK" /> in one easy place.</translation>
+<translation id="4015250302257349679">Press <ph name="ACCELERATOR" /> to focus this bubble, then again to focus the element that it is pointing to.</translation>
 <translation id="4016762287427926315">Permissions that you allow for <ph name="APP_NAME" /> will also be allowed for this app. <ph name="BEGIN_LINK" />Manage<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Create QR code for this link</translation>
 <translation id="4019983356493507433">Edit bookmark list</translation>
@@ -5759,6 +5762,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5045367873597907704">About HID devices</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="504561833207953641">Opening in existing browser session.</translation>
+<translation id="504953514574706691">Tab excluded from suggested group</translation>
 <translation id="5049614114599109018">Use input history</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{This site has sent a lot of notifications recently. You can stop it from sending future notifications.}other{These sites have sent a lot of notifications recently. You can stop them from sending future notifications.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5810,6 +5814,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5079950360618752063">Use suggested password</translation>
 <translation id="508059534790499809">Refresh a Kerberos ticket</translation>
 <translation id="5081124414979006563">&amp;Open Guest Profile</translation>
+<translation id="508209203623347828">If this card is disabled, your Microsoft cards, such as Sharepoint and Outlook Calendar will be disabled as well.</translation>
 <translation id="5083035541015925118">ctrl + alt + up arrow</translation>
 <translation id="5084328598860513926">Provisioning flow was interrupted. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Sites are more likely to work as you would expect</translation>
@@ -5927,6 +5932,8 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5157250307065481244">View site details</translation>
 <translation id="5158206172605340248">Accent marks menu dismissed.</translation>
 <translation id="5159094275429367735">Set up Crostini</translation>
+<translation id="5159236862360390997">A series of tutorial bubbles with instructions will be displayed.
+          Press <ph name="ACCELERATOR" /> to focus a bubble, then again to focus the element that it is pointing to.</translation>
 <translation id="5159419673777902220">Your parent has disabled extension permissions</translation>
 <translation id="5160634252433617617">Physical keyboard</translation>
 <translation id="5160857336552977725">Sign in to your <ph name="DEVICE_TYPE" /></translation>
@@ -6007,6 +6014,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5216674789212441076">Automatically translates Live Captions. Captions are sent to Google for translation.</translation>
 <translation id="5220011581825921581">search + up arrow</translation>
 <translation id="5221516927483787768">Unable to cast <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Tab excluded from list</translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5225324770654022472">Show apps shortcut</translation>
@@ -6207,6 +6215,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5372579129492968947">Unpin extension</translation>
 <translation id="5372632722660566343">Continue without an account</translation>
 <translation id="5372990315769030589">Keep '<ph name="EXTENSION_NAME" />'?</translation>
+<translation id="5374324662289354619">Internal debugging pages are currently disabled.</translation>
 <translation id="5375318608039113175">To use Nearby Share with these contacts, add the email address linked with their Google Account to your contacts.</translation>
 <translation id="5375374982898812658">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="5375577102295339548">Sites can help to verify that you're not a bot</translation>
@@ -6487,6 +6496,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5571066253365925590">Bluetooth enabled</translation>
 <translation id="5571092938913434726">Global Media Controls</translation>
 <translation id="5571832155627049070">Customise your profile</translation>
+<translation id="5572000034319109899">Clean up unused tabs</translation>
 <translation id="5572166921642484567">Pick a colour scheme mode</translation>
 <translation id="5572252023412311448">Show site details for <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">See extension permissions for other sites</translation>
@@ -8051,6 +8061,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6723839937902243910">Power</translation>
 <translation id="6725073593266469338">UI service</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
+<translation id="6725627354629889015">Clean up unused tabs?</translation>
 <translation id="6725970970008349185">Number of candidates to be displayed per page</translation>
 <translation id="672609503628871915">See what's new</translation>
 <translation id="6726800386221816228">Special characters</translation>
@@ -9463,6 +9474,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7737846262459425222">You can change this at any time in Settings &gt; Google Assistant &gt; Screen context.</translation>
 <translation id="7737948071472253612">Not allowed to use your camera</translation>
 <translation id="77381465218432215">Show accent marks and special characters</translation>
+<translation id="7739524723876359011">Press <ph name="ACCELERATOR" /> to focus this bubble.</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7742706086992565332">You can set how much you zoom in or out on certain websites</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Found 1 compromised password}other{Found {NUM_SITES} compromised passwords}}</translation>

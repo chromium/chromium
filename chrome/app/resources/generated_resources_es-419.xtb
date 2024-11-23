@@ -2164,6 +2164,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2477065602824695373">Dado que configuraste varios interruptores, se desactivó el escaneo automático.</translation>
 <translation id="2478176599153288112">Permisos de archivo de medios para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Habilita el servicio de recuperación de datos</translation>
+<translation id="2479541499757560845">Configuración del teclado de accesibilidad</translation>
 <translation id="2480868415629598489">Modificar los datos copiados y pegados</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2482895651873876648">Se movió la pestaña al grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -3082,6 +3083,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3132277757485842847">No se pudo mantener la conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3132896062549112541">Regla</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
+<translation id="3134312457920437826">No se puede instalar la extensión porque usa una versión de manifiesto no compatible.</translation>
 <translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todos modos</translation>
@@ -4352,6 +4354,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4012509903424054869">Los archivos PDF se convierten automáticamente para que puedas buscar y seleccionar texto</translation>
 <translation id="4014432863917027322">¿Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">¿Tienes extensiones? <ph name="BEGIN_LINK" />Administra tus extensiones<ph name="END_LINK" /> en un solo lugar.</translation>
+<translation id="4015250302257349679">Presiona <ph name="ACCELERATOR" /> para enfocar el cuadro y, luego, otra vez para enfocar el elemento al que señala.</translation>
 <translation id="4016762287427926315">Los permisos que otorgues para <ph name="APP_NAME" /> también se otorgarán para esta app. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear un código QR para este vínculo</translation>
 <translation id="4019983356493507433">Editar lista de Favoritos</translation>
@@ -5911,6 +5914,8 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5157250307065481244">Ver detalles del sitio</translation>
 <translation id="5158206172605340248">Se descartó el menú de tildes.</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
+<translation id="5159236862360390997">Se mostrarán una serie de cuadros con instrucciones.
+          Presiona <ph name="ACCELERATOR" /> para enfocar un cuadro y, luego, otra vez para enfocar el elemento al que señala.</translation>
 <translation id="5159419673777902220">Tu padre o madre inhabilitaron los permisos de extensiones</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
@@ -6191,6 +6196,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5372579129492968947">Deja de fijar extensión</translation>
 <translation id="5372632722660566343">Continuar sin cuenta</translation>
 <translation id="5372990315769030589">¿Quieres conservar "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5374324662289354619">Las páginas de depuración internas están inhabilitadas en este momento.</translation>
 <translation id="5375318608039113175">Para usar Compartir con Nearby con estos contactos, agrega a tus contactos las direcciones de correo electrónico vinculadas a sus Cuentas de Google.</translation>
 <translation id="5375374982898812658">Perderás de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se borrará de todos tus dispositivos</translation>
 <translation id="5375577102295339548">Los sitios pueden ayudar a verificar que no eres un bot</translation>
@@ -9447,6 +9453,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7737846262459425222">Puedes cambiar esta opción cuando quieras en Configuración &gt; Asistente de Google &gt; Contexto de pantalla.</translation>
 <translation id="7737948071472253612">No puede usar la cámara</translation>
 <translation id="77381465218432215">Mostrar tildes y caracteres especiales</translation>
+<translation id="7739524723876359011">Presiona <ph name="ACCELERATOR" /> para enfocar el cuadro.</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="7742706086992565332">Puedes establecer el nivel del zoom en sitios web determinados.</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Se encontró 1 contraseña hackeada}other{Se encontraron {NUM_SITES} contraseñas hackeadas}}</translation>

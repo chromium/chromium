@@ -375,6 +375,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5602351063754773347">Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" /></translation>
 <translation id="5648328599815354043">Chrome does more to keep you safe online</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
+<translation id="566568153320186256">Chrome conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more about Energy Saver<ph name="END_LINK" /></translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Your administrator asks that you relaunch Chrome to apply this update}=1{Your administrator asks that you relaunch Chrome to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chrome to apply this update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -523,6 +524,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7477130805345743099">Chrome will warn you before loading any site using an insecure connection</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="749228101751499733">While you're signed in, you can use your passwords and more from your Google Account in Chrome. <ph name="SHORTCUT" /> can change your Google services settings.</translation>
+<translation id="7496017508659652909">Chrome preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
 <translation id="7512187482580860950">Chrome can understand more types of information and autofill your forms faster. Learn more about <ph name="BEGIN_LINK" />Chrome autofill<ph name="END_LINK" /></translation>
 <translation id="7514258452813684157">Google updater service</translation>
 <translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
@@ -639,6 +641,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8712767363896337380">Nearly up to date! Relaunch Chrome to finish updating.</translation>
 <translation id="8718062187489036808">Sign out of Chrome</translation>
 <translation id="873133009373065397">Google Chrome cannot determine or set the default browser</translation>
+<translation id="8748735421235723888">Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them. <ph name="BEGIN_LINK" />Learn more about Memory Saver<ph name="END_LINK" /></translation>
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8781673607513845160">To use your camera, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Install error: Your network administrator has applied a Group Policy that prevents installation: <ph name="INSTALL_ERROR" /></translation>

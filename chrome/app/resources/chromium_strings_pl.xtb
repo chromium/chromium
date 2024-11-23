@@ -64,6 +64,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="1863308913976887472">W Chromium witryny mogą przechowywać informacje o Twoich zainteresowaniach. Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
 <translation id="1880677175115548835">Zaznacz tekst</translation>
 <translation id="1881322772814446296">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Chromium. Twoje dane Chromium, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chromium osobno. <ph name="LEARN_MORE" /></translation>
+<translation id="1896836275755235458">Chromium oszczędza baterię, ograniczając aktywność w tle i efekty wizualne, takie jak płynne przewijanie i liczba klatek w filmie. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu energii<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Usługa aktualizatora Chromium</translation>
 <translation id="1911763535808217981">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chromium</translation>
 <translation id="1929939181775079593">Chromium nie odpowiada. Uruchomić go teraz ponownie?</translation>
@@ -259,6 +260,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="4544142686420020088">Coś poszło nie tak i nie udało się zaktualizować Chromium. <ph name="BEGIN_LINK" />Napraw nieudane aktualizacje Chromium i rozwiąż inne problemy z aktualizacjami<ph name="END_LINK" /></translation>
 <translation id="4545268686623374213">Aby ułatwić i przyspieszyć przeglądanie, Chromium może dezaktywować tę kartę.</translation>
 <translation id="454579500955453258">Kontynuować w nowym profilu Chromium?</translation>
+<translation id="4548534452171747496">Chromium wstępnie wczytuje strony, co przyspiesza przeglądanie i wyszukiwanie. <ph name="BEGIN_LINK" />Więcej informacji o wstępnym wczytywaniu stron<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">Jesteś zalogowany jako <ph name="USER_EMAIL_ADDRESS" />. Teraz możesz korzystać ze swoich zakładek, historii i innych ustawień na wszystkich zalogowanych urządzeniach.</translation>
 <translation id="4570813286784708942">Pobieranie zostało zablokowane przez Chromium, ponieważ masz wyłączone Bezpieczne przeglądanie i nie można zweryfikować pliku</translation>
 <translation id="4594305310729380060">W Menedżerze haseł na tym urządzeniu</translation>
@@ -332,6 +334,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5698481217667032250">Wyświetlaj Chromium w tym języku</translation>
 <translation id="569897634095159764">Nie można połączyć się z internetem. Serwer proxy wymaga uwierzytelnienia.</translation>
 <translation id="5761096224651992291">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
+<translation id="5768371961535086509">Chromium zwalnia pamięć zajętą przez nieaktywne karty. Dzięki temu aktywne karty i inne aplikacje mają więcej zasobów komputerowych, a Chromium działa szybciej. Nieaktywne karty zostaną automatycznie włączone, gdy ponownie je otworzysz. <ph name="BEGIN_LINK" />Więcej informacji o Oszczędzaniu pamięci<ph name="END_LINK" /></translation>
 <translation id="5800158606660203929">Dostosuj i kontroluj Chromium. Ustaw Chromium jako przeglądarkę domyślną.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
 <translation id="5821520528363214608">Zaktualizuj Chromium, aby móc zapisywać dane z niego na koncie Google i ich używać</translation>

@@ -1579,6 +1579,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3801265110651850478">Enviar uma solicitação "Do Not Track" com seu tráfego de navegação</translation>
 <translation id="3801297763951514916">Você visita com frequência</translation>
 <translation id="380329542618494757">Nome</translation>
+<translation id="3803481123869276674">Ao fazer compras no Chrome, veja a carteira digital como opção</translation>
 <translation id="3803801106042434208">Estes mecanismos são famosos na sua região</translation>
 <translation id="380666903981445943">Salve uma forma de pagamento na sua Conta do Google para que ela seja preenchida automaticamente em compras feitas no Chrome</translation>
 <translation id="3807366285948165054">Mudança X da imagem</translation>
@@ -2193,6 +2194,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4930714375720679147">Ativar</translation>
 <translation id="4932035752129140860">O texto colado ou anexado é enviado ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis e podem ser armazenados com base nas políticas da empresa e ficar visíveis para seu administrador.</translation>
 <translation id="4933468175699107356">Clique com o botão direito do mouse para preencher automaticamente as informações salvas, como seu nome ou endereço, em qualquer formulário</translation>
+<translation id="4933788293078559286">Pagar com Pix</translation>
 <translation id="4934780484581617878">Gerenciamento de janelas</translation>
 <translation id="4936134414789135531">Não foi possível localizar o valor de <ph name="VALUE_NAME" /> inserido.</translation>
 <translation id="4936573216809994970">O upload do arquivo para o <ph name="CLOUD_PROVIDER" /> vai começar em 1 hora</translation>
@@ -2468,6 +2470,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5443468954631487277">Ordem reversa virada para cima</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use as informações salvas sobre você</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
+<translation id="5452923259299906094">Pague com a carteira digital e o Pix</translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
 <translation id="5456428544444655325">Nunca mostrar</translation>
 <translation id="5456839782162429664">Verificar manualmente sempre que você pagar usando o preenchimento automático</translation>
@@ -3283,6 +3286,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="6946949206576443118">Pesquise na Web usando o Chrome</translation>
 <translation id="6948051842255602737">Fim de jogo. Sua pontuação é de <ph name="SCORE" />.</translation>
+<translation id="6948223029286835408">Ao fazer compras no Chrome, veja o Pix como opção</translation>
 <translation id="6948701128805548767">Para acessar métodos e requisitos de retirada, selecione um endereço</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">Redefinir senha</translation>
@@ -3599,6 +3603,7 @@ Mais detalhes:
 <translation id="7489392576326061356">Shampoos e condicionadores</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
 <translation id="749865518782565832">Encanamento</translation>
+<translation id="7499188644237027195">Ao fazer compras no Chrome, veja a carteira digital e o Pix como opções</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">O site a seguir foi sinalizado pela sua organização</translation>
 <translation id="7507075214339298899">Envelope 9</translation>
@@ -3712,6 +3717,7 @@ Mais detalhes:
 <translation id="767550629621587224">Abas pré-cortadas</translation>
 <translation id="7675756033024037212">Configuração de rolagem e zoom não permitida</translation>
 <translation id="7676643023259824263">Pesquisar um texto na área de transferência, <ph name="TEXT" /></translation>
+<translation id="7679287273775285018">Pagar com carteira digital</translation>
 <translation id="7679367271685653708">Ver e gerenciar seu histórico de navegação nas configurações do Chrome</translation>
 <translation id="7679947978757153706">Beisebol</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira em <ph name="CARD_EXPIRATION" /></translation>
