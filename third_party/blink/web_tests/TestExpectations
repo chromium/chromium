@@ -85,6 +85,9 @@ crbug.com/895777 external/wpt/css/css-break/ink-overflow-001-print.html [ Skip T
 
 crbug.com/807686 crbug.com/24182 jquery/manipulation.html [ Pass Timeout ]
 
+# Temporarily disable these tests, due to an API change
+crbug.com/377577806 external/wpt/wasm/jsapi/jspi/* [ Failure Pass ]
+
 # The following tests need to remove the assumption that user activation is
 # available in child/sibling frames.  This assumption doesn't hold with User
 # Activation v2 (UAv2).
