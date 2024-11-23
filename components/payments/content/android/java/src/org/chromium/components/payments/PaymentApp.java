@@ -180,8 +180,10 @@ public abstract class PaymentApp extends EditableOption {
      * @param merchantName     The name of the merchant.
      * @param origin           The origin of this merchant.
      * @param iframeOrigin     The origin of the iframe that invoked PaymentRequest.
-     * @param certificateChain The site certificate chain of the merchant. Can be null for localhost
-     *                         or local file, which are secure contexts without SSL.
+     * @param certificateChain The site certificate chain of the merchant. Can be null when
+     *                         ANDROID_PAYMENT_INTENTS_OMIT_DEPRECATED_PARAMETERS is enabled or for
+     *                         localhost or local file, which are secure contexts without SSL. Each
+     *                         byte array cannot be null.
      * @param methodDataMap    The payment-method specific data for all applicable payment methods,
      *                         e.g., whether the app should be invoked in test or production, a
      *                         merchant identifier, or a public key.
