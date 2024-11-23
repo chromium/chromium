@@ -502,6 +502,9 @@ bool WillFillCreditCardNumberOrCvc(
     base::span<const std::unique_ptr<AutofillField>> autofill_fields,
     const AutofillField& trigger_autofill_field,
     bool card_has_cvc) {
+  if (fields.size() != autofill_fields.size()) {
+    return false;
+  }
   DenseSet<FieldType> fillable_field_types({CREDIT_CARD_NUMBER});
   // Add CVC field types to `fillable_field_types` if CVC storage is enabled and
   // the card to be filled has a CVC saved.
