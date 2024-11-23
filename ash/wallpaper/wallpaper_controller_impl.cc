@@ -1181,6 +1181,7 @@ void WallpaperControllerImpl::ShowUserWallpaper(
   if (user_type == user_manager::UserType::kKioskApp ||
       user_type == user_manager::UserType::kWebKioskApp ||
       user_type == user_manager::UserType::kKioskIWA) {
+    RepaintWallpaper();
     return;
   }
 
