@@ -63,9 +63,6 @@ async function cleanUpState() {
 chrome.test.runTests([
   async function UserScriptWorld_worldIdValidation() {
     await chrome.test.assertPromiseRejects(
-        chrome.userScripts.configureWorld({csp: '', worldId: ''}),
-        'Error: If specified, `worldId` must be non-empty.');
-    await chrome.test.assertPromiseRejects(
         chrome.userScripts.configureWorld({csp: '', worldId: '_foobar'}),
         `Error: World IDs beginning with '_' are reserved.`);
     await chrome.test.assertPromiseRejects(

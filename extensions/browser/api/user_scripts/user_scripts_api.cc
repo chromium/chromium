@@ -41,9 +41,9 @@ constexpr char kInvalidSourceError[] =
 constexpr char kMatchesMissingError[] =
     "User script with ID '*' must specify 'matches'.";
 
-// Returns true if the given `world_id` is valid from the API perspective.
-// If invalid, populates `error_out`.
-bool IsValidWorldId(const std::optional<std::string>& world_id,
+// Sanitizes the given `world_id`, updating it if necessary.
+// Returns true on success; on failure, returns false and populates `error_out`.
+bool IsValidWorldId(std::optional<std::string>& world_id,
                     std::string* error_out) {
   if (!world_id) {
     // Omitting world ID is valid.
@@ -51,8 +51,11 @@ bool IsValidWorldId(const std::optional<std::string>& world_id,
   }
 
   if (world_id->empty()) {
-    *error_out = "If specified, `worldId` must be non-empty.";
-    return false;
+    // Specifying an empty-string world ID is valid, and will use the default
+    // user script world. This is represented by nullopt elsewhere, so we update
+    // the world ID value.
+    world_id = std::nullopt;
+    return true;
   }
 
   if (world_id->at(0) == '_') {

@@ -106,6 +106,7 @@ void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
     const std::optional<std::string>& world_id,
     std::optional<std::string> csp,
     bool enable_messaging) {
+  CHECK(!world_id || !world_id->empty());
   // Persist world configuratation in ExtensionPrefs.
   ExtensionPrefs::ScopedDictionaryUpdate update(
       extension_prefs_, extension.id(), kUserScriptsWorldsConfiguration.name);
@@ -130,6 +131,7 @@ void UserScriptWorldConfigurationManager::SetUserScriptWorldInfo(
 void UserScriptWorldConfigurationManager::ClearUserScriptWorldInfo(
     const Extension& extension,
     const std::optional<std::string>& world_id) {
+  CHECK(!world_id || !world_id->empty());
   ExtensionPrefs::ScopedDictionaryUpdate update(
       extension_prefs_, extension.id(), kUserScriptsWorldsConfiguration.name);
   std::unique_ptr<prefs::DictionaryValueUpdate> update_dict = update.Get();
@@ -151,6 +153,7 @@ mojom::UserScriptWorldInfoPtr
 UserScriptWorldConfigurationManager::GetUserScriptWorldInfo(
     const ExtensionId& extension_id,
     const std::optional<std::string>& world_id) {
+  CHECK(!world_id || !world_id->empty());
   const base::Value::Dict* worlds_configuration =
       extension_prefs_->ReadPrefAsDictionary(extension_id,
                                              kUserScriptsWorldsConfiguration);
