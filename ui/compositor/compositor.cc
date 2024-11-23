@@ -53,6 +53,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
@@ -711,9 +712,9 @@ void Compositor::IssueExternalBeginFrame(
       args, force, std::move(callback));
 }
 
-ThroughputTracker Compositor::RequestNewThroughputTracker() {
-  return ThroughputTracker(next_throughput_tracker_id_++,
-                           weak_ptr_factory_.GetWeakPtr());
+CompositorMetricsTracker Compositor::RequestNewCompositorMetricsTracker() {
+  return CompositorMetricsTracker(next_compositor_metrics_tracker_id_++,
+                                  weak_ptr_factory_.GetWeakPtr());
 }
 
 double Compositor::GetPercentDroppedFrames() const {
@@ -863,25 +864,25 @@ Compositor::TrackerState& Compositor::TrackerState::operator=(TrackerState&&) =
     default;
 Compositor::TrackerState::~TrackerState() = default;
 
-void Compositor::StartThroughputTracker(
+void Compositor::StartMetricsTracker(
     TrackerId tracker_id,
-    ThroughputTrackerHost::ReportCallback callback) {
-  DCHECK(!base::Contains(throughput_tracker_map_, tracker_id));
+    CompositorMetricsTrackerHost::ReportCallback callback) {
+  DCHECK(!base::Contains(compositor_metrics_tracker_map_, tracker_id));
 
-  auto& tracker_state = throughput_tracker_map_[tracker_id];
+  auto& tracker_state = compositor_metrics_tracker_map_[tracker_id];
   tracker_state.report_callback = std::move(callback);
 
   animation_host_->StartThroughputTracking(tracker_id);
 }
 
-bool Compositor::StopThroughputTracker(TrackerId tracker_id) {
-  auto it = throughput_tracker_map_.find(tracker_id);
-  CHECK(it != throughput_tracker_map_.end(), base::NotFatalUntil::M130);
+bool Compositor::StopMetricsTracker(TrackerId tracker_id) {
+  auto it = compositor_metrics_tracker_map_.find(tracker_id);
+  CHECK(it != compositor_metrics_tracker_map_.end(), base::NotFatalUntil::M130);
 
-  // Clean up if report has happened since StopThroughputTracking would
+  // Clean up if report has happened since StopCompositorMetricsTracking would
   // not trigger report in this case.
   if (it->second.report_attempted) {
-    throughput_tracker_map_.erase(it);
+    compositor_metrics_tracker_map_.erase(it);
     return false;
   }
 
@@ -890,13 +891,13 @@ bool Compositor::StopThroughputTracker(TrackerId tracker_id) {
   return true;
 }
 
-void Compositor::CancelThroughputTracker(TrackerId tracker_id) {
-  auto it = throughput_tracker_map_.find(tracker_id);
-  CHECK(it != throughput_tracker_map_.end(), base::NotFatalUntil::M130);
+void Compositor::CancelMetricsTracker(TrackerId tracker_id) {
+  auto it = compositor_metrics_tracker_map_.find(tracker_id);
+  CHECK(it != compositor_metrics_tracker_map_.end(), base::NotFatalUntil::M130);
 
   const bool should_stop = !it->second.report_attempted;
 
-  throughput_tracker_map_.erase(it);
+  compositor_metrics_tracker_map_.erase(it);
 
   if (should_stop)
     animation_host_->StopThroughputTracking(tracker_id);
@@ -943,21 +944,22 @@ void Compositor::RequestSuccessfulPresentationTimeForNextFrame(
 void Compositor::ReportMetricsForTracker(
     int tracker_id,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
-  auto it = throughput_tracker_map_.find(tracker_id);
-  if (it == throughput_tracker_map_.end())
+  auto it = compositor_metrics_tracker_map_.find(tracker_id);
+  if (it == compositor_metrics_tracker_map_.end()) {
     return;
+  }
 
-  // Set `report_attempted` but not reporting if relevant ThroughputTrackers
-  // are not stopped and waiting for reports.
+  // Set `report_attempted` but not reporting if relevant
+  // CompositorMetricsTrackers are not stopped and waiting for reports.
   if (!it->second.should_report) {
     it->second.report_attempted = true;
     return;
   }
 
-  // Callback may modify `throughput_tracker_map_` so update the map first.
-  // See https://crbug.com/1193382.
+  // Callback may modify `compositor_metrics_tracker_map_` so update the map
+  // first. See https://crbug.com/1193382.
   auto callback = std::move(it->second.report_callback);
-  throughput_tracker_map_.erase(it);
+  compositor_metrics_tracker_map_.erase(it);
   std::move(callback).Run(data);
 }
 

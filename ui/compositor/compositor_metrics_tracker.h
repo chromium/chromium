@@ -2,38 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_COMPOSITOR_THROUGHPUT_TRACKER_H_
-#define UI_COMPOSITOR_THROUGHPUT_TRACKER_H_
+#ifndef UI_COMPOSITOR_COMPOSITOR_METRICS_TRACKER_H_
+#define UI_COMPOSITOR_COMPOSITOR_METRICS_TRACKER_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/compositor/compositor_export.h"
-#include "ui/compositor/throughput_tracker_host.h"
+#include "ui/compositor/compositor_metrics_tracker_host.h"
 
 namespace ui {
 
 class Compositor;
-class ThroughputTrackerHost;
 
-// A class to track the throughput of Compositor. The tracking is identified by
+// A class to track custom metrics of Compositor. The tracking is identified by
 // an id. The id is passed into impl side and be used as the sequence id to
 // create and stop a kCustom typed cc::FrameSequenceTracker. The class is
-// move-only to have only one holder of the id. When ThroughputTracker is
+// move-only to have only one holder of the id. When CompositorMetricsTracker is
 // destroyed with an active tracking, the tracking will be canceled and report
 // callback will not be invoked.
-class COMPOSITOR_EXPORT ThroughputTracker {
+class COMPOSITOR_EXPORT CompositorMetricsTracker {
  public:
-  using TrackerId = ThroughputTrackerHost::TrackerId;
+  using TrackerId = CompositorMetricsTrackerHost::TrackerId;
 
   // Move only.
-  ThroughputTracker(ThroughputTracker&& other);
-  ThroughputTracker& operator=(ThroughputTracker&& other);
+  CompositorMetricsTracker(CompositorMetricsTracker&& other);
+  CompositorMetricsTracker& operator=(CompositorMetricsTracker&& other);
 
-  ~ThroughputTracker();
+  ~CompositorMetricsTracker();
 
   // Starts tracking Compositor and provides a callback for reporting. The
   // throughput data collection starts after the next commit.
-  void Start(ThroughputTrackerHost::ReportCallback callback);
+  void Start(CompositorMetricsTrackerHost::ReportCallback callback);
 
   // Stops tracking. Returns true when the supplied callback will be invoked
   // when the data collection finishes. Returns false when the data collection
@@ -61,15 +60,18 @@ class COMPOSITOR_EXPORT ThroughputTracker {
   };
 
   // Private since it should only be created via Compositor's
-  // RequestNewThroughputTracker call.
-  ThroughputTracker(TrackerId id, base::WeakPtr<ThroughputTrackerHost> host);
+  // RequestNewMetricsTracker call.
+  CompositorMetricsTracker(TrackerId id,
+                           base::WeakPtr<CompositorMetricsTrackerHost> host);
 
   static const TrackerId kInvalidId = 0u;
   TrackerId id_ = kInvalidId;
-  base::WeakPtr<ThroughputTrackerHost> host_;
+  base::WeakPtr<CompositorMetricsTrackerHost> host_;
   State state_ = State::kNotStarted;
 };
 
+using ThroughputTracker = CompositorMetricsTracker;
+
 }  // namespace ui
 
-#endif  // UI_COMPOSITOR_THROUGHPUT_TRACKER_H_
+#endif  // UI_COMPOSITOR_COMPOSITOR_METRICS_TRACKER_H_

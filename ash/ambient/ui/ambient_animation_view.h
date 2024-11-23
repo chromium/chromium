@@ -18,7 +18,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/lottie/animation.h"
 #include "ui/lottie/animation_observer.h"
 #include "ui/views/view.h"

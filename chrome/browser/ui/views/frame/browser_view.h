@@ -64,7 +64,7 @@
 #include "ui/views/window/client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #endif
 
 // NOTE: For more information about the objects and files in this directory,

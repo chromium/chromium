@@ -80,7 +80,8 @@ void StartRecordAnimationSmoothness(
   if (!widget)
     return;
 
-  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker.emplace(
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker());
   tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(

@@ -1505,7 +1505,7 @@ void ShelfView::AnimateToIdealBounds() {
   CalculateIdealBounds();
 
   move_animation_tracker_.emplace(
-      GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+      GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
   move_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportMoveAnimationSmoothness)));
 
@@ -2364,7 +2364,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     // tracking for the first one.
     if (!fade_out_animation_tracker_) {
       fade_out_animation_tracker_.emplace(
-          GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+          GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
       fade_out_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
           base::BindRepeating(&ReportFadeOutAnimationSmoothness)));
     }

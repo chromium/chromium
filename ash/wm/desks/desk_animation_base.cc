@@ -45,7 +45,7 @@ void DeskAnimationBase::Launch() {
     // Request a new sequence tracker so the tracking number can't be reused.
     throughput_tracker_ =
         desks_util::GetSelectedCompositorForPerformanceMetrics()
-            ->RequestNewThroughputTracker();
+            ->RequestNewCompositorMetricsTracker();
     throughput_tracker_->Start(GetSmoothnessReportCallback());
   }
 

@@ -14,13 +14,13 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/animation_throughput_reporter_test_base.h"
-#include "ui/compositor/test/throughput_report_checker.h"
+#include "ui/compositor/test/compositor_metrics_report_checker.h"
+#include "ui/compositor/test/compositor_metrics_reporter_test_base.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
-using AnimationThroughputReporterTest = AnimationThroughputReporterTestBase;
+using AnimationThroughputReporterTest = CompositorMetricsReporterTestBase;
 
 // Tests animation throughput collection with implicit animation scenario.
 TEST_F(AnimationThroughputReporterTest, ImplicitAnimation) {
@@ -28,7 +28,7 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimation) {
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   {
     LayerAnimator* animator = layer.GetAnimator();
     AnimationThroughputReporter reporter(animator,
@@ -48,7 +48,7 @@ TEST_F(AnimationThroughputReporterTest, ImplicitAnimationLateAttach) {
   Layer layer;
   layer.SetOpacity(0.5f);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   {
     LayerAnimator* animator = layer.GetAnimator();
     AnimationThroughputReporter reporter(animator,
@@ -71,7 +71,7 @@ TEST_F(AnimationThroughputReporterTest, ExplicitAnimation) {
   layer.SetOpacity(0.5f);
   root_layer()->Add(&layer);
 
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   LayerAnimator* animator = layer.GetAnimator();
   AnimationThroughputReporter reporter(animator, checker.repeating_callback());
 
@@ -93,7 +93,7 @@ TEST_F(AnimationThroughputReporterTest, PersistedAnimation) {
   layer->SetAnimator(animator);
 
   // |reporter| keeps reporting as long as it is alive.
-  ThroughputReportChecker checker(this);
+  CompositorMetricsReportChecker checker(this);
   AnimationThroughputReporter reporter(animator, checker.repeating_callback());
 
   // Report data for animation of opacity goes to 1.
@@ -112,7 +112,7 @@ TEST_F(AnimationThroughputReporterTest, AbortedAnimation) {
   layer->SetOpacity(0.5f);
   root_layer()->Add(layer.get());
 
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
 
   // Reporter started monitoring animation, then deleted, which should be
   // reported when the animation ends.
@@ -142,7 +142,7 @@ TEST_F(AnimationThroughputReporterTest, LayerDestroyedBeforeReporter) {
   layer->SetOpacity(0.5f);
   root_layer()->Add(layer.get());
 
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
   LayerAnimator* animator = layer->GetAnimator();
   AnimationThroughputReporter reporter(animator, checker.repeating_callback());
   {
@@ -164,7 +164,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportOnDetach) {
   layer->SetOpacity(0.5f);
   root_layer()->Add(layer.get());
 
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
   {
     LayerAnimator* animator = layer->GetAnimator();
     AnimationThroughputReporter reporter(animator,
@@ -188,7 +188,7 @@ TEST_F(AnimationThroughputReporterTest, EndDetachedNoReportNoLeak) {
   auto layer = std::make_unique<Layer>();
   layer->SetOpacity(0.5f);
 
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
   LayerAnimator* animator = layer->GetAnimator();
   // Schedule an animation without being attached to a root.
   {
@@ -216,7 +216,7 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
   layer->SetBounds(gfx::Rect(0, 0, 1, 2));
   root_layer()->Add(layer.get());
 
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
   LayerAnimator* animator = layer->GetAnimator();
   // Schedule an animation that will be preempted. No report should happen.
   {
@@ -229,7 +229,7 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
   }
 
   // Animate to new target. Report should happen.
-  ThroughputReportChecker checker2(this);
+  CompositorMetricsReportChecker checker2(this);
   {
     AnimationThroughputReporter reporter(animator,
                                          checker2.repeating_callback());
@@ -261,7 +261,7 @@ TEST_F(AnimationThroughputReporterTest, NoLeakWithNoAnimationStart) {
   }
 
   // Create the reporter with the existing animation.
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
   {
     AnimationThroughputReporter reporter(animator,
                                          checker.repeating_callback());
@@ -277,7 +277,7 @@ TEST_F(AnimationThroughputReporterTest, NoReportForNoRunAnimations) {
   Layer layer;
   root_layer()->Add(&layer);
 
-  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  CompositorMetricsReportChecker checker(this, /*fail_if_reported=*/true);
   {
     LayerAnimator* animator = layer.GetAnimator();
     AnimationThroughputReporter reporter(animator,

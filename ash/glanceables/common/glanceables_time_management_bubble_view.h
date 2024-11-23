@@ -13,7 +13,7 @@
 #include "ash/style/error_message_toast.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/models/combobox_model.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"

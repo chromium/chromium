@@ -301,7 +301,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #else
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1685,7 +1685,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   if (should_animate) {
 #if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_.emplace(
-        GetWidget()->GetCompositor()->RequestNewThroughputTracker());
+        GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
     loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif

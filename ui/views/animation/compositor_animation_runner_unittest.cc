@@ -6,8 +6,8 @@
 
 #include "base/test/bind.h"
 #include "base/timer/timer.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/buildflags.h"
@@ -72,7 +72,7 @@ class TestAnimationDelegateViews : public AnimationDelegateViews {
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Tests that ui::ThroughputTracker will report for gfx::Animation. Only
+// Tests that ui::CompositorMetricsTracker will report for gfx::Animation. Only
 // supported on ChromeOS.
 TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
   WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
@@ -91,8 +91,8 @@ TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
   base::RepeatingTimer interval_timer;
   base::RunLoop run_loop;
 
-  ui::ThroughputTracker tracker1 =
-      widget->GetCompositor()->RequestNewThroughputTracker();
+  ui::CompositorMetricsTracker tracker1 =
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker();
   tracker1.Start(base::BindLambdaForTesting(
       [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
         ++report_count;
@@ -118,8 +118,8 @@ TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
   // expected.
   base::RunLoop run_loop2;
 
-  ui::ThroughputTracker tracker2 =
-      widget->GetCompositor()->RequestNewThroughputTracker();
+  ui::CompositorMetricsTracker tracker2 =
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker();
   tracker2.Start(base::BindLambdaForTesting(
       [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
         ++report_count2;

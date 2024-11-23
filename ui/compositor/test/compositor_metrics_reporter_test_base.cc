@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/compositor/test/animation_throughput_reporter_test_base.h"
+#include "ui/compositor/test/compositor_metrics_reporter_test_base.h"
 
 #include <memory>
 
@@ -15,12 +15,12 @@
 
 namespace ui {
 
-AnimationThroughputReporterTestBase::AnimationThroughputReporterTestBase() =
+CompositorMetricsReporterTestBase::CompositorMetricsReporterTestBase() =
     default;
-AnimationThroughputReporterTestBase::~AnimationThroughputReporterTestBase() =
+CompositorMetricsReporterTestBase::~CompositorMetricsReporterTestBase() =
     default;
 
-void AnimationThroughputReporterTestBase::SetUp() {
+void CompositorMetricsReporterTestBase::SetUp() {
   context_factories_ = std::make_unique<TestContextFactories>(false);
 
   const gfx::Rect bounds(100, 100);
@@ -32,24 +32,23 @@ void AnimationThroughputReporterTestBase::SetUp() {
 
   frame_generation_timer_.Start(
       FROM_HERE, base::Milliseconds(16), this,
-      &AnimationThroughputReporterTestBase::GenerateOneFrame);
+      &CompositorMetricsReporterTestBase::GenerateOneFrame);
 }
 
-void AnimationThroughputReporterTestBase::TearDown() {
+void CompositorMetricsReporterTestBase::TearDown() {
   frame_generation_timer_.Stop();
   host_.reset();
   context_factories_.reset();
 }
 
-void AnimationThroughputReporterTestBase::Advance(
-    const base::TimeDelta& delta) {
+void CompositorMetricsReporterTestBase::Advance(const base::TimeDelta& delta) {
   run_loop_ = std::make_unique<base::RunLoop>();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop_->QuitClosure(), delta);
   run_loop_->Run();
 }
 
-void AnimationThroughputReporterTestBase::QuitRunLoop() {
+void CompositorMetricsReporterTestBase::QuitRunLoop() {
   run_loop_->Quit();
 }
 

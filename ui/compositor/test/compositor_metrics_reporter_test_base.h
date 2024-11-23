@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_COMPOSITOR_TEST_ANIMATION_THROUGHPUT_REPORTER_TEST_BASE_H_
-#define UI_COMPOSITOR_TEST_ANIMATION_THROUGHPUT_REPORTER_TEST_BASE_H_
+#ifndef UI_COMPOSITOR_TEST_COMPOSITOR_METRICS_REPORTER_TEST_BASE_H_
+#define UI_COMPOSITOR_TEST_COMPOSITOR_METRICS_REPORTER_TEST_BASE_H_
 
 #include <memory>
 
@@ -21,14 +21,14 @@ class RunLoop;
 namespace ui {
 class TestContextFactories;
 
-class AnimationThroughputReporterTestBase : public testing::Test {
+class CompositorMetricsReporterTestBase : public testing::Test {
  public:
-  AnimationThroughputReporterTestBase();
-  AnimationThroughputReporterTestBase(
-      const AnimationThroughputReporterTestBase&) = delete;
-  AnimationThroughputReporterTestBase& operator=(
-      const AnimationThroughputReporterTestBase&) = delete;
-  ~AnimationThroughputReporterTestBase() override;
+  CompositorMetricsReporterTestBase();
+  CompositorMetricsReporterTestBase(const CompositorMetricsReporterTestBase&) =
+      delete;
+  CompositorMetricsReporterTestBase& operator=(
+      const CompositorMetricsReporterTestBase&) = delete;
+  ~CompositorMetricsReporterTestBase() override;
 
   // testing::Test:
   void SetUp() override;
@@ -61,4 +61,4 @@ class AnimationThroughputReporterTestBase : public testing::Test {
 
 }  // namespace ui
 
-#endif  // UI_COMPOSITOR_TEST_ANIMATION_THROUGHPUT_REPORTER_TEST_BASE_H_
+#endif  // UI_COMPOSITOR_TEST_COMPOSITOR_METRICS_REPORTER_TEST_BASE_H_

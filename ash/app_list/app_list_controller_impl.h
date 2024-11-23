@@ -42,7 +42,7 @@
 #include "components/prefs/pref_member.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/types/display_constants.h"

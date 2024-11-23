@@ -26,13 +26,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -124,8 +124,9 @@ class BoundsAnimationReporter : public gfx::AnimationDelegate {
  public:
   BoundsAnimationReporter(views::View* view,
                           metrics_util::ReportCallback report_callback)
-      : tracker_(
-            view->GetWidget()->GetCompositor()->RequestNewThroughputTracker()) {
+      : tracker_(view->GetWidget()
+                     ->GetCompositor()
+                     ->RequestNewCompositorMetricsTracker()) {
     tracker_.Start(std::move(report_callback));
   }
   BoundsAnimationReporter(const BoundsAnimationReporter& other) = delete;

@@ -436,7 +436,7 @@ void AshMessagePopupCollection::AnimationStarted() {
     // this when the first popup shows in the animation sequence.
     animation_tracker_.emplace(last_pop_up_added_->GetWidget()
                                    ->GetCompositor()
-                                   ->RequestNewThroughputTracker());
+                                   ->RequestNewCompositorMetricsTracker());
     animation_tracker_->Start(metrics_util::ForSmoothnessV3(
         base::BindRepeating(&ReportPopupAnimationSmoothness)));
   }
