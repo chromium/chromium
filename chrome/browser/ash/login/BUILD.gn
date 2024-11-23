@@ -101,6 +101,7 @@ static_library("login") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/auth/public:challenge_response_key",

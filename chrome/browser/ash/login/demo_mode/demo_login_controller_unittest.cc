@@ -4,19 +4,29 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/test_login_screen.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/account_id/account_id.h"
+#include "components/policy/core/common/device_local_account_type.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
@@ -50,6 +60,8 @@ constexpr char kCleanUpDemoAccountUrl[] =
 
 constexpr char kApiKeyParam[] = "key";
 
+constexpr char kPublicAccountUserId[] = "public_session_user@localhost";
+
 }  // namespace
 
 class DemoLoginControllerTest : public testing::Test {
@@ -67,7 +79,22 @@ class DemoLoginControllerTest : public testing::Test {
   }
 
   void SetUp() override {
-    attributes_.Get()->SetDemoMode();
+    features_.InitAndEnableFeature(features::kDemoModeSignIn);
+
+    settings_helper_.InstallAttributes()->SetDemoMode();
+    fake_user_manager_->AddPublicAccountUser(auto_login_account_id_);
+    settings_helper_.ReplaceDeviceSettingsProviderWithStub();
+
+    base::Value::Dict account;
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kPublicAccountUserId);
+    account.Set(
+        kAccountsPrefDeviceLocalAccountsKeyType,
+        static_cast<int>(policy::DeviceLocalAccountType::kPublicSession));
+    base::Value::List accounts;
+    accounts.Append(std::move(account));
+    settings_helper_.Set(kAccountsPrefDeviceLocalAccounts,
+                         base::Value(std::move(accounts)));
+
     login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
     demo_login_controller_ =
         std::make_unique<DemoLoginController>(login_screen_client_.get());
@@ -117,17 +144,39 @@ class DemoLoginControllerTest : public testing::Test {
     loop.Run();
   }
 
+  void ExpectGetExistingController() {
+    EXPECT_CALL(login_display_host(), GetExistingUserController())
+        .WillRepeatedly(testing::Return(&existing_user_controller_));
+  }
+
+  ScopedCrosSettingsTestHelper* settings_helper() { return &settings_helper_; }
+  ExistingUserController* existing_user_controller() {
+    return &existing_user_controller_;
+  }
+
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
+  base::test::ScopedFeatureList features_;
   content::BrowserTaskEnvironment task_environment_;
-  ScopedStubInstallAttributes attributes_;
+
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   system::FakeStatisticsProvider statistics_provider_;
 
-  // Dependencies for `LoginScreenClientImpl`:
+  // Dependencies for `ExistingUserController`:
+  FakeSessionManagerClient fake_session_manager_client_;
+  ScopedCrosSettingsTestHelper settings_helper_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<FakeChromeUserManager>()};
   session_manager::SessionManager session_manager_;
+  const AccountId auto_login_account_id_ =
+      AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
+          kPublicAccountUserId,
+          policy::DeviceLocalAccountType::kPublicSession));
+  ExistingUserController existing_user_controller_;
+
+  // Dependencies for `LoginScreenClientImpl`:
   TestLoginScreen test_login_screen_;
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
 
@@ -163,7 +212,7 @@ TEST_F(DemoLoginControllerTest, OnSetupDemoAccountSuccessFirstTime) {
 
 TEST_F(DemoLoginControllerTest, InValidGaia) {
   test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kInValidGaiaCreds);
-
+  ExpectGetExistingController();
   base::RunLoop loop;
   EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
   demo_login_controller()->SetSetupFailedCallbackForTest(
@@ -228,6 +277,32 @@ TEST_F(DemoLoginControllerTest, CleanUpFailed) {
   const auto new_session_id =
       local_state->GetString(prefs::kDemoModeSessionIdentifier);
   EXPECT_NE(new_session_id, last_session_id);
+}
+
+TEST_F(DemoLoginControllerTest, FallbackToMGS) {
+  // Mock setup failed by returning invalid credential.
+  test_url_loader_factory_.AddResponse(GetSetupUrl().spec(), kInValidGaiaCreds);
+  ExpectGetExistingController();
+
+  // Configure auto login settings. This is done by policy in prod env.
+  settings_helper()->SetString(kAccountsPrefDeviceLocalAccountAutoLoginId,
+                               kPublicAccountUserId);
+  settings_helper()->SetInteger(kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+                                0);
+
+  base::RunLoop loop;
+  EXPECT_CALL(login_display_host(), CompleteLogin).Times(0);
+  demo_login_controller()->SetSetupFailedCallbackForTest(
+      base::BindLambdaForTesting(
+          [&](const DemoLoginController::ResultCode result_code) {
+            loop.Quit();
+          }));
+  login_display_host().StartSignInScreen();
+  login_screen_client()->OnLoginScreenShown();
+  loop.Run();
+
+  // Expect auto login managed guest session starts.
+  EXPECT_TRUE(existing_user_controller()->IsAutoLoginTimerRunningForTesting());
 }
 
 // TODO(crbug.com/372771485): Add more request fail test cases.

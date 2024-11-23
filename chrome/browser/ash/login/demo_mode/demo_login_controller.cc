@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
@@ -271,16 +272,16 @@ DemoLoginController::~DemoLoginController() = default;
 void DemoLoginController::OnLoginScreenShown() {
   // Stop observe login screen since it may get invoked in session. Demo account
   // should be setup only once for each session. Follow up response will
-  // instruct retry or fallback to public account.
+  // instruct retry or fall back to public account.
   scoped_observation_.Reset();
 
   if (!demo_mode::IsDeviceInDemoMode()) {
     return;
   }
+  // Try demo account login first by disable auto-login to managed guest
+  // session.
+  demo_mode::SetShouldFallBackMGS(false);
 
-  // TODO(crbug.com/370806573): Skip auto login public account in
-  // `ExistingUserController::StartAutoLoginTimer` if this feature enable
-  // Maybe add a policy.
   MaybeCleanupPreviousDemoAccount();
 }
 
@@ -321,8 +322,6 @@ void DemoLoginController::OnSetupDemoAccountComplete(
     HandleSetupDemoAcountResponse(sign_in_scoped_device_id,
                                   std::move(response_body));
   } else {
-    // TODO(crbug.com/364214790):  Handle any errors (maybe earlier for net
-    // connection error) and fallback to MGS.
     OnSetupDemoAccountError(result);
   }
 }
@@ -362,6 +361,12 @@ void DemoLoginController::OnSetupDemoAccountError(
   if (setup_failed_callback_for_testing_) {
     std::move(setup_failed_callback_for_testing_).Run(result_code);
   }
+
+  // Login public account session when set up failed.
+  demo_mode::SetShouldFallBackMGS(true);
+  auto* existing_user_controller =
+      ash::ExistingUserController::current_controller();
+  existing_user_controller->ConfigureAutoLogin();
 }
 
 void DemoLoginController::MaybeCleanupPreviousDemoAccount() {

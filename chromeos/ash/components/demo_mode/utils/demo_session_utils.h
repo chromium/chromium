@@ -26,6 +26,14 @@ bool IsDeviceInDemoMode();
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether the device should fall back to manage guest sesison in demo mode.
+bool ShouldFallBackToMGS();
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEMO_MODE)
+// Whether the device is in demo account session.
+void SetShouldFallBackMGS(bool is_demo_account_session);
+
 }  // namespace ash::demo_mode
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEMO_MODE_UTILS_DEMO_SESSION_UTILS_H_
