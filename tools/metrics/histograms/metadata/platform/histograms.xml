@@ -2361,7 +2361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.CryptoBusyCount" units="count"
-    expires_after="2024-11-09">
+    expires_after="2025-11-14">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2370,7 +2370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.CryptoInitTime" units="ms"
-    expires_after="2024-11-09">
+    expires_after="2025-11-14">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2399,7 +2399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.DispatcherBusyCount" units="count"
-    expires_after="2024-11-09">
+    expires_after="2025-11-14">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2427,7 +2427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.FilesystemBusyCount" units="count"
-    expires_after="2024-11-09">
+    expires_after="2025-11-14">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.TPM.TimeslicesExpired" units="count"
-    expires_after="2024-11-09">
+    expires_after="2025-11-14">
   <owner>granaghan@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
