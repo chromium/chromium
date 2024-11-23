@@ -179,6 +179,9 @@ class GraphBuilderTflite final {
     requires internal::IsSupportedTensorType<DataType>
   base::span<const DataType> GetConstantValue(uint64_t operand_id);
 
+  // Get the value from constant operand and cast it to int64 data type.
+  base::FixedArray<int64_t> GetConstantInt64Value(uint64_t operand_id);
+
   // Operation serialization helpers for operations not directly declared in
   // the mojom::Operation union.
   //
@@ -218,6 +221,12 @@ class GraphBuilderTflite final {
       const TensorInfo& indices_tensor_info,
       const TensorInfo& input_tensor_info);
   int32_t CastGatherIndices(const TensorInfo& indices_tensor_info);
+
+  // This function is called by `SerializeGatherND` to serialize WebNN
+  // gatherND or gatherElements.
+  OperatorOffset SerializeGatherNDOperation(int32_t input_tensor_index,
+                                            int32_t indices_tensor_index,
+                                            int32_t output_tensor_index);
 
   // This function is called by `SerializeConcat` to serialize WebNN
   // concat operator or used to emulate WebNN operations.
@@ -536,6 +545,8 @@ class GraphBuilderTflite final {
       const mojom::Expand& expand);
   base::expected<OperatorOffset, std::string> SerializeGather(
       const mojom::Gather& gather);
+  base::expected<OperatorOffset, std::string> SerializeGatherElements(
+      const mojom::GatherElements& gather_elements);
   base::expected<OperatorOffset, std::string> SerializeGatherND(
       const mojom::GatherND& gather_nd);
   base::expected<OperatorOffset, std::string> SerializeGelu(

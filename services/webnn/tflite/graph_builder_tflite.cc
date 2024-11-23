@@ -295,6 +295,34 @@ base::FixedArray<DataType> FillMaskTriangular(
   return filled_matrix;
 }
 
+// Converts the index in a flat array into a tuple of coordinates that
+// represents the corresponding position in a multi-dimensional array.
+//
+// The coordinates are calculated by iteratively dividing the flat index by the
+// stride of each dimension. For example a shape (3, 2) array can map to the
+// following coordinates:
+//       index                        row, col
+//     [[0,  1,]                  [[0, 0], [0, 1],
+//      [2,  3,]      =>           [1, 0], [1, 1]
+//      [4,  5,]]                  [2, 0], [2, 1]]
+base::expected<base::FixedArray<int64_t>, std::string>
+GetCoordinatesNDFromIndex(size_t flat_index,
+                          base::span<const uint32_t> strides) {
+  const size_t rank = strides.size();
+  base::FixedArray<int64_t> coordinates(rank);
+  for (size_t i = 0; i < rank; ++i) {
+    size_t coordinate = flat_index / strides[i];
+    flat_index -= coordinate * strides[i];
+
+    auto checked_coordinate = base::MakeCheckedNum<int64_t>(coordinate);
+    if (!checked_coordinate.IsValid()) {
+      return base::unexpected("The coordinate is too large.");
+    }
+    coordinates[i] = checked_coordinate.ValueOrDie();
+  }
+  return coordinates;
+}
+
 }  // namespace
 
 // static
@@ -413,9 +441,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gather_input=*/kFloat16To32AndInt8To64AndUint8,
        /*gather_indices=*/
        DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
-       // GatherElements is not implemented.
-       /*gather_elements_input=*/{},
-       /*gather_elements_indices=*/{},
+       /*gather_elements_input=*/kFloat16To32AndInt8To64AndUint8,
+       /*gather_elements_indices=*/
+       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
        /*gather_nd_input=*/kFloat16To32AndInt8To64AndUint8,
        /*gather_nd_indices=*/
        DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes,
@@ -737,6 +765,11 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeGather(*op.get_gather()));
       break;
     }
+    case mojom::Operation::Tag::kGatherElements: {
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeGatherElements(*op.get_gather_elements()));
+      break;
+    }
     case mojom::Operation::Tag::kGatherNd: {
       ASSIGN_OR_RETURN(operator_offset, SerializeGatherND(*op.get_gather_nd()));
       break;
@@ -888,7 +921,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeWhere(*op.get_where()));
       break;
     }
-    case mojom::Operation::Tag::kGatherElements:
     case mojom::Operation::Tag::kReverse:
     case mojom::Operation::Tag::kScatterElements:
       return base::unexpected(NotSupportedOperatorError(op));
@@ -2323,6 +2355,84 @@ auto GraphBuilderTflite::SerializeGatherNDIndices(
   return clamp_tensor_index;
 }
 
+auto GraphBuilderTflite::SerializeGatherNDOperation(
+    int32_t input_tensor_index,
+    int32_t indices_tensor_index,
+    int32_t output_tensor_index) -> OperatorOffset {
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_GATHER_ND);
+  const std::array<int32_t, 2> op_inputs = {input_tensor_index,
+                                            indices_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
+}
+
+auto GraphBuilderTflite::SerializeGatherElements(
+    const mojom::GatherElements& gather_elements)
+    -> base::expected<OperatorOffset, std::string> {
+  CHECK(context_properties_.data_type_limits.gather_elements_input.Has(
+      GetOperand(gather_elements.input_operand_id).descriptor.data_type()));
+  const mojom::Operand& indices_operand =
+      GetOperand(gather_elements.indices_operand_id);
+  CHECK(context_properties_.data_type_limits.gather_elements_indices.Has(
+      indices_operand.descriptor.data_type()));
+  if (indices_operand.kind != mojom::Operand::Kind::kConstant) {
+    // TODO(crbug.com/377615324): Support user input indices.
+    return base::unexpected("gatherElements only supports constant indices.");
+  }
+  const std::vector<uint32_t> indices_strides =
+      CalculateStrides(indices_operand.descriptor.shape());
+  const size_t indices_rank = indices_strides.size();
+
+  ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
+                   SerializeInputTensorInfo(gather_elements.input_operand_id));
+  // Clamp the values in `indices` to be in range of `-N` (inclusive) to `N`
+  // (exclusive), where `N = input.dimensions[axis]`
+  const int64_t axis_dimension =
+      input_tensor_info.dimensions[gather_elements.axis];
+  const int64_t min_values = -(axis_dimension);
+  const int64_t max_values = axis_dimension - 1;
+  base::FixedArray<int64_t> indices_value =
+      GetConstantInt64Value(gather_elements.indices_operand_id);
+  base::FixedArray<int64_t> unraveled_indices(indices_value.size() *
+                                              indices_rank);
+  for (size_t i = 0; i < indices_value.size(); ++i) {
+    indices_value[i] =
+        std::min(std::max(min_values, indices_value[i]), max_values);
+    if (indices_value[i] < 0) {
+      indices_value[i] += axis_dimension;
+    }
+
+    // Get coordinates from the index of the flat array.
+    ASSIGN_OR_RETURN(base::FixedArray<int64_t> coordinates,
+                     GetCoordinatesNDFromIndex(i, indices_strides));
+    // Adjust the coordinates with WebNN indices operand along the axis.
+    //
+    //   unravelled index   WebNN indices   axis = 0      TFLite indices
+    //  [[0, 0], [0, 1],     [[1, 0],                    [[1 ,0], [0, 1],
+    //   [1, 0], [1, 1]       [2, 1],         =>          [2, 0], [1, 1],
+    //   [2, 0], [2, 1]]      [0, 2]]                     [0, 0], [2, 1]]
+    coordinates[gather_elements.axis] = indices_value[i];
+    CHECK_EQ(coordinates.size(), indices_rank);
+    base::span(unraveled_indices)
+        .subspan(i * indices_rank, indices_rank)
+        .copy_from(coordinates);
+  }
+  const int32_t indices_tensor_index = SerializeTensorWithBuffer<int64_t>(
+      /*buffer=*/unraveled_indices,
+      /*dimensions=*/std::array<int32_t, 2>{
+          base::checked_cast<int32_t>(indices_value.size()),
+          base::checked_cast<int32_t>(indices_rank)});
+
+  ASSIGN_OR_RETURN(
+      const TensorInfo& output_tensor_info,
+      SerializeOutputTensorInfo(gather_elements.output_operand_id));
+  return SerializeGatherNDOperation(
+      input_tensor_info.index, indices_tensor_index, output_tensor_info.index);
+}
+
 auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
     -> base::expected<OperatorOffset, std::string> {
   CHECK(context_properties_.data_type_limits.gather_nd_input.Has(
@@ -2349,14 +2459,8 @@ auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
 
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(gather_nd.output_operand_id));
-  const uint32_t operator_code_index =
-      GetOperatorCodeIndex(::tflite::BuiltinOperator_GATHER_ND);
-  const std::array<int32_t, 2> op_inputs = {input_tensor_info.index,
-                                            indices_tensor_index};
-  const std::array<int32_t, 1> op_outputs = {output_tensor_info.index};
-  return ::tflite::CreateOperator(builder_, operator_code_index,
-                                  builder_.CreateVector<int32_t>(op_inputs),
-                                  builder_.CreateVector<int32_t>(op_outputs));
+  return SerializeGatherNDOperation(
+      input_tensor_info.index, indices_tensor_index, output_tensor_info.index);
 }
 
 auto GraphBuilderTflite::SerializeGelu(const mojom::Gelu& gelu)
@@ -4033,32 +4137,42 @@ base::FixedArray<int64_t> GraphBuilderTflite::GetInt64ZeroPointFromInt4(
   return int64_value;
 }
 
-base::FixedArray<int64_t> GraphBuilderTflite::GetInt64ZeroPoint(
-    uint64_t zero_point_operand_id) {
-  const mojom::Operand& operand = GetOperand(zero_point_operand_id);
+base::FixedArray<int64_t> GraphBuilderTflite::GetConstantInt64Value(
+    uint64_t operand_id) {
+  const mojom::Operand& operand = GetOperand(operand_id);
   base::FixedArray<int64_t> typed_value(operand.descriptor.NumberOfElements());
   switch (operand.descriptor.data_type()) {
     case OperandDataType::kInt4: {
-      return GetInt64ZeroPointFromInt4(zero_point_operand_id);
+      return GetInt64ZeroPointFromInt4(operand_id);
     }
     case OperandDataType::kInt8: {
-      base::span<const int8_t> int8_value =
-          GetConstantValue<int8_t>(zero_point_operand_id);
-      base::ranges::copy(int8_value, typed_value.begin());
+      base::ranges::copy(GetConstantValue<int8_t>(operand_id),
+                         typed_value.begin());
       break;
     }
     case OperandDataType::kUint8: {
-      base::span<const uint8_t> uint8_value =
-          GetConstantValue<uint8_t>(zero_point_operand_id);
-      base::ranges::copy(uint8_value, typed_value.begin());
+      base::ranges::copy(GetConstantValue<uint8_t>(operand_id),
+                         typed_value.begin());
+      break;
+    }
+    case OperandDataType::kInt32: {
+      base::ranges::copy(GetConstantValue<int32_t>(operand_id),
+                         typed_value.begin());
+      break;
+    }
+    case OperandDataType::kUint32: {
+      base::ranges::copy(GetConstantValue<uint32_t>(operand_id),
+                         typed_value.begin());
+      break;
+    }
+    case OperandDataType::kInt64: {
+      base::ranges::copy(GetConstantValue<int64_t>(operand_id),
+                         typed_value.begin());
       break;
     }
     case OperandDataType::kFloat32:
     case OperandDataType::kFloat16:
     case OperandDataType::kUint64:
-    case OperandDataType::kInt32:
-    case OperandDataType::kUint32:
-    case OperandDataType::kInt64:
     case OperandDataType::kUint4:
       NOTREACHED() << "This data type is not supported.";
   }
@@ -4091,7 +4205,7 @@ auto GraphBuilderTflite::SerializeQuantizeParams(uint64_t zero_point_operand_id,
   }
 
   base::FixedArray<int64_t> zero_point_vale =
-      GetInt64ZeroPoint(zero_point_operand_id);
+      GetConstantInt64Value(zero_point_operand_id);
   base::span<const float> scale_value =
       GetConstantValue<float>(scale_operand_id);
   flatbuffers::Offset<flatbuffers::Vector<float>> scale_offset =

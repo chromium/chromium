@@ -357,4 +357,15 @@ bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
   }
 }
 
+std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {
+  size_t rank = dimensions.size();
+  std::vector<uint32_t> strides(rank);
+  base::CheckedNumeric<uint32_t> stride = 1;
+  for (size_t i = rank; i-- > 0;) {
+    strides[i] = stride.ValueOrDie();
+    stride *= dimensions[i];
+  }
+  return strides;
+}
+
 }  // namespace webnn
