@@ -2733,7 +2733,7 @@ domain DOM
     enum
       first-line
       first-letter
-      check
+      checkmark
       before
       after
       select-arrow

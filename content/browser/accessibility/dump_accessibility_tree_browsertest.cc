@@ -417,26 +417,27 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSLanguage) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSPseudoElementCheck) {
+                       AccessibilityCSSPseudoElementCheckMark) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-check.html"));
+  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-check-mark.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityCSSPseudoElementCheckOverrideContent) {
+                       AccessibilityCSSPseudoElementCheckMarkOverrideContent) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
-  RunCSSTest(FILE_PATH_LITERAL("pseudo-element-check-override-content.html"));
+  RunCSSTest(
+      FILE_PATH_LITERAL("pseudo-element-check-mark-override-content.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    AccessibilityCSSPseudoElementCheckOverrideContentAlternativeText) {
+    AccessibilityCSSPseudoElementCheckMarkOverrideContentAlternativeText) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   RunCSSTest(FILE_PATH_LITERAL(
-      "pseudo-element-check-override-content-alternative-text.html"));
+      "pseudo-element-check-mark-override-content-alternative-text.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

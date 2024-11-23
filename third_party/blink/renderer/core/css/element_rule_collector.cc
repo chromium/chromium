@@ -1231,7 +1231,7 @@ void ElementRuleCollector::DidMatchRule(
     if (dynamic_pseudo > kLastTrackedPublicPseudoId) {
       return;
     }
-    if ((dynamic_pseudo == kPseudoIdCheck ||
+    if ((dynamic_pseudo == kPseudoIdCheckMark ||
          dynamic_pseudo == kPseudoIdBefore ||
          dynamic_pseudo == kPseudoIdAfter ||
          dynamic_pseudo == kPseudoIdSelectArrow) &&

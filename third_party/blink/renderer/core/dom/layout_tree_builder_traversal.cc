@@ -144,11 +144,11 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdScrollRightButton:
-      if (Node* next = parent_element->GetPseudoElement(kPseudoIdCheck)) {
+      if (Node* next = parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -249,11 +249,12 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
-      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdCheck)) {
+      if (Node* previous =
+              parent_element->GetPseudoElement(kPseudoIdCheckMark)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
       if (Node* previous =
               parent_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
         return previous;
@@ -333,7 +334,7 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
     return last;
   if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
     return last;
-  if (Node* last = current_element->GetPseudoElement(kPseudoIdCheck)) {
+  if (Node* last = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
     return last;
   }
   if (const ColumnPseudoElementsVector* columns =
@@ -417,7 +418,7 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
       return first;
     }
   }
-  if (Node* first = current_element->GetPseudoElement(kPseudoIdCheck)) {
+  if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
     return first;
   }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))

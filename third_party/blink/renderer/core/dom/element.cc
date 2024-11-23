@@ -3880,7 +3880,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
       if (DynamicTo<HTMLOptionElement>(this)) {
-        UpdatePseudoElement(kPseudoIdCheck, child_change, child_recalc_context);
+        UpdatePseudoElement(kPseudoIdCheckMark, child_change,
+                            child_recalc_context);
       }
     }
 
@@ -4424,7 +4425,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     } else {
       RebuildChildrenLayoutTrees(*child_attacher);
     }
-    RebuildPseudoElementLayoutTree(kPseudoIdCheck, *child_attacher);
+    RebuildPseudoElementLayoutTree(kPseudoIdCheckMark, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdBefore, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdMarker, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdScrollRightButton, *child_attacher);
@@ -7678,7 +7679,7 @@ void Element::SetShadowPseudoId(const AtomicString& id) {
     DCHECK(type == CSSSelector::kPseudoWebKitCustomElement ||
            type == CSSSelector::kPseudoBlinkInternalElement ||
            type == CSSSelector::kPseudoDetailsContent ||
-           type == CSSSelector::kPseudoCheck ||
+           type == CSSSelector::kPseudoCheckMark ||
            id == shadow_element_names::kPickerSelect)
         << "type: " << type << ", id: " << id;
   }
@@ -8532,7 +8533,7 @@ const ComputedStyle* Element::StyleForPseudoElement(
                            : request.pseudo_id;
 
   const bool is_before_or_after_like =
-      pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdBefore ||
+      pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
       pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow;
 
   if (is_before_or_after_like) {
@@ -10668,7 +10669,7 @@ Element* Element::ImplicitAnchorElement() const {
   }
   if (const PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
-      case kPseudoIdCheck:
+      case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
       case kPseudoIdSelectArrow:

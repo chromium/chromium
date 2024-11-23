@@ -4159,7 +4159,7 @@ inline bool LayoutObject::DocumentBeingDestroyed() const {
 }
 
 inline bool LayoutObject::IsCheckContent() const {
-  if (StyleRef().StyleType() != kPseudoIdCheck) {
+  if (StyleRef().StyleType() != kPseudoIdCheckMark) {
     return false;
   }
   // Text nodes don't have their own styles, so ignore the style on a text node.

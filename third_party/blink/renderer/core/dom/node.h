@@ -350,7 +350,7 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   DISABLE_CFI_PERF bool IsCheckPseudoElement() const {
-    return GetPseudoId() == kPseudoIdCheck;
+    return GetPseudoId() == kPseudoIdCheckMark;
   }
   DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdBefore;

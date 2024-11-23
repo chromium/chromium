@@ -115,10 +115,10 @@ select:not(:-internal-list-box) option:disabled {
 }
 
 
-select:not(:-internal-list-box) option::check {
+select:not(:-internal-list-box) option::checkmark {
   content: '\2713' / '';
 }
-select option:not(:checked)::check {
+select option:not(:checked)::checkmark {
   visibility: hidden;
 }
 

@@ -365,8 +365,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
     }
   }
   if (pseudo_element) {
-    if (pseudo_element->GetPseudoId() == kPseudoIdCheck) {
-      class_names.Append("::check");
+    if (pseudo_element->GetPseudoId() == kPseudoIdCheckMark) {
+      class_names.Append("::checkmark");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdBefore) {
       class_names.Append("::before");
     } else if (pseudo_element->GetPseudoId() == kPseudoIdAfter) {
@@ -1826,7 +1826,7 @@ void InspectorHighlight::VisitAndCollectDistanceInfo(Node* node) {
     } else {
       for (PseudoId pseudo_id :
            {kPseudoIdFirstLetter, kPseudoIdScrollMarkerGroupBefore,
-            kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter,
+            kPseudoIdCheckMark, kPseudoIdBefore, kPseudoIdAfter,
             kPseudoIdSelectArrow, kPseudoIdScrollMarkerGroupAfter,
             kPseudoIdScrollMarker, kPseudoIdScrollUpButton,
             kPseudoIdScrollDownButton, kPseudoIdScrollLeftButton,

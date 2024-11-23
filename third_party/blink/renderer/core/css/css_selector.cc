@@ -331,8 +331,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
       return kPseudoIdFirstLetter;
     case kPseudoSelection:
       return kPseudoIdSelection;
-    case kPseudoCheck:
-      return kPseudoIdCheck;
+    case kPseudoCheckMark:
+      return kPseudoIdCheckMark;
     case kPseudoBefore:
       return kPseudoIdBefore;
     case kPseudoAfter:
@@ -571,8 +571,8 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"autofill", CSSSelector::kPseudoAutofill},
     {"backdrop", CSSSelector::kPseudoBackdrop},
     {"before", CSSSelector::kPseudoBefore},
-    {"check", CSSSelector::kPseudoCheck},
     {"checked", CSSSelector::kPseudoChecked},
+    {"checkmark", CSSSelector::kPseudoCheckMark},
     {"closed", CSSSelector::kPseudoClosed},
     {"column", CSSSelector::kPseudoColumn},
     {"corner-present", CSSSelector::kPseudoCornerPresent},
@@ -869,7 +869,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       [[fallthrough]];
     // For pseudo elements
     case kPseudoSelectArrow:
-    case kPseudoCheck:
+    case kPseudoCheckMark:
     case kPseudoBackdrop:
     case kPseudoCue:
     case kPseudoMarker:
@@ -1571,8 +1571,8 @@ bool CSSSelector::IsAllowedInParentPseudo() const {
 
 bool CSSSelector::IsTreeAbidingPseudoElement() const {
   return Match() == CSSSelector::kPseudoElement &&
-         (GetPseudoType() == kPseudoCheck || GetPseudoType() == kPseudoBefore ||
-          GetPseudoType() == kPseudoAfter ||
+         (GetPseudoType() == kPseudoCheckMark ||
+          GetPseudoType() == kPseudoBefore || GetPseudoType() == kPseudoAfter ||
           GetPseudoType() == kPseudoSelectArrow ||
           GetPseudoType() == kPseudoMarker ||
           GetPseudoType() == kPseudoPlaceholder ||
@@ -1606,7 +1606,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     //
     // All pseudo-elements other than ::part() should be allowed after
     // ::part().
-    case kPseudoCheck:
+    case kPseudoCheckMark:
     case kPseudoBefore:
     case kPseudoAfter:
     case kPseudoSelectArrow:

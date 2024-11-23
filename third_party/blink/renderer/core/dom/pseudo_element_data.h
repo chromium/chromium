@@ -108,7 +108,7 @@ inline bool PseudoElementData::HasPseudoElements() const {
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
-  SetPseudoElement(kPseudoIdCheck, nullptr);
+  SetPseudoElement(kPseudoIdCheckMark, nullptr);
   SetPseudoElement(kPseudoIdBefore, nullptr);
   SetPseudoElement(kPseudoIdAfter, nullptr);
   SetPseudoElement(kPseudoIdSelectArrow, nullptr);
@@ -137,7 +137,7 @@ inline void PseudoElementData::SetPseudoElement(
     const AtomicString& view_transition_name) {
   PseudoElement* previous_element = nullptr;
   switch (pseudo_id) {
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
       previous_element = generated_check_;
       generated_check_ = element;
       break;
@@ -218,7 +218,7 @@ inline void PseudoElementData::SetPseudoElement(
 inline PseudoElement* PseudoElementData::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
-  if (kPseudoIdCheck == pseudo_id) {
+  if (kPseudoIdCheckMark == pseudo_id) {
     return generated_check_.Get();
   }
   if (kPseudoIdBefore == pseudo_id)

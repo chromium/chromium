@@ -1238,14 +1238,14 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
-TEST_F(ElementTest, TheCheckPseudoElement) {
+TEST_F(ElementTest, TheCheckMarkPseudoElement) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      #a-div::check {
+      #a-div::checkmark {
         content: "*";
       }
 
-      #target::check {
+      #target::checkmark {
         content: "*";
       }
     </style>
@@ -1261,14 +1261,15 @@ TEST_F(ElementTest, TheCheckPseudoElement) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   Element* div = GetElementById("a-div");
-  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheck));
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheckMark));
 
   Element* target = GetElementById("target");
-  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheck));
+  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheckMark));
 
-  // The `::check` pseudo element should only be created for option elements.
+  // The `::checkmark` pseudo element should only be created for option
+  // elements.
   Element* target_option = GetElementById("target-option");
-  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheck));
+  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheckMark));
 }
 
 TEST_F(ElementTest, TheSelectArrowPseudoElement) {

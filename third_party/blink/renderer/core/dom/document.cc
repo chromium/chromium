@@ -2197,7 +2197,7 @@ static void AssertNodeClean(const Node& node) {
 
 static void AssertLayoutTreeUpdatedForPseudoElements(const Element& element) {
   WTF::Vector<PseudoId> pseudo_ids = {kPseudoIdFirstLetter,
-                                      kPseudoIdCheck,
+                                      kPseudoIdCheckMark,
                                       kPseudoIdBefore,
                                       kPseudoIdAfter,
                                       kPseudoIdSelectArrow,

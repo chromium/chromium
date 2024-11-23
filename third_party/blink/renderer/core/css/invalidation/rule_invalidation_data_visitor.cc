@@ -84,7 +84,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoIndeterminate:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoCurrent:
-    case CSSSelector::kPseudoCheck:
+    case CSSSelector::kPseudoCheckMark:
     case CSSSelector::kPseudoBefore:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoSelectArrow:

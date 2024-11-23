@@ -2304,7 +2304,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // For display: contents elements, we still need to generate ::before and
     // ::after, but the rest of the pseudo-elements should only be used for
     // elements with an actual layout object.
-    return pseudo == kPseudoIdCheck || pseudo == kPseudoIdBefore ||
+    return pseudo == kPseudoIdCheckMark || pseudo == kPseudoIdBefore ||
            pseudo == kPseudoIdAfter || pseudo == kPseudoIdSelectArrow;
   }
 

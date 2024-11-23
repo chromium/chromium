@@ -337,7 +337,7 @@ LegacyDOMSnapshotAgent::VisitPseudoElements(
     bool include_event_listeners,
     bool include_user_agent_shadow_tree) {
   if (!parent->GetPseudoElement(kPseudoIdFirstLetter) &&
-      !parent->GetPseudoElement(kPseudoIdCheck) &&
+      !parent->GetPseudoElement(kPseudoIdCheckMark) &&
       !parent->GetPseudoElement(kPseudoIdBefore) &&
       !parent->GetPseudoElement(kPseudoIdAfter) &&
       !parent->GetPseudoElement(kPseudoIdSelectArrow)) {
@@ -346,8 +346,8 @@ LegacyDOMSnapshotAgent::VisitPseudoElements(
 
   auto pseudo_elements = std::make_unique<protocol::Array<int>>();
   for (PseudoId pseudo_id :
-       {kPseudoIdFirstLetter, kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter,
-        kPseudoIdSelectArrow}) {
+       {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
+        kPseudoIdAfter, kPseudoIdSelectArrow}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id)) {
       pseudo_elements->emplace_back(VisitNode(pseudo_node,
                                               include_event_listeners,

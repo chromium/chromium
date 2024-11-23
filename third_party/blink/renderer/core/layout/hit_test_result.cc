@@ -225,7 +225,7 @@ PositionWithAffinity HitTestResult::GetPosition() const {
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }
 
-  if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdCheck) {
+  if (node->IsPseudoElement() && node->GetPseudoId() == kPseudoIdCheckMark) {
     return PositionWithAffinity(
         MostForwardCaretPosition(Position::FirstPositionInNode(*inner_node_)));
   }

@@ -41,7 +41,7 @@ class DisplayStyle {
 
   bool ContentPreventsBoxGeneration() const {
     switch (style_type_) {
-      case kPseudoIdCheck:
+      case kPseudoIdCheckMark:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
       case kPseudoIdSelectArrow:

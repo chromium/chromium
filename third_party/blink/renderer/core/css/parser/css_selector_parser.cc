@@ -1066,7 +1066,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
           /*has_arguments=*/false, parent ? &parent->GetDocument() : nullptr);
 
       PseudoId pseudo_id = CSSSelector::GetPseudoId(pseudo_type);
-      if (pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdBefore ||
+      if (pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdBefore ||
           pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdSelectArrow ||
           pseudo_id == kPseudoIdFirstLetter ||
           pseudo_id == kPseudoIdFirstLine) {
@@ -1241,7 +1241,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
     case CSSSelector::kPseudoSelectArrow:
     case CSSSelector::kPseudoAfter:
     case CSSSelector::kPseudoBefore:
-    case CSSSelector::kPseudoCheck:
+    case CSSSelector::kPseudoCheckMark:
       if (simple_selector.GetPseudoType() == CSSSelector::kPseudoMarker &&
           RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled()) {
         return true;

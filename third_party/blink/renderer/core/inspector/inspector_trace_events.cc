@@ -347,7 +347,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoInvalid)
     DEFINE_STRING_MAPPING(PseudoIndeterminate)
     DEFINE_STRING_MAPPING(PseudoTarget)
-    DEFINE_STRING_MAPPING(PseudoCheck)
+    DEFINE_STRING_MAPPING(PseudoCheckMark)
     DEFINE_STRING_MAPPING(PseudoBefore)
     DEFINE_STRING_MAPPING(PseudoAfter)
     DEFINE_STRING_MAPPING(PseudoSelectArrow)

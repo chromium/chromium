@@ -1788,7 +1788,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     AttachPseudoElement(kPseudoIdScrollLeftButton, context);
     AttachPseudoElement(kPseudoIdScrollRightButton, context);
     AttachPseudoElement(kPseudoIdMarker, context);
-    AttachPseudoElement(kPseudoIdCheck, context);
+    AttachPseudoElement(kPseudoIdCheckMark, context);
     AttachPseudoElement(kPseudoIdBefore, context);
   }
 
@@ -1807,7 +1807,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     DetachPseudoElement(kPseudoIdScrollLeftButton, performing_reattach);
     DetachPseudoElement(kPseudoIdScrollRightButton, performing_reattach);
     DetachPseudoElement(kPseudoIdMarker, performing_reattach);
-    DetachPseudoElement(kPseudoIdCheck, performing_reattach);
+    DetachPseudoElement(kPseudoIdCheckMark, performing_reattach);
     DetachPseudoElement(kPseudoIdBefore, performing_reattach);
   }
 

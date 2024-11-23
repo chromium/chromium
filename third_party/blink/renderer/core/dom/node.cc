@@ -389,7 +389,7 @@ Node* Node::PseudoAwarePreviousSibling() const {
   // Note the [[fallthrough]] attributes, the order of the cases matters and
   // corresponds to the ordering of pseudo elements in a traversal:
   // ::scroll-marker-group(before), ::marker, ::scroll-marker,
-  // ::scroll-button(), ::check,
+  // ::scroll-button(), ::checkmark,
   // ::before, non-pseudo Elements, ::after, ::select-arrow,
   // ::scroll-marker-group(after), ::view-transition. The fallthroughs ensure
   // this ordering by checking for each kind of node in-turn.
@@ -419,11 +419,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
-      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheck)) {
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheckMark)) {
         return previous;
       }
       [[fallthrough]];
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
       if (Node* previous =
               parent->GetPseudoElement(kPseudoIdScrollRightButton)) {
         return previous;
@@ -534,11 +534,11 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollRightButton:
-      if (Node* next = parent->GetPseudoElement(kPseudoIdCheck)) {
+      if (Node* next = parent->GetPseudoElement(kPseudoIdCheckMark)) {
         return next;
       }
       [[fallthrough]];
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -650,7 +650,7 @@ Node* Node::PseudoAwareFirstChild() const {
             current_element->GetPseudoElement(kPseudoIdScrollRightButton)) {
       return first;
     }
-    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheck)) {
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
@@ -719,7 +719,7 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
       return last;
-    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheck)) {
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheckMark)) {
       return last;
     }
     if (Node* last =
@@ -2765,7 +2765,7 @@ static void AppendMarkedTree(const String& base_indent,
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }
-      if (Element* pseudo = element->GetPseudoElement(kPseudoIdCheck)) {
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdCheckMark)) {
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }

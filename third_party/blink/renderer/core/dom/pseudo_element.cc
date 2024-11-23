@@ -82,11 +82,11 @@ PseudoId ResolvePseudoIdAlias(PseudoId pseudo_id) {
 PseudoElement* PseudoElement::Create(Element* parent,
                                      PseudoId pseudo_id,
                                      const AtomicString& view_transition_name) {
-  if (pseudo_id == kPseudoIdCheck) {
+  if (pseudo_id == kPseudoIdCheckMark) {
     CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
 
     if (!IsA<HTMLOptionElement>(parent)) {
-      // The `::check` pseudo element should only be created for option
+      // The `::checkmark` pseudo element should only be created for option
       // elements.
       return nullptr;
     }
@@ -122,7 +122,7 @@ PseudoElement* PseudoElement::Create(Element* parent,
     return MakeGarbageCollected<ScrollButtonPseudoElement>(parent, pseudo_id);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
-         pseudo_id == kPseudoIdCheck || pseudo_id == kPseudoIdSelectArrow ||
+         pseudo_id == kPseudoIdCheckMark || pseudo_id == kPseudoIdSelectArrow ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
          pseudo_id == kPseudoIdColumn);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
@@ -139,8 +139,8 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, before, (AtomicString("::before")));
       return before;
     }
-    case kPseudoIdCheck: {
-      DEFINE_STATIC_LOCAL(QualifiedName, check, (AtomicString("::check")));
+    case kPseudoIdCheckMark: {
+      DEFINE_STATIC_LOCAL(QualifiedName, check, (AtomicString("::checkmark")));
       return check;
     }
     case kPseudoIdSelectArrow: {
@@ -443,7 +443,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
         return;
       }
       break;
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdSelectArrow:
@@ -497,7 +497,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
 bool PseudoElement::CanGenerateContent() const {
   switch (GetPseudoIdForStyling()) {
     case kPseudoIdMarker:
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdSelectArrow:
@@ -520,7 +520,7 @@ bool PseudoElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
 
 bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
   switch (GetPseudoId()) {
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdSelectArrow:
@@ -591,7 +591,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdViewTransitionOld:
     case kPseudoIdColumn:
       return true;
-    case kPseudoIdCheck:
+    case kPseudoIdCheckMark:
     case kPseudoIdBefore:
     case kPseudoIdAfter:
     case kPseudoIdSelectArrow:

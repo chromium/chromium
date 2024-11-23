@@ -2647,7 +2647,7 @@ void LayoutObject::SetPseudoElementStyle(const LayoutObject& owner,
                                          bool match_parent_size) {
   NOT_DESTROYED();
   const ComputedStyle* pseudo_style = owner.Style();
-  DCHECK(pseudo_style->StyleType() == kPseudoIdCheck ||
+  DCHECK(pseudo_style->StyleType() == kPseudoIdCheckMark ||
          pseudo_style->StyleType() == kPseudoIdBefore ||
          pseudo_style->StyleType() == kPseudoIdAfter ||
          pseudo_style->StyleType() == kPseudoIdSelectArrow ||
@@ -4303,7 +4303,7 @@ const ComputedStyle* LayoutObject::GetCachedPseudoElementStyle(
     PseudoId pseudo) const {
   NOT_DESTROYED();
   DCHECK_NE(pseudo, kPseudoIdBefore);
-  DCHECK_NE(pseudo, kPseudoIdCheck);
+  DCHECK_NE(pseudo, kPseudoIdCheckMark);
   DCHECK_NE(pseudo, kPseudoIdAfter);
   DCHECK_NE(pseudo, kPseudoIdSelectArrow);
   if (!GetNode())
@@ -4320,7 +4320,7 @@ const ComputedStyle* LayoutObject::GetUncachedPseudoElementStyle(
     const StyleRequest& request) const {
   NOT_DESTROYED();
   DCHECK_NE(request.pseudo_id, kPseudoIdBefore);
-  DCHECK_NE(request.pseudo_id, kPseudoIdCheck);
+  DCHECK_NE(request.pseudo_id, kPseudoIdCheckMark);
   DCHECK_NE(request.pseudo_id, kPseudoIdAfter);
   DCHECK_NE(request.pseudo_id, kPseudoIdSelectArrow);
   if (!GetNode())
