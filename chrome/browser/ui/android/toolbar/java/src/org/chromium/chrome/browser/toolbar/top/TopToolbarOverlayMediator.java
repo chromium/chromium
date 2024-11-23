@@ -82,6 +82,7 @@ public class TopToolbarOverlayMediator {
     /** Whether a layout that this overlay can be displayed on is showing. */
     private boolean mIsOnValidLayout;
 
+    private ObservableSupplier<Tab> mTabSupplier;
     private float mViewportHeight;
 
     TopToolbarOverlayMediator(
@@ -104,6 +105,7 @@ public class TopToolbarOverlayMediator {
         mBottomToolbarControlsOffsetSupplier = bottomToolbarControlsOffsetSupplier;
         mIsVisibilityManuallyControlled = manualVisibilityControl;
         mIsOnValidLayout = (mLayoutStateProvider.getActiveLayoutType() & layoutsToShowOn) > 0;
+        mTabSupplier = tabSupplier;
         updateVisibility();
 
         mSceneChangeObserver =
@@ -145,6 +147,11 @@ public class TopToolbarOverlayMediator {
                                 updateVisibility();
                                 updateThemeColor(tab);
                                 updateAnonymize(tab);
+                            }
+
+                            @Override
+                            public void didBackForwardTransitionAnimationChange(Tab tab) {
+                                updateVisibility();
                             }
                         },
                         activityTabCallback);
@@ -325,7 +332,11 @@ public class TopToolbarOverlayMediator {
 
     /** Update the visibility of the overlay. */
     private void updateVisibility() {
-        if (mIsVisibilityManuallyControlled) {
+        Tab tab = mTabSupplier.get();
+        if (tab != null && tab.isNativePage() && tab.isDisplayingBackForwardAnimation()) {
+            // TODO(crbug.com/365818512): Add a screenshot capture test to cover this case.
+            mModel.set(TopToolbarOverlayProperties.VISIBLE, false);
+        } else if (mIsVisibilityManuallyControlled) {
             mModel.set(TopToolbarOverlayProperties.VISIBLE, mManualVisibility && mIsOnValidLayout);
         } else {
             boolean visibility =
