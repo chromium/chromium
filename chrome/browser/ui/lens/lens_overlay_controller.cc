@@ -56,6 +56,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_metrics.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -1499,12 +1500,13 @@ void LensOverlayController::ContinueCreateInitializationData(
 void LensOverlayController::StorePageContentAndContinueInitialization(
     std::unique_ptr<OverlayInitializationData> initialization_data,
     std::vector<uint8_t> bytes,
-    lens::PageContentMimeType content_type) {
+    lens::PageContentMimeType content_type,
+    std::optional<uint32_t> page_count) {
   initialization_data->page_content_bytes_ = bytes;
   initialization_data->page_content_type_ = content_type;
   InitializeOverlay(std::move(initialization_data));
 
-  RecordDocumentSizes();
+  RecordDocumentMetrics(page_count);
 }
 
 void LensOverlayController::GetPageContextualization(
@@ -1512,7 +1514,7 @@ void LensOverlayController::GetPageContextualization(
   // If the contextual searchbox is disabled, exit early.
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kNone);
+                            lens::PageContentMimeType::kNone, std::nullopt);
     return;
   }
 
@@ -1552,21 +1554,22 @@ void LensOverlayController::GetPageContextualization(
   }
 
   std::move(callback).Run(std::vector<uint8_t>(),
-                          lens::PageContentMimeType::kNone);
+                          lens::PageContentMimeType::kNone, std::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_PDF)
 void LensOverlayController::OnPdfBytesReceived(
     PageContentRetrievedCallback callback,
     pdf::mojom::PdfListener::GetPdfBytesStatus status,
-    const std::vector<uint8_t>& bytes) {
+    const std::vector<uint8_t>& bytes,
+    uint32_t page_count) {
   // TODO(b/370530197): Show user error message if status is not success.
   if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kPdf);
+                            lens::PageContentMimeType::kPdf, page_count);
     return;
   }
-  std::move(callback).Run(bytes, lens::PageContentMimeType::kPdf);
+  std::move(callback).Run(bytes, lens::PageContentMimeType::kPdf, page_count);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -1576,12 +1579,13 @@ void LensOverlayController::OnInnerTextReceived(
   if (!result || result->inner_text.size() >
                      lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kPlainText);
+                            lens::PageContentMimeType::kPlainText,
+                            std::nullopt);
     return;
   }
   std::move(callback).Run(std::vector<uint8_t>(result->inner_text.begin(),
                                                result->inner_text.end()),
-                          lens::PageContentMimeType::kPlainText);
+                          lens::PageContentMimeType::kPlainText, std::nullopt);
 }
 
 void LensOverlayController::OnInnerHtmlReceived(
@@ -1590,11 +1594,11 @@ void LensOverlayController::OnInnerHtmlReceived(
   if (!result.has_value() ||
       result->size() > lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kHtml);
+                            lens::PageContentMimeType::kHtml, std::nullopt);
     return;
   }
   std::move(callback).Run(std::vector<uint8_t>(result->begin(), result->end()),
-                          lens::PageContentMimeType::kHtml);
+                          lens::PageContentMimeType::kHtml, std::nullopt);
 }
 
 void LensOverlayController::AddBoundingBoxesToInitializationData(
@@ -1648,7 +1652,8 @@ void LensOverlayController::TryUpdatePageContextualization() {
 
 void LensOverlayController::UpdatePageContextualization(
     std::vector<uint8_t> bytes,
-    lens::PageContentMimeType content_type) {
+    lens::PageContentMimeType content_type,
+    std::optional<uint32_t> page_count) {
   if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     return;
   }
@@ -1676,7 +1681,7 @@ void LensOverlayController::UpdatePageContextualization(
       initialization_data_->page_content_bytes_,
       initialization_data_->page_content_type_, GetPageURL());
 
-  RecordDocumentSizes();
+  RecordDocumentMetrics(page_count);
 }
 
 void LensOverlayController::UpdateGhostLoaderState(bool suppress_ghost_loader,
@@ -2741,10 +2746,17 @@ void LensOverlayController::RecordEndOfSessionMetrics(
                                    session_duration);
 }
 
-void LensOverlayController::RecordDocumentSizes() {
+void LensOverlayController::RecordDocumentMetrics(
+    std::optional<uint32_t> page_count) {
   auto content_type = initialization_data_->page_content_type_;
   lens::RecordDocumentSizeBytes(
       content_type, initialization_data_->page_content_bytes_.size());
+
+  if (page_count.has_value() &&
+      content_type == lens::PageContentMimeType::kPdf) {
+    lens::RecordPdfPageCount(page_count.value());
+    return;
+  }
 
   // Fetch and record the other content type for representing the webpage.
   auto* render_frame_host = tab_->GetContents()->GetPrimaryMainFrame();

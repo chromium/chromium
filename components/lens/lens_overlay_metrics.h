@@ -104,6 +104,10 @@ void MaybeRecordContextualSearchBoxShown(
 // sliced by content type.
 void RecordDocumentSizeBytes(lens::PageContentMimeType page_content_type,
                              size_t document_size_bytes);
+
+// Record the number of pages in a PDF.
+void RecordPdfPageCount(uint32_t page_count);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_

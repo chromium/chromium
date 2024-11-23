@@ -97,10 +97,15 @@ class Profile;
 
 extern void* kLensOverlayPreselectionWidgetIdentifier;
 
-// Callback type alias for page content bytes retrieved.
+// Callback type alias for page content bytes retrieved. `content_type` is the
+// mime type of the bytes. `pdf_page_count` is the number of pages in the
+// document being retrieved, not necessarily the number of pages in `bytes`. For
+// example, if the document is a PDF, `pdf_page_count` is the number of pages in
+// the PDF, while `bytes` could be empty because the PDF is too large.
 using PageContentRetrievedCallback =
     base::OnceCallback<void(std::vector<uint8_t> bytes,
-                            lens::PageContentMimeType content_type)>;
+                            lens::PageContentMimeType content_type,
+                            std::optional<uint32_t> pdf_page_count)>;
 
 // Manages all state associated with the lens overlay.
 // This class is not thread safe. It should only be used from the browser
@@ -661,11 +666,13 @@ class LensOverlayController : public LensSearchboxClient,
       const std::vector<gfx::Rect>& all_bounds,
       SkBitmap rgb_screenshot);
 
-  // Stores the page content and continues the initialization process.
+  // Stores the page content and continues the initialization process. Also
+  // records the page count for PDF.
   void StorePageContentAndContinueInitialization(
       std::unique_ptr<OverlayInitializationData> initialization_data,
       std::vector<uint8_t> bytes,
-      lens::PageContentMimeType content_type);
+      lens::PageContentMimeType content_type,
+      std::optional<uint32_t> pdf_page_count);
 
   // Tries to fetch the underlying page content bytes to use for
   // contextualization. If page content can not be retrieved, the callback will
@@ -677,7 +684,8 @@ class LensOverlayController : public LensSearchboxClient,
   // them in initialization data.
   void OnPdfBytesReceived(PageContentRetrievedCallback callback,
                           pdf::mojom::PdfListener::GetPdfBytesStatus status,
-                          const std::vector<uint8_t>& bytes);
+                          const std::vector<uint8_t>& bytes,
+                          uint32_t pdf_page_count);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Callback for when the inner text is retrieved from the underlying page.
@@ -701,7 +709,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Updates the query flow with the new page content bytes. A request will only
   // be sent if the bytes are different from the previous bytes sent.
   void UpdatePageContextualization(std::vector<uint8_t> bytes,
-                                   lens::PageContentMimeType content_type);
+                                   lens::PageContentMimeType content_type,
+                                   std::optional<uint32_t> pdf_page_count);
 
   // Updates state of the ghost loader. |suppress_ghost_loader| is true when
   // the page bytes can't be uploaded. |reset_loading_state| is true whenever
@@ -940,10 +949,11 @@ class LensOverlayController : public LensSearchboxClient,
   void RecordEndOfSessionMetrics(
       lens::LensOverlayDismissalSource dismissal_source);
 
-  // Records the UMA for the size of the document where the contextual search
-  // box was shown. If this is a webpage, records the size of the innerHtml and
-  // the innerText. If this is a PDF, records the byte size of the PDF.
-  void RecordDocumentSizes();
+  // Records the UMA for the metrics relating to the document where the
+  // contextual search box was shown. If this is a webpage, records the size of
+  // the innerHtml and the innerText. If this is a PDF, records the byte size of
+  // the PDF and the number of pages. `pdf_page_count` is only used for PDFs.
+  void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
 
   // Callback to record the size of the innerText once it is fetched.
   void RecordInnerTextSize(

@@ -4364,6 +4364,10 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByContentType.Pdf.DocumentSize",
       /*expected_count=*/2);
+  // Verify the histogram two documents of one page.
+  histogram_tester.ExpectBucketCount(
+      "Lens.Overlay.ByDocumentType.Pdf.PageCount", /*sample*/ 1,
+      /*expected_count=*/2);
 }
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
@@ -4443,6 +4447,9 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByContentType.Pdf.DocumentSize",
       /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ByDocumentType.Pdf.PageCount", /*sample*/ 1,
+      /*expected_bucket_count=*/1);
 }
 
 // TODO(crbug.com/378810677): Flaky on all platforms.
@@ -4864,6 +4871,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByContentType.Html.DocumentSize",
       /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.ByDocumentType.Pdf.PageCount",
+                                    /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
