@@ -639,6 +639,8 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
 #if BUILDFLAG(IS_ANDROID)
   interval_decider_use_fixed_intervals_ =
       !display_->OutputSurfaceSupportsSetFrameRate();
+#elif BUILDFLAG(IS_IOS)
+  interval_decider_use_fixed_intervals_ = false;
 #endif
   UpdateFrameIntervalDeciderSettings();
 }
@@ -649,9 +651,6 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
     return;
   }
 
-  // TODO(crbug.com/346732738): This is only correctly configured for Android
-  // and ChromeOS. Support other platforms / configurations.
-
   // Note that matcher order defines precedence.
   std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers;
   matchers.push_back(std::make_unique<InputBoostMatcher>());
@@ -660,12 +659,13 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
   matchers.push_back(std::make_unique<OnlyVideoMatcher>());
   matchers.push_back(std::make_unique<OnlyAnimatingImageMatcher>());
   matchers.push_back(std::make_unique<OnlyScrollBarFadeOutAnimationMatcher>());
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_IOS)
+  matchers.push_back(std::make_unique<OnlyVideoMatcher>());
+#else
   if (base::FeatureList::IsEnabled(features::kSingleVideoFrameRateThrottling)) {
     matchers.push_back(std::make_unique<OnlyVideoMatcher>());
   }
+
   // Only desktop platforms get VideoConferenceMatcher.
   matchers.push_back(std::make_unique<VideoConferenceMatcher>());
 #endif
@@ -674,14 +674,24 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
   if (interval_decider_use_fixed_intervals_) {
     FrameIntervalMatcher::FixedIntervalSettings fixed_interval_settings;
     fixed_interval_settings.supported_intervals = GetSupportedFrameIntervals();
+#if BUILDFLAG(IS_ANDROID)
+    // Android relies on always returning an element from
+    // `exact_supported_refresh_rates_`.
     fixed_interval_settings.default_interval =
         *fixed_interval_settings.supported_intervals.begin();
+#else
+    // Other platforms uses the special unspecified value for default.
+    fixed_interval_settings.default_interval =
+        FrameRateDecider::UnspecifiedFrameInterval();
+#endif
     settings.interval_settings = fixed_interval_settings;
   } else if (max_vsync_interval_.has_value()) {
     FrameIntervalMatcher::ContinuousRangeSettings continuous_range_settings;
     continuous_range_settings.min_interval =
         *GetSupportedFrameIntervals().begin();
     continuous_range_settings.max_interval = max_vsync_interval_.value();
+    continuous_range_settings.default_interval =
+        FrameRateDecider::UnspecifiedFrameInterval();
     settings.interval_settings = continuous_range_settings;
   } else {
     settings.interval_settings = {};
@@ -697,19 +707,37 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
 void RootCompositorFrameSinkImpl::FrameIntervalDeciderResultCallback(
     FrameIntervalDecider::Result result,
     FrameIntervalMatcherType matcher_type) {
-  // TODO(crbug.com/346732738): This is only correctly configured for Android
-  // and ChromeOS. Support other platforms / configurations.
-
+#if BUILDFLAG(IS_ANDROID)
   base::TimeDelta interval = absl::visit(
       base::Overloaded(
           [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
-            // For now, setting 0 implies no preference, and
-            // allow the OS to use its own heuristics to
-            // estimate.
-            return base::Milliseconds(0);
+            switch (frame_interval_class) {
+              case FrameIntervalDecider::FrameIntervalClass::kBoost:
+                // Currently there is no Android API to get the highest
+                // available frame rate. So only option for now is to use system
+                // its heuristics which hopefully should boost in this case.
+                return base::Milliseconds(0);
+              case FrameIntervalDecider::FrameIntervalClass::kDefault:
+                // 0 is a special value on Android for no preference.
+                return base::Milliseconds(0);
+            }
           },
           [](base::TimeDelta interval) { return interval; }),
       result);
+#else
+  base::TimeDelta interval = absl::visit(
+      base::Overloaded(
+          [](FrameIntervalDecider::FrameIntervalClass frame_interval_class) {
+            switch (frame_interval_class) {
+              case FrameIntervalDecider::FrameIntervalClass::kBoost:
+                return FrameRateDecider::UnspecifiedFrameInterval();
+              case FrameIntervalDecider::FrameIntervalClass::kDefault:
+                return FrameRateDecider::UnspecifiedFrameInterval();
+            }
+          },
+          [](base::TimeDelta interval) { return interval; }),
+      result);
+#endif
 
   if (decided_display_interval_ == interval) {
     return;
@@ -749,6 +777,8 @@ base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
 void RootCompositorFrameSinkImpl::SetHwSupportForMultipleRefreshRates(
     bool support) {
   display_->SetHwSupportForMultipleRefreshRates(support);
+  interval_decider_use_fixed_intervals_ = !support;
+  UpdateFrameIntervalDeciderSettings();
 }
 
 void RootCompositorFrameSinkImpl::StartOverdrawTracking(

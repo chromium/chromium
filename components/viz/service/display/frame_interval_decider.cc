@@ -48,8 +48,6 @@ void FrameIntervalDecider::UpdateSettings(
                   [](const absl::monostate& monostate) {},
                   [](const FixedIntervalSettings& fixed_interval_settings) {
                     CHECK(!fixed_interval_settings.supported_intervals.empty());
-                    CHECK(fixed_interval_settings.supported_intervals.contains(
-                        fixed_interval_settings.default_interval));
                   },
                   [](const ContinuousRangeSettings& continuous_range_settings) {
                     CHECK_LE(continuous_range_settings.min_interval,
@@ -100,7 +98,9 @@ void FrameIntervalDecider::Decide(
               return fixed_interval_settings.default_interval;
             },
             [](const ContinuousRangeSettings& continuous_range_settings)
-                -> Result { return continuous_range_settings.min_interval; }),
+                -> Result {
+              return continuous_range_settings.default_interval;
+            }),
         settings_.interval_settings);
   }
 
