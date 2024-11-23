@@ -1780,6 +1780,8 @@ generated_typedef_sources_in_core = [
 ]
 
 generated_union_sources_in_core = [
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_undefined_unsignedlonglongenforcerange.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_undefined_unsignedlonglongenforcerange.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_addeventlisteneroptions_boolean.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_union_animationeffect_animationeffectsequence.cc",
