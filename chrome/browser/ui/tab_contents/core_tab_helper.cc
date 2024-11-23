@@ -610,8 +610,9 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
   const std::string& post_data = post_content.second;
   if (!post_data.empty()) {
     DCHECK(!content_type.empty());
-    open_url_params.post_data = network::ResourceRequestBody::CreateFromBytes(
-        post_data.data(), post_data.size());
+    open_url_params.post_data =
+        network::ResourceRequestBody::CreateFromCopyOfBytes(
+            base::as_byte_span(post_data));
     open_url_params.extra_headers +=
         base::StringPrintf("%s: %s\r\n", net::HttpRequestHeaders::kContentType,
                            content_type.c_str());
