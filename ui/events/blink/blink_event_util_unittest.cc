@@ -35,12 +35,12 @@ TEST(BlinkEventUtilTest, NoScalingWith1DSF) {
   EXPECT_TRUE(ScaleWebInputEvent(event, 2.f));
 }
 
-void RunTest(ui::ScrollGranularity granularity) {
+TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEvent) {
   blink::WebMouseWheelEvent event(
       blink::WebInputEvent::Type::kMouseWheel,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
-  event.delta_units = granularity;
+  event.delta_units = ui::ScrollGranularity::kScrollByPixel;
   event.delta_x = 1.f;
   event.delta_y = 1.f;
   event.wheel_ticks_x = 1.f;
@@ -54,14 +54,6 @@ void RunTest(ui::ScrollGranularity granularity) {
   EXPECT_EQ(2.f, mouseWheelEvent->delta_y);
   EXPECT_EQ(2.f, mouseWheelEvent->wheel_ticks_x);
   EXPECT_EQ(2.f, mouseWheelEvent->wheel_ticks_y);
-}
-
-TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEvent) {
-  RunTest(ui::ScrollGranularity::kScrollByPixel);
-}
-
-TEST(BlinkEventUtilTest, NonPaginatedWebMouseWheelEventPercentBased) {
-  RunTest(ui::ScrollGranularity::kScrollByPercentage);
 }
 
 TEST(BlinkEventUtilTest, PaginatedWebMouseWheelEvent) {

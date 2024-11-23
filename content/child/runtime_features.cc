@@ -262,8 +262,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kNotificationContentImage), kSetOnlyIfOverridden},
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
           {wf::EnablePaymentRequest, raw_ref(features::kWebPayments)},
-          {wf::EnablePercentBasedScrolling,
-           raw_ref(features::kWindowsScrollingPersonality)},
           {wf::EnablePeriodicBackgroundSync,
            raw_ref(features::kPeriodicBackgroundSync)},
           {wf::EnablePushMessagingSubscriptionChange,

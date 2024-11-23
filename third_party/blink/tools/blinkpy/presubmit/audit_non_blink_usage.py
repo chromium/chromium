@@ -626,7 +626,6 @@ _CONFIG = [
             'cc::kManipulationInfoTouch',
             'cc::kManipulationInfoWheel',
             'cc::kMinFractionToStepWhenPaging',
-            'cc::kPercentDeltaForDirectionalScroll',
             'cc::kPixelsPerLineStep',
             'cc::MainThreadScrollingReason',
             'cc::ManipulationInfo',

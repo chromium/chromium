@@ -620,10 +620,9 @@ void Scrollbar::MouseDown(const WebMouseEvent& evt) {
 
 void Scrollbar::InjectScrollGestureForPressedPart(
     WebInputEvent::Type gesture_type) {
-  ui::ScrollGranularity granularity = PressedPartScrollGranularity();
-  ScrollOffset delta =
-      ToScrollDelta(PressedPartScrollDirectionPhysical(),
-                    ScrollableArea::DirectionBasedScrollDelta(granularity));
+  const ui::ScrollGranularity granularity = PressedPartScrollGranularity();
+  const ScrollOffset delta =
+      ToScrollDelta(PressedPartScrollDirectionPhysical(), 1);
   InjectScrollGesture(gesture_type, delta, granularity);
 }
 

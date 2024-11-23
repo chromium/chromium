@@ -3219,12 +3219,6 @@
       base_feature: "none",
     },
     {
-      name: "PercentBasedScrolling",
-      base_feature: "none",
-      public: true,
-      settable_from_internals: true,
-    },
-    {
       name: "PerformanceManagerInstrumentation",
       base_feature: "none",
       public: true,

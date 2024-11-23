@@ -93,14 +93,6 @@ int ScrollableArea::MaxOverlapBetweenPages() const {
 }
 
 // static
-float ScrollableArea::DirectionBasedScrollDelta(
-    ui::ScrollGranularity granularity) {
-  return (granularity == ui::ScrollGranularity::kScrollByPercentage)
-             ? cc::kPercentDeltaForDirectionalScroll
-             : 1;
-}
-
-// static
 mojom::blink::ScrollBehavior ScrollableArea::DetermineScrollBehavior(
     mojom::blink::ScrollBehavior behavior_from_param,
     mojom::blink::ScrollBehavior behavior_from_style) {
@@ -203,8 +195,6 @@ float ScrollableArea::ScrollStep(ui::ScrollGranularity granularity,
     case ui::ScrollGranularity::kScrollByPixel:
     case ui::ScrollGranularity::kScrollByPrecisePixel:
       return PixelStep(orientation);
-    case ui::ScrollGranularity::kScrollByPercentage:
-      return PercentageStep(orientation);
     default:
       NOTREACHED();
   }
@@ -215,25 +205,6 @@ ScrollOffset ScrollableArea::ResolveScrollDelta(
     const ScrollOffset& delta) {
   gfx::SizeF step(ScrollStep(granularity, kHorizontalScrollbar),
                   ScrollStep(granularity, kVerticalScrollbar));
-
-  if (granularity == ui::ScrollGranularity::kScrollByPercentage) {
-    LocalFrame* local_frame = GetLayoutBox()->GetFrame();
-    DCHECK(local_frame);
-    gfx::SizeF viewport(local_frame->GetPage()->GetVisualViewport().Size());
-
-    // Convert to screen coordinates (physical pixels).
-    float page_scale_factor = local_frame->GetPage()->PageScaleFactor();
-    step.Scale(page_scale_factor);
-
-    gfx::Vector2dF pixel_delta =
-        cc::ScrollUtils::ResolveScrollPercentageToPixels(delta, step, viewport);
-
-    // Rescale back to rootframe coordinates.
-    pixel_delta.Scale(1 / page_scale_factor);
-
-    return pixel_delta;
-  }
-
   return gfx::ScaleVector2d(delta, step.width(), step.height());
 }
 
@@ -1157,14 +1128,6 @@ int ScrollableArea::DocumentStep(ScrollbarOrientation orientation) const {
 
 float ScrollableArea::PixelStep(ScrollbarOrientation) const {
   return 1;
-}
-
-float ScrollableArea::PercentageStep(ScrollbarOrientation orientation) const {
-  int percent_basis =
-      (orientation == ScrollbarOrientation::kHorizontalScrollbar)
-          ? VisibleWidth()
-          : VisibleHeight();
-  return static_cast<float>(percent_basis);
 }
 
 int ScrollableArea::VerticalScrollbarWidth(

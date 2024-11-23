@@ -1494,13 +1494,6 @@ gfx::Vector2dF InputHandler::ResolveScrollGranularityToPixels(
   gfx::Vector2dF pixel_delta = scroll_delta;
 
   if (granularity == ui::ScrollGranularity::kScrollByPage) {
-    // Page should use a percentage of the scroller so change the parameters
-    // and let the percentage case below resolve it.
-    granularity = ui::ScrollGranularity::kScrollByPercentage;
-    pixel_delta.Scale(kMinFractionToStepWhenPaging);
-  }
-
-  if (granularity == ui::ScrollGranularity::kScrollByPercentage) {
     gfx::SizeF scroller_size = gfx::SizeF(scroll_node.container_bounds);
     gfx::SizeF viewport_size(compositor_delegate_->VisualDeviceViewportSize());
 
@@ -1512,6 +1505,7 @@ gfx::Vector2dF InputHandler::ResolveScrollGranularityToPixels(
     // enabled, `DeviceScaleFactor()` returns 1).
     viewport_size.InvScale(compositor_delegate_->DeviceScaleFactor());
 
+    pixel_delta.Scale(kMinFractionToStepWhenPaging);
     pixel_delta = ScrollUtils::ResolveScrollPercentageToPixels(
         pixel_delta, scroller_size, viewport_size);
   }
