@@ -70,12 +70,14 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -84,6 +86,7 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.ButtonType;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
@@ -96,6 +99,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.PassthroughTabRemover;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -103,10 +107,20 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
+import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -115,6 +129,7 @@ import org.chromium.ui.widget.RectProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -125,6 +140,7 @@ import java.util.stream.IntStream;
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
 @LooperMode(Mode.LEGACY)
+@DisableFeatures(ChromeFeatureList.DATA_SHARING)
 public class StripLayoutHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -147,7 +163,12 @@ public class StripLayoutHelperTest {
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private TabCreator mTabCreator;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
     @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
+    @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
     private Activity mActivity;
     private Context mContext;
@@ -184,6 +205,9 @@ public class StripLayoutHelperTest {
     private static final float REORDER_OVERLAP_SWITCH_PERCENTAGE = 0.53f;
     private static final PointF DRAG_START_POINT = new PointF(70f, 20f);
     private static final float EPSILON = 0.001f;
+    private static final String COLLABORATION_ID1 = "A";
+    private static final String SYNC_ID1 = "B";
+    private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 
     /** Reset the environment before each test. */
     @Before
@@ -210,6 +234,11 @@ public class StripLayoutHelperTest {
                 new CompositorAnimationHandler(CallbackUtils.emptyRunnable());
         when(mUpdateHost.getAnimationHandler()).thenReturn(mHandler);
         when(mModel.getProfile()).thenReturn(mProfile);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(false);
     }
 
     @After
@@ -2936,6 +2965,106 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TITLE, views[groupStartIndex] instanceof StripLayoutGroupTitle);
         mStripLayoutHelper.setPrefServiceForTesting(mPrefService);
         when(mPrefService.getBoolean(any())).thenReturn(skipDialog);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testUpdateSharedGroupState_DuringStripBuild() {
+        // Mock 5 tabs.
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        initializeTest(false, false, 3, 5);
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Setup sync and collaboration.
+        SavedTabGroup savedTabGroup = setupTabGroupSync();
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+
+        // Group the first and second tabs.
+        when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
+        groupTabs(0, 1);
+
+        // Verify group title is present.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testUpdateSharedGroupState_OnGroupAddedAndRemoved() {
+        // Mock 5 tabs.
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        initializeTest(false, false, 3, 5);
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        mStripLayoutHelper.onSizeChanged(
+                SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT);
+
+        // Setup sync.
+        SavedTabGroup savedTabGroup = setupTabGroupSync();
+
+        // Group the first and second tabs.
+        when(mModel.getTabAt(0).getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
+        groupTabs(0, 1);
+
+        // Verify group title is present.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
+        StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
+        int color =
+                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, TabGroupColorId.GREY, mIncognito);
+        groupTitle.updateTint(color);
+
+        // Group added through Data sharing observer.
+        savedTabGroup.collaborationId = COLLABORATION_ID1;
+        mSharingObserverCaptor
+                .getValue()
+                .onGroupAdded(
+                        SharedGroupTestHelper.newGroupData(
+                                COLLABORATION_ID1,
+                                SharedGroupTestHelper.GROUP_MEMBER1,
+                                SharedGroupTestHelper.GROUP_MEMBER2));
+
+        // Verify group shared state is updated and avatar resource is initialized.
+        verifySharedGroupState(groupTitle);
+
+        // Group removed through Data sharing observer.
+        mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
+
+        // Verify group shared state is updated and avatar resource is cleared.
+        assertFalse("Group should be unshared.", groupTitle.isGroupSharedForTesting());
+        assertNull(
+                "SharedImageTilesCoordinator for shared group should be cleared",
+                groupTitle.getSharedImageTilesCoordinatorForTesting());
+        assertNull(
+                "Avatar resource should for shared group should be cleared",
+                groupTitle.getAvatarResourceForTesting());
+    }
+
+    private SavedTabGroup setupTabGroupSync() {
+        SavedTabGroup savedTabGroup = new SavedTabGroup();
+        savedTabGroup.localId = new LocalTabGroupId(TAB_GROUP_TOKEN);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        SavedTabGroupTab savedTab2 = new SavedTabGroupTab();
+        savedTabGroup.savedTabs = Arrays.asList(new SavedTabGroupTab[] {savedTab, savedTab2});
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_ID1});
+        when(mTabGroupSyncService.getGroup(SYNC_ID1)).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
+        return savedTabGroup;
+    }
+
+    private void verifySharedGroupState(StripLayoutGroupTitle groupTitle) {
+        assertTrue("Group should be shared.", groupTitle.isGroupSharedForTesting());
+        assertNotNull(
+                "SharedImageTilesCoordinator for shared group should be initialized",
+                groupTitle.getSharedImageTilesCoordinatorForTesting());
+        assertNotNull(
+                "Avatar resource should for shared group should be initialized",
+                groupTitle.getAvatarResourceForTesting());
     }
 
     private void startDraggingTab(

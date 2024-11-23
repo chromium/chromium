@@ -69,7 +69,7 @@ import java.util.List;
 
 /** Unit tests for {@link TabGroupContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU})
+@EnableFeatures({ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU, ChromeFeatureList.DATA_SHARING})
 public class TabGroupContextMenuCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -141,7 +141,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testListMenuItems() {
         // Build custom view first to setup menu view.
@@ -236,7 +235,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testCollaborationMenuItems_Owner() {
         ModelList modelList = new ModelList();
@@ -263,7 +261,6 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     @Feature("Tab Strip Group Context Menu")
     public void testCollaborationMenuItems_Member() {
         ModelList modelList = new ModelList();

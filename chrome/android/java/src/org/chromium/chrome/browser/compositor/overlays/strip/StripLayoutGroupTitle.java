@@ -7,13 +7,21 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.FloatProperty;
+import android.view.View;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.Token;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesColor;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
  * {@link StripLayoutGroupTitle} is used to keep track of the strip position and rendering
@@ -77,12 +85,19 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     // Tab group variables.
     // Tab group's root Id this view refers to.
+    // @TODO(crbug.com/379941150) Deprecate rootId and transition to using tabGroupId
     private int mRootId;
+    private Token mTabGroupId;
     private String mTitle;
     @ColorInt private int mColor;
 
     // Bottom indicator variables
     private float mBottomIndicatorWidth;
+
+    // Shared state
+    private boolean mIsShared;
+    @Nullable private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    @Nullable private ViewResourceAdapter mAvatarResource;
 
     /**
      * Create a {@link StripLayoutGroupTitle} that represents the TabGroup for the {@code rootId}.
@@ -90,17 +105,20 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * @param delegate The delegate for additional strip group title functionality.
      * @param incognito Whether or not this tab group is Incognito.
      * @param rootId The root ID for the tab group.
+     * @param tabGroupId The tab group ID for the tab group.
      */
     public StripLayoutGroupTitle(
             Context context,
             StripLayoutGroupTitleDelegate delegate,
             boolean incognito,
-            int rootId) {
+            int rootId,
+            Token tabGroupId) {
         super(incognito, delegate);
         assert rootId != Tab.INVALID_TAB_ID : "Tried to create a group title for an invalid group.";
         mRootId = rootId;
         mContext = context;
         mDelegate = delegate;
+        mTabGroupId = tabGroupId;
     }
 
     @Override
@@ -207,6 +225,13 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     }
 
     /**
+     * @return The group's tab group ID.
+     */
+    public Token getTabGroupId() {
+        return mTabGroupId;
+    }
+
+    /**
      * @param rootId The tab group's new rootId. Should be synced with the {@link
      *     org.chromium.chrome.browser.tabmodel.TabGroupModelFilter}.
      */
@@ -248,5 +273,77 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public float getBottomIndicatorHeight() {
         return BOTTOM_INDICATOR_HEIGHT_DP;
+    }
+
+    /**
+     * Fetch avatar for a shared group from peopleKit service and capture the avatar view as bitmap.
+     *
+     * @param collaborationId The id to identify a shared tab group.
+     * @param dataSharingService Used to fetch and observe current share data.
+     */
+    public void updateSharedTabGroup(
+            String collaborationId, DataSharingService dataSharingService) {
+        mIsShared = true;
+        if (mSharedImageTilesCoordinator == null) {
+            mSharedImageTilesCoordinator =
+                    new SharedImageTilesCoordinator(
+                            mContext,
+                            SharedImageTilesType.SMALL,
+                            new SharedImageTilesColor(
+                                    SharedImageTilesColor.Style.TAB_GROUP, mColor),
+                            dataSharingService);
+        }
+        mSharedImageTilesCoordinator.updateCollaborationId(
+                collaborationId,
+                (result) -> {
+                    if (result) {
+                        captureSharedAvatarBitmap(mSharedImageTilesCoordinator.getView());
+                    }
+                });
+    }
+
+    /**
+     * Lays out the avatar view and trigger the capture of the bitmap.
+     *
+     * @params view The Android view of the avatar.
+     */
+    private void captureSharedAvatarBitmap(View view) {
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        if (mAvatarResource == null) {
+            mAvatarResource = new ViewResourceAdapter(view);
+            // @TODO(crbug.com/362314403): register viewResourceAdapter to resourceManager and
+            // update group title bitmap.
+        }
+    }
+
+    public void clearSharedTabGroup() {
+        mIsShared = false;
+        mAvatarResource = null;
+        mSharedImageTilesCoordinator = null;
+    }
+
+    /**
+     * @return Whether the group is shared.
+     */
+    public boolean isGroupSharedForTesting() {
+        return mIsShared;
+    }
+
+    /**
+     * @return The coordinator to retrieve the avatar face pile for shared group.
+     */
+    public SharedImageTilesCoordinator getSharedImageTilesCoordinatorForTesting() {
+        return mSharedImageTilesCoordinator;
+    }
+
+    /**
+     * @return The avatar face pile resource displayed on the tab group title for shared group.
+     */
+    public ViewResourceAdapter getAvatarResourceForTesting() {
+        return mAvatarResource;
     }
 }

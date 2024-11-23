@@ -11,10 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 public class StripLayoutUtils {
     // Position Constants.
@@ -100,6 +105,45 @@ public class StripLayoutUtils {
             if (groupTitle.getRootId() == rootId) return groupTitle;
         }
         return null;
+    }
+
+    /**
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
+     * @param tabGroupId The tab group ID for the tab group .
+     * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
+     *     otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitleByTabGroupId(
+            StripLayoutGroupTitle[] groupTitles, Token tabGroupId) {
+        for (int i = 0; i < groupTitles.length; i++) {
+            final StripLayoutGroupTitle groupTitle = groupTitles[i];
+            if (groupTitle.getTabGroupId().equals(tabGroupId)) return groupTitle;
+        }
+        return null;
+    }
+
+    /**
+     * @param groupTitles A list of {@link StripLayoutGroupTitle}.
+     * @param collaborationId he sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The {@link StripLayoutGroupTitle} with the given tab group ID. {@code null}
+     *     otherwise.
+     */
+    static StripLayoutGroupTitle findGroupTitleByCollaborationId(
+            StripLayoutGroupTitle[] groupTitles,
+            String collaborationId,
+            TabGroupSyncService tabGroupSyncService) {
+        SavedTabGroup savedTabGroup =
+                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                        collaborationId, tabGroupSyncService);
+        if (savedTabGroup == null) {
+            return null;
+        }
+        LocalTabGroupId localTabGroupId = savedTabGroup.localId;
+        if (localTabGroupId == null) {
+            return null;
+        }
+        return findGroupTitleByTabGroupId(groupTitles, localTabGroupId.tabGroupId);
     }
 
     /**

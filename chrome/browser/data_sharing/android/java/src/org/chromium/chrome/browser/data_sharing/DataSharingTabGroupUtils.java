@@ -213,4 +213,22 @@ public class DataSharingTabGroupUtils {
         }
         return true;
     }
+
+    /**
+     * @param collaborationId The sharing ID associated with the group.
+     * @param tabGroupSyncService The sync service to get tab group data form.
+     * @return The {@link SavedTabGroup} from sync service.
+     */
+    public static SavedTabGroup getTabGroupForCollabIdFromSync(
+            String collaborationId, TabGroupSyncService tabGroupSyncService) {
+        for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
+            SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
+            assert !savedTabGroup.savedTabs.isEmpty();
+            if (savedTabGroup.collaborationId != null
+                    && savedTabGroup.collaborationId.equals(collaborationId)) {
+                return savedTabGroup;
+            }
+        }
+        return null;
+    }
 }

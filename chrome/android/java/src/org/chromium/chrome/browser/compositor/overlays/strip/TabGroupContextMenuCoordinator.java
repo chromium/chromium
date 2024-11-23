@@ -213,8 +213,6 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                                 activity, tabGroupModelFilter, tabId);
 
                 // Create the group share flow and display the share bottom sheet.
-                // TODO(crbug.com/362314403): Use Transitive/SharedGroupObserver to observe share
-                // state update and implement user avatars on group title with shareImageTiles.
                 TabUiUtils.startShareTabGroupFlow(
                         activity,
                         tabGroupModelFilter,

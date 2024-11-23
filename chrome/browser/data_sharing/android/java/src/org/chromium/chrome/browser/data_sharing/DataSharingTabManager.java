@@ -286,7 +286,8 @@ public class DataSharingTabManager {
 
         // Verify that tab group does not already exist in sync.
         SavedTabGroup existingGroup =
-                getTabGroupForCollabIdFromSync(collaborationId, tabGroupSyncService);
+                DataSharingTabGroupUtils.getTabGroupForCollabIdFromSync(
+                        collaborationId, tabGroupSyncService);
         if (existingGroup != null) {
             DataSharingMetrics.recordJoinActionFlowState(
                     DataSharingMetrics.JoinActionStateAndroid.SYNCED_TAB_GROUP_EXISTS);
@@ -444,20 +445,6 @@ public class DataSharingTabManager {
                 R.string.data_sharing_invitation_failure_title,
                 R.string.data_sharing_invitation_failure_description,
                 R.string.data_sharing_invitation_failure_button);
-    }
-
-    SavedTabGroup getTabGroupForCollabIdFromSync(
-            String collaborationId, TabGroupSyncService tabGroupSyncService) {
-        for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
-            SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
-            assert !savedTabGroup.savedTabs.isEmpty();
-            if (savedTabGroup.collaborationId != null
-                    && savedTabGroup.collaborationId.equals(collaborationId)) {
-                return savedTabGroup;
-            }
-        }
-
-        return null;
     }
 
     void setFaviconHelperForTesting(FaviconHelper helper) {

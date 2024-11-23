@@ -47,7 +47,6 @@ import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -57,6 +56,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -69,15 +69,18 @@ import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle.StripLayoutGroupTitleDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView.StripLayoutViewOnClickHandler;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncIphController;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
@@ -93,8 +96,15 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.Observer;
+import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -453,8 +463,12 @@ public class StripLayoutHelper
     private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
 
     // Tab group share.
-    private DataSharingTabManager mDataSharingTabManager;
     private ModalDialogManager mModalDialogManager;
+    @Nullable private DataSharingTabManager mDataSharingTabManager;
+    @Nullable private DataSharingService mDataSharingService;
+    @Nullable private CollaborationService mCollaborationService;
+    @Nullable private TabGroupSyncService mTabGroupSyncService;
+    @Nullable private DataSharingService.Observer mDataSharingObserver;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -664,6 +678,10 @@ public class StripLayoutHelper
         if (mTabGroupContextMenuCoordinator != null) {
             mTabGroupContextMenuCoordinator.destroy();
             mTabGroupContextMenuCoordinator = null;
+        }
+        if (mDataSharingService != null) {
+            mDataSharingService.removeObserver(mDataSharingObserver);
+            mDataSharingService = null;
         }
     }
 
@@ -996,8 +1014,8 @@ public class StripLayoutHelper
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
-        mActionConfirmationDelegate.initialize(
-                tabGroupModelFilter.getTabModel().getProfile(), mGroupIdToHideSupplier);
+        Profile profile = tabGroupModelFilter.getTabModel().getProfile();
+        mActionConfirmationDelegate.initialize(profile, mGroupIdToHideSupplier);
         mReorderDelegate.initialize(
                 /* animationHost= */ this,
                 mTabGroupModelFilter,
@@ -1005,8 +1023,47 @@ public class StripLayoutHelper
                 mActionConfirmationDelegate,
                 mGroupIdToHideSupplier,
                 mToolbarContainerView);
+
+        // Setup tab group share services. Profile could be null for incognito if there are no
+        // incognito tabs. The observer is setup before tabs and groups are created on tab strip.
+        // TODO(crbug.com/380511640) Use SharedGroupObserver instead of DataSharingObserver.
+        if (shouldEnableGroupSharing(profile)) {
+            mDataSharingService = DataSharingServiceFactory.getForProfile(profile);
+            mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
+            mDataSharingObserver =
+                    new Observer() {
+                        @Override
+                        public void onGroupChanged(GroupData groupData) {
+                            String collaborationId = groupData.groupToken.collaborationId;
+                            updateSharedTabGroup(collaborationId);
+                        }
+
+                        @Override
+                        public void onGroupAdded(GroupData groupData) {
+                            String collaborationId = groupData.groupToken.collaborationId;
+                            updateSharedTabGroup(collaborationId);
+                        }
+
+                        @Override
+                        public void onGroupRemoved(String collaborationId) {
+                            clearSharedTabGroup(collaborationId);
+                        }
+                    };
+            mDataSharingService.addObserver(mDataSharingObserver);
+        }
+
         updateTitleCacheForInit();
         rebuildStripViews();
+    }
+
+    private boolean shouldEnableGroupSharing(Profile profile) {
+        if (profile == null) {
+            return false;
+        }
+        if (mCollaborationService == null) {
+            mCollaborationService = CollaborationServiceFactory.getForProfile(profile);
+        }
+        return mCollaborationService.getServiceStatus().isAllowedToJoin();
     }
 
     TabGroupModelFilterObserver getTabGroupModelFilterObserverForTesting() {
@@ -1941,7 +1998,7 @@ public class StripLayoutHelper
                             mModalDialogManager,
                             mWindowAndroid,
                             mDataSharingTabManager,
-                            this::onGroupSharedCallback);
+                            (unused) -> {});
         }
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
@@ -1950,8 +2007,36 @@ public class StripLayoutHelper
         mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getRootId());
     }
 
-    private void onGroupSharedCallback(boolean groupShared) {
-        Log.d(TAG, "Group share created " + groupShared);
+    /**
+     * Update group shared state and avatar face piles displayed on group title for a shared group.
+     *
+     * @param collaborationId The sharing ID associated with the group.
+     */
+    private void updateSharedTabGroup(String collaborationId) {
+        StripLayoutGroupTitle groupTitle =
+                StripLayoutUtils.findGroupTitleByCollaborationId(
+                        mStripGroupTitles, collaborationId, mTabGroupSyncService);
+        if (groupTitle == null) {
+            return;
+        }
+        groupTitle.updateSharedTabGroup(collaborationId, mDataSharingService);
+    }
+
+    /**
+     * Clear group avatar face piles displayed on group title and other share related group title
+     * data.
+     *
+     * @param collaborationId The sharing ID associated with the group..
+     */
+    private void clearSharedTabGroup(String collaborationId) {
+        StripLayoutGroupTitle groupTitle =
+                StripLayoutUtils.findGroupTitleByCollaborationId(
+                        mStripGroupTitles, collaborationId, mTabGroupSyncService);
+        if (groupTitle == null) {
+            return;
+        }
+        groupTitle.clearSharedTabGroup();
+        // TODO(crbug.com/362314403): Update group title bitmap to remove avatar from group title.
     }
 
     private void getAnchorRect(StripLayoutGroupTitle groupTitle, RectProvider anchorRectProvider) {
@@ -2956,20 +3041,32 @@ public class StripLayoutHelper
         return StripLayoutUtils.findGroupTitle(mStripGroupTitles, rootId);
     }
 
-    private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId) {
+    private StripLayoutGroupTitle findOrCreateGroupTitle(int rootId, Token tabGroupId) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(rootId);
-        return groupTitle == null ? createGroupTitle(rootId) : groupTitle;
+        return groupTitle == null ? createGroupTitle(rootId, tabGroupId) : groupTitle;
     }
 
-    private StripLayoutGroupTitle createGroupTitle(int rootId) {
+    private StripLayoutGroupTitle createGroupTitle(int rootId, Token tabGroupId) {
         // Delay setting the collapsed state, since mStripViews may not yet be up to date.
         StripLayoutGroupTitle groupTitle =
-                new StripLayoutGroupTitle(mContext, /* delegate= */ this, mIncognito, rootId);
+                new StripLayoutGroupTitle(
+                        mContext, /* delegate= */ this, mIncognito, rootId, tabGroupId);
         pushPropertiesToGroupTitle(groupTitle);
+
         // Must pass in the group title instead of rootId, since the StripLayoutGroupTitle has not
         // been added to mStripViews yet.
-        updateGroupTitleText(groupTitle);
         updateGroupTitleTint(groupTitle);
+        updateGroupTitleText(groupTitle);
+
+        // Update tab group share avatars if necessary. The data sharing observer should already be
+        // in place by this point (added during #setTabGroupModelFilter).
+        if (shouldEnableGroupSharing(mTabGroupModelFilter.getTabModel().getProfile())) {
+            SavedTabGroup savedTabGroup =
+                    mTabGroupSyncService.getGroup(new LocalTabGroupId(tabGroupId));
+            if (savedTabGroup != null && savedTabGroup.collaborationId != null) {
+                groupTitle.updateSharedTabGroup(savedTabGroup.collaborationId, mDataSharingService);
+            }
+        }
 
         return groupTitle;
     }
@@ -3055,7 +3152,8 @@ public class StripLayoutHelper
         Tab firstTab = getTabById(mStripTabs[0].getTabId());
         if (mTabGroupModelFilter.isTabInTabGroup(firstTab)) {
             int rootId = firstTab.getRootId();
-            StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(rootId);
+            Token tabGroupId = firstTab.getTabGroupId();
+            StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(rootId, tabGroupId);
             if (rootId != mGroupIdToHideSupplier.get()) {
                 if (firstTab.getLaunchType() == TabLaunchType.FROM_SYNC_BACKGROUND) {
                     mLastSyncedGroupId = rootId;
@@ -3072,10 +3170,12 @@ public class StripLayoutHelper
             Tab currTab = getTabById(stripTab.getTabId());
             Tab nextTab = getTabById(mStripTabs[i + 1].getTabId());
             int nextRootId = nextTab.getRootId();
+            Token nextTabGroupId = nextTab.getTabGroupId();
             boolean nextTabInGroup = mTabGroupModelFilter.isTabInTabGroup(nextTab);
             boolean areRelatedTabs = currTab.getRootId() == nextRootId;
             if (nextTabInGroup && !areRelatedTabs) {
-                StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(nextRootId);
+                StripLayoutGroupTitle groupTitle =
+                        findOrCreateGroupTitle(nextRootId, nextTabGroupId);
                 if (nextRootId != mGroupIdToHideSupplier.get()) {
                     if (nextTab.getLaunchType() == TabLaunchType.FROM_SYNC_BACKGROUND) {
                         mLastSyncedGroupId = nextRootId;
