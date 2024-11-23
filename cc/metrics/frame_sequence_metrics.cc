@@ -150,15 +150,6 @@ std::string GetThroughputV4HistogramName(FrameSequenceTrackerType type,
 FrameSequenceMetrics::V3::V3() = default;
 FrameSequenceMetrics::V3::~V3() = default;
 
-FrameSequenceMetrics::CustomReportData::CustomReportData(
-    uint32_t frames_expected,
-    uint32_t frames_dropped,
-    uint32_t jank_count,
-    std::vector<Jank> janks)
-    : frames_expected_v3(frames_expected),
-      frames_dropped_v3(frames_dropped),
-      jank_count_v3(jank_count),
-      janks(std::move(janks)) {}
 FrameSequenceMetrics::CustomReportData::CustomReportData() = default;
 
 FrameSequenceMetrics::CustomReportData::CustomReportData(
@@ -291,9 +282,13 @@ void FrameSequenceMetrics::ReportMetrics() {
 
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
-    std::move(custom_reporter_)
-        .Run(CustomReportData(v3_.frames_expected, v3_.frames_dropped,
-                              v3_.jank_count, std::move(v3_.janks)));
+
+    CustomReportData custom_data;
+    custom_data.frames_dropped_v3 = v3_.frames_dropped;
+    custom_data.frames_expected_v3 = v3_.frames_expected;
+    custom_data.janks = std::move(v3_.janks);
+
+    std::move(custom_reporter_).Run(std::move(custom_data));
 
     v3_.frames_expected = 0u;
     v3_.frames_dropped = 0u;
