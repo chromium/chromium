@@ -33,11 +33,26 @@ class Mv2DeprecationReEnableDialogBrowserTest
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     // Add an extension that should be affected by the MV2 deprecation.
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder("MV2 Extension")
-            .SetManifestVersion(2)
-            .SetLocation(extensions::mojom::ManifestLocation::kInternal)
-            .Build();
+    scoped_refptr<const extensions::Extension> extension;
+
+    if (name == "NormalExtension") {
+      extension =
+          extensions::ExtensionBuilder("MV2 Extension")
+              .SetManifestVersion(2)
+              .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+              .Build();
+    } else if (name == "LongNameExtension") {
+      const std::string long_name =
+          "This extension name should be longer than our truncation threshold "
+          "to test that the bubble can handle long names";
+      extension =
+          extensions::ExtensionBuilder(long_name)
+              .SetManifestVersion(2)
+              .SetLocation(extensions::mojom::ManifestLocation::kInternal)
+              .Build();
+    }
+
+    ASSERT_TRUE(extension);
     extensions::ExtensionSystem::Get(browser()->profile())
         ->extension_service()
         ->AddExtension(extension.get());
@@ -52,6 +67,12 @@ class Mv2DeprecationReEnableDialogBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(Mv2DeprecationReEnableDialogBrowserTest, InvokeUi) {
+IN_PROC_BROWSER_TEST_F(Mv2DeprecationReEnableDialogBrowserTest,
+                       InvokeUi_NormalExtension) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(Mv2DeprecationReEnableDialogBrowserTest,
+                       InvokeUi_LongNameExtension) {
   ShowAndVerifyUi();
 }
