@@ -1240,6 +1240,22 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
     swap_chain_size.set_height(swap_chain_size.height() + 1);
   }
 
+  // Adjust `swap_chain_size` to fit into the max texture size.
+  const gfx::SizeF max_texture_size(D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION,
+                                    D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION);
+  if (swap_chain_size.width() > max_texture_size.width() ||
+      swap_chain_size.height() > max_texture_size.height()) {
+    if (max_texture_size.AspectRatio() > swap_chain_size.AspectRatio()) {
+      swap_chain_size =
+          gfx::SizeF(max_texture_size.height() * swap_chain_size.AspectRatio(),
+                     max_texture_size.height());
+    } else {
+      swap_chain_size =
+          gfx::SizeF(max_texture_size.width(),
+                     max_texture_size.width() / swap_chain_size.AspectRatio());
+    }
+  }
+
   // Adjust the transform matrix.
   UpdateSwapChainTransform(params.quad_rect.size(), swap_chain_size,
                            visual_transform);
