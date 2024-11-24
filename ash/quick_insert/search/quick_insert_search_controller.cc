@@ -69,10 +69,10 @@ constexpr auto kImeToLangCode =
          {"xkb:se::swe", "sv"},           {"nacl_mozc_us", "ja"},
          {"nacl_mozc_jp", "ja"}});
 
-base::span<const emoji::EmojiSearchEntry> FirstNOrLessElements(
+base::span<const emoji::EmojiSearchEntry> FirstNOrFewerElements(
     base::span<const emoji::EmojiSearchEntry> container,
     size_t n) {
-  return container.subspan(0, std::min(container.size(), n));
+  return container.first(std::min(container.size(), n));
 }
 
 const base::Value::Dict* LoadEmojiVariantsFromPrefs(PrefService* prefs) {
@@ -215,7 +215,7 @@ void QuickInsertSearchController::StartEmojiSearch(
   const base::Value::Dict* emoji_variants = LoadEmojiVariantsFromPrefs(prefs);
 
   for (const emoji::EmojiSearchEntry& result :
-       FirstNOrLessElements(results.emojis, kMaxEmojiResults)) {
+       FirstNOrFewerElements(results.emojis, kMaxEmojiResults)) {
     std::string emoji_string = result.emoji_string;
     if (emoji_variants != nullptr) {
       const std::string* variant_string =
@@ -229,14 +229,14 @@ void QuickInsertSearchController::StartEmojiSearch(
         base::UTF8ToUTF16(emoji_search_.GetEmojiName(emoji_string, "en"))));
   }
   for (const emoji::EmojiSearchEntry& result :
-       FirstNOrLessElements(results.symbols, kMaxSymbolResults)) {
+       FirstNOrFewerElements(results.symbols, kMaxSymbolResults)) {
     emoji_results.push_back(QuickInsertEmojiResult::Symbol(
         base::UTF8ToUTF16(result.emoji_string),
         base::UTF8ToUTF16(
             emoji_search_.GetEmojiName(result.emoji_string, "en"))));
   }
   for (const emoji::EmojiSearchEntry& result :
-       FirstNOrLessElements(results.emoticons, kMaxEmoticonResults)) {
+       FirstNOrFewerElements(results.emoticons, kMaxEmoticonResults)) {
     emoji_results.push_back(QuickInsertEmojiResult::Emoticon(
         base::UTF8ToUTF16(result.emoji_string),
         base::UTF8ToUTF16(
