@@ -24,6 +24,7 @@ namespace blink {
 
 class AnchorSpecifierValue;
 class Element;
+class LayoutBox;
 class LayoutObject;
 class LogicalAnchorQuery;
 class LogicalAnchorQueryMap;
@@ -170,10 +171,9 @@ class CORE_EXPORT PhysicalAnchorQuery
  public:
   using Base = AnchorQueryBase<PhysicalAnchorReference>;
 
-  const PhysicalAnchorReference* AnchorReference(
-      const LayoutObject& query_object,
-      const AnchorKey&) const;
-  const LayoutObject* AnchorLayoutObject(const LayoutObject& query_object,
+  const PhysicalAnchorReference* AnchorReference(const LayoutBox& query_box,
+                                                 const AnchorKey&) const;
+  const LayoutObject* AnchorLayoutObject(const LayoutBox& query_box,
                                          const AnchorKey&) const;
 
   void SetFromLogical(const LogicalAnchorQuery& logical_query,
@@ -214,9 +214,8 @@ class CORE_EXPORT LogicalAnchorQuery
   // Returns an empty instance.
   static const LogicalAnchorQuery& Empty();
 
-  const LogicalAnchorReference* AnchorReference(
-      const LayoutObject& query_object,
-      const AnchorKey&) const;
+  const LogicalAnchorReference* AnchorReference(const LayoutBox& query_box,
+                                                const AnchorKey&) const;
 
   enum class SetOptions {
     // An in-flow entry.
@@ -266,14 +265,14 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // compute `HasAnchorFunctions()`.
   AnchorEvaluatorImpl() = default;
 
-  AnchorEvaluatorImpl(const LayoutObject& query_object,
+  AnchorEvaluatorImpl(const LayoutBox& query_box,
                       const LogicalAnchorQuery& anchor_query,
                       const LayoutObject* implicit_anchor,
                       const WritingModeConverter& container_converter,
                       WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
-      : query_object_(&query_object),
+      : query_box_(&query_box),
         anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
@@ -286,7 +285,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   // This constructor takes |LogicalAnchorQueryMap| and |containing_block|
   // instead of |LogicalAnchorQuery|.
-  AnchorEvaluatorImpl(const LayoutObject& query_object,
+  AnchorEvaluatorImpl(const LayoutBox& query_box,
                       const LogicalAnchorQueryMap& anchor_queries,
                       const LayoutObject* implicit_anchor,
                       const LayoutObject& containing_block,
@@ -294,7 +293,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
                       WritingDirectionMode self_writing_direction,
                       const PhysicalOffset& offset_to_padding_box,
                       const PhysicalSize& available_size)
-      : query_object_(&query_object),
+      : query_box_(&query_box),
         anchor_queries_(&anchor_queries),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
@@ -382,7 +381,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   PhysicalRect PositionAreaModifiedContainingBlock(
       const std::optional<PositionAreaOffsets>&) const;
 
-  const LayoutObject* query_object_ = nullptr;
+  const LayoutBox* query_box_ = nullptr;
   mutable const LogicalAnchorQuery* anchor_query_ = nullptr;
   const LogicalAnchorQueryMap* anchor_queries_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
