@@ -590,6 +590,10 @@ class WTF_EXPORT StringImpl {
                  UChar pattern,
                  base::span<const ReplacementCharType> replacement,
                  base::span<DestCharType> dest) const;
+  template <typename DestCharType>
+  void DoReplace(const StringView& pattern,
+                 const StringView& replacement,
+                 base::span<DestCharType> dest) const;
 
   template <class UCharPredicate>
   scoped_refptr<StringImpl> StripMatchedCharacters(UCharPredicate);
