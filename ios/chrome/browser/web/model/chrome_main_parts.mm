@@ -63,8 +63,6 @@
 #import "ios/chrome/browser/segmentation_platform/model/ukm_database_client.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
@@ -315,13 +313,6 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   BrowserStateDependencyManager::GetInstance()
       ->DisallowKeyedServiceFactoryRegistration(
           "EnsureProfileKeyedServiceFactoriesBuilt()");
-
-  // Ensure the Profiles are loaded and initialized.
-  ProfileManagerIOS* profile_manager =
-      application_context_->GetProfileManager();
-
-  // Load all Profiles.
-  profile_manager->LoadProfiles();
 
   // Because the CleanExitBeacon flag takes 2 restarts to take effect, register
   // a synthetic field trial when the user defaults beacon is set. Called
