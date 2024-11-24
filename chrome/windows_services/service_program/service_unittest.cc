@@ -327,7 +327,9 @@ TEST_F(ServiceTest, RapidReuse) {
 
   base::RunLoop run_loop;
 
-  constexpr int kTaskCount = 4;
+  // Reduce to only one thread due to flaky CO_E_SERVER_EXEC_FAILURE; see
+  // https://crbug.com/375097840.
+  static constexpr int kTaskCount = 1;
 
   // Quit `run_loop` after all `kTaskCount` tasks have run this closure.
   base::RepeatingClosure quit_barrier =
