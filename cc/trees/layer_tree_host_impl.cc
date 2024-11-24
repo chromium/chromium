@@ -519,7 +519,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     compositor_frame_reporting_controller_->set_event_latency_tracker(this);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    dropped_frame_counter_.EnableReporForUI();
+    dropped_frame_counter_.EnableReportForUI();
     compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
         FrameInfo::SmoothEffectDrivingThread::kMain, true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -634,7 +634,7 @@ void LayerTreeHostImpl::ReadyToCommit(
        commit_timeout)) {
     is_measuring_smoothness_ = true;
     total_frame_counter_.Reset();
-    dropped_frame_counter_.OnFcpReceived();
+    dropped_frame_counter_.OnFirstContentfulPaintReceived();
   }
 
   // Notify the browser controls manager that we have processed any

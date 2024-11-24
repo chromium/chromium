@@ -1853,7 +1853,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   auto thread_type_compositor = SmoothEffectDrivingThread::kCompositor;
   reporting_controller_.SetThreadAffectsSmoothness(thread_type_compositor,
                                                    true);
-  dropped_counter_.OnFcpReceived();
+  dropped_counter_.OnFirstContentfulPaintReceived();
 
   // Submit and present two compositor frames.
   SimulatePresentCompositorFrame();
@@ -1993,8 +1993,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   auto thread_type_main = SmoothEffectDrivingThread::kMain;
   reporting_controller_.SetThreadAffectsSmoothness(thread_type_main,
                                                    /*affects_smoothness=*/true);
-  dropped_counter_.OnFcpReceived();
-  dropped_counter_.SetTimeFcpReceivedForTesting(args_.frame_time);
+  dropped_counter_.OnFirstContentfulPaintReceived();
+  dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
+      args_.frame_time);
 
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
@@ -2041,8 +2042,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.SetThreadAffectsSmoothness(
       SmoothEffectDrivingThread::kMain, /*affects_smoothness=*/false);
 
-  dropped_counter_.OnFcpReceived();
-  dropped_counter_.SetTimeFcpReceivedForTesting(args_.frame_time);
+  dropped_counter_.OnFirstContentfulPaintReceived();
+  dropped_counter_.SetTimeFirstContentfulPaintReceivedForTesting(
+      args_.frame_time);
 
   // Start a new frame and take it all the way to start the frame on the main
   // thread (i.e. 'begin main frame').

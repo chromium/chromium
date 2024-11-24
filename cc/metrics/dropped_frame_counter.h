@@ -100,7 +100,7 @@ class CC_EXPORT DroppedFrameCounter {
   virtual void OnEndFrame(const viz::BeginFrameArgs& args,
                           const FrameInfo& frame_info);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
-  void OnFcpReceived();
+  void OnFirstContentfulPaintReceived();
 
   // Reset is used on navigation, which resets frame statistics as well as
   // frame sorter.
@@ -113,15 +113,16 @@ class CC_EXPORT DroppedFrameCounter {
   void ResetPendingFrames(base::TimeTicks timestamp);
 
   // Enable dropped frame report for ui::Compositor..
-  void EnableReporForUI();
+  void EnableReportForUI();
 
   void set_total_counter(TotalFrameCounter* total_counter) {
     total_counter_ = total_counter;
   }
 
-  void SetTimeFcpReceivedForTesting(base::TimeTicks time_fcp_received) {
-    DCHECK(fcp_received_);
-    time_fcp_received_ = time_fcp_received;
+  void SetTimeFirstContentfulPaintReceivedForTesting(
+      base::TimeTicks time_fcp_received) {
+    DCHECK(first_contentful_paint_received_);
+    time_first_contentful_paint_received_ = time_fcp_received;
   }
 
   double sliding_window_max_percent_dropped() const {
@@ -196,12 +197,12 @@ class CC_EXPORT DroppedFrameCounter {
   size_t total_partial_ = 0;
   size_t total_dropped_ = 0;
   size_t total_smoothness_dropped_ = 0;
-  bool fcp_received_ = false;
+  bool first_contentful_paint_received_ = false;
   double sliding_window_max_percent_dropped_ = 0;
   std::optional<double> sliding_window_max_percent_dropped_After_1_sec_;
   std::optional<double> sliding_window_max_percent_dropped_After_2_sec_;
   std::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
-  base::TimeTicks time_fcp_received_;
+  base::TimeTicks time_first_contentful_paint_received_;
   raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
   raw_ptr<TotalFrameCounter> total_counter_ = nullptr;
