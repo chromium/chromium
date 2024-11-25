@@ -31,6 +31,7 @@ source_set("unit_tests") {
     "//components/endpoint_fetcher",
     "//content/test:test_support",
     "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
     "//url",

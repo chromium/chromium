@@ -13,12 +13,16 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/emoji/tenor_types.mojom.h"
-#include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
@@ -142,65 +146,45 @@ auto IsFakeGifs() {
 }
 }  // namespace
 
-class FakeEndpointFetcher : public EndpointFetcher {
- public:
-  explicit FakeEndpointFetcher(EndpointResponse response)
-      : EndpointFetcher(net::DefineNetworkTrafficAnnotation(
-            "chromeos_emoji_picker_mock_fetcher",
-            R"()")),
-        response_(response) {}
-
-  void PerformRequest(EndpointFetcherCallback endpoint_fetcher_callback,
-                      const char* key) override {
-    std::move(endpoint_fetcher_callback)
-        .Run(std::make_unique<EndpointResponse>(response_));
-  }
-
- private:
-  EndpointResponse response_;
-};
-
 class GifTenorApiFetcherTest : public testing::Test {
  public:
   GifTenorApiFetcherTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  void SimulateResponse(net::Error net_error,
+                        net::HttpStatusCode http_status_code,
+                        std::string_view contents) {
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GURL(), network::URLLoaderCompletionStatus(net_error),
+        network::CreateURLResponseHead(http_status_code), contents,
+        static_cast<network::TestURLLoaderFactory::ResponseMatchFlags>(
+            network::TestURLLoaderFactory::kUrlMatchPrefix |
+            network::TestURLLoaderFactory::kWaitForRequest));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
-
-auto CreateFakeEndpointFetcherCreator(EndpointResponse fake_response) {
-  return [fake_response](
-             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-             const GURL& url,
-             const net::NetworkTrafficAnnotationTag& annotation_tag) {
-    return std::make_unique<FakeEndpointFetcher>(fake_response);
-  };
-}
 
 TEST_F(GifTenorApiFetcherTest, FetchCategories) {
   base::test::TestFuture<
       base::expected<std::vector<std::string>, GifTenorApiFetcher::Error>>
       future;
   GifTenorApiFetcher::FetchCategories(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{}), url_loader_factory_,
-      future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   GifTenorApiFetcher::FetchCategories(
-      CreateFakeEndpointFetcherCreator(
-          EndpointResponse{.error_type = FetchErrorType::kNetError}),
-      url_loader_factory_, future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   GifTenorApiFetcher::FetchCategories(
-      CreateFakeEndpointFetcherCreator(
-          EndpointResponse{.response = kFakeCategoriesResponse,
-                           .http_status_code = net::HTTP_OK}),
-      url_loader_factory_, future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeCategoriesResponse);
   EXPECT_THAT(future.Take(), ValueIs(ElementsAre("#awesome", "#jk")));
 }
 
@@ -209,20 +193,18 @@ TEST_F(GifTenorApiFetcherTest, FetchFeaturedGifs) {
                                         GifTenorApiFetcher::Error>>
       future;
   GifTenorApiFetcher::FetchFeaturedGifs(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{}), url_loader_factory_,
-      "", future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   GifTenorApiFetcher::FetchFeaturedGifs(
-      CreateFakeEndpointFetcherCreator(
-          EndpointResponse{.error_type = FetchErrorType::kNetError}),
-      url_loader_factory_, "", future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   GifTenorApiFetcher::FetchFeaturedGifs(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{
-          .response = kFakeGifsResponse, .http_status_code = net::HTTP_OK}),
-      url_loader_factory_, "", future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeGifsResponse);
   EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
 }
 
@@ -231,20 +213,19 @@ TEST_F(GifTenorApiFetcherTest, FetchGifSearch) {
                                         GifTenorApiFetcher::Error>>
       future;
   GifTenorApiFetcher::FetchGifSearch(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{}), url_loader_factory_,
-      "", "", std::nullopt, future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", "", std::nullopt,
+      future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   GifTenorApiFetcher::FetchFeaturedGifs(
-      CreateFakeEndpointFetcherCreator(
-          EndpointResponse{.error_type = FetchErrorType::kNetError}),
-      url_loader_factory_, "", future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   GifTenorApiFetcher::FetchFeaturedGifs(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{
-          .response = kFakeGifsResponse, .http_status_code = net::HTTP_OK}),
-      url_loader_factory_, "", future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), "", future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeGifsResponse);
   EXPECT_THAT(future.Take(), ValueIs(Pointee(FieldsAre("1", IsFakeGifs()))));
 }
 
@@ -253,20 +234,21 @@ TEST_F(GifTenorApiFetcherTest, FetchGifsByIds) {
       std::vector<tenor::mojom::GifResponsePtr>, GifTenorApiFetcher::Error>>
       future;
   GifTenorApiFetcher::FetchGifsByIds(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{}), url_loader_factory_,
-      std::vector<std::string>(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::vector<std::string>(),
+      future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kHttpError));
 
   GifTenorApiFetcher::FetchGifsByIds(
-      CreateFakeEndpointFetcherCreator(
-          EndpointResponse{.error_type = FetchErrorType::kNetError}),
-      url_loader_factory_, std::vector<std::string>(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::vector<std::string>(),
+      future.GetCallback());
+  SimulateResponse(net::ERR_FAILED, net::HTTP_NOT_FOUND, "");
   EXPECT_THAT(future.Take(), ErrorIs(GifTenorApiFetcher::Error::kNetError));
 
   GifTenorApiFetcher::FetchGifsByIds(
-      CreateFakeEndpointFetcherCreator(EndpointResponse{
-          .response = kFakeGifsResponse, .http_status_code = net::HTTP_OK}),
-      url_loader_factory_, std::vector<std::string>(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::vector<std::string>(),
+      future.GetCallback());
+  SimulateResponse(net::OK, net::HTTP_OK, kFakeGifsResponse);
   EXPECT_THAT(future.Take(), ValueIs(IsFakeGifs()));
 }
 
