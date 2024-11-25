@@ -1156,8 +1156,9 @@ INSTANTIATE_TEST_SUITE_P(ForceUpdateOn,
 // navigated back to a devtools extension page, it gets put back in the devtools
 // process.
 // http://crbug.com/570483
+// TODO(crbug.com/331650494): Enable once the test is fixed.
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       HttpIframeInDevToolsExtensionPanel) {
+                       DISABLED_HttpIframeInDevToolsExtensionPanel) {
   // Install the dynamically-generated extension.
   const Extension* extension =
       LoadExtensionForTest("Devtools Extension", "panel_devtools_page.html",
