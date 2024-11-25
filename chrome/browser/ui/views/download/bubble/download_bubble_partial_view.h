@@ -41,7 +41,6 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
-  bool IsPartialView() const override;
 
   // views::FocusChangeListener:
   void OnWillChangeFocus(views::View* before, views::View* now) override;

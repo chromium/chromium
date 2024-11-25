@@ -187,9 +187,5 @@ DownloadDialogView::DownloadDialogView(
 
 DownloadDialogView::~DownloadDialogView() = default;
 
-bool DownloadDialogView::IsPartialView() const {
-  return false;
-}
-
 BEGIN_METADATA(DownloadDialogView)
 END_METADATA

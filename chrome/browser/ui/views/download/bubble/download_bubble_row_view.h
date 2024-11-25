@@ -50,13 +50,12 @@ class DownloadBubbleRowView : public views::View,
   METADATA_HEADER(DownloadBubbleRowView, views::View)
 
  public:
-  explicit DownloadBubbleRowView(
+  DownloadBubbleRowView(
       const DownloadBubbleRowViewInfo& info,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       base::WeakPtr<Browser> browser,
-      int fixed_width,
-      bool is_in_partial_view = false);
+      int fixed_width);
   DownloadBubbleRowView(const DownloadBubbleRowView&) = delete;
   DownloadBubbleRowView& operator=(const DownloadBubbleRowView&) = delete;
   ~DownloadBubbleRowView() override;
@@ -253,11 +252,6 @@ class DownloadBubbleRowView : public views::View,
 
   // Mitigates the risk of clickjacking by enforcing a delay in click input.
   std::unique_ptr<views::InputEventActivationProtector> input_protector_;
-
-  // Used for metrics to study clickjacking potential.
-  const base::Time shown_time_;
-  // False in tests.
-  const bool is_in_partial_view_ = false;
 
   // TODO(crbug.com/40233803): The size constraint is not passed down from the
   // views tree in the first round of layout, so setting a fixed width to bound
