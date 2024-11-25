@@ -45,7 +45,7 @@ using testing::Not;
 using testing::UnorderedElementsAre;
 
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests2";
+    "API.StorageAccess.AllowedRequests4";
 constexpr char kAllowedByStorageAccessTypeHistogram[] =
     "API.EffectiveStorageAccess.AllowedByStorageAccessType";
 

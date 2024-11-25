@@ -316,7 +316,7 @@ bool IsSameSiteIgnoringWebSocketProtocol(const url::Origin& initiator,
 }  // namespace
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
-  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests2", result);
+  UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests4", result);
 }
 
 bool DomainIsHostOnly(const std::string& domain_string) {

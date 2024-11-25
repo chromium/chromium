@@ -64,7 +64,7 @@ const bool kSupports3pcBlocking = {
 
 #if !BUILDFLAG(IS_IOS)
 constexpr char kAllowedRequestsHistogram[] =
-    "API.StorageAccess.AllowedRequests2";
+    "API.StorageAccess.AllowedRequests4";
 #endif
 
 // To avoid an explosion of test cases, please don't just add a boolean to
