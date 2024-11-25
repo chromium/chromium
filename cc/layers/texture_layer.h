@@ -103,10 +103,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   void SetFlipped(bool flipped);
   bool flipped() const { return flipped_.Read(*this); }
 
-  // Sets whether this texture should use nearest neighbor interpolation as
-  // opposed to bilinear. Defaults to false.
-  void SetNearestNeighbor(bool nearest_neighbor);
-
   // Sets a UV transform to be used at draw time. Defaults to (0, 0) and (1, 1).
   void SetUV(const gfx::PointF& top_left, const gfx::PointF& bottom_right);
 
@@ -179,7 +175,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
       client_;
 
   ProtectedSequenceReadable<bool> flipped_;
-  ProtectedSequenceReadable<bool> nearest_neighbor_;
   ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
   ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
   // [bottom left, top left, top right, bottom right]

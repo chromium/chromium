@@ -31,7 +31,6 @@ scoped_refptr<TextureLayer> TextureLayer::CreateForMailbox(
 TextureLayer::TextureLayer(TextureLayerClient* client)
     : client_(client),
       flipped_(true),
-      nearest_neighbor_(false),
       uv_bottom_right_(1.f, 1.f),
       premultiplied_alpha_(true),
       blend_background_color_(false),
@@ -59,13 +58,6 @@ void TextureLayer::SetFlipped(bool flipped) {
   if (flipped_.Read(*this) == flipped)
     return;
   flipped_.Write(*this) = flipped;
-  SetNeedsCommit();
-}
-
-void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (nearest_neighbor_.Read(*this) == nearest_neighbor)
-    return;
-  nearest_neighbor_.Write(*this) = nearest_neighbor;
   SetNeedsCommit();
 }
 
@@ -236,7 +228,6 @@ void TextureLayer::PushPropertiesTo(
   TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
 
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
-  texture_layer->SetNearestNeighbor(nearest_neighbor_.Read(*this));
   texture_layer->SetUVTopLeft(uv_top_left_.Read(*this));
   texture_layer->SetUVBottomRight(uv_bottom_right_.Read(*this));
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_.Read(*this));

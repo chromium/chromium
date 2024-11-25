@@ -909,6 +909,21 @@ float LayerImpl::GetPreferredRasterScale(
   return std::min(kMaxScaleRatio * lower_scale, higher_scale);
 }
 
+void LayerImpl::SetFilterQuality(PaintFlags::FilterQuality filter_quality) {
+  if (GetFilterQuality() == filter_quality) {
+    return;
+  }
+  EnsureRareProperties().filter_quality = filter_quality;
+}
+
+void LayerImpl::SetDynamicRangeLimit(
+    PaintFlags::DynamicRangeLimitMixture dynamic_range_limit) {
+  if (GetDynamicRangeLimit() == dynamic_range_limit) {
+    return;
+  }
+  EnsureRareProperties().dynamic_range_limit = dynamic_range_limit;
+}
+
 PropertyTrees* LayerImpl::GetPropertyTrees() const {
   return layer_tree_impl_->property_trees();
 }

@@ -41,7 +41,6 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
   // y-stretched to fit.
   void SetAperture(const gfx::Rect& aperture);
   void SetFillCenter(bool fill_center);
-  void SetNearestNeighbor(bool nearest_neighbor);
 
   // |rect| is the space completely occluded by another layer in layer
   // space. This can be used for example to occlude the entire window's
@@ -56,7 +55,6 @@ class CC_EXPORT NinePatchLayer : public UIResourceLayer {
 
   ProtectedSequenceReadable<gfx::Rect> border_;
   ProtectedSequenceReadable<bool> fill_center_;
-  ProtectedSequenceReadable<bool> nearest_neighbor_;
 
   // The transparent center region that shows the parent layer's contents in
   // image space.

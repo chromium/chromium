@@ -361,8 +361,7 @@ void DrawingBuffer::SetFilterQuality(
   if (filter_quality_ != filter_quality) {
     filter_quality_ = filter_quality;
     if (layer_) {
-      layer_->SetNearestNeighbor(filter_quality ==
-                                 cc::PaintFlags::FilterQuality::kNone);
+      layer_->SetFilterQuality(filter_quality);
     }
   }
 }
@@ -1267,8 +1266,7 @@ cc::Layer* DrawingBuffer::CcLayer() {
       layer_->SetPremultipliedAlpha(requested_alpha_type_ !=
                                     kUnpremul_SkAlphaType);
     }
-    layer_->SetNearestNeighbor(filter_quality_ ==
-                               cc::PaintFlags::FilterQuality::kNone);
+    layer_->SetFilterQuality(filter_quality_);
 
     if (opengl_flip_y_extension_ && IsUsingGpuCompositing())
       layer_->SetFlipped(false);

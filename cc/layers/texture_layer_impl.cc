@@ -65,7 +65,6 @@ void TextureLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
-  texture_layer->SetNearestNeighbor(nearest_neighbor_);
   if (own_resource_) {
     texture_layer->SetTransferableResource(transferable_resource_,
                                            std::move(release_callback_));
@@ -165,14 +164,16 @@ void TextureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   gfx::Rect visible_quad_rect =
       draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
           quad_rect);
-  bool needs_blending = !are_contents_opaque;
+  const bool needs_blending = !are_contents_opaque;
   if (visible_quad_rect.IsEmpty())
     return;
+  const bool nearest_neighbor =
+      GetFilterQuality() == PaintFlags::FilterQuality::kNone;
 
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect, needs_blending,
                resource_id_, premultiplied_alpha_, uv_top_left_,
-               uv_bottom_right_, bg_color, nearest_neighbor_,
+               uv_bottom_right_, bg_color, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
   quad->set_resource_size_in_pixels(transferable_resource_.size);
   ValidateQuadResources(quad);
@@ -239,10 +240,6 @@ void TextureLayerImpl::SetBlendBackgroundColor(bool blend) {
 
 void TextureLayerImpl::SetForceTextureToOpaque(bool opaque) {
   force_texture_to_opaque_ = opaque;
-}
-
-void TextureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
-  nearest_neighbor_ = nearest_neighbor;
 }
 
 void TextureLayerImpl::SetUVTopLeft(const gfx::PointF& top_left) {

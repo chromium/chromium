@@ -16,8 +16,7 @@ scoped_refptr<NinePatchLayer> NinePatchLayer::Create() {
   return base::WrapRefCounted(new NinePatchLayer());
 }
 
-NinePatchLayer::NinePatchLayer()
-    : UIResourceLayer(), fill_center_(false), nearest_neighbor_(false) {}
+NinePatchLayer::NinePatchLayer() : UIResourceLayer(), fill_center_(false) {}
 
 NinePatchLayer::~NinePatchLayer() = default;
 
@@ -49,14 +48,6 @@ void NinePatchLayer::SetFillCenter(bool fill_center) {
   SetNeedsCommit();
 }
 
-void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  if (nearest_neighbor_.Read(*this) == nearest_neighbor)
-    return;
-
-  nearest_neighbor_.Write(*this) = nearest_neighbor;
-  SetNeedsCommit();
-}
-
 void NinePatchLayer::SetLayerOcclusion(const gfx::Rect& occlusion) {
   if (layer_occlusion_.Read(*this) == occlusion)
     return;
@@ -77,8 +68,7 @@ void NinePatchLayer::PushPropertiesTo(
     DCHECK(IsAttached());
     layer_impl->SetLayout(image_aperture_.Read(*this), border_.Read(*this),
                           layer_occlusion_.Read(*this),
-                          fill_center_.Read(*this),
-                          nearest_neighbor_.Read(*this));
+                          fill_center_.Read(*this));
   }
 }
 

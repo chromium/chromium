@@ -1475,6 +1475,8 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   layer->UpdateDebugInfo(debug_info_.Write(*this).get());
 
   if (inputs.rare_inputs) {
+    layer->SetFilterQuality(inputs.rare_inputs->filter_quality);
+    layer->SetDynamicRangeLimit(inputs.rare_inputs->dynamic_range_limit);
     layer->SetMainThreadScrollHitTestRegion(
         inputs.rare_inputs->main_thread_scroll_hit_test_region);
     layer->SetNonCompositedScrollHitTestRects(
@@ -1662,6 +1664,31 @@ gfx::Transform Layer::ScreenSpaceTransform() const {
   DCHECK_NE(transform_tree_index_.Read(*this), kInvalidPropertyNodeId);
   return draw_property_utils::ScreenSpaceTransform(
       this, layer_tree_host()->property_trees()->transform_tree());
+}
+
+void Layer::SetFilterQuality(PaintFlags::FilterQuality filter_quality) {
+  const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
+  const auto old_filter_quality = rare_inputs ? rare_inputs->filter_quality
+                                              : PaintFlags::FilterQuality::kLow;
+  if (old_filter_quality == filter_quality) {
+    return;
+  }
+  EnsureRareInputs().filter_quality = filter_quality;
+  SetNeedsCommit();
+}
+
+void Layer::SetDynamicRangeLimit(
+    PaintFlags::DynamicRangeLimitMixture dynamic_range_limit) {
+  const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
+  const auto old_dynamic_range_limit =
+      rare_inputs ? rare_inputs->dynamic_range_limit
+                  : PaintFlags::DynamicRangeLimitMixture(
+                        PaintFlags::DynamicRangeLimit::kHigh);
+  if (old_dynamic_range_limit == dynamic_range_limit) {
+    return;
+  }
+  EnsureRareInputs().dynamic_range_limit = dynamic_range_limit;
+  SetNeedsCommit();
 }
 
 }  // namespace cc

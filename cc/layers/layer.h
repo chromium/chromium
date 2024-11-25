@@ -839,6 +839,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return GetBitFlag(kShouldCheckBackfaceVisibilityFlagMask);
   }
 
+  // Sets the filter quality to use when rendering ImageBitmaps, canvases, or
+  // videos. Defaults to PaintFlags::FilterQuality::kLow.
+  void SetFilterQuality(PaintFlags::FilterQuality filter_quality);
+
+  // Set the limitation for brightness of HDR content. Defaults to "high",
+  // which imposes no limit.
+  void SetDynamicRangeLimit(
+      PaintFlags::DynamicRangeLimitMixture dynamic_range_limit);
+
   // For debugging, containing information about the associated DOM, etc.
   std::string DebugName() const;
 
@@ -991,6 +1000,9 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_region;
+    PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kLow;
+    PaintFlags::DynamicRangeLimitMixture dynamic_range_limit{
+        PaintFlags::DynamicRangeLimit::kHigh};
   };
 
   RareInputs& EnsureRareInputs() {

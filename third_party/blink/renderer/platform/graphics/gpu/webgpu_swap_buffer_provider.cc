@@ -80,8 +80,7 @@ void WebGPUSwapBufferProvider::SetFilterQuality(
   if (filter_quality != filter_quality_) {
     filter_quality_ = filter_quality;
     if (layer_) {
-      layer_->SetNearestNeighbor(filter_quality ==
-                                 cc::PaintFlags::FilterQuality::kNone);
+      layer_->SetFilterQuality(filter_quality_);
     }
   }
 }
@@ -234,8 +233,7 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
     layer_ = cc::TextureLayer::CreateForMailbox(this);
     layer_->SetIsDrawable(true);
     layer_->SetFlipped(false);
-    layer_->SetNearestNeighbor(filter_quality_ ==
-                               cc::PaintFlags::FilterQuality::kNone);
+    layer_->SetFilterQuality(filter_quality_);
     // TODO(cwallez@chromium.org): These flags aren't taken into account when
     // the layer is promoted to an overlay. Make sure we have fallback /
     // emulation paths to keep the rendering correct in that cases.

@@ -55,7 +55,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void SetPremultipliedAlpha(bool premultiplied_alpha);
   void SetBlendBackgroundColor(bool blend);
   void SetForceTextureToOpaque(bool opaque);
-  void SetNearestNeighbor(bool nearest_neighbor);
   void SetUVTopLeft(const gfx::PointF& top_left);
   void SetUVBottomRight(const gfx::PointF& bottom_right);
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
@@ -93,7 +92,6 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   bool premultiplied_alpha_ = true;
   bool blend_background_color_ = false;
   bool force_texture_to_opaque_ = false;
-  bool nearest_neighbor_ = false;
   gfx::PointF uv_top_left_ = gfx::PointF();
   gfx::PointF uv_bottom_right_ = gfx::PointF(1.f, 1.f);
 

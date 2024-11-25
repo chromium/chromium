@@ -254,7 +254,14 @@ TEST_F(TextureLayerTest, CheckPropertyChangeCausesCorrectBehavior) {
   // Test properties that should call SetNeedsCommit.  All properties need to
   // be set to new values in order for SetNeedsCommit to be called.
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetFlipped(false));
-  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetNearestNeighbor(true));
+  EXPECT_SET_NEEDS_COMMIT(
+      1, test_layer->SetFilterQuality(PaintFlags::FilterQuality::kNone));
+  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetDynamicRangeLimit(
+
+                                 PaintFlags::DynamicRangeLimitMixture(
+                                     PaintFlags::DynamicRangeLimit::kStandard)
+
+                                     ));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetUV(gfx::PointF(0.25f, 0.25f),
                                                gfx::PointF(0.75f, 0.75f)));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetPremultipliedAlpha(false));

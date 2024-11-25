@@ -82,7 +82,6 @@ ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
   layer_ = cc::TextureLayer::CreateForMailbox(this);
   layer_->SetIsDrawable(true);
   layer_->SetHitTestable(true);
-  layer_->SetNearestNeighbor(false);
   if (opacity_mode_ == kOpaque) {
     layer_->SetContentsOpaque(true);
     layer_->SetBlendBackgroundColor(false);
@@ -132,8 +131,7 @@ void ImageLayerBridge::SetFilterQuality(
     return;
   }
 
-  layer_->SetNearestNeighbor(filter_quality ==
-                             cc::PaintFlags::FilterQuality::kNone);
+  layer_->SetFilterQuality(filter_quality);
 }
 
 void ImageLayerBridge::SetUV(const gfx::PointF& left_top,

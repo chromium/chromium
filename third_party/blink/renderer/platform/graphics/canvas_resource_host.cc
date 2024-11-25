@@ -59,8 +59,7 @@ void CanvasResourceHost::SetFilterQuality(
     resource_provider_->SetFilterQuality(filter_quality);
   }
   if (cc_layer_) {
-    cc_layer_->SetNearestNeighbor(filter_quality ==
-                                  cc::PaintFlags::FilterQuality::kNone);
+    cc_layer_->SetFilterQuality(filter_quality);
   }
 }
 
@@ -166,8 +165,7 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     cc_layer_->SetHitTestable(true);
     cc_layer_->SetContentsOpaque(opacity_mode_ == kOpaque);
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
-    cc_layer_->SetNearestNeighbor(FilterQuality() ==
-                                  cc::PaintFlags::FilterQuality::kNone);
+    cc_layer_->SetFilterQuality(FilterQuality());
     cc_layer_->SetFlipped(false);
   }
   return cc_layer_.get();
