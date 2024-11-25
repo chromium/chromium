@@ -25,6 +25,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.wolvic.WolvicWebContentsDelegate;
+import org.chromium.wolvic.WolvicWebContentsFactory;
 
 @JNINamespace("wolvic")
 public class Tab {
@@ -42,10 +43,6 @@ public class Tab {
     private NavigationController mNavigationController;
     private TabCompositorView mCompositorView;
     protected WebContents mWebContents;
-
-    public WebContents createWebContents(boolean is_off_the_record) {
-        return TabJni.get().createWebContents(is_off_the_record);
-    }
 
     private void attachWebContents(WebContents mWebContents) {
         TabJni.get().attachWebContents(mWebContents);
@@ -72,7 +69,7 @@ public class Tab {
             mWebContents = webContents;
             attachWebContents(mWebContents);
         } else {
-            mWebContents = createWebContents(is_off_the_record);
+            mWebContents = WolvicWebContentsFactory.createWebContents(is_off_the_record);
         }
 
         mContentView =
@@ -209,7 +206,6 @@ public class Tab {
 
     @NativeMethods
     public interface Natives {
-        WebContents createWebContents(boolean is_off_the_record);
         void attachWebContents(WebContents webContents);
         void releaseWebContents(WebContents webContents);
         void setWebContentsDelegate(WebContents webContents, WolvicWebContentsDelegate delegate);

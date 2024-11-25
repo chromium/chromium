@@ -36,28 +36,6 @@ void doPageZoom(const JavaParamRef<jobject>& jweb_contents,
 
 }  // namespace
 
-ScopedJavaLocalRef<jobject> JNI_Tab_CreateWebContents(
-    JNIEnv* env,
-    jboolean is_off_the_record) {
-  // TODO(wolvic-chromium#6): Consider handling browser profiles.
-  auto* browser_client = WolvicContentBrowserClient::Get();
-  CHECK(browser_client->browser_context() != nullptr);
-
-  std::unique_ptr<WebContents> web_contents =
-      WebContents::Create(content::WebContents::CreateParams(
-          is_off_the_record ? browser_client->off_the_record_browser_context()
-                            : browser_client->browser_context()));
-
-  auto* web_contents_impl = web_contents.get();
-  auto wolvic_contents =
-      std::make_unique<WolvicContents>(std::move(web_contents));
-  wolvic_contents.release()->Init();
-
-  zoom::ZoomController::CreateForWebContents(web_contents_impl);
-
-  return web_contents_impl->GetJavaWebContents();
-}
-
 void JNI_Tab_AttachWebContents(JNIEnv* env,
                             const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);

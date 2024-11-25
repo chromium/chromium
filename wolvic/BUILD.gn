@@ -66,6 +66,7 @@ shared_library("libcontent_native") {
     "browser/session_settings.h",
     "browser/session_settings_jni.cc",
     "browser/tab_jni.cc",
+    "browser/wolvic_web_contents_factory_jni.cc",
     "browser/vr/moz_external_vr.h",
     "browser/vr/wolvic_xr_integration_client.cc",
     "browser/vr/wolvic_xr_integration_client.h",
@@ -314,6 +315,7 @@ generate_jni("jni_headers") {
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
     "java/org/chromium/wolvic/WolvicBrowserContext.java",
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
+    "java/org/chromium/wolvic/WolvicWebContentsFactory.java",
     "java/org/chromium/wolvic/mojo/WolvicInterfaceRegistrar.java",
   ]
 }
@@ -337,6 +339,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
     "java/org/chromium/wolvic/WolvicBrowserContext.java",
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
+    "java/org/chromium/wolvic/WolvicWebContentsFactory.java",
     "java/org/chromium/wolvic/installedapp/WolvicInstalledAppProviderFactory.java",
     "java/org/chromium/wolvic/mojo/WolvicInterfaceRegistrar.java",
   ]
@@ -354,6 +357,8 @@ android_library("wolvic_java") {
     "//mojo/public/java:bindings_java",
     "//services/service_manager/public/java:service_manager_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/android_deps:dagger_java",
+    "//third_party/android_deps:javax_inject_javax_inject_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
