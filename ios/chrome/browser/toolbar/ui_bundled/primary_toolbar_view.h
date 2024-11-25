@@ -8,13 +8,15 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
 
 // View for the primary toolbar. In an adaptive toolbar paradigm, this is the
 // toolbar always displayed.
-@interface PrimaryToolbarView : UIView <AdaptiveToolbarView>
+@interface PrimaryToolbarView
+    : UIView <AdaptiveToolbarView, FullscreenUIElement>
 
 // Initialize this View with the button `factory`. To finish the initialization
 // of the view, a call to `setUp` is needed.

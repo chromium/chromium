@@ -266,6 +266,8 @@ BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
   }
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:progress];
+
+  [self.view updateForFullscreenProgress:progress];
 }
 
 #pragma mark - ToolbarAnimatee

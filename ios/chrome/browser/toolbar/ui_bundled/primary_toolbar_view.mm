@@ -107,11 +107,32 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 @end
 
 @implementation PrimaryToolbarView {
+  // The last fullscreen progress registered.
+  CGFloat _previousFullscreenProgress;
+
   // Background and container for the banner promo.
   UIView* _bannerPromoBackground;
 
   // The actual banner promo view.
   BannerPromoView* _bannerPromo;
+
+  // Constrains the height of the background promo for fullscreen purposes.
+  NSLayoutConstraint* _bannerPromoBackgroundHeightConstraint;
+
+  // The location bar container has a bottom constraint where the constant
+  // is controlled outside this class. However, the exact second item for
+  // this constraint may vary, so use this layout guide to add a level in
+  // between.
+  UILayoutGuide* _locationBarContainerBottomLayoutGuide;
+
+  // Constraints for the banner promo and related views when in split toolbar
+  // mode.
+  NSArray<NSLayoutConstraint*>* _bannerPromoBackgroundSplitToolbarConstraints;
+
+  // Constraints for the banner promo and related views when not in split
+  // toolbar mode.
+  NSArray<NSLayoutConstraint*>*
+      _bannerPromoBackgroundNonSplitToolbarConstraints;
 }
 
 @synthesize fakeOmniboxTarget = _fakeOmniboxTarget;
@@ -169,6 +190,14 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   [self setUpBannerPromo];
 
   [self setUpConstraints];
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:@[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
+    ]
+                       withAction:@selector(updateViews:
+                                      previousTraitCollection:)];
+  }
 }
 
 - (void)setHidden:(BOOL)hidden {
@@ -207,6 +236,16 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.superview);
   BOOL isAvailable = !IsCompactHeight(self.superview) && !canShowTabStrip;
   self.tabGroupIndicatorView.available = isAvailable;
+}
+
+// Calculates the heihgt of the banner promo background when fullscreen is
+// active.
+- (CGFloat)bannerPromoBackgroundHeightForFullscreenProgress:(CGFloat)progress {
+  if (IsSplitToolbarMode(self)) {
+    return _bannerPromo.intrinsicContentSize.height + self.safeAreaInsets.top;
+  }
+
+  return _bannerPromo.intrinsicContentSize.height * progress;
 }
 
 #pragma mark - Properties
@@ -296,6 +335,18 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  // iOS 17 and later introduce a new way to handle trait changes. If the OS
+  // version is iOS 17 or later, skip the old way of updating views.
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateViews:self previousTraitCollection:previousTraitCollection];
+}
+#endif
+
 #pragma mark - Setup
 
 // Sets up the toolbar background.
@@ -322,6 +373,9 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
       setContentHuggingPriority:UILayoutPriorityDefaultLow
                         forAxis:UILayoutConstraintAxisHorizontal];
   self.locationBarContainer.translatesAutoresizingMaskIntoConstraints = NO;
+
+  _locationBarContainerBottomLayoutGuide = [[UILayoutGuide alloc] init];
+  [self addLayoutGuide:_locationBarContainerBottomLayoutGuide];
 
   // The location bar shouldn't have vibrancy.
   [self addSubview:self.locationBarContainer];
@@ -405,6 +459,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   _bannerPromoBackground = [[UIView alloc] init];
   _bannerPromoBackground.translatesAutoresizingMaskIntoConstraints = NO;
   _bannerPromoBackground.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  _bannerPromoBackground.clipsToBounds = YES;
   [self addSubview:_bannerPromoBackground];
 
   _bannerPromo = [[BannerPromoView alloc] init];
@@ -444,12 +499,19 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   self.locationBarContainerHeight =
       [self.locationBarContainer.heightAnchor constraintEqualToConstant:0];
   self.locationBarBottomConstraint = [self.locationBarContainer.bottomAnchor
-      constraintEqualToAnchor:self.bottomAnchor];
+      constraintEqualToAnchor:_locationBarContainerBottomLayoutGuide
+                                  .bottomAnchor];
+
+  NSLayoutConstraint* locationBarContainerLayoutGuideBottomConstraint =
+      [_locationBarContainerBottomLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor];
 
   [NSLayoutConstraint activateConstraints:@[
     self.locationBarBottomConstraint,
     self.locationBarContainerHeight,
+    locationBarContainerLayoutGuideBottomConstraint,
   ]];
+
   [self.contractedConstraints addObjectsFromArray:@[
     [self.locationBarContainer.trailingAnchor
         constraintEqualToAnchor:self.trailingStackView.leadingAnchor
@@ -478,12 +540,33 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   ]];
 
   if (IsDefaultBrowserBannerPromoEnabled()) {
+    _bannerPromoBackgroundSplitToolbarConstraints = @[
+      [_bannerPromoBackground.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_bannerPromo.topAnchor
+          constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
+      locationBarContainerLayoutGuideBottomConstraint,
+    ];
+
+    _bannerPromoBackgroundNonSplitToolbarConstraints = @[
+      [_bannerPromo.topAnchor
+          constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
+      [_locationBarContainerBottomLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:_bannerPromoBackground.topAnchor],
+      [_bannerPromoBackground.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor],
+    ];
+
+    _bannerPromoBackgroundHeightConstraint =
+        [_bannerPromoBackground.heightAnchor
+            constraintLessThanOrEqualToConstant:
+                [self bannerPromoBackgroundHeightForFullscreenProgress:1]];
+
     [NSLayoutConstraint activateConstraints:@[
+      _bannerPromoBackgroundHeightConstraint,
       [_bannerPromoBackground.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor],
       [_bannerPromoBackground.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
-      [_bannerPromoBackground.topAnchor constraintEqualToAnchor:self.topAnchor],
 
       [_bannerPromo.leadingAnchor
           constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
@@ -491,9 +574,19 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
           constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
       [_bannerPromo.bottomAnchor
           constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
-      [_bannerPromo.topAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
     ]];
+
+    if (IsSplitToolbarMode(self)) {
+      [NSLayoutConstraint
+          activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+      [NSLayoutConstraint deactivateConstraints:
+                              _bannerPromoBackgroundNonSplitToolbarConstraints];
+    } else {
+      [NSLayoutConstraint
+          deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+      [NSLayoutConstraint
+          activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+    }
   }
 
   // Trailing StackView constraints.
@@ -590,6 +683,49 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
 - (ToolbarButton*)openNewTabButton {
   return nil;
+}
+
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  _previousFullscreenProgress = progress;
+
+  CGFloat alphaValue = fmax(progress * 2 - 1, 0);
+
+  _bannerPromoBackground.alpha = alphaValue;
+
+  _bannerPromoBackgroundHeightConstraint.constant =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:progress];
+}
+
+#pragma mark - Private
+
+// Adjusts the layout and appearance of views in response to changes in
+// available space and trait collections.
+- (void)updateViews:(UIView*)updatedView
+    previousTraitCollection:(UITraitCollection*)previousTraitCollection {
+  if (IsSplitToolbarMode(self)) {
+    [NSLayoutConstraint
+        activateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+    [NSLayoutConstraint
+        deactivateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  } else {
+    [NSLayoutConstraint
+        deactivateConstraints:_bannerPromoBackgroundSplitToolbarConstraints];
+    [NSLayoutConstraint
+        activateConstraints:_bannerPromoBackgroundNonSplitToolbarConstraints];
+  }
+
+  _bannerPromoBackgroundHeightConstraint.constant =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:
+                _previousFullscreenProgress];
+}
+
+- (void)safeAreaInsetsDidChange {
+  [super safeAreaInsetsDidChange];
+  _bannerPromoBackgroundHeightConstraint.constant =
+      [self bannerPromoBackgroundHeightForFullscreenProgress:
+                _previousFullscreenProgress];
 }
 
 @end
