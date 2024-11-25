@@ -28,6 +28,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWindowCoverageTracker;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
@@ -621,11 +622,9 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                 totalSamples);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(
-                            1, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                    assertEquals(1, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                     mAwContents.onDetachedFromWindow();
-                    assertEquals(
-                            0, AwContents.AwWindowCoverageTracker.sWindowCoverageTrackers.size());
+                    assertEquals(0, AwWindowCoverageTracker.sWindowCoverageTrackers.size());
                 });
     }
 

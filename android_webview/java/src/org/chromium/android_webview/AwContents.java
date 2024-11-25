@@ -64,7 +64,6 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.gfx.AwFunctor;
 import org.chromium.android_webview.gfx.AwGLFunctor;
 import org.chromium.android_webview.gfx.AwPicture;
-import org.chromium.android_webview.gfx.RectUtils;
 import org.chromium.android_webview.metrics.AwOriginVisitLogger;
 import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
@@ -147,9 +146,7 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -1000,157 +997,6 @@ public class AwContents implements SmartClipProvider {
         }
     }
     ;
-
-    /** Tracks and reports the percentage of coverage of AwContents on the root view. */
-    @VisibleForTesting
-    public static class AwWindowCoverageTracker {
-        private static final long RECALCULATION_DELAY_MS = 200;
-
-        @VisibleForTesting
-        public static final Map<View, AwWindowCoverageTracker> sWindowCoverageTrackers =
-                new HashMap<>();
-
-        private final View mRootView;
-        private List<AwContents> mAwContentsList = new ArrayList<>();
-        private long mRecalculationTime;
-        private boolean mPendingRecalculation;
-
-        private AwWindowCoverageTracker(View rootView) {
-            mRootView = rootView;
-
-            sWindowCoverageTrackers.put(rootView, this);
-        }
-
-        public static AwWindowCoverageTracker getOrCreateForRootView(
-                AwContents contents, View rootView) {
-            AwWindowCoverageTracker tracker = sWindowCoverageTrackers.get(rootView);
-
-            if (tracker == null) {
-                if (TRACE) {
-                    Log.i(TAG, "%s creating WindowCoverageTracker for %s", contents, rootView);
-                }
-
-                tracker = new AwWindowCoverageTracker(rootView);
-            }
-
-            return tracker;
-        }
-
-        public void trackContents(AwContents contents) {
-            contents.mAwWindowCoverageTracker = this;
-            mAwContentsList.add(contents);
-        }
-
-        public void untrackContents(AwContents contents) {
-            contents.mAwWindowCoverageTracker = null;
-            mAwContentsList.remove(contents);
-
-            // If that was the last AwContents, remove ourselves from the static map.
-            if (!isTracking()) {
-                if (TRACE) Log.i(TAG, "%s removing " + this, contents);
-                sWindowCoverageTrackers.remove(mRootView);
-            }
-        }
-
-        private boolean isTracking() {
-            return mAwContentsList.size() > 0;
-        }
-
-        /**
-         * Notifies this object that a recalculation of the window coverage is necessary.
-         *
-         * This should be called every time any of the tracked AwContents changes its size,
-         * visibility, or scheme.
-         *
-         * Recalculation won't happen immediately, and will be rate limited.
-         */
-        public void onInputsUpdated() {
-            long time = SystemClock.uptimeMillis();
-
-            if (mPendingRecalculation) return;
-            mPendingRecalculation = true;
-
-            if (time > mRecalculationTime + RECALCULATION_DELAY_MS) {
-                // Enough time has elapsed since the last recalculation, run it now.
-                mRecalculationTime = time;
-            } else {
-                // Not enough time has elapsed, run it once enough time has elapsed.
-                mRecalculationTime += RECALCULATION_DELAY_MS;
-            }
-
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        recalculate();
-                        mPendingRecalculation = false;
-                    },
-                    mRecalculationTime - time);
-        }
-
-        private static int[] toIntArray(List<Integer> list) {
-            int[] array = new int[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                array[i] = list.get(i);
-            }
-            return array;
-        }
-
-        private void recalculate() {
-            if (TRACE) Log.i(TAG, "%s recalculate", this);
-
-            List<Rect> contentRects = new ArrayList<>();
-
-            Rect rootVisibleRect =
-                    new Rect(
-                            (int) mRootView.getX(),
-                            (int) mRootView.getY(),
-                            (int) mRootView.getX() + mRootView.getWidth(),
-                            (int) mRootView.getY() + mRootView.getHeight());
-            int rootArea = RectUtils.getRectArea(rootVisibleRect);
-
-            int globalPercentage = 0;
-
-            // Note that a scheme could occur more than once at a time.
-            List<String> schemes = new ArrayList<>();
-            List<Integer> schemePercentages = new ArrayList<>();
-
-            // If the root view has a width or height of 0 then nothing is visible, so leave the
-            // lists empty and pass them on like that. Also, we don't want to divide by 0.
-            if (rootArea > 0) {
-                for (AwContents content : mAwContentsList) {
-                    // A workaround for a deeper problem: https://crbug.com/1232765#c19
-                    if (content.isDestroyed(NO_WARN)) continue;
-                    if (content.mIsAttachedToWindow
-                            && content.mIsViewVisible
-                            && content.mIsWindowVisible) {
-                        // The result of getGlobalVisibleRect can change underneath us, so take a
-                        // protective copy.
-                        Rect contentRect = new Rect(content.getGlobalVisibleRect());
-
-                        // If the intersect method returns true then it may have modified
-                        // contentRect. A Rect with area 0 will not intersect with anything.
-                        if (contentRect.intersect(rootVisibleRect)) {
-                            contentRects.add(contentRect);
-                            schemes.add(AwContentsJni.get().getScheme(content.mNativeAwContents));
-                            schemePercentages.add(
-                                    RectUtils.getRectArea(contentRect) * 100 / rootArea);
-                        }
-                    }
-                }
-
-                globalPercentage =
-                        RectUtils.calculatePixelsOfCoverage(rootVisibleRect, contentRects)
-                                * 100
-                                / rootArea;
-            }
-
-            AwContentsJni.get()
-                    .updateScreenCoverage(
-                            globalPercentage,
-                            schemes.toArray(new String[schemes.size()]),
-                            toIntArray(schemePercentages));
-        }
-    }
 
     // --------------------------------------------------------------------------------------------
     /**
@@ -2230,6 +2076,28 @@ public class AwContents implements SmartClipProvider {
             mDragAndDropPermissions.release();
             mDragAndDropPermissions = null;
         }
+    }
+
+    String getScheme() {
+        return AwContentsJni.get().getScheme(mNativeAwContents);
+    }
+
+    /**
+     * Provides the on screen rect for the purposes of {@link AwWindowCoverageTracker} calculations.
+     * Will return null if the AwContents is not visible or is destroyed.
+     *
+     * @return Either null, or a defensive copy of the global visible rectangle.
+     */
+    @Nullable
+    Rect getRectForWindowCoverage() {
+        // A workaround for a deeper problem: https://crbug.com/1232765#c19
+        if (isDestroyed(AwContents.NO_WARN)) return null;
+
+        if (!mIsAttachedToWindow || !mIsViewVisible || !mIsWindowVisible) return null;
+
+        // The result of getGlobalVisibleRect can change underneath us, so take a
+        // protective copy.
+        return new Rect(getGlobalVisibleRect());
     }
 
     // --------------------------------------------------------------------------------------------
@@ -3514,9 +3382,9 @@ public class AwContents implements SmartClipProvider {
         mAwViewMethods.onAttachedToWindow();
         mWindowAndroid.getWindowAndroid().getDisplay().addObserver(mDisplayObserver);
 
-        AwWindowCoverageTracker tracker =
+        mAwWindowCoverageTracker =
                 AwWindowCoverageTracker.getOrCreateForRootView(this, mContainerView.getRootView());
-        tracker.trackContents(this);
+        mAwWindowCoverageTracker.trackContents(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
@@ -3546,6 +3414,7 @@ public class AwContents implements SmartClipProvider {
     private void detachWindowCoverageTracker() {
         if (mAwWindowCoverageTracker == null) return;
         mAwWindowCoverageTracker.untrackContents(this);
+        mAwWindowCoverageTracker = null;
     }
 
     /** @see android.view.View#onDetachedFromWindow() */
@@ -5008,8 +4877,6 @@ public class AwContents implements SmartClipProvider {
         void setDipScale(long nativeAwContents, float dipScale);
 
         String getScheme(long nativeAwContents);
-
-        void updateScreenCoverage(int globalPercentage, String[] schemes, int[] schemePercentages);
 
         void onInputEvent(long nativeAwContents);
 
