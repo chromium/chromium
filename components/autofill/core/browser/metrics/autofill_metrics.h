@@ -819,6 +819,7 @@ class AutofillMetrics {
   // Records if an autofilled field of a specific type was edited by the user.
   static void LogEditedAutofilledFieldAtSubmission(
       autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      ukm::SourceId source_id,
       const FormStructure& form,
       const AutofillField& field);
 

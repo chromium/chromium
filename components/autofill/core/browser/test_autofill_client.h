@@ -204,7 +204,7 @@ class TestAutofillClientTemplate : public T {
     return &test_ukm_recorder_;
   }
 
-  ukm::SourceId GetUkmSourceId() override {
+  ukm::SourceId GetActivePageUkmSourceId() override {
     if (source_id_ == -1) {
       source_id_ = ukm::UkmRecorder::GetNewSourceID();
       test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);

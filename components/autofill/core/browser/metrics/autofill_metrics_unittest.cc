@@ -4802,7 +4802,7 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
   autofill_client_->set_form_origin(url);
 
   autofill_metrics::LogCardUploadDecisionsUkm(
-      &test_ukm_recorder(), autofill_client_->GetUkmSourceId(), url,
+      &test_ukm_recorder(), autofill_client_->GetActivePageUkmSourceId(), url,
       upload_decision);
   auto entries = test_ukm_recorder().GetEntriesByName(
       UkmCardUploadDecisionType::kEntryName);
@@ -4823,8 +4823,8 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
   autofill_client_->set_form_origin(url);
 
   AutofillMetrics::LogDeveloperEngagementUkm(
-      &test_ukm_recorder(), autofill_client_->GetUkmSourceId(), url, true,
-      {FormTypeNameForLogging::kCreditCardForm}, form_structure_metric,
+      &test_ukm_recorder(), autofill_client_->GetActivePageUkmSourceId(), url,
+      true, {FormTypeNameForLogging::kCreditCardForm}, form_structure_metric,
       form_signature);
   auto entries = test_ukm_recorder().GetEntriesByName(
       UkmDeveloperEngagementType::kEntryName);

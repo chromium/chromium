@@ -7,7 +7,10 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -26,6 +29,8 @@ namespace autofill::autofill_metrics {
 // This function returns whether we should record autofill UKM events for the
 // current session.
 bool ShouldRecordUkm();
+
+class UkmTimestampPin;
 
 // Utility to log URL keyed form interaction events.
 class FormInteractionsUkmLogger {
@@ -85,11 +90,16 @@ class FormInteractionsUkmLogger {
   FormInteractionsUkmLogger(AutofillClient* autofill_client,
                             ukm::UkmRecorder* ukm_recorder);
 
-  bool has_pinned_timestamp() const { return !pinned_timestamp_.is_null(); }
-  void set_pinned_timestamp(base::TimeTicks t) { pinned_timestamp_ = t; }
+  bool has_pinned_timestamp(base::PassKey<UkmTimestampPin> pass_key) const {
+    return !pinned_timestamp_.is_null();
+  }
+  void set_pinned_timestamp(base::TimeTicks t,
+                            base::PassKey<UkmTimestampPin> pass_key) {
+    pinned_timestamp_ = t;
+  }
 
-  ukm::builders::Autofill_CreditCardFill CreateCreditCardFillBuilder();
-  void Record(ukm::builders::Autofill_CreditCardFill&& builder);
+  void Record(ukm::SourceId ukm_source_id,
+              ukm::builders::Autofill_CreditCardFill&& builder);
 
   // Initializes this logger with a source_id. Unless forms is parsed no
   // autofill UKM is recorded. However due to autofill_manager resets,
@@ -100,28 +110,34 @@ class FormInteractionsUkmLogger {
   // navigation. Ideally we need to refactor ownership of this logger
   // so as not to rely on OnFormsParsed to record the metrics correctly.
   // TODO(nikunjb): Refactor the logger to be owned by AutofillClient.
-  void OnFormsParsed(const ukm::SourceId source_id);
-  void LogInteractedWithForm(bool is_for_credit_card,
+  void LogInteractedWithForm(ukm::SourceId ukm_source_id,
+                             bool is_for_credit_card,
                              size_t local_record_type_count,
                              size_t server_record_type_count,
                              FormSignature form_signature);
-  void LogSuggestionsShown(const FormStructure& form,
+  void LogSuggestionsShown(ukm::SourceId ukm_source_id,
+                           const FormStructure& form,
                            const AutofillField& field,
                            base::TimeTicks form_parsed_timestamp,
                            bool off_the_record);
   // For address suggestions, the `record_type` is irrelevant.
   void LogDidFillSuggestion(
+      ukm::SourceId ukm_source_id,
       const FormStructure& form,
       const AutofillField& field,
       std::optional<CreditCard::RecordType> record_type = std::nullopt);
-  void LogTextFieldDidChange(const FormStructure& form,
+  void LogTextFieldDidChange(ukm::SourceId ukm_source_id,
+                             const FormStructure& form,
                              const AutofillField& field);
-  void LogEditedAutofilledFieldAtSubmission(const FormStructure& form,
+  void LogEditedAutofilledFieldAtSubmission(ukm::SourceId ukm_source_id,
+                                            const FormStructure& form,
                                             const AutofillField& field);
-  void LogFieldFillStatus(const FormStructure& form,
+  void LogFieldFillStatus(ukm::SourceId ukm_source_id,
+                          const FormStructure& form,
                           const AutofillField& field,
                           QualityMetricType metric_type);
-  void LogFieldType(base::TimeTicks form_parsed_timestamp,
+  void LogFieldType(ukm::SourceId ukm_source_id,
+                    base::TimeTicks form_parsed_timestamp,
                     FormSignature form_signature,
                     FieldSignature field_signature,
                     QualityMetricPredictionSource prediction_source,
@@ -129,22 +145,27 @@ class FormInteractionsUkmLogger {
                     FieldType predicted_type,
                     FieldType actual_type);
   void LogAutofillFieldInfoAtFormRemove(
+      ukm::SourceId ukm_source_id,
       const FormStructure& form,
       const AutofillField& field,
       AutofillMetrics::AutocompleteState autocomplete_state);
   void LogAutofillFormSummaryAtFormRemove(
+      ukm::SourceId ukm_source_id,
       const FormStructure& form_structure,
       FormEventSet form_events,
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks form_submitted_timestamp);
   void LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+      ukm::SourceId ukm_source_id,
       const FormStructure& form_structure);
   void LogFocusedComplexFormAtFormRemove(
+      ukm::SourceId ukm_source_id,
       const FormStructure& form_structure,
       FormEventSet form_events,
       base::TimeTicks initial_interaction_timestamp,
       base::TimeTicks form_submitted_timestamp);
-  void LogKeyMetrics(const DenseSet<FormTypeNameForLogging>& form_types,
+  void LogKeyMetrics(ukm::SourceId ukm_source_id,
+                     const DenseSet<FormTypeNameForLogging>& form_types,
                      bool data_to_fill_available,
                      bool suggestions_shown,
                      bool edited_autofilled_field,
@@ -152,28 +173,35 @@ class FormInteractionsUkmLogger {
                      const FormInteractionCounts& form_interaction_counts,
                      const FormInteractionsFlowId& flow_id,
                      std::optional<int64_t> fast_checkout_run_id);
-  void LogFormEvent(autofill_metrics::FormEvent form_event,
+  void LogFormEvent(ukm::SourceId ukm_source_id,
+                    autofill_metrics::FormEvent form_event,
                     const DenseSet<FormTypeNameForLogging>& form_types,
                     base::TimeTicks form_parsed_timestamp);
 
   // Logs whether the autofill decided to skip or to fill each
   // hidden/representational field.
-  void LogHiddenRepresentationalFieldSkipDecision(const FormStructure& form,
+  void LogHiddenRepresentationalFieldSkipDecision(ukm::SourceId ukm_source_id,
+                                                  const FormStructure& form,
                                                   const AutofillField& field,
                                                   bool is_skipped);
 
  private:
-  bool CanLog() const;
+  bool CanLog(ukm::SourceId ukm_source_id) const;
   int64_t MillisecondsSinceFormParsed(
       base::TimeTicks form_parsed_timestamp) const;
 
-  ukm::SourceId GetSourceId();
-
   // These objects outlive.
-  raw_ptr<AutofillClient> autofill_client_;
-  raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+  const raw_ptr<AutofillClient> autofill_client_;
+  const raw_ptr<ukm::UkmRecorder> ukm_recorder_;
 
-  std::optional<ukm::SourceId> source_id_;
+  // The pinned timestamp is used to that metrics logged sequentially refer to
+  // the same timestamp to determine MillisecondsSinceFormParsed().
+  //
+  // For example, in
+  //   UkmTimestampPin timestamp_pin(&logger);
+  //   LogFoo(&logger);
+  //   LogBar(&logger);
+  // all logged metrics use the same value for MillisecondsSinceFormParsed().
   base::TimeTicks pinned_timestamp_;
 };
 
@@ -192,7 +220,7 @@ class UkmTimestampPin {
   ~UkmTimestampPin();
 
  private:
-  const raw_ptr<autofill_metrics::FormInteractionsUkmLogger> logger_;
+  const raw_ref<autofill_metrics::FormInteractionsUkmLogger> logger_;
 };
 
 // This defines a second-to-minute-scale prioritized set of buckets for

@@ -129,7 +129,7 @@ void AddressProfileSaveManager::OnUserDecision(
 void AddressProfileSaveManager::FinalizeProfileImport(
     std::unique_ptr<ProfileImportProcess> import_process) {
   import_process->CollectMetrics(client_->GetUkmRecorder(),
-                                 client_->GetUkmSourceId(),
+                                 client_->GetActivePageUkmSourceId(),
                                  address_data_manager().GetProfiles());
   import_process->ApplyImport();
 

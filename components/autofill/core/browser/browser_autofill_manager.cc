@@ -601,11 +601,10 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
 
 BrowserAutofillManager::MetricsState::MetricsState(
     BrowserAutofillManager* owner)
-    : address_form_event_logger(owner->form_interactions_ukm_logger(),
-                                &owner->client()),
+    : address_form_event_logger(owner->form_interactions_ukm_logger(), owner),
       credit_card_form_event_logger(owner->form_interactions_ukm_logger(),
                                     &owner->client().GetPersonalDataManager(),
-                                    &owner->client()) {}
+                                    owner) {}
 
 BrowserAutofillManager::MetricsState::~MetricsState() {
   credit_card_form_event_logger.OnDestroyed();
@@ -917,7 +916,7 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
   votes_uploader_->MaybeStartVoteUploadProcess(
       std::move(submitted_form),
       /*observed_submission=*/true, GetCurrentPageLanguage(),
-      metrics_->initial_interaction_timestamp);
+      metrics_->initial_interaction_timestamp, driver().GetPageUkmSourceId());
 }
 
 void BrowserAutofillManager::UpdatePendingForm(const FormData& form) {
@@ -947,7 +946,7 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
   votes_uploader_->MaybeStartVoteUploadProcess(
       std::move(upload_form),
       /*observed_submission=*/false, GetCurrentPageLanguage(),
-      metrics_->initial_interaction_timestamp);
+      metrics_->initial_interaction_timestamp, driver().GetPageUkmSourceId());
 }
 
 void BrowserAutofillManager::LogSubmissionMetrics(
@@ -1020,8 +1019,8 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   if (!metrics_->user_did_type || autofill_field->is_autofilled()) {
     metrics_->user_did_type = true;
-    form_interactions_ukm_logger()->LogTextFieldDidChange(*form_structure,
-                                                          *autofill_field);
+    form_interactions_ukm_logger()->LogTextFieldDidChange(
+        driver().GetPageUkmSourceId(), *form_structure, *autofill_field);
   }
 
   auto* logger = GetEventFormLogger(*autofill_field);
@@ -2694,9 +2693,6 @@ void BrowserAutofillManager::OnBeforeProcessParsedForms() {
                                            .GetPersonalDataManager()
                                            .payments_data_manager()
                                            .GetPaymentsSigninStateForMetrics();
-
-  // Setup the url for metrics that we will collect for this form.
-  form_interactions_ukm_logger()->OnFormsParsed(client().GetUkmSourceId());
 }
 
 void BrowserAutofillManager::OnFormProcessed(
@@ -2722,7 +2718,7 @@ void BrowserAutofillManager::OnFormProcessed(
   // TODO(crbug.com/41405154): avoid logging developer engagement multiple
   // times for a given form if it or other forms on the page are dynamic.
   LogDeveloperEngagementUkm(client().GetUkmRecorder(),
-                            client().GetUkmSourceId(), form_structure);
+                            driver().GetPageUkmSourceId(), form_structure);
 
   for (const auto& field : form_structure) {
     if (field->Type().html_type() == HtmlFieldType::kOneTimeCode) {
@@ -2968,10 +2964,9 @@ void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
     phone_collection_metric_state |= kWebOtpUsed;
   }
 
-  ukm::UkmRecorder* recorder = client().GetUkmRecorder();
-  ukm::SourceId source_id = client().GetUkmSourceId();
   AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
-      recorder, source_id, phone_collection_metric_state);
+      client().GetUkmRecorder(), driver().GetPageUkmSourceId(),
+      phone_collection_metric_state);
 
   base::UmaHistogramExactLinear("Autofill.WebOTP.PhonePlusWebOTPPlusOTC",
                                 phone_collection_metric_state, kMaxValue + 1);
@@ -2992,7 +2987,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
-          form_structure, *autofill_field,
+          driver().GetPageUkmSourceId(), form_structure, *autofill_field,
           AutofillMetrics::AutocompleteStateForSubmittedField(*autofill_field));
     }
   }
@@ -3006,10 +3001,12 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         metrics_->credit_card_form_event_logger.GetFormEvents(
             form_structure.global_id()));
     form_interactions_ukm_logger()->LogAutofillFormSummaryAtFormRemove(
-        form_structure, form_events, metrics_->initial_interaction_timestamp,
+        driver().GetPageUkmSourceId(), form_structure, form_events,
+        metrics_->initial_interaction_timestamp,
         metrics_->form_submitted_timestamp);
     form_interactions_ukm_logger()->LogFocusedComplexFormAtFormRemove(
-        form_structure, form_events, metrics_->initial_interaction_timestamp,
+        driver().GetPageUkmSourceId(), form_structure, form_events,
+        metrics_->initial_interaction_timestamp,
         metrics_->form_submitted_timestamp);
   }
 
@@ -3019,7 +3016,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
           /*require_classified_field=*/false)) {
     form_interactions_ukm_logger()
         ->LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
-            form_structure);
+            driver().GetPageUkmSourceId(), form_structure);
   }
 
   for (const auto& autofill_field : form_structure) {

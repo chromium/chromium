@@ -132,7 +132,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() final;
   StrikeDatabase* GetStrikeDatabase() final;
   ukm::UkmRecorder* GetUkmRecorder() final;
-  ukm::SourceId GetUkmSourceId() final;
+  ukm::SourceId GetActivePageUkmSourceId() final;
   AddressNormalizer* GetAddressNormalizer() final;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const final;
   url::Origin GetLastCommittedPrimaryMainFrameOrigin() const final;

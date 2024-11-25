@@ -181,9 +181,9 @@ ukm::UkmRecorder* WebViewAutofillClientIOS::GetUkmRecorder() {
   return nullptr;
 }
 
-ukm::SourceId WebViewAutofillClientIOS::GetUkmSourceId() {
+ukm::SourceId WebViewAutofillClientIOS::GetActivePageUkmSourceId() {
   // UKM recording is not supported for WebViews.
-  return 0;
+  return ukm::kInvalidSourceId;
 }
 
 AddressNormalizer* WebViewAutofillClientIOS::GetAddressNormalizer() {

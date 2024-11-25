@@ -1338,7 +1338,7 @@ void CreditCardSaveManager::LogCardUploadDecisions(
     int upload_decision_metrics) {
   autofill_metrics::LogCardUploadDecisionMetrics(upload_decision_metrics);
   autofill_metrics::LogCardUploadDecisionsUkm(
-      client_->GetUkmRecorder(), client_->GetUkmSourceId(),
+      client_->GetUkmRecorder(), client_->GetActivePageUkmSourceId(),
       pending_upload_request_origin_.GetURL(), upload_decision_metrics);
   pending_upload_request_origin_ = url::Origin();
   LogCardUploadDecisionsToAutofillInternals(upload_decision_metrics);

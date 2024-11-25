@@ -14,7 +14,10 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -84,13 +87,21 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
 FormEventLoggerBase::FormEventLoggerBase(
     const std::string& form_type_name,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    AutofillClient* client)
+    BrowserAutofillManager* owner)
     : form_type_name_(form_type_name),
       form_interactions_ukm_logger_(form_interactions_ukm_logger),
-      client_(*client) {}
+      owner_(*owner) {}
 
 FormEventLoggerBase::~FormEventLoggerBase() {
   DCHECK(has_called_on_destroyed_);
+}
+
+AutofillClient& FormEventLoggerBase::client() {
+  return owner_->client();
+}
+
+AutofillDriver& FormEventLoggerBase::driver() {
+  return owner_->driver();
 }
 
 void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
@@ -126,7 +137,8 @@ void FormEventLoggerBase::OnDidShowSuggestions(
     base::TimeTicks form_parsed_timestamp,
     bool off_the_record) {
   form_interactions_ukm_logger_->LogSuggestionsShown(
-      form, field, form_parsed_timestamp, off_the_record);
+      driver().GetPageUkmSourceId(), form, field, form_parsed_timestamp,
+      off_the_record);
 
   Log(FORM_EVENT_SUGGESTIONS_SHOWN, form);
   if (!has_logged_suggestions_shown_) {
@@ -263,7 +275,8 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
   // Log UKM metrics for only autofillable form events.
   if (form.IsAutofillable()) {
     form_interactions_ukm_logger_->LogFormEvent(
-        event, GetFormTypesForLogging(form), form.form_parsed_timestamp());
+        driver().GetPageUkmSourceId(), event, GetFormTypesForLogging(form),
+        form.form_parsed_timestamp());
   }
 }
 
@@ -283,7 +296,7 @@ void FormEventLoggerBase::LogFormSubmitted(const FormStructure& form) {
   }
 }
 
-void FormEventLoggerBase::RecordFunnelMetrics() const {
+void FormEventLoggerBase::RecordFunnelMetrics() {
   for (FormTypeNameForLogging form_type :
        GetSupportedFormTypeNamesForLogging()) {
     base::UmaHistogramBoolean(
@@ -294,7 +307,7 @@ void FormEventLoggerBase::RecordFunnelMetrics() const {
   if (!has_parsed_form_) {
     return;
   }
-  LogBuffer logs(IsLoggingActive(client_->GetLogManager()));
+  LogBuffer logs(IsLoggingActive(client().GetLogManager()));
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     LOG_AF(logs) << Tr{} << "Form Type: " << form_type;
   }
@@ -311,7 +324,7 @@ void FormEventLoggerBase::RecordFunnelMetrics() const {
     RecordSubmissionAfterFill(logs);
   }
 
-  LOG_AF(client_->GetLogManager())
+  LOG_AF(client().GetLogManager())
       << LoggingScope::kMetrics << LogMessage::kFunnelMetrics << Tag{"table"}
       << std::move(logs) << CTag{"table"};
 }
@@ -359,12 +372,12 @@ void FormEventLoggerBase::RecordSubmissionAfterFill(LogBuffer& logs) const {
   LOG_AF(logs) << Tr{} << "SubmissionAfterFill" << has_logged_will_submit_;
 }
 
-void FormEventLoggerBase::RecordKeyMetrics() const {
+void FormEventLoggerBase::RecordKeyMetrics() {
   if (!has_parsed_form_) {
     return;
   }
 
-  LogBuffer logs(IsLoggingActive(client_->GetLogManager()));
+  LogBuffer logs(IsLoggingActive(client().GetLogManager()));
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     LOG_AF(logs) << Tr{} << "Form Type: " << form_type;
   }
@@ -383,8 +396,9 @@ void FormEventLoggerBase::RecordKeyMetrics() const {
     RecordFillingAssistance(logs);
     if (form_interactions_ukm_logger_) {
       form_interactions_ukm_logger_->LogKeyMetrics(
-          submitted_form_types_, HasLoggedDataToFillAvailable(),
-          has_logged_suggestions_shown_, has_logged_edited_autofilled_field_,
+          driver().GetPageUkmSourceId(), submitted_form_types_,
+          HasLoggedDataToFillAvailable(), has_logged_suggestions_shown_,
+          has_logged_edited_autofilled_field_,
           has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
           flow_id_, fast_checkout_run_id_);
     }
@@ -394,7 +408,7 @@ void FormEventLoggerBase::RecordKeyMetrics() const {
     RecordFormSubmission(logs);
   }
 
-  LOG_AF(client_->GetLogManager())
+  LOG_AF(client().GetLogManager())
       << LoggingScope::kMetrics << LogMessage::kKeyMetrics << Tag{"table"}
       << std::move(logs) << CTag{"table"};
 }
@@ -537,7 +551,7 @@ void FormEventLoggerBase::OnTextFieldDidChange(
 }
 
 void FormEventLoggerBase::UpdateFlowId() {
-  flow_id_ = client_->GetCurrentFormInteractionsFlowId();
+  flow_id_ = client().GetCurrentFormInteractionsFlowId();
 }
 
 FormInteractionsUkmLogger::FormEventSet FormEventLoggerBase::GetFormEvents(

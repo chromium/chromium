@@ -39,7 +39,8 @@ class VotesUploader {
       std::unique_ptr<FormStructure> form_structure,
       bool observed_submission,
       LanguageCode current_page_language,
-      base::TimeTicks initial_interaction_timestamp);
+      base::TimeTicks initial_interaction_timestamp,
+      ukm::SourceId ukm_source_id);
 
   // Triggers and wipes all pending QualityAndVotesUploadCallbacks.
   void FlushPendingLogQualityAndVotesUploadCallbacks();

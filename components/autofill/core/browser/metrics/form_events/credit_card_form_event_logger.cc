@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -37,11 +38,10 @@ namespace autofill::autofill_metrics {
 CreditCardFormEventLogger::CreditCardFormEventLogger(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     PersonalDataManager* personal_data_manager,
-    AutofillClient* client)
-    : FormEventLoggerBase("CreditCard", form_interactions_ukm_logger, client),
+    BrowserAutofillManager* owner)
+    : FormEventLoggerBase("CreditCard", form_interactions_ukm_logger, owner),
       current_authentication_flow_(UnmaskAuthFlowType::kNone),
-      personal_data_manager_(personal_data_manager),
-      client_(client) {}
+      personal_data_manager_(personal_data_manager) {}
 
 CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
@@ -314,11 +314,12 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     const AutofillTriggerSource trigger_source) {
   CreditCard::RecordType record_type = credit_card.record_type();
   signin_state_for_metrics_ = signin_state_for_metrics;
-  ukm::builders::Autofill_CreditCardFill builder =
-      form_interactions_ukm_logger_->CreateCreditCardFillBuilder();
+  ukm::builders::Autofill_CreditCardFill builder(
+      owner_->driver().GetPageUkmSourceId());
   builder.SetFormSignature(HashFormSignature(form.form_signature()));
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field, record_type);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(
+      driver().GetPageUkmSourceId(), form, field, record_type);
 
   AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
       {.event_logger = raw_ref(*this),
@@ -455,7 +456,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
-  form_interactions_ukm_logger_->Record(std::move(builder));
+  form_interactions_ukm_logger_->Record(owner_->driver().GetPageUkmSourceId(),
+                                        std::move(builder));
 
   if (trigger_source != AutofillTriggerSource::kFastCheckout) {
     ++form_interaction_counts_.autofill_fills;
@@ -652,6 +654,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
 void CreditCardFormEventLogger::LogUkmInteractedWithForm(
     FormSignature form_signature) {
   form_interactions_ukm_logger_->LogInteractedWithForm(
+      driver().GetPageUkmSourceId(),
       /*is_for_credit_card=*/true, local_record_type_count_,
       server_record_type_count_, form_signature);
 }
@@ -669,7 +672,7 @@ void CreditCardFormEventLogger::OnSuggestionsShownSubmittedOnce(
     const FormStructure& form) {
   if (!has_logged_form_filling_suggestion_filled_) {
     const CreditCard& credit_card =
-        client_->GetFormDataImporter()->ExtractCreditCardFromForm(form).card;
+        client().GetFormDataImporter()->ExtractCreditCardFromForm(form).card;
     Log(GetCardNumberStatusFormEvent(credit_card), form);
   }
 }
@@ -769,12 +772,12 @@ void CreditCardFormEventLogger::RecordCardUnmaskFlowEvent(
 bool CreditCardFormEventLogger::DoesCardHaveOffer(
     const CreditCard& credit_card) {
   auto* offer_manager =
-      client_->GetPaymentsAutofillClient()->GetAutofillOfferManager();
+      client().GetPaymentsAutofillClient()->GetAutofillOfferManager();
   if (!offer_manager)
     return false;
 
   auto card_linked_offer_map = offer_manager->GetCardLinkedOffersMap(
-      client_->GetLastCommittedPrimaryMainFrameURL());
+      client().GetLastCommittedPrimaryMainFrameURL());
   return base::Contains(card_linked_offer_map, credit_card.guid());
 }
 

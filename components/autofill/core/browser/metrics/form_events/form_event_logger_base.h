@@ -19,6 +19,12 @@
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+namespace autofill {
+class AutofillClient;
+class AutofillDriver;
+class BrowserAutofillManager;
+}  // namespace autofill
+
 namespace autofill::autofill_metrics {
 
 // Utility to log autofill form events in the relevant histograms depending on
@@ -28,7 +34,7 @@ class FormEventLoggerBase {
   FormEventLoggerBase(
       const std::string& form_type_name,
       autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      AutofillClient* client);
+      BrowserAutofillManager* owner);
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
@@ -90,6 +96,9 @@ class FormEventLoggerBase {
  protected:
   virtual ~FormEventLoggerBase();
 
+  AutofillClient& client();
+  AutofillDriver& driver();
+
   virtual void RecordPollSuggestions() = 0;
   virtual void RecordParseForm() = 0;
   virtual void RecordShowSuggestions() = 0;
@@ -114,7 +123,7 @@ class FormEventLoggerBase {
                      const FormStructure& form) const {}
 
   // Records UMA metrics on the funnel and writes logs to autofill-internals.
-  void RecordFunnelMetrics() const;
+  void RecordFunnelMetrics();
 
   // For each funnel metric, a separate function is defined below.
   // `RecordFunnelMetrics()` checks the necessary pre-conditions for metrics to
@@ -127,7 +136,7 @@ class FormEventLoggerBase {
   // Records UMA metrics on key metrics and writes logs to autofill-internals.
   // Similar to the funnel metrics, a separate function for each key metric is
   // defined below.
-  void RecordKeyMetrics() const;
+  void RecordKeyMetrics();
 
   // Whether for a submitted form, Chrome had data stored that could be
   // filled.
@@ -234,8 +243,9 @@ class FormEventLoggerBase {
       form_interactions_ukm_logger_;
 
   // Weak reference.
-  const raw_ref<AutofillClient> client_;
+  const raw_ref<BrowserAutofillManager> owner_;
 };
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_FORM_EVENT_LOGGER_BASE_H_

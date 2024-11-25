@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
@@ -188,19 +189,20 @@ class TestAutofillDriverTemplate : public T {
 // Consider using TestAutofillDriverInjector in browser tests.
 class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
  public:
-  explicit TestAutofillDriver(AutofillClient* client);
+  explicit TestAutofillDriver(TestAutofillClient* client);
   ~TestAutofillDriver() override;
 
   // AutofillDriver
-  AutofillClient& GetAutofillClient() override;
+  TestAutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
 
   void set_autofill_manager(std::unique_ptr<AutofillManager> autofill_manager) {
     autofill_manager_ = std::move(autofill_manager);
   }
 
  private:
-  raw_ref<AutofillClient> autofill_client_;
+  raw_ref<TestAutofillClient> autofill_client_;
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
 };
 

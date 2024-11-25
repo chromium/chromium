@@ -30,6 +30,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -146,6 +147,10 @@ AutofillClient& AutofillDriverIOS::GetAutofillClient() {
 
 BrowserAutofillManager& AutofillDriverIOS::GetAutofillManager() {
   return *manager_;
+}
+
+ukm::SourceId AutofillDriverIOS::GetPageUkmSourceId() const {
+  return ukm::GetSourceIdForWebStateDocument(web_state_);
 }
 
 // Return true as iOS has no MPArch.

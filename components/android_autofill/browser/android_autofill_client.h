@@ -96,7 +96,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   autofill::FormDataImporter* GetFormDataImporter() final;
   autofill::StrikeDatabase* GetStrikeDatabase() final;
   ukm::UkmRecorder* GetUkmRecorder() final;
-  ukm::SourceId GetUkmSourceId() final;
+  ukm::SourceId GetActivePageUkmSourceId() final;
   autofill::AddressNormalizer* GetAddressNormalizer() final;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const final;
   url::Origin GetLastCommittedPrimaryMainFrameOrigin() const final;

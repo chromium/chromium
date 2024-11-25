@@ -166,6 +166,7 @@ class ContentAutofillDriver : public AutofillDriver,
   ContentAutofillDriver* GetParent() override;
   ContentAutofillClient& GetAutofillClient() override;
   AutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
   bool IsActive() const override;
   bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;

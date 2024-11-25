@@ -136,7 +136,7 @@ ukm::UkmRecorder* AndroidAutofillClient::GetUkmRecorder() {
   return nullptr;
 }
 
-ukm::SourceId AndroidAutofillClient::GetUkmSourceId() {
+ukm::SourceId AndroidAutofillClient::GetActivePageUkmSourceId() {
   // TODO(crbug.com/321677608): Consider UKM recording via delegate (non-WebView
   // only).
   return ukm::kInvalidSourceId;

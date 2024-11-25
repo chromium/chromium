@@ -1830,7 +1830,8 @@ TEST_F(FieldLogUkmMetricTest,
 
   FormInteractionsUkmLogger logger(autofill_client_.get(),
                                    &test_ukm_recorder());
-  logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(form_structure);
+  logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+      autofill_driver_->GetPageUkmSourceId(), form_structure);
 
   auto ukm_entries = test_ukm_recorder().GetEntriesByName(
       UkmSubmittedFormWithExperimentalFieldsType::kEntryName);

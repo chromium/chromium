@@ -612,6 +612,7 @@ void LogPredictionQualityMetrics(
     QualityMetricPredictionSource prediction_source,
     FieldType predicted_type,
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type,
@@ -640,7 +641,7 @@ void LogPredictionQualityMetrics(
                            (predicted_type << 16) | actual_type);
 
   form_interactions_ukm_logger->LogFieldType(
-      form.form_parsed_timestamp(), form.form_signature(),
+      source_id, form.form_parsed_timestamp(), form.form_signature(),
       field.GetFieldSignature(), prediction_source, metric_type, predicted_type,
       actual_type);
 
@@ -679,12 +680,13 @@ void LogPredictionQualityMetrics(
 
 void LogHeuristicPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
-      form_interactions_ukm_logger, form, field, metric_type,
+      form_interactions_ukm_logger, source_id, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
   if (metric_type == TYPE_SUBMISSION) {
     LogHeuristicPredictionQualityPerLabelSourceMetric(field);
@@ -713,37 +715,40 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
 
 void LogMlPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_ML_PREDICTIONS,
       field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
-      form_interactions_ukm_logger, form, field, metric_type,
+      form_interactions_ukm_logger, source_id, form, field, metric_type,
       /*log_rationalization_metrics=*/false);
 }
 
 // static
 void LogServerPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(PREDICTION_SOURCE_SERVER, field.server_type(),
-                              form_interactions_ukm_logger, form, field,
-                              metric_type,
+                              form_interactions_ukm_logger, source_id, form,
+                              field, metric_type,
                               /*log_rationalization_metrics=*/false);
 }
 
 // static
 void LogOverallPredictionQualityMetrics(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
       PREDICTION_SOURCE_OVERALL, field.Type().GetStorableType(),
-      form_interactions_ukm_logger, form, field, metric_type,
+      form_interactions_ukm_logger, source_id, form, field, metric_type,
       /*log_rationalization_metrics=*/true);
 }
 

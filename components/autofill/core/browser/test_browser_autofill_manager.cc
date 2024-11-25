@@ -33,7 +33,8 @@ class TestVotesUploader : public VotesUploader {
       std::unique_ptr<FormStructure> form_structure,
       bool observed_submission,
       LanguageCode current_page_language,
-      base::TimeTicks initial_interaction_timestamp) override;
+      base::TimeTicks initial_interaction_timestamp,
+      ukm::SourceId ukm_source_id) override;
 
   void StoreUploadVotesAndLogQualityCallback(
       FormSignature form_signature,
@@ -208,7 +209,8 @@ bool TestVotesUploader::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission,
     LanguageCode current_page_language,
-    base::TimeTicks initial_interaction_timestamp) {
+    base::TimeTicks initial_interaction_timestamp,
+    ukm::SourceId ukm_source_id) {
   // The purpose of this runloop is to ensure that the field type determination
   // finishes. If `observed_submission` is true, it's terminated in
   // LogQualityAndUploadVotes. Otherwise, it is already terminated in
@@ -216,7 +218,7 @@ bool TestVotesUploader::MaybeStartVoteUploadProcess(
   run_loop_ = std::make_unique<base::RunLoop>();
   if (VotesUploader::MaybeStartVoteUploadProcess(
           std::move(form_structure), observed_submission, current_page_language,
-          initial_interaction_timestamp)) {
+          initial_interaction_timestamp, ukm_source_id)) {
     run_loop_->Run();
     return true;
   }

@@ -73,7 +73,8 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
     std::unique_ptr<FormStructure> form_structure,
     bool observed_submission,
     LanguageCode current_page_language,
-    base::TimeTicks initial_interaction_timestamp) {
+    base::TimeTicks initial_interaction_timestamp,
+    ukm::SourceId ukm_source_id) {
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
   std::vector<const AutofillProfile*> profiles =
@@ -124,7 +125,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
       base::BindOnce(&VotesUploader::OnSubmissionFieldTypesDetermined,
                      weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
                      initial_interaction_timestamp, base::TimeTicks::Now(),
-                     observed_submission, client().GetUkmSourceId());
+                     observed_submission, ukm_source_id);
 
   // If the form was not submitted (e.g. the user just removed the focus from
   // the form), it's possible that later modifications lead to more accurate
@@ -215,7 +216,7 @@ void VotesUploader::UploadVotesAndLogQuality(
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         interaction_time, submission_time,
-        owner_->form_interactions_ukm_logger(), observed_submission);
+        owner_->form_interactions_ukm_logger(), source_id, observed_submission);
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
       // we are not sure whether a full navigation with a Reset() call follows.

@@ -428,7 +428,7 @@ ukm::UkmRecorder* ChromeAutofillClient::GetUkmRecorder() {
   return ukm::UkmRecorder::Get();
 }
 
-ukm::SourceId ChromeAutofillClient::GetUkmSourceId() {
+ukm::SourceId ChromeAutofillClient::GetActivePageUkmSourceId() {
   return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 

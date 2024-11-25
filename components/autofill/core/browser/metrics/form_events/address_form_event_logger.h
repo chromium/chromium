@@ -38,7 +38,7 @@ class AddressFormEventLogger : public FormEventLoggerBase {
  public:
   AddressFormEventLogger(
       autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      AutofillClient* client);
+      BrowserAutofillManager* owner);
 
   ~AddressFormEventLogger() override;
 

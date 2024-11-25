@@ -262,7 +262,7 @@ class FakeAutofillDriver : public TestAutofillDriver {
   enum class SharedAutofillPolicy { kDefault, kEnabled, kDisabled };
 
   static std::unique_ptr<FakeAutofillDriver> CreateChildFrame(
-      AutofillClient* client,
+      TestAutofillClient* client,
       const url::Origin& origin,
       FakeAutofillDriver* parent,
       SharedAutofillPolicy shared_autofill) {
@@ -348,7 +348,8 @@ class FakeAutofillDriver : public TestAutofillDriver {
   bool is_sub_root() const { return is_sub_root_; }
 
  private:
-  explicit FakeAutofillDriver(AutofillClient* client, const url::Origin& origin)
+  explicit FakeAutofillDriver(TestAutofillClient* client,
+                              const url::Origin& origin)
       : TestAutofillDriver(client), origin_(origin) {}
 
   const url::Origin origin_;

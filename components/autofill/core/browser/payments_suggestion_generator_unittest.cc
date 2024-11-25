@@ -33,6 +33,8 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_payments_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -182,13 +184,7 @@ auto SuggestionWithGuidPayload(const Suggestion::Guid& guid) {
 class MockCreditCardFormEventLogger
     : public autofill_metrics::CreditCardFormEventLogger {
  public:
-  MockCreditCardFormEventLogger(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      PersonalDataManager* personal_data_manager,
-      AutofillClient* client)
-      : CreditCardFormEventLogger(form_interactions_ukm_logger,
-                                  personal_data_manager,
-                                  client) {}
+  using autofill_metrics::CreditCardFormEventLogger::CreditCardFormEventLogger;
   MOCK_METHOD(
       void,
       OnMetadataLoggingContextReceived,
@@ -214,7 +210,7 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
             form_interactions_ukm_logger_.get(),
-            &autofill_client_.GetPersonalDataManager(), &autofill_client_);
+            &autofill_client_.GetPersonalDataManager(), &autofill_manager_);
   }
 
   void TearDown() override {
@@ -298,6 +294,8 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
+  TestAutofillDriver autofill_driver_{&autofill_client_};
+  TestBrowserAutofillManager autofill_manager_{&autofill_driver_};
   testing::NiceMock<ui::MockResourceBundleDelegate> mock_resource_delegate_;
   raw_ptr<ui::ResourceBundle> original_resource_bundle_;
   // Tracks whether SetUpIbanImageResources() has been called, so that the

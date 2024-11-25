@@ -656,8 +656,8 @@ void FormFiller::FillOrPreviewForm(
         !autofill_field->IsFocusable()) {
       manager_->form_interactions_ukm_logger()
           ->LogHiddenRepresentationalFieldSkipDecision(
-              *form_structure, *autofill_field,
-              !autofill_field->IsSelectElement());
+              manager_->driver().GetPageUkmSourceId(), *form_structure,
+              *autofill_field, !autofill_field->IsSelectElement());
     }
     if (!skip_reasons[autofill_field->global_id()].empty()) {
       const FieldFillingSkipReason skip_reason =

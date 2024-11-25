@@ -48,8 +48,8 @@ CategoryResolvedKeyMetricBucket ProfileCategoriesToMetricBucket(
 
 AddressFormEventLogger::AddressFormEventLogger(
     autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    AutofillClient* client)
-    : FormEventLoggerBase("Address", form_interactions_ukm_logger, client) {}
+    BrowserAutofillManager* owner)
+    : FormEventLoggerBase("Address", form_interactions_ukm_logger, owner) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
 
@@ -67,7 +67,8 @@ void AddressFormEventLogger::OnDidFillFormFillingSuggestion(
     const FormStructure& form,
     const AutofillField& field,
     const AutofillTriggerSource trigger_source) {
-  form_interactions_ukm_logger_->LogDidFillSuggestion(form, field);
+  form_interactions_ukm_logger_->LogDidFillSuggestion(
+      driver().GetPageUkmSourceId(), form, field);
   Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED, form);
   if (!has_logged_form_filling_suggestion_filled_) {
     has_logged_form_filling_suggestion_filled_ = true;
@@ -148,6 +149,7 @@ void AddressFormEventLogger::LogUkmInteractedWithForm(
     FormSignature form_signature) {
   // Address Autofill has deprecated the concept of server addresses.
   form_interactions_ukm_logger_->LogInteractedWithForm(
+      driver().GetPageUkmSourceId(),
       /*is_for_credit_card=*/false, record_type_count_,
       /*server_record_type_count=*/0, form_signature);
 }

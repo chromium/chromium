@@ -43,7 +43,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   CreditCardFormEventLogger(
       autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       PersonalDataManager* personal_data_manager,
-      AutofillClient* client);
+      BrowserAutofillManager* owner);
 
   ~CreditCardFormEventLogger() override;
 
@@ -73,7 +73,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // TODO(crbug.com/40937936): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
-  // values can be retrieved from 'form' or 'client_'.
+  // values can be retrieved from `form` or `owner_`.
   void OnDidShowSuggestions(const FormStructure& form,
                             const AutofillField& field,
                             base::TimeTicks form_parsed_timestamp,
@@ -221,7 +221,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Weak references.
   raw_ptr<PersonalDataManager> personal_data_manager_;
-  raw_ptr<AutofillClient> client_;
 };
 
 }  // namespace autofill_metrics

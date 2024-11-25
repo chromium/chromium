@@ -90,6 +90,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   AutofillDriverIOS* GetParent() override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
   bool IsActive() const override;
   bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;

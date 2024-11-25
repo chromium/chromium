@@ -833,7 +833,8 @@ void AutofillManager::OnLoadedServerPredictions(
   // autocomplete attributes, if available.
   if (auto* logger = form_interactions_ukm_logger()) {
     for (FormStructure* cur_form : queried_forms) {
-      autofill_metrics::LogQualityMetricsBasedOnAutocomplete(*cur_form, logger);
+      autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
+          *cur_form, logger, driver().GetPageUkmSourceId());
     }
   }
 

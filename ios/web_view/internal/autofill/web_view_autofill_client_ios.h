@@ -74,7 +74,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
-  ukm::SourceId GetUkmSourceId() override;
+  ukm::SourceId GetActivePageUkmSourceId() override;
   AddressNormalizer* GetAddressNormalizer() override;
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override;
   url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override;

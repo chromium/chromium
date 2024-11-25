@@ -340,8 +340,14 @@ class AutofillClient {
   // Gets the UKM service associated with this client (for metrics).
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
 
-  // Gets the UKM source id associated with this client (for metrics).
-  virtual ukm::SourceId GetUkmSourceId() = 0;
+  // Gets the UKM source ID *currently* active page
+  // Prefer AutofillDriver::GetPageUkmSourceId() when possible.
+  //
+  // A UKM source ID changes on navigation, which can lead to surprising
+  // behavior when recording metrics asynchronously: the *current* UKM source
+  // ID may not be the intended one; you may want to use the pre-navigation
+  // AutofillDriver::GetPageUkmSourceId().
+  virtual ukm::SourceId GetActivePageUkmSourceId() = 0;
 
   // Gets an AddressNormalizer instance (can be null).
   virtual AddressNormalizer* GetAddressNormalizer() = 0;
