@@ -191,16 +191,25 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaAccountInfo(
     JNIEnv* env,
     const AccountInfo& account_info) {
   CHECK(!account_info.IsEmpty());
-  gfx::Image avatar_image = account_info.account_image;
+  // Empty domain means that the management status is unknown, which is
+  // represented by `null` hostedDomain on the Java side.
+  base::android::ScopedJavaLocalRef<jstring> hosted_domain =
+      account_info.hosted_domain.empty()
+          ? nullptr
+          : base::android::ConvertUTF8ToJavaString(env,
+                                                   account_info.hosted_domain);
+  base::android::ScopedJavaLocalRef<jobject> account_image =
+      account_info.account_image.IsEmpty()
+          ? nullptr
+          : gfx::ConvertToJavaBitmap(
+                *account_info.account_image.AsImageSkia().bitmap());
   return signin::Java_AccountInfo_Constructor(
       env, ConvertToJavaCoreAccountId(env, account_info.account_id),
       base::android::ConvertUTF8ToJavaString(env, account_info.email),
       base::android::ConvertUTF8ToJavaString(env, account_info.gaia),
       base::android::ConvertUTF8ToJavaString(env, account_info.full_name),
       base::android::ConvertUTF8ToJavaString(env, account_info.given_name),
-      avatar_image.IsEmpty()
-          ? nullptr
-          : gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap()),
+      hosted_domain, account_image,
       account_info.capabilities.ConvertToJavaAccountCapabilities(env));
 }
 
