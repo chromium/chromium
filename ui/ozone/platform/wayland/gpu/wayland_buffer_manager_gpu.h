@@ -154,22 +154,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
   bool supports_viewporter() const { return supports_viewporter_; }
   bool supports_overlays() const { return supports_overlays_; }
-  bool supports_non_backed_solid_color_buffers() const {
-    return supports_non_backed_solid_color_buffers_;
-  }
   bool supports_single_pixel_buffer() const {
     return supports_single_pixel_buffer_;
   }
-  bool supports_subpixel_accurate_position() const {
-    return supports_subpixel_accurate_position_;
-  }
-  bool supports_clip_rect() const { return supports_clip_rect_; }
-  bool supports_affine_transform() const { return supports_affine_transform_; }
-  bool supports_out_of_window_clip_rect() const {
-    return supports_out_of_window_clip_rect_;
-  }
-  bool has_transformation_fix() const { return has_transformation_fix_; }
-
   void set_drm_modifiers_filter(
       std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter) {
     drm_modifiers_filter_ = std::move(drm_modifiers_filter);
@@ -274,34 +261,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Whether delegated overlays should be used for this Wayland server.
   bool supports_overlays_ = false;
 
-  // Determines whether solid color overlays can be delegated without a backing
-  // image via a wayland protocol.
-  bool supports_non_backed_solid_color_buffers_ = false;
-
   // Determines whether single pixel buffer are supported via a wayland
   // protocol.
   bool supports_single_pixel_buffer_ = false;
 
-  // Determines whether subpixel accurate position is supported.
-  bool supports_subpixel_accurate_position_ = false;
-
   // Determines whether Wayland server supports Wayland protocols that allow to
   // export wl_buffers backed by dmabuf.
   bool supports_dmabuf_ = true;
-
-  bool supports_clip_rect_ = false;
-
-  // Determines whether Wayland server supports delegating non axis-aligned 2d
-  // transforms.
-  bool supports_affine_transform_ = false;
-
-  // Whether wayland server supports clip delegation for quads that are
-  // partially or fully outside of the window.
-  bool supports_out_of_window_clip_rect_ = false;
-
-  // Whether wayland server has the fix that applies transformations in the
-  // correct order.
-  bool has_transformation_fix_ = false;
 
   // A DRM modifiers filter to ensure we don't allocate buffers with modifiers
   // not supported by Vulkan.

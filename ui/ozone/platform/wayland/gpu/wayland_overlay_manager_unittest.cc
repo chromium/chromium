@@ -148,19 +148,6 @@ TEST_P(WaylandOverlayManagerTest, DoesNotSupportNonIntegerDisplayRect) {
   }
 }
 
-TEST_P(WaylandOverlayManagerTest, SupportsNonIntegerDisplayRect) {
-  // WaylandBufferManagerGpu manager_gpu;
-  buffer_manager_gpu_->supports_subpixel_accurate_position_ = true;
-
-  constexpr std::array<std::array<bool, 2>, 2> test_data = {
-      {{false, false}, {true, false}}};
-  for (const auto& data : test_data) {
-    NonIntegerDisplayRectTestHelper(buffer_manager_gpu_.get(),
-                                    data[0] /* is_delegated_context */,
-                                    data[1] /* expect_candidates_handled */);
-  }
-}
-
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(WaylandOverlayManagerTest);
 
 }  // namespace ui

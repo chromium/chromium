@@ -418,9 +418,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
     const bool transform_supports_clipping =
         context_.supports_arbitrary_transform ||
         absl::holds_alternative<gfx::OverlayTransform>(candidate.transform);
-    // Out of window clipping is enabled on Lacros only when it is supported.
-    // TODO(crbug.com/40246811): Remove the condition on `quad_within_window`
-    // when M117 becomes widely supported.
     bool can_delegate_clipping =
         context_.supports_clip_rect &&
         (quad_within_window || context_.supports_out_of_window_clip_rect) &&

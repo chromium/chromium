@@ -88,22 +88,6 @@ void WaylandBufferManagerGpu::Initialize(
   supports_acquire_fence_ = supports_acquire_fence;
   supports_dmabuf_ = supports_dma_buf;
   supports_overlays_ = supports_overlays;
-
-  // TODO(crbug.com/375523817): remove these.
-  supports_non_backed_solid_color_buffers_ = false;
-  supports_subpixel_accurate_position_ = false;
-  supports_clip_rect_ = false;
-  supports_affine_transform_ = false;
-
-  // HitTestMask fix landed in https://crrev.com/c/5252908. This is required to
-  // support DnD behavior when the target window has out-of-window frames.
-  // TODO(crbug.com/375523817): remove this.
-  supports_out_of_window_clip_rect_ = false;
-
-  // Exo transformation fix landed in https://crrev.com/c/4961473
-  // TODO(crbug.com/375523817): remove this.
-  has_transformation_fix_ = false;
-
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
 
   // Allow to rebind the interface if it hasn't been destroyed yet. Used, for

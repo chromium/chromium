@@ -87,15 +87,6 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
         ->GetOverlayManager()
         ->SetContextDelegated();
   }
-
-  const auto& runtime_props =
-      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
-  supports_clip_rect_ = runtime_props.supports_clip_rect;
-  supports_out_of_window_clip_rect_ =
-      runtime_props.supports_out_of_window_clip_rect;
-  needs_background_image_ = runtime_props.needs_background_image;
-  supports_affine_transform_ = runtime_props.supports_affine_transform;
-  has_transformation_fix_ = runtime_props.has_transformation_fix;
 }
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
@@ -155,11 +146,11 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
 
   OverlayCandidateFactory::OverlayContext context;
   context.is_delegated_context = true;
-  context.supports_clip_rect = supports_clip_rect_;
-  context.supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_;
-  context.supports_arbitrary_transform = supports_affine_transform_;
+  context.supports_clip_rect = false;
+  context.supports_out_of_window_clip_rect = false;
+  context.supports_arbitrary_transform = false;
   context.supports_mask_filter = true;
-  context.transform_and_clip_rpdq = has_transformation_fix_;
+  context.transform_and_clip_rpdq = false;
   context.supports_flip_rotate_transform = SupportsFlipRotateTransform();
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(

@@ -180,10 +180,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // method.
     static SupportsForTest override_supports_ssd_for_test;
 
-    // Wayland only: determines whether solid color overlays can be delegated
-    // without a backing image via a wayland protocol.
-    bool supports_non_backed_solid_color_buffers = false;
-
     // Wayland only: determines whether single pixel buffer protocol is
     // supported.
     bool supports_single_pixel_buffer = false;
@@ -194,26 +190,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether BufferQueue needs a background image to
     // be stacked below an AcceleratedWidget to make a widget opaque.
     bool needs_background_image = false;
-
-    // Wayland only: determines whether clip rects can be delegated via the
-    // wayland protocol when no quad is out of window.
-    // TODO(crbug.com/375523817): remove this.
-    bool supports_clip_rect = false;
-
-    // Wayland only: determines whether non axis-aligned 2d transforms can be
-    // delegated via the wayland protocol.
-    bool supports_affine_transform = false;
-
-    // Wayland only: determines whether clip rects can be delegated via the
-    // wayland protocol when some quads are out of window.
-    // TODO(crbug.com/40277728): The flag is currently disabled by default since
-    // there is a bug. Set this flag to enabled in GPU process when the
-    // remaining issues are resolved.
-    bool supports_out_of_window_clip_rect = false;
-
-    // Wayland only: whether wayland server has the fix that applies
-    // transformations in the correct order.
-    bool has_transformation_fix = false;
 
     // Wayland only: whether bubble widgets can use platform objects.
     bool supports_subwindows_as_accelerated_widgets = false;

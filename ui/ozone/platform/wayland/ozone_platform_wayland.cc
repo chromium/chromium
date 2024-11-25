@@ -398,8 +398,6 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_overlays =
           connection_->ShouldUseOverlayDelegation() &&
           connection_->viewporter();
-      // TODO(crbug.com/375523817): remove this.
-      properties.supports_non_backed_solid_color_buffers = false;
       properties.supports_single_pixel_buffer =
           ui::IsWaylandOverlayDelegationEnabled() &&
           connection_->buffer_manager_host()->SupportsSinglePixelBuffer();
@@ -427,8 +425,6 @@ class OzonePlatformWayland : public OzonePlatform,
       DCHECK(has_initialized_gpu());
       // These properties are set when the GetPlatformRuntimeProperties is
       // called on the gpu process side.
-      // TODO(crbug.com/375523817): remove this.
-      properties.supports_non_backed_solid_color_buffers = false;
       properties.supports_single_pixel_buffer =
           ui::IsWaylandOverlayDelegationEnabled() &&
           buffer_manager_->supports_single_pixel_buffer();
@@ -438,12 +434,6 @@ class OzonePlatformWayland : public OzonePlatform,
           buffer_manager_->supports_viewporter();
       properties.supports_native_pixmaps =
           surface_factory_->SupportsNativePixmaps();
-      properties.supports_affine_transform =
-          buffer_manager_->supports_affine_transform();
-      properties.supports_out_of_window_clip_rect =
-          buffer_manager_->supports_out_of_window_clip_rect();
-      properties.has_transformation_fix =
-          buffer_manager_->has_transformation_fix();
     }
     return properties;
   }
