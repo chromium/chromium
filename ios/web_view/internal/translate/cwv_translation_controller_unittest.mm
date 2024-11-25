@@ -327,6 +327,8 @@ TEST_F(CWVTranslationControllerTest, OnLanguageDetermined) {
   OnLanguageDetermined(details);
 
   EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_TRUE([translation_controller_.languageDetectionDetails
+      isEqual:language_detection_details]);
 }
 
 }  // namespace ios_web_view
