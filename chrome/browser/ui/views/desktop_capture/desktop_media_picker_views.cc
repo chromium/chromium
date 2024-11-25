@@ -103,10 +103,6 @@ DesktopMediaID::Id AcceleratedWidgetToDesktopMediaId(
 }
 #endif
 
-BASE_FEATURE(kWarnUserOfSystemWideLocalAudioSuppression,
-             "WarnUserOfSystemWideLocalAudioSuppression",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class GDMResult {
@@ -772,9 +768,7 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
 
   switch (category.type) {
     case DesktopMediaList::Type::kScreen: {
-      bool show_warning = suppress_local_audio_playback_ &&
-                          base::FeatureList::IsEnabled(
-                              kWarnUserOfSystemWideLocalAudioSuppression);
+      bool show_warning = suppress_local_audio_playback_;
       if (request_source_ == RequestSource::kGetDisplayMedia &&
           !base::FeatureList::IsEnabled(
               ::kSuppressLocalAudioPlaybackForSystemAudio)) {
