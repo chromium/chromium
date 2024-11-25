@@ -32,11 +32,11 @@ using FeatureAccessFailureSet = base::EnumSet<FeatureAccessFailure,
 struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
     FeatureAccessConfig {
   // The preference that determines whether the feature is enabled via settings.
-  // The FeeatureAccessChecker::Check() verifies if its value is true in the
+  // The FeatureAccessChecker::Check() verifies if its value is true in the
   // given prefs, and returns kDisabledInSettings if not.
   std::string_view settings_toggle_pref;
   // The preference that deterimines whether the features legal consent
-  // disclaimer has been accepted. The FeeatureAccessChecker::Check() verifies
+  // disclaimer has been accepted. The FeatureAccessChecker::Check() verifies
   // if its value is true in the given prefs, and returns kConsentNotAccepted if
   // not.
   std::string_view consent_accepted_pref;

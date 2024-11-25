@@ -19,63 +19,47 @@ using testing::IsEmpty;
 
 using enum FeatureAccessFailure;
 
-TEST(FeatureAccessCheckerTest, CheckSettingsPrefCheckPass) {
-  TestingPrefServiceSimple pref_service_simple;
-  pref_service_simple.registry()->RegisterBooleanPref("some_toggle", true);
-  pref_service_simple.registry()->RegisterBooleanPref("some_consent_acceptance",
-                                                      true);
+constexpr std::string_view kSettingsTogglePref = "settings-toggle";
+constexpr std::string_view kConsentAcceptedPref = "consent-accepted";
+
+FeatureAccessConfig DefaultConfig() {
+  return {
+      .settings_toggle_pref = kSettingsTogglePref,
+      .consent_accepted_pref = kConsentAcceptedPref,
+  };
+}
+
+void RegisterAndEnableAllPrefs(TestingPrefServiceSimple& pref) {
+  pref.registry()->RegisterBooleanPref(kSettingsTogglePref, true);
+  pref.registry()->RegisterBooleanPref(kConsentAcceptedPref, true);
+}
+
+TEST(FeatureAccessCheckerTest, AllChecksPass) {
+  TestingPrefServiceSimple pref;
+  RegisterAndEnableAllPrefs(pref);
 
   EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(
-                         {.settings_toggle_pref = "some_toggle",
-                          .consent_accepted_pref = "some_consent_acceptance"},
-                         pref_service_simple)
-                         .Check()),
+      base::ToVector(FeatureAccessChecker(DefaultConfig(), pref).Check()),
       IsEmpty());
 }
 
 TEST(FeatureAccessCheckerTest, CheckSettingsPrefCheckFail) {
-  TestingPrefServiceSimple pref_service_simple;
-  pref_service_simple.registry()->RegisterBooleanPref("some_toggle", false);
-  pref_service_simple.registry()->RegisterBooleanPref("some_consent_acceptance",
-                                                      true);
+  TestingPrefServiceSimple pref;
+  RegisterAndEnableAllPrefs(pref);
+  pref.SetBoolean(kSettingsTogglePref, false);
 
   EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(
-                         {.settings_toggle_pref = "some_toggle",
-                          .consent_accepted_pref = "some_consent_acceptance"},
-                         pref_service_simple)
-                         .Check()),
+      base::ToVector(FeatureAccessChecker(DefaultConfig(), pref).Check()),
       ElementsAre(kDisabledInSettings));
 }
 
-TEST(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckPass) {
-  TestingPrefServiceSimple pref_service_simple;
-  pref_service_simple.registry()->RegisterBooleanPref("some_toggle", true);
-  pref_service_simple.registry()->RegisterBooleanPref("some_consent_acceptance",
-                                                      true);
-
-  EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(
-                         {.settings_toggle_pref = "some_toggle",
-                          .consent_accepted_pref = "some_consent_acceptance"},
-                         pref_service_simple)
-                         .Check()),
-      IsEmpty());
-}
-
 TEST(FeatureAccessCheckerTest, ConsentAcceptancePrefCheckFail) {
-  TestingPrefServiceSimple pref_service_simple;
-  pref_service_simple.registry()->RegisterBooleanPref("some_toggle", true);
-  pref_service_simple.registry()->RegisterBooleanPref("some_consent_acceptance",
-                                                      false);
+  TestingPrefServiceSimple pref;
+  RegisterAndEnableAllPrefs(pref);
+  pref.SetBoolean(kConsentAcceptedPref, false);
 
   EXPECT_THAT(
-      base::ToVector(FeatureAccessChecker(
-                         {.settings_toggle_pref = "some_toggle",
-                          .consent_accepted_pref = "some_consent_acceptance"},
-                         pref_service_simple)
-                         .Check()),
+      base::ToVector(FeatureAccessChecker(DefaultConfig(), pref).Check()),
       ElementsAre(kConsentNotAccepted));
 }
 
