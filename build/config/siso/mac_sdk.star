@@ -50,6 +50,15 @@ def __filegroups(ctx):
                 "type": "glob",
                 "includes": sdk_includes,
             }
+            fg[ctx.fs.canonpath("./" + gn_logs_data.get("mac_sdk_path")) + ":link"] = {
+                "type": "glob",
+                "includes": [
+                    "*.tbd",
+                    "Current",
+                    "Frameworks",
+                    "*.o",
+                ],
+            }
         if gn_logs_data.get("ios_sdk_path"):
             fg[ctx.fs.canonpath("./" + gn_logs_data.get("ios_sdk_path")) + ":headers"] = {
                 "type": "glob",
