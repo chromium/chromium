@@ -601,65 +601,41 @@ class GSL_POINTER span {
         span<element_type>(data() + (extent - size_type{count}), count));
   }
 
+  // `count` elements beginning at `offset`.
   template <size_t Offset, size_t Count = dynamic_extent>
   constexpr auto subspan() const
     requires(Offset <= extent &&
              (Count == dynamic_extent || Count <= extent - Offset))
   {
-    constexpr size_t kExtent =
-        Count != dynamic_extent ? Count : extent - Offset;
-    // SAFETY: span provides that data() points to at least `extent` many
-    // elements.
-    //
-    // If Count is dynamic_extent, kExtent becomes `extent - Offset`. Since
-    // `Offset <= extent` from the requires condition, then `Offset` is a valid
-    // offset for data(), and `Offset + kExtent = Offset + extent - Offset =
-    // extent >= Offset` is also a valid offset that is not before `Offset`.
-    // This makes a span at `Offset` with size `kExtent` valid.
-    //
-    // Otherwise `Count <= extent - Offset` and `0 <= Offset <= extent` by the
-    // requires condition, so `Offset <= extent - Count` and `extent - Count`
-    // can not underflow. Then `Offset` is a valid offset for data() and
-    // `kExtent` is `Count <= extent - Offset`, so `Offset + kExtent <=
-    // Offset + extent - Offset = extent` which makes both `Offset` and
-    // `Offset + kExtent` valid offsets for data(), and since `kExtent` is
-    // non-negative, `Offset + kExtent` is not before `Offset` so `kExtent` is a
-    // valid size for the span at `data() + Offset`.
-    return UNSAFE_BUFFERS(
-        span<element_type, kExtent>(data() + Offset, kExtent));
+    if constexpr (Count == dynamic_extent) {
+      constexpr size_t kRemaining = extent - Offset;
+      // SAFETY: `data()` points to at least `extent` elements, so `Offset`
+      // specifies a valid element index or the past-the-end index, and
+      // `kRemaining` cannot index past-the-end elements.
+      return UNSAFE_BUFFERS(
+          span<element_type, kRemaining>(data() + Offset, kRemaining));
+    } else {
+      // SAFETY: `data()` points to at least `extent` elements, so `Offset`
+      // specifies a valid element index or the past-the-end index, and `Count`
+      // is no larger than the number of remaining valid elements.
+      return UNSAFE_BUFFERS(span<element_type, Count>(data() + Offset, Count));
+    }
   }
-
-  // Returns a span over the first `count` elements starting at the given
-  // `offset` from the start of the span.
-  //
-  // # Checks
-  // The function CHECKs that the span contains at least `offset + count`
-  // elements, or at least `offset` elements if `count` is not specified, and
-  // will terminate otherwise.
   constexpr auto subspan(size_type offset,
                          size_type count = dynamic_extent) const {
     CHECK_LE(offset, extent);
-    CHECK(count == dynamic_extent || count <= extent - offset);
-    const size_type new_extent =
-        count != dynamic_extent ? count : extent - offset;
-    // SAFETY: span provides that data() points to at least `extent` many
-    // elements.
-    //
-    // If Count is dynamic_extent, `new_extent` becomes `extent - offset`. Since
-    // `offset <= extent` from the requires condition, then `offset` is a valid
-    // offset for data(), and `offset + new_extent = offset + extent - offset =
-    // extent >= offset` is also a valid offset that is not before `offset`.
-    // This makes a span at `offset` with size `new_extent` valid.
-    //
-    // Otherwise `count <= extent - offset` and `0 <= offset <= extent` by the
-    // requires condition, so `offset <= extent - count` and `extent - count`
-    // can not underflow. Then `offset` is a valid offset for data() and
-    // `new_extent` is `count <= extent - offset`, so `offset + new_extent <=
-    // offset + extent - offset = extent` which makes both `offset` and
-    // `offset + new_extent` valid offsets for data(), and since `new_extent` is
-    // non-negative, `offset + new_extent` is not before `offset` so
-    // `new_extent` is a valid size for the span at `data() + offset`.
-    return UNSAFE_BUFFERS(span<element_type>(data() + offset, new_extent));
+    const size_type remaining = extent - offset;
+    if (count == dynamic_extent) {
+      // SAFETY: `data()` points to at least `extent` elements, so `offset`
+      // specifies a valid element index or the past-the-end index, and
+      // `remaining` cannot index past-the-end elements.
+      return UNSAFE_BUFFERS(span<element_type>(data() + offset, remaining));
+    }
+    CHECK_LE(count, remaining);
+    // SAFETY: `data()` points to at least `extent` elements, so `offset`
+    // specifies a valid element index or the past-the-end index, and `count` is
+    // no larger than the number of remaining valid elements.
+    return UNSAFE_BUFFERS(span<element_type>(data() + offset, count));
   }
 
   template <size_t Offset>
@@ -1129,65 +1105,39 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
         span<element_type>(data() + (size() - size_type{count}), count));
   }
 
+  // `count` elements beginning at `offset`.
   template <size_t Offset, size_t Count = dynamic_extent>
   constexpr auto subspan() const {
     CHECK_LE(Offset, size());
-    CHECK(Count == dynamic_extent || Count <= size() - Offset);
-    const size_type new_extent =
-        Count != dynamic_extent ? Count : size() - Offset;
-    // SAFETY: span provides that data() points to at least `size()` many
-    // elements.
-    //
-    // If Count is dynamic_extent, `new_extent` becomes `size() - Offset`. Since
-    // `Offset <= size()` from the check above, then `Offset` is a valid offset
-    // for data(), and `Offset + new_extent = Offset + size() - Offset = size()
-    // >= Offset` is also a valid offset that is not before `Offset`. This makes
-    // a span at `Offset` with size `new_extent` valid.
-    //
-    // Otherwise `Count <= size() - Offset` and `0 <= Offset <= size()` by the
-    // check above, so `Offset <= size() - Count` and `size() - Count` can not
-    // underflow. Then `Offset` is a valid offset for data() and `new_extent` is
-    // `Count <= size() - Offset`, so `Offset + extent <= Offset + size() -
-    // Offset = size()` which makes both `Offset` and `Offset + new_extent`
-    // valid offsets for data(), and since `new_extent` is non-negative, `Offset
-    // + new_extent` is not before `Offset` so `new_extent` is a valid size for
-    // the span at `data() + Offset`.
-    return UNSAFE_BUFFERS(
-        span<element_type, Count>(data() + Offset, new_extent));
+    const size_type remaining = size() - Offset;
+    if constexpr (Count == dynamic_extent) {
+      // SAFETY: `data()` points to at least `size()` elements, so `Offset`
+      // specifies a valid element index or the past-the-end index, and
+      // `remaining` cannot index past-the-end elements.
+      return UNSAFE_BUFFERS(
+          span<element_type, Count>(data() + Offset, remaining));
+    }
+    CHECK_LE(Count, remaining);
+    // SAFETY: `data()` points to at least `size()` elements, so `Offset`
+    // specifies a valid element index or the past-the-end index, and `Count` is
+    // no larger than the number of remaining valid elements.
+    return UNSAFE_BUFFERS(span<element_type, Count>(data() + Offset, Count));
   }
-
-  // Returns a span over the first `count` elements starting at the given
-  // `offset` from the start of the span.
-  //
-  // # Checks
-  // The function CHECKs that the span contains at least `offset + count`
-  // elements, or at least `offset` elements if `count` is not specified, and
-  // will terminate otherwise.
   constexpr auto subspan(size_type offset,
                          size_type count = dynamic_extent) const {
     CHECK_LE(offset, size());
-    CHECK(count == dynamic_extent || count <= size() - offset)
-        << " count: " << count << " offset: " << offset << " size: " << size();
-    const size_type new_extent =
-        count != dynamic_extent ? count : size() - offset;
-    // SAFETY: span provides that data() points to at least `size()` many
-    // elements.
-    //
-    // If count is dynamic_extent, `new_extent` becomes `size() - offset`. Since
-    // `offset <= size()` from the check above, then `offset` is a valid offset
-    // for data(), and `offset + new_extent = offset + size() - offset = size()
-    // >= offset` is also a valid offset that is not before `offset`. This makes
-    // a span at `offset` with size `new_extent` valid.
-    //
-    // Otherwise `count <= size() - offset` and `0 <= offset <= size()` by the
-    // checks above, so `offset <= size() - count` and `size() - count` can not
-    // underflow. Then `offset` is a valid offset for data() and `new_extent` is
-    // `count <= size() - offset`, so `offset + new_extent <= offset + size() -
-    // offset = size()` which makes both `offset` and `offset + new_extent`
-    // valid offsets for data(), and since `new_extent` is non-negative, `offset
-    // + new_extent` is not before `offset` so `new_extent` is a valid size for
-    // the span at `data() + offset`.
-    return UNSAFE_BUFFERS(span<element_type>(data() + offset, new_extent));
+    const size_type remaining = size() - offset;
+    if (count == dynamic_extent) {
+      // SAFETY: `data()` points to at least `size()` elements, so `offset`
+      // specifies a valid element index or the past-the-end index, and
+      // `remaining` cannot index past-the-end elements.
+      return UNSAFE_BUFFERS(span<element_type>(data() + offset, remaining));
+    }
+    CHECK_LE(count, remaining);
+    // SAFETY: `data()` points to at least `size()` elements, so `offset`
+    // specifies a valid element index or the past-the-end index, and `count` is
+    // no larger than the number of remaining valid elements.
+    return UNSAFE_BUFFERS(span<element_type>(data() + offset, count));
   }
 
   // An overload of `split_at` which returns a fixed-size span.
