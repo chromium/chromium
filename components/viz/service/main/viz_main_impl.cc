@@ -223,8 +223,15 @@ void VizMainImpl::CreateGpuService(
     // These are the viz threads that are on the critical path of all frames.
     base::flat_set<base::PlatformThreadId> gpu_process_thread_ids;
 
-    // Add the current (GPU Main) thread and Compositor GPU thread IDs.
-    gpu_process_thread_ids.insert(base::PlatformThread::CurrentId());
+    // Add the current (GPU Main, or in-process GPU) thread and Compositor GPU
+    // thread IDs.
+    base::PlatformThreadId main_thread_id = base::PlatformThread::CurrentId();
+    gpu_process_thread_ids.insert(main_thread_id);
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPFGpuMain)) {
+      viz_compositor_thread_runner_->SetGpuMainThreadId(main_thread_id);
+    }
+#endif
 
     CompositorGpuThread* compositor_gpu_thread =
         gpu_service_->compositor_gpu_thread();

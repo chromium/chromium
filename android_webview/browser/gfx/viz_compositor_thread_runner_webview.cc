@@ -148,6 +148,19 @@ void VizCompositorThreadRunnerWebView::SetIOThreadId(
   }
 }
 
+void VizCompositorThreadRunnerWebView::SetGpuMainThreadId(
+    base::PlatformThreadId gpu_main_thread_id) {
+  if (gpu_main_thread_id != base::kInvalidThreadId) {
+    base::WaitableEvent event;
+    viz_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &VizCompositorThreadRunnerWebView::SetGpuMainThreadIdOnViz,
+            base::Unretained(this), gpu_main_thread_id, &event));
+    event.Wait();
+  }
+}
+
 void VizCompositorThreadRunnerWebView::CreateFrameSinkManager(
     viz::mojom::FrameSinkManagerParamsPtr params,
     viz::GpuServiceImpl* gpu_service) {
@@ -195,6 +208,14 @@ void VizCompositorThreadRunnerWebView::SetIOThreadIdOnViz(
     base::WaitableEvent* event) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   thread_ids_.insert(io_thread_id);
+  event->Signal();
+}
+
+void VizCompositorThreadRunnerWebView::SetGpuMainThreadIdOnViz(
+    base::PlatformThreadId gpu_main_thread_id,
+    base::WaitableEvent* event) {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  thread_ids_.insert(gpu_main_thread_id);
   event->Signal();
 }
 

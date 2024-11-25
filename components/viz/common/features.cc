@@ -187,6 +187,13 @@ BASE_FEATURE(kWebViewEnableADPFRendererMain,
              "WebViewEnableADPFRendererMain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the GPU Main thread is included in the set of threads reported
+// to the HWUI. This feature works only when WebViewEnableADPF is enabled,
+// otherwise this is a no-op.
+BASE_FEATURE(kWebViewEnableADPFGpuMain,
+             "WebViewEnableADPFGpuMain",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable WebView providing frame rate hints to View system.
 BASE_FEATURE(kWebViewFrameRateHints,
              "WebViewFrameRateHints",

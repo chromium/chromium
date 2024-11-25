@@ -71,6 +71,7 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure) override;
   void SetIOThreadId(base::PlatformThreadId io_thread_id) override;
+  void SetGpuMainThreadId(base::PlatformThreadId gpu_main_thread_id) override;
   void CreateFrameSinkManager(viz::mojom::FrameSinkManagerParamsPtr params,
                               viz::GpuServiceImpl* gpu_service) override;
 
@@ -85,6 +86,8 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
                                  viz::GpuServiceImpl* gpu_service_impl);
   void SetIOThreadIdOnViz(base::PlatformThreadId io_thread_id,
                           base::WaitableEvent* event);
+  void SetGpuMainThreadIdOnViz(base::PlatformThreadId gpu_main_thread_id,
+                               base::WaitableEvent* event);
 
   base::Thread viz_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
