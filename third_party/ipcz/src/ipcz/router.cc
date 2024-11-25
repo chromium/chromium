@@ -337,6 +337,9 @@ bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
   TrapEventDispatcher dispatcher;
   absl::InlinedVector<Ref<RouterLink>, 4> forwarding_links;
   {
+    // If we have to drop any undeliverable parcels, make sure they're destroyed
+    // outside of `lock` in case they have any attached Routers.
+    std::vector<std::unique_ptr<Parcel>> dropped_parcels;
     absl::MutexLock lock(&mutex_);
 
     DVLOG(4) << "Router " << this << " disconnected from "
@@ -344,9 +347,9 @@ bool Router::AcceptRouteDisconnectedFrom(LinkType link_type) {
 
     is_disconnected_ = true;
     if (link_type.is_peripheral_inward()) {
-      outbound_parcels_.ForceTerminateSequence();
+      dropped_parcels = outbound_parcels_.ForceTerminateSequence();
     } else {
-      inbound_parcels_.ForceTerminateSequence();
+      dropped_parcels = inbound_parcels_.ForceTerminateSequence();
     }
 
     // Wipe out all remaining links and propagate the disconnection over them.
