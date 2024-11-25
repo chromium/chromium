@@ -752,7 +752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.NumberFaviconsFetched" units="count"
-    expires_after="2024-12-01">
+    expires_after="2025-07-01">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
