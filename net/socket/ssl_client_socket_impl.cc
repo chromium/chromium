@@ -463,7 +463,7 @@ SSLClientSocketImpl::GetPeerApplicationSettings() const {
 }
 
 bool SSLClientSocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
-  ssl_info->Reset();
+  *ssl_info = SSLInfo();
   if (!server_cert_)
     return false;
 

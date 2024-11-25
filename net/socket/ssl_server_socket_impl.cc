@@ -564,7 +564,7 @@ SSLServerContextImpl::SocketImpl::GetPeerApplicationSettings() const {
 }
 
 bool SSLServerContextImpl::SocketImpl::GetSSLInfo(SSLInfo* ssl_info) {
-  ssl_info->Reset();
+  *ssl_info = SSLInfo();
   if (!completed_handshake_)
     return false;
 

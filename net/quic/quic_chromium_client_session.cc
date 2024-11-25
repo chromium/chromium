@@ -1415,7 +1415,7 @@ int QuicChromiumClientSession::GetRemoteEndpoint(IPEndPoint* endpoint) {
 // TODO(rtenneti): Add unittests for GetSSLInfo which exercise the various ways
 // we learn about SSL info (sync vs async vs cached).
 bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
-  ssl_info->Reset();
+  *ssl_info = SSLInfo();
   if (!cert_verify_result_) {
     return false;
   }

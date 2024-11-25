@@ -175,7 +175,7 @@ std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {
                                     &ssl_info.connection_status);
   ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
-  stream->set_ssl_info(ssl_info);
+  stream->set_ssl_info(std::move(ssl_info));
   return stream;
 }
 

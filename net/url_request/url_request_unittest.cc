@@ -621,7 +621,7 @@ class OCSPErrorTestDelegate : public TestDelegate {
     return on_ssl_certificate_error_called_;
   }
 
-  SSLInfo ssl_info() { return ssl_info_; }
+  const SSLInfo& ssl_info() { return ssl_info_; }
 
  private:
   bool on_ssl_certificate_error_called_ = false;
@@ -10456,7 +10456,7 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
       TestDelegate* delegate,
       SSLInfo* out_ssl_info) {
     // Always overwrite |out_ssl_info|.
-    out_ssl_info->Reset();
+    *out_ssl_info = SSLInfo();
 
     EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
     test_server.SetSSLConfig(cert_config);
