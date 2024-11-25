@@ -1080,13 +1080,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
       // correct or treat them as unsupported.
       if ((pseudo_type == CSSSelector::PseudoType::kPseudoWebKitCustomElement ||
            pseudo_type ==
-               CSSSelector::PseudoType::kPseudoBlinkInternalElement ||
-           (!RuntimeEnabledFeatures::
-                PseudoElementsCorrectInGetComputedStyleEnabled() &&
-            (pseudo_type == CSSSelector::PseudoType::kPseudoCue ||
-             pseudo_type == CSSSelector::PseudoType::kPseudoPlaceholder ||
-             pseudo_type ==
-                 CSSSelector::PseudoType::kPseudoFileSelectorButton))) &&
+               CSSSelector::PseudoType::kPseudoBlinkInternalElement) &&
           num_colons == 2) {
         return kPseudoIdNone;
       }

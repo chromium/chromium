@@ -3424,12 +3424,6 @@
       is_protected_feature: "true",
     },
     {
-      // Fix for ::cue, ::file-selector-button, and ::placeholder pseudo
-      // elements in getComputedStyle().
-      name: "PseudoElementsCorrectInGetComputedStyle",
-      status: "stable",
-    },
-    {
       // Allowing pseudo elements to have focus.
       name: "PseudoElementsFocusable",
       status: "experimental",
