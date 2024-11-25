@@ -2712,6 +2712,18 @@ chromium-metrics-reviews@google.com.
       variants="ActivityIndexMismatchAssignmentState"/>
 </histogram>
 
+<histogram name="Android.MultiWindowMode.Configuration" enum="WindowingMode"
+    expires_after="2025-05-22">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the configuration of the window that the app is running in. The
+    histogram will be emitted when a window is created, and when the windowing
+    mode changes. Recorded for tablet form factors only when desktop windowing
+    is supported.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindowMode.DraggedTabOpenedNewWindow"
     enum="Boolean" expires_after="2025-05-11">
   <owner>aishwaryarj@google.com</owner>

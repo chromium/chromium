@@ -48,6 +48,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
+import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.WindowingMode;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
@@ -100,7 +101,7 @@ public class AppHeaderCoordinatorUnitTest {
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
         doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
-        setupWithNoInsets();
+        setupWithNoCaptionInsets();
         mSavedInstanceStateBundle = new Bundle();
         initAppHeaderCoordinator();
     }
@@ -234,9 +235,16 @@ public class AppHeaderCoordinatorUnitTest {
     @Test
     public void enableDesktopWindowing() {
         var watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.DesktopWindowHeuristicResult",
-                        DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.DesktopWindowHeuristicResult",
+                                DesktopWindowHeuristicResult.IN_DESKTOP_WINDOW,
+                                1)
+                        .expectIntRecordTimes(
+                                "Android.MultiWindowMode.Configuration",
+                                WindowingMode.DESKTOP_WINDOW,
+                                1)
+                        .build();
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
 
@@ -315,7 +323,7 @@ public class AppHeaderCoordinatorUnitTest {
                 expectedState,
                 mAppHeaderCoordinator.getAppHeaderState());
 
-        setupWithNoInsets();
+        setupWithNoCaptionInsets();
         notifyInsetsRectObserver();
         verifyDesktopWindowingDisabled(
                 /* error= */ "DesktopWindowing should exit when no insets is supplied.");
@@ -432,7 +440,7 @@ public class AppHeaderCoordinatorUnitTest {
                 mSpyRootView.getPaddingBottom());
 
         // Simulate switching out of desktop windowing mode.
-        setupWithNoInsets();
+        setupWithNoCaptionInsets();
         notifyInsetsRectObserver();
         insets = applyWindowInsets(KEYBOARD_INSET);
         assertNotEquals(
@@ -472,6 +480,118 @@ public class AppHeaderCoordinatorUnitTest {
                 mSpyRootView.getPaddingBottom());
     }
 
+    @Test
+    public void windowingModeHistogram_EnterFullScreen() {
+        // Simulate starting in desktop windowing mode for an initial state.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        // Simulate switching to fullscreen mode.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.MultiWindowMode.Configuration",
+                                WindowingMode.FULLSCREEN,
+                                1)
+                        .build();
+
+        doReturn(false).when(mSpyActivity).isInMultiWindowMode();
+        setupWithNoCaptionInsets();
+        mLastSeenRawWindowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
+                        .build();
+        notifyInsetsRectObserver();
+
+        // Histogram should be emitted as expected.
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void windowingModeHistogram_EnterSplitScreen() {
+        // Simulate starting in desktop windowing mode for an initial state.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        // Simulate switching to split screen mode.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.MultiWindowMode.Configuration",
+                                WindowingMode.MULTI_WINDOW,
+                                1)
+                        .build();
+
+        doReturn(true).when(mSpyActivity).isInMultiWindowMode();
+        doReturn(false).when(mSpyActivity).isInPictureInPictureMode();
+        setupWithNoCaptionInsets();
+        mLastSeenRawWindowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
+                        .build();
+        notifyInsetsRectObserver();
+
+        // Histogram should be emitted as expected.
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void windowingModeHistogram_EnterPipMode() {
+        // Simulate starting in desktop windowing mode for an initial state.
+        setupWithLeftAndRightBoundingRect();
+        notifyInsetsRectObserver();
+
+        // Simulate switching to picture-in-picture mode.
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                "Android.MultiWindowMode.Configuration",
+                                WindowingMode.PICTURE_IN_PICTURE,
+                                1)
+                        .build();
+
+        doReturn(true).when(mSpyActivity).isInMultiWindowMode();
+        doReturn(true).when(mSpyActivity).isInPictureInPictureMode();
+        setupWithNoCaptionInsets();
+        mLastSeenRawWindowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
+                        .build();
+        notifyInsetsRectObserver();
+
+        // Histogram should be emitted as expected.
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void windowingModeHistogramNotRecordedWhenInsetsAbsent() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.MultiWindowMode.Configuration")
+                        .build();
+        // Override the last seen raw insets and trigger an insets rect update.
+        mLastSeenRawWindowInsets = new WindowInsetsCompat.Builder().build();
+        setupWithNoCaptionInsets();
+        notifyInsetsRectObserver();
+
+        // Histogram should not be emitted.
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void windowingModeHistogramRecordedOnce() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.MultiWindowMode.Configuration", WindowingMode.DESKTOP_WINDOW);
+        setupWithLeftAndRightBoundingRect();
+        // Simulate multiple rect updates that will be triggered when windowing mode changes.
+        notifyInsetsRectObserver();
+        notifyInsetsRectObserver();
+
+        // Histogram should be emitted just once.
+        watcher.assertExpected();
+    }
+
     private void initAppHeaderCoordinator() {
         mAppHeaderCoordinator =
                 new AppHeaderCoordinator(
@@ -485,7 +605,7 @@ public class AppHeaderCoordinatorUnitTest {
         mAppHeaderCoordinator.addObserver(mObserver);
     }
 
-    private void setupWithNoInsets() {
+    private void setupWithNoCaptionInsets() {
         setupInsetsRectProvider(Insets.NONE, List.of(), new Rect(), WINDOW_RECT);
     }
 

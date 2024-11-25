@@ -2330,6 +2330,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="NotVisible"/>
 </enum>
 
+<enum name="WindowingMode">
+  <int value="0" label="Mode is unknown."/>
+  <int value="1" label="The app is running in a fullscreen window."/>
+  <int value="2" label="The app is running in a picture-in-picture window."/>
+  <int value="3" label="The app is running in a desktop window."/>
+  <int value="4"
+      label="The app is running in a multi-windowing mode not equivalent to
+             any of the other modes."/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
