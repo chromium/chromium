@@ -447,7 +447,7 @@ void QuickInsertView::SelectMoreResults(QuickInsertSectionType type) {
                           search_field_view_->GetQueryText());
 }
 
-void QuickInsertView::ToggleGifs() {
+void QuickInsertView::ToggleGifs(bool is_checked) {
   if (base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
     // TODO: b/368442959 - Search and display GIF results.
   } else {

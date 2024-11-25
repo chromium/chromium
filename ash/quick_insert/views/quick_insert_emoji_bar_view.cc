@@ -148,7 +148,9 @@ class GifsButton : public views::LabelButton {
   METADATA_HEADER(GifsButton, views::LabelButton)
 
  public:
-  explicit GifsButton(base::RepeatingClosure pressed_callback) {
+  // `pressed_callback` takes in whether the GIFs button is checked or not
+  // (after the press).
+  explicit GifsButton(base::RepeatingCallback<void(bool)> pressed_callback) {
     // The label is not translated to keep the width constant. Treat it as an
     // icon.
     views::Builder<views::LabelButton>(this)
@@ -188,22 +190,24 @@ class GifsButton : public views::LabelButton {
         kGifsButtonCornerRadius));
   }
 
-  void OnButtonPressed() {
+  // Returns whether the GIFs button is checked or not after the button press.
+  bool OnButtonPressed() {
     if (!base::FeatureList::IsEnabled(ash::features::kPickerGifs)) {
-      return;
+      return false;
     }
 
-    toggled_ = !toggled_;
+    is_checked_ = !is_checked_;
     SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                  toggled_
+                  is_checked_
                       ? std::make_optional(ui::ImageModel::FromVectorIcon(
                             kCheckIcon, cros_tokens::kCrosSysOnSurface, 16))
                       : std::nullopt);
     PreferredSizeChanged();
+    return is_checked_;
   }
 
  private:
-  bool toggled_ = false;
+  bool is_checked_ = false;
 };
 
 BEGIN_METADATA(GifsButton)
@@ -257,7 +261,7 @@ QuickInsertEmojiBarView::QuickInsertEmojiBarView(
                       // `gifs_button_`.
                       views::Builder<views::Button>(
                           std::make_unique<GifsButton>(base::BindRepeating(
-                              &QuickInsertEmojiBarView::OpenGifs,
+                              &QuickInsertEmojiBarView::ToggleGifs,
                               base::Unretained(this))))
                           .SetVisible(is_gifs_enabled)
                           .CopyAddressTo(&gifs_button_)))
@@ -375,8 +379,8 @@ void QuickInsertEmojiBarView::OpenMoreEmojis() {
   delegate_->ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis);
 }
 
-void QuickInsertEmojiBarView::OpenGifs() {
-  delegate_->ToggleGifs();
+void QuickInsertEmojiBarView::ToggleGifs(bool is_checked) {
+  delegate_->ToggleGifs(is_checked);
 }
 
 int QuickInsertEmojiBarView::CalculateAvailableWidthForItemRow() {

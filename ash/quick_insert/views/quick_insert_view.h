@@ -108,7 +108,7 @@ class ASH_EXPORT QuickInsertView
   void OnSearchResultsViewHeightChanged() override;
 
   // QuickInsertEmojiBarViewDelegate:
-  void ToggleGifs() override;
+  void ToggleGifs(bool is_checked) override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
 
   // QuickInsertPseudoFocusHandler:
