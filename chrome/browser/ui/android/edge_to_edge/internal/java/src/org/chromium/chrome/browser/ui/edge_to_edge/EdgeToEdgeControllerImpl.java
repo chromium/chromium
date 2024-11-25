@@ -582,7 +582,6 @@ public class EdgeToEdgeControllerImpl
     }
 
     private static Insets getSystemInsets(@NonNull WindowInsetsCompat windowInsets) {
-        return windowInsets.getInsets(
-                WindowInsetsCompat.Type.navigationBars() + WindowInsetsCompat.Type.statusBars());
+        return windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
     }
 }
