@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -127,14 +129,18 @@ void MediaToolbarButtonView::Disable() {
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
-  if (service_->should_show_cast_local_media_iph()) {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(
+          browser_->profile()) &&
+      service_->should_show_cast_local_media_iph()) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCLocalMediaCastingFeature);
   }
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
-  if (service_->HasLocalCastNotifications()) {
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(
+          browser_->profile()) &&
+      service_->HasLocalCastNotifications()) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }

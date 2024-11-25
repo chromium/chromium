@@ -371,8 +371,7 @@ void ToolbarView::Init() {
   std::unique_ptr<MediaToolbarButtonView> media_button;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
     media_button = std::make_unique<MediaToolbarButtonView>(
-        browser_view_,
-        std::make_unique<MediaToolbarButtonContextualMenu>(browser_));
+        browser_view_, MediaToolbarButtonContextualMenu::Create(browser_));
   }
 
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>

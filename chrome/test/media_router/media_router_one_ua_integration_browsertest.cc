@@ -69,19 +69,19 @@ class MediaRouterIntegrationOneUABrowserTest
 #else
 #define MAYBE_Basic Basic
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest, MAYBE_Basic) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest, MAYBE_Basic) {
   RunBasicTest();
 }
 #undef MAYBE_Basic
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
                        MANUAL_SendAndOnMessage) {
   RunSendMessageTest("foo");
 }
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
                        MANUAL_ReceiverCloseConnection) {
   WebContents* web_contents = StartSessionWithTestPageAndChooseSink();
   CheckSessionValidity(web_contents);
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
                        MAYBE_Fail_SendMessage) {
   RunFailToSendMessageTest();
 }
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 #else
 #define MAYBE_ReconnectSession ReconnectSession
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
                        MAYBE_ReconnectSession) {
   RunReconnectSessionTest();
 }
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUABrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUABrowserTest,
                        MAYBE_ReconnectSessionSameTab) {
   RunReconnectSessionSameTabTest();
 }
@@ -144,7 +144,7 @@ class MediaRouterIntegrationOneUANoReceiverBrowserTest
 #else
 #define MAYBE_Basic Basic
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
                        MAYBE_Basic) {
   RunBasicTest();
 }
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #else
 #define MAYBE_Fail_SendMessage Fail_SendMessage
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
                        MAYBE_Fail_SendMessage) {
   RunFailToSendMessageTest();
 }
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #else
 #define MAYBE_ReconnectSession ReconnectSession
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
                        MAYBE_ReconnectSession) {
   RunReconnectSessionTest();
 }
@@ -179,10 +179,15 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
 #else
 #define MAYBE_ReconnectSessionSameTab ReconnectSessionSameTab
 #endif
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationOneUANoReceiverBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationOneUANoReceiverBrowserTest,
                        MAYBE_ReconnectSessionSameTab) {
   RunReconnectSessionSameTabTest();
 }
 #undef MAYBE_ReconnectSessionSameTab
+
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterIntegrationOneUABrowserTest);
+INSTANTIATE_MEDIA_ROUTER_INTEGRATION_BROWER_TEST_SUITE(
+    MediaRouterIntegrationOneUANoReceiverBrowserTest);
 
 }  // namespace media_router

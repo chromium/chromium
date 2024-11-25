@@ -4875,6 +4875,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "global-media-controls-cast-start-stop",
+    "owners": [ "takumif@chromium.org", "muyaoxu@google.com", "openscreen-eng@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "global-media-controls-updated-ui",
     "owners": [ "yrw@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 140

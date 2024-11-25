@@ -66,6 +66,11 @@ bool ShouldShowDeviceSelectorView(
   if (source_type == media_message_center::SourceType::kCast) {
     return false;
   }
+  if (!media_router::GlobalMediaControlsCastStartStopEnabled(profile) &&
+      !base::FeatureList::IsEnabled(
+          media::kGlobalMediaControlsSeamlessTransfer)) {
+    return false;
+  }
   // Hide device selector view if the local media session has started Remote
   // Playback or Tab Mirroring.
   if (source_type == media_message_center::SourceType::kLocalMediaSession &&
@@ -83,13 +88,15 @@ HostAndClientPair CreateHostAndClient(
   mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> host;
   mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
-  if (item->GetSourceType() ==
-      media_message_center::SourceType::kLocalMediaSession) {
-    device_service->GetDeviceListHostForSession(
-        id, host.InitWithNewPipeAndPassReceiver(), std::move(client));
-  } else {
-    device_service->GetDeviceListHostForPresentation(
-        host.InitWithNewPipeAndPassReceiver(), std::move(client));
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    if (item->GetSourceType() ==
+        media_message_center::SourceType::kLocalMediaSession) {
+      device_service->GetDeviceListHostForSession(
+          id, host.InitWithNewPipeAndPassReceiver(), std::move(client));
+    } else {
+      device_service->GetDeviceListHostForPresentation(
+          host.InitWithNewPipeAndPassReceiver(), std::move(client));
+    }
   }
   HostAndClientPair host_and_client;
   host_and_client.host = std::move(host);
@@ -244,7 +251,8 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     Profile* profile,
     std::optional<media_message_center::MediaColorTheme> media_color_theme) {
   // Show a footer view for a Cast item.
-  if (item->GetSourceType() == media_message_center::SourceType::kCast) {
+  if (item->GetSourceType() == media_message_center::SourceType::kCast &&
+      media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
     auto media_cast_item =
         static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS)

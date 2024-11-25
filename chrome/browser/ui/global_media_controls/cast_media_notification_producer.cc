@@ -43,18 +43,24 @@ bool ShouldHideNotification(Profile* profile,
   }
   std::unique_ptr<media_router::CastMediaSource> source =
       media_router::CastMediaSource::FromMediaSource(route.media_source());
-  // Show local site-initiated Mirroring routes.
-  if (source && route.is_local() &&
-      media_router::IsSiteInitiatedMirroringSource(source->source_id())) {
-    return false;
-  }
-  // Hide a route if it contains a Streaming App, i.e. Tab/Desktop Mirroring
-  // and Remote Playback routes.
-  if (source && source->ContainsStreamingApp()) {
-    // Don't hide it in case of MirroringType::kOffscreenTab.
-    // This happens when 1UA mode is being used. It uses a URL for MediaSource
-    // and a streaming receiver app for CastMediaSource.
-    return !route.media_source().url().SchemeIsHTTPOrHTTPS();
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    // Show local site-initiated Mirroring routes.
+    if (source && route.is_local() &&
+        media_router::IsSiteInitiatedMirroringSource(source->source_id())) {
+      return false;
+    }
+    // Hide a route if it contains a Streaming App, i.e. Tab/Desktop Mirroring
+    // and Remote Playback routes.
+    if (source && source->ContainsStreamingApp()) {
+      // Don't hide it in case of MirroringType::kOffscreenTab.
+      // This happens when 1UA mode is being used. It uses a URL for MediaSource
+      // and a streaming receiver app for CastMediaSource.
+      return !route.media_source().url().SchemeIsHTTPOrHTTPS();
+    }
+  } else if (route.controller_type() !=
+             media_router::RouteControllerType::kGeneric) {
+    // Hide a route if it doesn't have a generic controller (play, pause etc.).
+    return true;
   }
 
   // Skip the multizone member check if it's a DIAL route.

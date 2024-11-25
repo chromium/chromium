@@ -182,12 +182,13 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
   item_manager_->AddItemProducer(cast_notification_producer_.get());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  presentation_request_notification_producer_ =
-      std::make_unique<PresentationRequestNotificationProducer>(
-          base::BindRepeating(
-              &MediaNotificationService::HasActiveNotificationsForWebContents,
-              base::Unretained(this)),
-          content::MediaSession::GetSourceId(profile));
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    presentation_request_notification_producer_ =
+        std::make_unique<PresentationRequestNotificationProducer>(
+            base::BindRepeating(
+                &MediaNotificationService::HasActiveNotificationsForWebContents,
+                base::Unretained(this)),
+            content::MediaSession::GetSourceId(profile));
 #if !BUILDFLAG(IS_CHROMEOS)
     supplemental_device_picker_producer_ =
         std::make_unique<SupplementalDevicePickerProducer>(item_manager_.get());
@@ -196,6 +197,7 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
     // crosapi.
     SetDevicePickerProvider(supplemental_device_picker_producer_->PassRemote());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On Lacros-enabled Chrome OS, MediaNotificationService instances exist on

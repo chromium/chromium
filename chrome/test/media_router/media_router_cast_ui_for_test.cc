@@ -23,7 +23,9 @@ MediaRouterCastUiForTest::~MediaRouterCastUiForTest() {
   CHECK(!watch_callback_);
 }
 
-void MediaRouterCastUiForTest::SetUp() {}
+void MediaRouterCastUiForTest::SetUp() {
+  feature_list_.InitAndDisableFeature(kGlobalMediaControlsCastStartStop);
+}
 
 void MediaRouterCastUiForTest::ShowDialog() {
   dialog_controller_->ShowMediaRouterDialog(

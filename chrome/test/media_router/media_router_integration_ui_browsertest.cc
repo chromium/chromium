@@ -17,7 +17,8 @@
 namespace media_router {
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
   test_ui_->ShowDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
@@ -37,8 +38,9 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
 }
 
 // TODO(crbug.com/40567200): Flaky in Chromium waterfall.
-IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
                        MANUAL_Dialog_RouteCreationTimedOut) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   // The hardcoded timeout route creation timeout for the UI.
   // See kCreateRouteTimeoutSeconds in media_router_ui.cc.
   test_provider_->set_delay(base::Seconds(20));
@@ -64,6 +66,36 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");
   test_ui_->HideDialog();
+}
+
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       PRE_OpenDialogAfterEnablingMediaRouting) {
+  SetEnableMediaRouter(false);
+}
+
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       OpenDialogAfterEnablingMediaRouting) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
+  // Enable media routing and open media router dialog.
+  SetEnableMediaRouter(true);
+  OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
+  test_ui_->ShowDialog();
+  ASSERT_TRUE(test_ui_->IsDialogShown());
+  test_ui_->HideDialog();
+}
+
+IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
+                       DisableMediaRoutingWhenDialogIsOpened) {
+  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
+  // Open media router dialog.
+  OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
+  test_ui_->ShowDialog();
+  ASSERT_TRUE(test_ui_->IsDialogShown());
+
+  // Disable media routing.
+  SetEnableMediaRouter(false);
+
+  ASSERT_FALSE(test_ui_->IsDialogShown());
 }
 
 }  // namespace media_router
