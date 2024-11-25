@@ -906,8 +906,8 @@ bool DeprecatedEqualIgnoringCase(const UChar* a,
 wtf_size_t StringImpl::Find(CharacterMatchFunctionPtr match_function,
                             wtf_size_t start) const {
   if (Is8Bit())
-    return WTF::Find(Characters8(), length_, match_function, start);
-  return WTF::Find(Characters16(), length_, match_function, start);
+    return WTF::Find(Span8(), match_function, start);
+  return WTF::Find(Span16(), match_function, start);
 }
 
 wtf_size_t StringImpl::Find(base::RepeatingCallback<bool(UChar)> match_callback,
@@ -982,8 +982,8 @@ wtf_size_t StringImpl::Find(const StringView& match_string,
   // Optimization 1: fast case for strings of length 1.
   if (match_length == 1) {
     if (Is8Bit())
-      return WTF::Find(Characters8(), length(), match_string[0], index);
-    return WTF::Find(Characters16(), length(), match_string[0], index);
+      return WTF::Find(Span8(), match_string[0], index);
+    return WTF::Find(Span16(), match_string[0], index);
   }
 
   if (!match_length) [[unlikely]] {

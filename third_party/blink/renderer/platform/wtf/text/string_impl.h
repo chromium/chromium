@@ -735,76 +735,55 @@ WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const StringImpl*,
                                                 const LChar*);
 
-inline wtf_size_t Find(const LChar* characters,
-                       wtf_size_t length,
-                       LChar match_character,
+template <typename CharType>
+inline wtf_size_t Find(base::span<const CharType> characters,
+                       CharType match_character,
                        wtf_size_t index = 0) {
-  // Some clients rely on being able to pass index >= length.
-  if (index >= length)
+  if (index >= characters.size()) {
     return kNotFound;
-  const LChar* found = static_cast<const LChar*>(
-      memchr(characters + index, match_character, length - index));
-  return found ? static_cast<wtf_size_t>(found - characters) : kNotFound;
-}
-
-inline wtf_size_t Find(const UChar* characters,
-                       wtf_size_t length,
-                       UChar match_character,
-                       wtf_size_t index = 0) {
-  while (index < length) {
-    if (characters[index] == match_character)
-      return index;
-    ++index;
   }
-  return kNotFound;
+  // Pass raw pointers to std::find for better performance.
+  const CharType* begin = base::to_address(characters.begin());
+  const CharType* end = base::to_address(characters.end());
+  const CharType* it = std::find(base::to_address(characters.begin() + index),
+                                 end, match_character);
+  return it == end ? kNotFound : std::distance(begin, it);
 }
 
-ALWAYS_INLINE wtf_size_t Find(const UChar* characters,
-                              wtf_size_t length,
+ALWAYS_INLINE wtf_size_t Find(base::span<const UChar> characters,
                               LChar match_character,
                               wtf_size_t index = 0) {
-  return Find(characters, length, static_cast<UChar>(match_character), index);
+  return Find(characters, static_cast<UChar>(match_character), index);
 }
 
-inline wtf_size_t Find(const LChar* characters,
-                       wtf_size_t length,
+inline wtf_size_t Find(base::span<const LChar> characters,
                        UChar match_character,
                        wtf_size_t index = 0) {
   if (match_character & ~0xFF)
     return kNotFound;
-  return Find(characters, length, static_cast<LChar>(match_character), index);
+  return Find(characters, static_cast<LChar>(match_character), index);
 }
 
 template <typename CharacterType>
-inline wtf_size_t Find(const CharacterType* characters,
-                       wtf_size_t length,
+inline wtf_size_t Find(base::span<const CharacterType> characters,
                        char match_character,
                        wtf_size_t index = 0) {
-  return Find(characters, length, static_cast<LChar>(match_character), index);
+  return Find(characters, static_cast<LChar>(match_character), index);
 }
 
-inline wtf_size_t Find(const LChar* characters,
-                       wtf_size_t length,
+template <typename CharType>
+inline wtf_size_t Find(base::span<const CharType> characters,
                        CharacterMatchFunctionPtr match_function,
                        wtf_size_t index = 0) {
-  while (index < length) {
-    if (match_function(characters[index]))
-      return index;
-    ++index;
+  if (index >= characters.size()) {
+    return kNotFound;
   }
-  return kNotFound;
-}
-
-inline wtf_size_t Find(const UChar* characters,
-                       wtf_size_t length,
-                       CharacterMatchFunctionPtr match_function,
-                       wtf_size_t index = 0) {
-  while (index < length) {
-    if (match_function(characters[index]))
-      return index;
-    ++index;
-  }
-  return kNotFound;
+  // Pass raw pointers to std::find_if for better performance.
+  const CharType* begin = base::to_address(characters.begin());
+  const CharType* end = base::to_address(characters.end());
+  const CharType* it = std::find_if(
+      base::to_address(characters.begin() + index), end, match_function);
+  return it == end ? kNotFound : std::distance(begin, it);
 }
 
 template <typename CharacterType>
@@ -843,8 +822,8 @@ inline wtf_size_t ReverseFind(const LChar* characters,
 
 inline wtf_size_t StringImpl::Find(LChar character, wtf_size_t start) const {
   if (Is8Bit())
-    return WTF::Find(Characters8(), length_, character, start);
-  return WTF::Find(Characters16(), length_, character, start);
+    return WTF::Find(Span8(), character, start);
+  return WTF::Find(Span16(), character, start);
 }
 
 ALWAYS_INLINE wtf_size_t StringImpl::Find(char character,
@@ -854,8 +833,8 @@ ALWAYS_INLINE wtf_size_t StringImpl::Find(char character,
 
 inline wtf_size_t StringImpl::Find(UChar character, wtf_size_t start) const {
   if (Is8Bit())
-    return WTF::Find(Characters8(), length_, character, start);
-  return WTF::Find(Characters16(), length_, character, start);
+    return WTF::Find(Span8(), character, start);
+  return WTF::Find(Span16(), character, start);
 }
 
 inline wtf_size_t LengthOfNullTerminatedString(const UChar* string) {

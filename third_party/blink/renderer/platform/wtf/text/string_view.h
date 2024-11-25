@@ -402,8 +402,8 @@ inline bool operator!=(const StringView& a, const StringView& b) {
 
 inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,
                                    wtf_size_t start) const {
-  return Is8Bit() ? WTF::Find(Characters8(), length_, match_function, start)
-                  : WTF::Find(Characters16(), length_, match_function, start);
+  return Is8Bit() ? WTF::Find(Span8(), match_function, start)
+                  : WTF::Find(Span16(), match_function, start);
 }
 
 template <bool isSpecialCharacter(UChar), typename CharacterType>
