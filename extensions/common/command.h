@@ -36,11 +36,6 @@ class Command {
   // shortcut text (like accelerator::GetShortcutText() does).
   static std::string AcceleratorToString(const ui::Accelerator& accelerator);
 
-  // Return true if the specified accelerator is one of the following multimedia
-  // keys: Next Track key, Previous Track key, Stop Media key, Play/Pause Media
-  // key, without any modifiers.
-  static bool IsMediaKey(const ui::Accelerator& accelerator);
-
   // Return true if the |command_name| is one of the following action events:
   // Action Command Event, Browser Action Command Event, Page Action Command
   // Event.

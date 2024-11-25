@@ -408,15 +408,6 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
 }
 
 // static
-bool Command::IsMediaKey(const ui::Accelerator& accelerator) {
-  if (accelerator.modifiers() != 0) {
-    return false;
-  }
-
-  return ui::MediaKeysListener::IsMediaKeycode(accelerator.key_code());
-}
-
-// static
 bool Command::IsActionRelatedCommand(std::string_view command_name) {
   return command_name == values::kActionCommandEvent ||
          command_name == values::kBrowserActionCommandEvent ||

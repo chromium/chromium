@@ -11,7 +11,6 @@
 #import "base/apple/foundation_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_keys_listener_manager.h"
-#include "extensions/common/command.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
@@ -88,7 +87,7 @@ bool GlobalShortcutListenerMac::RegisterAcceleratorImpl(
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(accelerator_ids_.find(accelerator) == accelerator_ids_.end());
 
-  if (Command::IsMediaKey(accelerator)) {
+  if (accelerator.IsMediaKey()) {
     // We should listen for media key presses through a MediaKeysListener. If
     // the MediaKeysListenerManager is enabled, we should listen through it,
     // which will tell the manager to send us the media key presses and prevent
@@ -129,15 +128,16 @@ void GlobalShortcutListenerMac::UnregisterAcceleratorImpl(
   DCHECK(accelerator_ids_.find(accelerator) != accelerator_ids_.end());
 
   // Unregister the hot_key if it's a keyboard shortcut.
-  if (!Command::IsMediaKey(accelerator))
+  if (!accelerator.IsMediaKey()) {
     UnregisterHotKey(accelerator);
+  }
 
   // Remove hot_key from the mappings.
   KeyId key_id = accelerator_ids_[accelerator];
   id_accelerators_.erase(key_id);
   accelerator_ids_.erase(accelerator);
 
-  if (Command::IsMediaKey(accelerator)) {
+  if (accelerator.IsMediaKey()) {
     // If we're listening to media keys through the MediaKeysListenerManager,
     // then inform the manager that we're no longer listening for the given key.
     if (content::MediaKeysListenerManager::
@@ -232,7 +232,7 @@ void GlobalShortcutListenerMac::StopWatchingHotKeys() {
 
 bool GlobalShortcutListenerMac::IsAnyHotKeyRegistered() {
   for (auto& accelerator_id : accelerator_ids_) {
-    if (!Command::IsMediaKey(accelerator_id.first)) {
+    if (!accelerator_id.first.IsMediaKey()) {
       return true;
     }
   }

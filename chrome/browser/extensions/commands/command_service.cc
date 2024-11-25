@@ -60,8 +60,9 @@ std::string GetPlatformKeybindingKeyForAccelerator(
   // shortcut (1-to-1 relationship). That means two or more extensions can
   // register for the same media key so the extension ID needs to be added to
   // the key to make sure the key is unique.
-  if (Command::IsMediaKey(accelerator))
+  if (accelerator.IsMediaKey()) {
     key += ":" + extension_id;
+  }
 
   return key;
 }
@@ -176,7 +177,7 @@ bool CommandService::AddKeybindingPref(const ui::Accelerator& accelerator,
     return true;
 
   // Media Keys are allowed to be used by named command only.
-  DCHECK(!Command::IsMediaKey(accelerator) ||
+  DCHECK(!accelerator.IsMediaKey() ||
          !Command::IsActionRelatedCommand(command_name));
 
   ScopedDictPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
@@ -489,8 +490,9 @@ bool CommandService::CanAutoAssign(const Command &command,
     return false;
 
   // Media Keys are non-exclusive, so allow auto-assigning them.
-  if (Command::IsMediaKey(command.accelerator()))
+  if (command.accelerator().IsMediaKey()) {
     return true;
+  }
 
   if (command.global()) {
     if (Command::IsActionRelatedCommand(command.command_name()))

@@ -10,7 +10,6 @@
 #include "base/win/win_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_keys_listener_manager.h"
-#include "extensions/common/command.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_code_conversion_win.h"
@@ -80,7 +79,7 @@ bool GlobalShortcutListenerWin::RegisterAcceleratorImpl(
   // Instead, we'll just disable the MediaKeysListenerManager handling here, and
   // listen using the fallback RegisterHotKey method.
   if (content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
-      Command::IsMediaKey(accelerator)) {
+      accelerator.IsMediaKey()) {
     content::MediaKeysListenerManager* media_keys_listener_manager =
         content::MediaKeysListenerManager::GetInstance();
     DCHECK(media_keys_listener_manager);
@@ -119,7 +118,7 @@ void GlobalShortcutListenerWin::UnregisterAcceleratorImpl(
   // TODO(crbug.com/40622191): We should be using
   // |media_keys_listener_manager->StopWatchingMediaKey(...)| here.
   if (content::MediaKeysListenerManager::IsMediaKeysListenerManagerEnabled() &&
-      Command::IsMediaKey(accelerator)) {
+      accelerator.IsMediaKey()) {
     registered_media_keys_--;
     DCHECK_GE(registered_media_keys_, 0);
     if (registered_media_keys_ == 0) {

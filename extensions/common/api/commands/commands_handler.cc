@@ -100,8 +100,9 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
       // Only media keys are allowed to work without modifiers, and because
       // media keys aren't registered exclusively they should not count towards
       // the max of four shortcuts per extension.
-      if (!Command::IsMediaKey(binding->accelerator()))
+      if (!binding->accelerator().IsMediaKey()) {
         ++keybindings_found;
+      }
 
       if (keybindings_found > kMaxCommandsWithKeybindingPerExtension &&
           !PermissionsParser::HasAPIPermission(
