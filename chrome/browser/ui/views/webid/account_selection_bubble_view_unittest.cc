@@ -452,7 +452,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_TRUE(GetHoverButtonIconView(idp_button));
     // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
     EXPECT_EQ(GetHoverButtonIconView(idp_button)->GetPreferredSize(),
-              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
   }
 
   void CheckUseOtherAccount(
@@ -486,7 +486,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
               expected_subtitle);
     ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
     EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
-              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
+              gfx::Size(fedcm::kMultiIdpIconSize, fedcm::kMultiIdpIconSize));
   }
 
   void SetUp() override {

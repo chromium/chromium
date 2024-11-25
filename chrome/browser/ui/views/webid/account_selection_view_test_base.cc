@@ -227,11 +227,14 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
   } else {
     EXPECT_FALSE(GetHoverButtonFooter(account_row));
   }
-  EXPECT_EQ(icon_view->size(),
-            is_modal_dialog ? gfx::Size(kModalAvatarSize, kModalAvatarSize)
-            : expect_idp    ? gfx::Size(kDesiredAvatarSize + kIdpBadgeOffset,
-                                        kDesiredAvatarSize + kIdpBadgeOffset)
-                         : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+  EXPECT_EQ(
+      icon_view->size(),
+      is_modal_dialog
+          ? gfx::Size(fedcm::kModalAvatarSize, fedcm::kModalAvatarSize)
+      : expect_idp
+          ? gfx::Size(fedcm::kDesiredAvatarSize + fedcm::kIdpBadgeOffset,
+                      fedcm::kDesiredAvatarSize + fedcm::kIdpBadgeOffset)
+          : gfx::Size(fedcm::kDesiredAvatarSize, fedcm::kDesiredAvatarSize));
 
   if (is_modal_dialog) {
     // Check for arrow icon in secondary view.
@@ -254,8 +257,8 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
     ASSERT_EQ(icon_children.size(), 2u);
     EXPECT_STREQ(icon_children[0]->GetClassName(), "AccountImageView");
     EXPECT_EQ(icon_children[0]->size(),
-              gfx::Size(kDesiredAvatarSize + kIdpBadgeOffset,
-                        kDesiredAvatarSize + kIdpBadgeOffset));
+              gfx::Size(fedcm::kDesiredAvatarSize + fedcm::kIdpBadgeOffset,
+                        fedcm::kDesiredAvatarSize + fedcm::kIdpBadgeOffset));
     EXPECT_STREQ(icon_children[1]->GetClassName(), "BoxLayoutView");
     ASSERT_EQ(icon_children[1]->children().size(), 1u);
     views::View* brand_icon_image_view = icon_children[1]->children()[0];

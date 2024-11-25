@@ -207,8 +207,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_TRUE(spinner->GetVisible());
 
     // Check spinner is of the correct size.
-    EXPECT_EQ(spinner->size(),
-              gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
+    EXPECT_EQ(spinner->size(), gfx::Size(fedcm::kModalIconSpinnerSize,
+                                         fedcm::kModalIconSpinnerSize));
 
     // Check IDP icon container contains the IDP icon image. The IDP icon
     // container is always present. Its visibility is updated when we want to
@@ -230,7 +230,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
       // Check icon image is of the correct size.
       EXPECT_EQ(idp_icon_image->size(),
-                gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
+                gfx::Size(fedcm::kModalIdpIconSize, fedcm::kModalIdpIconSize));
     }
 
     // The combined icons container is present only when we expect it to be
@@ -253,8 +253,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       // icons.
       for (const auto& icon : combined_icons_container_children) {
         EXPECT_TRUE(icon->GetVisible());
-        EXPECT_EQ(icon->size(),
-                  gfx::Size(kModalCombinedIconSize, kModalCombinedIconSize));
+        EXPECT_EQ(icon->size(), gfx::Size(fedcm::kModalCombinedIconSize,
+                                          fedcm::kModalCombinedIconSize));
       }
     }
 

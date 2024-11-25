@@ -26,16 +26,13 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 
-using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
-using IdentityRequestAccountPtr =
-    scoped_refptr<content::IdentityRequestAccount>;
-using TokenError = content::IdentityCredentialTokenError;
-
 class FedCmAccountSelectionView;
 
 namespace content {
 class IdentityRequestAccount;
 }  // namespace content
+
+namespace fedcm {
 
 // The radius used for the corner of the "Continue as" button.
 inline constexpr int kButtonRadius = 16;
@@ -95,6 +92,7 @@ inline constexpr int kModalIconSpinnerSize = 28;
 inline constexpr int kModalButtonSpinnerSize = 20;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
+}  // namespace fedcm
 
 class BrandIconImageView : public views::ImageView {
   METADATA_HEADER(BrandIconImageView, views::ImageView)

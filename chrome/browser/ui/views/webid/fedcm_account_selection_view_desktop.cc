@@ -37,8 +37,9 @@ int AccountSelectionView::GetBrandIconMinimumSize(
     blink::mojom::RpMode rp_mode) {
   // TODO(crbug.com/348673144): Decide whether to keep circle cropping IDP
   // icons.
-  return (rp_mode == blink::mojom::RpMode::kActive ? kModalIdpIconSize
-                                                   : kBubbleIdpIconSize) /
+  return (rp_mode == blink::mojom::RpMode::kActive
+              ? fedcm::kModalIdpIconSize
+              : fedcm::kBubbleIdpIconSize) /
          FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio;
 }
 
@@ -885,9 +886,9 @@ bool FedCmAccountSelectionView::CanFitInWebContents() {
   // cannot fit in web contents. The offsets kRightMargin and kTopMargin pertain
   // to the bubble widget.
   return preferred_bubble_size.width() <
-             (web_contents_size.width() - kRightMargin) &&
+             (web_contents_size.width() - fedcm::kRightMargin) &&
          preferred_bubble_size.height() <
-             (web_contents_size.height() - kTopMargin);
+             (web_contents_size.height() - fedcm::kTopMargin);
 }
 
 void FedCmAccountSelectionView::UpdateDialogPosition() {
