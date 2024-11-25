@@ -21,6 +21,18 @@ void LogPixCodeCopied(ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
+void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_FopSelectorShown(ukm_source_id)
+      .SetShown(true)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id) {
+  ukm::builders::FacilitatedPayments_Pix_FopSelectorResult(ukm_source_id)
+      .SetResult(accepted)
+      .Record(ukm::UkmRecorder::Get());
+}
+
 void LogFopSelected() {
   // The histogram name should be in sync with
   // `FacilitatedPaymentsPaymentMethodsMediator.FOP_SELECTOR_USER_ACTION_HISTOGRAM`.

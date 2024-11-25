@@ -86,6 +86,14 @@ enum class TriggerSource {
 // website.
 void LogPixCodeCopied(ukm::SourceId ukm_source_id);
 
+// Log when the FOP selector UI is shown.
+void LogFopSelectorShownUkm(ukm::SourceId ukm_source_id);
+
+// Log after user accepts / rejects the FOP UI. The `accepted` will be false
+// if the user rejects the UI, and it will be true if the user accepts the
+// selector UI and selects a FoP to use.
+void LogFopSelectorResultUkm(bool accepted, ukm::SourceId ukm_source_id);
+
 // Log when user selects a FOP to pay with.
 void LogFopSelected();
 
