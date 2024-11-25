@@ -1709,6 +1709,19 @@ void WebFrameWidgetImpl::OnTaskCompletedForFrame(
   }
 }
 
+void WebFrameWidgetImpl::RecordRenderingUpdateEndTime(
+    base::TimeTicks rendering_update_time) {
+  if (!animation_frame_timing_monitor_) {
+    return;
+  }
+
+  LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
+  CHECK(local_root_frame);
+  CHECK(local_root_frame->DomWindow());
+  animation_frame_timing_monitor_->RecordRenderingUpdateEndTime(
+      *local_root_frame->DomWindow(), rendering_update_time);
+}
+
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
   CHECK(local_root_frame);
@@ -1716,27 +1729,6 @@ void WebFrameWidgetImpl::DidBeginMainFrame() {
   if (LocalFrameView* frame_view = local_root_frame->View()) {
     frame_view->RunPostLifecycleSteps();
   }
-
-  base::TimeTicks rendering_update_time = base::TimeTicks::Now();
-
-  // https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
-  // 20. For each doc of docs, record rendering time for doc given
-  // unsafeStyleAndLayoutStartTime.
-  //     (we passed |unsafeStyleAndLayoutStartTime| already in UpdateLifecycle)
-  if (animation_frame_timing_monitor_) {
-    CHECK(local_root_frame->DomWindow());
-    animation_frame_timing_monitor_->DidBeginMainFrame(
-        *local_root_frame->DomWindow(), rendering_update_time);
-  }
-
-  // https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
-  // 21. For each doc of docs, mark paint timing for doc.
-  ForEachLocalFrameControlledByWidget(
-      local_root_frame, [&](WebLocalFrameImpl* frame) {
-        PaintTiming::From(
-            *To<LocalFrame>(WebFrame::ToCoreFrame(*frame))->GetDocument())
-            .SetRenderingUpdateEndTime(rendering_update_time);
-      });
 
   if (Page* page = local_root_frame->GetPage()) {
     page->Animator().PostAnimate();

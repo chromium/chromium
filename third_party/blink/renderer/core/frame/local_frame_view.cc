@@ -2361,6 +2361,23 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       break;
   }
 
+  // Updating the rendering time here, after view transition operations, as per
+  // spec. Note that "pre-paint" has already occurred, because it's needed for
+  // view transitions and resize observers.
+  base::TimeTicks rendering_update_end_time = base::TimeTicks::Now();
+
+  // https://html.spec.whatwg.org/multipage/webappapis.html#update-the-rendering
+  // 20. For each doc of docs, record rendering time for doc..
+  if (FrameWidget* widget = frame_->GetWidgetForLocalRoot()) {
+    widget->RecordRenderingUpdateEndTime(rendering_update_end_time);
+  }
+
+  // 21. For each doc of docs, mark paint timing for doc.
+  ForAllNonThrottledLocalFrameViews([&](LocalFrameView& frame_view) {
+    PaintTiming::From(*frame_view.frame_->GetDocument())
+        .SetRenderingUpdateEndTime(rendering_update_end_time);
+  });
+
   // This must be after all other updates for position-visibility.
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.frame_->CheckPositionAnchorsForChainedVisibilityChanges();

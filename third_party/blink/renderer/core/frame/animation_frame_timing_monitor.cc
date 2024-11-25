@@ -89,16 +89,15 @@ void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
       base::TimeTicks::Now());
 }
 
-void AnimationFrameTimingMonitor::DidBeginMainFrame(
+void AnimationFrameTimingMonitor::RecordRenderingUpdateEndTime(
     LocalDOMWindow& local_root_window,
     base::TimeTicks rendering_update_end_time) {
   // This can happen if the AnimationFrameTimingMonitor instance is created
-  // in the middle of a frame.
-  if (!current_frame_timing_info_) {
+  // in the middle of a frame, or if some testing scenarios paint synchronously.
+  if (!current_frame_timing_info_ || state_ != State::kRenderingFrame) {
     return;
   }
 
-  CHECK(state_ == State::kRenderingFrame);
   current_frame_timing_info_->SetRenderEndTime(rendering_update_end_time);
 
   if (did_pause_) {

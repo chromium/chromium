@@ -320,6 +320,11 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void OnTaskCompletedForFrame(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
                                        LocalFrame*) = 0;
+
+  // Implementation of
+  // https://w3c.github.io/long-animation-frames/#record-rendering-time (the
+  // other parameters are recorded earlier).
+  virtual void RecordRenderingUpdateEndTime(base::TimeTicks) = 0;
 };
 
 }  // namespace blink
