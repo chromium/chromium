@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -200,18 +201,28 @@ size_t CloudBinaryUploadService::GetParallelActiveRequestsMax() {
 
 CloudBinaryUploadService::CloudBinaryUploadService(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
-      binary_fcm_service_(BinaryFCMService::Create(profile)),
       profile_(profile),
-      weakptr_factory_(this) {}
+      weakptr_factory_(this) {
+  // Only initialize binary_fcm_service_ if the experiment is off.
+  if (!enterprise_connectors::IsStopRegisterFcmEnabled()) {
+    binary_fcm_service_ = BinaryFCMService::Create(profile);
+  }
+}
 
 CloudBinaryUploadService::CloudBinaryUploadService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     Profile* profile,
     std::unique_ptr<BinaryFCMService> binary_fcm_service)
     : url_loader_factory_(url_loader_factory),
-      binary_fcm_service_(std::move(binary_fcm_service)),
       profile_(profile),
-      weakptr_factory_(this) {}
+      weakptr_factory_(this) {
+  {
+    // Only initialize binary_fcm_service_ if the experiment is off.
+    if (!enterprise_connectors::IsStopRegisterFcmEnabled()) {
+      binary_fcm_service_ = std::move(binary_fcm_service);
+    }
+  }
+}
 
 CloudBinaryUploadService::~CloudBinaryUploadService() = default;
 
