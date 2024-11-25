@@ -125,8 +125,7 @@ Resource* PreloadRequest::Start(Document* document) {
 
   bool shared_storage_writable_opted_in =
       shared_storage_writable_opted_in_ &&
-      RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
-          document->domWindow()) &&
+      RuntimeEnabledFeatures::SharedStorageAPIEnabled(document->domWindow()) &&
       document->domWindow()->IsSecureContext() &&
       !document->domWindow()->GetSecurityOrigin()->IsOpaque();
   resource_request.SetSharedStorageWritableOptedIn(

@@ -1804,8 +1804,7 @@ NavigationRequest::NavigationRequest(
         blink::kFencedFrameForcedSandboxFlags;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
-      base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118)) {
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     shared_storage_writable_opted_in_ =
         frame_tree_node_->shared_storage_writable_opted_in();
     shared_storage_writable_eligible_ =

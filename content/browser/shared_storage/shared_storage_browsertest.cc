@@ -7505,8 +7505,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
 
   SharedStoragePrivateAggregationEnabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPrivateAggregationApi,
-                              blink::features::kSharedStorageAPIM118},
+        /*enabled_features=*/{blink::features::kPrivateAggregationApi},
         /*disabled_features=*/{});
   }
 
@@ -10549,11 +10548,6 @@ class SharedStorageHeaderObserverBrowserTest
  public:
   using OperationResult = storage::SharedStorageManager::OperationResult;
 
-  SharedStorageHeaderObserverBrowserTest() {
-    shared_storage_m118_feature_.InitAndEnableFeature(
-        blink::features::kSharedStorageAPIM118);
-  }
-
   void FinishSetup() override {
     https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -10787,9 +10781,6 @@ class SharedStorageHeaderObserverBrowserTest
   url::Origin subresource_or_subframe_origin_;
   std::vector<url::Origin> redirect_origins_;
   std::string subresource_or_subframe_content_type_;
-
- private:
-  base::test::ScopedFeatureList shared_storage_m118_feature_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,

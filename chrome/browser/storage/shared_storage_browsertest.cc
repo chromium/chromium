@@ -4945,11 +4945,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {
  public:
-  SharedStorageHeaderPrefBrowserTest() {
-    shared_storage_m118_feature_.InitAndEnableFeature(
-        blink::features::kSharedStorageAPIM118);
-  }
-
   void FinishSetUp() override {
     observer_ = content::CreateAndOverrideSharedStorageHeaderObserver(
         GetStoragePartition());
@@ -4957,9 +4952,6 @@ class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {
 
  protected:
   base::WeakPtr<content::TestSharedStorageHeaderObserver> observer_;
-
- private:
-  base::test::ScopedFeatureList shared_storage_m118_feature_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -5076,7 +5068,6 @@ class SharedStorageChromeNoParamsBrowserTest
         privacy_sandbox::kEnforcePrivacySandboxAttestations,
         GetEnforcementAndEnrollmentStatus() !=
             EnforcementAndEnrollmentStatus::kAttestationsUnenforced);
-    m118_feature_.InitAndEnableFeature(blink::features::kSharedStorageAPIM118);
     m125_feature_.InitAndEnableFeature(blink::features::kSharedStorageAPIM125);
   }
   ~SharedStorageChromeNoParamsBrowserTest() override = default;
@@ -5400,7 +5391,6 @@ class SharedStorageExtensionBrowserTest
          blink::features::kFencedFrames,
          blink::features::kFencedFramesAPIChanges,
          privacy_sandbox::kEnforcePrivacySandboxAttestations,
-         blink::features::kSharedStorageAPIM118,
          blink::features::kSharedStorageAPIM125},
         /*disabled_features=*/{});
   }

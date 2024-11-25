@@ -1613,11 +1613,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageWorkletSharedBackingThreadImplementation);
 
-// Additional Shared Storage API features shipped in M118.
-// TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM118);
-
 // Additional Shared Storage API features shipped in M125.
 // TODO(crbug.com/1218540): Merge this flag with `kSharedStorageAPI` once
 // shipped.

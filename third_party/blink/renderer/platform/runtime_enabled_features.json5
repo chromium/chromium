@@ -3934,11 +3934,6 @@
       status: "stable",
     },
     {
-      name: "SharedStorageAPIM118",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "SharedStorageAPIM125",
       base_feature: "none",
       public: true,

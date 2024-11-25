@@ -1772,7 +1772,6 @@ TEST_F(HTMLPreloadScannerTest, TokenStreamMatcher) {
 
 TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
   WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
-  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
   static constexpr bool kSecureDocumentUrl = true;
   static constexpr bool kInsecureDocumentUrl = false;
 

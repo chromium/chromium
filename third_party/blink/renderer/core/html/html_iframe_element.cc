@@ -309,7 +309,7 @@ void HTMLIFrameElement::ParseAttribute(
     }
   } else if (name == html_names::kSharedstoragewritableAttr &&
              GetExecutionContext() &&
-             RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+             RuntimeEnabledFeatures::SharedStorageAPIEnabled(
                  GetExecutionContext())) {
     if (!GetExecutionContext()->IsSecureContext()) {
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -632,8 +632,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
         !FastGetAttribute(html_names::kAdauctionheadersAttr).IsNull();
   }
 
-  if (RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
-          GetExecutionContext()) &&
+  if (RuntimeEnabledFeatures::SharedStorageAPIEnabled(GetExecutionContext()) &&
       GetExecutionContext()->IsSecureContext()) {
     attributes->shared_storage_writable_opted_in =
         !FastGetAttribute(html_names::kSharedstoragewritableAttr).IsNull();
