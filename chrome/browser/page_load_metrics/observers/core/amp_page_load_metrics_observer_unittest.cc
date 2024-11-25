@@ -923,10 +923,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming."
-      "MainFrameToSubFrameNavigationDelta.Subframe",
-      1);
 
   // We expect a source with a negative NavigationDelta metric, since the main
   // frame navigation occurred before the AMP subframe navigation.
