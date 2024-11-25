@@ -8,13 +8,14 @@ import static org.junit.Assert.fail;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -93,8 +94,11 @@ public class ChromeCachedFlagsTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "http://crbug.com/380380524")
     public void testValueIsConsistentWithDefault() {
+        // In Chrome-branded builds, the fieldtrial_testing_config.json isn't applied, so
+        // flag values may differ.
+        Assume.assumeTrue(!BuildConfig.IS_CHROME_BRANDED);
+
         mEntryPoints.startOnBlankPageNonBatched();
 
         List<List<CachedFlag>> allListsOfCachedFlags =
