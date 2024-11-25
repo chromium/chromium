@@ -417,9 +417,6 @@ class HeadlessProtocolBrowserTestWithKnownPermission
     // Handle known exceptions.
     if (permission == "midiSysEx") {
       permission = "midiSysex";
-    } else if (permission == "windowPlacement") {
-      // This should be removed after https://crrev.com/c/6044006 lands.
-      permission = "windowManagement";
     }
   }
 
