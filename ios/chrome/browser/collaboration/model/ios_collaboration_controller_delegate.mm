@@ -55,7 +55,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult sign_in_result,
-                          SigninCompletionInfo* completion_info) {
+                          id<SystemIdentity> completion_info) {
                bool completion_result =
                    sign_in_result == SigninCoordinatorResultSuccess;
                CollaborationControllerDelegate::Outcome outcome =

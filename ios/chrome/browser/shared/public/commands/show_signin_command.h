@@ -8,13 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #include "components/signin/public/base/signin_metrics.h"
+#include "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
-@class SigninCompletionInfo;
-typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
-
-using ShowSigninCommandCompletionCallback =
-    void (^)(SigninCoordinatorResult result, SigninCompletionInfo*);
 
 enum class AuthenticationOperation {
   // Operation to start a re-authenticate operation. The user is presented with
@@ -63,7 +59,7 @@ enum class AuthenticationOperation {
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
                        completion:
-                           (ShowSigninCommandCompletionCallback)completion
+                           (SigninCoordinatorCompletionCallback)completion
     NS_DESIGNATED_INITIALIZER;
 
 // Initializes a ShowSigninCommand with `identity` and `completion` set to nil.
@@ -83,7 +79,7 @@ enum class AuthenticationOperation {
 
 // The completion to be invoked after the operation is complete.
 @property(nonatomic, copy, readonly)
-    ShowSigninCommandCompletionCallback completion;
+    SigninCoordinatorCompletionCallback completion;
 
 // The operation to perform during the sign-in flow.
 @property(nonatomic, readonly) AuthenticationOperation operation;

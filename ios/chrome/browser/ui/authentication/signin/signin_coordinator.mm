@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/logging/first_run_signin_logger.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_screen_provider.h"
 #import "ios/chrome/browser/ui/authentication/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
@@ -205,7 +206,7 @@ using signin_metrics::PromoAction;
 
 - (void)dealloc {
   // -[SigninCoordinator
-  // runCompletionWithSigninResult:completionInfo:] has to be called
+  // runCompletionWithSigninResult:completionIdentity:] has to be called
   // by the subclass before the coordinator is deallocated.
   DCHECK(!self.signinCompletion) << base::SysNSStringToUTF8([self description]);
 }
@@ -229,7 +230,7 @@ using signin_metrics::PromoAction;
   // interruptWithAction:completion:].
   // If you work on a SigninCoordinator subclass:
   // -[SigninCoordinator
-  // runCompletionWithSigninResult:completionInfo:] has to be called
+  // runCompletionWithSigninResult:completionIdentity:] has to be called
   // by the subclass before
   // -[SigninCoordinator stop] is called.
   DCHECK(!self.signinCompletion);
@@ -238,14 +239,14 @@ using signin_metrics::PromoAction;
 #pragma mark - Private
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
-                       completionInfo:(SigninCompletionInfo*)completionInfo {
+                   completionIdentity:(id<SystemIdentity>)completionIdentity {
   // `identity` is set, if and only if the sign-in is successful.
-  DCHECK(((signinResult == SigninCoordinatorResultSuccess) &&
-          completionInfo.identity) ||
-         ((signinResult != SigninCoordinatorResultSuccess) &&
-          !completionInfo.identity))
+  DCHECK(
+      ((signinResult == SigninCoordinatorResultSuccess) &&
+       completionIdentity) ||
+      ((signinResult != SigninCoordinatorResultSuccess) && !completionIdentity))
       << "signinResult: " << signinResult
-      << ", identity: " << (completionInfo.identity ? "YES" : "NO");
+      << ", identity: " << (completionIdentity ? "YES" : "NO");
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
   DCHECK(self.signinCompletion);
@@ -253,7 +254,7 @@ using signin_metrics::PromoAction;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(signinResult, completionInfo);
+  signinCompletion(signinResult, completionIdentity);
 }
 
 @end

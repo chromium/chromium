@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
@@ -246,10 +245,8 @@ TEST_F(SaveToDriveCoordinatorTest, ShowsAddAccount) {
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
                 if (command) {
-                  command.completion(
-                      SigninCoordinatorResultSuccess,
-                      [SigninCompletionInfo
-                          signinCompletionInfoWithIdentity:added_identity]);
+                  command.completion(SigninCoordinatorResultSuccess,
+                                     added_identity);
                 }
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);

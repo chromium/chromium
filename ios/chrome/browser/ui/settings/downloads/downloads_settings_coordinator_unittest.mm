@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller_action_delegate.h"
@@ -311,7 +310,7 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   // Expect that a ShowSigninCommand is dispatched to show the Add account view
   // when -saveToPhotosSettingsAccountSelectionViewControllerAddAccount is
   // called.
-  __block ShowSigninCommandCompletionCallback show_signin_callback = nil;
+  __block SigninCoordinatorCompletionCallback show_signin_callback = nil;
   OCMExpect([mock_application_commands_handler_
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
@@ -348,9 +347,7 @@ TEST_F(DownloadsSettingsCoordinatorTest,
   ASSERT_TRUE(show_signin_callback);
   OCMExpect([mock_save_to_photos_settings_mediator_
       setSelectedIdentityGaiaID:added_identity.gaiaID]);
-  show_signin_callback(
-      SigninCoordinatorResultSuccess,
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:added_identity]);
+  show_signin_callback(SigninCoordinatorResultSuccess, added_identity);
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_settings_mediator_);
 
   [coordinator stop];

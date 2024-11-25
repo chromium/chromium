@@ -1884,7 +1884,7 @@ using UserFeedbackDataCallback =
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.
   [self startSigninCoordinatorWithCompletion:^(SigninCoordinatorResult result,
-                                               SigninCompletionInfo*) {
+                                               id<SystemIdentity>) {
     if (completion) {
       completion();
     }
@@ -1963,7 +1963,7 @@ using UserFeedbackDataCallback =
   GURL copiedURL = url;
   [self startSigninCoordinatorWithCompletion:^(
             SigninCoordinatorResult result,
-            SigninCompletionInfo* completionInfo) {
+            id<SystemIdentity> completionIdentity) {
     // If the sign-in is not successful or the scene controller is shut down do
     // not load the continuation URL.
     BOOL success = result == SigninCoordinatorResultSuccess;
@@ -3603,7 +3603,7 @@ using UserFeedbackDataCallback =
 // Starts the sign-in coordinator with a default cleanup completion.
 // Call completion with Cancelled if the current scene is blocked.
 - (void)startSigninCoordinatorWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion {
+    (SigninCoordinatorCompletionCallback)completion {
   DCHECK(self.signinCoordinator);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForProfile(
@@ -3653,7 +3653,7 @@ using UserFeedbackDataCallback =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
   __weak SceneController* weakSelf = self;
   self.signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
         if (!weakSelf) {
           return;
         }
@@ -3663,7 +3663,7 @@ using UserFeedbackDataCallback =
         uiBlocker.reset();
 
         if (completion) {
-          completion(result, info);
+          completion(result, identity);
         }
 
         if (!weakSelf.dismissingSigninPromptFromExternalTrigger) {

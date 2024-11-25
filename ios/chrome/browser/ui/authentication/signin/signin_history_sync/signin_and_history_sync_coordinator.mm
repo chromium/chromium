@@ -148,9 +148,9 @@ enum class SignInHistorySyncStep {
   } else {
     result = SigninCoordinatorResultCanceledByUser;
   }
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  id<SystemIdentity> completionIdentity = identity;
+  [self runCompletionWithSigninResult:result
+                   completionIdentity:completionIdentity];
 }
 
 // Creates the current step coordinator according to `_currentStep`.
@@ -164,7 +164,7 @@ enum class SignInHistorySyncStep {
                              accessPoint:self.accessPoint];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
             [weakSelf currentStepDidFinishWithResult:result];
           };
       return coordinator;
@@ -178,7 +178,7 @@ enum class SignInHistorySyncStep {
                          promoAction:_promoAction];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
-          ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+          ^(SigninCoordinatorResult result, id<SystemIdentity>) {
             [weakSelf currentStepDidFinishWithResult:result];
           };
       return coordinator;

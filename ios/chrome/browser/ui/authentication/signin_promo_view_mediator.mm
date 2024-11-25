@@ -1155,8 +1155,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   // To make sure -[<SigninPromoViewConsumer> signinDidFinish], we have to save
   // in a variable and not get it from weakSelf (that might not exist anymore).
   __weak id<SigninPromoViewConsumer> weakConsumer = self.consumer;
-  ShowSigninCommandCompletionCallback completion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* completionInfo) {
+  SigninCoordinatorCompletionCallback completion =
+      ^(SigninCoordinatorResult result, id<SystemIdentity> completionIdentity) {
         [weakSelf signinCallbackWithResult:result];
         if ([weakConsumer respondsToSelector:@selector(signinDidFinish)]) {
           [weakConsumer signinDidFinish];

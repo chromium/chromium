@@ -525,7 +525,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
-                          SigninCompletionInfo* completionInfo) {
+                          id<SystemIdentity> completionIdentity) {
                [weakSelf handleDidAddAccount:result];
              }];
   [_applicationHandler showSignin:command baseViewController:self];

@@ -260,7 +260,7 @@ using signin_metrics::PromoAction;
         didRequestAddAccountWithBaseViewController:_viewController
                                         completion:^(
                                             SigninCoordinatorResult result,
-                                            SigninCompletionInfo*) {
+                                            id<SystemIdentity>) {
                                           [weakSelf
                                               addAccountToDeviceCompleted];
                                         }];
@@ -271,7 +271,7 @@ using signin_metrics::PromoAction;
               accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
               promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
                completion:^(SigninCoordinatorResult result,
-                            SigninCompletionInfo* completionInfo) {
+                            id<SystemIdentity> completionIdentity) {
                  [weakSelf addAccountToDeviceCompleted];
                }];
     [HandlerForProtocol(self.browser->GetCommandDispatcher(),

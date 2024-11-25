@@ -323,9 +323,9 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
     }
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
       __weak __typeof(self) weakSelf = self;
-      ShowSigninCommandCompletionCallback completion =
+      SigninCoordinatorCompletionCallback completion =
           ^(SigninCoordinatorResult result,
-            SigninCompletionInfo* completionInfo) {
+            id<SystemIdentity> completionIdentity) {
             BOOL succeeded = result == SigninCoordinatorResultSuccess;
             [weakSelf onSigninComplete:succeeded];
           };

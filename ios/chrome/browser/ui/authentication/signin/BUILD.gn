@@ -13,7 +13,6 @@ group("signin") {
 # Contains public headers.
 source_set("signin_headers") {
   sources = [
-    "signin_completion_info.h",
     "signin_coordinator.h",
     "signin_utils.h",
   ]
@@ -38,7 +37,6 @@ source_set("signin_protected") {
 # Contains sign-in implementation.
 source_set("signin_impl") {
   sources = [
-    "signin_completion_info.mm",
     "signin_coordinator.mm",
     "signin_utils.mm",
   ]

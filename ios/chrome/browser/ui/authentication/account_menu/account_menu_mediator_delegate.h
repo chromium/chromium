@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/sync_error_settings_command_handler.h"
 
 @class AccountMenuMediator;
@@ -51,7 +52,7 @@
 
 // The user tapped on "Add account…".
 - (void)didTapAddAccountWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion;
+    (SigninCoordinatorCompletionCallback)completion;
 
 // Blocks the user from using Chromium. Returns whether the block was possible.
 - (BOOL)blockOtherScenesIfPossible;

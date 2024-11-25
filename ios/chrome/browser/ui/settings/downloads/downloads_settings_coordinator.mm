@@ -12,7 +12,6 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_table_view_controller.h"
@@ -145,12 +144,12 @@
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
-                          SigninCompletionInfo* info) {
+                          id<SystemIdentity> signinIdentity) {
                __strong __typeof(weakSelf) strongSelf = weakSelf;
                if (strongSelf && result == SigninCoordinatorResultSuccess &&
-                   info.identity) {
+                   signinIdentity) {
                  [strongSelf->_saveToPhotosSettingsMediator
-                     setSelectedIdentityGaiaID:info.identity.gaiaID];
+                     setSelectedIdentityGaiaID:signinIdentity.gaiaID];
                }
              }];
   [applicationCommandsHandler showSignin:addAccountCommand

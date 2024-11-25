@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 
 @interface SigninScreenCoordinator () <IdentityChooserCoordinatorDelegate,
@@ -172,23 +173,22 @@
   __weak __typeof(self) weakSelf = self;
   self.addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
+        id<SystemIdentity> signinCompletionIdentity) {
         [weakSelf addAccountSigninCompleteWithResult:signinResult
-                                      completionInfo:signinCompletionInfo];
+                                  completionIdentity:signinCompletionIdentity];
       };
   [self.addAccountSigninCoordinator start];
 }
 
 // Callback handling the completion of the AddAccount action.
 - (void)addAccountSigninCompleteWithResult:(SigninCoordinatorResult)signinResult
-                            completionInfo:
-                                (SigninCompletionInfo*)signinCompletionInfo {
+                        completionIdentity:
+                            (id<SystemIdentity>)signinCompletionIdentity {
   [self.addAccountSigninCoordinator stop];
   self.addAccountSigninCoordinator = nil;
   if (signinResult == SigninCoordinatorResultSuccess &&
-      self.accountManagerService->IsValidIdentity(
-          signinCompletionInfo.identity)) {
-    self.mediator.selectedIdentity = signinCompletionInfo.identity;
+      self.accountManagerService->IsValidIdentity(signinCompletionIdentity)) {
+    self.mediator.selectedIdentity = signinCompletionIdentity;
     self.mediator.addedAccount = YES;
   }
 }

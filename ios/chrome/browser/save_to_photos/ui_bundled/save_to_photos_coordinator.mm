@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -255,9 +254,9 @@
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
-                          SigninCompletionInfo* completionInfo) {
+                          id<SystemIdentity> completionIdentity) {
                if (completion) {
-                 completion(completionInfo.identity);
+                 completion(completionIdentity);
                }
              }];
   [applicationCommandsHandler

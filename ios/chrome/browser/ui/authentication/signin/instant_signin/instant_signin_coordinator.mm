@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 
 @interface InstantSigninCoordinator () <AuthenticationFlowDelegate,
@@ -152,7 +153,7 @@
     [_identityChooserCoordinator stop];
     _identityChooserCoordinator = nil;
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                         completionInfo:nil];
+                     completionIdentity:nil];
     if (completion) {
       completion();
     }
@@ -167,7 +168,7 @@
     [_activityOverlayCoordinator stop];
     _activityOverlayCoordinator = nil;
     [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                         completionInfo:nil];
+                     completionIdentity:nil];
     if (completion) {
       completion();
     }
@@ -216,7 +217,7 @@
   if (!identity) {
     // If no identity was selected, the coordinator can be closed.
     [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
-                         completionInfo:nil];
+                     completionIdentity:nil];
     return;
   }
   _identity = identity;
@@ -235,16 +236,14 @@
     case SigninCoordinatorResultSuccess: {
       signin_metrics::RecordConsistencyPromoUserAction(_actionToRecordOnSuccess,
                                                        self.accessPoint);
-      SigninCompletionInfo* info =
-          [SigninCompletionInfo signinCompletionInfoWithIdentity:_identity];
       [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
-                           completionInfo:info];
+                       completionIdentity:_identity];
       break;
     }
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
     case SigninCoordinatorUINotAvailable:
       NOTREACHED();
@@ -291,29 +290,29 @@
                                           browser:self.browser
                                       accessPoint:self.accessPoint];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        [weakSelf addAccountDoneWithResult:result info:info];
-      };
+  _addAccountSigninCoordinator.signinCompletion = ^(
+      SigninCoordinatorResult result, id<SystemIdentity> resultIdentity) {
+    [weakSelf addAccountDoneWithResult:result resultIdentity:resultIdentity];
+  };
   [_addAccountSigninCoordinator start];
 }
 
 // Starts the sign-in flow if the identity has been selected, otherwise, it
 // ends this coordinator.
 - (void)addAccountDoneWithResult:(SigninCoordinatorResult)result
-                            info:(SigninCompletionInfo*)info {
+                  resultIdentity:(id<SystemIdentity>)resultIdentity {
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
   _addAccountSigninCoordinator = nil;
   switch (result) {
     case SigninCoordinatorResultSuccess:
-      _identity = info.identity;
+      _identity = resultIdentity;
       [self startSignInOnlyFlow];
       break;
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionIdentity:nil];
       break;
     case SigninCoordinatorUINotAvailable:
       // InstantSigninCoordinator presents its child coordinators directly and

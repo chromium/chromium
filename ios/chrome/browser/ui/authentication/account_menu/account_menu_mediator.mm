@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -115,8 +114,7 @@
     // By default, if the mediator was not involved in stopping the account
     // menu, it mean the coordinator was directly interupted.
     self.signinCoordinatorResult = SigninCoordinatorResultInterrupted;
-    _signinCompletionInfo =
-        [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
+    _signinCompletionIdentity = nil;
     _error = GetAccountErrorUIInfo(_syncService);
   }
   return self;
@@ -124,7 +122,7 @@
 
 - (void)disconnect {
   _accountSwitchInProgress.RunAndReset();
-  _signinCompletionInfo = nil;
+  _signinCompletionIdentity = nil;
   _blockUpdates = YES;
   _accountManagerService = nullptr;
   _accountManagerServiceObserver.reset();
@@ -419,11 +417,10 @@
   }
   __weak __typeof(self) weakSelf = self;
   self.userInteractionsBlocked = YES;
-  [self.delegate
-      didTapAddAccountWithCompletion:^(SigninCoordinatorResult result,
-                                       SigninCompletionInfo* info) {
-        [weakSelf accountAddedIsDone];
-      }];
+  [self.delegate didTapAddAccountWithCompletion:^(SigninCoordinatorResult,
+                                                  id<SystemIdentity>) {
+    [weakSelf accountAddedIsDone];
+  }];
 }
 
 #pragma mark - Callbacks
@@ -480,8 +477,7 @@
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;
   if (success) {
-    _signinCompletionInfo =
-        [SigninCompletionInfo signinCompletionInfoWithIdentity:newIdentity];
+    _signinCompletionIdentity = newIdentity;
     self.signinCoordinatorResult = result;
     [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self];

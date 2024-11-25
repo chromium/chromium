@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
@@ -92,10 +93,10 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+      ^(SigninCoordinatorResult result, id<SystemIdentity> resultInfo) {
         signin_completion_called = true;
         EXPECT_EQ(SigninCoordinatorResultCanceledByUser, result);
-        EXPECT_EQ(nil, info.identity);
+        EXPECT_EQ(nil, resultInfo);
       };
   [signinCoordinator start];
   // Wait until the view controllre is presented.
@@ -154,10 +155,10 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+      ^(SigninCoordinatorResult result, id<SystemIdentity> resultInfo) {
         signin_completion_called = true;
         EXPECT_EQ(SigninCoordinatorResultInterrupted, result);
-        EXPECT_EQ(nil, info.identity);
+        EXPECT_EQ(nil, resultInfo);
       };
   [signinCoordinator start];
   // Wait until the view controllre is presented.
@@ -211,10 +212,10 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest,
   // Open and cancel the web sign-in dialog.
   __block bool signin_completion_called = false;
   signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+      ^(SigninCoordinatorResult result, id<SystemIdentity> resultInfo) {
         signin_completion_called = true;
         EXPECT_EQ(SigninCoordinatorResultInterrupted, result);
-        EXPECT_EQ(nil, info.identity);
+        EXPECT_EQ(nil, resultInfo);
       };
   [signinCoordinator start];
   // Wait until the view controllre is presented.

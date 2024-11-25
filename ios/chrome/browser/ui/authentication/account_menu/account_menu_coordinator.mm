@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
@@ -271,7 +270,7 @@
 }
 
 - (void)didTapAddAccountWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion {
+    (SigninCoordinatorCompletionCallback)completion {
   [self openAddAccountWithBaseViewController:_navigationController
                                   completion:completion];
 }
@@ -429,7 +428,8 @@
   ProceduralBlock childrenCompletion = ^() {
     [weakSelf
         runCompletionWithSigninResult:weakSelf.mediator.signinCoordinatorResult
-                       completionInfo:weakSelf.mediator.signinCompletionInfo];
+                   completionIdentity:weakSelf.mediator
+                                          .signinCompletionIdentity];
     if (completion) {
       completion();
     }
@@ -450,7 +450,7 @@
             (ManageAccountsCoordinator*)manageAccountsCoordinator
     didRequestAddAccountWithBaseViewController:(UIViewController*)viewController
                                     completion:
-                                        (ShowSigninCommandCompletionCallback)
+                                        (SigninCoordinatorCompletionCallback)
                                             completion {
   CHECK_EQ(manageAccountsCoordinator, _manageAccountsCoordinator);
   [self openAddAccountWithBaseViewController:viewController
@@ -460,23 +460,24 @@
 #pragma mark - Private
 
 - (void)startSigninCoordinatorWithCompletion:
-    (ShowSigninCommandCompletionCallback)completion {
+    (SigninCoordinatorCompletionCallback)completion {
   CHECK(_signinCoordinator);
   __weak __typeof(self) weakSelf = self;
-  _signinCoordinator.signinCompletion = ^(
-      SigninCoordinatorResult signinResult,
-      SigninCompletionInfo* signinCompletionInfo) {
-    [weakSelf signinCoordinatorCompletionWithSigninResult:signinResult
-                                           completionInfo:signinCompletionInfo
-                                               completion:completion];
-  };
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinatorResult signinResult,
+        id<SystemIdentity> signinCompletionIdentity) {
+        [weakSelf
+            signinCoordinatorCompletionWithSigninResult:signinResult
+                                     completionIdentity:signinCompletionIdentity
+                                             completion:completion];
+      };
   [_signinCoordinator start];
 }
 
 // Opens the add account coordinator on top of `baseViewController`.
 - (void)openAddAccountWithBaseViewController:baseViewController
                                   completion:
-                                      (ShowSigninCommandCompletionCallback)
+                                      (SigninCoordinatorCompletionCallback)
                                           completion {
   _signinCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:baseViewController
@@ -489,15 +490,15 @@
 - (void)
     signinCoordinatorCompletionWithSigninResult:
         (SigninCoordinatorResult)signinResult
-                                 completionInfo:
-                                     (SigninCompletionInfo*)completionInfo
+                             completionIdentity:
+                                 (id<SystemIdentity>)completionIdentity
                                      completion:
-                                         (ShowSigninCommandCompletionCallback)
+                                         (SigninCoordinatorCompletionCallback)
                                              completion {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
   if (completion) {
-    completion(signinResult, completionInfo);
+    completion(signinResult, completionIdentity);
   }
 }
 

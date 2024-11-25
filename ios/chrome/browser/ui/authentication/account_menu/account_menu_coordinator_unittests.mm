@@ -113,7 +113,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         initWithBaseViewController:nil
                            browser:browser_.get()];
     coordinator_.signinCompletion =
-        ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
+        ^(SigninCoordinatorResult, id<SystemIdentity>) {
           signinCompletion();
         };
     [coordinator_ start];
@@ -153,7 +153,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     // `stop` should not be called directly. Instead, the SigninCoordinator is
     // closed inderectly through `runCompletion`. We ensure to close it by
     // simulating that the mediator request to dismiss the coordinator.
-    OCMStub(mediator_.signinCompletionInfo).andReturn(nil);
+    OCMStub(mediator_.signinCompletionIdentity).andReturn(nil);
     OCMStub(mediator_.signinCoordinatorResult)
         .andReturn(
             SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser);

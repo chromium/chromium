@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -427,10 +426,8 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
                 if (command) {
-                  command.completion(
-                      SigninCoordinatorResultSuccess,
-                      [SigninCompletionInfo
-                          signinCompletionInfoWithIdentity:added_identity]);
+                  command.completion(SigninCoordinatorResultSuccess,
+                                     added_identity);
                 }
                 EXPECT_EQ(AuthenticationOperation::kAddAccount,
                           command.operation);

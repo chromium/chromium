@@ -172,8 +172,8 @@ using base::UserMetricsAction;
   NOTREACHED() << static_cast<int>(type);
 }
 
-// Calls the completion callback with the given `result` and a
-// SigninCompletionInfo object that includes the given `identity`.
+// Calls the completion callback with the given `result` and the given
+// `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
   if (self.accessPoint ==
@@ -191,9 +191,7 @@ using base::UserMetricsAction;
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   _screenProvider = nil;
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionIdentity:identity];
 }
 
 #pragma mark - FirstRunScreenDelegate

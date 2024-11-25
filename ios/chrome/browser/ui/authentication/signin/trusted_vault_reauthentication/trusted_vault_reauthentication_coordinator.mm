@@ -73,10 +73,8 @@ using l10n_util::GetNSStringF;
   void (^cancelCompletion)(void) = ^() {
     // The reauthentication callback is dropped when the dialog is canceled.
     // The completion block has to be called explicitly.
-    SigninCompletionInfo* completionInfo =
-        [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
     [weakSelf runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                             completionInfo:completionInfo];
+                         completionIdentity:nil];
     if (completion) {
       completion();
     }
@@ -188,9 +186,8 @@ using l10n_util::GetNSStringF;
   SigninCoordinatorResult result = success
                                        ? SigninCoordinatorResultSuccess
                                        : SigninCoordinatorResultCanceledByUser;
-  SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-      signinCompletionInfoWithIdentity:success ? self.identity : nil];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result
+                   completionIdentity:success ? self.identity : nil];
 }
 
 #pragma mark - NSObject

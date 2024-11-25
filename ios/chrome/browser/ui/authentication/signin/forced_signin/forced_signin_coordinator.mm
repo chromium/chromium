@@ -133,9 +133,9 @@
   self.childCoordinator = nil;
   self.navigationController = nil;
   self.screenProvider = nil;
-  SigninCompletionInfo* completionInfo =
-      [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
+  id<SystemIdentity> completionIdentity = identity;
+  [self runCompletionWithSigninResult:result
+                   completionIdentity:completionIdentity];
 }
 
 #pragma mark - FirstRunScreenDelegate

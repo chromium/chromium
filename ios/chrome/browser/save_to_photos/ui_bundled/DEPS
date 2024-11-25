@@ -1,6 +1,5 @@
 include_rules = [
   "+ios/chrome/browser/account_picker/ui_bundled",
-  "+ios/chrome/browser/ui/authentication/signin/signin_completion_info.h",
   "+ios/chrome/browser/drive/model/manage_storage_url_util.h",
   "+ios/chrome/browser/photos/model",
   "+ios/chrome/browser/signin/model",

@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -135,13 +134,13 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
 TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
-  __block SigninCompletionInfo* signin_completion_info;
+  __block id<SystemIdentity> signin_completion_identity;
   __block BOOL completion_block_done = NO;
   coordinator_.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
+        id<SystemIdentity> signinCompletionIdentity) {
         signin_result = signinResult;
-        signin_completion_info = signinCompletionInfo;
+        signin_completion_identity = signinCompletionIdentity;
         completion_block_done = YES;
       };
 
@@ -173,7 +172,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
-  EXPECT_EQ(signin_completion_info.identity, nil);
+  EXPECT_EQ(signin_completion_identity, nil);
   [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
@@ -182,13 +181,13 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
 TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
-  __block SigninCompletionInfo* signin_completion_info;
+  __block id<SystemIdentity> signin_completion_identity;
   __block BOOL completion_block_done = NO;
   coordinator_.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
+        id<SystemIdentity> signinCompletionIdentity) {
         signin_result = signinResult;
-        signin_completion_info = signinCompletionInfo;
+        signin_completion_identity = signinCompletionIdentity;
         completion_block_done = YES;
       };
 
@@ -200,7 +199,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
   EXPECT_TRUE(completion_block_done);
 
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
-  EXPECT_EQ(signin_completion_info.identity, nil);
+  EXPECT_EQ(signin_completion_identity, nil);
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
 
@@ -208,13 +207,13 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
 TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
-  __block SigninCompletionInfo* signin_completion_info;
+  __block id<SystemIdentity> signin_completion_identity;
   __block BOOL completion_block_done = NO;
   coordinator_.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
+        id<SystemIdentity> signinCompletionIdentity) {
         signin_result = signinResult;
-        signin_completion_info = signinCompletionInfo;
+        signin_completion_identity = signinCompletionIdentity;
         completion_block_done = YES;
       };
 
@@ -227,7 +226,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultCanceledByUser);
-  EXPECT_EQ(signin_completion_info.identity, nil);
+  EXPECT_EQ(signin_completion_identity, nil);
   [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
@@ -236,13 +235,13 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
 TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
   base::HistogramTester histogram_tester;
   __block SigninCoordinatorResult signin_result;
-  __block SigninCompletionInfo* signin_completion_info;
+  __block id<SystemIdentity> signin_completion_identity;
   __block BOOL completion_block_done = NO;
   coordinator_.signinCompletion =
       ^(SigninCoordinatorResult signinResult,
-        SigninCompletionInfo* signinCompletionInfo) {
+        id<SystemIdentity> signinCompletionIdentity) {
         signin_result = signinResult;
-        signin_completion_info = signinCompletionInfo;
+        signin_completion_identity = signinCompletionIdentity;
         completion_block_done = YES;
       };
 
@@ -261,7 +260,7 @@ TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
-  EXPECT_EQ(signin_completion_info.identity, nil);
+  EXPECT_EQ(signin_completion_identity, nil);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
 
   [coordinator_ stop];

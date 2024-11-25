@@ -2189,7 +2189,7 @@ struct EnhancedSafeBrowsingActivePromoData
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinatorResult result,
-                          SigninCompletionInfo* completionInfo) {
+                          id<SystemIdentity> completionIdentity) {
                [weakSelf didFinishSignin];
              }];
   [self.applicationHandler showSignin:command baseViewController:self];

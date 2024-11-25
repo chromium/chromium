@@ -23,7 +23,7 @@
             (ManageAccountsCoordinator*)manageAccountsCoordinator
     didRequestAddAccountWithBaseViewController:(UIViewController*)viewController
                                     completion:
-                                        (ShowSigninCommandCompletionCallback)
+                                        (SigninCoordinatorCompletionCallback)
                                             completion;
 
 @end
