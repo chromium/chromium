@@ -111,7 +111,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     MutationObserverInit* init = MutationObserverInit::Create();
     init->setChildList(true);
     init->setSubtree(true);
-    // TODO(ansollan): Observe attributes as well to detect changes in tabindex.
+    init->setAttributes(true);
     observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
     // Traverse descendants that have been added to the select so far.
     TraverseDescendants();
@@ -139,8 +139,13 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
             DCHECK(IsA<HTMLSelectedContentElement>(*record->target()));
           }
 #endif
-          AddWarningToNode(*descendant);
+          AddDescendantDisallowedErrorToNode(*descendant);
         }
+      } else if ((record->type() == "attributes") &&
+                 (record->attributeName() == html_names::kTabindexAttr ||
+                  record->attributeName() ==
+                      html_names::kContenteditableAttr)) {
+        AddDescendantDisallowedErrorToNode(*record->target());
       }
     }
   }
@@ -158,12 +163,12 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
     for (Node* descendant = NodeTraversal::FirstWithin(*select_); descendant;
          descendant = NodeTraversal::Next(*descendant, select_)) {
       if (!IsWhitespaceOrEmpty(*descendant)) {
-        AddWarningToNode(*descendant);
+        AddDescendantDisallowedErrorToNode(*descendant);
       }
     }
   }
 
-  void AddWarningToNode(Node& node) {
+  void AddDescendantDisallowedErrorToNode(Node& node) {
     if (!IsDescendantAllowed(node)) {
       // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
       node.AddConsoleMessage(
@@ -240,10 +245,31 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
   }
 
   bool IsAllowedDescendantOfOption(const Node& descendant) {
-    // TODO(ansollan): Descendants of <option> should not have the tabindex
-    // attribute specified and contenteditable should be false.
-    return IsA<HTMLDivElement>(descendant) ||
-           IsAllowedPhrasingContent(descendant);
+    // Check tabindex and contenteditable attributes of the descendant as well.
+    return (IsA<HTMLDivElement>(descendant) ||
+            IsAllowedPhrasingContent(descendant)) &&
+           IsAllowedTabIndex(descendant) &&
+           IsAllowedContenteditable(descendant);
+  }
+
+  bool IsAllowedTabIndex(const Node& node) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      return !element->FastHasAttribute(html_names::kTabindexAttr);
+    }
+    // Text nodes don't have attributes, so we return true if it is a text node.
+    return node.IsTextNode();
+  }
+
+  bool IsAllowedContenteditable(const Node& node) {
+    if (auto* html_element = DynamicTo<HTMLElement>(node)) {
+      ContentEditableType normalized_value =
+          html_element->contentEditableNormalized();
+      return !(normalized_value == ContentEditableType::kContentEditable ||
+               normalized_value == ContentEditableType::kPlaintextOnly);
+    }
+    // Similarly to above, only HTML elements can have the `contenteditable`
+    // attribute. We return true if the node is a text node or an <svg> element.
+    return node.IsTextNode() || node.IsSVGElement();
   }
 
   bool TraverseAncestorsAndCheckDescendant(const Node& descendant) {

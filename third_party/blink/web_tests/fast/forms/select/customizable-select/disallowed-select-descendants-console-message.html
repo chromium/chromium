@@ -64,14 +64,57 @@
   </optgroup>
 </select>
 
-<select id="delayed" style="display:none">
+<!-- Should print two console messages. -->
+<select>
+  <div>
+    <option>
+      <span tabindex="1">..</span>
+      <span tabindex="2">..</span>
+    </option>
+  </div>
+</select>
+
+<!-- Should print two console messages. -->
+<select>
+  <div>
+    <option>
+      <span contenteditable="true">..</span>
+      <span contenteditable="plaintext-only">..</span>
+    </option>
+  </div>
+</select>
+
+<!-- Should print one console message. -->
+<select class="delayed" style="display:none">
   <input>
   <option></option>
 </select>
 
+<!-- Should print two console messages. -->
+<select class="delayed" style="display:none">
+  <div>
+    <option>
+      <span tabindex="1">..</span>
+      <span tabindex="2">..</span>
+    </option>
+  </div>
+</select>
+
+<!-- Should print two console messages. -->
+<select class="delayed" style="display:none">
+  <div>
+    <option>
+      <span contenteditable="true">..</span>
+      <span contenteditable="plaintext-only">..</span>
+    </option>
+  </div>
+</select>
+
 <script>
   requestAnimationFrame(() => {
-    document.getElementById('delayed').style.display = '';
+    document.querySelectorAll('.delayed').forEach((select) => {
+      select.style.display = '';
+    });
     requestAnimationFrame(() => {
         testRunner.notifyDone();
     });
