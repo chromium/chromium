@@ -22,10 +22,7 @@ def __filegroups(ctx):
         # vendor provided headers for libc++.
         "buildtools/third_party/libc++:headers": {
             "type": "glob",
-            "includes": [
-                "__*",
-                "gross_hack.h",
-            ],
+            "includes": ["__*"],
         },
 
         # toolchain root
