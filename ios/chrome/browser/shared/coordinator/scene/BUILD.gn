@@ -38,10 +38,10 @@ source_set("scene_state_header") {
     ":scene_activation_level",
     ":scene_state_observer",
     "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/window_activities/model",
   ]
 }
@@ -140,6 +140,7 @@ source_set("scene") {
     "//ios/chrome/browser/promos_manager/ui_bundled:promos_manager_scene_agent",
     "//ios/chrome/browser/promos_manager/ui_bundled:utils",
     "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/screenshot/model",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
@@ -173,7 +174,6 @@ source_set("scene") {
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/password",

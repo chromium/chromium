@@ -12,6 +12,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_provider.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -20,7 +21,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 
 @interface FirstRunProfileAgent () <FirstRunCoordinatorDelegate,
                                     SceneStateObserver>

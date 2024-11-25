@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h",
   "+ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_constants.h",
-  "+ios/chrome/browser/ui/scoped_ui_blocker",
+  "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
   "+ios/chrome/browser/autofill/ui_bundled/cells/autofill_edit_item.h",
   "+ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h",
   "+ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h",

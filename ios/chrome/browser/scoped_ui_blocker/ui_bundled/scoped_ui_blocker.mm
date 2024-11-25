@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
-#import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_target.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 
 ScopedUIBlocker::ScopedUIBlocker(id<UIBlockerTarget> target,
                                  UIBlockerExtent extent)

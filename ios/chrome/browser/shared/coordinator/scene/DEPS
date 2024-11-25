@@ -40,4 +40,5 @@ include_rules = [
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
+  "+ios/chrome/browser/scoped_ui_blocker/ui_bundled"
 ]

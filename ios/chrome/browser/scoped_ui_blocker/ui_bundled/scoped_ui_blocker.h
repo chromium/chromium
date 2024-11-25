@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCOPED_UI_BLOCKER_SCOPED_UI_BLOCKER_H_
-#define IOS_CHROME_BROWSER_UI_SCOPED_UI_BLOCKER_SCOPED_UI_BLOCKER_H_
+#ifndef IOS_CHROME_BROWSER_SCOPED_UI_BLOCKER_UI_BUNDLED_SCOPED_UI_BLOCKER_H_
+#define IOS_CHROME_BROWSER_SCOPED_UI_BLOCKER_UI_BUNDLED_SCOPED_UI_BLOCKER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -36,4 +36,4 @@ class ScopedUIBlocker {
   ScopedUIBlocker& operator=(const ScopedUIBlocker&) = delete;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_SCOPED_UI_BLOCKER_SCOPED_UI_BLOCKER_H_
+#endif  // IOS_CHROME_BROWSER_SCOPED_UI_BLOCKER_UI_BUNDLED_SCOPED_UI_BLOCKER_H_

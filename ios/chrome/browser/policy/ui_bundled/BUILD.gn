@@ -41,6 +41,7 @@ source_set("user_policy_scene_agent") {
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/policy/ui_bundled/user_policy",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
@@ -51,7 +52,6 @@ source_set("user_policy_scene_agent") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/authentication/signin",
-    "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ui/base",
   ]
   public_deps = [ ":user_policy_util" ]

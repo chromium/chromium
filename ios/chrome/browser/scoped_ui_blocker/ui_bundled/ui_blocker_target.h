@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SCOPED_UI_BLOCKER_UI_BLOCKER_TARGET_H_
-#define IOS_CHROME_BROWSER_UI_SCOPED_UI_BLOCKER_UI_BLOCKER_TARGET_H_
+#ifndef IOS_CHROME_BROWSER_SCOPED_UI_BLOCKER_UI_BUNDLED_UI_BLOCKER_TARGET_H_
+#define IOS_CHROME_BROWSER_SCOPED_UI_BLOCKER_UI_BUNDLED_UI_BLOCKER_TARGET_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 
 @protocol UIBlockerManager;
 @class UIScene;
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SCOPED_UI_BLOCKER_UI_BLOCKER_TARGET_H_
+#endif  // IOS_CHROME_BROWSER_SCOPED_UI_BLOCKER_UI_BUNDLED_UI_BLOCKER_TARGET_H_
