@@ -57,6 +57,7 @@ source_set("user_activity_browser_agent") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/common/intents:intents_generate_source",

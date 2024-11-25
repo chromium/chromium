@@ -88,6 +88,10 @@ class UserActivityBrowserAgent
   // Clears startup parameters.
   void ClearStartupParameters();
 
+  // Handles the opening of  a new Tab or routes to correct Tab based on a
+  // `ApplicationModeForTabOpening`.
+  void HandleRouteToCorrectTab(ApplicationModeForTabOpening target_mode);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The browser associated with this agent.

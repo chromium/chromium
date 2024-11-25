@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
@@ -531,77 +532,17 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
       connection_information_.startupParameters.isUnexpectedMode) {
     return;
   }
-
-  // TODO(crbug.com/41443029): Exacly the same copy of this code is present in
-  // +[URLOpener
-  // openURL:applicationActive:options:tabOpener:startupInformation:]
-
-  // The app is already active so the applicationDidBecomeActive: method
-  // will never be called. Open the requested URL after all modal UIs have
-  // been dismissed. `_startupParameters` must be retained until all deferred
-  // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
-  // with requested URL.
-  ApplicationModeForTabOpening target_mode =
-      [[connection_information_ startupParameters] applicationMode];
-  GURL url;
-  GURL virtual_url;
-  GURL complete_url = connection_information_.startupParameters.completeURL;
-  if (complete_url.SchemeIsFile()) {
-    // External URL will be loaded by WebState, which expects `complete_url`.
-    // Omnibox however suppose to display `external_url`, which is used as
-    // virtual URL.
-    url = complete_url;
-    virtual_url = external_url;
+  if (base::FeatureList::IsEnabled(kChromeStartupParametersAsync)) {
+    base::OnceCallback<void(ApplicationModeForTabOpening)> completion =
+        base::BindOnce(&UserActivityBrowserAgent::HandleRouteToCorrectTab,
+                       weak_ptr_factory_.GetWeakPtr());
+    [connection_information_.startupParameters
+        requestApplicationModeWithBlock:base::CallbackToBlock(
+                                            std::move(completion))];
   } else {
-    url = external_url;
+    HandleRouteToCorrectTab(
+        [connection_information_.startupParameters applicationMode]);
   }
-  UrlLoadParams params;
-  if (connection_information_.startupParameters.openExistingTab) {
-    web::NavigationManager::WebLoadParams web_load_params =
-        web::NavigationManager::WebLoadParams(url);
-    params = UrlLoadParams::SwitchToTab(web_load_params);
-  } else {
-    params = UrlLoadParams::InNewTab(url, virtual_url);
-  }
-
-  if (connection_information_.startupParameters.imageSearchData) {
-    TemplateURLService* template_url_service =
-        ios::TemplateURLServiceFactory::GetForProfile(profile_);
-
-    NSData* image_data =
-        connection_information_.startupParameters.imageSearchData;
-    web::NavigationManager::WebLoadParams web_load_params =
-        ImageSearchParamGenerator::LoadParamsForImageData(image_data, GURL(),
-                                                          template_url_service);
-
-    params.web_params = web_load_params;
-  } else if (connection_information_.startupParameters.textQuery) {
-    NSString* query = connection_information_.startupParameters.textQuery;
-
-    GURL result = GenerateResultGURLFromSearchQuery(query);
-    params.web_params.url = result;
-  }
-
-  params.from_external = true;
-
-  if ([[connection_information_ startupParameters] applicationMode] !=
-          ApplicationModeForTabOpening::INCOGNITO &&
-      [tab_opener_ URLIsOpenedInRegularMode:params.web_params.url]) {
-    // Record metric.
-  }
-
-  base::OnceClosure closure =
-      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
-                     weak_ptr_factory_.GetWeakPtr());
-  [tab_opener_
-      dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
-                               withUrlLoadParams:params
-                                  dismissOmnibox:[[connection_information_
-                                                     startupParameters]
-                                                     postOpeningAction] !=
-                                                 FOCUS_OMNIBOX
-                                      completion:base::CallbackToBlock(
-                                                     std::move(closure))];
 }
 
 BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
@@ -872,4 +813,76 @@ void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
 
 void UserActivityBrowserAgent::ClearStartupParameters() {
   connection_information_.startupParameters = nil;
+}
+
+void UserActivityBrowserAgent::HandleRouteToCorrectTab(
+    ApplicationModeForTabOpening target_mode) {
+  GURL external_url = connection_information_.startupParameters.externalURL;
+  // TODO(crbug.com/41443029): Exacly the same copy of this code is present in
+  // +[URLOpener
+  // openURL:applicationActive:options:tabOpener:startupInformation:]
+
+  // The app is already active so the applicationDidBecomeActive: method
+  // will never be called. Open the requested URL after all modal UIs have
+  // been dismissed. `_startupParameters` must be retained until all deferred
+  // modal UIs are dismissed and tab opened (or Incognito interstitial shown)
+  // with requested URL.
+  GURL url;
+  GURL virtual_url;
+  GURL complete_url = connection_information_.startupParameters.completeURL;
+  if (complete_url.SchemeIsFile()) {
+    // External URL will be loaded by WebState, which expects `complete_url`.
+    // Omnibox however suppose to display `external_url`, which is used as
+    // virtual URL.
+    url = complete_url;
+    virtual_url = external_url;
+  } else {
+    url = external_url;
+  }
+  UrlLoadParams params;
+  if (connection_information_.startupParameters.openExistingTab) {
+    web::NavigationManager::WebLoadParams web_load_params =
+        web::NavigationManager::WebLoadParams(url);
+    params = UrlLoadParams::SwitchToTab(web_load_params);
+  } else {
+    params = UrlLoadParams::InNewTab(url, virtual_url);
+  }
+
+  if (connection_information_.startupParameters.imageSearchData) {
+    TemplateURLService* template_url_service =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_);
+
+    NSData* image_data =
+        connection_information_.startupParameters.imageSearchData;
+    web::NavigationManager::WebLoadParams web_load_params =
+        ImageSearchParamGenerator::LoadParamsForImageData(image_data, GURL(),
+                                                          template_url_service);
+
+    params.web_params = web_load_params;
+  } else if (connection_information_.startupParameters.textQuery) {
+    NSString* query = connection_information_.startupParameters.textQuery;
+
+    GURL result = GenerateResultGURLFromSearchQuery(query);
+    params.web_params.url = result;
+  }
+
+  params.from_external = true;
+
+  if (target_mode != ApplicationModeForTabOpening::INCOGNITO &&
+      [tab_opener_ URLIsOpenedInRegularMode:params.web_params.url]) {
+    // Record metric.
+  }
+
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
+  [tab_opener_
+      dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
+                               withUrlLoadParams:params
+                                  dismissOmnibox:[[connection_information_
+                                                     startupParameters]
+                                                     postOpeningAction] !=
+                                                 FOCUS_OMNIBOX
+                                      completion:base::CallbackToBlock(
+                                                     std::move(closure))];
 }
