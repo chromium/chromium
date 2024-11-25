@@ -370,7 +370,7 @@ class InstallTest(XcodeUtilTest):
                     ios_version='15.0',
                     xcode_build_version='15a123')
 
-    mock_delete_least_recently_used_simulator_runtimes.assert_called_once_with()
+    mock_delete_least_recently_used_simulator_runtimes.assert_not_called()
     mock_get_simulator_runtime_info_by_build.assert_called_once_with('20C52')
     mock__install_runtime_dmg.assert_not_called()
 
