@@ -872,6 +872,11 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo) {
     ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kThrottleFrameRateOnManyDidNotProduceFrame) &&
+      frame_sink_type_ == mojom::CompositorFrameSinkType::kLayerTree) {
+    ApplyPreferredFrameRate(frame.metadata.begin_frame_ack.frame_id.source_id);
+  }
 
   Surface* prev_surface =
       surface_manager_->GetSurfaceForId(last_created_surface_id_);
