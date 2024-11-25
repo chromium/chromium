@@ -4572,6 +4572,8 @@ enum WebFeature {
   kCanvas2DMeasureText = 5198,
   kCrossPartitionBlobURLFetch = 5199,
   kCrossTopLevelSiteBlobURLNavigation = 5200,
+  kGeolocationSucceeded = 5201,
+  kGeolocationSucceededWithoutInjectionMitigation = 5202,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

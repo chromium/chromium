@@ -10903,6 +10903,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5198" label="Canvas2DMeasureText"/>
   <int value="5199" label="CrossPartitionBlobURLFetch"/>
   <int value="5200" label="CrossTopLevelSiteBlobURLNavigation"/>
+  <int value="5201" label="GeolocationSucceeded"/>
+  <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
