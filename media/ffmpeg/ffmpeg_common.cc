@@ -406,10 +406,10 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   // AVStream occasionally has invalid extra data. See http://crbug.com/517163
   if ((codec_context->extradata_size == 0) !=
       (codec_context->extradata == nullptr)) {
-    LOG(ERROR) << __func__
-               << (codec_context->extradata == nullptr ? " NULL" : " Non-NULL")
-               << " extra data cannot have size of "
-               << codec_context->extradata_size << ".";
+    DLOG(ERROR) << __func__
+                << (codec_context->extradata == nullptr ? " NULL" : " Non-NULL")
+                << " extra data cannot have size of "
+                << codec_context->extradata_size << ".";
     return false;
   }
 
@@ -1003,7 +1003,7 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
 
     default:
       // FFmpeg knows more pixel formats than Chromium cares about.
-      LOG(ERROR) << "Unsupported pixel format: " << pixel_format;
+      DVLOG(1) << "Unsupported pixel format: " << pixel_format;
       return PIXEL_FORMAT_UNKNOWN;
   }
 }
