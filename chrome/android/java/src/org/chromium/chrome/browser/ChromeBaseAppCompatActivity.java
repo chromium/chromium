@@ -248,6 +248,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             mEdgeToEdgeLayoutCoordinator.destroy();
             mEdgeToEdgeLayoutCoordinator = null;
         }
+        mEdgeToEdgeManager.destroy();
         super.onDestroy();
     }
 
