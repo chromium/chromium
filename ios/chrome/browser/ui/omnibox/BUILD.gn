@@ -313,6 +313,7 @@ source_set("unit_tests") {
     "chrome_omnibox_client_ios_unittest.mm",
     "fake_suggestions_database_unittest.cc",
     "omnibox_text_field_ios_unittest.mm",
+    "omnibox_view_ios_unittest.mm",
     "zero_suggest_prefetch_helper_unittest.mm",
   ]
   deps = [

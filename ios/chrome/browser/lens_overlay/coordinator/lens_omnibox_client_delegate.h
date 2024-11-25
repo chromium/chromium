@@ -14,10 +14,8 @@ class GURL;
 
 /// Omnibox did accept a suggestion with `text` and `destinationURL`.
 - (void)omniboxDidAcceptText:(const std::u16string&)text
-              destinationURL:(const GURL&)destinationURL;
-
-/// Omnibox did remove the thumbnail.
-- (void)omniboxDidRemoveThumbnail;
+              destinationURL:(const GURL&)destinationURL
+            thumbnailRemoved:(BOOL)thumbnailRemoved;
 
 @end
 

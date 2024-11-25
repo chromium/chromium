@@ -48,10 +48,6 @@ class LensOmniboxClient final : public OmniboxClient {
     omnibox_steady_state_text_ = [text copy];
   }
 
-  NSString* GetOmniboxSteadyStateText() const {
-    return omnibox_steady_state_text_;
-  }
-
   // OmniboxClient.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
       override;
@@ -117,6 +113,7 @@ class LensOmniboxClient final : public OmniboxClient {
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
   BOOL lens_result_has_thumbnail_;
+  BOOL thumbnail_removed_in_session_;
   std::optional<lens::proto::LensOverlaySuggestInputs>
       lens_overlay_suggest_inputs_;
   NSString* omnibox_steady_state_text_;

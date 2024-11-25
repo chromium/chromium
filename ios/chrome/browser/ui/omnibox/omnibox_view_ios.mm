@@ -89,6 +89,7 @@ void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
   AutocompleteController* autocomplete_controller =
       controller()->autocomplete_controller();
 
+  AcceptThumbnailEdits();
   OmniboxPopupSelection selection(autocomplete_controller->InjectAdHocMatch(
       autocomplete_controller->clipboard_provider()->NewClipboardURLMatch(
           url)));
@@ -118,6 +119,7 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
     return;
   }
 
+  AcceptThumbnailEdits();
   OmniboxPopupSelection selection(
       controller()->autocomplete_controller()->InjectAdHocMatch(
           new_match.value()));
@@ -152,6 +154,7 @@ void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
   if (!optional_match) {
     return;
   }
+  AcceptThumbnailEdits();
   OmniboxPopupSelection selection(
       controller()->autocomplete_controller()->InjectAdHocMatch(
           optional_match.value()));
@@ -195,6 +198,7 @@ void OmniboxViewIOS::SetCaretPos(size_t caret_pos) {
 void OmniboxViewIOS::RevertAll() {
   ignore_popup_updates_ = true;
   OmniboxView::RevertAll();
+  RevertThumbnailEdits();
   ignore_popup_updates_ = false;
 }
 
@@ -515,6 +519,7 @@ void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
   if (model()) {
+    AcceptThumbnailEdits();
     // The omnibox edit model doesn't support accepting input with no text.
     // Delegate the call to the client instead.
     if (OmniboxClient* client = controller()->client();
@@ -731,6 +736,7 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
   if (index >= autocomplete_controller->result().size() ||
       autocomplete_controller->result().match_at(index).destination_url !=
           match.destination_url) {
+    AcceptThumbnailEdits();
     OmniboxPopupSelection selection(
         autocomplete_controller->InjectAdHocMatch(match));
     model()->OpenSelection(selection, match_selection_timestamp, disposition);
@@ -765,6 +771,7 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
       return;
     }
   }
+  AcceptThumbnailEdits();
   model()->OpenSelection(OmniboxPopupSelection(index),
                          match_selection_timestamp, disposition);
 }
@@ -772,30 +779,43 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
 #pragma mark - Thumbnail
 
 void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
+  thumbnail_image_before_edit_ = image;
+  thumbnail_deleted_ = NO;
   [consumer_ setThumbnailImage:image];
   if (popup_provider_) {
     popup_provider_->SetHasThumbnail(image != nil);
   }
 }
 
-void OmniboxViewIOS::RemoveThumbnail() {
-  base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
-  // Update the client state.
-  if (OmniboxClient* client = controller()->client()) {
-    client->OnThumbnailRemoved();
+void OmniboxViewIOS::AcceptThumbnailEdits() {
+  if (thumbnail_deleted_) {
+    base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
+    thumbnail_image_before_edit_ = nil;
+    thumbnail_deleted_ = NO;
+    if (OmniboxClient* client = controller()->client()) {
+      client->OnThumbnailRemoved();
+    }
   }
-  // Update the UI.
+}
+
+void OmniboxViewIOS::RevertThumbnailEdits() {
+  if (thumbnail_deleted_) {
+    [consumer_ setThumbnailImage:thumbnail_image_before_edit_];
+    thumbnail_deleted_ = NO;
+    if (popup_provider_) {
+      popup_provider_->SetHasThumbnail(thumbnail_image_before_edit_ != nil);
+    }
+  }
+}
+
+void OmniboxViewIOS::RemoveThumbnail() {
+  thumbnail_deleted_ = YES;
   [consumer_ setThumbnailImage:nil];
   if (popup_provider_) {
     popup_provider_->SetHasThumbnail(false);
   }
-  // Generate new results.
   if (model()) {
-    if (field_.userText.length) {
-      model()->UpdateInput(/*has_selected_text=*/false,
-                           /*prevent_inline_autocomplete=*/true);
-    } else {
-      CloseOmniboxPopup();
-    }
+    model()->UpdateInput(/*has_selected_text=*/false,
+                         /*prevent_inline_autocomplete=*/true);
   }
 }

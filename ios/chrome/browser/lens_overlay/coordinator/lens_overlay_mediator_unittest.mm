@@ -156,7 +156,9 @@ class LensOverlayMediatorTest : public PlatformTest {
     OCMExpect([mock_toolbar_consumer_ setCanGoBack:expectCanGoBack]);
 
     fake_chrome_lens_overlay_.resultURL = resultURL;
-    [mediator_ omniboxDidAcceptText:omniboxText destinationURL:omniboxURL];
+    [mediator_ omniboxDidAcceptText:omniboxText
+                     destinationURL:omniboxURL
+                   thumbnailRemoved:NO];
 
     EXPECT_EQ(fake_result_consumer_.lastPushedURL, resultURL);
     EXPECT_OCMOCK_VERIFY(mock_omnibox_coordinator_);

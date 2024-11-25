@@ -53,8 +53,6 @@
   std::unique_ptr<LensOverlayNavigationManager> _navigationManager;
   /// Time where lens started the search request.
   base::ElapsedTimer _lensStartSearchRequestTime;
-  /// Whether the thumbnail/selection of the `currentLensResult` was removed.
-  BOOL _thumbnailRemoved;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
@@ -100,28 +98,20 @@
 #pragma mark LensOmniboxClientDelegate
 
 - (void)omniboxDidAcceptText:(const std::u16string&)text
-              destinationURL:(const GURL&)destinationURL {
+              destinationURL:(const GURL&)destinationURL
+            thumbnailRemoved:(BOOL)thumbnailRemoved {
   [self defocusOmnibox];
-
-  const BOOL isUnimodalTextQuery =
-      _thumbnailRemoved || _currentLensResult.isTextSelection;
-  if (isUnimodalTextQuery) {
+  // Start new unimodal searches in a new tab.
+  if (thumbnailRemoved || _currentLensResult.isTextSelection) {
     [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
     [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
-    if (_omniboxClient) {
-      [self updateOmniboxText:_omniboxClient->GetOmniboxSteadyStateText()];
-    }
-  } else {  // Multimodal query.
+    [self updateForLensResult:_currentLensResult];
+  } else {
     // Setting the query text generates new results.
     NSString* nsText = base::SysUTF16ToNSString(text);
     [self updateOmniboxText:nsText];
-    [self.lensHandler setQueryText:nsText clearSelection:_thumbnailRemoved];
+    [self.lensHandler setQueryText:nsText clearSelection:thumbnailRemoved];
   }
-}
-
-- (void)omniboxDidRemoveThumbnail {
-  _thumbnailRemoved = YES;
-  [self.lensHandler hideUserSelection];
 }
 
 #pragma mark LensToolbarMutator
@@ -207,7 +197,6 @@
 
 - (void)loadLensResult:(id<ChromeLensOverlayResult>)result {
   _currentLensResult = result;
-  _thumbnailRemoved = NO;
   // Load the URL, it will start the result UI.
   [self.resultConsumer loadResultsURL:result.searchResultURL];
   [self updateForLensResult:result];

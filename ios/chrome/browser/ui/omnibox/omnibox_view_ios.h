@@ -185,6 +185,11 @@ class OmniboxViewIOS : public OmniboxView,
   void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
   void UpdateSchemeStyle(const gfx::Range& scheme_range) override {}
 
+  /// Accepts thumbnail edits and update the client.
+  void AcceptThumbnailEdits();
+  /// Discards edits and restore the thumbnail.
+  void RevertThumbnailEdits();
+
   OmniboxTextFieldIOS* field_;
 
   // Focuser, used to transition the location bar to focused/defocused state as
@@ -205,6 +210,11 @@ class OmniboxViewIOS : public OmniboxView,
   NSString* marked_text_before_change_;
   NSRange current_selection_;
   NSRange old_selection_;
+
+  // Thumbnail image before any edit from the omnibox.
+  UIImage* thumbnail_image_before_edit_;
+  // Whether the thumbnail image was removed during omnibox edit.
+  BOOL thumbnail_deleted_;
 
   // TODO(rohitrao): This is a monster hack, needed because closing the popup
   // ends up inadvertently triggering a new round of autocomplete.  Fix the
