@@ -64,4 +64,15 @@ public interface SelectionActionMenuDelegate {
      */
     @NonNull
     List<SelectionMenuItem> getAdditionalTextProcessingItems();
+
+    /**
+     * Queries if selection menu item cache can be reused. Selection menu's items can be cached for
+     * repeated selections. Delegate can add menu items using {@link #modifyDefaultMenuItems(List)}
+     * API due to which repeated selections can result in different selection menu items being
+     * shown.
+     *
+     * @return True, if cached selection menu items can be reused for repeated selection, False
+     *     otherwise.
+     */
+    boolean canReuseCachedSelectionMenu();
 }
