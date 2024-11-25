@@ -97,7 +97,7 @@ public class VariationsTest extends AwParameterizedTest {
         try {
             FeatureAssociation features =
                     FeatureAssociation.newBuilder()
-                            .addEnableFeature(VariationsTestUtils.TEST_FEATURE_NAME)
+                            .addEnableFeature(AwFeatures.WEBVIEW_TEST_FEATURE)
                             .build();
             createAndLoadSeedFile(features);
 

@@ -122,7 +122,9 @@ BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,
              "WebViewSuppressDifferentOriginSubframeJSDialogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A Feature used for WebView variations tests. Not used in production.
+// A Feature used for WebView variations tests. Not used in production. Please
+// do not clean up this stale feature: we intentionally keep this feature flag
+// around for testing purposes.
 BASE_FEATURE(kWebViewTestFeature,
              "WebViewTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
