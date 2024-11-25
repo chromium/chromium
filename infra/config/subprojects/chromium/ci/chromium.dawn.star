@@ -1013,6 +1013,12 @@ ci.thin_tester(
             "gpu_samsung_s24_stable",
             "limited_capacity_bot",
         ],
+        per_test_modifications = {
+            "noop_sleep_tests": targets.mixin(
+                # TODO(crbug.com/333424893): Enable tests.
+                experiment_percentage = 100,
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,
