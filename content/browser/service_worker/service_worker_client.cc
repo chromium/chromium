@@ -1098,6 +1098,10 @@ void ServiceWorkerClient::InheritControllerFrom(
     // be in back forward cache. Otherwise, CHECK fail during restoring from
     // back forward cache.
     is_in_back_forward_cache_ = creator_host.is_in_back_forward_cache();
+    // TODO(crbug.com/341322515): remove this CHECK.
+    // This CHECK is to ensure this path does not cause the crash at
+    // ServiceWorkerVersion::RemoveControlleeFromBackForwardCacheMap().
+    CHECK(creator_host.controller_registration()->active_version());
     SetControllerRegistration(creator_host.controller_registration(),
                               false /* notify_controllerchange */);
   }
