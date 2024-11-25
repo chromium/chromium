@@ -36,10 +36,12 @@ class ProfileAttributesStorageIOS {
 
   ~ProfileAttributesStorageIOS();
 
-  // Register profile with `name`.
+  // Register profile with `name`. No profile with that name must be registered
+  // yet.
   void AddProfile(std::string_view name);
 
-  // Remove informations about profile with `name`.
+  // Remove information about profile with `name`. A profile with that name
+  // must be registered (and won't be anymore once this method returns).
   void RemoveProfile(std::string_view name);
 
   // Returns the count of known profiles.

@@ -40,7 +40,7 @@ ProfileAttributesStorageIOS::~ProfileAttributesStorageIOS() = default;
 
 void ProfileAttributesStorageIOS::AddProfile(std::string_view name) {
   // Inserts the profile name in sorted position.
-  auto iterator = base::ranges::upper_bound(sorted_keys_, name);
+  auto iterator = base::ranges::lower_bound(sorted_keys_, name);
   CHECK(iterator == sorted_keys_.end() || *iterator != name);
   sorted_keys_.insert(iterator, std::string(name));
 
