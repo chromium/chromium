@@ -451,7 +451,7 @@ std::optional<FilePath> MakeAbsoluteFilePathNoResolveSymbolicLinks(
   // a relative |input|.
   if (input.IsAbsolute()) {
     collapsed_path = FilePath(components_span[0]);
-    components_span = components_span.subspan(1);
+    components_span = components_span.subspan<1>();
   } else {
     if (!GetCurrentDirectory(&collapsed_path)) {
       return std::nullopt;

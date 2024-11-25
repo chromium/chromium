@@ -64,8 +64,7 @@ std::string ReadFromSocket(int fd) {
     return {};
   }
 
-  const auto contents =
-      make_span(buffer).subspan(0, static_cast<size_t>(result));
+  const auto contents = span(buffer).first(static_cast<size_t>(result));
   return std::string(contents.begin(), contents.end());
 }
 
