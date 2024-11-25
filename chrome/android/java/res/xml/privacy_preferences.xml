@@ -32,8 +32,7 @@ found in the LICENSE file.
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <Preference
         android:key="tracking_protection"
-        android:title="@string/tracking_protection_title"
-        android:summary="@string/tracking_protection_summary"
+        android:title="@string/third_party_cookies_link_row_label"
         android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
         app:isPreferenceVisible="false" />
     <Preference

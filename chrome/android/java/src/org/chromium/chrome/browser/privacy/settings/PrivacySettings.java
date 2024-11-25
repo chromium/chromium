@@ -208,12 +208,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             if (thirdPartyCookies != null) thirdPartyCookies.setVisible(false);
             Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
             trackingProtection.setVisible(true);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)) {
-                Preference doNotTrackPref = findPreference(PREF_DO_NOT_TRACK);
-                if (doNotTrackPref != null) doNotTrackPref.setVisible(false);
-            } else {
-                trackingProtection.setTitle(R.string.third_party_cookies_link_row_label);
-            }
         } else if (thirdPartyCookies != null) {
             thirdPartyCookies
                     .getExtras()
@@ -407,8 +401,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         mIncognitoLockSettings.updateIncognitoReauthPreferenceIfNeeded(getActivity());
 
         Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
-        if (trackingProtection != null
-                && !ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)) {
+        if (trackingProtection != null) {
             trackingProtection.setSummary(
                     ContentSettingsResources.getTrackingProtectionListSummary(
                             UserPrefs.get(getProfile())

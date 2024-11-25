@@ -1610,14 +1610,6 @@ Your Google account may have other forms of browsing history like searches and a
         Privacy guide explanation closed
       </message>
 
-      <!-- Tracking protection -->
-      <message name="IDS_TRACKING_PROTECTION_TITLE" desc="Tracking Protection preference item title.">
-        Tracking Protection
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_SUMMARY" desc="Tracking Protection preference item summary.">
-        Manage third-party cookies and tracking protections
-      </message>
-
       <!-- IP protection -->
       <message name="IDS_IP_PROTECTION_TITLE" desc="IP Protection preference item title." translateable="false">
         Hide your IP address
