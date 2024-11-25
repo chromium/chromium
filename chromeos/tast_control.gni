@@ -77,8 +77,7 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardEmojiSuggestion.guest",
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
 
-  # b/355351792, b/352703668: tests failing on jacuzzi and trogdor.
-  "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
+  # b/352703668: tests failing on trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
 
   # b/359336803: These tests are failing on brya (specifically kano) and
