@@ -35,10 +35,9 @@ def use_siso_default(output_dir):
       os.path.join(os.path.dirname(__file__), "../config/siso/.sisoenv")):
     return False
 
-  # TODO(341167943): Use Siso by default for Googlers working on corp
-  # Win/Mac machines.
+  # Use Siso by default for Googlers working on corp machine.
   if _is_google_corp_machine():
-    return sys.platform == "linux"
+    return True
 
   # Otherwise, use Ninja, until we are ready to roll it out
   # on non-corp machines, too.
