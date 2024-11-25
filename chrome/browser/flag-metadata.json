@@ -1779,6 +1779,14 @@
     "expiry_milestone": 136
   },
   {
+    "name": "cros-mall-managed",
+    "owners": [
+      "tsergeant@chromium.org",
+      "crosdev-commerce-eng@google.com"
+    ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "cros-mall-url",
     "owners": [
       "tsergeant@chromium.org",

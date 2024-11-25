@@ -78,6 +78,12 @@ BASE_FEATURE(kCrosComponents,
 // with Finch.
 BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Mall app for managed users. Only has an effect when kCrosMall is
+// also enabled.
+BASE_FEATURE(kCrosMallManaged,
+             "CrosMallManaged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",

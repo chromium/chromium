@@ -7684,6 +7684,11 @@ const char kCrosMallName[] = "ChromeOS App Mall";
 const char kCrosMallDescription[] =
     "Enables an app to discover and install other apps.";
 
+const char kCrosMallManagedName[] = "ChromeOS App Mall for managed users";
+const char kCrosMallManagedDescription[] =
+    "Enables the Mall app for managed users. Only has an effect when the "
+    "#cros-mall flag is enabled.";
+
 const char kCrosMallUrlName[] = "ChromeOS App Mall URL";
 const char kCrosMallUrlDescription[] =
     "Customize the URL used for the ChromeOS App Mall.";
