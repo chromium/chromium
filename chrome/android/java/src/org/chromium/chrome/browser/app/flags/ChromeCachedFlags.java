@@ -144,6 +144,7 @@ public class ChromeCachedFlags {
                         StartupLatencyInjector.CLANK_STARTUP_LATENCY_PARAM_MS,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         ToolbarPhone.REMOVE_REDUNDANT_ANIM_CALL,
+                        ToolbarPhone.REFACTOR_ANIMATIONS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
