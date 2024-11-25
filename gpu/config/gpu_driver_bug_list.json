@@ -2917,22 +2917,6 @@
       ]
     },
     {
-      "id": 407,
-      "cr_bugs": [1355946],
-      "description": "ANGLE does not permit rendering to RGB external textures",
-      "os": {
-        "type": "android"
-      },
-      "gl_renderer": "ANGLE.*Samsung Xclipse.*",
-      "comment": [
-        "This issue affects the Samsung Galaxy S22/23/24 with Exynos chipsets which uses ANGLE",
-        "as the system GLES driver, and the cause appears be overly strict validation."
-      ],
-      "features": [
-        "disable_rendering_to_rgb_external_texture"
-      ]
-    },
-    {
       "id": 408,
       "description": "Disable Media Foundation Clear Playback on older AMD drivers.",
       "comment": [

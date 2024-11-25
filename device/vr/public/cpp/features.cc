@@ -56,12 +56,6 @@ BASE_FEATURE(kWebXrSharedBuffers,
              "WebXrSharedBuffers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls what texture target is used for importing AHardwareBuffers from
-// SharedBuffers to local context.
-BASE_FEATURE(kUseTargetTexture2DForSharedBuffers,
-             "UseTargetTexture2DForSharedBuffers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
