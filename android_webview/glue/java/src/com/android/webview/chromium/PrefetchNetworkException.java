@@ -6,10 +6,7 @@ package com.android.webview.chromium;
 
 import org.chromium.android_webview.common.Lifetime;
 
-/**
- * A variation of {@link PrefetchException} for the network operation. <b> HttpStatusCode is based
- * on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN web response codes</a>
- */
+/** A variation of {@link PrefetchException} for the network operation. */
 @Lifetime.Temporary
 public class PrefetchNetworkException extends PrefetchException {
     private final int mHttpResponseStatusCode;
@@ -19,6 +16,10 @@ public class PrefetchNetworkException extends PrefetchException {
         mHttpResponseStatusCode = httpResponseStatusCode;
     }
 
+    /**
+     * HttpResponseStatusCode is based on <a
+     * href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status">MDN web response codes</a>.
+     */
     public int getHttpResponseStatusCode() {
         return mHttpResponseStatusCode;
     }

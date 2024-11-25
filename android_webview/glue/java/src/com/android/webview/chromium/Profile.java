@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
-import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
 import androidx.annotation.AnyThread;
@@ -92,9 +91,7 @@ public class Profile {
 
     @AnyThread
     public void prefetchUrl(
-            String url,
-            @Nullable PrefetchParams params,
-            ValueCallback<PrefetchOperationResult> resultCallback) {
+            String url, @Nullable PrefetchParams params, PrefetchOperationCallback resultCallback) {
         try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.PRE_START")) {
             if (url == null) {
                 throw new IllegalArgumentException("URL cannot be null for prefetch.");
@@ -115,15 +112,33 @@ public class Profile {
                                     PrefetchOperationResult.fromPrefetchStatusCode(
                                             statusCode, extras);
                             if (operationResult != null) {
-                                resultCallback.onReceiveValue(operationResult);
+                                switch (operationResult.statusCode) {
+                                    case PrefetchOperationStatusCode.SUCCESS:
+                                        resultCallback.onSuccess();
+                                        break;
+                                    case PrefetchOperationStatusCode.FAILURE:
+                                        resultCallback.onError(
+                                                new PrefetchException(
+                                                        "Prefetch Request has failed"));
+                                        break;
+                                    case PrefetchOperationStatusCode.SERVER_FAILURE:
+                                        resultCallback.onError(
+                                                new PrefetchNetworkException(
+                                                        "Server error",
+                                                        operationResult.httpResponseStatusCode));
+                                        break;
+                                    default:
+                                        resultCallback.onError(
+                                                new PrefetchException(
+                                                        "Unexpected error occurred."));
+                                }
                             }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            resultCallback.onReceiveValue(
-                                    new PrefetchOperationResult(
-                                            PrefetchOperationStatusCode.FAILURE));
+                            // TODO: Correct this based on the type of error.
+                            resultCallback.onError(new PrefetchException(e));
                         }
                     };
             Executor callingThreadExecutor = Runnable::run;
@@ -134,11 +149,11 @@ public class Profile {
         }
     }
 
-    public void clearPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {
+    public void clearPrefetch(String url, PrefetchOperationCallback resultCallback) {
         // TODO(334016945): do the actual implementation
     }
 
-    public void cancelPrefetch(String url, ValueCallback<PrefetchOperationResult> resultCallback) {
+    public void cancelPrefetch(String url) {
         // TODO(334016945): do the actual implementation
     }
 }
