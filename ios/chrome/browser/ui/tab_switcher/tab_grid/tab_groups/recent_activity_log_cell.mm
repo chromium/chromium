@@ -13,11 +13,7 @@
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     self.isAccessibilityElement = YES;
-    _iconImageView = [[UIImageView alloc] init];
-    // The user's icon is smaller than its UIImageView's bounds, so center it.
-    _iconImageView.contentMode = UIViewContentModeCenter;
-    [_iconImageView setContentHuggingPriority:UILayoutPriorityRequired
-                                      forAxis:UILayoutConstraintAxisHorizontal];
+    _avatarView = [[UIView alloc] init];
 
     // The favicon image is smaller than its UIImageView's bounds, so center
     // it.
@@ -31,7 +27,7 @@
     _titleLabel = [[UILabel alloc] init];
     _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
-    _titleLabel.numberOfLines = 1;
+    _titleLabel.numberOfLines = 2;
     [_titleLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                         forAxis:
@@ -53,7 +49,7 @@
 
     UIStackView* horizontalStack =
         [[UIStackView alloc] initWithArrangedSubviews:@[
-          _iconImageView, verticalStack, _faviconImageView
+          _avatarView, verticalStack, _faviconImageView
         ]];
     horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
     horizontalStack.axis = UILayoutConstraintAxisHorizontal;
@@ -95,8 +91,10 @@
   [super prepareForReuse];
   _titleLabel.text = nil;
   _descriptionLabel.text = nil;
-  _iconImageView.image = nil;
   _faviconImageView.image = nil;
+  for (UIView* subview in _avatarView.subviews) {
+    [subview removeFromSuperview];
+  }
 }
 
 @end

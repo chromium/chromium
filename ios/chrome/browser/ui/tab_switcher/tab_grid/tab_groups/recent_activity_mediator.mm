@@ -6,20 +6,24 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
+#import "components/data_sharing/public/group_data.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_avatar_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_log_item.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
 namespace {
 
-// The size of image of a user's icon and a favicon.
-const CGFloat kImageSize = 22;
+// The size of a favicon image.
+const CGFloat kFaviconSize = 20;
+// The size of an avatar image.
+const CGFloat kAvatarSize = 30;
 
 ActivityLogType ConvertCollaborationEvent(
     collaboration::messaging::CollaborationEvent collaboration_event) {
@@ -53,6 +57,8 @@ ActivityLogType ConvertCollaborationEvent(
   raw_ptr<FaviconLoader> _faviconLoader;
   // A service to get the information of a tab group.
   raw_ptr<tab_groups::TabGroupSyncService> _syncService;
+  // A service to get the information of a shared tab group.
+  raw_ptr<ShareKitService> _shareKitService;
 }
 
 - (instancetype)initWithtabGroup:(base::WeakPtr<const TabGroup>)tabGroup
@@ -60,14 +66,17 @@ ActivityLogType ConvertCollaborationEvent(
                     (collaboration::messaging::MessagingBackendService*)
                         messagingService
                    faviconLoader:(FaviconLoader*)faviconLoader
-                     syncService:(tab_groups::TabGroupSyncService*)syncService {
+                     syncService:(tab_groups::TabGroupSyncService*)syncService
+                 shareKitService:(ShareKitService*)shareKitService {
   CHECK(messagingService);
   CHECK(faviconLoader);
   CHECK(syncService);
+  CHECK(shareKitService);
   if ((self = [super init])) {
     _messagingService = messagingService;
     _faviconLoader = faviconLoader;
     _syncService = syncService;
+    _shareKitService = shareKitService;
   }
   return self;
 }
@@ -103,14 +112,28 @@ ActivityLogType ConvertCollaborationEvent(
       _faviconLoader->FaviconForPageUrlOrHost(
           GURL(log.activity_metadata.tab_metadata.value()
                    .last_known_url.value()),
-          kImageSize, ^(FaviconAttributes* attributes) {
+          kFaviconSize, ^(FaviconAttributes* attributes) {
             item.favicon = attributes.faviconImage;
           });
     }
 
-    // TODO(crbug.com/370897655): Get a correct user icon.
-    item.userIcon =
-        DefaultSymbolTemplateWithPointSize(kXMarkCircleFillSymbol, 20);
+    // Get a user's icon from the avatar URL and set it to `item`.
+    // The image is asynchronously loaded.
+    if (_shareKitService->IsSupported() &&
+        log.activity_metadata.triggering_user.has_value()) {
+      ShareKitAvatarConfiguration* config =
+          [[ShareKitAvatarConfiguration alloc] init];
+      data_sharing::GroupMember user =
+          log.activity_metadata.triggering_user.value();
+      config.avatarUrl =
+          [NSURL URLWithString:base::SysUTF8ToNSString(user.avatar_url.spec())];
+      // Use email intead when the display name is empty.
+      config.displayName = user.display_name.empty()
+                               ? base::SysUTF8ToNSString(user.email)
+                               : base::SysUTF8ToNSString(user.display_name);
+      config.avatarSize = CGSizeMake(kAvatarSize, kAvatarSize);
+      item.avatarPrimitive = _shareKitService->AvatarImage(config);
+    }
 
     [items addObject:item];
   }

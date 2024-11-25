@@ -10,8 +10,9 @@
 #import "base/memory/weak_ptr.h"
 
 class FaviconLoader;
-class TabGroup;
 @protocol RecentActivityConsumer;
+class ShareKitService;
+class TabGroup;
 namespace collaboration::messaging {
 class MessagingBackendService;
 }  // namespace collaboration::messaging
@@ -32,6 +33,7 @@ class TabGroupSyncService;
                         messagingService
                    faviconLoader:(FaviconLoader*)faviconLoader
                      syncService:(tab_groups::TabGroupSyncService*)syncService
+                 shareKitService:(ShareKitService*)shareKitService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

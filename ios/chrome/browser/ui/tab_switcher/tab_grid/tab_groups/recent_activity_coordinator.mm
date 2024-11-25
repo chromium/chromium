@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_mediator.h"
@@ -47,7 +48,8 @@
                                profile)
          faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(profile)
            syncService:tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-                           profile)];
+                           profile)
+       shareKitService:ShareKitServiceFactory::GetForProfile(profile)];
   _mediator.consumer = _viewController;
 
   UINavigationController* navigationController = [[UINavigationController alloc]

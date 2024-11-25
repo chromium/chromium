@@ -10,8 +10,8 @@
 // Represents a log in the recent activity in a shared tab group.
 @interface RecentActivityLogCell : UITableViewCell
 
-// The cell user's icon imageView on the left end.
-@property(nonatomic, readonly, strong) UIImageView* iconImageView;
+// The cell user's avatar view on the left end.
+@property(nonatomic, readonly, strong) UIView* avatarView;
 // The cell favicon imageView on the right end.
 @property(nonatomic, readonly, strong) UIImageView* faviconImageView;
 // The cell title.

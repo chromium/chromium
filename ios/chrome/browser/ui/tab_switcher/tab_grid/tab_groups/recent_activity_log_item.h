@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ShareKitAvatarPrimitive;
+
 // Different type used for RecentActivityLogItem.
 enum class ActivityLogType : NSUInteger {
   kTabAdded,
@@ -30,8 +32,8 @@ enum class ActivityLogType : NSUInteger {
 // The image of a favicon of a page.
 @property(nonatomic, strong) UIImage* favicon;
 
-// The image of a user icon.
-@property(nonatomic, strong) UIImage* userIcon;
+// The object to provide an avatar image.
+@property(nonatomic, strong) id<ShareKitAvatarPrimitive> avatarPrimitive;
 
 // The string of a title.
 @property(nonatomic, strong) NSString* title;

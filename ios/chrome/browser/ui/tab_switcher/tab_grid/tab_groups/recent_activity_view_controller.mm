@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_avatar_primitive.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_log_cell.h"
@@ -116,8 +117,15 @@ NSString* const kRecentActivitySectionIdentifier =
       DequeueTableViewCell<RecentActivityLogCell>(tableView);
   cell.titleLabel.text = itemIdentifier.title;
   cell.descriptionLabel.text = itemIdentifier.actionDescription;
-  cell.iconImageView.image = itemIdentifier.userIcon;
   cell.faviconImageView.image = itemIdentifier.favicon;
+
+  UIView* view = [itemIdentifier.avatarPrimitive view];
+  [cell.avatarView addSubview:view];
+  [NSLayoutConstraint activateConstraints:@[
+    [view.centerXAnchor constraintEqualToAnchor:cell.avatarView.centerXAnchor],
+    [view.centerYAnchor constraintEqualToAnchor:cell.avatarView.centerYAnchor],
+  ]];
+  [itemIdentifier.avatarPrimitive resolve];
   return cell;
 }
 

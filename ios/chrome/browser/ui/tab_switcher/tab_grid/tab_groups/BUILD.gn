@@ -147,6 +147,7 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/saved_tab_groups/favicon/ui",
+    "//ios/chrome/browser/share_kit/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
