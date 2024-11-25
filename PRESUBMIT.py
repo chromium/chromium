@@ -479,7 +479,9 @@ _BANNED_IOS_OBJC_FUNCTIONS = (
       excluded_paths=(
         'ios/chrome/browser/shared/ui/symbols/symbol_helpers.mm',
         'ios/chrome/common',
-        'ios/chrome/search_widget_extension/',
+        # App extensions have restricted dependencies and thus can't use the
+        # wrappers.
+        '^ios/chrome/\w+_extension/',
       ),
     ),
 )

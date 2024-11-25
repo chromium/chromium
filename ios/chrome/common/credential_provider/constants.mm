@@ -36,10 +36,20 @@ NSString* const kUserDefaultsCredentialProviderManagedUserEmail =
 NSString* const kUserDefaultsCredentialProviderNewCredentials =
     @"kUserDefaultsCredentialProviderNewCredentials";
 
-// Used to generate the key for the app group user defaults containg whether
+// Used to generate the key for the app group user defaults containing whether
 // saving passwords is currently enabled.
 NSString* const kUserDefaulsCredentialProviderSavingPasswordsEnabled =
     @"kUserDefaulsCredentialProviderSavingPasswordsEnabled";
+
+// Used to generate the key for the app group user defaults containing whether
+// saving passwords is currently managed by enterprise policy.
+NSString* const kUserDefaultsCredentialProviderSavingPasswordsManaged =
+    @"kUserDefaultsCredentialProviderSavingPasswordsManaged";
+
+// Used to generate the key for the app group user defaults containing whether
+// syncing passwords is currently enabled.
+NSString* const kUserDefaultsCredentialProviderPasswordSyncSetting =
+    @"kUserDefaultsCredentialProviderPasswordSyncSetting";
 
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
@@ -99,4 +109,16 @@ NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaulsCredentialProviderSavingPasswordsEnabled];
+}
+
+NSString* AppGroupUserDefaulsCredentialProviderSavingPasswordsManaged() {
+  return [AppGroupPrefix()
+      stringByAppendingString:
+          kUserDefaultsCredentialProviderSavingPasswordsManaged];
+}
+
+NSString* AppGroupUserDefaultsCredentialProviderPasswordSyncSetting() {
+  return
+      [AppGroupPrefix() stringByAppendingString:
+                            kUserDefaultsCredentialProviderPasswordSyncSetting];
 }

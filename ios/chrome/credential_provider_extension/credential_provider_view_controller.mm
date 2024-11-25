@@ -36,6 +36,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/generic_error_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/passkey_welcome_screen_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/saving_enterprise_disabled_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/signed_out_user_view_controller.h"
@@ -321,7 +322,23 @@ UIColor* BackgroundColor() {
   }
 
   if (!IsPasswordCreationUserEnabled()) {
-    [self showSavingDisabledByEnterpriseAlert];
+    if (IsPasswordCreationManaged()) {
+      [self showSavingDisabledByEnterpriseAlert];
+    } else {
+      // TODO(crbug.com/379247744): Replace this generic error with a more
+      // appropriate one. Users in this state have manually disabled the "Offer
+      // to save passwords" option, and need to enable it to complete saving a
+      // passkey.
+      [self showGenericErrorAlert];
+    }
+    return;
+  }
+
+  if (!IsPasswordSyncEnabled()) {
+    // TODO(crbug.com/379247744): Replace this generic error with a more
+    // appropriate one. Users in this state have disabled saving passwords to
+    // their account (sync).
+    [self showGenericErrorAlert];
     return;
   }
 
@@ -859,6 +876,18 @@ UIColor* BackgroundColor() {
   signedOutUserViewController.actionHandler = self;
   signedOutUserViewController.presentationController.delegate = self;
   [self presentViewController:signedOutUserViewController
+                     animated:YES
+                   completion:nil];
+}
+
+// Displays sheet with a generic error message. Should not be used if a more
+// specific error could be shown instead.
+- (void)showGenericErrorAlert {
+  GenericErrorViewController* genericErrorViewController =
+      [[GenericErrorViewController alloc] init];
+  genericErrorViewController.actionHandler = self;
+  genericErrorViewController.presentationController.delegate = self;
+  [self presentViewController:genericErrorViewController
                      animated:YES
                    completion:nil];
 }
