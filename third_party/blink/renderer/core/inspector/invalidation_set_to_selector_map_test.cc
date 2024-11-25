@@ -50,9 +50,10 @@ TEST_F(InvalidationSetToSelectorMapTest, TrackerLifetime) {
 
   StartTracing();
   SetBodyInnerHTML(R"HTML(<div id=d>D</div>)HTML");
-  EXPECT_NE(GetInstance(), nullptr);
+  EXPECT_EQ(GetInstance(), nullptr);
   GetElementById("d")->setAttribute(html_names::kStyleAttr,
                                     AtomicString("color: red"));
+  EXPECT_NE(GetInstance(), nullptr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_NE(GetInstance(), nullptr);
 
@@ -290,7 +291,8 @@ TEST_F(InvalidationSetToSelectorMapTest, SubtreeInvalidation) {
 
 TEST_F(InvalidationSetToSelectorMapTest, InvalidationSetRemoval) {
   StartTracing();
-  SetBodyInnerHTML(R"HTML(<div id=d>D</div>)HTML");
+  InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
+      GetDocument().GetStyleEngine());
   EXPECT_NE(GetInstance(), nullptr);
 
   StyleRule* style_rule = To<StyleRule>(
@@ -602,6 +604,88 @@ TEST_F(InvalidationSetToSelectorMapTest, HandleRebuildAfterRuleSetChange) {
       if (selector_list != nullptr) {
         EXPECT_EQ(selector_list->size(), 1u);
         EXPECT_EQ((*selector_list)[0], ".a .b");
+        found_event_count++;
+      }
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest,
+       StartTracingLateWithSubtreeInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a * { background-color: red; }
+    </style>
+    <div id=parent class=a>Parent
+      <div>Child</div>
+    </div>
+  )HTML");
+
+  StartTracing();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr &&
+        *reason == "Invalidation set invalidates subtree") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ((*selector_list)[0], ".a *");
+        found_event_count++;
+      }
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest,
+       StartTracingLateWithSubtreeInvalidation_InsertedSibling) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .a + * { background-color: red; }
+    </style>
+    <div id=parent>Parent
+      <div id=sibling>Sibling</div>
+    </div>
+  )HTML");
+
+  StartTracing();
+
+  Element* new_element = GetDocument().CreateRawElement(html_names::kDivTag);
+  new_element->setAttribute(html_names::kClassAttr, AtomicString("a"));
+  GetElementById("parent")->insertBefore(new_element,
+                                         GetElementById("sibling"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr &&
+        *reason == "Invalidation set invalidates subtree") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ((*selector_list)[0], ".a + *");
         found_event_count++;
       }
     }
