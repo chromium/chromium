@@ -297,7 +297,6 @@
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/download/bubble/download_bubble_update_service_factory.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
@@ -781,9 +780,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ContentIndexProviderFactory::GetInstance();
   CookieControlsServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
-#if !BUILDFLAG(IS_ANDROID)
-  CouponServiceFactory::GetInstance();
-#endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           chromeos::features::kCrosAppsBackgroundEventHandling)) {

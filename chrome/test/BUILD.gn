@@ -7326,7 +7326,6 @@ test("unit_tests") {
       "../browser/bookmarks/permanent_folder_ordering_tracker_unittest.cc",
       "../browser/browser_commands_unittest.cc",
       "../browser/browsing_data/chrome_browsing_data_lifetime_manager_unittest.cc",
-      "../browser/commerce/coupons/coupon_service_unittest.cc",
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_language_pack_component_installer_unittest.cc",
       "../browser/component_updater/zxcvbn_data_component_installer_unittest.cc",
