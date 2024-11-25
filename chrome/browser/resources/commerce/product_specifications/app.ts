@@ -108,6 +108,7 @@ enum AppState {
   SYNC_SCREEN = 2,
   TABLE_POPULATED = 3,
   LOADING = 4,
+  NO_CONTENT = 5,
 }
 
 function getProductDetails(
@@ -224,7 +225,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
-  private appState_: AppState = AppState.LOADING;
+  private appState_: AppState = AppState.NO_CONTENT;
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string|null = null;
   private showTableDataUnavailableContainer_: boolean;
@@ -376,7 +377,12 @@ export class ProductSpecificationsElement extends PolymerElement {
       }
       return AppState.TABLE_POPULATED;
     }
-    return AppState.ERROR;
+
+    if (this.isOffline_) {
+      return AppState.ERROR;
+    }
+
+    return AppState.NO_CONTENT;
   }
 
   private isAppStateError_() {
@@ -399,10 +405,20 @@ export class ProductSpecificationsElement extends PolymerElement {
     return this.appState_ === AppState.LOADING;
   }
 
+  private isAppStateNoContent_() {
+    return this.appState_ === AppState.NO_CONTENT;
+  }
+
   private computeShowTableDataUnavailableContainer_() {
     return this.appState_ === AppState.ERROR ||
         this.appState_ === AppState.TABLE_EMPTY ||
         this.appState_ === AppState.SYNC_SCREEN;
+  }
+
+  private canShowFooter_(
+      showTableDataUnavailableContainer: boolean, appState: AppState) {
+    return !(
+        showTableDataUnavailableContainer || appState === AppState.NO_CONTENT);
   }
 
   private canShowFeedbackButtons_() {
@@ -798,8 +814,12 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   // Resolves upon updating the loading state.
   private async enterLoadingState_(urlCount: number): Promise<void> {
-    if ([AppState.ERROR, AppState.SYNC_SCREEN, AppState.LOADING].includes(
-            this.appState_)) {
+    if ([
+          AppState.ERROR,
+          AppState.SYNC_SCREEN,
+          AppState.LOADING,
+          AppState.NO_CONTENT,
+        ].includes(this.appState_)) {
       this.loadingState_ = {loading: true, urlCount};
       this.dispatchLoadingStartEvent_();
       return Promise.resolve();

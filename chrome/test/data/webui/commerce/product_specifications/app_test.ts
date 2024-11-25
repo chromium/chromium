@@ -1757,6 +1757,11 @@ suite('AppTest', () => {
       assertTrue(isVisible(appElement.$.specs));
     });
 
+    test('hides summary container when app loads', async () => {
+      const appElement = await createAppElement();
+      assertFalse(isVisible(appElement.$.summaryContainer));
+    });
+
     test('hides empty state after product selection', async () => {
       const url = 'https://example.com/';
       const productTabs = [{
@@ -2107,7 +2112,7 @@ suite('AppTest', () => {
               isAllowedForEnterprise: true,
             },
           }));
-      createAppElement();
+      await createAppElement();
       await shoppingServiceApi.whenCalled(
           'getProductSpecificationsFeatureState');
 
