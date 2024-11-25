@@ -44,9 +44,7 @@ void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
 }
 
 void TestAddressDataManager::RemoveProfile(const std::string& guid) {
-  const AutofillProfile* profile = GetProfileByGUID(guid);
-  profiles_.erase(
-      base::ranges::find(profiles_, profile->guid(), &AutofillProfile::guid));
+  profiles_.erase(base::ranges::find(profiles_, guid, &AutofillProfile::guid));
   NotifyObservers();
 }
 
