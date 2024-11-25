@@ -26,7 +26,6 @@ struct AudioProcessingSettings {
   bool echo_cancellation;
   bool noise_suppression;
   bool automatic_gain_control;
-  bool high_pass_filter;
   bool multi_channel_capture_processing;
 };
 

@@ -484,7 +484,6 @@ class EchoCancellationContainer {
 
     properties->noise_suppression &= default_audio_processing_value;
     properties->voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
-    properties->goog_highpass_filter &= default_audio_processing_value;
   }
 
   bool GetDefaultValueForAudioProperties(
@@ -743,7 +742,6 @@ class ProcessingBasedContainer {
         BoolSet(),                               /* auto_gain_control_set */
         BoolSet(),                               /* goog_audio_mirroring_set */
         BoolSet(),                               /* noise_suppression_set */
-        BoolSet(),                               /* goog_highpass_filter_set */
         BoolSet(),                               /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
         GetApmSupportedChannels(device_parameters), /* channels_set */
@@ -769,7 +767,6 @@ class ProcessingBasedContainer {
         BoolSet({false}),                        /* auto_gain_control_set */
         BoolSet(),                               /* goog_audio_mirroring_set */
         BoolSet({false}),                        /* noise_suppression_set */
-        BoolSet({false}),                        /* goog_highpass_filter_set */
         BoolSet(),                               /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
         {device_parameters.channels()},          /* channels_set */
@@ -794,7 +791,6 @@ class ProcessingBasedContainer {
         BoolSet({false}),                        /* auto_gain_control_set */
         BoolSet({false}),                        /* goog_audio_mirroring_set */
         BoolSet({false}),                        /* noise_suppression_set */
-        BoolSet({false}),                        /* goog_highpass_filter_set */
         BoolSet({false}),                        /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
         {device_parameters.channels()},          /* channels_set */
@@ -959,7 +955,6 @@ class ProcessingBasedContainer {
  private:
   enum BooleanContainerId {
     kGoogNoiseSuppression,
-    kGoogHighpassFilter,
     kNumBooleanContainerIds
   };
 
@@ -977,8 +972,7 @@ class ProcessingBasedContainer {
       kBooleanPropertyContainerInfoMap[] = {
           {kGoogNoiseSuppression, &ConstraintSet::noise_suppression,
            &AudioProcessingProperties::noise_suppression},
-          {kGoogHighpassFilter, &ConstraintSet::goog_highpass_filter,
-           &AudioProcessingProperties::goog_highpass_filter}};
+  };
 
   // Private constructor intended to instantiate different variants of this
   // class based on the initial values provided. The appropriate way to
@@ -991,7 +985,6 @@ class ProcessingBasedContainer {
                            BoolSet auto_gain_control_set,
                            BoolSet goog_audio_mirroring_set,
                            BoolSet noise_suppression_set,
-                           BoolSet goog_highpass_filter_set,
                            BoolSet voice_isolation_set,
                            IntRangeSet sample_size_range,
                            Vector<int> channels_set,
@@ -1024,8 +1017,6 @@ class ProcessingBasedContainer {
 
     boolean_containers_[kGoogNoiseSuppression] =
         BooleanContainer(noise_suppression_set);
-    boolean_containers_[kGoogHighpassFilter] =
-        BooleanContainer(goog_highpass_filter_set);
 
     // Allow the full set of supported values when the device is not open or
     // when the candidate settings would open the device using an unprocessed

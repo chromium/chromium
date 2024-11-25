@@ -35,7 +35,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, CheckDefaultAudioProcessingConfig) {
   EXPECT_TRUE(config.pipeline.multi_channel_render);
   EXPECT_TRUE(config.pipeline.multi_channel_capture);
   EXPECT_EQ(config.pipeline.maximum_internal_processing_rate, 48000);
-  EXPECT_TRUE(config.high_pass_filter.enabled);
   EXPECT_FALSE(config.pre_amplifier.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
 
@@ -170,16 +169,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
 #else
     EXPECT_FALSE(config.echo_canceller.mobile_mode);
 #endif
-  }
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, ToggleHighPassFilter) {
-  for (bool high_pass_filter_enabled : {true, false}) {
-    SCOPED_TRACE(high_pass_filter_enabled);
-    auto config = CreateApmGetConfig(
-        /*settings=*/{.high_pass_filter = high_pass_filter_enabled});
-
-    EXPECT_EQ(config.high_pass_filter.enabled, high_pass_filter_enabled);
   }
 }
 
