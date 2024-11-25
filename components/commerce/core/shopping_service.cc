@@ -1172,8 +1172,12 @@ void ShoppingService::HandleOnDemandProductInfoResponse(
   optimization_guide::OptimizationGuideDecisionWithMetadata decision =
       iter->second;
 
-  if (decision.decision !=
-      optimization_guide::OptimizationGuideDecision::kTrue) {
+  bool successful_request =
+      decision.decision == optimization_guide::OptimizationGuideDecision::kTrue;
+  base::UmaHistogramBoolean("Commerce.ProductInfo.OnDemandRequest.Success",
+                            successful_request);
+
+  if (!successful_request) {
     std::move(callback).Run(url, std::nullopt);
     return;
   }

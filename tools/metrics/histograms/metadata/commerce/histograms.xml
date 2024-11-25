@@ -802,6 +802,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.ProductInfo.OnDemandRequest.Success" enum="Boolean"
+    expires_after="2025-06-01">
+  <owner>mdjones@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <summary>
+    Records whether an on-demand request for product info was successful. This
+    metric is only recorded for users of the GetProductInfoForUrl API and does
+    not include the scheduled updates for tracked products (as part of
+    bookmarks).
+  </summary>
+</histogram>
+
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2025-02-01">
   <owner>ayman@chromium.org</owner>
