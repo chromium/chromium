@@ -1201,7 +1201,7 @@
 <translation id="6579867704846662339">คุณเลือกเปิด URL ที่มีเข้ามาจากแอปอื่นๆ ในโหมดไม่ระบุตัวตนได้</translation>
 <translation id="6583087784430677195">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ "ป้อนรหัสผ่านอัตโนมัติ"</translation>
 <translation id="6585048665672348661">ลบข้อมูลการท่องเว็บ…</translation>
-<translation id="6585618849026997638">กลับไปที่หน้าที่สำคัญกับคุณได้โดยการเพิ่มบุ๊กมาร์ก</translation>
+<translation id="6585618849026997638">กลับไปยังหน้าเว็บที่สำคัญสำหรับคุณได้โดยการเพิ่มบุ๊กมาร์ก</translation>
 <translation id="6596481460663245319">ค้นหารูปภาพด้วย Google</translation>
 <translation id="6598432073497341323">{COUNT,plural, =1{รหัสผ่าน 1 รายการ}other{รหัสผ่าน # รายการ}}</translation>
 <translation id="6601302169302852717">บันทึกรูปภาพสำหรับ <ph name="USER_EMAIL" /> ไว้ใน Google Photos แล้ว</translation>
