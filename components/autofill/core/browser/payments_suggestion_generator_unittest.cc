@@ -60,20 +60,24 @@
 #include "ui/native_theme/native_theme.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-using gfx::test::AreImagesEqual;
-
 namespace autofill {
 namespace {
 
-using testing::_;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::IsEmpty;
-using testing::Matcher;
-using testing::NiceMock;
-using testing::UnorderedElementsAre;
-using testing::UnorderedElementsAreArray;
+using ::gfx::test::AreImagesEqual;
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Ge;
+using ::testing::IsEmpty;
+using ::testing::Matcher;
+using ::testing::NiceMock;
+using ::testing::Property;
+using ::testing::ResultOf;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 
 Matcher<Suggestion> EqualLabels(
     const std::vector<std::vector<Suggestion::Text>>& suggestion_objects) {
@@ -160,21 +164,19 @@ Matcher<Suggestion> EqualsManagePaymentsMethodsSuggestion(bool with_gpay_logo) {
 #endif
 }
 
-// Checks that `arg` contains necessary credit card footer suggestions. `arg`
-// has to be of type std::vector<Suggestion>.
-MATCHER_P(ContainsCreditCardFooterSuggestions, with_gpay_logo, "") {
-  EXPECT_GT(arg.size(), 2ul);
-  EXPECT_THAT(arg[arg.size() - 2],
-              EqualsSuggestion(SuggestionType::kSeparator));
-  EXPECT_THAT(arg.back(),
-              EqualsManagePaymentsMethodsSuggestion(with_gpay_logo));
-  return true;
+auto ContainsCreditCardFooterSuggestions(bool with_gpay_logo) {
+  return AllOf(
+      SizeIs(Ge(2)),
+      ResultOf(
+          [](const auto& container) {
+            return base::make_span(container).template last<2>();
+          },
+          ElementsAre(EqualsSuggestion(SuggestionType::kSeparator),
+                      EqualsManagePaymentsMethodsSuggestion(with_gpay_logo))));
 }
 
-// Checks that `arg` is the expected suggestion with `guid`. `arg` has to be of
-// type Suggestion.
-MATCHER_P(SuggestionWithGuidPayload, guid, "") {
-  return arg.template GetPayload<Suggestion::Guid>() == guid;
+auto SuggestionWithGuidPayload(const Suggestion::Guid& guid) {
+  return Property(&Suggestion::GetPayload<Suggestion::Guid>, guid);
 }
 
 class MockCreditCardFormEventLogger
@@ -438,7 +440,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
                                         /*virtual_card_option=*/false,
                                         /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(
+      ElementsAre(
           std::vector<Suggestion::Text>{
               Suggestion::Text(expected_benefit_text())},
           std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
@@ -511,7 +513,7 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                         /*virtual_card_option=*/true,
                                         /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(
+      ElementsAre(
           std::vector<Suggestion::Text>{
               Suggestion::Text(expected_benefit_text())},
           std::vector<Suggestion::Text>{
@@ -555,9 +557,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                         /*virtual_card_option=*/false,
                                         /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(
-          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
-              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+      ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
 // Checks that the category benefit description is not displayed for suggestions
@@ -582,9 +583,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                         /*virtual_card_option=*/false,
                                         /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(
-          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
-              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+      ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
 // Checks that the benefit description is not displayed when benefit suggestions
@@ -603,9 +603,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                         /*virtual_card_option=*/false,
                                         /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(
-          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
-              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
+      ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
 #else
