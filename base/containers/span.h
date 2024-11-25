@@ -137,6 +137,12 @@
 // - Omits constructors from `std::array`, since separating these from the range
 //   constructor is only useful to mark them `noexcept`, and Chromium doesn't
 //   care about that.
+// - Fixed-extent constructor from range is only `explicit` for ranges whose
+//   extent cannot be statically computed. This matches the spirit of
+//   `std::span`, which handles these (so far as it is aware) via other
+//   overloads. Without this, we would not only need the dedicated constructors
+//   from `std::array`, we would also need dedicated constructors from
+//   fixed-extent `std::span`.
 // - Provides implicit conversion from fixed-extent `span` to `std::span`.
 //   `std::span`'s general-purpose range constructor is explicit in this case
 //   because it does not have a carve-out for `span`.
@@ -256,10 +262,11 @@ concept FixedExtentConstructibleFromExtent = X == N || X == dynamic_extent;
 // Computes a fixed extent if possible from a source container type `T`.
 template <typename T>
 inline constexpr size_t kComputedExtentImpl = dynamic_extent;
+template <typename T>
+  requires requires { std::tuple_size<T>(); }
+inline constexpr size_t kComputedExtentImpl<T> = std::tuple_size_v<T>;
 template <typename T, size_t N>
 inline constexpr size_t kComputedExtentImpl<T[N]> = N;
-template <typename T, size_t N>
-inline constexpr size_t kComputedExtentImpl<std::array<T, N>> = N;
 template <typename T, size_t N>
 inline constexpr size_t kComputedExtentImpl<std::span<T, N>> = N;
 template <typename T, size_t N, typename InternalPtrType>
@@ -311,7 +318,11 @@ class GSL_POINTER span {
   using reference = element_type&;
   using const_reference = const element_type&;
   using iterator = CheckedContiguousIterator<element_type>;
+  using const_iterator = CheckedContiguousConstIterator<element_type>;
   using reverse_iterator = std::reverse_iterator<iterator>;
+  // TODO(C++23): When `std::const_iterator<>` is available, switch to
+  // `std::const_iterator<reverse_iterator>` as the standard specifies.
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   static constexpr size_type extent = Extent;
 
   // [span.cons], span constructors, copy, assignment, and destructor
@@ -411,7 +422,7 @@ class GSL_POINTER span {
              internal::FixedExtentConstructibleFromExtent<extent, N> &&
              std::ranges::borrowed_range<R>)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr explicit(N != extent) span(R&& range)
+  constexpr explicit span(R&& range)
       // SAFETY: `std::ranges::size()` returns the number of elements
       // `std::ranges::data()` will point to, so accessing those elements will
       // be safe.
@@ -465,7 +476,7 @@ class GSL_POINTER span {
     requires(!std::is_const_v<element_type> && N == dynamic_extent &&
              std::convertible_to<R &&, span<const element_type>>)
   constexpr void copy_from(R&& other) {
-    return copy_from(span<const element_type, extent>(std::forward<R>(other)));
+    copy_from(span<const element_type, extent>(std::forward<R>(other)));
   }
 
   // Bounds-checked copy from a non-overlapping span. The spans must be the
@@ -539,7 +550,7 @@ class GSL_POINTER span {
 
   // [span.sub], span subviews
   template <size_t Count>
-  constexpr auto first() const noexcept
+  constexpr auto first() const
     requires(Count <= extent)
   {
     // SAFETY: span provides that data() points to at least `extent` many
@@ -553,7 +564,7 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the span contains at least `count` elements and
   // will terminate otherwise.
-  constexpr auto first(StrictNumeric<size_type> count) const noexcept {
+  constexpr auto first(StrictNumeric<size_type> count) const {
     CHECK_LE(size_type{count}, extent);
     // SAFETY: span provides that data() points to at least `extent` many
     // elements. `Count` is non-negative by its type and `Count <= extent` from
@@ -562,7 +573,7 @@ class GSL_POINTER span {
   }
 
   template <size_t Count>
-  constexpr auto last() const noexcept
+  constexpr auto last() const
     requires(Count <= extent)
   {
     // SAFETY: span provides that data() points to at least `extent` many
@@ -579,7 +590,7 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the span contains at least `count` elements and
   // will terminate otherwise.
-  constexpr auto last(StrictNumeric<size_type> count) const noexcept {
+  constexpr auto last(StrictNumeric<size_type> count) const {
     CHECK_LE(size_type{count}, extent);
     // SAFETY: span provides that data() points to at least `extent` many
     // elements. `Count` is non-negative by its type and `Count <= extent` from
@@ -591,7 +602,7 @@ class GSL_POINTER span {
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
-  constexpr auto subspan() const noexcept
+  constexpr auto subspan() const
     requires(Offset <= extent &&
              (Count == dynamic_extent || Count <= extent - Offset))
   {
@@ -626,7 +637,7 @@ class GSL_POINTER span {
   // elements, or at least `offset` elements if `count` is not specified, and
   // will terminate otherwise.
   constexpr auto subspan(size_type offset,
-                         size_type count = dynamic_extent) const noexcept {
+                         size_type count = dynamic_extent) const {
     CHECK_LE(offset, extent);
     CHECK(count == dynamic_extent || count <= extent - offset);
     const size_type new_extent =
@@ -653,7 +664,7 @@ class GSL_POINTER span {
 
   template <size_t Offset>
     requires(Offset <= extent)
-  constexpr auto split_at() const noexcept {
+  constexpr auto split_at() const {
     return std::pair(first<Offset>(), subspan<Offset, extent - Offset>());
   }
 
@@ -674,7 +685,7 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the span contains at least `offset` elements and
   // will terminate otherwise.
-  constexpr auto split_at(size_type offset) const noexcept {
+  constexpr auto split_at(size_type offset) const {
     return std::pair(first(offset), subspan(offset));
   }
 
@@ -781,6 +792,13 @@ class GSL_POINTER span {
   constexpr reference operator[](size_type idx) const
     requires(extent > 0)
   {
+    return at(idx);
+  }
+
+  // When `idx` is outside the span, the underlying call will `CHECK()`.
+  constexpr reference at(size_type idx) const
+    requires(extent > 0)
+  {
     return *get_at(idx);
   }
 
@@ -838,6 +856,9 @@ class GSL_POINTER span {
     // pointer for the `data()` allocation.
     return UNSAFE_BUFFERS(iterator(data(), data() + extent));
   }
+  constexpr const_iterator cbegin() const noexcept {
+    return const_iterator(begin());
+  }
 
   constexpr iterator end() const noexcept {
     // SAFETY: span provides that `data()` points to at least `extent` many
@@ -845,13 +866,22 @@ class GSL_POINTER span {
     // pointer for the `data()` allocation.
     return UNSAFE_BUFFERS(iterator(data(), data() + extent, data() + extent));
   }
+  constexpr const_iterator cend() const noexcept {
+    return const_iterator(end());
+  }
 
   constexpr reverse_iterator rbegin() const noexcept {
     return reverse_iterator(end());
   }
+  constexpr const_reverse_iterator crbegin() const noexcept {
+    return const_iterator(rbegin());
+  }
 
   constexpr reverse_iterator rend() const noexcept {
     return reverse_iterator(begin());
+  }
+  constexpr const_reverse_iterator crend() const noexcept {
+    return const_iterator(rend());
   }
 
  private:
@@ -874,7 +904,11 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   using reference = element_type&;
   using const_reference = const element_type&;
   using iterator = CheckedContiguousIterator<element_type>;
+  using const_iterator = CheckedContiguousConstIterator<element_type>;
   using reverse_iterator = std::reverse_iterator<iterator>;
+  // TODO(C++23): When `std::const_iterator<>` is available, switch to
+  // `std::const_iterator<reverse_iterator>` as the standard specifies.
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
   static constexpr size_type extent = dynamic_extent;
 
   constexpr span() noexcept = default;
@@ -1046,7 +1080,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
 
   // [span.sub], span subviews
   template <size_t Count>
-  constexpr auto first() const noexcept {
+  constexpr auto first() const {
     CHECK_LE(Count, size());
     // SAFETY: span provides that data() points to at least `size()` many
     // elements. `Count` is non-negative by its type and `Count <= size()` from
@@ -1059,7 +1093,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the span contains at least `count` elements and
   // will terminate otherwise.
-  constexpr auto first(StrictNumeric<size_type> count) const noexcept {
+  constexpr auto first(StrictNumeric<size_type> count) const {
     CHECK_LE(size_type{count}, size());
     // SAFETY: span provides that data() points to at least `size()` many
     // elements. `count` is non-negative by its type and `count <= size()` from
@@ -1068,7 +1102,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   }
 
   template <size_t Count>
-  constexpr auto last() const noexcept {
+  constexpr auto last() const {
     CHECK_LE(Count, size());
     // SAFETY: span provides that data() points to at least `size()` many
     // elements. `Count` is non-negative by its type and `Count <= size()` from
@@ -1084,7 +1118,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the span contains at least `count` elements and
   // will terminate otherwise.
-  constexpr auto last(StrictNumeric<size_type> count) const noexcept {
+  constexpr auto last(StrictNumeric<size_type> count) const {
     CHECK_LE(size_type{count}, size());
     // SAFETY: span provides that data() points to at least `size()` many
     // elements. `count` is non-negative by its type and `count <= size()` from
@@ -1096,7 +1130,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   }
 
   template <size_t Offset, size_t Count = dynamic_extent>
-  constexpr auto subspan() const noexcept {
+  constexpr auto subspan() const {
     CHECK_LE(Offset, size());
     CHECK(Count == dynamic_extent || Count <= size() - Offset);
     const size_type new_extent =
@@ -1130,7 +1164,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // elements, or at least `offset` elements if `count` is not specified, and
   // will terminate otherwise.
   constexpr auto subspan(size_type offset,
-                         size_type count = dynamic_extent) const noexcept {
+                         size_type count = dynamic_extent) const {
     CHECK_LE(offset, size());
     CHECK(count == dynamic_extent || count <= size() - offset)
         << " count: " << count << " offset: " << offset << " size: " << size();
@@ -1162,9 +1196,9 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // The function CHECKs that the span contains at least `Offset` elements and
   // will terminate otherwise.
   template <size_t Offset>
-  constexpr auto split_at() const noexcept {
+  constexpr auto split_at() const {
     CHECK_LE(Offset, size());
-    return std::pair(first<Offset>(), subspan(Offset));
+    return std::pair(first<Offset>(), subspan<Offset>());
   }
 
   // Splits a span into two at the given `offset`, returning two spans that
@@ -1184,7 +1218,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the span contains at least `offset` elements and
   // will terminate otherwise.
-  constexpr auto split_at(size_type offset) const noexcept {
+  constexpr auto split_at(size_type offset) const {
     return std::pair(first(offset), subspan(offset));
   }
 
@@ -1286,9 +1320,10 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // [span.elem], span element access
   //
   // When `idx` is outside the span, the underlying call will `CHECK()`.
-  constexpr reference operator[](size_type idx) const noexcept {
-    return *get_at(idx);
-  }
+  constexpr reference operator[](size_type idx) const { return at(idx); }
+
+  // When `idx` is outside the span, the underlying call will `CHECK()`.
+  constexpr reference at(size_type idx) const { return *get_at(idx); }
 
   // Returns a pointer to an element in the span.
   //
@@ -1302,7 +1337,7 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the `idx` is inside the span and will terminate
   // otherwise.
-  constexpr pointer get_at(size_type idx) const noexcept {
+  constexpr pointer get_at(size_type idx) const {
     CHECK_LT(idx, size());
     // SAFETY: Since data() always points to at least `size()` elements, the
     // check above ensures `idx < size()` and is thus in range for data().
@@ -1312,12 +1347,12 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
   // Returns a reference to the first element in the span.
   //
   // When `empty()`, the underlying call will `CHECK()`.
-  constexpr reference front() const noexcept { return operator[](0); }
+  constexpr reference front() const { return operator[](0); }
 
   // Returns a reference to the last element in the span.
   //
   // When `empty()`, the underlying call will `CHECK()`.
-  constexpr reference back() const noexcept { return operator[](size() - 1); }
+  constexpr reference back() const { return operator[](size() - 1); }
 
   // Returns a pointer to the first element in the span. If the span is empty
   // (`size()` is 0), the returned pointer may or may not be null, and it must
@@ -1334,6 +1369,9 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // pointer for the data() allocation.
     return UNSAFE_BUFFERS(iterator(data(), data() + size()));
   }
+  constexpr const_iterator cbegin() const noexcept {
+    return const_iterator(begin());
+  }
 
   constexpr iterator end() const noexcept {
     // SAFETY: span provides that data() points to at least `size()` many
@@ -1341,13 +1379,22 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
     // pointer for the data() allocation.
     return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
   }
+  constexpr const_iterator cend() const noexcept {
+    return const_iterator(end());
+  }
 
   constexpr reverse_iterator rbegin() const noexcept {
     return reverse_iterator(end());
   }
+  constexpr const_reverse_iterator crbegin() const noexcept {
+    return const_iterator(rbegin());
+  }
 
   constexpr reverse_iterator rend() const noexcept {
     return reverse_iterator(begin());
+  }
+  constexpr const_reverse_iterator crend() const noexcept {
+    return const_iterator(rend());
   }
 
   // Convert a dynamic-extent span to a fixed-extent span. Returns a
@@ -1383,13 +1430,12 @@ span(R&&) -> span<std::remove_reference_t<std::ranges::range_reference_t<R>>,
 
 // [span.objectrep], views of object representation
 template <typename ElementType, size_t Extent, typename InternalPtrType>
-constexpr auto as_bytes(span<ElementType, Extent, InternalPtrType> s) noexcept {
+constexpr auto as_bytes(span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<const uint8_t>(s);
 }
 template <typename ElementType, size_t Extent, typename InternalPtrType>
   requires(!std::is_const_v<ElementType>)
-constexpr auto as_writable_bytes(
-    span<ElementType, Extent, InternalPtrType> s) noexcept {
+constexpr auto as_writable_bytes(span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<uint8_t>(s);
 }
 
@@ -1398,7 +1444,7 @@ constexpr auto as_writable_bytes(
 // added since chrome still represents many things as char arrays which
 // rightfully should be uint8_t.
 template <typename ElementType, size_t Extent, typename InternalPtrType>
-constexpr auto as_chars(span<ElementType, Extent, InternalPtrType> s) noexcept {
+constexpr auto as_chars(span<ElementType, Extent, InternalPtrType> s) {
   return internal::as_byte_span<const char>(s);
 }
 
@@ -1424,17 +1470,16 @@ constexpr auto as_writable_chars(span<ElementType, Extent, InternalPtrType> s) {
 // ```
 // std::string_view(as_chars(span).begin(), as_chars(span).end())
 // ```
-constexpr auto as_string_view(span<const char> s) noexcept {
+constexpr auto as_string_view(span<const char> s) {
   return std::string_view(s.begin(), s.end());
 }
-constexpr auto as_string_view(span<const unsigned char> s) noexcept {
-  const auto c = as_chars(s);
-  return std::string_view(c.begin(), c.end());
+constexpr auto as_string_view(span<const unsigned char> s) {
+  return as_string_view(as_chars(s));
 }
-constexpr auto as_string_view(span<const char16_t> s) noexcept {
+constexpr auto as_string_view(span<const char16_t> s) {
   return std::u16string_view(s.begin(), s.end());
 }
-constexpr auto as_string_view(span<const wchar_t> s) noexcept {
+constexpr auto as_string_view(span<const wchar_t> s) {
   return std::wstring_view(s.begin(), s.end());
 }
 
@@ -1499,6 +1544,15 @@ constexpr std::ostream& operator<<(
   return l << ']';
 }
 
+// Because `span` meets the GoogleTest "container" criteria, explicitly
+// overloading `PrintTo()` is necessary to make GoogleTest print spans using the
+// `operator<<()` overload above, and not its own container printer.
+template <typename ElementType, size_t Extent, typename InternalPtrType>
+constexpr void PrintTo(span<ElementType, Extent, InternalPtrType> s,
+                       std::ostream* os) {
+  *os << s;
+}
+
 // `span_from_ref` converts a reference to T into a span of length 1.  This is a
 // non-std helper that is inspired by the `std::slice::from_ref()` function from
 // Rust.
@@ -1506,13 +1560,13 @@ constexpr std::ostream& operator<<(
 // Const references are turned into a `span<const T, 1>` while mutable
 // references are turned into a `span<T, 1>`.
 template <typename T>
-constexpr auto span_from_ref(const T& t LIFETIME_BOUND) noexcept {
+constexpr auto span_from_ref(const T& t LIFETIME_BOUND) {
   // SAFETY: Given a valid reference to `t` the span of size 1 will be a valid
   // span that points to the `t`.
   return UNSAFE_BUFFERS(span<const T, 1>(std::addressof(t), 1u));
 }
 template <typename T>
-constexpr auto span_from_ref(T& t LIFETIME_BOUND) noexcept {
+constexpr auto span_from_ref(T& t LIFETIME_BOUND) {
   // SAFETY: Given a valid reference to `t` the span of size 1 will be a valid
   // span that points to the `t`.
   return UNSAFE_BUFFERS(span<T, 1>(std::addressof(t), 1u));
@@ -1525,11 +1579,11 @@ constexpr auto span_from_ref(T& t LIFETIME_BOUND) noexcept {
 // Const references are turned into a `span<const T, sizeof(T)>` while mutable
 // references are turned into a `span<T, sizeof(T)>`.
 template <typename T>
-constexpr auto byte_span_from_ref(const T& t LIFETIME_BOUND) noexcept {
+constexpr auto byte_span_from_ref(const T& t LIFETIME_BOUND) {
   return as_bytes(span_from_ref(t));
 }
 template <typename T>
-constexpr auto byte_span_from_ref(T& t LIFETIME_BOUND) noexcept {
+constexpr auto byte_span_from_ref(T& t LIFETIME_BOUND) {
   return as_writable_bytes(span_from_ref(t));
 }
 

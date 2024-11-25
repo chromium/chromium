@@ -37,17 +37,7 @@ using ::testing::Pointwise;
 
 namespace base {
 
-namespace {
-
-// Tests for span(It, StrictNumeric<size_t>) deduction guide. These tests use a
-// helper function to wrap the static_asserts, as most STL containers don't work
-// well in a constexpr context. std::array<T, N> does, but span has specific
-// overloads for std::array<T, n>, so that ends up being less helpful than it
-// would initially appear.
-//
-// Another alternative would be to use std::declval, but that would be fairly
-// verbose.
-[[maybe_unused]] void TestDeductionGuides() {
+TEST(SpanTest, DeductionGuides) {
   // Tests for span(It, EndOrSize) deduction guide.
   {
     const std::vector<int> v;
@@ -153,8 +143,6 @@ namespace {
       std::is_same_v<decltype(span(std::declval<std::array<float, 9>&>())),
                      span<float, 9>>);
 }
-
-}  // namespace
 
 TEST(SpanTest, DefaultConstructor) {
   span<int> dynamic_span;
@@ -342,8 +330,8 @@ TEST(SpanTest, DisallowedConstructionsFromStdArray) {
 
   static_assert(
       !std::is_constructible_v<span<int>, const std::array<const int, 3>&>,
-      "Error: span<int> with dynamic extent should not be constructible const "
-      "from l-value reference to std::array<const int>");
+      "Error: span<int> with dynamic extent should not be constructible from "
+      "const l-value reference to std::array<const int>");
 
   static_assert(
       !std::is_constructible_v<span<int, 2>, std::array<int, 3>&>,
