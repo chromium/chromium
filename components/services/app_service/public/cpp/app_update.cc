@@ -114,9 +114,8 @@ bool MergeWithoutIconKey(App* state, const App* delta) {
 
   if ((delta->app_type != state->app_type) ||
       (delta->app_id != state->app_id)) {
-    LOG(ERROR) << "inconsistent (app_type, app_id): ("
-               << EnumToString(delta->app_type) << ", " << delta->app_id
-               << ") vs (" << EnumToString(state->app_type) << ", "
+    LOG(ERROR) << "inconsistent (app_type, app_id): (" << delta->app_type
+               << ", " << delta->app_id << ") vs (" << state->app_type << ", "
                << state->app_id << ") ";
     return false;
   }
@@ -635,7 +634,7 @@ bool AppUpdate::ExtraChanged() const {
 }
 
 std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
-  out << "AppType: " << EnumToString(app.AppType()) << std::endl;
+  out << "AppType: " << app.AppType() << std::endl;
   out << "AppId: " << app.AppId() << std::endl;
   out << "Readiness: " << EnumToString(app.Readiness()) << std::endl;
   out << "Name: " << app.Name() << std::endl;

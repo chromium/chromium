@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_
 
 #include <optional>
+#include <ostream>
 
 #include "base/component_export.h"
 #include "components/services/app_service/public/cpp/macros.h"
@@ -13,31 +14,35 @@
 
 namespace apps {
 
-// When updating the enum below, update
-// //components/services/app_service/public/cpp/macros.h
-// macros if necessary, as well as the ApplicationType enum in
+// When updating the enum below, update the ApplicationType enum in
 // //components/services/app_service/public/protos/app_types.proto.
 //
 // This is used for metrics and should not be reordered or removed and email
 // chromeos-data-team@google.com to request a corresponding change to backend
 // enums.
-ENUM(AppType,
-     kUnknown,
-     kArc,                         // Android app.
-     kBuiltIn,                     // Built-in app. (No longer used)
-     kCrostini,                    // Linux (via Crostini) app.
-     kChromeApp,                   // Chrome app.
-     kWeb,                         // Web app.
-     kPluginVm,                    // Plugin VM app, see go/pluginvm.
-     kStandaloneBrowser,           // Lacros browser app, see //docs/lacros.md.
-     kRemote,                      // Remote app.
-     kBorealis,                    // Borealis app, see go/borealis-app.
-     kSystemWeb,                   // System web app.
-     kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
-     kExtension,                   // Browser extension.
-     kStandaloneBrowserExtension,  // Extension hosted in Lacros.
-     kBruschetta                   // Bruschetta app, see go/bruschetta.
-)
+enum class AppType {
+  kUnknown = 0,
+  kArc = 1,                // Android app.
+  kBuiltIn = 2,            // Built-in app. (No longer used)
+  kCrostini = 3,           // Linux (via Crostini) app.
+  kChromeApp = 4,          // Chrome app.
+  kWeb = 5,                // Web app.
+  kPluginVm = 6,           // Plugin VM app, see go/pluginvm.
+  kStandaloneBrowser = 7,  // Lacros browser app, see //docs/lacros.md.
+  kRemote = 8,             // Remote app.
+  kBorealis = 9,           // Borealis app, see go/borealis-app.
+  kSystemWeb = 10,         // System web app.
+  kStandaloneBrowserChromeApp = 11,  // Chrome app hosted in Lacros.
+  kExtension = 12,                   // Browser extension.
+  kStandaloneBrowserExtension = 13,  // Extension hosted in Lacros.
+  kBruschetta = 14,                  // Bruschetta app, see go/bruschetta.
+
+  // The value for UMA. Should be updated when a new entry is added.
+  kMaxValue = kBruschetta
+};
+
+COMPONENT_EXPORT(APP_TYPES)
+std::ostream& operator<<(std::ostream& os, AppType v);
 
 // When updating the enum below, update
 // //components/services/app_service/public/cpp/macros.h

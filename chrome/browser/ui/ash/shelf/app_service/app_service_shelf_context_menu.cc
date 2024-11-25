@@ -148,7 +148,7 @@ std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
   if (command_id == ash::LAUNCH_NEW) {
     CHECK_GT(launch_new_string_id_, 0)
         << "Unexpected `launch_new_string_id_` value. App id = "
-        << item().id.app_id << "; app type = " << apps::EnumToString(app_type_)
+        << item().id.app_id << "; app type = " << app_type_
         << "; submenu items count = " << submenu_->GetItemCount();
     return l10n_util::GetStringUTF16(launch_new_string_id_);
   } else if (command_id == ash::SHUTDOWN_BRUSCHETTA_OS) {

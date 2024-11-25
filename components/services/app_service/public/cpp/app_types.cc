@@ -6,22 +6,45 @@
 
 namespace apps {
 
-APP_ENUM_TO_STRING(AppType,
-                   kUnknown,
-                   kArc,
-                   kBuiltIn,
-                   kCrostini,
-                   kChromeApp,
-                   kWeb,
-                   kPluginVm,
-                   kStandaloneBrowser,
-                   kRemote,
-                   kBorealis,
-                   kSystemWeb,
-                   kStandaloneBrowserChromeApp,
-                   kExtension,
-                   kStandaloneBrowserExtension,
-                   kBruschetta)
+std::ostream& operator<<(std::ostream& os, AppType v) {
+  switch (v) {
+    case AppType::kUnknown:
+      return os << "AppType::kUnknown";
+    case AppType::kArc:
+      return os << "AppType::kArc";
+    case AppType::kBuiltIn:
+      return os << "AppType::kBuiltIn";
+    case AppType::kCrostini:
+      return os << "AppType::kCrostini";
+    case AppType::kChromeApp:
+      return os << "AppType::kChromeApp";
+    case AppType::kWeb:
+      return os << "AppType::kWeb";
+    case AppType::kPluginVm:
+      return os << "AppType::kPluginVm";
+    case AppType::kStandaloneBrowser:
+      return os << "AppType::kStandaloneBrowser";
+    case AppType::kRemote:
+      return os << "AppType::kRemote";
+    case AppType::kBorealis:
+      return os << "AppType::kBorealis";
+    case AppType::kSystemWeb:
+      return os << "AppType::kSystemWeb";
+    case AppType::kStandaloneBrowserChromeApp:
+      return os << "AppType::kStandaloneBrowserChromeApp";
+    case AppType::kExtension:
+      return os << "AppType::kExtension";
+    case AppType::kStandaloneBrowserExtension:
+      return os << "AppType::kStandaloneBrowserExtension";
+    case AppType::kBruschetta:
+      return os << "AppType::kBruschetta";
+  }
+
+  // Just in case, where the value comes from outside of the chrome code
+  // then casted without checks.
+  return os << "(unknown: " << static_cast<int>(v) << ")";
+}
+
 APP_ENUM_TO_STRING(PackageType,
                    kUnknown,
                    kArc,
