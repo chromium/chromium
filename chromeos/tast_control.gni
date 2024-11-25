@@ -92,9 +92,6 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
   "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
 
-  # b/376898784
-  "a11y.LiveCaption.fieldtrial_testing_config_on",
-
   # b/379893188
   "login.ExistingUser",
   "login.ChangePassword.user_with_recovery",
