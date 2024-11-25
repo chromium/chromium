@@ -98,7 +98,7 @@ class KioskMixin : public InProcessBrowserTestMixin {
   // Encapsulates the data used to configure Kiosk.
   //
   // This is designed to be used as the parameter type in parameterized tests,
-  // for example with `KioskMixin::StandardConfigs()`.
+  // for example with `ConfigsToAutoLaunchEachAppType()`.
   struct Config {
     Config(std::optional<std::string> name,
            std::optional<AutoLaunchAccount> auto_launch_account_id,
@@ -197,34 +197,6 @@ class KioskMixin : public InProcessBrowserTestMixin {
   // `InProcessBrowserTestMixin`:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
-
-  // Configures a Kiosk Chrome App in device policies with the given `app_id`
-  // and `account_id`.
-  //
-  // The `app_id` and `account_id` must be unique among other device local
-  // accounts.
-  void ConfigureCwsChromeApp(ScopedDevicePolicyUpdate& scoped_update,
-                             std::string_view app_id,
-                             std::string_view crx_filename,
-                             std::string_view crx_version,
-                             std::string_view account_id);
-
-  // Configures a Kiosk web app in device policies with the given `url` and
-  // `account_id`.
-  //
-  // The `url` and `account_id` must be unique among other device local
-  // accounts.
-  void ConfigureWebApp(ScopedDevicePolicyUpdate& scoped_update,
-                       const GURL& url,
-                       std::string_view account_id);
-
-  // Configures the Kiosk account given by `account_id` as the auto launch
-  // account.
-  //
-  // An app with the given `account_id` must be configured previously via the
-  // methods above.
-  void ConfigureAutoLaunchAccountId(ScopedDevicePolicyUpdate& scoped_update,
-                                    std::string_view account_id);
 
   // The configuration used to simulate pre-cached policy state before the test
   // starts.
