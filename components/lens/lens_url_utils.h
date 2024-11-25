@@ -9,7 +9,6 @@
 
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_metadata.mojom.h"
-#include "components/lens/lens_rendering_environment.h"
 #include "ui/gfx/geometry/size_f.h"
 
 class GURL;
@@ -32,25 +31,14 @@ extern void AppendLogsQueryParam(
     std::string* query_string,
     const std::vector<lens::mojom::LatencyLogPtr>& log_data);
 
-// Appends the viewport width and height query params to the Lens or companion
-// request GURL if the width and height of the input size is not zero,
-// respectively.
-extern GURL AppendOrReplaceViewportSizeForRequest(
-    const GURL& url,
-    const gfx::Size& viewport_size);
-
 // Returns a modified GURL with appended or replaced parameters depending on the
 // entrypoint and other parameters.
-extern GURL AppendOrReplaceQueryParametersForLensRequest(
-    const GURL& url,
-    lens::EntryPoint ep,
-    lens::RenderingEnvironment re);
+extern GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
+                                                         lens::EntryPoint ep);
 
 // Returns a query string with all relevant query parameters. Needed for when a
 // GURL is unavailable to append to.
-extern std::string GetQueryParametersForLensRequest(
-    lens::EntryPoint ep,
-    bool is_full_screen_request);
+extern std::string GetQueryParametersForLensRequest(lens::EntryPoint ep);
 
 // Check if the lens URL is a valid results page. This is done by checking if
 // the URL has a payload parameter.

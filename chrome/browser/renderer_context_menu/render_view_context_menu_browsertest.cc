@@ -171,7 +171,6 @@
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "ui/events/test/event_generator.h"
 #endif
@@ -561,8 +560,9 @@ class PdfPluginContextMenuBrowserTest : public PDFExtensionTestBase {
     params.media_flags |= blink::ContextMenuData::kMediaCanRotate;
     params.selection_text = info.selection_text;
     // Mimic how `edit_flag` is set in ContextMenuController::ShowContextMenu().
-    if (info.can_copy)
+    if (info.can_copy) {
       params.edit_flags |= blink::ContextMenuDataEditFlags::kCanCopy;
+    }
 
     auto menu =
         std::make_unique<TestRenderViewContextMenu>(*target_frame, params);
@@ -2292,7 +2292,7 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
              {{lens::features::kHomepageURLForLens.name, GetLensURL().spec()}}},
         },
         /*disabled_features=*/{lens::features::kLensOverlay});
-        InProcessBrowserTest::SetUp();
+    InProcessBrowserTest::SetUp();
   }
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -2517,9 +2517,7 @@ IN_PROC_BROWSER_TEST_F(LensBrowserBaseTest, LensRegionSearchNonGoogleDSE) {
   std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
 
   // Match strings up to the query.
-  EXPECT_THAT(
-      new_tab_content,
-      expected_content);
+  EXPECT_THAT(new_tab_content, expected_content);
   ExpectThatRequestContainsImageData(new_tab);
 }
 
@@ -2904,12 +2902,14 @@ class LoadImageBrowserTest : public InProcessBrowserTest {
   // default handler on second, third, etc.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.relative_url != image_path_)
+    if (request.relative_url != image_path_) {
       return nullptr;
+    }
 
     ++request_attempts_;
-    if (request_attempts_ > 1)
+    if (request_attempts_ > 1) {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> not_found_response =
         std::make_unique<net::test_server::BasicHttpResponse>();

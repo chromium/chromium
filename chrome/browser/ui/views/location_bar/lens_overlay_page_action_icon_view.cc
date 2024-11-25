@@ -203,7 +203,6 @@ void LensOverlayPageActionIconView::OnExecuting(
     }
     lens_region_search_controller_->Start(
         GetWebContents(), /*use_fullscreen_capture=*/true,
-        /*force_open_in_new_tab=*/true,
         /*is_google_default_search_provider=*/true,
         lens::AmbientSearchEntryPoint::
             LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK);

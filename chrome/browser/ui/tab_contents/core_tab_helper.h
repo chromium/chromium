@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_entrypoints.h"
-#include "components/lens/lens_rendering_environment.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -76,16 +75,13 @@ class CoreTabHelper : public content::WebContentsObserver,
   void SearchWithLens(content::RenderFrameHost* render_frame_host,
                       const GURL& src_url,
                       lens::EntryPoint entry_point,
-                      bool is_image_translate,
-                      bool force_open_in_new_tab);
+                      bool is_image_translate);
 
   // Opens the Lens experience for an `image`, which will be resized if needed.
   // If the search engine supports opening requests in side panel, then the
   // request will open in the side panel instead of a new tab, unless
   // force_open_in_new_tab is set.
-  void SearchWithLens(const gfx::Image& image,
-                      lens::EntryPoint entry_point,
-                      bool force_open_in_new_tab);
+  void SearchWithLens(const gfx::Image& image, lens::EntryPoint entry_point);
 
   // Performs an image search for the image that triggered the context menu. The
   // `src_url` is passed to the search request and is not used directly to fetch

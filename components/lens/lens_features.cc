@@ -355,24 +355,6 @@ constexpr base::FeatureParam<std::string> kHomepageURLForLens{
 constexpr base::FeatureParam<bool> kEnableLensHtmlRedirectFix{
     &kLensStandalone, "lens-html-redirect-fix", false};
 
-constexpr base::FeatureParam<bool>
-    kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame{
-        &kLensStandalone,
-        "dismiss-loading-state-on-document-on-load-completed-in-primary-main-"
-        "frame",
-        false};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnDomContentLoaded{
-    &kLensStandalone, "dismiss-loading-state-on-dom-content-loaded", false};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishNavigation{
-    &kLensStandalone, "dismiss-loading-state-on-did-finish-navigation", false};
-
-constexpr base::FeatureParam<bool>
-    kDismissLoadingStateOnNavigationEntryCommitted{
-        &kLensStandalone, "dismiss-loading-state-on-navigation-entry-committed",
-        true};
-
 constexpr base::FeatureParam<bool> kShouldIssuePreconnectForLens{
     &kLensStandalone, "lens-issue-preconnect", true};
 
@@ -381,12 +363,6 @@ constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
 
 constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
     &kLensStandalone, "lens-issue-process-prewarming", true};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
-    &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
-
-constexpr base::FeatureParam<bool> kDismissLoadingStateOnPrimaryPageChanged{
-    &kLensStandalone, "dismiss-loading-state-on-primary-page-changed", false};
 
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
@@ -402,30 +378,6 @@ std::string GetHomepageURLForLens() {
 
 bool GetEnableLensHtmlRedirectFix() {
   return kEnableLensHtmlRedirectFix.Get();
-}
-
-bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame() {
-  return kDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame.Get();
-}
-
-bool GetDismissLoadingStateOnDomContentLoaded() {
-  return kDismissLoadingStateOnDomContentLoaded.Get();
-}
-
-bool GetDismissLoadingStateOnDidFinishNavigation() {
-  return kDismissLoadingStateOnDidFinishNavigation.Get();
-}
-
-bool GetDismissLoadingStateOnNavigationEntryCommitted() {
-  return kDismissLoadingStateOnNavigationEntryCommitted.Get();
-}
-
-bool GetDismissLoadingStateOnDidFinishLoad() {
-  return kDismissLoadingStateOnDidFinishLoad.Get();
-}
-
-bool GetDismissLoadingStateOnPrimaryPageChanged() {
-  return kDismissLoadingStateOnPrimaryPageChanged.Get();
 }
 
 bool IsLensFullscreenSearchEnabled() {

@@ -30,7 +30,6 @@
 #include "components/lens/lens_constants.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
-#include "components/lens/lens_rendering_environment.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url.h"
@@ -60,10 +59,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#endif
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #endif
 
 using content::WebContents;
@@ -236,29 +231,16 @@ lens::mojom::ImageFormat CoreTabHelper::EncodeImageIntoSearchArgs(
 void CoreTabHelper::SearchWithLens(content::RenderFrameHost* render_frame_host,
                                    const GURL& src_url,
                                    lens::EntryPoint entry_point,
-                                   bool is_image_translate,
-                                   bool force_open_in_new_tab) {
+                                   bool is_image_translate) {
   SearchByImageImpl(
       render_frame_host, src_url, kImageSearchThumbnailMinSize,
       lens::kMaxPixelsForImageSearch, lens::kMaxPixelsForImageSearch,
-      lens::GetQueryParametersForLensRequest(entry_point,
-                                             /*is_full_screen_request=*/false),
-      is_image_translate);
+      lens::GetQueryParametersForLensRequest(entry_point), is_image_translate);
 }
 
 void CoreTabHelper::SearchWithLens(const gfx::Image& image,
-                                   lens::EntryPoint entry_point,
-                                   bool force_open_in_new_tab) {
-  // Do not show the side panel on searches and modify the entry point if Lens
-  // fullscreen search features are enabled.
-  bool is_full_screen_request = lens::features::IsLensFullscreenSearchEnabled();
-  lens::EntryPoint lens_entry_point =
-      is_full_screen_request
-          ? lens::EntryPoint::CHROME_FULLSCREEN_SEARCH_MENU_ITEM
-          : entry_point;
-
-  auto lens_query_params = lens::GetQueryParametersForLensRequest(
-      lens_entry_point, is_full_screen_request);
+                                   lens::EntryPoint entry_point) {
+  auto lens_query_params = lens::GetQueryParametersForLensRequest(entry_point);
 
   SearchByImageImpl(image, lens_query_params);
 }

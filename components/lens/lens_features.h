@@ -116,40 +116,6 @@ extern std::string GetHomepageURLForLens();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableLensHtmlRedirectFix();
 
-// Returns whether to remove the Lens side panel loading state in the
-// OnDocumentOnLoadCompletedInPrimaryMainFrame web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDocumentOnLoadCompletedInPrimaryMainFrame();
-
-// Returns whether to remove the Lens side panel loading state in the
-// DOMContentLoaded web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDomContentLoaded();
-
-// Returns whether to remove the Lens side panel loading state in the
-// DidFinishNavigation web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDidFinishNavigation();
-
-// Returns whether to remove the Lens side panel loading state in the
-// NavigationEntryCommitted web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnNavigationEntryCommitted();
-
-// Returns whether to remove the Lens side panel loading state in the
-// DidFinishLoad web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnDidFinishLoad();
-
-// Returns whether to remove the Lens side panel loading state in the
-// PrimaryPageChanged web contents observer callback.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetDismissLoadingStateOnPrimaryPageChanged();
-
-// Returns whether Lens fullscreen search is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensFullscreenSearchEnabled();
-
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)

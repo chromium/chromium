@@ -280,7 +280,6 @@
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #endif
@@ -917,9 +916,7 @@ RenderViewContextMenu::RenderViewContextMenu(
           ProtocolHandlerRegistryFactory::GetForBrowserContext(GetProfile())),
       accessibility_labels_submenu_model_(this),
       embedder_web_contents_(GetWebContentsToUse(&render_frame_host)),
-      autofill_context_menu_manager_(
-          this,
-          &menu_model_) {
+      autofill_context_menu_manager_(this, &menu_model_) {
   if (!g_custom_id_ranges_initialized) {
     g_custom_id_ranges_initialized = true;
     SetContentCustomCommandIdRange(IDC_CONTENT_CONTEXT_CUSTOM_FIRST,
@@ -2178,7 +2175,8 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
 
-    if (GetBrowser() && GetBrowser()
+    if (GetBrowser() &&
+        GetBrowser()
             ->GetFeatures()
             .lens_overlay_entry_point_controller()
             ->IsEnabled() &&
@@ -2781,11 +2779,7 @@ void RenderViewContextMenu::AppendRegionSearchItem() {
   const TemplateURL* provider = GetImageSearchProvider();
   if (provider) {
     const int region_search_idc = GetRegionSearchIdc();
-    int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
-    if (lens::features::IsLensFullscreenSearchEnabled()) {
-      // Default text for fullscreen search when enabled.
-      resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-    }
+    const int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
     menu_model_.AddItem(region_search_idc,
                         l10n_util::GetStringFUTF16(
                             resource_id, GetImageSearchProviderName(provider)));
@@ -4401,10 +4395,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
   } else {
     // When the Lens image search feature is entered via the context menu
     // with a Keyboard action, use the Lens region search flow through
-    // core_tab_helper (with results forced into a new tab) instead of the
-    // Lens Overlay flow.
-    bool force_open_in_new_tab =
-        lens_overlay_for_image_search_enabled && entered_through_keyboard;
+    // core_tab_helper instead of the Lens Overlay flow.
     lens::RecordAmbientSearchQuery(
         lens_overlay_for_image_search_enabled
             ? lens::AmbientSearchEntryPoint::
@@ -4418,7 +4409,7 @@ void RenderViewContextMenu::ExecSearchLensForImage(int event_flags,
                   CHROME_TRANSLATE_IMAGE_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM
             : lens::EntryPoint::
                   CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM,
-        is_image_translate, force_open_in_new_tab);
+        is_image_translate);
   }
 }
 
@@ -4480,10 +4471,7 @@ void RenderViewContextMenu::ExecRegionSearch(
   // as a fullscreen capture.
   // TODO(crbug/353984457): Clean this branching when the new server
   // results flow is ready.
-  bool use_fullscreen_capture = entered_through_keyboard ||
-                                lens::features::IsLensFullscreenSearchEnabled();
-  bool force_open_in_new_tab =
-      lens_overlay_for_region_search_enabled && entered_through_keyboard;
+  const bool use_fullscreen_capture = entered_through_keyboard;
 
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
@@ -4498,7 +4486,7 @@ void RenderViewContextMenu::ExecRegionSearch(
                 CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS
           : lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_REGION_WITH_WEB;
   lens_region_search_controller_->Start(
-      embedder_web_contents_, use_fullscreen_capture, force_open_in_new_tab,
+      embedder_web_contents_, use_fullscreen_capture,
       is_google_default_search_provider, entry_point);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
@@ -4745,40 +4733,30 @@ void RenderViewContextMenu::SearchForVideoFrame(
           .lens_overlay_entry_point_controller()
           ->IsEnabled() &&
       lens::features::UseLensOverlayForVideoFrameSearch() && is_lens_query;
-  bool entered_through_keyboard =
-      IsLensOptionEnteredThroughKeyboard(event_flags);
-  bool force_open_in_new_tab = false;
   // TODO(crbug/353984457): Clean this branching when the new server
   // results flow is ready.
   if (lens_overlay_for_video_search_enabled) {
-    if (entered_through_keyboard) {
-      // Using the keyboard to invoke this entry point should use the
-      // Lens region search flow through core_tab_helper (with results forced
-      // into a new tab) instead of the Lens Overlay flow.
-      force_open_in_new_tab = true;
-    } else {
-      RenderFrameHost* render_frame_host = GetRenderFrameHost();
-      if (!render_frame_host) {
-        return;
-      }
-
-      auto tab_bounds = source_web_contents_->GetViewBounds();
-      auto view_bounds = render_frame_host->GetView()->GetViewBounds();
-      float device_scale_factor =
-          render_frame_host->GetView()->GetDeviceScaleFactor();
-
-      RecordAmbientSearchQuery(
-          lens::AmbientSearchEntryPoint::
-              CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_LENS_OVERLAY);
-
-      // OpenLensOverlayWithPreselectedRegion() only takes a `ChromeRenderFrame`
-      // to keep it alive while the mojo calls run, which is not needed here.
-      OpenLensOverlayWithPreselectedRegion(
-          /*chrome_render_frame=*/mojo::AssociatedRemote<
-              chrome::mojom::ChromeRenderFrame>(),
-          tab_bounds, view_bounds, device_scale_factor, bitmap, region_bounds);
+    RenderFrameHost* render_frame_host = GetRenderFrameHost();
+    if (!render_frame_host) {
       return;
     }
+
+    auto tab_bounds = source_web_contents_->GetViewBounds();
+    auto view_bounds = render_frame_host->GetView()->GetViewBounds();
+    float device_scale_factor =
+        render_frame_host->GetView()->GetDeviceScaleFactor();
+
+    RecordAmbientSearchQuery(
+        lens::AmbientSearchEntryPoint::
+            CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_LENS_OVERLAY);
+
+    // OpenLensOverlayWithPreselectedRegion() only takes a `ChromeRenderFrame`
+    // to keep it alive while the mojo calls run, which is not needed here.
+    OpenLensOverlayWithPreselectedRegion(
+        /*chrome_render_frame=*/mojo::AssociatedRemote<
+            chrome::mojom::ChromeRenderFrame>(),
+        tab_bounds, view_bounds, device_scale_factor, bitmap, region_bounds);
+    return;
   }
 
   // If not using Lens overlay for video frame search, fallback to use
@@ -4800,8 +4778,7 @@ void RenderViewContextMenu::SearchForVideoFrame(
             : lens::AmbientSearchEntryPoint::
                   CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_GOOGLE_LENS);
     core_tab_helper->SearchWithLens(
-        image, lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM,
-        force_open_in_new_tab);
+        image, lens::EntryPoint::CHROME_VIDEO_FRAME_SEARCH_CONTEXT_MENU_ITEM);
   } else {
     RecordAmbientSearchQuery(lens::AmbientSearchEntryPoint::
                                  CONTEXT_MENU_SEARCH_VIDEO_FRAME_WITH_WEB);
@@ -4888,8 +4865,7 @@ void RenderViewContextMenu::MaybePrepareForLensQuery() {
   }
   if (lens::features::GetShouldIssueProcessPrewarmingForLens() &&
       !base::SysInfo::IsLowEndDevice()) {
-    content::SpareRenderProcessHostManager::Get().WarmupSpare(
-        browser_context_);
+    content::SpareRenderProcessHostManager::Get().WarmupSpare(browser_context_);
   }
 }
 

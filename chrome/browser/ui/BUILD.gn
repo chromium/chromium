@@ -5255,8 +5255,6 @@ static_library("ui") {
     sources += [
       "views/lens/lens_region_search_instructions_view.cc",
       "views/lens/lens_region_search_instructions_view.h",
-      "views/lens/lens_side_panel_helper.cc",
-      "views/lens/lens_side_panel_helper.h",
     ]
   }
 
