@@ -1575,7 +1575,6 @@
 <translation id="3792826587784915501">कल्ट आणि इंडी चित्रपट</translation>
 <translation id="3793574014653384240">अलीकडे झालेल्या क्रॅशची संख्या आणि कारणे</translation>
 <translation id="3799805948399000906">फॉन्टची विनंती केली</translation>
-<translation id="3801265110651850478">तुमच्या ब्राउझिंग ट्रॅफिकसह "Do Not Track" विनंती पाठवा</translation>
 <translation id="3801297763951514916">तुम्ही अनेकदा भेट देता</translation>
 <translation id="380329542618494757">नाव</translation>
 <translation id="3803801106042434208">ही शोध इंजीन तुमच्या प्रदेशामध्ये लोकप्रिय आहेत</translation>
@@ -1606,6 +1605,7 @@
 <translation id="3835233591525155343">तुमच्या डिव्हाइसचा वापर</translation>
 <translation id="3836246517890985658">स्वयंपाकघरासाठी लहान उपकरणे</translation>
 <translation id="3839220096695873023">हायब्रिड आणि पर्यायी वाहने</translation>
+<translation id="3841356782900714251">स्मार्ट कार्ड रीडर</translation>
 <translation id="384315386171052386">मासे आणि सीफूड</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google दस्तऐवज झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
@@ -2025,7 +2025,6 @@
 <translation id="464342062220857295">शोध वैशिष्ट्ये</translation>
 <translation id="4644567637638438744">तुम्ही Microsoft OneDrive मध्ये साइन इन केलेले असेल तरच फाइल अपलोड करता येतात</translation>
 <translation id="4644670975240021822">उलट्या क्रमाने फेस डाउन</translation>
-<translation id="4646534391647090355">आता मला तेथे घेऊन जा</translation>
 <translation id="4648262692072505866">हॅशचा फॉरमॅट SHA-256 असा असावा.</translation>
 <translation id="4652266463001779298">अनुमती नाही</translation>
 <translation id="4652440160515225514">ही साइट धोरणाचे उल्लंघन करत असल्यामुळे, तुमच्या संस्थेने ती ब्लॉक केली आहे.</translation>
@@ -2216,7 +2215,6 @@
 <translation id="4983145717627482381">मार्गदर्शित टूर आणि मार्गदर्शक असलेल्या सुट्ट्या</translation>
 <translation id="498323057460789381">स्कीमा पडताळणी एरर: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">मायक्रोफोन वापरायचा का?</translation>
-<translation id="4989163558385430922">सर्व पहा</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4989809363548539747">हे प्लगइन सपोर्टेड नाही</translation>
 <translation id="4990241977441916452">एन्व्हलप ए२</translation>
@@ -2598,7 +2596,6 @@
 <translation id="568292603005599551">इमेज X स्थिती</translation>
 <translation id="5684874026226664614">अरेरे. हे पेज भाषांतरित करता आले नाही.</translation>
 <translation id="568489534660743582">साइटने सुचवलेल्या जाहिराती ही जाहिराती पर्सनलाइझ करण्यासाठी साइट वापरत असलेल्या अनेक गोष्टींपैकी फक्त एक गोष्ट आहे. साइट तुम्हाला साइटने सुचवलेल्या जाहिरातींशिवायदेखील जाहिराती दाखवू शकतात, पण त्या फारशा मनोरंजक नसतील.</translation>
-<translation id="5687340364605915800">या विनंतीला प्रतिसाद देताना साइट त्यांची विवेकबुद्धी वापरतात</translation>
 <translation id="5688137257686092846">सौंदर्यविज्ञान आणि सौंदर्यविषयक प्रोफेशनल</translation>
 <translation id="5689199277474810259">JSON वर एक्सपोर्ट करा</translation>
 <translation id="5689516760719285838">स्थान</translation>
@@ -3184,7 +3181,6 @@
 <translation id="6739943577740687354">हे वैशिष्ट्य AI चा वापर करते आणि ते नेहमीच बरोबर असेल असे नाही</translation>
 <translation id="6740851646645036700">तुम्ही सध्या तुमच्या लिहिण्याची मर्यादा गाठली आहे. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="674375294223700098">अज्ञात सर्व्हर सर्टिफिकेट एरर.</translation>
-<translation id="6744009308914054259">कनेक्शनची वाट पाहत असताना, तुम्ही ऑफलाइन लेख वाचण्यासाठी डाउनलोडवर जाऊ शकता.</translation>
 <translation id="6745592621698551453">आता अपडेट करा</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेलीकॉंफरन्सिंग</translation>
@@ -3565,7 +3561,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">हे तुम्हीच आहात याची पडताळणी करा, जेणेकरून Chromium ला तुमची पेमेंट माहिती भरता येईल.</translation>
 <translation id="7437289804838430631">संपर्क माहिती जोडा</translation>
-<translation id="7440140511386898319">ऑफलाइन असताना एक्सप्लोर करा</translation>
 <translation id="7441627299479586546">चुकीचे धोरण विषय</translation>
 <translation id="7441864845853794192">गॉर्मे आणि विशेषता खाद्यपदार्थ</translation>
 <translation id="7442389976360981500">हात ट्रॅक करण्याला अनुमती द्यायची आहे का?</translation>
@@ -3798,6 +3793,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">पेपर (प्लेन)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' साठी <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> सापडले</translation>
+<translation id="7819605256207059717">तुमच्या संस्थेने ब्लॉक केले आहे</translation>
 <translation id="7822611063308883975">हँडहेल्ड गेम कन्सोल</translation>
 <translation id="7825558994363763489">मायक्रोवेव्ह</translation>
 <translation id="782886543891417279">तुम्ही वापरत असलेल्या (<ph name="WIFI_NAME" />) वाय-फाय च्या लॉग इन पेजला तुम्हाला भेट देण्याची आवश्यकता असू शकते.</translation>

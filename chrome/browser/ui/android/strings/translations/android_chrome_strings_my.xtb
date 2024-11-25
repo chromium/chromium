@@ -1112,6 +1112,7 @@
 <translation id="6108923351542677676">စဖွင့် သတ်မှတ်မှု လုပ်ကိုင်…</translation>
 <translation id="6112702117600201073">စာမျက်နှာအား ပြန်လည်စတင်ရန်</translation>
 <translation id="6122831415929794347">'ဘေးကင်းစွာ အသုံးပြုခြင်း' ကို ပိတ်လိုသလား။</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />နောက်ထပ်အသေးစိတ်<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6130303040046284160">တဘ်ကို ချုံ့ရန်</translation>
@@ -1339,7 +1340,6 @@
 <translation id="7020741890149022655">ဖတ်ရန် စာရင်းသို့ ထည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ဘရောက်ဇာတွင် ဖွင့်ပါ</translation>
 <translation id="7025769836128625875">၎င်းသည် စမ်းသပ်ဆဲ AI တူးလ် ဖြစ်ပြီး အမြဲတမ်း မှန်ကန်မည်မဟုတ်ပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
-<translation id="7027549951530753705"><ph name="ITEM_TITLE" /> ကို ပြန်ယူပြီးပြီ</translation>
 <translation id="7029809446516969842">စကားဝှက်များ</translation>
 <translation id="7035701931849773472">အခြား ရွေးချယ်စရာများ</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
@@ -1611,6 +1611,7 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">ပြန်ဆက်ရန်</translation>
 <translation id="820568752112382238">အများဆုံး ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များ</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}other{<ph name="OWNER_FIRST_NAME" />၊ အခြား <ph name="NUMBER_OF_OTHER_MEMBERS" /> ဦးတို့နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း}}</translation>
 <translation id="8209050860603202033">ပုံဖွင့်</translation>
 <translation id="8210770465353466621">သင့်တဘ်များကို ဤနေရာတွင် ပြပါမည်</translation>
 <translation id="8211101263765532799">စကားဝှက်အချို့ကို မကြာမီ သုံးနိုင်တော့မည် မဟုတ်ပါ</translation>
@@ -1644,7 +1645,6 @@
 <translation id="834313815369870491">ဝဘ်ဆိုက်များကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="8348430946834215779">ရနိုင်ချိန်တိုင်း HTTPS ကိုသုံးပြီး ၎င်းက ပံ့ပိုးမထားသော ဝဘ်ဆိုက်များကို မဖွင့်မီ သတိပေးချက်ရယူပါ</translation>
 <translation id="8354977102499939946">သင့်အသံဖြင့် အမြန်ရှာပါ။ ဤဖြတ်လမ်းလင့်ခ်ကို ပြင်ဆင်ရန် ‘ဆက်တင်များ’ သို့ သွားပါ။</translation>
-<translation id="835847953965672673">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ပြန်ယူပြီးပြီ</translation>
 <translation id="8368001212524806591">ဈေးနှုန်း စောင့်ကြည့်ခြင်း</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{တဘ်အုပ်စု <ph name="TAB_GROUPS_ONE" /> ခု}other{တဘ်အုပ်စု <ph name="TAB_GROUPS_MANY" /> ခု}}</translation>
 <translation id="8378850197701296741">သင့်ထံတွင် <ph name="FROM_ACCOUNT" /> မှ လိပ်စာ၊ မှတ်တမ်းနှင့် အခြားဆက်တင်များ ရှိသည်။</translation>

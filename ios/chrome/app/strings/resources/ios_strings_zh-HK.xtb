@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">已嘗試派件，之後會再次嘗試</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
 <translation id="355765753469272474">復原</translation>
+<translation id="3562379378751492229">選擇最適合你的位置。</translation>
 <translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3570693105179140209">㩒兩下就可以睇多啲密碼。</translation>
 <translation id="3572607909481582402">在你的 Google 帳戶中</translation>
@@ -968,6 +969,7 @@
 <translation id="5506763544823940561">將圖片儲存至…</translation>
 <translation id="5511959326926949696">選用的瀏覽器極端保護功能。除非你認為自己有可能成為極危險網絡攻擊的目標，否則不建議採用功能。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小時前</translation>
+<translation id="5524590039848017563">收合咗主要工具列按鈕</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
 <translation id="5532545557415295622">閒置逾時對話框</translation>
 <translation id="5548760955356983418">「Handoff」讓您可在此裝置上開始瀏覽網站，然後輕易在 Mac 上繼續瀏覽。目前開啟的網站將會在 Mac 的 Dock 中顯示。
@@ -992,6 +994,7 @@
 <translation id="5611398002774823980">儲存在帳戶中</translation>
 <translation id="5613297089029360427">按最新項目排序</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
+<translation id="5614805397884895755">從主畫面更快存取。</translation>
 <translation id="5619871095170816857">此資訊卡會顯示所有已同步裝置在過去 24 小時內最後開啟的分頁。</translation>
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="5624637933505983014">不要開啟同步功能</translation>
@@ -1496,6 +1499,7 @@
 <translation id="7812377703891978671">揀「<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />」就可以存取所有瀏覽記錄。</translation>
 <translation id="78146569776629510">下載</translation>
 <translation id="7815852444315004084">暫時隱藏</translation>
+<translation id="7831876841288640403">選擇最適合你的網址列位置。</translation>
 <translation id="7839994177130598711">家庭成員現在透過「Google 密碼管理工具」登入 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 時，可以使用你的使用者名稱和密碼。</translation>
 <translation id="7840771868269352570">您選取的項目將會被移除。</translation>
 <translation id="7841180087127694526">搜尋已複製的文字</translation>

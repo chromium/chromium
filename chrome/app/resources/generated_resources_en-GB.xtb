@@ -7006,6 +7006,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5943127421590245687">Your verification was successful. To unlock and restore your local data, please enter your old <ph name="DEVICE_TYPE" /> password.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> is managing your new tab page</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> may be dangerous. Send to Google Safe Browsing for scanning?</translation>
+<translation id="5945192511027649793">Disable touchpad</translation>
 <translation id="5945363896952315544">Your security key can't store any more fingerprints. To add a new one, first delete an existing fingerprint.</translation>
 <translation id="5946591249682680882">Report ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Double-click the mouse</translation>
@@ -8507,6 +8508,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7025190659207909717">Mobile data service management</translation>
 <translation id="7025895441903756761">Security and privacy</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Open All in &amp;Incognito Window}=1{Open in &amp;Incognito Window}other{Open All ({COUNT}) in &amp;Incognito Window}}</translation>
+<translation id="7027432471322992835">Disable trackpad</translation>
 <translation id="7029307918966275733">Crostini is not installed. Please install Crostini to view credits.</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
@@ -9331,6 +9333,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7642778300616172920">Hide sensitive content</translation>
 <translation id="7643842463591647490">{0,plural, =1{# open window}other{# open windows}}</translation>
 <translation id="7643932971554933646">Let site view files?</translation>
+<translation id="7644953783774050577">Select none</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (owner)</translation>
 <translation id="7645681574855902035">Cancelling Linux backup</translation>
 <translation id="7646499124171960488">Warns you for insecure public sites</translation>
@@ -9595,7 +9598,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7817361223956157679">The on-screen keyboard doesn’t work in Linux apps yet</translation>
 <translation id="7818135753970109980">New theme added (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Blocked by your organisation</translation>
 <translation id="7820400255539998692">Delete <ph name="FILENAME" />, so others who use this device can't see your passwords</translation>
 <translation id="7820561748632634942">Assign additional switches?</translation>
 <translation id="782057141565633384">C&amp;opy video address</translation>
@@ -10041,6 +10043,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8119438628456698432">Generating log files…</translation>
 <translation id="811994229154425014">Double-space to type full stop</translation>
 <translation id="8120505434908124087">Install eSIM profile</translation>
+<translation id="8121537075864592453">Full screen disabled</translation>
 <translation id="8121750884985440809">You are currently casting your screen.</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Yellow and white flower</translation>
@@ -10262,6 +10265,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
 <translation id="8276850948802942358">Learn more about giving a site temporary permission to use third-party cookies</translation>
 <translation id="8277907305629781277">You created this passkey on <ph name="DATE" /></translation>
+<translation id="827966378414194229">Use head movements and facial expressions to control your Chromebook. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Websites in your languages</translation>
 <translation id="8280848878018088610">Crashing waves in the sea, with a fantastical city and castle in the background, in a dark mood.</translation>
 <translation id="828180235270931531">Other available printers</translation>

@@ -9296,6 +9296,7 @@
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要允許網站查看檔案嗎？</translation>
+<translation id="7644953783774050577">全部不選取</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7645681574855902035">正在取消 Linux 備份作業</translation>
 <translation id="7646499124171960488">在你造訪不安全的公開網站時發出警告</translation>
@@ -9559,7 +9560,6 @@
 <translation id="7815680994978050279">已封鎖危險下載內容</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援螢幕小鍵盤</translation>
 <translation id="7818135753970109980">已新增以下主題：<ph name="EXTENSION_NAME" /></translation>
-<translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7820400255539998692">請刪除「<ph name="FILENAME" />」，以免這部裝置的其他使用者看到你的密碼</translation>
 <translation id="7820561748632634942">要指派其他外接切換裝置嗎？</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>

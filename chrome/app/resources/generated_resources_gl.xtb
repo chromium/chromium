@@ -2166,6 +2166,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2477065602824695373">Como configuraches varios interruptores, desactivouse a función de exploración automática.</translation>
 <translation id="2478176599153288112">Permisos de ficheiros multimedia para "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">Activar servizo de recuperación de datos.</translation>
+<translation id="2479541499757560845">Configuración do teclado de accesibilidade</translation>
 <translation id="2480868415629598489">Modificar os datos que copias e pegas</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2482895651873876648">A pestana moveuse ao grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
@@ -3084,6 +3085,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3132277757485842847">Non puidemos manter a conexión co teu teléfono. Asegúrate de que estea preto e desbloqueado, e comproba que teña o Bluetooth e a wifi activados.</translation>
 <translation id="3132896062549112541">Norma</translation>
 <translation id="3132996321662585180">Actualizar diariamente</translation>
+<translation id="3134312457920437826">Non se pode instalar a extensión porque usa unha versión do ficheiro de manifesto non compatible.</translation>
 <translation id="3134393957315651797">Seleccionar estado do experimento <ph name="EXPERIMENT_NAME" />. Descrición do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">Avatar amarelo predeterminado</translation>
 <translation id="3141093262818886744">Abrir de todas formas</translation>
@@ -4357,6 +4359,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4012509903424054869">Os PDF convértense automaticamente para que poidas buscar texto e seleccionalo</translation>
 <translation id="4014432863917027322">Queres reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Tes extensións? <ph name="BEGIN_LINK" />Xestiónaas<ph name="END_LINK" /> facilmente desde un único lugar.</translation>
+<translation id="4015250302257349679">Preme <ph name="ACCELERATOR" /> para enfocar este globo e logo volve darlle para enfocar o elemento cara ao que apunta.</translation>
 <translation id="4016762287427926315">Os permisos que lle concedas a <ph name="APP_NAME" /> tamén se lle darán a esta aplicación. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Crear código QR para esta ligazón</translation>
 <translation id="4019983356493507433">Editar lista de marcadores</translation>
@@ -5748,6 +5751,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5045367873597907704">Acerca dos dispositivos de interface humana</translation>
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="504561833207953641">Abrindo nunha sesión xa aberta do navegador.</translation>
+<translation id="504953514574706691">Pestanas excluídas do grupo suxerido</translation>
 <translation id="5049614114599109018">Utilizar historial de introdución de texto</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{Recentemente, este sitio enviou moitas notificacións. Podes impedirlle que envíe máis.}other{Recentemente, estes sitios enviaron moitas notificacións. Podes impedirlles que envíen máis.}}</translation>
 <translation id="5050330054928994520">Texto a voz</translation>
@@ -5799,6 +5803,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5079950360618752063">Utilizar contrasinal suxerido</translation>
 <translation id="508059534790499809">Actualizar un tícket de Kerberos</translation>
 <translation id="5081124414979006563">&amp;Abrir perfil de convidado</translation>
+<translation id="508209203623347828">Se esta tarxeta está desactivada, tamén se desactivarán as tarxetas de Microsoft, como SharePoint e o calendario de Outlook</translation>
 <translation id="5083035541015925118">control + alt + frecha arriba</translation>
 <translation id="5084328598860513926">Interrompeuse o fluxo de abastecemento. Téntao de novo ou ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">É máis probable que os sitios funcionen da forma que esperas</translation>
@@ -5916,6 +5921,8 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5157250307065481244">Ver detalles do sitio</translation>
 <translation id="5158206172605340248">Pechouse o menú de acentos.</translation>
 <translation id="5159094275429367735">Configurar Crostini</translation>
+<translation id="5159236862360390997">Mostrarase unha serie de globos de axuda con instrucións.
+          Preme <ph name="ACCELERATOR" /> para enfocar un globo e logo volve darlle para enfocar o elemento cara ao que apunte.</translation>
 <translation id="5159419673777902220">Teu pai ou túa nai desactivou os permisos para as extensións</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Inicia sesión no teu <ph name="DEVICE_TYPE" /></translation>
@@ -5996,6 +6003,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5216674789212441076">Traduciranse automaticamente os subtítulos instantáneos. Os subtítulos envíanse a Google para que se traduzan.</translation>
 <translation id="5220011581825921581">busca + frecha arriba</translation>
 <translation id="5221516927483787768">Non se puido emitir <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">Pestana excluída da lista</translation>
 <translation id="5222403284441421673">Bloqueouse unha descarga non segura</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5225324770654022472">Mostrar o atallo das aplicacións</translation>
@@ -6196,6 +6204,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5372579129492968947">Deixar de fixar a extensión</translation>
 <translation id="5372632722660566343">Continuar sen unha conta</translation>
 <translation id="5372990315769030589">Queres conservar <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5374324662289354619">As páxinas de depuración interna están actualmente desactivadas.</translation>
 <translation id="5375318608039113175">Para utilizar con estes contactos a función Compartir por Nearby, engádelles o enderezo de correo electrónico vinculado á súa Conta de Google.</translation>
 <translation id="5375374982898812658">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="5375577102295339548">O sitios poden axudarche a verificar que non es un bot</translation>
@@ -6476,6 +6485,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5571066253365925590">Bluetooth activado</translation>
 <translation id="5571092938913434726">Controis multimedia globais</translation>
 <translation id="5571832155627049070">Personaliza o teu perfil</translation>
+<translation id="5572000034319109899">Borrar as pestanas sen usar</translation>
 <translation id="5572166921642484567">Seleccionar un modo de paleta de cores</translation>
 <translation id="5572252023412311448">Mostrar detalles do sitio <ph name="SITE_GROUP" /></translation>
 <translation id="557506220935336383">Ver permisos de extensións para outros sitios</translation>
@@ -8037,6 +8047,7 @@ Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o
 <translation id="6723839937902243910">A</translation>
 <translation id="6725073593266469338">Servizo de IU</translation>
 <translation id="6725206449694821596">Protocolo de impresión por Internet (IPP)</translation>
+<translation id="6725627354629889015">Queres borrar as pestanas sen usar?</translation>
 <translation id="6725970970008349185">Número de candidatos para mostrar por páxina</translation>
 <translation id="672609503628871915">Ver as novidades</translation>
 <translation id="6726800386221816228">Caracteres especiais</translation>
@@ -9305,6 +9316,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7642778300616172920">Ocultar contido confidencial</translation>
 <translation id="7643842463591647490">{0,plural, =1{# ventá aberta}other{# ventás abertas}}</translation>
 <translation id="7643932971554933646">Queres permitir que o sitio vexa os ficheiros?</translation>
+<translation id="7644953783774050577">Non seleccionar nada</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7645681574855902035">Cancelando copia de seguranza de Linux</translation>
 <translation id="7646499124171960488">Recibir avisos dos sitios públicos pouco seguros</translation>
@@ -9448,6 +9460,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7737846262459425222">Podes cambiar esta opción cando queiras en Configuración &gt; Asistente de Google &gt; Contexto da pantalla.</translation>
 <translation id="7737948071472253612">Permiso denegado para usar a cámara</translation>
 <translation id="77381465218432215">Mostrar acentos e caracteres especiais</translation>
+<translation id="7739524723876359011">Preme <ph name="ACCELERATOR" /> para enfocar este globo.</translation>
 <translation id="7740996059027112821">Estándar</translation>
 <translation id="7742706086992565332">Podes definir o nivel de zoom para determinados sitios web</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Atopouse 1 contrasinal vulnerado}other{Atopáronse {NUM_SITES} contrasinais vulnerados}}</translation>
@@ -9568,7 +9581,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7815680994978050279">Bloqueouse unha descarga perigosa</translation>
 <translation id="7817361223956157679">O teclado en pantalla aínda non está dispoñible en aplicacións de Linux</translation>
 <translation id="7818135753970109980">Engadiuse un tema novo (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Bloqueado pola túa organización</translation>
 <translation id="7820400255539998692">Elimina "<ph name="FILENAME" />" para que os outros usuarios deste dispositivo non poidan ver os teus contrasinais</translation>
 <translation id="7820561748632634942">Queres asignarlles accións a máis interruptores?</translation>
 <translation id="782057141565633384">C&amp;opiar enderezo do vídeo</translation>

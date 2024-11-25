@@ -9313,6 +9313,7 @@
 <translation id="7642778300616172920">Скрыть конфиденциальные данные</translation>
 <translation id="7643842463591647490">{0,plural, =1{Открыто # окно}one{Открыто # окно}few{Открыто # окна}many{Открыто # окон}other{Открыто # окна}}</translation>
 <translation id="7643932971554933646">Разрешить сайту просматривать файлы?</translation>
+<translation id="7644953783774050577">Отменить выбор</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (владелец)</translation>
 <translation id="7645681574855902035">Отмена резервного копирования контейнера Linux…</translation>
 <translation id="7646499124171960488">Предупреждать о незащищенных общедоступных сайтах</translation>
@@ -9576,7 +9577,6 @@
 <translation id="7815680994978050279">Заблокировано скачивание опасного файла</translation>
 <translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
 <translation id="7818135753970109980">Добавлена новая тема (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Заблокировано вашей организацией</translation>
 <translation id="7820400255539998692">Чтобы другие пользователи, которые работают с этим устройством, не могли посмотреть ваши пароли, удалите файл <ph name="FILENAME" />.</translation>
 <translation id="7820561748632634942">Назначить дополнительные переключатели?</translation>
 <translation id="782057141565633384">&amp;Копировать URL видео</translation>

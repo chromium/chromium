@@ -1572,7 +1572,6 @@
 <translation id="3792826587784915501">Kult və Müstəqil Filmlər</translation>
 <translation id="3793574014653384240">Son vaxtlarda baş verən xətaların sayı və səbəbləri</translation>
 <translation id="3799805948399000906">Şrift üzrə sorğu göndərildi</translation>
-<translation id="3801265110651850478">Baxış trafiki ilə birgə "İzlənilməsin" sorğusu göndərin</translation>
 <translation id="3801297763951514916">Tez-tez daxil olursunuz</translation>
 <translation id="380329542618494757">Ad</translation>
 <translation id="3803801106042434208">Bu axtarış mexanizmləri regionunuzda populyardır</translation>
@@ -1603,6 +1602,7 @@
 <translation id="3835233591525155343">Cihazdan istifadəniz</translation>
 <translation id="3836246517890985658">Kiçik mətbəx avadanlıqları</translation>
 <translation id="3839220096695873023">Hibrid və Alternativ Nəqliyyat Vasitələri</translation>
+<translation id="3841356782900714251">Smart kart oxuyanlar</translation>
 <translation id="384315386171052386">Balıq və dəniz məhsulları</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq cəld yeni Google Sənəd yaradın</translation>
@@ -2022,7 +2022,6 @@
 <translation id="464342062220857295">Axtarış funksiyaları</translation>
 <translation id="4644567637638438744">Yalnız Microsoft OneDrive-a daxil olduqda fayllar yüklənə bilər</translation>
 <translation id="4644670975240021822">Tərs sıra ilə üzü aşağı</translation>
-<translation id="4646534391647090355">İndi giriş edilsin</translation>
 <translation id="4648262692072505866">Heş SHA-256 formatında olmalıdır.</translation>
 <translation id="4652266463001779298">İcazə verilmir</translation>
 <translation id="4652440160515225514">Siyasəti pozduğuna görə təşkilatınız bu saytı bloklayıb.</translation>
@@ -2213,7 +2212,6 @@
 <translation id="4983145717627482381">Bələdçili tur və müşayiət edilən tətillər</translation>
 <translation id="498323057460789381">Sxem doğrulama xətası: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Mikrofondan istifadə edilsin?</translation>
-<translation id="4989163558385430922">Hamısına baxın</translation>
 <translation id="4989542687859782284">Əlçatmaz</translation>
 <translation id="4989809363548539747">Bu plagin dəstəklənmir</translation>
 <translation id="4990241977441916452">Zərf A2</translation>
@@ -2595,7 +2593,6 @@
 <translation id="568292603005599551">Şəklin X oxu üzrə mövqeyi</translation>
 <translation id="5684874026226664614">Bu səhifə tərcümə edilə bilmir. Niyəsini bilmirik.</translation>
 <translation id="568489534660743582">Sayt tərəfindən təklif olunan reklamlar saytın reklamları fərdiləşdirmək üçün istifadə edə biləcəyi vasitələrdən biridir. Sayt tərəfindən təklif olunan reklamlar olmasa da, saytlar maraq dairənizə uyğun olmayan reklamlar göstərə bilər.</translation>
-<translation id="5687340364605915800">Saytlar öz mülahizələrinə əsasən bu sorğunu cavablandırır</translation>
 <translation id="5688137257686092846">Kosmetologiya və gözəllik mütəxəssisləri</translation>
 <translation id="5689199277474810259">JSON-a eksport edin</translation>
 <translation id="5689516760719285838">Məkan</translation>
@@ -3180,7 +3177,6 @@
 <translation id="6739943577740687354">Bu funksiya AI istifadə edir və həmişə dəqiq nəticə təmin etməyə bilər</translation>
 <translation id="6740851646645036700">Yazı köməyi limitinə çatdınız. Sonra cəhd edin.</translation>
 <translation id="674375294223700098">Naməlum server sertifikatı xətası</translation>
-<translation id="6744009308914054259">Bağlantı gözlənilərkən oflayn məqalələri oxumaq üçün Endirilənlərə baxa bilərsiniz.</translation>
 <translation id="6745592621698551453">İndi Güncəlləşdirin</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telekonfrans</translation>
@@ -3560,7 +3556,6 @@
 <translation id="7429429656042611765">Biznes klass</translation>
 <translation id="7432774160230062882">Chromium-un ödəniş məlumatlarını doldurması üçün kimliyi doğrulayın.</translation>
 <translation id="7437289804838430631">Kontakt Məlumatı Əlavə Edin</translation>
-<translation id="7440140511386898319">Oflayn kəşf edin</translation>
 <translation id="7441627299479586546">Yanlış siyasət mövzusu</translation>
 <translation id="7441864845853794192">Qurman və xüsusi yeməklər</translation>
 <translation id="7442389976360981500">Əlin izlənilməsinə icazə verilsin?</translation>
@@ -3793,6 +3788,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Kağız (sadə)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' üçün <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> tapılmışdır</translation>
+<translation id="7819605256207059717">Təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="7822611063308883975">Əl oyun konsolları</translation>
 <translation id="7825558994363763489">Mikrodalğalı sobalar</translation>
 <translation id="782886543891417279">İstifadə etdiyiniz Wi-Fi (<ph name="WIFI_NAME" />) Sizdən login səhifəsinə daxil olmağınızı tələb edə bilər.</translation>

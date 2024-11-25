@@ -2169,6 +2169,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2477065602824695373">Nastavili ste viacero prepínačov, takže automatické prehľadávanie bolo vypnuté.</translation>
 <translation id="2478176599153288112">Povolenia súborov médií pre rozšírenie <ph name="EXTENSION" /></translation>
 <translation id="24786041351753425">Povoľte službu obnovenia údajov.</translation>
+<translation id="2479541499757560845">Nastavenia klávesnice pre Dostupnosť</translation>
 <translation id="2480868415629598489">Upravovať dáta, ktoré kopírujete a prilepujete</translation>
 <translation id="2482878487686419369">Upozornenia</translation>
 <translation id="2482895651873876648">Karta bola presunutá do skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -3087,6 +3088,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3132277757485842847">Nepodarilo sa udržať pripojenie k vášmu telefónu. Uistite sa, že je telefón nablízku, odomknutý a má zapnuté rozhranie Bluetooth a pripojenie Wi‑Fi.</translation>
 <translation id="3132896062549112541">Pravidlo</translation>
 <translation id="3132996321662585180">Obnovovať denne</translation>
+<translation id="3134312457920437826">Rozšírenie sa nedá nainštalovať, pretože používa nepodporovanú verziu manifestu.</translation>
 <translation id="3134393957315651797">Vyberte stav experimentu <ph name="EXPERIMENT_NAME" />. Popis experimentu: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3139925690611372679">Predvolený žltý avatar</translation>
 <translation id="3141093262818886744">Otvoriť aj tak</translation>
@@ -4357,6 +4359,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="4012509903424054869">Súbory PDF budú automaticky konvertované, aby ste mohli vyhľadávať a vyberať text</translation>
 <translation id="4014432863917027322">Chcete opraviť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="4015163439792426608">Používate rozšírenia? <ph name="BEGIN_LINK" />Uľahčite si správu rozšírení<ph name="END_LINK" /> na jednom mieste.</translation>
+<translation id="4015250302257349679">Stlačením klávesa <ph name="ACCELERATOR" /> označte túto bublinu. Potom jeho opätovným stlačením označte prvok, na ktorý ukazuje.</translation>
 <translation id="4016762287427926315">Povolenia, ktoré udelíte aplikácii <ph name="APP_NAME" />, budú udelené aj tejto aplikácii. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">Vytvoriť QR kód pre tento odkaz</translation>
 <translation id="4019983356493507433">Upraviť zoznam záložiek</translation>
@@ -5917,6 +5920,8 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5157250307065481244">Zobraziť podrobnosti o webe</translation>
 <translation id="5158206172605340248">Ponuka s diakritickými znamienkami bola zavretá.</translation>
 <translation id="5159094275429367735">Nastaviť Crostini</translation>
+<translation id="5159236862360390997">Zobrazí sa skupina bublín návodu s pokynmi.
+          Stlačením klávesa <ph name="ACCELERATOR" /> označte bublinu. Potom jeho opätovným stlačením označte prvok, na ktorý ukazuje.</translation>
 <translation id="5159419673777902220">Tvoj rodič deaktivoval povolenia rozšírenia</translation>
 <translation id="5160634252433617617">Fyzická klávesnica</translation>
 <translation id="5160857336552977725">Prihláste sa do svojho zariadenia <ph name="DEVICE_TYPE" /></translation>
@@ -6197,6 +6202,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5372579129492968947">Odopnúť rozšírenie</translation>
 <translation id="5372632722660566343">Pokračovať bez účtu</translation>
 <translation id="5372990315769030589">Chcete si <ph name="EXTENSION_NAME" /> ponechať?</translation>
+<translation id="5374324662289354619">Interné stránky ladenia sú momentálne deaktivované.</translation>
 <translation id="5375318608039113175">Ak chcete s týmito kontaktmi používať Zdieľanie nablízku, pridajte e‑mailové adresy prepojené s ich účtami Google do svojich kontaktov.</translation>
 <translation id="5375374982898812658">Okamžite stratíte prístup ku skupine kariet <ph name="GROUP_NAME" />, ktorá bude odstránená zo všetkých vašich zariadení</translation>
 <translation id="5375577102295339548">Weby môžu pomôcť skontrolovať, či ste robot</translation>
@@ -9315,6 +9321,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7642778300616172920">Skryť citlivý obsah</translation>
 <translation id="7643842463591647490">{0,plural, =1{# otvorené okno}few{# otvorené okná}many{# open windows}other{# otvorených okien}}</translation>
 <translation id="7643932971554933646">Chcete povoliť webu zobrazovať si súbory?</translation>
+<translation id="7644953783774050577">Zrušiť výber</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (vlastník)</translation>
 <translation id="7645681574855902035">Ruší sa záloha systému Linux</translation>
 <translation id="7646499124171960488">Upozorňuje vás na nezabezpečené verejné weby</translation>
@@ -9458,6 +9465,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7737846262459425222">Túto možnosť môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Asistent Google &gt; Kontext obrazovky.</translation>
 <translation id="7737948071472253612">Nemôže používať vašu kameru</translation>
 <translation id="77381465218432215">Zobrazovať diakritické znamienka a špeciálne znaky</translation>
+<translation id="7739524723876359011">Stlačením klávesa <ph name="ACCELERATOR" /> označte túto bublinu.</translation>
 <translation id="7740996059027112821">Štandardne</translation>
 <translation id="7742706086992565332">Môžete nastaviť úroveň priblíženia alebo oddialenia určitých webov</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{Bolo nájdené 1 odhalené heslo}few{Boli nájdené {NUM_SITES} odhalené heslá}many{Found {NUM_SITES} compromised passwords}other{Bolo nájdených {NUM_SITES} odhalených hesiel}}</translation>
@@ -9578,7 +9586,6 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7815680994978050279">Bolo zablokované sťahovanie nebezpečného súboru</translation>
 <translation id="7817361223956157679">Klávesnica na obrazovke ešte nie je v systéme Linux funkčná</translation>
 <translation id="7818135753970109980">Bol pridaný nový motív (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Blokované vašou organizáciou</translation>
 <translation id="7820400255539998692">Odstráňte <ph name="FILENAME" />, aby si ostatní používatelia tohto zariadenia nemohli zobraziť vaše heslá</translation>
 <translation id="7820561748632634942">Chcete prideliť ďalšie prepínače?</translation>
 <translation id="782057141565633384">K&amp;opírovať adresu videa</translation>

@@ -5760,6 +5760,7 @@
 <translation id="5045367873597907704">HID ডিভাইস সম্পর্কে</translation>
 <translation id="5045550434625856497">ভুল পাসওয়ার্ড</translation>
 <translation id="504561833207953641">আগে থেকে থাকা ব্রাউজার সেশনে খোলা হচ্ছে।</translation>
+<translation id="504953514574706691">সাজেস্ট করা গ্রুপ থেকে ট্যাব বাদ দেওয়া হয়েছে</translation>
 <translation id="5049614114599109018">ইনপুট ইতিহাস ব্যবহার করুন</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{এই সাইটটি সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে। আপনি সাইট থেকে বিজ্ঞপ্তি পাওয়া বন্ধ করতে পারেন।}one{এই সাইটগুলি সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে। আপনি সাইট থেকে বিজ্ঞপ্তি পাওয়া বন্ধ করতে পারেন।}other{এই সাইটগুলি সম্প্রতি প্রচুর বিজ্ঞপ্তি পাঠিয়েছে। আপনি সাইট থেকে বিজ্ঞপ্তি পাওয়া বন্ধ করতে পারেন।}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5811,6 +5812,7 @@
 <translation id="5079950360618752063">প্রস্তাবিত পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="508059534790499809">একটি Kerberos টিকিট রিফ্রেশ করুন</translation>
 <translation id="5081124414979006563">&amp;অতিথি প্রোফাইল খুলুন</translation>
+<translation id="508209203623347828">এই কার্ডটি বন্ধ করা হলে, Sharepoint ও Outlook Calendar-এর মতো আপনার Microsoft কার্ডও বন্ধ করা হবে।</translation>
 <translation id="5083035541015925118">ctrl + alt + ঊর্দ্ধমুখী তীরচিহ্ন</translation>
 <translation id="5084328598860513926">প্রভিশনিং ফ্লোতে বিঘ্ন ঘটেছে। আবার চেষ্টা করুন অথবা আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="5084622689760736648">আপনার প্রত্যাশা অনুযায়ী সাইটগুলির কাজ করার সম্ভাবনা আছে</translation>
@@ -6008,6 +6010,7 @@
 <translation id="5216674789212441076">এই ফিচারের সাহায্যে লাইভ ক্যাপশন অটোমেটিক অনুবাদ হয়। ক্যাপশন অনুবাদের জন্য Google-এ পাঠানো হয়।</translation>
 <translation id="5220011581825921581">search + up arrow</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> কাস্ট করা যায়নি</translation>
+<translation id="5221834113325601057">তালিকা থেকে ট্যাব বাদ দেওয়া হয়েছে</translation>
 <translation id="5222403284441421673">ডাউনলোড হওয়া অসুরক্ষিত ফাইল ব্লক করা হয়েছে</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5225324770654022472">অ্যাপ্লিকেশানগুলির শর্টকাট দেখান</translation>
@@ -6488,6 +6491,7 @@
 <translation id="5571066253365925590">ব্লুটুথ সক্ষমিত</translation>
 <translation id="5571092938913434726">গ্লোবাল মিডিয়া কন্ট্রোল</translation>
 <translation id="5571832155627049070">আপনার প্রোফাইল কাস্টমাইজ করুন</translation>
+<translation id="5572000034319109899">অব্যবহৃত ট্যাব ক্লিন-আপ করুন</translation>
 <translation id="5572166921642484567">রঙের স্কিম মোড বেছে নিন</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />-এর জন্য সাইটের বিবরণ দেখান</translation>
 <translation id="557506220935336383">অন্যান্য সাইটের জন্য এক্সটেনশনের সাইট ব্যবহারের অনুমতি দেখুন</translation>
@@ -8055,6 +8059,7 @@
 <translation id="6723839937902243910">পাওয়ার</translation>
 <translation id="6725073593266469338">UI পরিষেবা</translation>
 <translation id="6725206449694821596">ইন্টারনেট প্রিন্ট প্রোটোকল (IPP)</translation>
+<translation id="6725627354629889015">অব্যবহৃত ট্যাব ক্লিন-আপ করতে চান?</translation>
 <translation id="6725970970008349185">পৃষ্ঠা প্রতি প্রদর্শিত প্রার্থীর সংখ্যা</translation>
 <translation id="672609503628871915">নতুন কী আছে দেখুন</translation>
 <translation id="6726800386221816228">বিশেষ অক্ষর</translation>
@@ -9324,6 +9329,7 @@
 <translation id="7642778300616172920">ব্যক্তিগত কোনও কিছু দেখতে চাই না</translation>
 <translation id="7643842463591647490">{0,plural, =1{#টি খোলা উইন্ডো}one{#টি খোলা উইন্ডো}other{#টি খোলা উইন্ডো}}</translation>
 <translation id="7643932971554933646">সাইটকে এই ফাইল পড়ার অনুমতি দেবেন?</translation>
+<translation id="7644953783774050577">কিছু নির্বাচন করবেন না</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (মালিক)</translation>
 <translation id="7645681574855902035">Linux ব্যাক-আপ বাতিল করা হচ্ছে</translation>
 <translation id="7646499124171960488">এর ফলে আপনি অসুরক্ষিত সাইট সম্পর্কে বিজ্ঞপ্তি পেতে পারেন</translation>
@@ -9586,7 +9592,6 @@
 <translation id="7815680994978050279">ক্ষতিকারক ডাউনলোড ব্লক করা হয়েছে</translation>
 <translation id="7817361223956157679">এখনও Linux অ্যাপে স্ক্রিনের কীবোর্ড কাজ করে না।</translation>
 <translation id="7818135753970109980">নতুন থিম জোড়া হয়েছে (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">আপনার সংস্থা ব্লক করে দিয়েছে</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> মুছুন, যাতে এই ডিভাইসটি ব্যবহার করে অন্যরা আপনার পাসওয়ার্ড দেখতে না পারেন</translation>
 <translation id="7820561748632634942">অতিরিক্ত সুইচ অ্যাসাইন করতে চান?</translation>
 <translation id="782057141565633384">ভি&amp;ডিও ঠিকানা কপি করুন</translation>

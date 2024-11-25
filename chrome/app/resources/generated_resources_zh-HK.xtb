@@ -2180,6 +2180,7 @@
 <translation id="2477065602824695373">由於您已設定多個按鈕裝置，因此自動掃瞄已關閉。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」的媒體檔案權限</translation>
 <translation id="24786041351753425">啟用資料復原服務。</translation>
+<translation id="2479541499757560845">無障礙鍵盤設定</translation>
 <translation id="2480868415629598489">修改您複製並貼上的資料</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">分頁移咗去包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組</translation>
@@ -3097,6 +3098,7 @@
 <translation id="3132277757485842847">我們無法與您的手機維持連線狀態。請確認您的手機在附近並已解鎖，且已開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">規則</translation>
 <translation id="3132996321662585180">每日重新整理</translation>
+<translation id="3134312457920437826">擴充程式使用的資訊清單版本不受支援，因此無法安裝擴充程式。</translation>
 <translation id="3134393957315651797">揀「<ph name="EXPERIMENT_NAME" />」嘅實驗狀態。實驗描述：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">預設黃色圖片</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
@@ -4362,6 +4364,7 @@
 <translation id="4012509903424054869">PDF 會自動轉換，方便你搜尋和選取文字</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4015163439792426608">您有使用擴充程式嗎？集中<ph name="BEGIN_LINK" />管理擴充程式<ph name="END_LINK" />，輕鬆又方便。</translation>
+<translation id="4015250302257349679">㩒一下 <ph name="ACCELERATOR" /> 就可以突顯呢個對話氣泡，再㩒一下就可以突顯對話氣泡指向嘅元素。</translation>
 <translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式亦會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為此連結建立 QR 碼</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
@@ -5748,6 +5751,7 @@
 <translation id="5045367873597907704">關於 HID 裝置</translation>
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="504561833207953641">正在現有的瀏覽器工作階段中開啟。</translation>
+<translation id="504953514574706691">喺建議群組度排除咗分頁</translation>
 <translation id="5049614114599109018">使用輸入記錄功能</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{此網站最近傳送了很多通知。您可以禁止此網站日後繼續傳送通知。}other{這些網站最近傳送了很多通知。您可以禁止這些網站日後繼續傳送通知。}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5799,6 +5803,7 @@
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="508059534790499809">更新 Kerberos 票證</translation>
 <translation id="5081124414979006563">開啟訪客設定檔(&amp;O)</translation>
+<translation id="508209203623347828">如停用此資訊卡，你的 Microsoft 資訊卡 (例如 SharePoint 和 Outlook 日曆) 也會一併停用。</translation>
 <translation id="5083035541015925118">Ctrl 鍵 + Alt 鍵 + 向上箭咀鍵</translation>
 <translation id="5084328598860513926">佈建流程已中斷。請再試一次，或聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5084622689760736648">網站較有可能會正常運作</translation>
@@ -5916,6 +5921,8 @@
 <translation id="5157250307065481244">查看網站詳情</translation>
 <translation id="5158206172605340248">閂咗重音符號選單。</translation>
 <translation id="5159094275429367735">設定 Crostini</translation>
+<translation id="5159236862360390997">系統將會顯示一系列有指示嘅教學課程對話氣泡。
+          㩒一下 <ph name="ACCELERATOR" /> 就可以突顯對話氣泡，再㩒一下就可以突顯對話氣泡指向嘅元素。</translation>
 <translation id="5159419673777902220">您的家長已停用擴充程式權限</translation>
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
@@ -5996,6 +6003,7 @@
 <translation id="5216674789212441076">自動翻譯即時字幕。字幕會傳送至 Google 進行翻譯。</translation>
 <translation id="5220011581825921581">搜尋鍵 + 向上箭咀鍵</translation>
 <translation id="5221516927483787768">無法投放 <ph name="HOST_NAME" /></translation>
+<translation id="5221834113325601057">喺清單度排除咗分頁</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
@@ -6195,6 +6203,7 @@
 <translation id="5372579129492968947">取消固定擴充程式</translation>
 <translation id="5372632722660566343">在不登入帳戶的情況下繼續</translation>
 <translation id="5372990315769030589">要保留「<ph name="EXTENSION_NAME" />」嗎？</translation>
+<translation id="5374324662289354619">目前已停用內部偵錯網頁。</translation>
 <translation id="5375318608039113175">如要與這些聯絡人使用「咫尺共享」，請將與他們 Google 帳戶連結的電郵地址加入您的通訊錄。</translation>
 <translation id="5375374982898812658">你將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從你的所有裝置刪除</translation>
 <translation id="5375577102295339548">網站可協助驗證您不是機器人</translation>
@@ -6475,6 +6484,7 @@
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="5571092938913434726">全域媒體控制項</translation>
 <translation id="5571832155627049070">自訂你的設定檔</translation>
+<translation id="5572000034319109899">清理未使用的分頁</translation>
 <translation id="5572166921642484567">揀選色彩配置模式</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 嘅網站詳情</translation>
 <translation id="557506220935336383">查看其他網站的擴充程式權限</translation>
@@ -8036,6 +8046,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6725073593266469338">使用者介面服務</translation>
 <translation id="6725206449694821596">Internet Printing Protocol (IPPS)</translation>
+<translation id="6725627354629889015">要清理未使用的分頁嗎？</translation>
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看最新內容</translation>
 <translation id="6726800386221816228">特殊字元</translation>
@@ -9304,6 +9315,7 @@
 <translation id="7642778300616172920">隱藏敏感內容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 個開啟的視窗}other{# 個開啟的視窗}}</translation>
 <translation id="7643932971554933646">要讓網站查看檔案嗎？</translation>
+<translation id="7644953783774050577">全部不選取</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (擁有者)</translation>
 <translation id="7645681574855902035">正在取消 Linux 備份</translation>
 <translation id="7646499124171960488">在你瀏覽不安全的公開網站時發出警告</translation>
@@ -9447,6 +9459,7 @@
 <translation id="7737846262459425222">您可隨時在 [設定] &gt; [Google 助理] &gt; [畫面內容] 中變更此設定。</translation>
 <translation id="7737948071472253612">不允許使用攝錄機</translation>
 <translation id="77381465218432215">顯示重音標記和特殊字元</translation>
+<translation id="7739524723876359011">㩒一下 <ph name="ACCELERATOR" /> 就可以突顯呢個對話氣泡。</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="7742706086992565332">您可設定特定網站的縮放比例</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{找到 1 個被盜用的密碼}other{找到 {NUM_SITES} 個被盜用的密碼}}</translation>
@@ -9567,7 +9580,6 @@
 <translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7817361223956157679">Linux 應用程式目前不支援屏幕鍵盤</translation>
 <translation id="7818135753970109980">已新增以下主題背景：<ph name="EXTENSION_NAME" /></translation>
-<translation id="7819605256207059717">已由機構封鎖</translation>
 <translation id="7820400255539998692">請刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="7820561748632634942">要指派其他按鈕裝置嗎？</translation>
 <translation id="782057141565633384">複製影片位址(&amp;O)</translation>

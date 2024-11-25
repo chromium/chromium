@@ -2162,6 +2162,7 @@
 <translation id="2477065602824695373">複数のスイッチを設定したため、自動スキャンがオフになっています。</translation>
 <translation id="2478176599153288112">「<ph name="EXTENSION" />」のメディアファイル権限</translation>
 <translation id="24786041351753425">データ復旧サービスを有効にしてください。</translation>
+<translation id="2479541499757560845">ユーザー補助キーボードの設定</translation>
 <translation id="2480868415629598489">コピーして貼り付けるデータの修正</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">タブを <ph name="GROUP_NAME" /> グループに移動しました - <ph name="GROUP_CONTENTS" /></translation>
@@ -3079,6 +3080,7 @@
 <translation id="3132277757485842847">スマートフォンとの接続を維持できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3132896062549112541">ルール</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
+<translation id="3134312457920437826">サポートされていないマニフェスト バージョンを使用しているため、拡張機能をインストールできません。</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
 <translation id="3141093262818886744">開く</translation>
@@ -4346,6 +4348,7 @@
 <translation id="4012509903424054869">PDF が自動変換され、テキストの検索や選択が可能になります</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
+<translation id="4015250302257349679">このバブルをフォーカスするには <ph name="ACCELERATOR" /> を押し、バブルが指している要素をフォーカスするにはもう一度押します。</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" /> に許可した権限は、このアプリにも適用されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">このリンクの QR コードを作成</translation>
 <translation id="4019983356493507433">ブックマーク リストを編集</translation>
@@ -5734,6 +5737,7 @@
 <translation id="5045367873597907704">HID デバイスについて</translation>
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="504561833207953641">既存のブラウザ セッションで開いています。</translation>
+<translation id="504953514574706691">候補グループからタブを除外しました</translation>
 <translation id="5049614114599109018">入力履歴を利用する</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{このサイトは最近多くの通知を送信しています。今後の通知を停止できます。}other{これらのサイトは最近多くの通知を送信しています。今後の通知を停止できます。}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5785,6 +5789,7 @@
 <translation id="5079950360618752063">提案されたパスワードを使用</translation>
 <translation id="508059534790499809">Kerberos チケットの更新</translation>
 <translation id="5081124414979006563">ゲスト プロフィールを開く(&amp;O)</translation>
+<translation id="508209203623347828">このカードを無効にした場合、SharePoint や Outlook カレンダーなどの Microsoft カードも無効になります。</translation>
 <translation id="5083035541015925118">Ctrl+Alt+上矢印</translation>
 <translation id="5084328598860513926">プロビジョニング フローが中断されました。もう一度お試しいただくか、デバイス所有者または管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5084622689760736648">サイトが想定どおりに機能する可能性が高くなります</translation>
@@ -5902,6 +5907,7 @@
 <translation id="5157250307065481244">サイトの詳細を表示</translation>
 <translation id="5158206172605340248">アクセント記号のメニューを閉じました。</translation>
 <translation id="5159094275429367735">Crostini のセットアップ</translation>
+<translation id="5159236862360390997">手順が表示される一連のチュートリアル バブルです。バブルをフォーカスするには <ph name="ACCELERATOR" /> を押し、バブルが指している要素をフォーカスするにはもう一度押します。</translation>
 <translation id="5159419673777902220">保護者が拡張機能の許可設定を無効にしました</translation>
 <translation id="5160634252433617617">物理キーボード</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
@@ -5981,6 +5987,7 @@
 <translation id="5216674789212441076">自動字幕起こしを自動的に翻訳します。字幕は翻訳のために Google に送信されます。</translation>
 <translation id="5220011581825921581">検索+上矢印</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> をキャストできません</translation>
+<translation id="5221834113325601057">リストからタブを除外しました</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="5225324770654022472">アプリのショートカットを表示</translation>
@@ -6180,6 +6187,7 @@
 <translation id="5372579129492968947">拡張機能の固定を解除します</translation>
 <translation id="5372632722660566343">アカウントなしで続行</translation>
 <translation id="5372990315769030589">「<ph name="EXTENSION_NAME" />」を残しますか？</translation>
+<translation id="5374324662289354619">内部デバッグ ページは現在無効になっています。</translation>
 <translation id="5375318608039113175">連絡先とニアバイシェアを使用するには、Google アカウントにリンクされているメールアドレスを連絡先に追加してください。</translation>
 <translation id="5375374982898812658">「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="5375577102295339548">サイトは、あなたが bot でないことを確認する情報を提供できます。</translation>
@@ -6459,6 +6467,7 @@
 <translation id="5571066253365925590">Bluetooth オン</translation>
 <translation id="5571092938913434726">グローバル メディア コントロール</translation>
 <translation id="5571832155627049070">プロファイルのカスタマイズ</translation>
+<translation id="5572000034319109899">使用していないタブを整理</translation>
 <translation id="5572166921642484567">カラーパターン モードを選択</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> のサイトの詳細を表示</translation>
 <translation id="557506220935336383">他のサイトに対する拡張機能の権限を確認する</translation>
@@ -6968,6 +6977,7 @@
 <translation id="5943127421590245687">確認が完了しました。ロックを解除してローカルデータを復元するには、<ph name="DEVICE_TYPE" /> の以前のパスワードを入力してください。</translation>
 <translation id="5943209617717087975">新しいタブページは <ph name="THIRD_PARTY_NTP_MANAGER" /> によって管理されています</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google セーフ ブラウジングに送信してスキャンしますか？</translation>
+<translation id="5945192511027649793">タッチパッドを無効にする</translation>
 <translation id="5945363896952315544">このセキュリティ キーにはこれ以上指紋を保存できません。新たに追加するには、まず既存の指紋を削除してください。</translation>
 <translation id="5946591249682680882">レポート ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">マウスをダブルクリックする</translation>
@@ -8022,6 +8032,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="6725073593266469338">UI サービス</translation>
 <translation id="6725206449694821596">インターネット印刷プロトコル（IPP）</translation>
+<translation id="6725627354629889015">使用していないタブを整理しますか？</translation>
 <translation id="6725970970008349185">1 ページに表示する候補数</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
 <translation id="6726800386221816228">特殊文字</translation>
@@ -8466,6 +8477,7 @@
 <translation id="7025190659207909717">モバイル データ サービスの管理</translation>
 <translation id="7025895441903756761">セキュリティとプライバシー</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
+<translation id="7027432471322992835">トラックパッドを無効にする</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
@@ -9290,6 +9302,7 @@
 <translation id="7642778300616172920">プライベートな内容を表示しない</translation>
 <translation id="7643842463591647490">{0,plural, =1{開いているウィンドウ # 個}other{開いているウィンドウ # 個}}</translation>
 <translation id="7643932971554933646">サイトにファイルの読み取りを許可しますか？</translation>
+<translation id="7644953783774050577">選択しない</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">Linux のバックアップをキャンセルしています</translation>
 <translation id="7646499124171960488">安全でない公開サイトについて警告する</translation>
@@ -9433,6 +9446,7 @@
 <translation id="7737846262459425222">この設定は、[設定] &gt; [Google アシスタント] &gt; [画面のコンテキスト] でいつでも変更できます。</translation>
 <translation id="7737948071472253612">カメラの使用を許可しないサイト</translation>
 <translation id="77381465218432215">アクセント記号と特殊文字を表示</translation>
+<translation id="7739524723876359011">このバブルをフォーカスするには <ph name="ACCELERATOR" /> を押します。</translation>
 <translation id="7740996059027112821">標準</translation>
 <translation id="7742706086992565332">特定のウェブサイトをどの程度拡大または縮小して表示するかを設定できます</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{不正使用されたパスワードが 1 件見つかりました}other{不正使用されたパスワードが {NUM_SITES} 件見つかりました}}</translation>
@@ -9552,7 +9566,6 @@
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7817361223956157679">画面キーボードは現在のところ Linux アプリでは使用できません</translation>
 <translation id="7818135753970109980">新しいテーマが追加されました（<ph name="EXTENSION_NAME" />）</translation>
-<translation id="7819605256207059717">組織でブロックされました</translation>
 <translation id="7820400255539998692"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="7820561748632634942">スイッチを追加で割り当てますか？</translation>
 <translation id="782057141565633384">動画アドレスをコピー(&amp;C)</translation>
@@ -9998,6 +10011,7 @@
 <translation id="8119438628456698432">ログファイルを生成しています...</translation>
 <translation id="811994229154425014">スペース 2 つでピリオドを入力</translation>
 <translation id="8120505434908124087">eSIM プロファイルのインストール</translation>
+<translation id="8121537075864592453">全画面表示を無効にする</translation>
 <translation id="8121750884985440809">現在、画面をキャストしています</translation>
 <translation id="8122898034710982882">スマートフォン ハブ、<ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">黄色と白の花</translation>
@@ -10219,6 +10233,7 @@
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
 <translation id="8276850948802942358">サイトにサードパーティ Cookie の使用を一時的に許可することについての詳細</translation>
 <translation id="8277907305629781277"><ph name="DATE" /> にこのパスキーを作成しました</translation>
+<translation id="827966378414194229">頭の動きや顔の表情を使用して Chromebook を操作します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">ウェブサイトの表示言語</translation>
 <translation id="8280848878018088610">砕け散る海の波と、幻想的な市街と城郭、暗い雰囲気の背景。</translation>
 <translation id="828180235270931531">その他の利用可能なプリンタ</translation>

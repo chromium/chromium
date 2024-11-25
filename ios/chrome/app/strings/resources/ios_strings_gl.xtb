@@ -554,6 +554,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3549391962818677448">Tentouse realizar a entrega. Tentarase de novo</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
 <translation id="355765753469272474">Desfacer</translation>
+<translation id="3562379378751492229">Selecciona a posición que mellor che cadre.</translation>
 <translation id="3565930036634619844">Pestana. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Toca dúas veces para obter máis contrasinais.</translation>
 <translation id="3572607909481582402">Na túa Conta de Google</translation>
@@ -968,6 +969,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5506763544823940561">Gardar imaxe en…</translation>
 <translation id="5511959326926949696">Protección opcional extrema para o navegador. Só se debe usar se consideras que podes ser obxecto dun ciberataque moi sofisticado.</translation>
 <translation id="5513681519188741830">Hai <ph name="TIME" /> h</translation>
+<translation id="5524590039848017563">Botón contraído da barra de ferramentas principal</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="5532545557415295622">Cadro de diálogo do tempo de espera de inactividade</translation>
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
@@ -992,6 +994,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5611398002774823980">Gardar na conta</translation>
 <translation id="5613297089029360427">Ordenar por máis recente</translation>
 <translation id="5614553682702429503">Queres gardar o contrasinal?</translation>
+<translation id="5614805397884895755">Accede máis rápido desde a pantalla de inicio.</translation>
 <translation id="5619871095170816857">Esta tarxeta móstrache a última pestana aberta que usaches en todos os dispositivos sincronizados nas últimas 24 horas.</translation>
 <translation id="5624120631404540903">Xestionar contrasinais</translation>
 <translation id="5624637933505983014">Non activar sincronización</translation>
@@ -1496,6 +1499,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7812377703891978671">Para acceder a todo o historial de navegación, selecciona <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Descargas</translation>
 <translation id="7815852444315004084">Ocultar por agora</translation>
+<translation id="7831876841288640403">Selecciona a posición da barra de enderezos que mellor che cadre.</translation>
 <translation id="7839994177130598711">Os membros da túa familia agora poden usar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usan o xestor de contrasinais de Google.</translation>
 <translation id="7840771868269352570">Quitaranse os elementos seleccionados.</translation>
 <translation id="7841180087127694526">Buscar texto copiado</translation>

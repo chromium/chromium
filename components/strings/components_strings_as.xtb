@@ -866,6 +866,7 @@
 <translation id="2521736961081452453">ফ’ৰ্ম সৃষ্টি কৰক</translation>
 <translation id="2523886232349826891">কেৱল এই ডিভাইচটোত ছেভ কৰা হয়</translation>
 <translation id="2524461107774643265">অধিক তথ্য যোগ কৰক</translation>
+<translation id="2526062290525841862">এই এপ্‌টো চলাবলৈ পোনপটীয়াকৈ বিতৰণ কৰা ৱেব এপৰ বিকাশকৰ্তাৰ ম’ড পুনৰ সক্ষম কৰক</translation>
 <translation id="2526280916094749336">ছেভ হৈ থকা ঠিকনাসমূহ আপুনি সমগ্ৰ Google প্ৰ’ডাক্টত ব্যৱহাৰ কৰিব পাৰে। এই ঠিকনাটো আপোনাৰ Google একাউণ্ট <ph name="ACCOUNT" />ত ছেভ কৰা হ’ব।</translation>
 <translation id="2527451058878391043">আপোনাৰ CVC আপোনাৰ কাৰ্ডৰ সন্মুখ ভাগত আছে। এইটো একেবাৰে ওপৰৰ সোঁফালে আপোনাৰ কাৰ্ডৰ নম্বৰটোৰ ওপৰত থকা ৪ টা অংকৰ ক’ড।</translation>
 <translation id="2529899080962247600">এই ক্ষেত্ৰখনত <ph name="MAX_ITEMS_LIMIT" /> টাতকৈ অধিক প্ৰবিষ্টি থাকিব নালাগে। পৰৱৰ্তী আটাইবোৰ প্ৰবিষ্টি অৱজ্ঞা কৰা হ’ব।</translation>
@@ -1573,9 +1574,9 @@
 <translation id="3792826587784915501">কাল্ট আৰু ইণ্ডী চলচ্চিত্ৰ</translation>
 <translation id="3793574014653384240">শেহতীয়াকৈ হোৱা ক্রেশ্বসমূহৰ সংখ্যা আৰু কাৰণসমূহ</translation>
 <translation id="3799805948399000906">ফ’ণ্টৰ বাবে অনুৰোধ কৰা হৈছে</translation>
-<translation id="3801265110651850478">আপোনাৰ ব্ৰাউজিঙৰ ট্ৰেফিকৰ জৰিয়তে "ট্ৰেক কৰা নিষেধ" বুলি এটা অনুৰোধ পঠিয়াওক</translation>
 <translation id="3801297763951514916">আপুনি প্ৰায়ে চায়</translation>
 <translation id="380329542618494757">নাম</translation>
+<translation id="3803481123869276674">আপুনি Chromeত ক্ৰয় কৰিলে, এটা বিকল্প হিচাপে eWallet দেখা পাওক</translation>
 <translation id="3803801106042434208">এই সন্ধান ইঞ্জিনসমূহ আপোনাৰ অঞ্চলত জনপ্ৰিয়</translation>
 <translation id="380666903981445943">Chromeত কৰা ক্ৰয়সমূহৰ বাবে পৰিশোধ পদ্ধতিসমূহ স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ আপোনাৰ Google একাউণ্টত এটা পৰিশোধ পদ্ধতিসমূহ ছেভ কৰক</translation>
 <translation id="3807366285948165054">প্ৰতিচ্ছবি X শ্বিফ্ট</translation>
@@ -1604,6 +1605,7 @@
 <translation id="3835233591525155343">আপোনাৰ ডিভাইচটোৰ ব্যৱহাৰ</translation>
 <translation id="3836246517890985658">পাকঘৰৰ সৰু সা-সৰঞ্জাম</translation>
 <translation id="3839220096695873023">হাইব্ৰিড আৰু বৈকল্পিক বাহন</translation>
+<translation id="3841356782900714251">স্মাৰ্ট কাৰ্ডৰ ৰীডাৰ</translation>
 <translation id="384315386171052386">মাছ আৰু সাগৰীয় খাদ্য</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, এখন নতুন Google Doc ক্ষিপ্ৰভাৱে সৃষ্টি কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
@@ -2022,7 +2024,6 @@
 <translation id="464342062220857295">সন্ধানৰ সুবিধাসমূহ</translation>
 <translation id="4644567637638438744">ফাইলসমূহ কেৱল তেতিয়াহে আপল'ড কৰিব পাৰি যদিহে আপুনি Microsoft OneDriveত ছাইন ইন হৈ আছে</translation>
 <translation id="4644670975240021822">তলমুখীয়াকৈ বিপৰীত ক্ৰম</translation>
-<translation id="4646534391647090355">মোক এতিয়াই তালৈ নিয়ক</translation>
 <translation id="4648262692072505866">হেশ্বৰ ফৰ্মেট SHA-256 হ’বই লাগিব।</translation>
 <translation id="4652266463001779298">অনুমতি নাই</translation>
 <translation id="4652440160515225514">আপোনাৰ প্ৰতিষ্ঠানে এই ছাইটটো অৱৰোধ কৰিছে কাৰণ ই এটা নীতি উলংঘন কৰিছে।</translation>
@@ -2189,6 +2190,7 @@
 <translation id="4930714375720679147">অন কৰক</translation>
 <translation id="4932035752129140860">আপুনি পে’ষ্ট বা সংলগ্ন কৰা পাঠ বিশ্লেষণৰ বাবে Google Cloud বা তৃতীয় পক্ষলৈ পঠিওৱা হয়। উদাহৰণস্বৰূপে, এইটো সংবেদনশীল ডেটাৰ বাবে স্কেন কৰা হ’ব পাৰে আৰু কোম্পানীৰ নীতিৰ ওপৰত ভিত্তি কৰি ষ্ট’ৰ কৰা হ’ব পাৰে আৰু প্ৰশাসকৰ বাবে দৃশ্যমান হ’ব পাৰে।</translation>
 <translation id="4933468175699107356">যিকোনো ফৰ্মত আপোনাৰ নাম বা ঠিকনাৰ দৰে ছেভ কৰি থোৱা তথ্য স্বয়ংক্রিয়ভাৱে পূৰ কৰিবলৈ ৰাইট ক্লিক কৰক</translation>
+<translation id="4933788293078559286">Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4934780484581617878">ৱিণ্ড’ পৰিচালনা</translation>
 <translation id="4936134414789135531">ভৰোৱা <ph name="VALUE_NAME" /> বিচাৰি পাব পৰা নগ’ল।</translation>
 <translation id="4936573216809994970"><ph name="CLOUD_PROVIDER" />ত আপুনি কৰা ফাইলৰ আপল’ড ১ ঘণ্টাত আৰম্ভ হ’ব</translation>
@@ -2213,7 +2215,6 @@
 <translation id="4983145717627482381">গাইড সহায়ত কৰা ভ্ৰমণ আৰু সহচৰ থকা বন্ধৰ দিন</translation>
 <translation id="498323057460789381">স্কীমা সত্যাপন সম্পৰ্কীয় আসোঁৱাহ: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">মাইক্র’ফ’ন ব্যৱহাৰ কৰিবনে?</translation>
-<translation id="4989163558385430922">সকলো চাওক</translation>
 <translation id="4989542687859782284">উপলব্ধ নহয়</translation>
 <translation id="4989809363548539747">এই প্লাগ ইনটো সমৰ্থিত নহয়।</translation>
 <translation id="4990241977441916452">এনভেল’প A2</translation>
@@ -2464,6 +2465,7 @@
 <translation id="5443468954631487277">ওপৰমুখীয়াকৈ বিপৰীত ক্ৰম</translation>
 <translation id="5447235695608032700"><ph name="SITE" />এ আপোনাৰ বিষয়ে ছেভ কৰি ৰখা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="5452270690849572955">এই <ph name="HOST_NAME" />ৰ পৃষ্ঠাটো বিচাৰিব নোৱাৰি</translation>
+<translation id="5452923259299906094">eWallet আৰু Pixৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="5455374756549232013">নীতিৰ টাইমষ্টাম্প আসোঁৱাহপূৰ্ণ</translation>
 <translation id="5456428544444655325">কেতিয়াও নেদেখুৱাব</translation>
 <translation id="5456839782162429664">আপুনি স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাটো ব্যৱহাৰ কৰি প্ৰতিবাৰ পৰিশোধ কৰাৰ সময়ত মেনুৱেলী সত্যাপন কৰক</translation>
@@ -2595,7 +2597,6 @@
 <translation id="568292603005599551">প্ৰতিচ্ছবি X স্থান</translation>
 <translation id="5684874026226664614">ওঁহ এই পৃষ্ঠাটো অনুবাদ কৰিব পৰা নগ’ল।</translation>
 <translation id="568489534660743582">ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপন হৈছে বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ ছাইটে ব্যৱহাৰ কৰিব পৰা বহুতো কাৰ্যৰ মাজৰ এটা। ছাইটে পৰামৰ্শ দিয়া বিজ্ঞাপন অবিহনেও ছাইটে আপোনাক তথাপি বিজ্ঞাপন দেখুৱাব পাৰে, কিন্তু সেয়া কম আকৰ্ষণীয় হ’ব পাৰে।</translation>
-<translation id="5687340364605915800">ছাইটসমূহে এই অনুৰোধটোৰ প্ৰতি সঁহাৰি জনোৱাৰ সময়ত নিজৰ বিবেচনা ব্যৱহাৰ কৰে</translation>
 <translation id="5688137257686092846">কছমেট’ল’জী আৰু সৌন্দৰ্য সম্পৰ্কীয় পেছাদাৰী</translation>
 <translation id="5689199277474810259">JSON হিচাপে ৰপ্তানি কৰক</translation>
 <translation id="5689516760719285838">অৱস্থান</translation>
@@ -3179,7 +3180,6 @@
 <translation id="6739943577740687354">এই সুবিধাটোৱে AI ব্যৱহাৰ কৰে আৰু ই সদায় শুদ্ধ ফলাফল প্ৰদৰ্শন নকৰে</translation>
 <translation id="6740851646645036700">সদ্যহতে আপুনি আপোনাৰ লিখাৰ সহায়ৰ সীমাত উপনীত হৈছে। পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="674375294223700098">ছাৰ্ভাৰ প্ৰমাণপত্ৰ সম্পর্কীয় কোনো অজ্ঞাত আসোঁৱাহ</translation>
-<translation id="6744009308914054259">সংযোগলৈ অপেক্ষা কৰি থকা সময়ত আপুনি ডাউনল’ড-লৈ গৈ অফলাইনত থকা লেখাসমূহ পঢ়িব পাৰে।</translation>
 <translation id="6745592621698551453">এতিয়াই আপডে’ট কৰক</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">টেলিকনফাৰেন্সিং</translation>
@@ -3278,6 +3278,7 @@
 <translation id="6944692733090228304">আপুনি <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />এ পৰিচালনা নকৰা এটা ছাইটত আপোনাৰ পাছৱৰ্ড দিছে। আপোনাৰ একাউণ্টটো সুৰক্ষিত কৰিবলৈ আপোনাৰ পাছৱৰ্ডটো অন্য এপ্‌ আৰু ছাইটত পুনৰ ব্যৱহাৰ নকৰিব।</translation>
 <translation id="6946949206576443118">Chromeত ৱেবত সন্ধান কৰক</translation>
 <translation id="6948051842255602737">গে’ম সমাপ্ত হ’ল, আপোনাৰ স্ক’ৰ হৈছে <ph name="SCORE" />।</translation>
+<translation id="6948223029286835408">আপুনি Chromeত ক্ৰয় কৰিলে, এটা বিকল্প হিচাপে Pix দেখা পাওক</translation>
 <translation id="6948701128805548767">পিকআপৰ পদ্ধতি আৰু আৱশ্যকতাসমূহ চাবলৈ এটা ঠিকনা বাছনি কৰক</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">পাছৱৰ্ড ৰিছেট কৰক</translation>
@@ -3559,7 +3560,6 @@
 <translation id="7429429656042611765">এক্সিকিউটিভ</translation>
 <translation id="7432774160230062882">এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰক যাতে Chromiumএ আপোনাৰ পৰিশোধৰ তথ্য পূৰ কৰিব পাৰে।</translation>
 <translation id="7437289804838430631">সম্পর্কৰ তথ্য যোগ কৰক</translation>
-<translation id="7440140511386898319">অফলাইন অৱস্থাত অন্বেষণ কৰক</translation>
 <translation id="7441627299479586546">নীতিৰ বিষয় ভুল আছে</translation>
 <translation id="7441864845853794192">ভোজনবিলাসী আৰু বিশেষ খাদ্য</translation>
 <translation id="7442389976360981500">হাত ট্ৰেক কৰাৰ অনুমতি দিবনে?</translation>
@@ -3593,6 +3593,7 @@
 <translation id="7489392576326061356">শ্বেম্পু আৰু কণ্ডিশ্বনাৰ</translation>
 <translation id="7495528107193238112">এই সমলটো অৱৰোধ কৰা হৈছে। সমস্যাটো সমাধান কৰিবলৈ ছাইটৰ গৰাকীৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="749865518782565832">প্লামিং</translation>
+<translation id="7499188644237027195">আপুনি Chromeত ক্ৰয় কৰিলে, eWallet আৰু Pixক বিকল্প হিচাপে দেখা পাওক</translation>
 <translation id="7500917112031739411">গোট অনুসৰি দেখুৱাওক</translation>
 <translation id="7501663406926337752">খুলিবলৈ লোৱা ছাইটটো আপোনাৰ প্ৰতিষ্ঠানে ফ্লেগ কৰিছে</translation>
 <translation id="7507075214339298899">এনভেল’প #৯</translation>
@@ -3706,6 +3707,7 @@
 <translation id="767550629621587224">প্ৰি-কাট টেব</translation>
 <translation id="7675756033024037212">স্ক্ৰ’ল কৰা আৰু জুম কৰাৰ অনুমতি নাই</translation>
 <translation id="7676643023259824263">ক্লিপব’ৰ্ডৰ পাঠ, <ph name="TEXT" /> সন্ধান কৰক</translation>
+<translation id="7679287273775285018">eWalletৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="7679367271685653708">Chromeৰ ছেটিঙত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="7679947978757153706">বেছবল</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" />ত ম্যাদ উকলিব</translation>
@@ -3792,6 +3794,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">কাগজ (উকা)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />'ৰ বাবে <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> পাইছে</translation>
+<translation id="7819605256207059717">আপোনাৰ প্ৰতিষ্ঠানে অৱৰোধ কৰিছে</translation>
 <translation id="7822611063308883975">হেণ্ডহেল্ড গে’ম কনছ’ল</translation>
 <translation id="7825558994363763489">মাইক্ৰ’ৱেভ</translation>
 <translation id="782886543891417279">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাইটোৰ(<ph name="WIFI_NAME" />) বাবে আপুনি তাৰ লগ ইন কৰা পৃষ্ঠালৈ যাব লগা হ’ব পাৰে।</translation>

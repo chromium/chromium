@@ -1577,7 +1577,6 @@
 <translation id="3792826587784915501">कल्ट और इंडी (आम फ़िल्मों से हटकर) फ़िल्में</translation>
 <translation id="3793574014653384240">हाल ही में बंद होने की संख्या और वजहें</translation>
 <translation id="3799805948399000906">फ़ॉन्ट का अनुरोध किया गया</translation>
-<translation id="3801265110651850478">अपने ब्राउज़िंग ट्रैफ़िक के साथ “Do Not Track” अनुरोध भेजें</translation>
 <translation id="3801297763951514916">आपके डिवाइस पर अक्सर खोला जाने वाला टैब</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803801106042434208">ये सर्च इंजन आपके देश/इलाके में लोकप्रिय हैं</translation>
@@ -1608,6 +1607,7 @@
 <translation id="3835233591525155343">आपके डिवाइस का इस्तेमाल</translation>
 <translation id="3836246517890985658">रसोई के छोटे उपकरण</translation>
 <translation id="3839220096695873023">हाइब्रिड और ऑल्टरनेटिव वाहन</translation>
+<translation id="3841356782900714251">स्मार्ट कार्ड रीडर</translation>
 <translation id="384315386171052386">मछली और सी-फ़ूड</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, जल्दी से नया Google दस्तावेज़ बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
@@ -2027,7 +2027,6 @@
 <translation id="464342062220857295">खोज सुविधाएं</translation>
 <translation id="4644567637638438744">Microsoft OneDrive में साइन इन करने के बाद ही फ़ाइलें अपलोड की जा सकती हैं</translation>
 <translation id="4644670975240021822">दूसरी तरफ़ उलटा करके रखें</translation>
-<translation id="4646534391647090355">मुझे अभी वहां ले जाएं</translation>
 <translation id="4648262692072505866">हैश का फ़ॉर्मैट SHA-256 होना चाहिए.</translation>
 <translation id="4652266463001779298">अनुमति नहीं है</translation>
 <translation id="4652440160515225514">आपके संगठन ने इस साइट को ब्लॉक कर दिया है, क्योंकि यह किसी नीति का उल्लंघन करती है.</translation>
@@ -2218,7 +2217,6 @@
 <translation id="4983145717627482381">निर्देशों के साथ सैर और छुट्टियां</translation>
 <translation id="498323057460789381">स्कीमा की पुष्टि करने के दौरान कोई गड़बड़ी हुई: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">क्या आप माइक्रोफ़ोन का इस्तेमाल करना चाहते हैं?</translation>
-<translation id="4989163558385430922">सभी देखें</translation>
 <translation id="4989542687859782284">अनुपलब्ध</translation>
 <translation id="4989809363548539747">यह प्लग इन समर्थित नहीं है</translation>
 <translation id="4990241977441916452">A2 साइज़ का लिफ़ाफ़ा</translation>
@@ -2600,7 +2598,6 @@
 <translation id="568292603005599551">इमेज X की स्थिति</translation>
 <translation id="5684874026226664614">ओह. इस पेज का अनुवाद नहीं किया जा सका.</translation>
 <translation id="568489534660743582">साइट की ओर से सुझाए गए विज्ञापन, उन कई चीज़ों में से एक हैं जिनका इस्तेमाल आपकी दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए किया जाता है. साइट की ओर से सुझाए जाने वाले विज्ञापनों के बिना भी, साइटें आपको विज्ञापन दिखा सकती हैं. हालांकि, ऐसा हो सकता है कि ऐसे विज्ञापन आपको अपनी दिलचस्पी के मुताबिक न लगें.</translation>
-<translation id="5687340364605915800">यह साइटों पर निर्भर करता है कि वे इस अनुरोध को स्वीकार करेंगी या नहीं</translation>
 <translation id="5688137257686092846">सौंदर्य प्रसाधन विज्ञान और ब्यूटी प्रोफ़ेशनल</translation>
 <translation id="5689199277474810259">JSON में एक्सपोर्ट करें</translation>
 <translation id="5689516760719285838">जगह की जानकारी</translation>
@@ -3185,7 +3182,6 @@
 <translation id="6739943577740687354">यह सुविधा, एआई का इस्तेमाल करती है. इसलिए, ज़रूरी नहीं है कि यह हमेशा सही हो</translation>
 <translation id="6740851646645036700">फ़िलहाल, लिखने में मदद पाने की तय सीमा पूरी हो गई है. बाद में कोशिश करें.</translation>
 <translation id="674375294223700098">अज्ञात सर्वर प्रमाणपत्र गड़बड़ी.</translation>
-<translation id="6744009308914054259">कनेक्शन का इंतज़ार करते समय, ऑफ़लाइन लेख पढ़ने के लिए आप 'डाउनलोड' पर जा सकते हैं.</translation>
 <translation id="6745592621698551453">अभी अपडेट करें</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">टेली कॉन्फ़्रेंसिंग</translation>
@@ -3566,7 +3562,6 @@
 <translation id="7429429656042611765">एक्ज़ीक्यूटिव</translation>
 <translation id="7432774160230062882">अपनी पहचान की पुष्टि करें, ताकि Chromium आपके क्रेडिट/डेबिट कार्ड की जानकारी भर सके.</translation>
 <translation id="7437289804838430631">संपर्क जानकारी जोड़ें</translation>
-<translation id="7440140511386898319">ऑफ़लाइन होने पर खोजें</translation>
 <translation id="7441627299479586546">गलत नीति विषय</translation>
 <translation id="7441864845853794192">स्वादिष्ट और खास खाना</translation>
 <translation id="7442389976360981500">क्या आपको हाथ ट्रैक करने की अनुमति देनी है?</translation>
@@ -3799,6 +3794,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">पेपर (प्लेन)</translation>
 <translation id="7815407501681723534">'<ph name="SEARCH_STRING" />' के लिए <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> मिले</translation>
+<translation id="7819605256207059717">आपके संगठन ने इसे ब्लॉक किया है</translation>
 <translation id="7822611063308883975">हैंडहेल्ड गेम कंसोल</translation>
 <translation id="7825558994363763489">माइक्रोवेव</translation>
 <translation id="782886543891417279">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं (<ph name="WIFI_NAME" />) आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>

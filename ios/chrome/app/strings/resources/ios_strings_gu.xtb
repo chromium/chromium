@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">ડિલિવરી કરવાનો પ્રયાસ કર્યો. ફરી પ્રયાસ કરીશું</translation>
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
 <translation id="355765753469272474">પેજ ઉમેરશો નહીં</translation>
+<translation id="3562379378751492229">તમારા માટે શ્રેષ્ઠ રીતે કાર્ય કરતું સ્થાન પસંદ કરો.</translation>
 <translation id="3565930036634619844">ટૅબ. <ph name="NUMBER_OF_TABS" />માંથી <ph name="TAB_INDEX" />.</translation>
 <translation id="3570693105179140209">વધુ પાસવર્ડ માટે બે વાર ટૅપ કરો.</translation>
 <translation id="3572607909481582402">તમારા Google એકાઉન્ટમાં</translation>
@@ -969,6 +970,7 @@
 <translation id="5506763544823940561">છબી આમાં સાચવો…</translation>
 <translation id="5511959326926949696">તમારા બ્રાઉઝર માટે સઘન વૈકલ્પિક સુરક્ષા. જો તમને લાગતું હોય કે કોઈ અત્યાધુનિક સાઇબર હુમલા માટે તમને લક્ષ્ય બનાવવામાં આવ્યા છે, તો જ તેનો ઉપયોગ કરવો જોઈએ.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> કલાક પહેલાં</translation>
+<translation id="5524590039848017563">પ્રાથમિક ટૂલબાર બટનને નાનું કર્યું</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} નબળો પાસવર્ડ}one{{COUNT} નબળો પાસવર્ડ}other{{COUNT} નબળા પાસવર્ડ}}</translation>
 <translation id="5532545557415295622">નિષ્ક્રિય સમયસમાપ્તિનો સંવાદ</translation>
 <translation id="5548760955356983418">હેન્ડઓફ તમને આ ડિવાઇસ પર વેબસાઇટ બ્રાઉઝ કરવાનું શરૂ કરવા અને પછી તમારા Mac પર સરળતાથી ચાલુ રાખવા દે છે. વર્તમાનમાં ખુલ્લી છે તે વેબસાઇટ તમારા Mac ના ડૉક પર દેખાશે.
@@ -993,6 +995,7 @@
 <translation id="5611398002774823980">એકાઉન્ટમાં સાચવો</translation>
 <translation id="5613297089029360427">નવીનતમ મુજબ સૉર્ટ કરો</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>
+<translation id="5614805397884895755">તમારી હોમ સ્ક્રીન પરથી વધુ ઝડપથી ઍક્સેસ કરો.</translation>
 <translation id="5619871095170816857">આ કાર્ડ છેલ્લા 24 કલાકની અંદર તમારા બધા સિંક કરેલા ડિવાઇસ પરથી તમારું છેલ્લે વપરાયેલું ખુલ્લું ટૅબ બતાવે છે.</translation>
 <translation id="5624120631404540903">પાસવર્ડ્સનું સંચાલન કરો</translation>
 <translation id="5624637933505983014">સિંક કરવાની સુવિધા ચાલુ કરશો નહીં</translation>
@@ -1497,6 +1500,7 @@
 <translation id="7812377703891978671">તમે <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> પસંદ કરીને તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ ઍક્સેસ કરી શકો છો.</translation>
 <translation id="78146569776629510">ડાઉનલોડ</translation>
 <translation id="7815852444315004084">હાલ પૂરતું છુપાવો</translation>
+<translation id="7831876841288640403">તમારા ઍડ્રેસ બારનું તમારા માટે શ્રેષ્ઠ રીતે કાર્ય કરતું સ્થાન પિક કરો.</translation>
 <translation id="7839994177130598711"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />માં સાઇન ઇન કરવા માટે જ્યારે કુટુંબના સભ્યો Google Password Managerનો ઉપયોગ કરે, ત્યારે તેઓ હવેથી તમારું વપરાશકર્તાનું નામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="7840771868269352570">તમે પસંદ કરેલી આઇટમ કાઢી નાખવામાં આવશે.</translation>
 <translation id="7841180087127694526">કૉપિ કરેલી ટેક્સ્ટ શોધો</translation>

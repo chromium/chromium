@@ -2182,6 +2182,7 @@
 <translation id="2477065602824695373">여러 스위치를 설정했으므로 자동 스캔이 사용 중지되었습니다.</translation>
 <translation id="2478176599153288112">'<ph name="EXTENSION" />'의 미디어 파일 권한</translation>
 <translation id="24786041351753425">데이터 복구 서비스 사용 설정</translation>
+<translation id="2479541499757560845">접근성 키보드 설정</translation>
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
@@ -3100,6 +3101,7 @@
 <translation id="3132277757485842847">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3132896062549112541">규칙</translation>
 <translation id="3132996321662585180">매일 새로고침</translation>
+<translation id="3134312457920437826">지원되지 않는 매니페스트 버전을 사용하고 있으므로 확장 프로그램을 설치할 수 없습니다.</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
 <translation id="3141093262818886744">무시하고 열기</translation>
@@ -4370,6 +4372,7 @@
 <translation id="4012509903424054869">PDF가 자동으로 변환되므로 텍스트를 검색하고 선택할 수 있습니다.</translation>
 <translation id="4014432863917027322">'<ph name="EXTENSION_NAME" />'을(를) 복구하시겠습니까?</translation>
 <translation id="4015163439792426608">확장 프로그램이 있나요? 한곳에서 편리하게 <ph name="BEGIN_LINK" />확장 프로그램을 관리<ph name="END_LINK" />하세요.</translation>
+<translation id="4015250302257349679"><ph name="ACCELERATOR" /> 키를 눌러 이 도움말 풍선에 포커스를 지정한 후 다시 풍선이 가리키는 요소에 포커스를 지정합니다.</translation>
 <translation id="4016762287427926315"><ph name="APP_NAME" />에 허용한 권한이 이 앱에도 허용됩니다. <ph name="BEGIN_LINK" />관리하기<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">이 링크의 QR 코드 생성</translation>
 <translation id="4019983356493507433">북마크 목록 수정</translation>
@@ -5760,6 +5763,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5045367873597907704">HID 기기 정보</translation>
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="504561833207953641">기존 브라우저 세션에서 여는 중입니다.</translation>
+<translation id="504953514574706691">추천 그룹에서 탭이 제외됨</translation>
 <translation id="5049614114599109018">입력 기록 사용</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{최근 많은 알림을 보낸 사이트 1개입니다. 이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{최근 많은 알림을 보낸 사이트입니다. 이러한 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5811,6 +5815,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5079950360618752063">추천 비밀번호 사용</translation>
 <translation id="508059534790499809">Kerberos 티켓 새로고침</translation>
 <translation id="5081124414979006563">게스트 프로필 열기(&amp;O)</translation>
+<translation id="508209203623347828">이 카드가 사용 중지되면 SharePoint 및 Outlook Calendar와 같은 Microsoft 카드도 사용 중지됩니다.</translation>
 <translation id="5083035541015925118">Ctrl + Alt + 위쪽 화살표</translation>
 <translation id="5084328598860513926">프로비저닝 흐름이 중단되었습니다. 다시 시도하거나 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5084622689760736648">사이트가 제대로 작동할 가능성이 높습니다.</translation>
@@ -5928,6 +5933,8 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5157250307065481244">사이트 세부정보 보기</translation>
 <translation id="5158206172605340248">발음 구별 부호 메뉴를 닫았습니다.</translation>
 <translation id="5159094275429367735">Crostini 설정</translation>
+<translation id="5159236862360390997">안내가 담긴 튜토리얼 풍선이 여러 개 표시됩니다.
+          <ph name="ACCELERATOR" /> 키를 눌러 도움말 풍선에 포커스를 지정한 후 다시 풍선이 가리키는 요소에 포커스를 지정합니다.</translation>
 <translation id="5159419673777902220">부모님이 확장 프로그램 권한을 사용 중지했습니다.</translation>
 <translation id="5160634252433617617">물리적 키보드</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
@@ -6008,6 +6015,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5216674789212441076">실시간 자막을 자동으로 번역합니다. 자막이 Google로 전송되어 번역됩니다.</translation>
 <translation id="5220011581825921581">검색 + 위쪽 화살표</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" />을(를) 전송할 수 없습니다</translation>
+<translation id="5221834113325601057">목록에서 탭이 제외됨</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
@@ -6208,6 +6216,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5372579129492968947">확장 프로그램 고정 해제</translation>
 <translation id="5372632722660566343">계정 없이 계속</translation>
 <translation id="5372990315769030589">"<ph name="EXTENSION_NAME" />" 확장 프로그램을 계속 사용하시겠습니까?</translation>
+<translation id="5374324662289354619">현재 내부 디버깅 페이지가 사용 중지된 상태입니다</translation>
 <translation id="5375318608039113175">이 연락처와 Nearby Share를 사용하려면 사용자의 Google 계정에 연결된 이메일 주소를 내 연락처에 추가하세요.</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="5375577102295339548">사이트에서 내가 봇이 아님을 확인할 수 있습니다.</translation>
@@ -6488,6 +6497,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="5571092938913434726">전체 미디어 컨트롤</translation>
 <translation id="5571832155627049070">프로필 맞춤설정</translation>
+<translation id="5572000034319109899">사용하지 않는 탭 정리</translation>
 <translation id="5572166921642484567">색 구성표 모드 선택</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />의 사이트 세부정보 표시</translation>
 <translation id="557506220935336383">다른 사이트에 관한 확장 프로그램 권한 보기</translation>
@@ -8052,6 +8062,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6723839937902243910">전원</translation>
 <translation id="6725073593266469338">UI 서비스</translation>
 <translation id="6725206449694821596">인터넷 인쇄 프로토콜(IPP)</translation>
+<translation id="6725627354629889015">사용하지 않는 탭을 정리하시겠습니까?</translation>
 <translation id="6725970970008349185">페이지당 표시할 후보자 수</translation>
 <translation id="672609503628871915">새로운 기능 알아보기</translation>
 <translation id="6726800386221816228">특수문자</translation>
@@ -9320,6 +9331,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7642778300616172920">민감한 내용 숨기기</translation>
 <translation id="7643842463591647490">{0,plural, =1{열린 창 #개}other{열린 창 #개}}</translation>
 <translation id="7643932971554933646">사이트가 파일을 보도록 허용하시겠습니까?</translation>
+<translation id="7644953783774050577">선택 안함</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />(소유자)</translation>
 <translation id="7645681574855902035">Linux 백업 취소 중</translation>
 <translation id="7646499124171960488">안전하지 않은 공개 사이트에 대해 경고 표시</translation>
@@ -9463,6 +9475,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7737846262459425222">언제든지 설정 &gt; Google 어시스턴트 &gt; 화면 컨텍스트에서 변경할 수 있습니다.</translation>
 <translation id="7737948071472253612">카메라 사용이 허용되지 않음</translation>
 <translation id="77381465218432215">악센트 표시 및 특수문자 표시</translation>
+<translation id="7739524723876359011"><ph name="ACCELERATOR" /> 키를 눌러 도움말 풍선에 포커스를 지정합니다.</translation>
 <translation id="7740996059027112821">표준</translation>
 <translation id="7742706086992565332">특정 웹사이트를 얼마나 확대 또는 축소할지 설정할 수 있습니다.</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{유출된 비밀번호 1개 발견됨}other{유출된 비밀번호 {NUM_SITES}개 발견됨}}</translation>
@@ -9583,7 +9596,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7815680994978050279">위험한 다운로드가 차단됨</translation>
 <translation id="7817361223956157679">Linux 앱에서는 아직 터치 키보드가 지원되지 않습니다.</translation>
 <translation id="7818135753970109980">새 테마가 추가됨(<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">조직에서 차단함</translation>
 <translation id="7820400255539998692">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제하세요.</translation>
 <translation id="7820561748632634942">추가 스위치를 할당하시겠습니까?</translation>
 <translation id="782057141565633384">동영상 주소 복사(&amp;O)</translation>

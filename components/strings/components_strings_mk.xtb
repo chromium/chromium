@@ -1576,7 +1576,6 @@
 <translation id="3792826587784915501">Култни и независни филмови</translation>
 <translation id="3793574014653384240">Број на падови и причини за падовите што се случиле неодамна</translation>
 <translation id="3799805948399000906">Побаран е фонт</translation>
-<translation id="3801265110651850478">Испратете барање „Do Not Track“ со сообраќајот на прелистување</translation>
 <translation id="3801297763951514916">Го отворате ова често</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803801106042434208">Овие пребарувачи се популарни во вашиот регион</translation>
@@ -1607,6 +1606,7 @@
 <translation id="3835233591525155343">Користење на уредот</translation>
 <translation id="3836246517890985658">Мали кујнски апарати</translation>
 <translation id="3839220096695873023">Хибридни и алтернативни возила</translation>
+<translation id="3841356782900714251">Читачи на паметни картички</translation>
 <translation id="384315386171052386">Риби и морска храна</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нов документ на Google</translation>
@@ -2026,7 +2026,6 @@
 <translation id="464342062220857295">Функции за пребарување</translation>
 <translation id="4644567637638438744">Датотеки може да се прикачуваат само ако сте најавени на Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Обратен редослед со лицето надолу</translation>
-<translation id="4646534391647090355">Однеси ме таму сега</translation>
 <translation id="4648262692072505866">Хашот мора да биде формат SHA-256.</translation>
 <translation id="4652266463001779298">Не е дозволено</translation>
 <translation id="4652440160515225514">Вашата организација го блокираше овој сајт бидејќи прекршува правило.</translation>
@@ -2217,7 +2216,6 @@
 <translation id="4983145717627482381">Обиколки со водич и одмори со придружба</translation>
 <translation id="498323057460789381">Грешка при потврда на шема: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Да се користи микрофонот?</translation>
-<translation id="4989163558385430922">Прикажи ги сите</translation>
 <translation id="4989542687859782284">Недостапни</translation>
 <translation id="4989809363548539747">Приклучоков не е поддржан</translation>
 <translation id="4990241977441916452">Плик A2</translation>
@@ -2599,7 +2597,6 @@
 <translation id="568292603005599551">Позиција на сликата X</translation>
 <translation id="5684874026226664614">Оваа страница не може да се преведе.</translation>
 <translation id="568489534660743582">Рекламите предложени од сајтови се само една од многуте работи што може да ги користи конкретен сајт за да персонализира реклами. Дури и без реклами предложени од сајтови, сајтовите сѐ уште може да ви прикажуваат реклами, но рекламите може да не бидат толку интересни.</translation>
-<translation id="5687340364605915800">Сајтовите постапуваат според сопствено убедување при одговарање на барањево</translation>
 <translation id="5688137257686092846">Професионалци за козметологија и убавина</translation>
 <translation id="5689199277474810259">Изврши извоз во формат .JSON</translation>
 <translation id="5689516760719285838">Локација</translation>
@@ -3184,7 +3181,6 @@
 <translation id="6739943577740687354">Функцијава ја користи AI и нема секогаш да биде во право</translation>
 <translation id="6740851646645036700">Засега го достигнавте ограничувањето за помош за пишување. Обидете се повторно подоцна.</translation>
 <translation id="674375294223700098">Непозната грешка со сертификат на сервер.</translation>
-<translation id="6744009308914054259">Додека чекате врска, може да одите во „Преземања“ за да ги прочитате офлајн статиите.</translation>
 <translation id="6745592621698551453">Ажурирај сега</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференции</translation>
@@ -3564,7 +3560,6 @@
 <translation id="7429429656042611765">Спална соба и соба за дневен простој</translation>
 <translation id="7432774160230062882">Потврдете го вашиот идентитет за да може Chromium да ги пополни вашите податоци за плаќање.</translation>
 <translation id="7437289804838430631">Додајте информации за контакт</translation>
-<translation id="7440140511386898319">Истражувајте додека сте офлајн</translation>
 <translation id="7441627299479586546">Погрешен предмет на правилото</translation>
 <translation id="7441864845853794192">Гурмански и специјализирани јадења</translation>
 <translation id="7442389976360981500">Да се дозволи „Следење раце“?</translation>
@@ -3797,6 +3792,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Хартија (обична)</translation>
 <translation id="7815407501681723534">Пронајдени се <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> за „<ph name="SEARCH_STRING" />“</translation>
+<translation id="7819605256207059717">Блокирана од организацијата</translation>
 <translation id="7822611063308883975">Преносливи конзоли за игри</translation>
 <translation id="7825558994363763489">Микробранови печки</translation>
 <translation id="782886543891417279">Wi-Fi што го користите (<ph name="WIFI_NAME" />) може да бара да ја посетите страницата за најавување.</translation>

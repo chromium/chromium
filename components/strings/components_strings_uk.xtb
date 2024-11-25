@@ -1576,7 +1576,6 @@
 <translation id="3792826587784915501">Культові й альтернативні фільми</translation>
 <translation id="3793574014653384240">Кількість і причини останніх аварійних завершень роботи</translation>
 <translation id="3799805948399000906">Запит на шрифт</translation>
-<translation id="3801265110651850478">Надсилати запит Do Not Track разом із трафіком вебперегляду</translation>
 <translation id="3801297763951514916">Ви часто відвідуєте цю сторінку</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803801106042434208">Ці пошукові системи популярні у вашому регіоні</translation>
@@ -1607,6 +1606,7 @@
 <translation id="3835233591525155343">Дані про активний стан пристрою</translation>
 <translation id="3836246517890985658">Дрібне кухонне приладдя</translation>
 <translation id="3839220096695873023">Гібридні й альтернативні автомобілі</translation>
+<translation id="3841356782900714251">Сканери розумних карток</translation>
 <translation id="384315386171052386">Риба й морепродукти</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити новий документ Google</translation>
@@ -2026,7 +2026,6 @@
 <translation id="464342062220857295">Функції пошуку</translation>
 <translation id="4644567637638438744">Щоб завантажувати файли, увійдіть в обліковий запис Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Зворотний порядок лицевою стороною вниз</translation>
-<translation id="4646534391647090355">Перейти зараз</translation>
 <translation id="4648262692072505866">Хеш має бути у форматі SHA-256.</translation>
 <translation id="4652266463001779298">Заборонено</translation>
 <translation id="4652440160515225514">Ваша організація заблокувала цей сайт, оскільки він порушує правила.</translation>
@@ -2217,7 +2216,6 @@
 <translation id="4983145717627482381">Тури й екскурсії з гідом</translation>
 <translation id="498323057460789381">Помилка перевірки схеми: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Використовувати мікрофон?</translation>
-<translation id="4989163558385430922">Показати все</translation>
 <translation id="4989542687859782284">Недоступні</translation>
 <translation id="4989809363548539747">Цей плагін не підтримується</translation>
 <translation id="4990241977441916452">Конверт A2</translation>
@@ -2599,7 +2597,6 @@
 <translation id="568292603005599551">Горизонтальне положення зображення</translation>
 <translation id="5684874026226664614">На жаль, цю сторінку неможливо перекласти.</translation>
 <translation id="568489534660743582">Реклама, пропонована сайтами, – це лише один із факторів, які сайт може використовувати для персоналізації оголошень. Навіть без неї сайти все одно можуть показувати оголошення, але не такі релевантні.</translation>
-<translation id="5687340364605915800">Сайти відповідають на цей запит на власний розсуд</translation>
 <translation id="5688137257686092846">Фахівці з косметичних послуг</translation>
 <translation id="5689199277474810259">Експортувати у формат JSON</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
@@ -3184,7 +3181,6 @@
 <translation id="6739943577740687354">Ця функція використовує ШІ, тому вона не завжди працює правильно</translation>
 <translation id="6740851646645036700">Ви досягли ліміту для запитів на допомогу з текстом. Повторіть спробу пізніше.</translation>
 <translation id="674375294223700098">Помилка "Невідомий сертифікат сервера".</translation>
-<translation id="6744009308914054259">Очікуючи на з’єднання, можете перейти в папку "Завантаження" й переглянути статті, доступні в режимі офлайн.</translation>
 <translation id="6745592621698551453">Оновити зараз</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференції</translation>
@@ -3565,7 +3561,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Підтвердьте свою особу в Chromium, щоб автоматично заповнити платіжну інформацію.</translation>
 <translation id="7437289804838430631">Додати контактну інформацію</translation>
-<translation id="7440140511386898319">Перегляд у режимі офлайн</translation>
 <translation id="7441627299479586546">Неправильна тема правила</translation>
 <translation id="7441864845853794192">Делікатеси і їжа для гурманів</translation>
 <translation id="7442389976360981500">Дозволити відстеження рук?</translation>
@@ -3798,6 +3793,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Папір (звичайний)</translation>
 <translation id="7815407501681723534">Знайдено результатів за запитом "<ph name="SEARCH_STRING" />": <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /></translation>
+<translation id="7819605256207059717">Заблоковано вашою організацією</translation>
 <translation id="7822611063308883975">Портативні ігрові консолі</translation>
 <translation id="7825558994363763489">Мікрохвильові печі</translation>
 <translation id="782886543891417279">Можливо, щоб під’єднатися до цієї мережі Wi-Fi (<ph name="WIFI_NAME" />), потрібно відвідати її сторінку входу.</translation>

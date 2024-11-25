@@ -6990,6 +6990,7 @@
 <translation id="5943127421590245687">Верификација је успела. Да бисте откључали и вратили локалне податке, унесите стару лозинку за <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5943209617717087975"><ph name="THIRD_PARTY_NTP_MANAGER" /> управља страницом нове картице</translation>
 <translation id="5945002094477276055">Фајл <ph name="FILE_NAME" /> је можда опасан. Желите да га пошаљете Google безбедном прегледању на скенирање?</translation>
+<translation id="5945192511027649793">Онемогући тачпед</translation>
 <translation id="5945363896952315544">Безбедносни кључ не може више да чува отиске прстију. Да бисте додали нови отисак прста, прво избришите неки постојећи отисак прста.</translation>
 <translation id="5946591249682680882">ИД извештаја <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5947651424015173580">Двапут кликните мишем</translation>
@@ -8495,6 +8496,7 @@
 <translation id="7025190659207909717">Управљање услугом мобилних података</translation>
 <translation id="7025895441903756761">Безбедност и приватност</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Отвори све у &amp;прозору без архивирања}=1{Отвори у &amp;прозору без архивирања}one{Отвори све ({COUNT}) у &amp;прозору без архивирања}few{Отвори све ({COUNT}) у &amp;прозору без архивирања}other{Отвори све ({COUNT}) у &amp;прозору без архивирања}}</translation>
+<translation id="7027432471322992835">Онемогући додирну таблу</translation>
 <translation id="7029307918966275733">Crostini није инсталиран. Инсталирајте Crostini да бисте видели импресум.</translation>
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7030304022046916278">Шаље URL-ове у Безбедно прегледање на проверу</translation>
@@ -9319,6 +9321,7 @@
 <translation id="7642778300616172920">Сакриј осетљив садржај</translation>
 <translation id="7643842463591647490">{0,plural, =1{# отворен прозор}one{# отворен прозор}few{# отворена прозора}other{# отворених прозора}}</translation>
 <translation id="7643932971554933646">Желите ли да дозволите да сајт прегледа фајлове?</translation>
+<translation id="7644953783774050577">Опозови сав избор</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (власник)</translation>
 <translation id="7645681574855902035">Отказује се прављење резервне копије за Linux</translation>
 <translation id="7646499124171960488">Упозорава вас на небезбедне јавне сајтове</translation>
@@ -9583,7 +9586,6 @@
 <translation id="7815680994978050279">Опасно преузимање је блокирано</translation>
 <translation id="7817361223956157679">Тастатура на екрану још увек не ради у Linux апликацијама</translation>
 <translation id="7818135753970109980">Додата је нова тема (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Блокира организација</translation>
 <translation id="7820400255539998692">Избришите фајл <ph name="FILENAME" /> да други људи који користе овај уређај не би могли да виде ваше лозинке</translation>
 <translation id="7820561748632634942">Желите да доделите додатне прекидаче?</translation>
 <translation id="782057141565633384">К&amp;опирај адресу видеа</translation>
@@ -10029,6 +10031,7 @@
 <translation id="8119438628456698432">Генеришу се датотеке евиденције...</translation>
 <translation id="811994229154425014">Дупли размак за тачку</translation>
 <translation id="8120505434908124087">Инсталирајте eSIM профил</translation>
+<translation id="8121537075864592453">Режим преко целог екрана је онемогућен</translation>
 <translation id="8121750884985440809">Тренутно пребацујете екран</translation>
 <translation id="8122898034710982882">Phone Hub, <ph name="FEATURE_NAME" /></translation>
 <translation id="81238879832906896">Жути и бели цвет</translation>
@@ -10250,6 +10253,7 @@
 <translation id="8276560076771292512">Испразни кеш и поново учитај са сервера</translation>
 <translation id="8276850948802942358">Сазнајте више о давању привремене дозволе да сајт користи колачиће треће стране</translation>
 <translation id="8277907305629781277">Направили сте овај приступни кључ <ph name="DATE" /></translation>
+<translation id="827966378414194229">Користите покрете главе и изразе лица да бисте контролисали Chromebook. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="8280267190418431666">Веб-сајтови на вашим језицима</translation>
 <translation id="8280848878018088610">Морски таласи ударају о обалу, са фантастичним градом и замком у позадини, у тамном амбијенту.</translation>
 <translation id="828180235270931531">Други доступни штампачи</translation>

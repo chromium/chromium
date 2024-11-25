@@ -2160,6 +2160,7 @@
 <translation id="2477065602824695373">由于您设置了多个开关，“自动扫描”功能已关闭。</translation>
 <translation id="2478176599153288112">“<ph name="EXTENSION" />”的媒体文件权限</translation>
 <translation id="24786041351753425">启用数据恢复服务。</translation>
+<translation id="2479541499757560845">无障碍键盘设置</translation>
 <translation id="2480868415629598489">修改您复制和粘贴的数据</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2482895651873876648">此标签页已移至“<ph name="GROUP_NAME" />”组中 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
@@ -3077,6 +3078,7 @@
 <translation id="3132277757485842847">我们无法保持与您手机的连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3132896062549112541">规则</translation>
 <translation id="3132996321662585180">每日刷新</translation>
+<translation id="3134312457920437826">无法安装扩展程序，因为它使用了不受支持的清单版本。</translation>
 <translation id="3134393957315651797">请为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态。实验说明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">默认的黄色头像</translation>
 <translation id="3141093262818886744">仍然打开</translation>
@@ -4344,6 +4346,7 @@
 <translation id="4012509903424054869">系统会自动转换 PDF 文件，以便您搜索和选择文本</translation>
 <translation id="4014432863917027322">要修复“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="4015163439792426608">安装了扩展程序？在一个位置轻松<ph name="BEGIN_LINK" />管理您的扩展程序<ph name="END_LINK" />。</translation>
+<translation id="4015250302257349679">按 <ph name="ACCELERATOR" /> 可聚焦于此气泡，再次按下可聚焦于它所指向的元素。</translation>
 <translation id="4016762287427926315">您向“<ph name="APP_NAME" />”授予的权限也会授给此应用。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">为此链接创建二维码</translation>
 <translation id="4019983356493507433">修改书签列表</translation>
@@ -5734,6 +5737,7 @@
 <translation id="5045367873597907704">关于 HID 设备</translation>
 <translation id="5045550434625856497">密码不正确</translation>
 <translation id="504561833207953641">正在现有的浏览器会话中打开。</translation>
+<translation id="504953514574706691">已从建议的分组中排除标签页</translation>
 <translation id="5049614114599109018">使用输入历史记录</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{这个网站最近发送了很多通知。您可以阻止它继续发送通知。}other{这些网站最近发送了很多通知。您可以阻止它们继续发送通知。}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5785,6 +5789,7 @@
 <translation id="5079950360618752063">使用建议的密码</translation>
 <translation id="508059534790499809">刷新 Kerberos 票据</translation>
 <translation id="5081124414979006563">打开访客资料(&amp;O)</translation>
+<translation id="508209203623347828">如果停用此卡片，您的 Microsoft 卡片（例如 SharePoint 和 Outlook 日历）也会被停用。</translation>
 <translation id="5083035541015925118">ctrl + alt + 向上键</translation>
 <translation id="5084328598860513926">配置流程已中断。请重试，或与设备所有者/管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5084622689760736648">网站更可能会按预期运行</translation>
@@ -5902,6 +5907,8 @@
 <translation id="5157250307065481244">查看网站详细信息</translation>
 <translation id="5158206172605340248">已关闭重音符号菜单。</translation>
 <translation id="5159094275429367735">设置 Crostini</translation>
+<translation id="5159236862360390997">系统将显示一系列带有说明的教程气泡。
+          按 <ph name="ACCELERATOR" /> 可聚焦于某个气泡，再次按下可聚焦于它所指向的元素。</translation>
 <translation id="5159419673777902220">您的家长已停用扩展程序权限</translation>
 <translation id="5160634252433617617">实体键盘</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
@@ -5982,6 +5989,7 @@
 <translation id="5216674789212441076">自动翻译实时字幕。系统会将字幕发送给 Google 进行翻译。</translation>
 <translation id="5220011581825921581">搜索键 + 向上键</translation>
 <translation id="5221516927483787768">无法投放 <ph name="HOST_NAME" /> 中的内容</translation>
+<translation id="5221834113325601057">已从列表中排除标签页</translation>
 <translation id="5222403284441421673">已阻止不安全的下载</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="5225324770654022472">显示应用快捷方式</translation>
@@ -6181,6 +6189,7 @@
 <translation id="5372579129492968947">取消固定扩展程序</translation>
 <translation id="5372632722660566343">在不登录账号的情况下继续</translation>
 <translation id="5372990315769030589">要保留“<ph name="EXTENSION_NAME" />”吗？</translation>
+<translation id="5374324662289354619">内部调试页面目前已停用。</translation>
 <translation id="5375318608039113175">如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。</translation>
 <translation id="5375374982898812658">您将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="5375577102295339548">网站可帮助验证您不是机器人</translation>
@@ -6461,6 +6470,7 @@
 <translation id="5571066253365925590">蓝牙已启用</translation>
 <translation id="5571092938913434726">全局媒体控件</translation>
 <translation id="5571832155627049070">自定义您的个人资料</translation>
+<translation id="5572000034319109899">清理未使用的标签页</translation>
 <translation id="5572166921642484567">选择配色方案模式</translation>
 <translation id="5572252023412311448">显示 <ph name="SITE_GROUP" /> 的网站详情</translation>
 <translation id="557506220935336383">查看扩展程序对其他网站的权限</translation>
@@ -8022,6 +8032,7 @@
 <translation id="6723839937902243910">电源</translation>
 <translation id="6725073593266469338">界面服务</translation>
 <translation id="6725206449694821596">互联网打印协议 (IPP)</translation>
+<translation id="6725627354629889015">清理未使用的标签页？</translation>
 <translation id="6725970970008349185">每页显示的候选字词数</translation>
 <translation id="672609503628871915">了解一下新变化</translation>
 <translation id="6726800386221816228">特殊字符</translation>
@@ -9291,6 +9302,7 @@
 <translation id="7642778300616172920">隐藏敏感内容</translation>
 <translation id="7643842463591647490">{0,plural, =1{# 个打开的窗口}other{# 个打开的窗口}}</translation>
 <translation id="7643932971554933646">允许网站查看文件？</translation>
+<translation id="7644953783774050577">全部不选</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7645681574855902035">正在取消 Linux 备份</translation>
 <translation id="7646499124171960488">在您访问不安全的公共网站时发出警告</translation>
@@ -9434,6 +9446,7 @@
 <translation id="7737846262459425222">您随时可在“设置”&gt;“Google 助理”&gt;“屏幕上下文”下更改此设置。</translation>
 <translation id="7737948071472253612">不允许使用您的摄像头</translation>
 <translation id="77381465218432215">显示重音符号和特殊字符</translation>
+<translation id="7739524723876359011">按 <ph name="ACCELERATOR" /> 可聚焦于此气泡。</translation>
 <translation id="7740996059027112821">标准</translation>
 <translation id="7742706086992565332">您可以设置特定网站的缩放级别</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{发现了 1 个已泄露的密码}other{发现了 {NUM_SITES} 个已泄露的密码}}</translation>
@@ -9554,7 +9567,6 @@
 <translation id="7815680994978050279">已屏蔽危险的下载内容</translation>
 <translation id="7817361223956157679">Linux 应用目前不支持屏幕键盘</translation>
 <translation id="7818135753970109980">已添加新主题背景（<ph name="EXTENSION_NAME" />）</translation>
-<translation id="7819605256207059717">已被贵组织屏蔽</translation>
 <translation id="7820400255539998692">请删除“<ph name="FILENAME" />”，以免使用此设备的他人看到您的密码</translation>
 <translation id="7820561748632634942">分配更多开关？</translation>
 <translation id="782057141565633384">复制视频地址(&amp;O)</translation>

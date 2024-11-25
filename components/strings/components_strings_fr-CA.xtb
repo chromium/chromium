@@ -1576,7 +1576,6 @@
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
 <translation id="3799805948399000906">Police demandée</translation>
-<translation id="3801265110651850478">Envoyer une demande « Do Not Track » avec les transferts liés à votre navigation</translation>
 <translation id="3801297763951514916">Vous visitez souvent cette page</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803801106042434208">Ces moteurs de recherche sont populaires dans votre région</translation>
@@ -1607,6 +1606,7 @@
 <translation id="3835233591525155343">Votre utilisation de l'appareil</translation>
 <translation id="3836246517890985658">Petits appareils électroménagers</translation>
 <translation id="3839220096695873023">Véhicules hybrides et alternatifs</translation>
+<translation id="3841356782900714251">Lecteurs de cartes à puce</translation>
 <translation id="384315386171052386">Poisson et fruits de mer</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer un document Google</translation>
@@ -2026,7 +2026,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
 <translation id="4644567637638438744">Les fichiers peuvent être téléversés uniquement si vous êtes connecté à Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Ordre inversé, face vers le bas</translation>
-<translation id="4646534391647090355">Y accéder maintenant</translation>
 <translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
 <translation id="4652266463001779298">Non autorisée</translation>
 <translation id="4652440160515225514">Votre organisation a bloqué ce site, car il enfreint une politique.</translation>
@@ -2217,7 +2216,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4983145717627482381">Visites guidées et vacances accompagnées</translation>
 <translation id="498323057460789381">Erreur de validation du schéma : <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Utiliser le microphone?</translation>
-<translation id="4989163558385430922">Tout afficher</translation>
 <translation id="4989542687859782284">Non disponible</translation>
 <translation id="4989809363548539747">Ce plugiciel n'est pas pris en charge</translation>
 <translation id="4990241977441916452">Enveloppe A2</translation>
@@ -2599,7 +2597,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="568292603005599551">Position X de l'image</translation>
 <translation id="5684874026226664614">Oups… Impossible de traduire cette page.</translation>
 <translation id="568489534660743582">Les annonces suggérées par les sites ne sont qu'un des nombreux moyens qu'un site peut utiliser pour personnaliser les annonces. Même sans ces annonces suggérées, les sites peuvent toujours vous montrer des annonces. Celles-ci pourraient toutefois moins vous intéresser.</translation>
-<translation id="5687340364605915800">Les sites répondent à cette demande à leur discrétion</translation>
 <translation id="5688137257686092846">Cosmétique et professionnels de la beauté</translation>
 <translation id="5689199277474810259">Exporter au format JSON</translation>
 <translation id="5689516760719285838">Lieu</translation>
@@ -3184,7 +3181,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6739943577740687354">Cette fonctionnalité utilise l'IA et ne fonctionnera pas toujours correctement</translation>
 <translation id="6740851646645036700">Vous avez atteint votre limite d'aide à la rédaction pour le moment. Réessayez plus tard.</translation>
 <translation id="674375294223700098">Erreur inconnue de certificat de serveur.</translation>
-<translation id="6744009308914054259">En attendant la connexion, vous pouvez consulter vos téléchargements pour lire des articles hors connexion.</translation>
 <translation id="6745592621698551453">Mettre à jour maintenant</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Téléconférence</translation>
@@ -3564,7 +3560,6 @@ Détails supplémentaires :
 <translation id="7429429656042611765">Dirigeant</translation>
 <translation id="7432774160230062882">Vérifiez qu'il s'agit bien de vous afin que Chromium puisse remplir vos infos de paiement.</translation>
 <translation id="7437289804838430631">Ajouter des coordonnées</translation>
-<translation id="7440140511386898319">Explorer du contenu en étant hors connexion</translation>
 <translation id="7441627299479586546">Objet de la règle incorrect</translation>
 <translation id="7441864845853794192">Gastronomie et aliments de spécialité</translation>
 <translation id="7442389976360981500">Autoriser le suivi des mains?</translation>
@@ -3797,6 +3792,7 @@ Détails supplémentaires :
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papier (ordinaire)</translation>
 <translation id="7815407501681723534"><ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> résultat(s) trouvé(s) pour « <ph name="SEARCH_STRING" /> »</translation>
+<translation id="7819605256207059717">Bloqué par votre organisation</translation>
 <translation id="7822611063308883975">Consoles de jeux portables</translation>
 <translation id="7825558994363763489">Micro-ondes</translation>
 <translation id="782886543891417279">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter sa page de connexion.</translation>

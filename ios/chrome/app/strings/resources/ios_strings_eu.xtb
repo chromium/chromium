@@ -554,6 +554,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3549391962818677448">Entregatzen saiatu da. Berriro saiatuko da.</translation>
 <translation id="3557336313807607643">Gehitu kontaktuetan</translation>
 <translation id="355765753469272474">Desegin</translation>
+<translation id="3562379378751492229">Hautatu erosoen iruditzen zaizun tokia.</translation>
 <translation id="3565930036634619844">Fitxa. <ph name="NUMBER_OF_TABS" /> fitxatatik <ph name="TAB_INDEX" />garrena.</translation>
 <translation id="3570693105179140209">Pasahitz gehiago ikusteko, sakatu birritan.</translation>
 <translation id="3572607909481582402">Google-ko kontuan daudenak</translation>
@@ -992,6 +993,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5611398002774823980">Gorde kontuan</translation>
 <translation id="5613297089029360427">Ordenatu berrienetatik zaharrenetara</translation>
 <translation id="5614553682702429503">Pasahitza gorde nahi duzu?</translation>
+<translation id="5614805397884895755">Lortu orri nagusitik bertatik bizkorrago sartzeko aukera.</translation>
 <translation id="5619871095170816857">Azken 24 orduetan sinkronizatutako gailu guztietan erabili dituzun azken fitxa irekiak erakusten ditu txartel honek.</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
 <translation id="5624637933505983014">Ez aktibatu sinkronizazioa</translation>
@@ -1496,6 +1498,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7812377703891978671">Arakatze-historia osoa atzitzeko, hautatu <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Deskargak</translation>
 <translation id="7815852444315004084">Ezkutatu oraingoz</translation>
+<translation id="7831876841288640403">Ezarri helbide-barra erosoen iruditzen zaizun tokian.</translation>
 <translation id="7839994177130598711">Orain, zure familiako kideek zure erabiltzaile-izena eta pasahitza erabil ditzakete <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabiltenean.</translation>
 <translation id="7840771868269352570">Kendu egingo dira hautatutako elementuak.</translation>
 <translation id="7841180087127694526">Bilatu kopiatu duzun testua</translation>

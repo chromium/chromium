@@ -1343,7 +1343,6 @@
 <translation id="7020741890149022655">الإضافة إلى قائمة القراءة <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">فتح في المتصفح</translation>
 <translation id="7025769836128625875">‏هذه ميزة تجريبية تستخدم الذكاء الاصطناعي (AI) وقد توفّر ملخّصات غير دقيقة في بعض الأحيان. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="7027549951530753705">تمّت استعادة <ph name="ITEM_TITLE" />.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7035701931849773472">خيارات أخرى</translation>
 <translation id="7053983685419859001">حظر</translation>
@@ -1651,7 +1650,6 @@
 <translation id="834313815369870491">مواقع إلكترونية لا أريد ترجمتها مطلقًا</translation>
 <translation id="8348430946834215779">‏استخدِم بروتوكول HTTPS كلما أمكن ذلك واحصل على تحذيرات قبل تحميل المواقع الإلكترونية غير المتوافقة معه.</translation>
 <translation id="8354977102499939946">يتيح لك هذا الزر إجراء بحث صوتي بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
-<translation id="835847953965672673">تمّت استعادة <ph name="NUMBER_OF_DOWNLOADS" /> عملية تنزيل.</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{مجموعة علامات تبويب واحدة (<ph name="TAB_GROUPS_ONE" />)}zero{‫<ph name="TAB_GROUPS_MANY" /> مجموعة علامات تبويب}two{مجموعتَا علامات تبويب (<ph name="TAB_GROUPS_MANY" />)}few{‫<ph name="TAB_GROUPS_MANY" /> مجموعات علامات تبويب}many{‫<ph name="TAB_GROUPS_MANY" /> مجموعة علامات تبويب}other{‫<ph name="TAB_GROUPS_MANY" /> مجموعة علامات تبويب}}</translation>
 <translation id="8378850197701296741">تمت مزامنة الإشارات المرجعية والسجلّ وإعدادات أخرى من <ph name="FROM_ACCOUNT" />.</translation>

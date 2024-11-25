@@ -1575,7 +1575,6 @@
 <translation id="3792826587784915501">Культтук жана Indie тасмалары</translation>
 <translation id="3793574014653384240">Акыркы убакта орун алган бузулуулардын саны жана себептери</translation>
 <translation id="3799805948399000906">Арип суралды</translation>
-<translation id="3801265110651850478">"Көз cалынбасын" сурамын cерептөө трафигиңиз менен кошо жөнөтүңүз</translation>
 <translation id="3801297763951514916">Тез-тез өтүп турасыз</translation>
 <translation id="380329542618494757">Ата-жөнү</translation>
 <translation id="3803801106042434208">Бул издөө куралдары аймагыңызда көп колдонулат</translation>
@@ -1606,6 +1605,7 @@
 <translation id="3835233591525155343">Түзмөгүңүздүн колдонулушу</translation>
 <translation id="3836246517890985658">Чакан ашкана шаймандары</translation>
 <translation id="3839220096695873023">Гибрид жана альтернативдүү унаалар</translation>
+<translation id="3841356782900714251">Акылдуу карта окугучтар</translation>
 <translation id="384315386171052386">Балык жана деңиз азыктары</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңы Google документин тез түзүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
@@ -2025,7 +2025,6 @@
 <translation id="464342062220857295">Функцияларды издөө</translation>
 <translation id="4644567637638438744">Файлдарды Microsoft OneDrive'га кирип турганда гана жүктөп бере аласыз</translation>
 <translation id="4644670975240021822">Тескери иретте алдыңкы бетин ылдый каратып</translation>
-<translation id="4646534391647090355">Азыр көрүнсүн</translation>
 <translation id="4648262692072505866">Хештин форматы: SHA-256 болушу керек.</translation>
 <translation id="4652266463001779298">Тыюу салынган</translation>
 <translation id="4652440160515225514">Эрежени бузгандыктан, уюмуңуз бул сайтты бөгөттөп койду.</translation>
@@ -2216,7 +2215,6 @@
 <translation id="4983145717627482381">Экскурсиялар жана коштолгон өргүү</translation>
 <translation id="498323057460789381">Схеманы текшерүү катасы: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Микрофон колдонулсунбу?</translation>
-<translation id="4989163558385430922">Баарын көрүү</translation>
 <translation id="4989542687859782284">Жеткиликсиз</translation>
 <translation id="4989809363548539747">Бул плагин колдоого алынбайт</translation>
 <translation id="4990241977441916452">Конверт A2</translation>
@@ -2598,7 +2596,6 @@
 <translation id="568292603005599551">X сүрөтүнүн абалы</translation>
 <translation id="5684874026226664614">Ой, бул бет которулган жок.</translation>
 <translation id="568489534660743582">Сайттар сунуштаган колдонмолор – сайттар жарнамаларды жекелештирүү үчүн колдоно ала турган ыкмалардын бири. Сайттар колдонмолорсуз да сизге жарнамаларды көрсөтө берет, бирок алар кызыксыз болушу мүмкүн.</translation>
-<translation id="5687340364605915800">Сайттар бул сурамга каалагандай жооп беришет</translation>
 <translation id="5688137257686092846">Косметология жана сулуулук адистери</translation>
 <translation id="5689199277474810259">JSON'го экспорттоо</translation>
 <translation id="5689516760719285838">Жайгашкан жер</translation>
@@ -3183,7 +3180,6 @@
 <translation id="6739943577740687354">Бул функция ЖИни колдонгондуктан, кээде туура эмес натыйжаны көрсөтүшү мүмкүн</translation>
 <translation id="6740851646645036700">Азырынча жазуу боюнча жардамдын чегине жеттиңиз. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="674375294223700098">Сервер тастыктамасынын белгисиз катасы.</translation>
-<translation id="6744009308914054259">Интернет байланышын күткөнчө, Жүктөлүп алынган файлдарды ачып, макалаларды оффлайнда окуп туруңуз.</translation>
 <translation id="6745592621698551453">Азыр жаңыртуу</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Телеконференция</translation>
@@ -3563,7 +3559,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Chromium төлөм маалыматыңызды толтуруусу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="7437289804838430631">Байланыш маалыматын кошуу</translation>
-<translation id="7440140511386898319">Оффлайн режиминде окуу</translation>
 <translation id="7441627299479586546">Туура эмес саясат темасы</translation>
 <translation id="7441864845853794192">Гастроном жана өзгөчө тамактар</translation>
 <translation id="7442389976360981500">Колдорго көз салууга уруксат бересизби?</translation>
@@ -3796,6 +3791,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Кагаз (жөнөкөй)</translation>
 <translation id="7815407501681723534">"<ph name="SEARCH_STRING" />" боюнча <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> табылды.</translation>
+<translation id="7819605256207059717">Уюмуңуз тарабынан бөгөттөлгөн</translation>
 <translation id="7822611063308883975">Ташыма оюн консолдору</translation>
 <translation id="7825558994363763489">Микротолкундар</translation>
 <translation id="782886543891417279">Сиз колдонуп жаткан Wi-Fi (<ph name="WIFI_NAME" />), башкы кирүү барагына өтүшүңүздү талап кылышы мүмкүн.</translation>

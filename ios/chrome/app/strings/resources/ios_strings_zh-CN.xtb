@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">已尝试投递，将重试</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
 <translation id="355765753469272474">撤消</translation>
+<translation id="3562379378751492229">选择最适合您的位置。</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
 <translation id="3570693105179140209">点按两次即可查看更多密码。</translation>
 <translation id="3572607909481582402">在您的 Google 账号中</translation>
@@ -968,6 +969,7 @@
 <translation id="5506763544823940561">将图片保存到…</translation>
 <translation id="5511959326926949696">可选的浏览器极端保护措施。除非您认为自己可能会受到高度复杂的网络攻击，否则不应使用此选项。</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
+<translation id="5524590039848017563">已收起主工具栏按钮</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5532545557415295622">空闲超时对话框</translation>
 <translation id="5548760955356983418">借助 Handoff 功能，您在此设备上浏览网站时，可轻松改用 Mac 继续浏览。当前打开的网站将显示在 Mac 的 Dock 中。
@@ -992,6 +994,7 @@
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="5613297089029360427">按新近度排序</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
+<translation id="5614805397884895755">从主屏幕更快速地进行访问。</translation>
 <translation id="5619871095170816857">此卡片会显示过去 24 小时内您在所有同步设备上最后使用的处于打开状态的标签页。</translation>
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="5624637933505983014">请勿开启同步功能</translation>
@@ -1496,6 +1499,7 @@
 <translation id="7812377703891978671">您可选择“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”来访问您的所有浏览记录。</translation>
 <translation id="78146569776629510">下载</translation>
 <translation id="7815852444315004084">暂时隐藏</translation>
+<translation id="7831876841288640403">选择最适合您的地址栏位置。</translation>
 <translation id="7839994177130598711">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7841180087127694526">搜索复制的文字</translation>

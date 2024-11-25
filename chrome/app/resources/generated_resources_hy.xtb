@@ -7434,7 +7434,7 @@
 <translation id="6270770586500173387">Ուղարկել <ph name="BEGIN_LINK1" />համակարգի և հավելվածների մասին տեղեկությունները<ph name="END_LINK1" /> և այլ <ph name="BEGIN_LINK2" />ցուցանիշները<ph name="END_LINK2" /></translation>
 <translation id="6271348838875430303">ուղղումը հետարկվեց</translation>
 <translation id="6271824294945464304">Գաղտնաբառի փոխանցում</translation>
-<translation id="6273677812470008672">Որակյալ</translation>
+<translation id="6273677812470008672">Որակ</translation>
 <translation id="6274089201566806618">Միացում «<ph name="HOST_DEVICE_NAME" />» սարքին</translation>
 <translation id="6274108044476515407">Թե արդյոք ձեզ ցուցադրվող գովազդն անհատականացված է, կարող է կախված լինել շատ բաներից, այդ թվում՝ այս կարգավորումից, <ph name="BEGIN_LINK1" />կայքերի առաջարկած գովազդներից<ph name="LINK_END1" />, ձեր <ph name="BEGIN_LINK2" />քուքիների կարգավորումներից<ph name="LINK_END2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք։ <ph name="BEGIN_LINK3" />Ինչպես կառավարել գովազդի գաղտնիությունը<ph name="LINK_END3" />։</translation>
 <translation id="6274202259872570803">Սքրինքաստ</translation>
@@ -9307,6 +9307,7 @@
 <translation id="7642778300616172920">Թաքցնել գաղտնի տվյալները</translation>
 <translation id="7643842463591647490">{0,plural, =1{# բաց պատուհան}one{# բաց պատուհան}other{# բաց պատուհան}}</translation>
 <translation id="7643932971554933646">Թույլ տա՞լ կայքին ֆայլեր դիտել</translation>
+<translation id="7644953783774050577">Չընտրել ոչ մեկը</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (սեփականատեր)</translation>
 <translation id="7645681574855902035">Լինուքսի պահուստավորումը չեղարկվում է</translation>
 <translation id="7646499124171960488">Նախազգուշացնում է ձեզ ոչ ապահով հանրային կայքերի մասին</translation>
@@ -9569,7 +9570,6 @@
 <translation id="7815680994978050279">Արգելափակվել է վտանգավոր ներբեռնում</translation>
 <translation id="7817361223956157679">Էկրանի ստեղնաշարն առայժմ չի աշխատում Լինուքսի հավելվածներում</translation>
 <translation id="7818135753970109980">Ավելացվել է նոր թեմա (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Արգելափակվել է ձեր կազմակերպության կողմից</translation>
 <translation id="7820400255539998692">Ջնջեք <ph name="FILENAME" /> ֆայլը, որպեսզի այս սարքի մյուս օգտատերերը չկարողանան տեսնել ձեր գաղտնաբառերը</translation>
 <translation id="7820561748632634942">Նշանակե՞լ այլ փոխանջատիչներ</translation>
 <translation id="782057141565633384">Պատճենել տեսանյութի հասցեն</translation>

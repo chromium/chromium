@@ -554,6 +554,7 @@
 <translation id="3549391962818677448">Извършен е опит за доставка. Ще бъде извършен нов</translation>
 <translation id="3557336313807607643">Добавяне към контактите</translation>
 <translation id="355765753469272474">Отмяна</translation>
+<translation id="3562379378751492229">Изберете позицията, която е най-подходяща за вас.</translation>
 <translation id="3565930036634619844">Раздел. <ph name="TAB_INDEX" /> от <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Докоснете два пъти за още пароли.</translation>
 <translation id="3572607909481582402">В профила ви в Google</translation>
@@ -830,6 +831,7 @@
 <translation id="484280513275854557">Излязохте от профила си. Данните за сърфирането бяха изтрити</translation>
 <translation id="4850886885716139402">Изглед</translation>
 <translation id="4860895144060829044">Обаждане</translation>
+<translation id="4861953997778766866">Всеки може да прави промени в споделените от вас групи раздели</translation>
 <translation id="4869146460927742717">Позиция на адресната лента</translation>
 <translation id="4870911314065352661">Искате ли да затворите всички раздели?</translation>
 <translation id="4872664437015695612">Отваряне в „Изтегляния“</translation>
@@ -992,6 +994,7 @@
 <translation id="5611398002774823980">Запазване в профила</translation>
 <translation id="5613297089029360427">Сортиране по актуалност</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
+<translation id="5614805397884895755">Получете по-бърз достъп от началния си екран.</translation>
 <translation id="5619871095170816857">Тази карта показва последно използвания от вас отворен раздел на всичките ви синхронизирани устройства през последните 24 часа.</translation>
 <translation id="5624120631404540903">Управление на паролите</translation>
 <translation id="5624637933505983014">Без включване на синхронизирането</translation>
@@ -1496,6 +1499,7 @@
 <translation id="7812377703891978671">Имате достъп до цялата си история на сърфиране, като изберете „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="78146569776629510">Изтегляния</translation>
 <translation id="7815852444315004084">Скриване засега</translation>
+<translation id="7831876841288640403">Изберете най-подходящата за вас позиция на адресната лента.</translation>
 <translation id="7839994177130598711">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли за вход в(ъв) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Избраните елементи ще бъдат премахнати.</translation>
 <translation id="7841180087127694526">Търсене на копирания текст</translation>

@@ -866,6 +866,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Solo se guardará en este dispositivo</translation>
 <translation id="2524461107774643265">Añade más información</translation>
+<translation id="2526062290525841862">Para ejecutar esta aplicación, vuelve a habilitar el modo Desarrollador de aplicaciones web aisladas</translation>
 <translation id="2526280916094749336">Puedes usar las direcciones guardadas en los productos de Google. Esta dirección se guardará en tu cuenta de Google <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">El CVC se encuentra en el anverso de tu tarjeta. Es el código de 4 dígitos situado encima del número de la tarjeta, en la parte superior derecha.</translation>
 <translation id="2529899080962247600">Este campo no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas. Se ignorarán las demás entradas.</translation>
@@ -1576,7 +1577,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3792826587784915501">Películas de culto e independientes</translation>
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
 <translation id="3799805948399000906">Fuente solicitada</translation>
-<translation id="3801265110651850478">Enviar una solicitud "Do Not Track" con tu tráfico de navegación</translation>
 <translation id="3801297763951514916">Lo visitas a menudo</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803481123869276674">Cuando hagas compras en Chrome, verás tu cartera electrónica como opción</translation>
@@ -1608,6 +1608,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3835233591525155343">Uso de tu dispositivo</translation>
 <translation id="3836246517890985658">Pequeños electrodomésticos de cocina</translation>
 <translation id="3839220096695873023">Vehículos híbridos y alternativos</translation>
+<translation id="3841356782900714251">Lectores de tarjetas inteligentes</translation>
 <translation id="384315386171052386">Pescado y marisco</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para crear un nuevo Documento de Google rápidamente</translation>
@@ -2027,7 +2028,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="464342062220857295">Buscar funciones</translation>
 <translation id="4644567637638438744">Solo puedes subir archivos si has iniciado sesión en Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orden inverso boca abajo</translation>
-<translation id="4646534391647090355">Ir allí ahora</translation>
 <translation id="4648262692072505866">El hash debe tener el formato SHA‑256.</translation>
 <translation id="4652266463001779298">No permitido</translation>
 <translation id="4652440160515225514">Tu organización ha bloqueado este sitio porque infringe una política.</translation>
@@ -2219,7 +2219,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4983145717627482381">Visitas guiadas y vacaciones en grupo</translation>
 <translation id="498323057460789381">Error de validación del esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">¿Usar micrófono?</translation>
-<translation id="4989163558385430922">Ver todo</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4989809363548539747">Este complemento no es compatible</translation>
 <translation id="4990241977441916452">Sobre A2</translation>
@@ -2602,7 +2601,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="568292603005599551">Posición de la imagen en el eje X</translation>
 <translation id="5684874026226664614">¡Vaya! No se ha podido traducir esta página.</translation>
 <translation id="568489534660743582">Los anuncios sugeridos por sitios son solo una de las muchas cosas que un sitio puede usar para personalizar anuncios. Incluso sin los anuncios sugeridos por sitios, los sitios pueden seguir mostrándote anuncios, pero pueden ser menos interesantes.</translation>
-<translation id="5687340364605915800">Los sitios pueden responder a esta solicitud según su propio criterio</translation>
 <translation id="5688137257686092846">Profesionales de la cosmética y la belleza</translation>
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Ubicación</translation>
@@ -3187,7 +3185,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6739943577740687354">Esta función usa IA y no siempre lo hará bien</translation>
 <translation id="6740851646645036700">Has alcanzado tu límite de ayuda de escritura por ahora. Inténtalo de nuevo más tarde.</translation>
 <translation id="674375294223700098">Error de certificado de servidor desconocido</translation>
-<translation id="6744009308914054259">Mientras esperas a que haya conexión, puedes ir a Descargas para leer artículos sin conexión.</translation>
 <translation id="6745592621698551453">Actualizar ahora</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencias</translation>
@@ -3569,7 +3566,6 @@ Más información:
 <translation id="7429429656042611765">Ejecutivo</translation>
 <translation id="7432774160230062882">Verifica tu identidad para que Chromium pueda rellenar tus datos para pagos.</translation>
 <translation id="7437289804838430631">Añade la información de contacto</translation>
-<translation id="7440140511386898319">Contenido sin conexión</translation>
 <translation id="7441627299479586546">Asunto de política incorrecto</translation>
 <translation id="7441864845853794192">Alimentos gourmets y especialidades</translation>
 <translation id="7442389976360981500">¿Permitir seguimiento de manos?</translation>
@@ -3804,6 +3800,7 @@ Más información:
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papel (normal)</translation>
 <translation id="7815407501681723534">Se han encontrado <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> de <ph name="SEARCH_STRING" /></translation>
+<translation id="7819605256207059717">Bloqueado por tu organización</translation>
 <translation id="7822611063308883975">Videoconsolas portátiles</translation>
 <translation id="7825558994363763489">Microondas</translation>
 <translation id="782886543891417279">La red Wi-Fi que estás utilizando (<ph name="WIFI_NAME" />) puede requerir que accedas a su página de inicio de sesión.</translation>

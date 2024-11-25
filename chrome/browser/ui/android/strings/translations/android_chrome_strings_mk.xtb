@@ -1340,7 +1340,6 @@
 <translation id="7020741890149022655">Додај во список за читање <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Отвори во прелистувач</translation>
 <translation id="7025769836128625875">Ова е експериментална AI-функција, па нема секогаш да прикажува точни информации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
-<translation id="7027549951530753705">Преземањето на <ph name="ITEM_TITLE" /> е вратено</translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7035701931849773472">Други опции</translation>
 <translation id="7053983685419859001">Блокирај</translation>
@@ -1645,7 +1644,6 @@
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8348430946834215779">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат</translation>
 <translation id="8354977102499939946">Брзо пребарувајте со гласот. За да ја измените кратенкава, одете во „Поставки“.</translation>
-<translation id="835847953965672673">Вратени се <ph name="NUMBER_OF_DOWNLOADS" /> преземања</translation>
 <translation id="8368001212524806591">Следи ја цената</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> група картички}one{<ph name="TAB_GROUPS_MANY" /> група картички}other{<ph name="TAB_GROUPS_MANY" /> групи картички}}</translation>
 <translation id="8378850197701296741">Имате обележувачи, историја и други поставки од <ph name="FROM_ACCOUNT" />.</translation>

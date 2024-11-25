@@ -1112,6 +1112,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6108923351542677676">Орнатылуда…</translation>
 <translation id="6112702117600201073">Бетті жаңарту</translation>
 <translation id="6122831415929794347">"Қауіпсіз шолу" функциясы өшірілсін бе?</translation>
+<translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> қосылған қойындылар тобына қосылыңыз</translation>
 <translation id="6125864963080902918"><ph name="BEGIN_LINK" />Қосымша мәліметтер<ph name="END_LINK" /></translation>
 <translation id="6127379762771434464">Элемент жойылған</translation>
 <translation id="6130303040046284160">Қойындыны кішірейту</translation>
@@ -1340,7 +1341,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7020741890149022655">Оқу тізіміне қосу <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Браузерден ашу</translation>
 <translation id="7025769836128625875">Бұл — эксперименттік AI функциясы. Ол кейде қателесуі мүмкін. <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
-<translation id="7027549951530753705">Қалпына келтірілген <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">Құпия сөздер</translation>
 <translation id="7035701931849773472">Басқа опциялар</translation>
 <translation id="7053983685419859001">Блоктау</translation>
@@ -1612,6 +1612,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Құрылғыларыңыз<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8200772114523450471">Жалғастыру</translation>
 <translation id="820568752112382238">Көп кіретін сайттар</translation>
+<translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> және тағы <ph name="NUMBER_OF_OTHER_MEMBERS" /> адам қосылған қойындылар тобына қосылыңыз}other{<ph name="OWNER_FIRST_NAME" /> және тағы <ph name="NUMBER_OF_OTHER_MEMBERS" /> адам қосылған қойындылар тобына қосылыңыз}}</translation>
 <translation id="8209050860603202033">Кескінді ашу</translation>
 <translation id="8210770465353466621">Қойындыларды осы жерден табасыз</translation>
 <translation id="8211101263765532799">Кейбір құпия сөздер жақында істемейтін болады.</translation>
@@ -1645,7 +1646,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="834313815369870491">Ешқашан сайттарды аудармау</translation>
 <translation id="8348430946834215779">Мүмкін болған кезде, HTTPS пайдаланыңыз. Оған қолдау көрсетілмейтін сайттарды жүктеу алдында сізге ескерту жіберіледі.</translation>
 <translation id="8354977102499939946">Дауыспен жылдам іздеу. Бұл таңбашаны өзгерту үшін "Параметрлер" бөліміне өтіңіз.</translation>
-<translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> жүктеп алынған файл қалпына келтірілді.</translation>
 <translation id="8368001212524806591">Бағаларды біліп жүру</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> қойындылар тобы}other{<ph name="TAB_GROUPS_MANY" /> қойындылар тобы}}</translation>
 <translation id="8378850197701296741">Сізде <ph name="FROM_ACCOUNT" /> аккаунтының бетбелгілері, тарихы және басқа да параметрлері бар.</translation>

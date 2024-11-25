@@ -1340,7 +1340,6 @@
 <translation id="7020741890149022655">საკითხავ სიაში დამატება <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">ბრაუზერში გახსნა</translation>
 <translation id="7025769836128625875">ეს ხელოვნურ ინტელექტზე დაფუძნებული ფუნქციაა და ის ყოველთვის არ იქნება ზუსტი. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
-<translation id="7027549951530753705">აღდგენის თარიღი: <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">პაროლები</translation>
 <translation id="7035701931849773472">სხვა ვარიანტები</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
@@ -1645,7 +1644,6 @@
 <translation id="834313815369870491">არასოდეს ითარგმნოს საიტები</translation>
 <translation id="8348430946834215779">შეძლებისდაგვარად HTTPS-ის გამოყენება და გაფრთხილების მიღება, სანამ ჩაიტვირთება ის საიტები, რომელთა მიერაც ის მხარდაუჭერელია</translation>
 <translation id="8354977102499939946">სწრაფად მოიძიეთ ხმის მეშვეობით. ამ მალსახმობის რედაქტირებისთვის გადადით პარამეტრებზე.</translation>
-<translation id="835847953965672673">აღდგენილია <ph name="NUMBER_OF_DOWNLOADS" /> ჩამოტვირთვა</translation>
 <translation id="8368001212524806591">ფასებისთვის თვალის მიდევნება</translation>
 <translation id="8368772330826888223">{TAB_GROUP_COUNT,plural, =1{<ph name="TAB_GROUPS_ONE" /> ჩანართების ჯგუფი}other{<ph name="TAB_GROUPS_MANY" /> ჩანართების ჯგუფი}}</translation>
 <translation id="8378850197701296741">თქვენ <ph name="FROM_ACCOUNT" />-დან მიღებული სანიშნეები, ისტორია და სხვა პარამეტრები გაქვთ.</translation>

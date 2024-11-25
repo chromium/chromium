@@ -2172,6 +2172,7 @@
 <translation id="2477065602824695373">بما أنّه سبق لك إعداد عدة مفاتيح تحكّم، تم إيقاف ميزة "المسح التلقائي".</translation>
 <translation id="2478176599153288112">أذونات ملف الوسائط لـ "<ph name="EXTENSION" />"</translation>
 <translation id="24786041351753425">تفعيل خدمة استرداد البيانات</translation>
+<translation id="2479541499757560845">إعدادات لوحة مفاتيح تسهيل الاستخدام</translation>
 <translation id="2480868415629598489">تعديل البيانات التي يتم نسخها ولصقها</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2482895651873876648">تم نقل علامة التبويب إلى المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
@@ -3090,6 +3091,7 @@
 <translation id="3132277757485842847">‏تعذَّر علينا المحافظة على الاتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
 <translation id="3132896062549112541">القاعدة</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
+<translation id="3134312457920437826">يتعذّر تثبيت الإضافة لأنّها تستخدم إصدار بيان غير متوافق.</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3139925690611372679">الأفاتار التلقائي الأصفر</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
@@ -4358,6 +4360,7 @@
 <translation id="4012509903424054869">‏يتم تحويل ملفات PDF تلقائيًا ليتمكّن المستخدمون من البحث في النص وتحديده</translation>
 <translation id="4014432863917027322">هل ترغب في إصلاح "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="4015163439792426608">ألديك إضافات مثبَّتة؟ يمكنك <ph name="BEGIN_LINK" />إدارة الإضافات<ph name="END_LINK" /> في مكان واحد يسهُل الوصول إليه.</translation>
+<translation id="4015250302257349679">يمكنك الضغط على <ph name="ACCELERATOR" /> للتركيز على فقاعة المساعدة هذه، وإذا ضغطت مرة أخرى، سيتم التركيز على العنصر الذي تشير إليه الفقاعة.</translation>
 <translation id="4016762287427926315">ستسري الأذونات التي تمنحها لـ "<ph name="APP_NAME" />" على هذا التطبيق أيضًا. <ph name="BEGIN_LINK" />إدارة الأذونات<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">إنشاء رمز الاستجابة السريعة لهذا الرابط</translation>
 <translation id="4019983356493507433">تعديل قائمة الإشارات المرجعية</translation>
@@ -5919,6 +5922,8 @@
 <translation id="5157250307065481244">عرض تفاصيل الموقع الإلكتروني</translation>
 <translation id="5158206172605340248">تم إغلاق قائمة علامات التشكيل.</translation>
 <translation id="5159094275429367735">‏إعداد نظام التشغيل Crostini</translation>
+<translation id="5159236862360390997">سيتم عرض سلسلة من فقاعات المساعدة التي تتضمّن تعليمات.
+          ويمكنك الضغط على <ph name="ACCELERATOR" /> للتركيز على فقاعة مساعدة، وإذا ضغطت مرة أخرى، سيتم التركيز على العنصر الذي تشير إليه الفقاعة.</translation>
 <translation id="5159419673777902220">أوقَف أحد والدَيك أذونات الإضافة.</translation>
 <translation id="5160634252433617617">لوحة المفاتيح الخارجية</translation>
 <translation id="5160857336552977725">سجّل الدخول إلى <ph name="DEVICE_TYPE" /></translation>
@@ -6200,6 +6205,7 @@
 <translation id="5372579129492968947">إزالة تثبيت الإضافة</translation>
 <translation id="5372632722660566343">المتابعة بدون حساب</translation>
 <translation id="5372990315769030589">هل تريد الاحتفاظ بالإضافة "<ph name="EXTENSION_NAME" />"؟</translation>
+<translation id="5374324662289354619">صفحات تصحيح الأخطاء الداخلية غير مفعَّلة حاليًا</translation>
 <translation id="5375318608039113175">‏لاستخدام ميزة "المشاركة عن قرب" مع جهات الاتصال هذه، أضِف عناوين البريد الإلكتروني المرتبطة بحساب كل منها على Google إلى جهات اتصالك.</translation>
 <translation id="5375374982898812658">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع أجهزتك</translation>
 <translation id="5375577102295339548">يمكن للمواقع الإلكترونية المساعدة في إثبات أنّك لست برنامج تتبُّع.</translation>
@@ -9323,6 +9329,7 @@
 <translation id="7642778300616172920">إخفاء المحتوى الحسّاس</translation>
 <translation id="7643842463591647490">{0,plural, =1{هناك نافذة واحدة مفتوحة (#).}zero{هناك # نافذة مفتوحة.}two{هناك نافذتان مفتوحتان (#).}few{هناك # نوافذ مفتوحة.}many{هناك # نافذة مفتوحة.}other{هناك # نافذة مفتوحة.}}</translation>
 <translation id="7643932971554933646">هل تسمح للموقع الإلكتروني بعرض الملفات؟</translation>
+<translation id="7644953783774050577">بلا تحديد</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (المالك)</translation>
 <translation id="7645681574855902035">‏جارٍ إلغاء عملية الاحتفاظ بنسخة احتياطية من Linux</translation>
 <translation id="7646499124171960488">التحذير بشأن المواقع الإلكترونية العامة غير الآمنة</translation>
@@ -9466,6 +9473,7 @@
 <translation id="7737846262459425222">‏يمكنك تغيير هذا الإعداد متى شئت من خلال الانتقال إلى الإعدادات &gt; مساعد Google &gt; سياق الشاشة.</translation>
 <translation id="7737948071472253612">المواقع الإلكترونية التي لا يُسمح لها باستخدام الكاميرا</translation>
 <translation id="77381465218432215">عرض علامات التشكيل والرموز الخاصة</translation>
+<translation id="7739524723876359011">يمكنك الضغط على <ph name="ACCELERATOR" /> للتركيز على فقاعة المساعدة هذه.</translation>
 <translation id="7740996059027112821">عادي</translation>
 <translation id="7742706086992565332">يمكنك ضبط مستوى التكبير أو التصغير على بعض المواقع الإلكترونية.</translation>
 <translation id="7742726773290359702">{NUM_SITES,plural, =1{تم العثور على كلمة مرور واحدة محتمَل تعرّضها للاختراق.}zero{تم العثور على {NUM_SITES} كلمة مرور محتمَل تعرّضها للاختراق.}two{تم العثور على كلمتَي مرور ({NUM_SITES}) محتمَل تعرّضهما للاختراق.}few{تم العثور على {NUM_SITES} كلمات مرور محتمَل تعرّضها للاختراق.}many{تم العثور على {NUM_SITES} كلمة مرور محتمَل تعرّضها للاختراق.}other{تم العثور على {NUM_SITES} كلمة مرور محتمَل تعرّضها للاختراق.}}</translation>
@@ -9586,7 +9594,6 @@
 <translation id="7815680994978050279">تم حظر عملية تنزيل خطيرة</translation>
 <translation id="7817361223956157679">‏لا تعمل لوحة المفاتيح على الشاشة على تطبيقات Linux بعد.</translation>
 <translation id="7818135753970109980">تمت إضافة مظهر جديد (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">حظرت مؤسستك هذا الملف.</translation>
 <translation id="7820400255539998692">يمكنك حذف "<ph name="FILENAME" />" لكي لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="7820561748632634942">هل تريد تخصيص مفاتيح تحكّم إضافية؟</translation>
 <translation id="782057141565633384">نس&amp;خ عنوان الفيديو</translation>

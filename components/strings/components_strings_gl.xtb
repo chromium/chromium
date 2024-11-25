@@ -866,6 +866,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2521736961081452453">Crear formulario</translation>
 <translation id="2523886232349826891">Gardada só neste dispositivo</translation>
 <translation id="2524461107774643265">Engadir máis información</translation>
+<translation id="2526062290525841862">Para executar esta aplicación, volve activar o modo de programador das aplicacións web illadas</translation>
 <translation id="2526280916094749336">Podes usar os enderezos gardados nos produtos de Google. Este enderezo gardarase na túa Conta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="2527451058878391043">O CVC está na parte dianteira da tarxeta. É un código de 4 díxitos que está no recanto superior dereito, enriba do número da tarxeta.</translation>
 <translation id="2529899080962247600">Este campo non debe ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas. Unha vez alcanzada esa cantidade, ignoraranse as demais entradas.</translation>
@@ -1576,9 +1577,9 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3792826587784915501">Películas independentes e de culto</translation>
 <translation id="3793574014653384240">Número de fallos ocorridos recentemente e as súas causas</translation>
 <translation id="3799805948399000906">Solicitouse a fonte</translation>
-<translation id="3801265110651850478">Enviar unha solicitude Do Not Track co teu tráfico de navegación</translation>
 <translation id="3801297763951514916">Acceso frecuente</translation>
 <translation id="380329542618494757">Nome</translation>
+<translation id="3803481123869276674">Cando fagas compras en Chrome, verás o moedeiro electrónico como opción</translation>
 <translation id="3803801106042434208">Estes buscadores son populares na túa rexión</translation>
 <translation id="380666903981445943">Garda un método de pago na túa Conta de Google para que se autocomplete a información cando fagas compras en Chrome</translation>
 <translation id="3807366285948165054">Desprazamento da imaxe no eixe X</translation>
@@ -1607,6 +1608,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3835233591525155343">Uso do dispositivo</translation>
 <translation id="3836246517890985658">Pequenos electrodomésticos</translation>
 <translation id="3839220096695873023">Vehículos alternativos e híbridos</translation>
+<translation id="3841356782900714251">Lectores de tarxetas intelixentes</translation>
 <translation id="384315386171052386">Peixe e marisco</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente un novo documento de Google</translation>
@@ -2026,7 +2028,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="464342062220857295">Busca funcións</translation>
 <translation id="4644567637638438744">Os ficheiros só se poden cargar se tes a sesión iniciada en Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Orde inversa cara abaixo</translation>
-<translation id="4646534391647090355">Visitar agora</translation>
 <translation id="4648262692072505866">O hash debe ter o formato SHA-256.</translation>
 <translation id="4652266463001779298">Permiso non concedido</translation>
 <translation id="4652440160515225514">A túa organización bloqueou este sitio porque infrinxe unha política.</translation>
@@ -2193,6 +2194,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4930714375720679147">Activar</translation>
 <translation id="4932035752129140860">O texto que pegues ou anexes enviarase a Google Cloud ou a terceiros para a súa análise. Por exemplo, podería examinarse para ver se contén datos confidenciais e almacenarse en función das políticas da empresa. Tamén podería velo a persoa administradora.</translation>
 <translation id="4933468175699107356">Fai clic co botón dereito para autocompletar calquera formulario coa información gardada (por exemplo, o nome ou o enderezo)</translation>
+<translation id="4933788293078559286">Pagar con Pix</translation>
 <translation id="4934780484581617878">Xestión de ventás</translation>
 <translation id="4936134414789135531">Non se puido atopar o valor indicado ("<ph name="VALUE_NAME" />").</translation>
 <translation id="4936573216809994970">A carga de ficheiros en <ph name="CLOUD_PROVIDER" /> comezará dentro dunha hora</translation>
@@ -2217,7 +2219,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4983145717627482381">Percorridos guiados e vacacións con guía</translation>
 <translation id="498323057460789381">Erro de validación do esquema: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Queres utilizar o micrófono?</translation>
-<translation id="4989163558385430922">Ver todo</translation>
 <translation id="4989542687859782284">Experimentos non dispoñibles</translation>
 <translation id="4989809363548539747">Este plugin non é compatible</translation>
 <translation id="4990241977441916452">Sobre A2</translation>
@@ -2468,6 +2469,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5443468954631487277">Orde inversa cara arriba</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use a información que gardase sobre ti</translation>
 <translation id="5452270690849572955">Non se pode atopar esta páxina de <ph name="HOST_NAME" /></translation>
+<translation id="5452923259299906094">Pagar co moedeiro electrónico e con Pix</translation>
 <translation id="5455374756549232013">Marca de tempo da política incorrecta</translation>
 <translation id="5456428544444655325">Non mostrar nunca</translation>
 <translation id="5456839782162429664">Facer unha verificación manual sempre que pagues mediante a función de autocompletar</translation>
@@ -2599,7 +2601,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="568292603005599551">Posición X da imaxe</translation>
 <translation id="5684874026226664614">Non se puido traducir esta páxina.</translation>
 <translation id="568489534660743582">A función de anuncios suxeridos polos sitios é só unha das moitas opcións que poden usar os sitios para personalizar os anuncios. Mesmo sen ela, os sitios poden mostrarche anuncios, pero é posible que che resulten menos interesantes.</translation>
-<translation id="5687340364605915800">Os sitios usan a súa discrecionalidade á hora de responder a esta solicitude</translation>
 <translation id="5688137257686092846">Profesionais da cosmética e a beleza</translation>
 <translation id="5689199277474810259">Exportar a JSON</translation>
 <translation id="5689516760719285838">Localización</translation>
@@ -3184,7 +3185,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6739943577740687354">Esta función utiliza IA e non acertará sempre</translation>
 <translation id="6740851646645036700">Por agora alcanzaches o límite máximo de axuda para escribir. Téntao de novo máis tarde.</translation>
 <translation id="674375294223700098">Erro de certificado de servidor descoñecido.</translation>
-<translation id="6744009308914054259">Mentres esperas a que se recupere a conexión, podes ler artigos sen conexión en Descargas.</translation>
 <translation id="6745592621698551453">Actualizar agora</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Videoconferencias</translation>
@@ -3283,6 +3283,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
 <translation id="6946949206576443118">Fai buscas na Web desde Chrome</translation>
 <translation id="6948051842255602737">Fin da partida. A túa puntuación é <ph name="SCORE" />.</translation>
+<translation id="6948223029286835408">Cando fagas compras en Chrome, verás Pix como opción</translation>
 <translation id="6948701128805548767">Para consultar os requisitos e métodos de recollida, selecciona un enderezo</translation>
 <translation id="6948874830249067134">A1x3</translation>
 <translation id="6949872517221025916">Restablecer contrasinal</translation>
@@ -3564,7 +3565,6 @@ Detalles adicionais:
 <translation id="7429429656042611765">Executivo</translation>
 <translation id="7432774160230062882">Verifica a túa identidade para que Chromium poida completar a túa información de pago.</translation>
 <translation id="7437289804838430631">Engadir información de contacto</translation>
-<translation id="7440140511386898319">Explorar contido mentres estás sen conexión</translation>
 <translation id="7441627299479586546">Asunto de política incorrecto</translation>
 <translation id="7441864845853794192">Alimentos especiais e de gourmet</translation>
 <translation id="7442389976360981500">Queres permitir o seguimento das mans?</translation>
@@ -3598,6 +3598,7 @@ Detalles adicionais:
 <translation id="7489392576326061356">Champús e acondicionadores</translation>
 <translation id="7495528107193238112">Este contido está bloqueado. Ponte en contacto co propietario do sitio para corrixir o problema.</translation>
 <translation id="749865518782565832">Fontanaría</translation>
+<translation id="7499188644237027195">Cando fagas compras en Chrome, verás o moedeiro electrónico e Pix como opcións</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">A túa organización marcou como inadecuado o sitio anteriormente</translation>
 <translation id="7507075214339298899">Sobre n.º 9</translation>
@@ -3711,6 +3712,7 @@ Detalles adicionais:
 <translation id="767550629621587224">Pestanas cortadas previamente</translation>
 <translation id="7675756033024037212">Desprazamento e zoom non permitidos</translation>
 <translation id="7676643023259824263">Buscar texto do portapapeis, <ph name="TEXT" /></translation>
+<translation id="7679287273775285018">Pagar co moedeiro electrónico</translation>
 <translation id="7679367271685653708">Ver e xestionar o teu historial de navegación na configuración de Chrome</translation>
 <translation id="7679947978757153706">Béisbol</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />; data de caducidade: <ph name="CARD_EXPIRATION" /></translation>
@@ -3797,6 +3799,7 @@ Detalles adicionais:
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815352264092918456">Papel (normal)</translation>
 <translation id="7815407501681723534">Encontráronse <ph name="NUMBER_OF_RESULTS" /> <ph name="SEARCH_RESULTS" /> para "<ph name="SEARCH_STRING" />"</translation>
+<translation id="7819605256207059717">Bloqueado pola túa organización</translation>
 <translation id="7822611063308883975">Videoconsolas portátiles</translation>
 <translation id="7825558994363763489">Microondas</translation>
 <translation id="782886543891417279">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso á súa páxina de inicio de sesión.</translation>

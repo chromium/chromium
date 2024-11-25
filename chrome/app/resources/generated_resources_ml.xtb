@@ -9314,6 +9314,7 @@
 <translation id="7642778300616172920">സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട ഉള്ളടക്കം അദൃശ്യമാക്കുക</translation>
 <translation id="7643842463591647490">{0,plural, =1{# തുറന്ന വിൻഡോ}other{# തുറന്ന വിൻഡോകൾ}}</translation>
 <translation id="7643932971554933646">ഫയലുകൾ കാണാൻ സൈറ്റിനെ അനുവദിക്കണോ?</translation>
+<translation id="7644953783774050577">ഒന്നും തിരഞ്ഞെടുക്കരുത്</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ഉടമ)</translation>
 <translation id="7645681574855902035">Linux ബാക്കപ്പ് റദ്ദാക്കുന്നു</translation>
 <translation id="7646499124171960488">സുരക്ഷിതമല്ലാത്ത പബ്ലിക് സൈറ്റുകൾ സംബന്ധിച്ച് നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകുന്നു</translation>
@@ -9578,7 +9579,6 @@
 <translation id="7815680994978050279">ദോഷകരമായ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്‌തു</translation>
 <translation id="7817361223956157679">Linux ആപ്പുകളിൽ ഇപ്പോഴും ഓൺ-സ്‌ക്രീൻ കീബോർഡ് പ്രവർത്തിക്കില്ല</translation>
 <translation id="7818135753970109980">പുതിയ തീം ചേർത്തു (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">നിങ്ങളുടെ സ്ഥാപനം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="7820400255539998692">ഈ ഉപകരണം ഉപയോഗിക്കുന്ന മറ്റ് ആളുകൾ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുന്നത് തടയാൻ <ph name="FILENAME" /> ഇല്ലാതാക്കുക</translation>
 <translation id="7820561748632634942">കൂടുതൽ സ്വിച്ചുകൾ അസൈൻ ചെയ്യണോ?</translation>
 <translation id="782057141565633384">വീഡിയോ വിലാസം പകർത്തുക</translation>

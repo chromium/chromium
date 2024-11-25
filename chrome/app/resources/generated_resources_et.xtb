@@ -5750,6 +5750,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5045367873597907704">Teave HID-seadmete kohta</translation>
 <translation id="5045550434625856497">Vale salasõna</translation>
 <translation id="504561833207953641">Olemasolevas brauseriseansis avamine.</translation>
+<translation id="504953514574706691">Vaheleht välistati soovitatud grupist</translation>
 <translation id="5049614114599109018">Kasuta sisestusajalugu</translation>
 <translation id="5050063070033073713">{NUM_SITES,plural, =1{See sait saatis hiljuti hulgaliselt märguandeid. Saate selle jaoks peatada tulevaste märguannete saatmise.}other{Need saidid saatsid hiljuti hulgaliselt märguandeid. Saate nende jaoks peatada tulevaste märguannete saatmise.}}</translation>
 <translation id="5050330054928994520">TTS</translation>
@@ -5801,6 +5802,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5079950360618752063">Kasuta soovitatud parooli</translation>
 <translation id="508059534790499809">Kerberose pileti värskendamine</translation>
 <translation id="5081124414979006563">&amp;Külalise profiili avamine</translation>
+<translation id="508209203623347828">Kui see kaart on keelatud, siis on keelatud ka teie Microsofti kaardid, nagu Sharepoint ja Outlook Calendar.</translation>
 <translation id="5083035541015925118">ctrl + alt + ülesnool</translation>
 <translation id="5084328598860513926">Ettevalmistamise voogu katkestati. Proovige uuesti või võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Saidid toimivad tõenäoliselt ootuspäraselt</translation>
@@ -5998,6 +6000,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5216674789212441076">Tõlgib reaalajas subtiitrid automaatselt. Subtiitrid saadetakse tõlkimiseks Google’ile.</translation>
 <translation id="5220011581825921581">otsing + ülesnool</translation>
 <translation id="5221516927483787768">Saiti <ph name="HOST_NAME" /> ei saa üle kanda</translation>
+<translation id="5221834113325601057">Vaheleht välistati loendist</translation>
 <translation id="5222403284441421673">Ebaturvaline allalaadimine blokeeriti</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5225324770654022472">Kuva rakenduste otsetee</translation>
@@ -6478,6 +6481,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5571066253365925590">Bluetooth on lubatud</translation>
 <translation id="5571092938913434726">Üldised meedia juhtelemendid</translation>
 <translation id="5571832155627049070">Profiili kohandamine</translation>
+<translation id="5572000034319109899">Kasutamata vahelehtede kustutamine</translation>
 <translation id="5572166921642484567">Valige värviskeemi režiim</translation>
 <translation id="5572252023412311448">Kuva saidi <ph name="SITE_GROUP" /> üksikasjad</translation>
 <translation id="557506220935336383">Kuva muude saitide laienduste load</translation>
@@ -8042,6 +8046,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6723839937902243910">Toide</translation>
 <translation id="6725073593266469338">Kasutajaliidese teenus</translation>
 <translation id="6725206449694821596">Interneti prindiprotokoll (IPP)</translation>
+<translation id="6725627354629889015">Kas kustutada kasutamata vahelehed?</translation>
 <translation id="6725970970008349185">Igal lehel kuvatavate kandidaatide arv</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
 <translation id="6726800386221816228">Erimärgid</translation>
@@ -9311,6 +9316,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7642778300616172920">Peida tundlik sisu</translation>
 <translation id="7643842463591647490">{0,plural, =1{# avatud aken}other{# avatud akent}}</translation>
 <translation id="7643932971554933646">Kas soovite lubada saidil faile vaadata?</translation>
+<translation id="7644953783774050577">Tühistage kõik valikud</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (omanik)</translation>
 <translation id="7645681574855902035">Linuxi varundamise tühistamine</translation>
 <translation id="7646499124171960488">Hoiatab teid ebaturvalistest saitidest</translation>
@@ -9574,7 +9580,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7815680994978050279">Ohtlik allalaadimine blokeeriti</translation>
 <translation id="7817361223956157679">Ekraanil kuvatav klaviatuur Linuxi rakendustes veel ei tööta</translation>
 <translation id="7818135753970109980">Lisati uus teema (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="7819605256207059717">Blokeeris teie organisatsioon</translation>
 <translation id="7820400255539998692">Kustutage fail nimega <ph name="FILENAME" />, et teised, kes seda seadet kasutavad, ei näeks teie paroole</translation>
 <translation id="7820561748632634942">Kas määrata täiendavad lülitid?</translation>
 <translation id="782057141565633384">K&amp;opeeri video aadress</translation>
