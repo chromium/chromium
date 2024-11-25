@@ -1618,15 +1618,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // shipped.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM125);
 
-// Aligns `createWorklet()`'s default data origin with `addModule()`'s to use
-// the invoking context's origin. Also adds the manual `dataOrigin` option to
-// that can be passed in the options dictionary for `createWorklet()` to use the
-// script's origin as the data origin instead.
-// TODO(crbug.com/40185706): Merge this flag with `kSharedStorageAPI` once
-// shipped.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kSharedStorageCreateWorkletUseContextOriginByDefault);
-
 // For the Shared Storage API, allow custom data origins in `createWorklet`.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kSharedStorageCreateWorkletCustomDataOrigin);

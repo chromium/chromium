@@ -122,9 +122,7 @@ void SharedStorageWorklet::AddModuleHelper(
   // the case where the script origin is opaque and used as the data origin.
   bool use_script_origin_as_data_origin =
       resolve_to_worklet &&
-      (!base::FeatureList::IsEnabled(
-           features::kSharedStorageCreateWorkletUseContextOriginByDefault) ||
-       data_origin_type == SharedStorageDataOrigin::kScriptOrigin);
+      data_origin_type == SharedStorageDataOrigin::kScriptOrigin;
 
   if (!use_script_origin_as_data_origin &&
       execution_context->GetSecurityOrigin()->IsOpaque()) {
@@ -173,9 +171,7 @@ void SharedStorageWorklet::AddModuleHelper(
       data_origin_type != SharedStorageDataOrigin::kScriptOrigin) {
     // This `createWorklet()` call could be affected by the breaking change
     // proposed in https://github.com/WICG/shared-storage/pull/158 and now
-    // implemented behind
-    // `blink::features::kSharedStorageCreateWorkletUseContextOriginByDefault`.
-    // Increment the use counter.
+    // implemented. Increment the use counter.
     execution_context->CountUse(
         WebFeature::
             kSharedStorageAPI_CreateWorklet_CrossOriginScriptDefaultDataOrigin);
