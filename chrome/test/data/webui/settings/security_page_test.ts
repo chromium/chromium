@@ -614,9 +614,23 @@ suite('FlagsDisabled', function() {
 
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    // Learn more label should be visible.
-    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
+  // launched.
+  test(
+      'OldLearnMoreLinkPositionWithoutPasswordLeakToggleEnabled',
+      async function() {
+        assertFalse(loadTimeData.getBoolean('enablePasswordLeakToggleMove'));
+
+        // Make sure ESB Description is visible.
+        page.$.safeBrowsingEnhanced.$.expandButton.click();
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
+
+        assertFalse(isChildVisible(page, '#learnMoreLabelContainer'));
+        assertTrue(isChildVisible(page, '#learnMoreLabelContainerOld'));
+      });
 
   // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
   // launched.
@@ -1142,6 +1156,22 @@ suite('SafeBrowsing', function() {
     assertEquals(
         url, loadTimeData.getString('enhancedProtectionHelpCenterURL'));
   });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
+  // launched.
+  test(
+      'NewLearnMoreLinkPositionWithPasswordLeakToggleEnabled',
+      async function() {
+        assertTrue(loadTimeData.getBoolean('enablePasswordLeakToggleMove'));
+
+        // Make sure ESB Description is visible.
+        page.$.safeBrowsingEnhanced.$.expandButton.click();
+        await microtasksFinished();
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
+
+        assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+        assertFalse(isChildVisible(page, '#learnMoreLabelContainerOld'));
+      });
 
   // <if expr="_google_chrome">
   test('StandardProtectionDropdownWithProxyString', async () => {
