@@ -1364,6 +1364,12 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="In app task, different task, not Finishing"/>
 </enum>
 
+<enum name="PredictiveNavTransitionPhase">
+  <int value="0" label="Activated"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Completed"/>
+</enum>
+
 <enum name="PrimaryCpuAbiBitness">
   <int value="0" label="Unknown"/>
   <int value="1" label="32-bit"/>

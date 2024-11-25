@@ -38,9 +38,11 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ViewportTestUtils;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -322,12 +324,32 @@ public class NavigationTransitionsTest {
         mActivityTestRule.loadUrl(url2);
         mActivityTestRule.loadUrl(url3);
 
+        HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
+        HistogramWatcher watcher;
+
+        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
+            watcher =
+                    builder.expectBooleanRecord("GestureNavigation.Activated2", false)
+                            .expectBooleanRecord("GestureNavigation.Completed2", false)
+                            .build();
+        } else {
+            watcher =
+                    builder.expectIntRecord(
+                                    "Android.PredictiveGestureNavigation.WithTransition",
+                                    BackPressMetrics.PredictiveGestureNavPhase.ACTIVATED)
+                            .expectIntRecord(
+                                    "Android.PredictiveGestureNavigation.WithTransition",
+                                    BackPressMetrics.PredictiveGestureNavPhase.COMPLETED)
+                            .build();
+        }
+
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
 
         // Perform a back gesture transition from the left edge.
         performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
         waitForTransitionFinished();
 
+        watcher.assertExpected();
         Assert.assertEquals(url2, getCurrentUrl());
 
         // Perform an edge gesture transition from the right edge. In three

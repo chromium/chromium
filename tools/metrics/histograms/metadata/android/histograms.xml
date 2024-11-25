@@ -4080,6 +4080,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PredictiveGestureNavigation.{Transition}"
+    enum="PredictiveNavTransitionPhase" expires_after="M135">
+  <owner>lazzzis@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Record the phase when a gesture nav is triggered {Transition} by user's
+    gesture and when the predictive back gesture is on.
+  </summary>
+  <token key="Transition">
+    <variant name="WithoutTransition"
+        summary="without transition is activated"/>
+    <variant name="WithTransition" summary="with transition is activated"/>
+  </token>
+</histogram>
+
 <histogram name="Android.PrepareMenu.OpenWebApkVisibilityCheck" units="ms"
     expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
