@@ -110,9 +110,6 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
   OCMExpect([consumer_ didConfirmPlusAddress]);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  EXPECT_EQ(user_action_tester.GetActionCount(
-                "PlusAddresses.OfferedPlusAddressAccepted"),
-            1);
 }
 
 // Tests that the settings service is informed that the notice was accepted.

@@ -9,6 +9,7 @@
 
 #import "base/strings/string_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
@@ -82,6 +83,7 @@ class PlusAddressBottomSheetViewControllerTest : public PlatformTest {
 // Ensure that tapping confirm button on bottom sheet confirms plus_address
 // and collects relevant metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
+  base::UserActionTester user_action_tester;
   [view_controller_ loadViewIfNeeded];
 
   OCMExpect([delegate_ confirmPlusAddress]);
@@ -109,6 +111,9 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
           PlusAddressModalCompletionStatus::kModalConfirmed,
           /*notice_shown=*/false),
       /*refresh_count=*/0, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.OfferedPlusAddressAccepted"),
+            1);
 }
 
 // Ensure that tapping the confirm button onthe bottom sheet confirms the
@@ -152,6 +157,7 @@ TEST_F(PlusAddressBottomSheetViewControllerTest,
 // Ensure that tapping cancel button dismisses bottom sheet
 // and collects relevant metrics.
 TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
+  base::UserActionTester user_action_tester;
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
   [view_controller_ loadViewIfNeeded];
 
@@ -178,6 +184,9 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
           PlusAddressModalCompletionStatus::kModalCanceled,
           /*notice_shown=*/false),
       /*refresh_count=*/0, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.OfferedPlusAddressDeclined"),
+            1);
 }
 
 // Simulate a swipe to dismisses bottom sheet and ensure that

@@ -89,9 +89,6 @@ enum class PlusAddressAction {
         handlePlusAddressResult:maybePlusProfile
                       forAction:PlusAddressAction::kPlusAddressActionConfirm];
   });
-
-  base::RecordAction(
-      base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
   // `is_manual_fallback` is used to conditionally launch a HaTS survey, which
   // is not possible to iOS.
   _plusAddressService->ConfirmPlusAddress(
