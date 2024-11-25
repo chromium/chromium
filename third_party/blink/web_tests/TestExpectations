@@ -4109,6 +4109,7 @@ crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/encoding/textdecod
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/encoding/textencoder-utf16-surrogates.any.shadowrealm.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/hr-time/idlharness-shadowrealm.window.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/html/dom/idlharness-shadowrealm.window.html [ Crash Timeout ]
+crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/html/webappapis/atob/base64.any.shadowrealm.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/performance-timeline/idlharness-shadowrealm.window.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/idlharness-shadowrealm.window.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/streams/piping/abort.any.shadowrealm.html [ Crash Timeout ]
@@ -4232,6 +4233,7 @@ crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/toS
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/wasm/jsapi/tag/type.tentative.any.shadowrealm.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/webidl/ecmascript-binding/global-mutable-prototype.any.shadowrealm.html [ Crash Timeout ]
 crbug.com/376786819 virtual/shadow-realm-enabled/external/wpt/webidl/idlharness-shadowrealm.window.html [ Crash Timeout ]
+
 
 # Sheriff failures 2017-03-21
 crbug.com/674720 http/tests/loading/preload-img-test.html [ Failure Pass ]

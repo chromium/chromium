@@ -3720,6 +3720,7 @@
       "external/wpt/encoding/textencoder-utf16-surrogates.any.shadowrealm.html",
       "external/wpt/hr-time/idlharness-shadowrealm.window.html",
       "external/wpt/html/dom/idlharness-shadowrealm.window.html",
+      "external/wpt/html/webappapis/atob/base64.any.shadowrealm.html",
       "external/wpt/performance-timeline/idlharness-shadowrealm.window.html",
       "external/wpt/service-workers/service-worker/shadowrealm-promise-rejection.https.html",
       "external/wpt/streams/idlharness-shadowrealm.window.html",
