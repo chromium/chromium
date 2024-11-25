@@ -2987,13 +2987,22 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kPreSelectSingleAccount);
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
 
-  // Only the first passkey should be in the recognized credentials list.
-  device::DiscoverableCredentialMetadata expected(
-      device::AuthenticatorType::kPhone, "www.example.com", kCredId1,
-      device::PublicKeyCredentialUserEntity(kCredId1, kUserName1, kUserName1));
-  EXPECT_THAT(dialog_model()->creds, testing::ElementsAre(expected));
+  // Only the first passkey should be included in the request.
+  std::optional<int> found;
+  for (size_t i = 0; i < dialog_model()->mechanisms.size(); ++i) {
+    if (IsMechanismEnclaveCredential(dialog_model()->mechanisms[i])) {
+      ASSERT_EQ(
+          absl::get<AuthenticatorRequestDialogModel::Mechanism::Credential>(
+              dialog_model()->mechanisms[i].type)
+              ->user_id,
+          kCredId1);
+      found = i;
+    }
+  }
+  ASSERT_TRUE(found);
+  EXPECT_EQ(found, dialog_model()->priority_mechanism_index);
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
@@ -3911,8 +3920,8 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, Bug_354083161) {
   delegate_observer()->WaitForUI();
 
   ASSERT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kPreSelectSingleAccount);
-  dialog_model()->OnAccountPreselectedIndex(0);
+            AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
 
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");

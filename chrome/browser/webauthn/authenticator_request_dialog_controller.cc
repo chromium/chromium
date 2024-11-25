@@ -845,10 +845,13 @@ void AuthenticatorRequestDialogController::
         // show UI to serve as user presence.
         if (!enclave_will_do_uv && transport_availability_.request_type ==
                                        FidoRequestType::kGetAssertion) {
-          for (auto& cred : transport_availability_.recognized_credentials) {
-            if (cred.source == AuthenticatorType::kEnclave) {
-              model_->creds = {cred};
-              SetCurrentStep(Step::kPreSelectSingleAccount);
+          for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
+            const auto& type = model_->mechanisms[i].type;
+            if (absl::holds_alternative<Mechanism::Credential>(type) &&
+                absl::get<Mechanism::Credential>(type)->source ==
+                    AuthenticatorType::kEnclave) {
+              model_->priority_mechanism_index = i;
+              SetCurrentStep(Step::kSelectPriorityMechanism);
               return;
             }
           }

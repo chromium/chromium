@@ -888,11 +888,11 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       // immediately.
       {L,
        ga,
-       {cable},
+       {cable, internal},
        {only_hybrid_or_internal, enclave_cred, uv_pref},
        {},
        {c(enclave_cred1), add},
-       kIsMac ? enclave_touchid : use_pk},
+       kIsMac ? enclave_touchid : hero},
      #endif
       // But, again, not for uv=discouraged.
       {L,
@@ -901,7 +901,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {only_hybrid_or_internal, enclave_cred},
        {},
        {c(enclave_cred1), add},
-       use_pk},
+       hero},
       // When the enclave needs to sign-in again, that should appear as a
       // mechanism and the MSS should be shown.
       {L,
