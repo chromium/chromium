@@ -13,10 +13,8 @@ import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_V
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -36,7 +34,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.Preference.OnPreferenceClickListener;
@@ -46,7 +43,6 @@ import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -1628,19 +1624,5 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
     private void onOffboardingCardCloseClick() {
         mCardPreference.setVisible(false);
-    }
-
-    private void openUrlInCct(String url) {
-        var customTabHelper = getCustomTabIntentHelper();
-        assert (customTabHelper != null) : "CCT helpers must be set before opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                customTabHelper.createCustomTabActivityIntent(getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

@@ -123,8 +123,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new ChromeSiteSettingsDelegate(mContext, mProfile);
             delegate.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
             baseSiteSettingsFragment.setSiteSettingsDelegate(delegate);
-            baseSiteSettingsFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof SafetyCheckSettingsFragment) {
             SafetyCheckCoordinator.create(
