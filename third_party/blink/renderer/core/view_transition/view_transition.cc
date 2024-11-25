@@ -631,9 +631,7 @@ ViewTransitionTypeSet* ViewTransition::Types() {
 }
 
 void ViewTransition::InitTypes(const Vector<String>& types) {
-  if (RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-    types_ = MakeGarbageCollected<ViewTransitionTypeSet>(this, types);
-  }
+  types_ = MakeGarbageCollected<ViewTransitionTypeSet>(this, types);
 }
 
 void ViewTransition::Trace(Visitor* visitor) const {
@@ -654,13 +652,11 @@ bool ViewTransition::MatchForOnlyChild(
 }
 
 bool ViewTransition::MatchForActiveViewTransition() {
-  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled());
   return !IsTerminalState(state_);
 }
 
 bool ViewTransition::MatchForActiveViewTransitionType(
     const Vector<AtomicString>& pseudo_types) {
-  CHECK(RuntimeEnabledFeatures::ViewTransitionTypesEnabled());
   if (IsTerminalState(state_)) {
     return false;
   }

@@ -1776,10 +1776,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
       return true;
     }
     case CSSSelector::kPseudoActiveViewTransitionType: {
-      if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-        return false;
-      }
-
       Vector<AtomicString> types;
       for (;;) {
         const CSSParserToken& ident = stream.Peek();

@@ -6824,9 +6824,6 @@ void Element::FocusVisibleStateChanged() {
 }
 
 void Element::ActiveViewTransitionStateChanged() {
-  if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-    return;
-  }
   SetNeedsStyleRecalc(kLocalStyleChange,
                       StyleChangeReasonForTracing::CreateWithExtraData(
                           style_change_reason::kPseudoClass,
@@ -6835,9 +6832,6 @@ void Element::ActiveViewTransitionStateChanged() {
 }
 
 void Element::ActiveViewTransitionTypeStateChanged() {
-  if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
-    return;
-  }
   SetNeedsStyleRecalc(
       kLocalStyleChange,
       StyleChangeReasonForTracing::CreateWithExtraData(
