@@ -16,6 +16,7 @@
 
 @protocol ApplicationCommands;
 @class ContextMenuConfigurationProvider;
+@protocol LensOverlayErrorHandler;
 @protocol LensResultPageConsumer;
 @protocol LensResultPageMediatorDelegate;
 @protocol SnackbarCommands;
@@ -34,6 +35,8 @@ class WebStateList;
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 /// Snackbar commands handler.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
+/// Handler for displaying errors.
+@property(nonatomic, weak) id<LensOverlayErrorHandler> errorHandler;
 
 /// Container for the web view.
 @property(nonatomic, weak) UIView* webViewContainer;

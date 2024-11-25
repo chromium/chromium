@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_detents_manager.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_metrics_recorder.h"
-#import "ios/chrome/browser/lens_overlay/model/lens_overlay_network_issue_alert_presenter.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_overflow_menu_factory.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
@@ -34,6 +33,7 @@
 #import "ios/chrome/browser/lens_overlay/model/snapshot_cover_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_network_issue_alert_presenter.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_view_controller.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
@@ -580,6 +580,12 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 
 #pragma mark - LensOverlayNetworkIssueDelegate
 
+- (void)onNetworkIssueAlertWillShow {
+  // Only one view controller may be presented at a time, so dismiss the bottom
+  // sheet.
+  [self stopResultPage];
+}
+
 - (void)onNetworkIssueAlertAcknowledged {
   [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kLensPermissionsDenied];
@@ -680,11 +686,14 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 // This coordinator acts as a proxy consumer to the result consumer to implement
 // lazy initialization of the result UI.
 - (void)loadResultsURL:(GURL)url {
-  DCHECK(!_resultMediator);
   [_metricsRecorder
       recordResultLoadedWithTextSelection:_mediator.currentLensResult
                                               .isTextSelection];
-  [self startResultPage];
+
+  if (!_resultMediator) {
+    [self startResultPage];
+  }
+
   [_resultMediator loadResultsURL:url];
 }
 
@@ -693,8 +702,18 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
 }
 
 - (void)handleSearchRequestErrored {
-  [_resultMediator handleSearchRequestErrored];
-  [_networkIssueAlertPresenter showAlert];
+  if (_resultMediator) {
+    [_resultMediator handleSearchRequestErrored];
+  } else {
+    [_networkIssueAlertPresenter showNoInternetAlert];
+  }
+}
+
+- (void)handleSlowRequestHasStarted {
+  if (!_resultMediator) {
+    [self startResultPage];
+  }
+  [_resultMediator handleSlowRequestHasStarted];
 }
 
 #pragma mark - LensOverlayConsentViewControllerDelegate
@@ -769,6 +788,7 @@ const CGFloat kSelectionViewDismissAnimationDuration = 0.2f;
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _resultMediator.snackbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
+  _resultMediator.errorHandler = _networkIssueAlertPresenter;
   _resultMediator.delegate = _mediator;
   _mediator.resultConsumer = _resultMediator;
 

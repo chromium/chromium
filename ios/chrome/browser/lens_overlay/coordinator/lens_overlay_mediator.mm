@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "net/base/apple/url_conversions.h"
@@ -170,11 +172,13 @@
 - (void)lensOverlayDidStartSearchRequest:(id<ChromeLensOverlay>)lensOverlay {
   [self.resultConsumer handleSearchRequestStarted];
   _lensStartSearchRequestTime = base::ElapsedTimer();
+  [self.toolbarConsumer setOmniboxEnabled:YES];
 }
 
 // The lens overlay search request produced an error.
 - (void)lensOverlayDidReceiveError:(id<ChromeLensOverlay>)lensOverlay {
   [self.resultConsumer handleSearchRequestErrored];
+  [self.toolbarConsumer setOmniboxEnabled:YES];
 }
 
 // The lens overlay search request produced a valid result.
@@ -185,6 +189,7 @@
   if (_navigationManager) {
     _navigationManager->LensOverlayDidGenerateResult(result);
   }
+  [self.toolbarConsumer setOmniboxEnabled:YES];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
@@ -211,6 +216,10 @@
 }
 
 - (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay {
+  [self.resultConsumer handleSlowRequestHasStarted];
+  UIImage* placeholder = ImageWithColor([UIColor colorNamed:kGrey200Color]);
+  [self.omniboxCoordinator setThumbnailImage:placeholder];
+  [self.toolbarConsumer setOmniboxEnabled:NO];
 }
 
 #pragma mark - LensOverlayNavigationMutator

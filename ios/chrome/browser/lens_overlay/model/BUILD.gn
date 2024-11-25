@@ -34,7 +34,6 @@ source_set("model") {
   public_deps = [
     ":configuration_factory",
     ":detent_state_header",
-    ":network_issue_alert_presenter",
     ":overflow_menu_factory",
     "//base",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
@@ -74,19 +73,6 @@ source_set("configuration_factory") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/public/provider/chrome/browser/lens:lens_api",
-    "//ui/base",
-    "//url",
-  ]
-}
-
-source_set("network_issue_alert_presenter") {
-  sources = [
-    "lens_overlay_network_issue_alert_presenter.h",
-    "lens_overlay_network_issue_alert_presenter.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ui/base",
     "//url",
   ]
