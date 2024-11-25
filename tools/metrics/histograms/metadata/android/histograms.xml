@@ -4080,7 +4080,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PredictiveGestureNavigation.{Transition}"
+<histogram name="Android.PredictiveGestureNavigation{Transition}"
     enum="PredictiveNavTransitionPhase" expires_after="M135">
   <owner>lazzzis@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -4089,9 +4089,10 @@ chromium-metrics-reviews@google.com.
     gesture and when the predictive back gesture is on.
   </summary>
   <token key="Transition">
-    <variant name="WithoutTransition"
+    <variant name="" summary="no matter if a transition is activated"/>
+    <variant name=".WithoutTransition"
         summary="without transition is activated"/>
-    <variant name="WithTransition" summary="with transition is activated"/>
+    <variant name=".WithTransition" summary="with transition is activated"/>
   </token>
 </histogram>
 

@@ -335,6 +335,12 @@ public class NavigationTransitionsTest {
         } else {
             watcher =
                     builder.expectIntRecord(
+                                    "Android.PredictiveGestureNavigation",
+                                    BackPressMetrics.PredictiveGestureNavPhase.ACTIVATED)
+                            .expectIntRecord(
+                                    "Android.PredictiveGestureNavigation",
+                                    BackPressMetrics.PredictiveGestureNavPhase.COMPLETED)
+                            .expectIntRecord(
                                     "Android.PredictiveGestureNavigation.WithTransition",
                                     BackPressMetrics.PredictiveGestureNavPhase.ACTIVATED)
                             .expectIntRecord(
