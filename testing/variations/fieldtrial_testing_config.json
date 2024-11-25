@@ -20122,17 +20122,36 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "SafetyHub_NoNotification",
                     "params": {
-                        "safety-hub-ab-control-probability": "0.2",
+                        "probability": "0.0155",
                         "safety-hub-ab-control-trigger-id": "XxxasK3Zu0ugnJ3q1cK0Yv2LaPos",
-                        "safety-hub-ab-interaction-probability": "0.2",
-                        "safety-hub-ab-interaction-trigger-id": "o6hoLZqjX0ugnJ3q1cK0XCht6ei6",
-                        "safety-hub-ab-notification-probability": "0.2",
-                        "safety-hub-ab-notification-trigger-id": "MVbs4W6AD0ugnJ3q1cK0Nc4CZvj2"
+                        "survey": "safety-hub-control"
                     },
                     "enable_features": [
-                        "SafetyHubOneOffHats"
+                        "SafetyHubHaTSOneOffSurvey"
+                    ]
+                },
+                {
+                    "name": "SafetyHub_Notification",
+                    "params": {
+                        "probability": "0.0155",
+                        "safety-hub-ab-notification-trigger-id": "MVbs4W6AD0ugnJ3q1cK0Nc4CZvj2",
+                        "survey": "safety-hub-notification"
+                    },
+                    "enable_features": [
+                        "SafetyHubHaTSOneOffSurvey"
+                    ]
+                },
+                {
+                    "name": "SafetyHub_Interaction",
+                    "params": {
+                        "probability": "0.1516",
+                        "safety-hub-ab-interaction-trigger-id": "o6hoLZqjX0ugnJ3q1cK0XCht6ei6",
+                        "survey": "safety-hub-interaction"
+                    },
+                    "enable_features": [
+                        "SafetyHubHaTSOneOffSurvey"
                     ]
                 }
             ]
