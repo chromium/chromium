@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/input/android_input_callback.h"
+#include "components/input/android/android_input_callback.h"
 
 #include "base/check.h"
 
-namespace viz {
+namespace input {
 
 AndroidInputCallback::AndroidInputCallback(
-    const FrameSinkId& root_frame_sink_id,
+    const viz::FrameSinkId& root_frame_sink_id,
     AndroidInputCallbackClient* client)
     : root_frame_sink_id_(root_frame_sink_id), client_(client) {
   CHECK(client_ != nullptr);
@@ -28,4 +28,4 @@ bool AndroidInputCallback::OnMotionEvent(AInputEvent* input_event) {
   return client_->OnMotionEvent(input_event, root_frame_sink_id_);
 }
 
-}  // namespace viz
+}  // namespace input

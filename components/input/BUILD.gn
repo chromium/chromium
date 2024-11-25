@@ -104,6 +104,10 @@ component("input") {
   }
   if (is_android) {
     sources += [
+      "android/android_input_callback.cc",
+      "android/android_input_callback.h",
+      "android/input_receiver_data.cc",
+      "android/input_receiver_data.h",
       "android/input_token_forwarder.cc",
       "android/input_token_forwarder.h",
       "android/scoped_input_receiver.cc",

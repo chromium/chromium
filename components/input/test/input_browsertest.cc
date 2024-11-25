@@ -193,6 +193,37 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
   EXPECT_EQ(slice_count, expected_count);
 }
 
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, ReuseSingleInputReceiver) {
+  base::HistogramTester histogram_tester;
+  GURL url = GURL(
+      "data:text/html,<!doctype html>"
+      "<body style='background-color: magenta;'></body>");
+  {
+    content::RenderFrameSubmissionObserver render_frame_submission_observer(
+        shell()->web_contents());
+    EXPECT_TRUE(content::NavigateToURL(shell(), url));
+    if (render_frame_submission_observer.render_frame_count() == 0) {
+      render_frame_submission_observer.WaitForAnyFrameSubmission();
+    }
+  }
+
+  auto* second_shell = content::Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), url, nullptr, {800, 600});
+  {
+    content::RenderFrameSubmissionObserver render_frame_submission_observer(
+        second_shell->web_contents());
+    if (render_frame_submission_observer.render_frame_count() == 0) {
+      render_frame_submission_observer.WaitForAnyFrameSubmission();
+    }
+  }
+
+  const int expected_count = IsTransferInputToVizSupported() ? 1 : 0;
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectBucketCount(
+      "Android.InputOnViz.InputReceiverCreationResult",
+      /*kReuseExistingInputReceiver*/ 7, expected_count);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AndroidInputBrowserTest,
                          ::testing::Bool(),

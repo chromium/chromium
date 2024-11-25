@@ -419,8 +419,6 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
-      "input/android_input_callback.cc",
-      "input/android_input_callback.h",
       "input/render_input_router_support_android.cc",
       "input/render_input_router_support_android.h",
     ]
