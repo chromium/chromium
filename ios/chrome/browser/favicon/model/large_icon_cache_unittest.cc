@@ -72,7 +72,8 @@ TEST_F(LargeIconCacheTest, RetreiveItem) {
   std::unique_ptr<favicon_base::LargeIconResult> expected_result2;
   expected_result1.reset(new favicon_base::LargeIconResult(expected_bitmap_));
   expected_result2.reset(new favicon_base::LargeIconResult(
-      new favicon_base::FallbackIconStyle(*expected_fallback_icon_style_)));
+      std::make_unique<favicon_base::FallbackIconStyle>(
+          *expected_fallback_icon_style_)));
 
   large_icon_cache_->SetCachedResult(GURL(kDummyUrl), *expected_result1);
   large_icon_cache_->SetCachedResult(GURL(kDummyUrl2), *expected_result2);

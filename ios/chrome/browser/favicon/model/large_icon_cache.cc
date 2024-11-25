@@ -51,8 +51,8 @@ LargeIconCache::CloneLargeIconResult(
   if (large_icon_result.bitmap.is_valid()) {
     clone.reset(new favicon_base::LargeIconResult(large_icon_result.bitmap));
   } else {
-    clone.reset(
-        new favicon_base::LargeIconResult(new favicon_base::FallbackIconStyle(
+    clone.reset(new favicon_base::LargeIconResult(
+        std::make_unique<favicon_base::FallbackIconStyle>(
             *large_icon_result.fallback_icon_style.get())));
   }
   return clone;
