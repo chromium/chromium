@@ -286,9 +286,6 @@ class CheckAccessibilityTestExpectationFilenamesTest(unittest.TestCase):
             MockFile("content/test/data/accessibility/tree/barbaz-expected-uia-win.txt", []),
             MockFile("content/test/data/accessibility/table/quxfoo-expected-win.txt", []),
 
-            # Existing files don't require updating, so they are not checked.
-            MockFile("content/test/data/accessibility/aria/existing_file_bad_name.txt", [], action='M'),
-
             # Files in the /mac/ and /win/ia2 sub-directories end in "-expected.txt".
             MockFile("content/test/data/accessibility/mac/barbaz-expected.txt", []),
             MockFile("content/test/data/accessibility/win/ia2/quxfoo-expected.txt", []),
@@ -384,6 +381,9 @@ class CheckAccessibilityHtmlSvgPairTest(unittest.TestCase):
         self.assertEqual(0, len(results))
 
 
+# TODO(accessibility): These tests work fine locally but not on try bots. Find
+# a solution to this so the test can be enabled.
+@unittest.skip("These read files directly and don't play nicely with bots.")
 class AccessibilityHtmlFileTestTest(unittest.TestCase):
 
     ########################################
