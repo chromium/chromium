@@ -118,6 +118,9 @@ enum Token {
   [Default] kEnd,
 };
 
+// Holds the possible input types to the model. Note that if any of these input
+// types include cross-origin data, such as a screenshot, any of the origins may
+// be able to control the model output.
 [Stable, Extensible]
 union InputPiece {
   // A token which may have different internal representations depending on the
