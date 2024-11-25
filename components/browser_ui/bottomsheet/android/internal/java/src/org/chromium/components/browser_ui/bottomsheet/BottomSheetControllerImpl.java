@@ -425,6 +425,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @Override
+    public int getMaxSheetWidth() {
+        return mBottomSheet != null ? (int) mBottomSheet.getMaxSheetWidth() : 0;
+    }
+
+    @Override
     public void addObserver(BottomSheetObserver observer) {
         if (mBottomSheet == null) {
             mPendingSheetObservers.add(observer);
