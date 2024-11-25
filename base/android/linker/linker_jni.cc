@@ -727,7 +727,7 @@ bool NativeLibInfo::SharedMemoryFunctionsSupportedForTesting() {
   return functions.IsWorking();
 }
 
-JNI_BOUNDARY_EXPORT void
+JNI_ZERO_BOUNDARY_EXPORT void
 Java_org_chromium_base_library_1loader_LinkerJni_nativeFindMemoryRegionAtRandomAddress(
     JNIEnv* env,
     jclass clazz,
@@ -739,7 +739,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeFindMemoryRegionAtRandomA
   s_lib_info_fields.SetLoadInfo(env, lib_info_obj, address, size);
 }
 
-JNI_BOUNDARY_EXPORT void
+JNI_ZERO_BOUNDARY_EXPORT void
 Java_org_chromium_base_library_1loader_LinkerJni_nativeReserveMemoryForLibrary(
     JNIEnv* env,
     jclass clazz,
@@ -752,7 +752,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeReserveMemoryForLibrary(
   s_lib_info_fields.SetLoadInfo(env, lib_info_obj, address, size);
 }
 
-JNI_BOUNDARY_EXPORT jboolean
+JNI_ZERO_BOUNDARY_EXPORT jboolean
 Java_org_chromium_base_library_1loader_LinkerJni_nativeFindRegionReservedByWebViewZygote(
     JNIEnv* env,
     jclass clazz,
@@ -766,7 +766,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeFindRegionReservedByWebVi
   return true;
 }
 
-JNI_BOUNDARY_EXPORT jboolean
+JNI_ZERO_BOUNDARY_EXPORT jboolean
 Java_org_chromium_base_library_1loader_LinkerJni_nativeLoadLibrary(
     JNIEnv* env,
     jclass clazz,
@@ -787,7 +787,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeLoadLibrary(
   return true;
 }
 
-JNI_BOUNDARY_EXPORT jboolean
+JNI_ZERO_BOUNDARY_EXPORT jboolean
 Java_org_chromium_base_library_1loader_LinkerJni_nativeUseRelros(
     JNIEnv* env,
     jclass clazz,
@@ -813,7 +813,7 @@ Java_org_chromium_base_library_1loader_LinkerJni_nativeUseRelros(
   return true;
 }
 
-JNI_BOUNDARY_EXPORT jint
+JNI_ZERO_BOUNDARY_EXPORT jint
 Java_org_chromium_base_library_1loader_LinkerJni_nativeGetRelroSharingResult(
     JNIEnv* env,
     jclass clazz) {

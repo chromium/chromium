@@ -69,12 +69,14 @@ def entry_point_declaration(sb, jni_mode, jni_obj, native, gen_jni_class):
     # In this case, it's not the symbol that JNI resolves, but the one the
     # switch table jumps to.
     function_name = native.muxed_entry_point_name
+    define = 'JNI_ZERO_MUXED_ENTRYPOINT'
   else:
     function_name = native.boundary_name_cpp(jni_mode,
                                              gen_jni_class=gen_jni_class)
+    define = 'JNI_ZERO_BOUNDARY_EXPORT'
   return_type_cpp = native.entry_point_return_type.to_cpp()
   params = native.entry_point_params(jni_mode)
-  sb(f'JNI_POSSIBLE_BOUNDARY_EXPORT {return_type_cpp} {function_name}')
+  sb(f'{define} {return_type_cpp} {function_name}')
   with sb.param_list() as plist:
     plist.append('JNIEnv* env')
     if not jni_mode.is_muxing:
@@ -158,7 +160,7 @@ def multiplexing_boundary_method(sb, muxed_aliases, gen_jni_class):
   sig = native.muxed_signature
   boundary_name_cpp = native.boundary_name_cpp(common.JniMode.MUXING,
                                                gen_jni_class=gen_jni_class)
-  sb(f'JNI_BOUNDARY_EXPORT {sig.return_type.to_cpp()} {boundary_name_cpp}')
+  sb(f'JNI_ZERO_BOUNDARY_EXPORT {sig.return_type.to_cpp()} {boundary_name_cpp}')
   param_names = []
   with sb.param_list() as plist:
     plist += ['JNIEnv* env', 'jclass jcaller', 'jint switch_num']

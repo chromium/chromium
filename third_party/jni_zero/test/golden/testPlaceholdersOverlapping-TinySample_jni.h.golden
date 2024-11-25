@@ -15,7 +15,7 @@
 // Forward declaration. To be implemented by the including .cc file.
 static jboolean JNI_TinySample_Bar(JNIEnv* env, jint a, const jni_zero::JavaParamRef<jobject>& b);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1bar(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1bar(
     JNIEnv* env,
     jclass jcaller,
     jint a,
@@ -27,7 +27,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zer
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_TinySample_Foo(JNIEnv* env, const jni_zero::JavaParamRef<jobject>& a, jint b);
 
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1foo(
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1TinySample_1foo(
     JNIEnv* env,
     jclass jcaller,
     jobject a,

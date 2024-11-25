@@ -14,16 +14,14 @@ extern const int64_t kJniZeroHashmoduleWhole = -7714383706413312501LL;
 extern const int64_t kJniZeroHashmodulePriority = 0LL;
 
 // Forward Declarations.
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Muxed_org_jni_1zero_SampleModule_bar(
-    JNIEnv* env,
-    jboolean a);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Muxed_org_jni_1zero_SampleModule_foo(JNIEnv* env);
+JNI_ZERO_MUXED_ENTRYPOINT jboolean Muxed_org_jni_1zero_SampleModule_bar(JNIEnv* env, jboolean a);
+JNI_ZERO_MUXED_ENTRYPOINT void Muxed_org_jni_1zero_SampleModule_foo(JNIEnv* env);
 
 // Multiplexing Methods.
-JNI_BOUNDARY_EXPORT void Java_J_module_1N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
   return Muxed_org_jni_1zero_SampleModule_foo(env);
 }
-JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num,

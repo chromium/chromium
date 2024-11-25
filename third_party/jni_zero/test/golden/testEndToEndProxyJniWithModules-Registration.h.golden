@@ -11,11 +11,11 @@
 #include "third_party/jni_zero/jni_zero_internal.h"
 
 // Forward Declarations.
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
     JNIEnv* env,
     jclass jcaller,
     jboolean a);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(JNIEnv* env, jclass jcaller);
 
 // Helper Methods.
 namespace {
