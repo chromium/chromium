@@ -441,6 +441,12 @@ group("gn_all") {
         ]
       }
 
+      if (android_64bit_target_cpu) {
+        deps += [
+          "//tools/pgo:generate_profile_android_trichrome_chrome_64_32_bundle",
+        ]
+      }
+
       if (enable_chrome_android_internal) {
         deps += [
           "//clank",
