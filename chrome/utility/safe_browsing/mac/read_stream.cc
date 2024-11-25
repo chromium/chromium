@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace safe_browsing {
@@ -53,7 +54,8 @@ bool MemoryReadStream::Read(base::span<uint8_t> buf, size_t* bytes_read) {
   }
 
   *bytes_read = std::min(buf.size(), bytes_remaining);
-  buf.first(*bytes_read).copy_from(byte_buf_.subspan(offset_, *bytes_read));
+  buf.first(*bytes_read)
+      .copy_from(byte_buf_.subspan(static_cast<size_t>(offset_), *bytes_read));
   offset_ += *bytes_read;
   return true;
 }
@@ -72,9 +74,7 @@ off_t MemoryReadStream::Seek(off_t offset, int whence) {
     default:
       NOTREACHED();
   }
-  if (static_cast<size_t>(offset_) >= byte_buf_.size()) {
-    offset_ = byte_buf_.size();
-  }
+  offset_ = std::min(base::checked_cast<size_t>(offset_), byte_buf_.size());
   return offset_;
 }
 
