@@ -562,19 +562,16 @@ TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
   // 2. card_metadata_available() and card_art_image_enabled() both return true.
   if (card_metadata_available()) {
     if (card_product_name_enabled() && card_art_image_enabled()) {
-      latency_histogram_suffix =
-          autofill_metrics::kProductNameAndArtImageBothShownSuffix;
+      latency_histogram_suffix = kProductNameAndArtImageBothShownSuffix;
     } else if (card_product_name_enabled()) {
-      latency_histogram_suffix = autofill_metrics::kProductNameShownOnlySuffix;
+      latency_histogram_suffix = kProductNameShownOnlySuffix;
     } else if (card_art_image_enabled()) {
-      latency_histogram_suffix = autofill_metrics::kArtImageShownOnlySuffix;
+      latency_histogram_suffix = kArtImageShownOnlySuffix;
     } else {
-      latency_histogram_suffix =
-          autofill_metrics::kProductNameAndArtImageNotShownSuffix;
+      latency_histogram_suffix = kProductNameAndArtImageNotShownSuffix;
     }
   } else {
-    latency_histogram_suffix =
-        autofill_metrics::kProductNameAndArtImageNotShownSuffix;
+    latency_histogram_suffix = kProductNameAndArtImageNotShownSuffix;
   }
   histogram_tester.ExpectUniqueSample(
       latency_histogram_prefix + latency_histogram_suffix, 2000, 1);

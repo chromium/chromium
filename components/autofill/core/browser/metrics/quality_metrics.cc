@@ -156,7 +156,7 @@ void LogExtractionMetrics(const FormStructure& form) {
 
 void LogPredictionMetrics(
     const FormStructure& form,
-    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     bool observed_submission) {
   const QualityMetricType metric_type =
@@ -169,8 +169,7 @@ void LogPredictionMetrics(
     LogOverallPredictionQualityMetrics(form_interactions_ukm_logger, source_id,
                                        form, *field, metric_type);
     LogEmailFieldPredictionMetrics(*field);
-    autofill_metrics::LogShadowPredictionComparison(*field,
-                                                    GetActiveHeuristicSource());
+    LogShadowPredictionComparison(*field, GetActiveHeuristicSource());
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     // If ML predictions are the active heuristic source, don't record samples
     // as these would be redundant to the ".Heuristic" sub-metric of
@@ -185,11 +184,10 @@ void LogPredictionMetrics(
   }
 }
 
-void LogFillingMetrics(
-    const FormStructure& form,
-    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
-    ukm::SourceId source_id,
-    bool observed_submission) {
+void LogFillingMetrics(const FormStructure& form,
+                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
+                       ukm::SourceId source_id,
+                       bool observed_submission) {
   const QualityMetricType metric_type =
       observed_submission ? TYPE_SUBMISSION : TYPE_NO_SUBMISSION;
   for (const std::unique_ptr<AutofillField>& field : form) {
@@ -201,7 +199,7 @@ void LogFillingMetrics(
   }
   LogPerfectFillingMetric(form);
   LogPreFillMetrics(form);
-  autofill_metrics::LogFieldFillingStatsAndScore(form);
+  LogFieldFillingStatsAndScore(form);
   LogFillingQualityMetrics(form);
 
   FieldTypeSet autofilled_field_types;
@@ -223,14 +221,13 @@ void LogFillingMetrics(
 
 }  // namespace
 
-void LogQualityMetrics(
-    const FormStructure& form_structure,
-    base::TimeTicks load_time,
-    base::TimeTicks interaction_time,
-    base::TimeTicks submission_time,
-    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
-    ukm::SourceId source_id,
-    bool observed_submission) {
+void LogQualityMetrics(const FormStructure& form_structure,
+                       base::TimeTicks load_time,
+                       base::TimeTicks interaction_time,
+                       base::TimeTicks submission_time,
+                       FormInteractionsUkmLogger& form_interactions_ukm_logger,
+                       ukm::SourceId source_id,
+                       bool observed_submission) {
   // Use the same timestamp on UKM Metrics generated within this method's scope.
   UkmTimestampPin timestamp_pin(&form_interactions_ukm_logger);
 
@@ -250,7 +247,7 @@ void LogQualityMetrics(
 // autocomplete attribute takes precedence over other type predictions).
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
-    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id) {
   const QualityMetricType metric_type = TYPE_AUTOCOMPLETE_BASED;
   for (const auto& field : form_structure) {

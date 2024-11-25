@@ -22,9 +22,8 @@
 namespace autofill::autofill_metrics {
 namespace {
 
-class SuggestionsListMetricsTest
-    : public autofill_metrics::AutofillMetricsBaseTest,
-      public testing::Test {
+class SuggestionsListMetricsTest : public AutofillMetricsBaseTest,
+                                   public testing::Test {
  public:
   void SetUp() override {
     SetUpHelper();

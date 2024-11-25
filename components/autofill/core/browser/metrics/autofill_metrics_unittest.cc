@@ -4801,9 +4801,9 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
   int upload_decision = 1;
   autofill_client_->set_form_origin(url);
 
-  autofill_metrics::LogCardUploadDecisionsUkm(
-      &test_ukm_recorder(), autofill_client_->GetActivePageUkmSourceId(), url,
-      upload_decision);
+  LogCardUploadDecisionsUkm(&test_ukm_recorder(),
+                            autofill_client_->GetActivePageUkmSourceId(), url,
+                            upload_decision);
   auto entries = test_ukm_recorder().GetEntriesByName(
       UkmCardUploadDecisionType::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -4851,7 +4851,7 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
 TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_InvalidUrl) {
   GURL url("");
   test_ukm_recorder().Purge();
-  autofill_metrics::LogCardUploadDecisionsUkm(&test_ukm_recorder(), -1, url, 1);
+  LogCardUploadDecisionsUkm(&test_ukm_recorder(), -1, url, 1);
   EXPECT_EQ(0ul, test_ukm_recorder().sources_count());
   EXPECT_EQ(0ul, test_ukm_recorder().entries_count());
 }
@@ -4860,7 +4860,7 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_InvalidUrl) {
 TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric_NoUkmService) {
   GURL url("https://www.google.com");
   test_ukm_recorder().Purge();
-  autofill_metrics::LogCardUploadDecisionsUkm(nullptr, -1, url, 1);
+  LogCardUploadDecisionsUkm(nullptr, -1, url, 1);
   EXPECT_EQ(0ul, test_ukm_recorder().sources_count());
   EXPECT_EQ(0ul, test_ukm_recorder().entries_count());
 }

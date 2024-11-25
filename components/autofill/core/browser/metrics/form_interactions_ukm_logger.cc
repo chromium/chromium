@@ -711,7 +711,7 @@ void FormInteractionsUkmLogger::LogFocusedComplexFormAtFormRemove(
   }
 
   DenseSet<FormTypeNameForLogging> form_type_names_for_logging =
-      autofill_metrics::GetFormTypesForLogging(form_structure);
+      GetFormTypesForLogging(form_structure);
 
   // To save bandwidth, only forms are reported that are a
   // kPostalAddressForm or a kCreditCardForm.
@@ -921,7 +921,7 @@ void FormInteractionsUkmLogger::LogKeyMetrics(
 
 void FormInteractionsUkmLogger::LogFormEvent(
     ukm::SourceId ukm_source_id,
-    autofill_metrics::FormEvent form_event,
+    FormEvent form_event,
     const DenseSet<FormTypeNameForLogging>& form_types,
     base::TimeTicks form_parsed_timestamp) {
   if (!CanLog(ukm_source_id)) {
@@ -957,8 +957,7 @@ int64_t FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
       kAutofillEventDataBucketSpacing);
 }
 
-UkmTimestampPin::UkmTimestampPin(
-    autofill_metrics::FormInteractionsUkmLogger* logger)
+UkmTimestampPin::UkmTimestampPin(FormInteractionsUkmLogger* logger)
     : logger_(*logger) {
   DCHECK(!logger_->has_pinned_timestamp(/*pass_key=*/{}));
   logger_->set_pinned_timestamp(base::TimeTicks::Now(), /*pass_key=*/{});

@@ -16,9 +16,8 @@
 
 namespace autofill::autofill_metrics {
 
-class CategoryResolvedKeyMetricsTest
-    : public autofill_metrics::AutofillMetricsBaseTest,
-      public testing::Test {
+class CategoryResolvedKeyMetricsTest : public AutofillMetricsBaseTest,
+                                       public testing::Test {
  public:
   CategoryResolvedKeyMetricsTest() = default;
 

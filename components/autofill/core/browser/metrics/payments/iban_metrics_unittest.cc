@@ -78,8 +78,7 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
   }
 
   base::HistogramTester histogram_tester;
-  autofill_metrics::LogStoredIbanMetrics(local_ibans, server_ibans,
-                                         kDisusedDataModelTimeDelta);
+  LogStoredIbanMetrics(local_ibans, server_ibans, kDisusedDataModelTimeDelta);
 
   // Validate the count metrics.
   histogram_tester.ExpectUniqueSample("Autofill.StoredIbanCount", 10, 1);
@@ -113,21 +112,21 @@ TEST_F(IbanMetricsTest, LogStoredIbanMetrics) {
 
 TEST_F(IbanMetricsTest, LogIbanSaveOfferedCountry) {
   base::HistogramTester histogram_tester;
-  autofill_metrics::LogIbanSaveOfferedCountry("FR");
+  LogIbanSaveOfferedCountry("FR");
   histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSaveOfferedIban",
                                       Iban::IbanSupportedCountry::kFR, 1);
 }
 
 TEST_F(IbanMetricsTest, LogIbanSaveAcceptedCountry) {
   base::HistogramTester histogram_tester;
-  autofill_metrics::LogIbanSaveAcceptedCountry("FR");
+  LogIbanSaveAcceptedCountry("FR");
   histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSaveAcceptedIban",
                                       Iban::IbanSupportedCountry::kFR, 1);
 }
 
 TEST_F(IbanMetricsTest, LogIbanSelectedCountry) {
   base::HistogramTester histogram_tester;
-  autofill_metrics::LogIbanSelectedCountry("FR");
+  LogIbanSelectedCountry("FR");
   histogram_tester.ExpectUniqueSample("Autofill.Iban.CountryOfSelectedIban",
                                       Iban::IbanSupportedCountry::kFR, 1);
 }

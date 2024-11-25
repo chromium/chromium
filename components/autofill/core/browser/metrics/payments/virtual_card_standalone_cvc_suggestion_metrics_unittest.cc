@@ -72,15 +72,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsAre(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionShown,
-              1),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionShownOnce,
-              1)));
+      BucketsAre(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionShown,
+                              1),
+                 base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionShownOnce,
+                              1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 1),
@@ -94,15 +91,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogShownMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsAre(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionShown,
-              2),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionShownOnce,
-              1)));
+      BucketsAre(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionShown,
+                              2),
+                 base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionShownOnce,
+                              1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(base::Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 2),
@@ -125,15 +119,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsAre(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionSelected,
-              1),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionSelectedOnce,
-              1)));
+      BucketsAre(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionSelected,
+                              1),
+                 base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionSelectedOnce,
+                              1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(
@@ -149,15 +140,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsAre(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionSelected,
-              2),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionSelectedOnce,
-              1)));
+      BucketsAre(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionSelected,
+                              2),
+                 base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                  kStandaloneCvcSuggestionSelectedOnce,
+                              1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(
@@ -185,15 +173,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsInclude(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionFilled,
-              1),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionFilledOnce,
-              1)));
+      BucketsInclude(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                      kStandaloneCvcSuggestionFilled,
+                                  1),
+                     base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                      kStandaloneCvcSuggestionFilledOnce,
+                                  1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(
@@ -212,15 +197,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsInclude(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionFilled,
-              2),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionFilledOnce,
-              1)));
+      BucketsInclude(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                      kStandaloneCvcSuggestionFilled,
+                                  2),
+                     base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                      kStandaloneCvcSuggestionFilledOnce,
+                                  1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(
@@ -249,15 +231,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
-      BucketsInclude(
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionWillSubmitOnce,
-              1),
-          base::Bucket(
-              autofill_metrics::VirtualCardStandaloneCvcSuggestionFormEvent::
-                  kStandaloneCvcSuggestionSubmittedOnce,
-              1)));
+      BucketsInclude(base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                      kStandaloneCvcSuggestionWillSubmitOnce,
+                                  1),
+                     base::Bucket(VirtualCardStandaloneCvcSuggestionFormEvent::
+                                      kStandaloneCvcSuggestionSubmittedOnce,
+                                  1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.FormEvents.StandaloneCvc"),
       BucketsInclude(

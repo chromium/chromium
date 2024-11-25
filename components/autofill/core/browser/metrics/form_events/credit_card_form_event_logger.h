@@ -64,7 +64,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       bool with_offer,
       bool with_cvc,
       bool is_virtual_card_standalone_cvc_field,
-      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
+      CardMetadataLoggingContext metadata_logging_context);
 
   // TODO(crbug.com/40937936): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
@@ -206,7 +206,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, one of the cards in the suggestions fetched has cvc info saved.
   bool suggestion_contains_card_with_cvc_ = false;
 
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context_;
+  CardMetadataLoggingContext metadata_logging_context_;
 
   // Set when a list of suggestion is shown.
   base::TimeTicks suggestion_shown_timestamp_;

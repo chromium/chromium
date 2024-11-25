@@ -81,13 +81,11 @@ class FormInteractionsUkmLogger {
     kMaxValue = kWasFocused
   };
 
-  struct FormEventSetTraits {
-    static constexpr FormEvent kMinValue = FormEvent(0);
-    static constexpr FormEvent kMaxValue = NUM_FORM_EVENTS;
-    static constexpr bool kPacked = false;
+  struct FormEventSetTraits : public DenseSetTraits<FormEvent> {
+    static constexpr FormEvent kMaxValue =
+        static_cast<FormEvent>(base::to_underlying(NUM_FORM_EVENTS) - 1);
   };
-  using FormEventSet =
-      DenseSet<autofill_metrics::FormEvent, FormEventSetTraits>;
+  using FormEventSet = DenseSet<FormEvent, FormEventSetTraits>;
 
   explicit FormInteractionsUkmLogger(AutofillClient* autofill_client);
 
@@ -166,7 +164,7 @@ class FormInteractionsUkmLogger {
                      const FormInteractionsFlowId& flow_id,
                      std::optional<int64_t> fast_checkout_run_id);
   void LogFormEvent(ukm::SourceId ukm_source_id,
-                    autofill_metrics::FormEvent form_event,
+                    FormEvent form_event,
                     const DenseSet<FormTypeNameForLogging>& form_types,
                     base::TimeTicks form_parsed_timestamp);
 
@@ -202,7 +200,7 @@ class UkmTimestampPin {
  public:
   UkmTimestampPin() = delete;
 
-  explicit UkmTimestampPin(autofill_metrics::FormInteractionsUkmLogger* logger);
+  explicit UkmTimestampPin(FormInteractionsUkmLogger* logger);
 
   UkmTimestampPin(const UkmTimestampPin&) = delete;
   UkmTimestampPin& operator=(const UkmTimestampPin&) = delete;
@@ -210,7 +208,7 @@ class UkmTimestampPin {
   ~UkmTimestampPin();
 
  private:
-  const raw_ref<autofill_metrics::FormInteractionsUkmLogger> logger_;
+  const raw_ref<FormInteractionsUkmLogger> logger_;
 };
 
 // This defines a second-to-minute-scale prioritized set of buckets for

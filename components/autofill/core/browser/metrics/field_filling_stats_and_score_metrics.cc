@@ -313,28 +313,28 @@ void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
   second.num_left_empty = first.num_left_empty + second.num_left_empty;
 }
 
-autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
+FormGroupFillingStats GetFormFillingStatsForFormType(
     FormType form_type,
     const FormStructure& form_structure) {
-  autofill_metrics::FormGroupFillingStats filling_stats_for_form_type;
+  FormGroupFillingStats filling_stats_for_form_type;
 
   for (auto& field : form_structure) {
     if (FieldTypeGroupToFormType(field->Type().group()) != form_type) {
       continue;
     }
     filling_stats_for_form_type.AddFieldFillingStatus(
-        autofill_metrics::GetFieldFillingStatus(*field));
+        GetFieldFillingStatus(*field));
   }
   return filling_stats_for_form_type;
 }
 
 void LogFieldFillingStatsAndScore(const FormStructure& form) {
   // Tracks how many fields are filled, unfilled or corrected.
-  autofill_metrics::FormGroupFillingStats address_field_stats;
-  autofill_metrics::FormGroupFillingStats postal_address_field_stats;
-  autofill_metrics::FormGroupFillingStats cc_field_stats;
-  autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
-  autofill_metrics::FormGroupFillingStats unclassified_fields_field_stats;
+  FormGroupFillingStats address_field_stats;
+  FormGroupFillingStats postal_address_field_stats;
+  FormGroupFillingStats cc_field_stats;
+  FormGroupFillingStats ac_unrecognized_address_field_stats;
+  FormGroupFillingStats unclassified_fields_field_stats;
   const bool is_postal_address_form = internal::IsPostalAddressForm(form);
   for (const std::unique_ptr<AutofillField>& field : form) {
     // For any field that belongs to either an address or a credit card form,
@@ -371,7 +371,7 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
          field->filling_product() == FillingProduct::kNone) &&
         field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       ac_unrecognized_address_field_stats.AddFieldFillingStatus(
-          autofill_metrics::GetFieldFillingStatus(*field));
+          GetFieldFillingStatus(*field));
     }
   }
   LogFieldFillingStats(FormTypeNameForLogging::kAddressForm,

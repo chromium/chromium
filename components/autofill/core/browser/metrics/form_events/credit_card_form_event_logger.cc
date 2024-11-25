@@ -47,7 +47,7 @@ void CreditCardFormEventLogger::OnDidFetchSuggestion(
     bool with_offer,
     bool with_cvc,
     bool is_virtual_card_standalone_cvc_field,
-    autofill_metrics::CardMetadataLoggingContext metadata_logging_context) {
+    CardMetadataLoggingContext metadata_logging_context) {
   has_eligible_offer_ = with_offer;
   suggestion_contains_card_with_cvc_ = with_cvc;
   is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
@@ -106,8 +106,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   }
   // Log issuer-specific metrics on whether card suggestions shown had metadata.
   LogCardWithMetadataFormEventMetric(
-      autofill_metrics::CardMetadataLoggingEvent::kShown,
-      metadata_logging_context_,
+      CardMetadataLoggingEvent::kShown, metadata_logging_context_,
       HasBeenLogged(has_logged_suggestion_with_metadata_shown_));
   has_logged_suggestion_with_metadata_shown_ = true;
 
@@ -117,9 +116,8 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
       Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
           form);
     }
-    LogCardWithBenefitFormEventMetric(
-        autofill_metrics::CardMetadataLoggingEvent::kShown,
-        metadata_logging_context_);
+    LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kShown,
+                                      metadata_logging_context_);
     has_logged_suggestion_shown_for_benefits_ = true;
   }
   if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
@@ -197,9 +195,8 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
           Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SELECTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
               form);
-          LogCardWithBenefitFormEventMetric(
-              autofill_metrics::CardMetadataLoggingEvent::kSelected,
-              metadata_logging_context_);
+          LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kSelected,
+                                            metadata_logging_context_);
         }
       }
 
@@ -227,9 +224,8 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       NOTREACHED();
   }
 
-  autofill_metrics::LogAcceptanceLatency(
-      base::TimeTicks::Now() - suggestion_shown_timestamp_,
-      metadata_logging_context_, credit_card);
+  LogAcceptanceLatency(base::TimeTicks::Now() - suggestion_shown_timestamp_,
+                       metadata_logging_context_, credit_card);
 
   // Log if a CVC suggestion was selected for a virtual card.
   if (is_virtual_card_standalone_cvc_field_) {
@@ -299,8 +295,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
     }
   }
   LogCardWithMetadataFormEventMetric(
-      autofill_metrics::CardMetadataLoggingEvent::kSelected,
-      metadata_logging_context_,
+      CardMetadataLoggingEvent::kSelected, metadata_logging_context_,
       HasBeenLogged(has_logged_suggestion_with_metadata_selected_));
   has_logged_suggestion_with_metadata_selected_ = true;
 }
@@ -382,8 +377,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   // Log issuer-specific metrics on whether a card suggestion with metadata
   // was filled.
   LogCardWithMetadataFormEventMetric(
-      autofill_metrics::CardMetadataLoggingEvent::kFilled,
-      metadata_logging_context_,
+      CardMetadataLoggingEvent::kFilled, metadata_logging_context_,
       HasBeenLogged(has_logged_form_filling_suggestion_filled_));
 
   // Log masked server card filled events for benefits.
@@ -403,9 +397,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
         Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_FILLED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
             form);
-        LogCardWithBenefitFormEventMetric(
-            autofill_metrics::CardMetadataLoggingEvent::kFilled,
-            metadata_logging_context_);
+        LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kFilled,
+                                          metadata_logging_context_);
       }
     }
   }
@@ -566,9 +559,9 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
   if (has_logged_form_filling_suggestion_filled_) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
-    LogCardWithMetadataFormEventMetric(
-        autofill_metrics::CardMetadataLoggingEvent::kWillSubmit,
-        metadata_logging_context_, HasBeenLogged(false));
+    LogCardWithMetadataFormEventMetric(CardMetadataLoggingEvent::kWillSubmit,
+                                       metadata_logging_context_,
+                                       HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
     // This event can only be triggered once per page load.
     Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
@@ -597,7 +590,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     // Log BetterAuth.FlowEvents.
     RecordCardUnmaskFlowEvent(current_authentication_flow_,
                               UnmaskAuthFlowEvent::kFormSubmitted);
-    autofill_metrics::LogServerCardUnmaskFormSubmission(
+    LogServerCardUnmaskFormSubmission(
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
@@ -626,9 +619,9 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
   if (has_logged_form_filling_suggestion_filled_) {
     // Log issuer-specific metrics on whether a card suggestion with metadata
     // was filled before submission.
-    LogCardWithMetadataFormEventMetric(
-        autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
-        metadata_logging_context_, HasBeenLogged(false));
+    LogCardWithMetadataFormEventMetric(CardMetadataLoggingEvent::kSubmitted,
+                                       metadata_logging_context_,
+                                       HasBeenLogged(false));
     // If a card suggestion was filled before submission, log it for metadata.
     // This event can only be triggered once per page load.
     Log(metadata_logging_context_.SelectedCardHasMetadataAvailable()
@@ -649,9 +642,8 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
       Log(FORM_EVENT_SUGGESTION_FOR_SERVER_CARD_SUBMITTED_AFTER_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
           form);
-      LogCardWithBenefitFormEventMetric(
-          autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
-          metadata_logging_context_);
+      LogCardWithBenefitFormEventMetric(CardMetadataLoggingEvent::kSubmitted,
+                                        metadata_logging_context_);
     }
   }
 }

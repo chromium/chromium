@@ -87,7 +87,7 @@ void MergeFormGroupFillingStats(const FormGroupFillingStats& first,
 // `form_structure` that match `form_type`. This method does not log to UMA but
 // only returns the statistics of a submitted form. `FormGroupFillingStats` is
 // UMA logged in `LogQualityMetrics()`.
-autofill_metrics::FormGroupFillingStats GetFormFillingStatsForFormType(
+FormGroupFillingStats GetFormFillingStatsForFormType(
     FormType form_type,
     const FormStructure& form_structure);
 

@@ -27,14 +27,11 @@ SuggestionRankingContext::GetRelativePositionEnum(size_t legacy_index,
                                                   size_t new_index) {
   // A lower index means that the suggestion was ranked higher.
   if (new_index < legacy_index) {
-    return autofill_metrics::SuggestionRankingContext::RelativePosition::
-        kRankedHigher;
+    return SuggestionRankingContext::RelativePosition::kRankedHigher;
   } else if (new_index > legacy_index) {
-    return autofill_metrics::SuggestionRankingContext::RelativePosition::
-        kRankedLower;
+    return SuggestionRankingContext::RelativePosition::kRankedLower;
   }
-  return autofill_metrics::SuggestionRankingContext::RelativePosition::
-      kRankedSame;
+  return SuggestionRankingContext::RelativePosition::kRankedSame;
 }
 
 bool SuggestionRankingContext::RankingsAreDifferent() const {

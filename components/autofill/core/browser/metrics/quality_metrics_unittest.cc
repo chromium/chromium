@@ -23,9 +23,8 @@
 namespace autofill::autofill_metrics {
 
 // This is defined in the prediction_quality_metrics.cc implementation file.
-int GetFieldTypeGroupPredictionQualityMetric(
-    FieldType field_type,
-    autofill_metrics::FieldTypeQualityMetric metric);
+int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
+                                             FieldTypeQualityMetric metric);
 
 namespace {
 
