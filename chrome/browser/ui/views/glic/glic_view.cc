@@ -8,8 +8,42 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+// Helper class for observing mouse and key events from native window.
+class WindowEventObserver : public ui::EventObserver {
+ public:
+  explicit WindowEventObserver(glic::GlicView* glic_view)
+      : glic_view_(glic_view) {
+    event_monitor_ = views::EventMonitor::CreateWindowMonitor(
+        this, glic_view_->GetWidget()->GetNativeWindow(),
+        {ui::EventType::kMouseDragged});
+  }
+
+  WindowEventObserver(const WindowEventObserver&) = delete;
+  WindowEventObserver& operator=(const WindowEventObserver&) = delete;
+  ~WindowEventObserver() override = default;
+
+  void OnEvent(const ui::Event& event) override {
+    if (event.IsMouseEvent()) {
+      if (event.type() == ui::EventType::kMouseDragged) {
+        gfx::Point mousePoint = event_monitor_->GetLastMouseLocation();
+        views::View::ConvertPointFromScreen(glic_view_, &mousePoint);
+        glic_view_->DragFromPoint(mousePoint.OffsetFromOrigin());
+      }
+    }
+  }
+
+  raw_ptr<glic::GlicView> glic_view_;
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+};
+
+}  // namespace
 
 namespace glic {
 
@@ -41,5 +75,23 @@ views::UniqueWidgetPtr GlicView::CreateWidget(Profile* profile,
       std::make_unique<GlicView>(profile, initial_bounds.size()));
 
   return widget;
+}
+
+void GlicView::AddedToWidget() {
+  window_event_observer_ = std::make_unique<WindowEventObserver>(this);
+}
+
+void GlicView::DragFromPoint(gfx::Vector2d mousePoint) {
+  // This code isn't set up to handle nested run loops. Nested run loops will
+  // lead to crashes.
+  if (!in_move_loop_) {
+    in_move_loop_ = true;
+    gfx::Vector2d drag_offset = mousePoint;
+    const views::Widget::MoveLoopSource move_loop_source =
+        views::Widget::MoveLoopSource::kMouse;
+    GetWidget()->RunMoveLoop(drag_offset, move_loop_source,
+                             views::Widget::MoveLoopEscapeBehavior::kDontHide);
+    in_move_loop_ = false;
+  }
 }
 }  // namespace glic

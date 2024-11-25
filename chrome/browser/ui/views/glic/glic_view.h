@@ -15,6 +15,10 @@ class Rect;
 
 class Profile;
 
+namespace {
+class WindowEventObserver;
+}
+
 namespace glic {
 
 class GlicView : public views::View {
@@ -28,6 +32,17 @@ class GlicView : public views::View {
   // given `initial_bounds`.
   static views::UniqueWidgetPtr CreateWidget(Profile* profile,
                                              const gfx::Rect& initial_bounds);
+  // views::View
+  void AddedToWidget() override;
+
+  void DragFromPoint(gfx::Vector2d mousePoint);
+
+ private:
+  // Used to monitor key and mouse events from native window.
+  std::unique_ptr<WindowEventObserver> window_event_observer_;
+
+  // True while RunMoveLoop() has been called on a widget.
+  bool in_move_loop_ = false;
 };
 
 }  // namespace glic
