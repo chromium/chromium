@@ -136,7 +136,8 @@ class WallpaperSearchHandler
       GetWallpaperSearchResultsCallback callback,
       base::ElapsedTimer request_timer,
       optimization_guide::OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+      std::unique_ptr<optimization_guide::proto::WallpaperSearchLoggingData>
+          logging_data);
   void OnWallpaperSearchResultsDecoded(
       GetWallpaperSearchResultsCallback callback,
       base::ElapsedTimer processing_timer,
