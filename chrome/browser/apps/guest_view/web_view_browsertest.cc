@@ -1517,8 +1517,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestOnEventProperty) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadProgressEvent) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   TestHelper("testLoadProgressEvent", "web_view/shim", NO_TEST_SERVER);
 }
 

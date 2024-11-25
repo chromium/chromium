@@ -8955,48 +8955,65 @@ void WebContentsImpl::DidStopLoading() {
 #endif
 }
 
-void WebContentsImpl::DidChangeLoadProgressForPrimaryMainFrame() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidChangeLoadProgress");
-  if (IsBeingDestroyed()) {
+void WebContentsImpl::DidChangeLoadProgressForMainFrame(
+    RenderFrameHostImpl* render_frame_host) {
+  OPTIONAL_TRACE_EVENT0("content",
+                        "WebContentsImpl::DidChangeLoadProgressForMainFrame");
+  if (IsBeingDestroyed() ||
+      render_frame_host->frame_tree()->IsBeingDestroyed()) {
     return;
   }
-  double load_progress = GetLoadProgress();
 
-  // The delegate is notified immediately for the first and last updates. Also,
-  // since the message loop may be pretty busy when a page is loaded, it might
-  // not execute a posted task in a timely manner so the progress report is sent
-  // immediately if enough time has passed.
-  base::TimeDelta min_delay = minimum_delay_between_loading_updates_ms_;
-  bool delay_elapsed =
-      loading_last_progress_update_.is_null() ||
-      base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
+  DCHECK(render_frame_host->is_main_frame());
+  if (!render_frame_host->IsOutermostMainFrame()) {
+    // If this main frame isn't an outermost main frame but an embedded
+    // main frame then return. ie. a fenced frame inside a guest.
+    return;
+  }
 
-  if (load_progress == 0.0 || load_progress == 1.0 || delay_elapsed) {
-    // If there is a pending task to send progress, it is now obsolete.
-    loading_weak_factory_.InvalidateWeakPtrs();
+  if (auto* guest =
+          GuestPageHolderImpl::FromRenderFrameHost(*render_frame_host)) {
+    guest->delegate()->GuestDidChangeLoadProgress(
+        render_frame_host->frame_tree()->GetLoadProgress());
+  } else if (render_frame_host->IsInPrimaryMainFrame()) {
+    double load_progress = GetLoadProgress();
 
-    // Notify the load progress change.
-    SendChangeLoadProgress();
+    // The delegate is notified immediately for the first and last updates.
+    // Also, since the message loop may be pretty busy when a page is loaded, it
+    // might not execute a posted task in a timely manner so the progress report
+    // is sent immediately if enough time has passed.
+    base::TimeDelta min_delay = minimum_delay_between_loading_updates_ms_;
+    bool delay_elapsed =
+        loading_last_progress_update_.is_null() ||
+        base::TimeTicks::Now() - loading_last_progress_update_ > min_delay;
 
-    // Clean-up the states if needed.
-    if (load_progress == 1.0) {
-      ResetLoadProgressState();
+    if (load_progress == 0.0 || load_progress == 1.0 || delay_elapsed) {
+      // If there is a pending task to send progress, it is now obsolete.
+      loading_weak_factory_.InvalidateWeakPtrs();
+
+      // Notify the load progress change.
+      SendChangeLoadProgress();
+
+      // Clean-up the states if needed.
+      if (load_progress == 1.0) {
+        ResetLoadProgressState();
+      }
+      return;
     }
-    return;
-  }
 
-  if (loading_weak_factory_.HasWeakPtrs()) {
-    return;
-  }
+    if (loading_weak_factory_.HasWeakPtrs()) {
+      return;
+    }
 
-  if (min_delay == base::Milliseconds(0)) {
-    SendChangeLoadProgress();
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
-                       loading_weak_factory_.GetWeakPtr()),
-        min_delay);
+    if (min_delay == base::Milliseconds(0)) {
+      SendChangeLoadProgress();
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WebContentsImpl::SendChangeLoadProgress,
+                         loading_weak_factory_.GetWeakPtr()),
+          min_delay);
+    }
   }
 }
 

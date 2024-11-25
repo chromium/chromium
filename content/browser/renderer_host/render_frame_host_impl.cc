@@ -7738,9 +7738,7 @@ void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {
 
   GetPage().set_load_progress(load_progress);
 
-  // Only dispatch LoadProgressChanged for the primary main frame.
-  if (IsInPrimaryMainFrame())
-    delegate_->DidChangeLoadProgressForPrimaryMainFrame();
+  delegate_->DidChangeLoadProgressForMainFrame(this);
 }
 
 void RenderFrameHostImpl::DidFinishLoad(const GURL& validated_url) {

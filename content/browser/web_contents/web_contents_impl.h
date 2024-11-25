@@ -916,7 +916,8 @@ class CONTENT_EXPORT WebContentsImpl
                           const base::FilePath& path,
                           bool is_hung) override;
 #endif  // BUILDFLAG(ENABLE_PPAPI)
-  void DidChangeLoadProgressForPrimaryMainFrame() override;
+  void DidChangeLoadProgressForMainFrame(
+      RenderFrameHostImpl* render_frame_host) override;
   void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
                             const GURL& url,
                             int error_code) override;

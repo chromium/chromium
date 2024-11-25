@@ -791,6 +791,9 @@ function testLoadProgressEvent() {
 
   webview.addEventListener('loadprogress', function(evt) {
     progress = evt.progress;
+    if (evt.url) {
+      embedder.test.assertEq(webview.src, evt.url);
+    }
   });
 
   webview.setAttribute('src', 'data:text/html,trigger navigation');

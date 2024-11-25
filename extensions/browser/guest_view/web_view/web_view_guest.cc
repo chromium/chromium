@@ -1015,14 +1015,10 @@ void WebViewGuest::DidFinishNavigation(
   find_helper_.CancelAllFindSessions();
 }
 
-void WebViewGuest::LoadProgressChanged(double progress) {
-  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
-    // TODO(crbug.com/40202416): Implement an MPArch equivalent of this.
-    return;
-  }
-
+void WebViewGuest::GuestViewDidChangeLoadProgress(double progress) {
   base::Value::Dict args;
-  args.Set(guest_view::kUrl, web_contents()->GetLastCommittedURL().spec());
+  args.Set(guest_view::kUrl,
+           GetController().GetLastCommittedEntry()->GetVirtualURL().spec());
   args.Set(webview::kProgress, progress);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadProgress, std::move(args)));

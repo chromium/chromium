@@ -713,8 +713,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                   bool is_hung) {}
 #endif
 
-  // The load progress for the primary main frame was changed.
-  virtual void DidChangeLoadProgressForPrimaryMainFrame() {}
+  // The load progress for the main frame was changed.
+  virtual void DidChangeLoadProgressForMainFrame(RenderFrameHostImpl* source) {}
 
   // Document load in |render_frame_host| failed.
   virtual void DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,

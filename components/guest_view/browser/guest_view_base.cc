@@ -670,6 +670,19 @@ void GuestViewBase::GuestDocumentOnLoadCompleted() {
   GuestViewDocumentOnLoadCompleted();
 }
 
+void GuestViewBase::GuestDidChangeLoadProgress(double progress) {
+  GuestViewDidChangeLoadProgress(progress);
+}
+
+void GuestViewBase::LoadProgressChanged(double progress) {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    // The load state of the embedder does not affect the load state of the
+    // guest.
+    return;
+  }
+  GuestDidChangeLoadProgress(progress);
+}
+
 content::JavaScriptDialogManager*
 GuestViewBase::GuestGetJavascriptDialogManager() {
   return nullptr;
