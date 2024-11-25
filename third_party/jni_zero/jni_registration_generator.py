@@ -144,7 +144,7 @@ def _Generate(args, jni_mode, native_sources, java_sources,
   boundary_proxy_natives = present_proxy_natives
   if jni_mode.is_muxing:
     boundary_proxy_natives = [
-        n for n in present_proxy_natives if n.muxed_switch_num <= 0
+        n for n in present_proxy_natives if n.muxed_switch_num == 0
     ]
 
   short_gen_jni_class = proxy.get_gen_jni_class(

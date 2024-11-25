@@ -18,19 +18,19 @@ public class GEN_JNI {
     J.N._V(3);
   }
   public static int org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(int sb) {
-    return J.N._I_I(sb);
+    return J.N._I_I(0, sb);
   }
   public static Object org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(Object arg) {
-    return J.N._O_O(arg);
+    return J.N._O_O(0, arg);
   }
   public static boolean org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(Object sb) {
-    return J.N._Z_O(sb);
+    return J.N._Z_O(0, sb);
   }
   public static void org_jni_1zero_SampleProxyEdgeCases_setBool(Object b, Object i) {
-    J.N._V_OO(b, i);
+    J.N._V_OO(0, b, i);
   }
   public static int org_jni_1zero_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
-    return J.N._I_OO(caller, b);
+    return J.N._I_OO(0, caller, b);
   }
   public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(Object a, Object b) {
     return J.N._O_OO(0, a, b);

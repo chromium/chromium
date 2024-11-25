@@ -156,15 +156,12 @@ def multiplexing_boundary_method(sb, muxed_aliases, gen_jni_class):
   """The method called by JNI when multiplexing is enabled."""
   native = muxed_aliases[0]
   sig = native.muxed_signature
-  has_switch_num = native.muxed_switch_num != -1
   boundary_name_cpp = native.boundary_name_cpp(common.JniMode.MUXING,
                                                gen_jni_class=gen_jni_class)
   sb(f'JNI_BOUNDARY_EXPORT {sig.return_type.to_cpp()} {boundary_name_cpp}')
   param_names = []
   with sb.param_list() as plist:
-    plist += ['JNIEnv* env', 'jclass jcaller']
-    if has_switch_num:
-      plist.append('jint switch_num')
+    plist += ['JNIEnv* env', 'jclass jcaller', 'jint switch_num']
     param_names += ['env']
     for i, p in enumerate(sig.param_list):
       plist.append(f'{p.java_type.to_cpp()} p{i}')
@@ -172,7 +169,8 @@ def multiplexing_boundary_method(sb, muxed_aliases, gen_jni_class):
 
   param_call_str = ', '.join(param_names)
   with sb.block():
-    if not has_switch_num:
+    if len(muxed_aliases) == 1:
+      native = muxed_aliases[0]
       sb(f'return {native.muxed_entry_point_name}({param_call_str});\n')
     else:
       sb('switch (switch_num)')

@@ -108,8 +108,4 @@ def populate_muxed_switch_num(jni_objs):
       aliases = muxed_aliases_by_sig[native.muxed_signature]
       native.muxed_switch_num = len(aliases)
       aliases.append(native)
-  # Omit switch_num for unique signatures.
-  for aliases in muxed_aliases_by_sig.values():
-    if len(aliases) == 1:
-      aliases[0].muxed_switch_num = -1
   return muxed_aliases_by_sig
