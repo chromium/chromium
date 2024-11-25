@@ -43,6 +43,7 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "components/unexportable_keys/features.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -57,6 +58,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -96,6 +98,34 @@ static constexpr char kSetLoginHeader[] = "Set-Login";
 static constexpr char kLoggedInHeaderValue[] = "logged-in";
 static constexpr char kLoggedOutHeaderValue[] = "logged-out";
 constexpr char kToken[] = "[not a real token]";
+
+class TestDeviceBoundSessionAccessObserver
+    : public content::WebContentsObserver {
+ public:
+  TestDeviceBoundSessionAccessObserver(content::WebContents* web_contents,
+                                       base::OnceClosure on_access_closure)
+      : WebContentsObserver(web_contents),
+        on_access_closure_(std::move(on_access_closure)) {}
+
+  // WebContentsObserver
+  void OnDeviceBoundSessionAccessed(
+      content::RenderFrameHost* render_frame_host,
+      const net::device_bound_sessions::SessionKey& session) override {
+    if (on_access_closure_) {
+      std::move(on_access_closure_).Run();
+    }
+  }
+  void OnDeviceBoundSessionAccessed(
+      content::NavigationHandle* navigation_handle,
+      const net::device_bound_sessions::SessionKey& session) override {
+    if (on_access_closure_) {
+      std::move(on_access_closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_access_closure_;
+};
 
 void ProvideRequestHandlerKeyCommitmentsToNetworkService(
     std::string_view host,
@@ -485,6 +515,14 @@ class BrowsingDataModelBrowserTest
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
 #endif
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    enabled_features.push_back({net::features::kDeviceBoundSessions, {}});
+    enabled_features.push_back(
+        {unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
+         {}});
+#endif
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -509,7 +547,15 @@ class BrowsingDataModelBrowserTest
     idp_server_ = std::make_unique<IdpTestServer>();
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &IdpTestServer::HandleRequest, base::Unretained(idp_server_.get())));
-    ASSERT_TRUE(https_server_->Start());
+
+    ASSERT_TRUE(https_server_->InitializeAndListen());
+
+    // Must come after `InitializeAndListen` so we know the `base_url()`.
+    https_server_->RegisterRequestHandler(
+        net::device_bound_sessions::GetTestRequestHandler(
+            https_server_->base_url()));
+
+    https_server_->StartAcceptingConnections();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -1803,3 +1849,54 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       DeviceBoundSessionsStoredCorrectly) {
+  // Check that no device bound sessions exist at the beginning of the test.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  // Register a session
+  base::RunLoop run_loop;
+  TestDeviceBoundSessionAccessObserver observer(web_contents(),
+                                                run_loop.QuitClosure());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(kTestHost, "/dbsc_required")));
+  run_loop.Run();
+
+  // Validate the device bound session and the cookie it protects are added
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  std::unique_ptr<net::CanonicalCookie> cookie_data_key =
+      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
+                                             "auth_cookie=abcdef0123; Path=/",
+                                             base::Time::Now());
+  net::device_bound_sessions::SessionKey session_data_key(
+      net::SchemefulSite(https_test_server()->GetURL(kTestHost, "/")),
+      net::device_bound_sessions::SessionKey::Id("session_id"));
+
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
+        session_data_key,
+        {{BrowsingDataModel::StorageType::kDeviceBoundSession},
+         /*storage_size=*/100,
+         /*cookie_count=*/0}},
+
+       {kTestHost,
+        *(cookie_data_key.get()),
+        {{BrowsingDataModel::StorageType::kCookie},
+         /*storage_size=*/0,
+         /*cookie_count=*/1}}});
+
+  // Remove device bound session
+  RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kTestHost);
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
