@@ -78,6 +78,10 @@ struct UrlInfo {
 
   // Thumbnail URL if it exists, otherwise an empty URL.
   url.mojom.Url thumbnail_url;
+
+  // A section of text from the URL if available. This string will be rendered
+  // as text only, no HTML tags will be processed if they exist.
+  string previewText;
 };
 
 struct PriceInsightsInfo {

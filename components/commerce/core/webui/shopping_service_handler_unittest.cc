@@ -673,6 +673,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForProductTabs) {
   commerce::UrlInfo url_info;
   url_info.title = u"example_title";
   url_info.url = GURL("https://example1.com/");
+  url_info.previewText = "URL text";
   std::vector<commerce::UrlInfo> url_info_list;
   url_info_list.push_back(url_info);
 
@@ -687,6 +688,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForProductTabs) {
                             url_infos) {
         ASSERT_EQ("example_title", url_infos[0]->title);
         ASSERT_EQ("https://example1.com/", url_infos[0]->url.spec());
+        ASSERT_EQ("URL text", url_infos[0]->previewText);
       }).Then(run_loop.QuitClosure()));
 
   run_loop.Run();
@@ -698,6 +700,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForRecentlyViewedTabs) {
   commerce::UrlInfo url_info;
   url_info.title = u"title";
   url_info.url = GURL("https://example.com/");
+  url_info.previewText = "URL text";
   std::vector<commerce::UrlInfo> url_info_list;
   url_info_list.push_back(url_info);
 
@@ -709,6 +712,7 @@ TEST_F(ShoppingServiceHandlerTest, TestGetUrlInfosForRecentlyViewedTabs) {
          std::vector<shopping_service::mojom::UrlInfoPtr> url_infos) {
         ASSERT_EQ("title", url_infos[0]->title);
         ASSERT_EQ("https://example.com/", url_infos[0]->url.spec());
+        ASSERT_EQ("URL text", url_infos[0]->previewText);
         run_loop->Quit();
       },
       &run_loop));

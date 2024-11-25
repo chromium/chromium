@@ -116,12 +116,14 @@ std::optional<ProductSpecifications::DescriptionText> ParseDescriptionText(
           url_object.GetDict().FindString(kFaviconUrlKey);
       const std::string* thumbnail_url =
           url_object.GetDict().FindString(kThumbnailUrlKey);
+      const std::string* url_text = url_object.GetDict().FindString(kTextKey);
       description->urls.push_back(UrlInfo(
           GURL(url_string ? *url_string : ""),
           base::UTF8ToUTF16(title ? *title : ""),
           favicon_url ? std::make_optional(GURL(*favicon_url)) : std::nullopt,
           thumbnail_url ? std::make_optional(GURL(*thumbnail_url))
-                        : std::nullopt));
+                        : std::nullopt,
+          url_text ? std::make_optional(*url_text) : std::nullopt));
     }
   }
 

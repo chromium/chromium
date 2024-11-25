@@ -100,6 +100,7 @@ std::vector<shopping_service::mojom::UrlInfoPtr> UrlInfoToMojo(
     auto url_info_ptr = shopping_service::mojom::UrlInfo::New();
     url_info_ptr->url = url_info.url;
     url_info_ptr->title = base::UTF16ToUTF8(url_info.title);
+    url_info_ptr->previewText = url_info.previewText.value_or("");
     url_info_ptr_list.push_back(std::move(url_info_ptr));
   }
   return url_info_ptr_list;
