@@ -25,7 +25,7 @@
     waitPermission({name: 'microphone'}, 'granted'),
   ]);
 
-  await grant('geolocation', 'audioCapture', 'videoCapturePanTiltZoom');
+  await grant('geolocation', 'audioCapture', 'cameraPanTiltZoom');
   await Promise.all([
     waitPermission({name: 'geolocation'}, 'granted'),
     waitPermission({name: 'microphone'}, 'granted'),

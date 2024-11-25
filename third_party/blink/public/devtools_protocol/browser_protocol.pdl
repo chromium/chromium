@@ -1393,18 +1393,21 @@ domain Browser
 
   experimental type PermissionType extends string
     enum
-      accessibilityEvents
+      ar
       audioCapture
-      backgroundSync
+      automaticFullscreen
       backgroundFetch
+      backgroundSync
+      cameraPanTiltZoom
       capturedSurfaceControl
       clipboardReadWrite
       clipboardSanitizedWrite
       displayCapture
       durableStorage
-      flash
       geolocation
+      handTracking
       idleDetection
+      keyboardLock
       localFonts
       midi
       midiSysex
@@ -1412,16 +1415,19 @@ domain Browser
       notifications
       paymentHandler
       periodicBackgroundSync
+      pointerLock
       protectedMediaIdentifier
       sensors
-      storageAccess
+      smartCard
       speakerSelection
+      storageAccess
       topLevelStorageAccess
       videoCapture
-      videoCapturePanTiltZoom
+      vr
       wakeLockScreen
       wakeLockSystem
       webAppInstallation
+      webPrinting
       windowManagement
 
   experimental type PermissionSetting extends string

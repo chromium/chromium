@@ -212,7 +212,11 @@ Response PermissionDescriptorToPermissionType(
 Response FromProtocolPermissionType(
     const protocol::Browser::PermissionType& type,
     PermissionType* out_type) {
-  if (type == protocol::Browser::PermissionTypeEnum::Notifications) {
+  // Please keep this in the same order as blink::PermissionType enum in
+  // third_party/blink/public/common/permissions/permission_utils.h
+  if (type == protocol::Browser::PermissionTypeEnum::MidiSysex) {
+    *out_type = PermissionType::MIDI_SYSEX;
+  } else if (type == protocol::Browser::PermissionTypeEnum::Notifications) {
     *out_type = PermissionType::NOTIFICATIONS;
   } else if (type == protocol::Browser::PermissionTypeEnum::Geolocation) {
     *out_type = PermissionType::GEOLOCATION;
@@ -221,27 +225,16 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::PROTECTED_MEDIA_IDENTIFIER;
   } else if (type == protocol::Browser::PermissionTypeEnum::Midi) {
     *out_type = PermissionType::MIDI;
-  } else if (type == protocol::Browser::PermissionTypeEnum::MidiSysex) {
-    *out_type = PermissionType::MIDI_SYSEX;
   } else if (type == protocol::Browser::PermissionTypeEnum::DurableStorage) {
     *out_type = PermissionType::DURABLE_STORAGE;
   } else if (type == protocol::Browser::PermissionTypeEnum::AudioCapture) {
     *out_type = PermissionType::AUDIO_CAPTURE;
   } else if (type == protocol::Browser::PermissionTypeEnum::VideoCapture) {
     *out_type = PermissionType::VIDEO_CAPTURE;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::VideoCapturePanTiltZoom) {
-    *out_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
   } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundSync) {
     *out_type = PermissionType::BACKGROUND_SYNC;
   } else if (type == protocol::Browser::PermissionTypeEnum::Sensors) {
     *out_type = PermissionType::SENSORS;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::ClipboardReadWrite) {
-    *out_type = PermissionType::CLIPBOARD_READ_WRITE;
-  } else if (type ==
-             protocol::Browser::PermissionTypeEnum::ClipboardSanitizedWrite) {
-    *out_type = PermissionType::CLIPBOARD_SANITIZED_WRITE;
   } else if (type == protocol::Browser::PermissionTypeEnum::PaymentHandler) {
     *out_type = PermissionType::PAYMENT_HANDLER;
   } else if (type == protocol::Browser::PermissionTypeEnum::BackgroundFetch) {
@@ -257,28 +250,54 @@ Response FromProtocolPermissionType(
     *out_type = PermissionType::WAKE_LOCK_SYSTEM;
   } else if (type == protocol::Browser::PermissionTypeEnum::Nfc) {
     *out_type = PermissionType::NFC;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::ClipboardReadWrite) {
+    *out_type = PermissionType::CLIPBOARD_READ_WRITE;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::ClipboardSanitizedWrite) {
+    *out_type = PermissionType::CLIPBOARD_SANITIZED_WRITE;
+  } else if (type == protocol::Browser::PermissionTypeEnum::Vr) {
+    *out_type = PermissionType::VR;
+  } else if (type == protocol::Browser::PermissionTypeEnum::Ar) {
+    *out_type = PermissionType::AR;
+  } else if (type == protocol::Browser::PermissionTypeEnum::StorageAccess) {
+    *out_type = PermissionType::STORAGE_ACCESS_GRANT;
+  } else if (type == protocol::Browser::PermissionTypeEnum::CameraPanTiltZoom) {
+    *out_type = PermissionType::CAMERA_PAN_TILT_ZOOM;
   } else if (type == protocol::Browser::PermissionTypeEnum::WindowManagement) {
     *out_type = PermissionType::WINDOW_MANAGEMENT;
   } else if (type == protocol::Browser::PermissionTypeEnum::LocalFonts) {
     *out_type = PermissionType::LOCAL_FONTS;
   } else if (type == protocol::Browser::PermissionTypeEnum::DisplayCapture) {
     *out_type = PermissionType::DISPLAY_CAPTURE;
-  } else if (type == protocol::Browser::PermissionTypeEnum::StorageAccess) {
-    *out_type = PermissionType::STORAGE_ACCESS_GRANT;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::TopLevelStorageAccess) {
     *out_type = PermissionType::TOP_LEVEL_STORAGE_ACCESS;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::CapturedSurfaceControl) {
     *out_type = PermissionType::CAPTURED_SURFACE_CONTROL;
+  } else if (type == protocol::Browser::PermissionTypeEnum::SmartCard) {
+    *out_type = PermissionType::SMART_CARD;
+  } else if (type == protocol::Browser::PermissionTypeEnum::WebPrinting) {
+    *out_type = PermissionType::WEB_PRINTING;
   } else if (type == protocol::Browser::PermissionTypeEnum::SpeakerSelection) {
     *out_type = PermissionType::SPEAKER_SELECTION;
+  } else if (type == protocol::Browser::PermissionTypeEnum::KeyboardLock) {
+    *out_type = PermissionType::KEYBOARD_LOCK;
+  } else if (type == protocol::Browser::PermissionTypeEnum::PointerLock) {
+    *out_type = PermissionType::POINTER_LOCK;
+  } else if (type ==
+             protocol::Browser::PermissionTypeEnum::AutomaticFullscreen) {
+    *out_type = PermissionType::AUTOMATIC_FULLSCREEN;
+  } else if (type == protocol::Browser::PermissionTypeEnum::HandTracking) {
+    *out_type = PermissionType::HAND_TRACKING;
   } else if (type ==
              protocol::Browser::PermissionTypeEnum::WebAppInstallation) {
     *out_type = PermissionType::WEB_APP_INSTALLATION;
   } else {
     return Response::InvalidParams("Unknown permission type: " + type);
   }
+
   return Response::Success();
 }
 

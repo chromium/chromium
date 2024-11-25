@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
@@ -24,6 +25,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace headless {
@@ -383,6 +385,57 @@ HEADLESS_PROTOCOL_TEST(GrantPermissions, "sanity/grant_permissions.js")
 #if !defined(HEADLESS_USE_EMBEDDED_RESOURCES)
 HEADLESS_PROTOCOL_TEST(AutoHyphenation, "sanity/auto-hyphenation.js")
 #endif
+
+class HeadlessProtocolBrowserTestWithKnownPermission
+    : public HeadlessProtocolBrowserTest {
+ public:
+  HeadlessProtocolBrowserTestWithKnownPermission() = default;
+
+ protected:
+  base::Value::Dict GetPageUrlExtraParams() override {
+    base::Value::List permissions;
+    const std::vector<blink::PermissionType>& types =
+        blink::GetAllPermissionTypes();
+    for (blink::PermissionType type : types) {
+      std::string permission = blink::GetPermissionString(type);
+      NormalizePermissionName(permission);
+      permissions.Append(permission);
+    }
+
+    base::Value::Dict dict;
+    dict.Set("permissions", std::move(permissions));
+    return dict;
+  }
+
+  static void NormalizePermissionName(std::string& permission) {
+    if (IsAllAsciiUpper(permission)) {
+      permission = base::ToLowerASCII(permission);
+    } else {
+      permission[0] = base::ToLowerASCII(permission[0]);
+    }
+
+    // Handle known exceptions.
+    if (permission == "midiSysEx") {
+      permission = "midiSysex";
+    } else if (permission == "windowPlacement") {
+      // This should be removed after https://crrev.com/c/6044006 lands.
+      permission = "windowManagement";
+    }
+  }
+
+  static bool IsAllAsciiUpper(const std::string& permission) {
+    for (char ch : permission) {
+      if (!base::IsAsciiUpper(ch)) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+
+HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithKnownPermission,
+                             KnownPermissionTypes,
+                             "sanity/known-permission-types.js")
 
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {
