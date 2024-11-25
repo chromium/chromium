@@ -402,8 +402,6 @@ chromium-metrics-reviews@google.com.
       summary="surfacing the Android PWA install option"/>
   <variant name="IPH_PwaQuietNotification"
       summary="the PWA quiet notification feature"/>
-  <variant name="IPH_QuietNotificationPrompts"
-      summary="the quiet notification prompts feature"/>
   <variant name="IPH_ReadAloudAppMenuFeature"
       summary="the Read Aloud button in the overflow menu"/>
   <variant name="IPH_ReadAloudExpandedPlayerFeature"

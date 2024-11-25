@@ -1159,6 +1159,14 @@ inline constexpr char kDiscountConsentShowInterestIn[] =
     "discount_consent_show_interest_in";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Deprecated 11/2024
+constexpr char kQuietNotificationPermissionPromoWasShown[] =
+    "profile.content_settings.quiet_permission_ui_promo.was_shown."
+    "notifications";
+constexpr char kQuietNotificationPermissionShouldShowPromo[] =
+    "profile.content_settings.quiet_permission_ui_promo.should_show."
+    "notifications";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1641,6 +1649,12 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2024
   optimization_guide::model_execution::prefs::
       RegisterLegacyUsagePrefsForMigration(registry);
+
+  // Deprecated 11/2024
+  registry->RegisterBooleanPref(kQuietNotificationPermissionPromoWasShown,
+                                true);
+  registry->RegisterBooleanPref(kQuietNotificationPermissionShouldShowPromo,
+                                true);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -3005,6 +3019,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kDiscountConsentShowInterest);
   profile_prefs->ClearPref(kDiscountConsentShowInterestIn);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 11/2024
+  profile_prefs->ClearPref(kQuietNotificationPermissionPromoWasShown);
+  profile_prefs->ClearPref(kQuietNotificationPermissionShouldShowPromo);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

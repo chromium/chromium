@@ -47098,8 +47098,6 @@ should be able to be added at any place in this file.
       label="For Android PWA install menu."/>
   <suffix name="PwaQuietNotification"
       label="In product help for the PWA quiet notification icon."/>
-  <suffix name="QuietNotificationPrompts"
-      label="For the quiet notification prompts feature."/>
   <suffix name="ReadAloudAppMenuFeature" label="For ReadAloudAppMenu feature."/>
   <suffix name="ReadAloudExpandedPlayerFeature"
       label="For ReadAloud expanded player feature."/>

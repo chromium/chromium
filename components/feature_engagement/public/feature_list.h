@@ -126,8 +126,6 @@ DEFINE_VARIATION_PARAM(kIPHPageInfoStoreInfoFeature, "IPH_PageInfoStoreInfo");
 DEFINE_VARIATION_PARAM(kIPHPageZoomFeature, "IPH_PageZoom");
 DEFINE_VARIATION_PARAM(kIPHPreviewsOmniboxUIFeature, "IPH_PreviewsOmniboxUI");
 DEFINE_VARIATION_PARAM(kIPHPriceDropNTPFeature, "IPH_PriceDropNTP");
-DEFINE_VARIATION_PARAM(kIPHQuietNotificationPromptsFeature,
-                       "IPH_QuietNotificationPrompts");
 DEFINE_VARIATION_PARAM(kIPHReadAloudAppMenuFeature,
                        "IPH_ReadAloudAppMenuFeature");
 DEFINE_VARIATION_PARAM(kIPHReadAloudExpandedPlayerFeature,
@@ -558,7 +556,6 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHPageZoomFeature),
         VARIATION_ENTRY(kIPHPreviewsOmniboxUIFeature),
         VARIATION_ENTRY(kIPHPriceDropNTPFeature),
-        VARIATION_ENTRY(kIPHQuietNotificationPromptsFeature),
         VARIATION_ENTRY(kIPHReadAloudAppMenuFeature),
         VARIATION_ENTRY(kIPHReadAloudExpandedPlayerFeature),
         VARIATION_ENTRY(kIPHReadLaterContextMenuFeature),

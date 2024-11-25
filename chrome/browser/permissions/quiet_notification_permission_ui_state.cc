@@ -20,12 +20,6 @@ void QuietNotificationPermissionUiState::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kEnableQuietGeolocationPermissionUi,
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(
-      prefs::kQuietNotificationPermissionShouldShowPromo,
-      /*default_value=*/false);
-  registry->RegisterBooleanPref(
-      prefs::kQuietNotificationPermissionPromoWasShown,
-      /*default_value=*/false);
-  registry->RegisterBooleanPref(
       prefs::kHadThreeConsecutiveNotificationPermissionDenies,
       /*default_value=*/false);
   registry->RegisterIntegerPref(

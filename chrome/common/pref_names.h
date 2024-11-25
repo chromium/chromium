@@ -1927,18 +1927,6 @@ inline constexpr char kNaviOnboardGroup[] = "browser.navi_onboard_group";
 inline constexpr char kHadThreeConsecutiveNotificationPermissionDenies[] =
     "profile.content_settings.had_three_consecutive_denies.notifications";
 
-// Boolean indicating whether to show a promo for the quiet notification
-// permission UI.
-inline constexpr char kQuietNotificationPermissionShouldShowPromo[] =
-    "profile.content_settings.quiet_permission_ui_promo.should_show."
-    "notifications";
-
-// Boolean indicating whether the promo was shown for the quiet notification
-// permission UI.
-inline constexpr char kQuietNotificationPermissionPromoWasShown[] =
-    "profile.content_settings.quiet_permission_ui_promo.was_shown."
-    "notifications";
-
 // Boolean indicating whether support for Data URLs in SVGUseElement should be
 // removed.
 inline constexpr char kDataUrlInSvgUseEnabled[] =
