@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.WallDuration" units="ms"
-    expires_after="2024-12-16">
+    expires_after="2025-12-16">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceFilter.WriteRuleset.Result"
-    enum="SubresourceFilterWriteRulesetResult" expires_after="2024-12-16">
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2025-12-16">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
