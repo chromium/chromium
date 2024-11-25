@@ -364,11 +364,6 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
-    public boolean shouldShowTrackingProtectionBrandedUi() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX);
-    }
-
-    @Override
     public boolean shouldShowTrackingProtectionActFeaturesUi() {
         return shouldDisplayIpProtection() || shouldDisplayFingerprintingProtection();
     }

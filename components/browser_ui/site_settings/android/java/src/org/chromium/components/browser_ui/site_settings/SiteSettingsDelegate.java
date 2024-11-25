@@ -186,11 +186,6 @@ public interface SiteSettingsDelegate {
      */
     boolean shouldDisplayFingerprintingProtection();
 
-    /***
-     * @return true if the Tracking Protection branded UI should be shown.
-     */
-    boolean shouldShowTrackingProtectionBrandedUi();
-
     /**
      * @return whether the 100% 3PCD Tracking Protection with ACT features UI should be shown.
      */
