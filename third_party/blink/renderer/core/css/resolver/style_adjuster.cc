@@ -1243,9 +1243,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetElementIsViewTransitionParticipant();
   }
 
-  if (RuntimeEnabledFeatures::
-          CSSContentVisibilityImpliesContainIntrinsicSizeAutoEnabled() &&
-      builder.ContentVisibility() == EContentVisibility::kAuto) {
+  if (builder.ContentVisibility() == EContentVisibility::kAuto) {
     builder.SetContainIntrinsicSizeAuto();
   }
 }
