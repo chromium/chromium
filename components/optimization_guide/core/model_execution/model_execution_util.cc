@@ -144,15 +144,7 @@ bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
   if (!features::internal::GetOptimizationTargetForCapability(feature)) {
     return false;
   }
-  base::Time last_use = local_state.GetTime(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature));
-  auto recent_use_period =
-      features::GetOnDeviceEligibleModelFeatureRecentUsePeriod();
-  auto time_since_use = base::Time::Now() - last_use;
-  // Note: Since we're storing a base::Time, we need to consider the possibility
-  // of clock changes.
-  return time_since_use < recent_use_period &&
-         time_since_use > -recent_use_period;
+  return model_execution::prefs::WasFeatureRecentlyUsed(&local_state, feature);
 }
 
 }  // namespace optimization_guide

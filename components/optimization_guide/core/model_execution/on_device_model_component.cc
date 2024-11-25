@@ -175,9 +175,7 @@ void OnDeviceModelComponentStateManager::OnDeviceEligibleFeatureUsed(
                                   GetWeakPtr(), feature));
   }
 
-  local_state_->SetTime(
-      model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(feature),
-      base::Time::Now());
+  model_execution::prefs::RecordFeatureUsage(local_state_, feature);
 
   base::UmaHistogramEnumeration(
       "OptimizationGuide.ModelExecution.OnDeviceModelStatusAtUseTime",
@@ -211,6 +209,7 @@ bool OnDeviceModelComponentStateManager::NeedsPerformanceClassUpdate() {
 
 void OnDeviceModelComponentStateManager::OnStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_execution::prefs::PruneOldUsagePrefs(local_state_);
   if (auto model_path_override_switch =
           switches::GetOnDeviceModelExecutionOverride()) {
     is_model_allowed_ = true;

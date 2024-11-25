@@ -1637,6 +1637,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kDiscountConsentShowInterest, false);
   registry->RegisterIntegerPref(kDiscountConsentShowInterestIn, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 11/2024
+  optimization_guide::model_execution::prefs::
+      RegisterLegacyUsagePrefsForMigration(registry);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2570,6 +2574,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 11/2024
   local_state->ClearPref(kOnDeviceModelTimeoutCount);
+
+  // Added 11/2024
+  optimization_guide::model_execution::prefs::MigrateLegacyUsagePrefs(
+      local_state);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

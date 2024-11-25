@@ -222,10 +222,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     pref_service_.SetInteger(
         model_execution::prefs::localstate::kOnDevicePerformanceClass,
         base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
-    pref_service_.SetTime(
-        model_execution::prefs::GetOnDeviceFeatureRecentlyUsedPref(
-            ModelBasedCapabilityKey::kCompose),
-        base::Time::Now());
+    model_execution::prefs::RecordFeatureUsage(
+        &pref_service_, ModelBasedCapabilityKey::kCompose);
   }
 
   void TearDown() override {

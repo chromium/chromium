@@ -150,6 +150,7 @@ component("features") {
     "//components/variations",
     "//google_apis",
     "//net",
+    "//services/preferences/public/cpp",
     "//third_party/metrics_proto:metrics_proto",
     "//ui/base",
   ]

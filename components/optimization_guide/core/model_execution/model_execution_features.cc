@@ -132,11 +132,8 @@ bool ShouldEnableFeatureWhenMainToggleOn(UserVisibleFeatureKey feature) {
       *visibility_feature, "enable_feature_when_main_toggle_on", true));
 }
 
-// LINT.IfChange(IsOnDeviceModelEnabled)
-//
 // To enable on-device execution for a feature, update this to return a
-// non-null target. `GetOnDeviceFeatureRecentlyUsedPref` must also be updated to
-// return a valid pref for each on-device feature.
+// non-null target.
 std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
     ModelBasedCapabilityKey feature_key) {
   switch (feature_key) {
@@ -170,6 +167,5 @@ std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
       return std::nullopt;
   }
 }
-// LINT.ThenChange(//components/optimization_guide/core/model_execution/model_execution_prefs.cc:GetOnDeviceFeatureRecentlyUsedPref)
 
 }  // namespace optimization_guide::features::internal
