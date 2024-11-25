@@ -59,7 +59,7 @@ enum class Status {
   kErrorInternal,
   kErrorKeyAttributeRetrievalFailed,
   kErrorKeyAttributeSettingFailed,
-  kErrorKeyNotAllowedForSigning,
+  kErrorKeyNotAllowedForOperation,
   kErrorKeyNotFound,
   kErrorShutDown,
   // kNetError* are for errors occurred during net::* operations.

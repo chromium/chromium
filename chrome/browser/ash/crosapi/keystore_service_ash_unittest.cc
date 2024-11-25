@@ -387,7 +387,7 @@ TEST_F(KeystoreServiceAshTest, UsingRsassaPkcs1V15NoneSignSuccess) {
 TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
   EXPECT_CALL(platform_keys_service_, SignEcdsa)
       .WillOnce(RunOnceCallback<4>(std::vector<uint8_t>(),
-                                   Status::kErrorKeyNotAllowedForSigning));
+                                   Status::kErrorKeyNotAllowedForOperation));
 
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
   keystore_service_.Sign(
@@ -397,7 +397,7 @@ TEST_F(KeystoreServiceAshTest, KeyNotAllowedSignFail) {
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertErrorEq(observer.result.value(),
-                mojom::KeystoreError::kKeyNotAllowedForSigning);
+                mojom::KeystoreError::kKeyNotAllowedForOperation);
 }
 
 TEST_F(KeystoreServiceAshTest, UnknownSignSchemeSignFail) {

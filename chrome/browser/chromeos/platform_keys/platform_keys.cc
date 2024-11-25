@@ -90,9 +90,8 @@ std::string StatusToString(Status status) {
       return "Key attribute value retrieval failed.";
     case Status::kErrorKeyAttributeSettingFailed:
       return "Setting key attribute value failed.";
-    case Status::kErrorKeyNotAllowedForSigning:
-      return "This key is not allowed for signing. Either it was used for "
-             "signing before or it was not correctly generated.";
+    case Status::kErrorKeyNotAllowedForOperation:
+      return "This key is not allowed for this operation.";
     case Status::kErrorKeyNotFound:
       return "Key not found.";
     case Status::kErrorShutDown:
@@ -131,8 +130,8 @@ crosapi::mojom::KeystoreError StatusToKeystoreError(Status status) {
       return KeystoreError::kKeyAttributeRetrievalFailed;
     case Status::kErrorKeyAttributeSettingFailed:
       return KeystoreError::kKeyAttributeSettingFailed;
-    case Status::kErrorKeyNotAllowedForSigning:
-      return KeystoreError::kKeyNotAllowedForSigning;
+    case Status::kErrorKeyNotAllowedForOperation:
+      return KeystoreError::kKeyNotAllowedForOperation;
     case Status::kErrorKeyNotFound:
       return KeystoreError::kKeyNotFound;
     case Status::kErrorShutDown:
@@ -178,8 +177,8 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
       return Status::kErrorKeyAttributeRetrievalFailed;
     case KeystoreError::kKeyAttributeSettingFailed:
       return Status::kErrorKeyAttributeSettingFailed;
-    case KeystoreError::kKeyNotAllowedForSigning:
-      return Status::kErrorKeyNotAllowedForSigning;
+    case KeystoreError::kKeyNotAllowedForOperation:
+      return Status::kErrorKeyNotAllowedForOperation;
     case KeystoreError::kKeyNotFound:
       return Status::kErrorKeyNotFound;
     case KeystoreError::kShutDown:
