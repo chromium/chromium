@@ -84,6 +84,7 @@ static_library("messaging_internal") {
 
   deps = [
     "//base",
+    "//components/collaboration/internal/messaging/storage/protocol",
     "//components/collaboration/public:messaging_public",
     "//components/saved_tab_groups/public",
   ]
