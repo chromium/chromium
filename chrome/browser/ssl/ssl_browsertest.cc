@@ -1299,8 +1299,10 @@ class SSLUITestWithWebApps : public SSLUITest {
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
 
+// Visits a page in an app window with https error and proceed:
+// Disabled due to flaky failures; see https://crbug.com/1156046.
 IN_PROC_BROWSER_TEST_F(SSLUITestWithWebApps,
-                       InAppTestHTTPSExpiredCertAndProceed) {
+                       DISABLED_InAppTestHTTPSExpiredCertAndProceed) {
   ASSERT_TRUE(https_server_expired_.Start());
 
   const GURL app_url = https_server_expired_.GetURL("/ssl/google.html");
