@@ -8,6 +8,9 @@
 #include "base/check_op.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/url_pattern_index/proto/rules.pb.h"
+#include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream.h"
 
 namespace subresource_filter {
 
