@@ -152,11 +152,13 @@ bool StyleCommands::ExecuteFontSize(LocalFrame& frame,
                                     Event*,
                                     EditorCommandSource source,
                                     const String& value) {
-  CSSValueID size;
-  if (!HTMLFontElement::CssValueFromFontSizeNumber(value, size))
+  std::optional<CSSValueID> size =
+      HTMLFontElement::CssValueFromFontSizeNumber(value);
+  if (!size) {
     return false;
+  }
   return ExecuteApplyStyle(frame, source, InputEvent::InputType::kNone,
-                           CSSPropertyID::kFontSize, size);
+                           CSSPropertyID::kFontSize, *size);
 }
 
 bool StyleCommands::ExecuteFontSizeDelta(LocalFrame& frame,

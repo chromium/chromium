@@ -399,10 +399,12 @@ const CSSValue* HTMLFontSizeEquivalent::AttributeValueAsCSSValue(
   const AtomicString& value = element->getAttribute(attr_name_);
   if (value.IsNull())
     return nullptr;
-  CSSValueID size;
-  if (!HTMLFontElement::CssValueFromFontSizeNumber(value, size))
+  std::optional<CSSValueID> size =
+      HTMLFontElement::CssValueFromFontSizeNumber(value);
+  if (!size) {
     return nullptr;
-  return CSSIdentifierValue::Create(size);
+  }
+  return CSSIdentifierValue::Create(*size);
 }
 
 EditingStyle::EditingStyle(Element* element,
