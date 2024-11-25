@@ -3387,6 +3387,22 @@ chromium-metrics-reviews@google.com.
   <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
 </histogram>
 
+<histogram
+    name="PageLoad.Internal.Prerender2.DomContentLoadedToActivation{PreloadingTriggerType}"
+    units="ms" expires_after="2025-05-11">
+  <owner>lingqi@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the duration from DOMContentLoaded to activation for a prerendered
+    and then activated page. If the DOMContentLoaded event is fired after
+    activation, the number will be negative.
+
+    This metric will be recorded when a session ends, at
+    PrerenderPageLoadMetricsObserver::MaybeRecordDocumentLoadMetrics.
+  </summary>
+  <token key="PreloadingTriggerType" variants="PagePreloadingTriggerType"/>
+</histogram>
+
 <histogram name="PageLoad.Internal.Prerender2.Event"
     enum="PageLoadPrerenderEvent" expires_after="2025-02-10">
   <owner>kenoss@chromium.org</owner>
