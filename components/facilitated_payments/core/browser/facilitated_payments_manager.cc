@@ -296,9 +296,11 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
   // over, and the progress screen gets dismissed. Calling `DismissPrompt`
   // clears the associated Java objects.
   DismissPrompt();
+  // Logs the general histograms.
+  std::string result_string = GetInitiatePurchaseActionResultString(result);
   LogInitiatePurchaseActionResultAndLatency(
-      GetInitiatePurchaseActionResultString(result),
-      base::TimeTicks::Now() - purchase_action_start_time_);
+      result_string, base::TimeTicks::Now() - purchase_action_start_time_);
+  LogInitiatePurchaseActionResultUkm(result_string, ukm_source_id_);
 }
 
 void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {

@@ -146,6 +146,14 @@ void LogInitiatePurchaseActionAttempt();
 void LogInitiatePurchaseActionResultAndLatency(const std::string& result,
                                                base::TimeDelta duration);
 
+// Log the UKM for the InitiatePurchaseAction result.
+void LogInitiatePurchaseActionResultUkm(const std::string& result,
+                                        ukm::SourceId ukm_source_id);
+
+// TODO(crbug.com/379723883): If the above function takes in an enum instead of
+// a string, remove this temporary conversion function.
+uint8_t ConvertPurchaseActionResultToEnumValue(const std::string& result);
+
 // Log whether the request to show the FOP(form of payment) selector is
 // successful or not.
 // TODO(crbug.com/377126728): Deprecate this method.
