@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_FONT_DATA_FONT_DATA_MANAGER_H_
 #define CONTENT_RENDERER_FONT_DATA_FONT_DATA_MANAGER_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -24,6 +25,10 @@
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+
+namespace base {
+class MemoryMappedFile;
+}
 
 namespace font_data_service {
 
@@ -111,6 +116,9 @@ class CONTENT_EXPORT FontDataManager : public SkFontMgr {
   // Cache of the shared memory region by GUID to known font mappings.
   mutable std::map<base::UnguessableToken, base::ReadOnlySharedMemoryMapping>
       mapped_regions_;
+
+  // Cache of the memory mapped files to ensure the mapping lives.
+  mutable std::list<std::unique_ptr<base::MemoryMappedFile>> mapped_files_;
 
 #if BUILDFLAG(ENABLE_FREETYPE)
   sk_sp<SkFontMgr> custom_fnt_mgr_;
