@@ -15,10 +15,10 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
@@ -150,10 +150,13 @@ import java.util.stream.Collectors;
             Callback<List<? extends StatusBarNotificationProxy>> callback) {
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getActiveNotifications",
-                () ->
-                        mNotificationManager.getActiveNotifications().stream()
-                                .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
-                                .collect(Collectors.toList()),
+                () -> {
+                    List<StatusBarNotificationAdaptor> result = new ArrayList<>();
+                    for (var notification : mNotificationManager.getActiveNotifications()) {
+                        result.add(new StatusBarNotificationAdaptor(notification));
+                    }
+                    return result;
+                },
                 callback);
     }
 

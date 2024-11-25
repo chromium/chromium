@@ -20,9 +20,9 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of the NotificationManagerProxy, which passes through all calls to the
@@ -239,10 +239,10 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
             Callback<List<? extends StatusBarNotificationProxy>> callback) {
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.getActiveNotifications")) {
-            List<StatusBarNotificationAdaptor> notifications =
-                    mNotificationManager.getActiveNotifications().stream()
-                            .map((sbn) -> new StatusBarNotificationAdaptor(sbn))
-                            .collect(Collectors.toList());
+            List<StatusBarNotificationAdaptor> notifications = new ArrayList<>();
+            for (var notification : mNotificationManager.getActiveNotifications()) {
+                notifications.add(new StatusBarNotificationAdaptor(notification));
+            }
             PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(notifications));
         }
     }
