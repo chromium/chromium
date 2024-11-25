@@ -137,6 +137,10 @@ enum ChromeDistanceMetric {
   // Distance between the right border of the toast and the label, if the label
   // is the rightmost element.
   DISTANCE_TOAST_BUBBLE_MARGIN_RIGHT_LABEL,
+  // Minimum distance between the horizontal edges of the toast and the browser
+  // window. Relevant if the toast is wide relative to the browser.
+  DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN,
+
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

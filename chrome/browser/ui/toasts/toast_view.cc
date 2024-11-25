@@ -115,6 +115,7 @@ ToastView::ToastView(
       image_override_(image_override),
       render_toast_over_web_contents_(render_toast_over_web_contents),
       toast_close_callback_(std::move(toast_close_callback)) {
+  SetPaintClientToLayer(true);
   SetShowCloseButton(false);
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_corner_radius(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -331,7 +332,6 @@ void ToastView::AnimateIn() {
   bubble_frame_view->layer()->SetOpacity(0);
   GetDialogClientView()->SetBackground(
       views::CreateThemedSolidBackground(ui::kColorToastBackgroundProminent));
-  GetDialogClientView()->SetPaintToLayer();
   GetDialogClientView()->layer()->SetOpacity(0);
   views::AnimationBuilder()
       .Once()
@@ -390,17 +390,25 @@ gfx::Rect ToastView::GetBubbleBounds() {
     return gfx::Rect();
   }
 
-  const gfx::Size bubble_size =
+  const gfx::Size preferred_size =
       GetWidget()->GetContentsView()->GetPreferredSize();
   const gfx::Rect anchor_bounds = anchor_view->GetBoundsInScreen();
-  const int x =
-      anchor_bounds.x() + (anchor_bounds.width() - bubble_size.width()) / 2;
+
+  // A wide toast in a narrow browser window needs to be compressed to fit.
+  const int minimum_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                 DISTANCE_TOAST_BUBBLE_BROWSER_WINDOW_MARGIN) -
+                             views::BubbleBorder::kShadowBlur;
+  const int width =
+      std::min(preferred_size.width(),
+               std::max(anchor_bounds.width() - 2 * minimum_margin, 0));
+  const int x = anchor_bounds.x() + ((anchor_bounds.width() - width) / 2);
+
   // Take bubble out of its original bounds to cross "line of death", unless in
   // fullscreen mode where the top container isn't rendered.
   const int y = anchor_bounds.bottom() - (render_toast_over_web_contents_
                                               ? views::BubbleBorder::kShadowBlur
-                                              : (bubble_size.height() / 2));
-  return gfx::Rect(x, y, bubble_size.width(), bubble_size.height());
+                                              : (preferred_size.height() / 2));
+  return gfx::Rect(x, y, width, preferred_size.height());
 }
 
 void ToastView::OnThemeChanged() {
