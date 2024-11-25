@@ -24,7 +24,8 @@
   "     expire, use `never`. A bug will be filed for removing expired suites. ",
 
   "Note: for VTS includes wpt_internal tests, please also list them in headless_shell.filter",
-  "with a negative filter so that they can be run blink_wpt_tests step.",
+  "with a negative filter so that they can be run in blink_wpt_tests step.",
+  "TODO(crbug.com/380755410): Find a way to do this systemmatically.",
 
   {
     "prefix": "verify-minimal-resource-request-kill-switch",
