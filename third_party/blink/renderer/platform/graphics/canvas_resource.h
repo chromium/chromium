@@ -123,7 +123,6 @@ class PLATFORM_EXPORT CanvasResource
 
   // Whether this resource uses ClientSharedImage.
   // TODO(crbug.com/351275962): Remove this method once
-  // CanvasResourceSharedBitmap holds ClientSharedImage and
   // ExternalCanvasResource either holds ClientSharedImage or is removed.
   virtual bool UsesClientSharedImage() { return false; }
 
@@ -228,15 +227,6 @@ class PLATFORM_EXPORT CanvasResource
     NOTREACHED();
   }
 
-  // Prepares software TransferableResource if supported (by default it is not).
-  // Subclasses that return false for SupportsAcceleratedCompositing() must
-  // override this method to implement support.
-  // NOTE: Will be called only if SupportsAcceleratedCompositing() is false.
-  virtual bool PrepareUnacceleratedTransferableResource(
-      viz::TransferableResource* out_resource) {
-    NOTREACHED();
-  }
-
   CanvasResourceProvider* Provider() { return provider_.get(); }
   base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }
 
@@ -281,12 +271,19 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   bool IsRecycleable() const final { return IsValid(); }
   bool IsValid() const final;
   bool SupportsAcceleratedCompositing() const final { return false; }
+  bool UsesClientSharedImage() final { return true; }
+  scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() final {
+    return shared_image_;
+  }
+  const gpu::SyncToken GetSyncTokenWithOptionalVerification(
+      bool needs_verified_token) final {
+    return sync_token_;
+  }
+
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override {
     return nullptr;
   }
-  bool PrepareUnacceleratedTransferableResource(
-      viz::TransferableResource* out_resource) final;
 
   // Uploads the contents of |sk_surface| to the resource's backing memory.
   void UploadSoftwareRenderingResults(SkSurface* sk_surface);

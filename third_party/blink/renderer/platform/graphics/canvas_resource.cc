@@ -191,7 +191,29 @@ bool CanvasResource::PrepareTransferableResource(
                : PrepareAcceleratedTransferableResourceWithoutClientSI(
                      out_resource);
   }
-  return PrepareUnacceleratedTransferableResource(out_resource);
+
+  // Create a TransferableResource to be used with the software compositor.
+  TRACE_EVENT0("blink",
+               "CanvasResource::PrepareUnacceleratedTransferableResource");
+
+  CHECK(UsesClientSharedImage());
+  auto client_shared_image = GetClientSharedImage();
+  if (!client_shared_image) {
+    return false;
+  }
+
+  // For software compositing, the display compositor assumes an N32 format for
+  // the resource type and completely ignores the format set on the
+  // TransferableResource. Clients are expected to render in N32 format but use
+  // RGBA as the tagged format on resources.
+  *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
+      client_shared_image, GetSyncToken(), Size(),
+      viz::SinglePlaneFormat::kBGRA_8888,
+      viz::TransferableResource::ResourceSource::kCanvas);
+
+  out_resource->color_space = GetColorSpace();
+
+  return true;
 }
 
 bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
@@ -340,28 +362,6 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
       size, format, alpha_type, color_space, std::move(provider),
       std::move(shared_image_interface_provider), filter_quality));
   return resource->IsValid() ? resource : nullptr;
-}
-
-bool CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource(
-    viz::TransferableResource* out_resource) {
-  TRACE_EVENT0(
-      "blink",
-      "CanvasResourceSharedBitmap::PrepareUnacceleratedTransferableResource");
-  if (!shared_image_) {
-    return false;
-  }
-
-  // For software compositing, the display compositor assumes an N32 format for
-  // the resource type and completely ignores the format set on the
-  // TransferableResource. Clients are expected to render in N32 format but use
-  // RGBA as the tagged format on resources.
-  *out_resource = viz::TransferableResource::MakeSoftwareSharedImage(
-      shared_image_, sync_token_, Size(), viz::SinglePlaneFormat::kBGRA_8888,
-      viz::TransferableResource::ResourceSource::kCanvas);
-
-  out_resource->color_space = GetColorSpace();
-
-  return true;
 }
 
 void CanvasResourceSharedBitmap::NotifyResourceLost() {
