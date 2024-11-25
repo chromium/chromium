@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset=utf-8>
-<title>Animation.progress</title>
+<title>Animation.overallProgress</title>
 <link rel="help"
-href="https://drafts.csswg.org/web-animations-2/#the-progress-of-an-animation">
+href="https://drafts.csswg.org/web-animations-2/#the-overall-progress-of-an-animation">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../testcommon.js"></script>
@@ -38,31 +38,32 @@ promise_test(async t => {
 
   assert_equals(animation.currentTime, null,
       "The current time is null in Idle state.");
-  assert_equals(animation.progress, null,
-      "The progress is null since the currentTime is unresolved.");
+  assert_equals(animation.overallProgress, null,
+      "The overallProgress is null since the currentTime is unresolved.");
 
   animation.play();
   assert_true(animation.pending, "Animation is in the pending state.");
   assert_equals(animation.currentTime, null,
       "The current time remains null while in the pending state.");
-  assert_equals(animation.progress, null,
-      "The progress is null since the currentTime is unresolved.");
+  assert_equals(animation.overallProgress, null,
+      "The overallProgress is null since the currentTime is unresolved.");
 
   await animation.ready;
   // Verify initial start and current times once ready.
   assert_percents_equal(animation.currentTime, 0,
       "The current time is resolved when ready.");
-  assert_equals(animation.progress, 0, "The progress is should be zero.");
+  assert_equals(animation.overallProgress, 0,
+    "The overallProgress should be zero.");
 
   scroller.scrollTop = 0.4 * maxScroll;
 
   await waitForNextFrame();
   assert_percents_equal(animation.currentTime, 40,
-      "currentTime reflects progress as a percentage");
-  assert_approx_equals(animation.progress, 0.4, 0.01,
-      "The progress is should match the scroll progress.");
-}, "animation.progress reflects the progress of a scroll animation as a "+
-   "number between 0 and 1");
+      "currentTime reflects overallProgress as a percentage");
+  assert_approx_equals(animation.overallProgress, 0.4, 0.01,
+      "The overallProgress should match the scroll progress.");
+}, "animation.overallProgress reflects the progress of a scroll animation as " +
+   "a number between 0 and 1");
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
@@ -74,31 +75,32 @@ promise_test(async t => {
   // Verify initial start and current times once ready.
   assert_percents_equal(animation.currentTime, 0,
       "The current time is resolved when ready.");
-  assert_equals(animation.progress, 0, "The progress is should be zero.");
+  assert_equals(animation.overallProgress, 0,
+    "The overallProgress should be zero.");
 
   scroller.scrollTop = 0.4 * maxScroll;
   await waitForNextFrame();
 
   let timing = animation.effect.getComputedTiming();
-  // iteration duration should be 100%, progress should reflect 40%.
+  // iteration duration should be 100%, overallProgress should reflect 40%.
   assert_percents_equal(timing.duration, 100);
   assert_percents_equal(animation.currentTime, 40,
       "currentTime reflects progress as a percentage");
-  assert_approx_equals(animation.progress, 0.4, 0.01,
-      "The progress is should match the scroll progress.");
+  assert_approx_equals(animation.overallProgress, 0.4, 0.01,
+      "The overallProgress should match the scroll progress.");
       timing = animation.effect.getComputedTiming();
 
   animation.effect.updateTiming({ iterations: 2 });
 
   timing = animation.effect.getComputedTiming();
-  // iteration duration should be 50%, progress should still reflect 40%
+  // iteration duration should be 50%, overallProgress should still reflect 40%
   // as it measures currentTime / effect endTime.
   assert_percents_equal(timing.duration, 50);
   assert_percents_equal(animation.currentTime, 40,
       "currentTime reflects progress as a percentage");
-  assert_approx_equals(animation.progress, 0.4, 0.01,
-      "The progress is should match the scroll progress.");
-}, "animation.progress reflects the overall progress of a scroll animation " +
+  assert_approx_equals(animation.overallProgress, 0.4, 0.01,
+      "The overallProgress is should match the scroll progress.");
+}, "animation.overallProgress reflects the overall progress of a scroll " +
    "with multiple iterations.");
 
 promise_test(async t => {
@@ -126,10 +128,11 @@ promise_test(async t => {
   const expected_current_time = timeline_time - start_time;
   assert_percents_equal(animation.currentTime, expected_current_time,
       "currentTime reflects progress as a percentage");
-  assert_approx_equals(animation.progress, target_pct / 100, 0.01,
-    "progress should reflect fraction of view timeline range scroll through.");
-}, "animation.progress reflects the overall progress of a scroll animation " +
-   "that uses a view-timeline.");
+  assert_approx_equals(animation.overallProgress, target_pct / 100, 0.01,
+    "overallProgress should reflect fraction of view timeline range scroll "
+    + "through.");
+}, "animation.overallProgress reflects the overall progress of a scroll "
+   + "that uses a view-timeline.");
 
 promise_test(async t => {
   const scroller = createScroller(t);
@@ -151,16 +154,16 @@ promise_test(async t => {
   await waitForNextFrame();
   let timing = animation.effect.getComputedTiming();
   assert_less_than(animation.currentTime.value, 0, "currentTime is negative");
-  assert_approx_equals(animation.progress, 0, 0.01, "progress is zero when " +
-    "scroll offset is less than range start.");
+  assert_approx_equals(animation.overallProgress, 0, 0.01, "overallProgress " +
+    "is zero when scroll offset is less than range start.");
 
   scroller.scrollTop = 200;
   await waitForNextFrame();
   assert_approx_equals(animation.currentTime.value, timing.endTime.value, 0.01,
     "currentTime has reached endTime");
-  assert_approx_equals(animation.progress, 1, 0.01, "progress is one when " +
-    "scroll offset goes past than range end.");
-}, "progresss of a view-timeline is bounded between 0 and 1.");
+  assert_approx_equals(animation.overallProgress, 1, 0.01, "overallProgress " +
+    "is one when scroll offset goes past than range end.");
+}, "overallProgress of a view-timeline is bounded between 0 and 1.");
 
 </script>
 </body>

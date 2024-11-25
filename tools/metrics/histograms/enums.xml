@@ -10602,7 +10602,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="OBSOLETE_V8ModelManager_CanCreateGenericSession_Method"/>
   <int value="4925"
       label="OBSOLETE_V8ModelManager_CreateGenericSession_Method"/>
-  <int value="4926" label="V8Animation_Progress_AttributeGetter"/>
+  <int value="4926" label="V8Animation_OverallProgress_AttributeGetter"/>
   <int value="4927"
       label="OBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method"/>
   <int value="4928" label="QuirksModeCursorHandApplied"/>

@@ -178,10 +178,10 @@ interface Animation : EventTarget
     getter oncancel
     getter onfinish
     getter onremove
+    getter overallProgress
     getter pending
     getter playState
     getter playbackRate
-    getter progress
     getter rangeEnd
     getter rangeStart
     getter ready

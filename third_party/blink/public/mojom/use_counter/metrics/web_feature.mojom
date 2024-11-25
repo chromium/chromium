@@ -4293,7 +4293,7 @@ enum WebFeature {
   kOBSOLETE_V8ModelGenericSession_ExecuteStreaming_Method = 4923,
   kOBSOLETE_V8ModelManager_CanCreateGenericSession_Method = 4924,
   kOBSOLETE_V8ModelManager_CreateGenericSession_Method = 4925,
-  kV8Animation_Progress_AttributeGetter = 4926,
+  kV8Animation_OverallProgress_AttributeGetter = 4926,
   kOBSOLETE_V8ModelManager_DefaultGenericSessionOptions_Method = 4927,
   kQuirksModeCursorHandApplied = 4928,
   kSkippedPreloadScanning = 4929,

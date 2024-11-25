@@ -635,7 +635,7 @@ std::optional<AnimationTimeDelta> Animation::UnlimitedCurrentTime() const {
              : CalculateCurrentTime();
 }
 
-std::optional<double> Animation::progress() const {
+std::optional<double> Animation::overallProgress() const {
   std::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
   if (!effect() || !current_time) {
     return std::nullopt;
