@@ -368,6 +368,7 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
+    siso_remote_linking = True,
 )
 
 ci.builder(
