@@ -57,7 +57,8 @@ enum class UsernameDetectionMethod {
   kHtmlBasedClassifier = 2,
   kAutocompleteAttribute = 3,
   kServerSidePrediction = 4,
-  kMaxValue = kServerSidePrediction,
+  kModelPrediction = 5,
+  kMaxValue = kModelPrediction,
 };
 
 // A wrapper around FormFieldData, carrying some additional data used during
@@ -177,6 +178,11 @@ class FormDataParser {
     return server_predictions_;
   }
 
+  void set_model_predictions(base::flat_map<autofill::FieldGlobalId,
+                                            autofill::FieldType> predictions) {
+    model_predictions_ = std::move(predictions);
+  }
+
   ReadonlyPasswordFields readonly_status() { return readonly_status_; }
 
   // Parse DOM information |form_data| into Password Manager's form
@@ -199,6 +205,11 @@ class FormDataParser {
  private:
   // Server predictions are an optional source of information about field types.
   std::optional<FormPredictions> server_predictions_;
+
+  // Classification model predictions are an optional source of information
+  // about field types.
+  std::optional<base::flat_map<autofill::FieldGlobalId, autofill::FieldType>>
+      model_predictions_;
 
   // Records whether readonly password fields were seen during the last call to
   // Parse().

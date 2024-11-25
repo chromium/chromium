@@ -1747,6 +1747,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="HTML based classifier"/>
   <int value="3" label="'autocomplete' attribute"/>
   <int value="4" label="Server-side prediction"/>
+  <int value="5" label="Client-side model prediction"/>
 </enum>
 
 <enum name="UseUpmLocalAndSeparateStoresState">

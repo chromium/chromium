@@ -85,6 +85,7 @@ struct FieldDataDescription {
   const std::u16string_view name = kNonimportantValue;
   FormControlType form_control_type = FormControlType::kInputText;
   autofill::FieldType server_predicted_type = autofill::MAX_VALID_FIELD_TYPE;
+  autofill::FieldType model_predicted_type = autofill::MAX_VALID_FIELD_TYPE;
   bool may_use_prefilled_placeholder = false;
   // If not -1, indicates on which rank among predicted usernames this should
   // be. Unused ranks will be padded with unique IDs (not found in any fields).
@@ -297,12 +298,16 @@ class FormParserTest : public testing::Test {
   // Creates a FormData to be fed to the parser. Includes FormFieldData as
   // described in `fields_description`. Populates `fill_result` and
   // `save_result`, if provided, with expectations about the result in FILLING
-  // and SAVING mode, respectively. Also fills `server_predictions`, if
-  // provided, with the server predictions contained in `FieldDataDescription`.
-  FormData GetFormDataAndExpectation(const FormParsingTestCase& test_case,
-                                     FormPredictions* server_predictions,
-                                     ParseResultIds* fill_result,
-                                     ParseResultIds* save_result) {
+  // and SAVING mode, respectively. Fills `server_predictions` and
+  // `model_predictions`, if provided, with the server and model predictions
+  // contained in `FieldDataDescription`.
+  FormData GetFormDataAndExpectation(
+      const FormParsingTestCase& test_case,
+      FormPredictions* server_predictions,
+      base::flat_map<autofill::FieldGlobalId, autofill::FieldType>*
+          model_predictions,
+      ParseResultIds* fill_result,
+      ParseResultIds* save_result) {
     FormData form_data;
     form_data.set_action(GURL("http://example1.com"));
     form_data.set_url(GURL("http://example2.com"));
@@ -364,6 +369,11 @@ class FormParserTest : public testing::Test {
             field_description.may_use_prefilled_placeholder,
             /*is_override=*/false);
       }
+      if (model_predictions && (field_description.model_predicted_type !=
+                                autofill::MAX_VALID_FIELD_TYPE)) {
+        (*model_predictions)[field.global_id()] =
+            field_description.model_predicted_type;
+      }
       if (field_description.predicted_username >= 0) {
         size_t index =
             static_cast<size_t>(field_description.predicted_username);
@@ -391,12 +401,16 @@ class FormParserTest : public testing::Test {
   void CheckTestData(const std::vector<FormParsingTestCase>& test_cases) {
     for (const FormParsingTestCase& test_case : test_cases) {
       FormPredictions server_predictions;
+      base::flat_map<autofill::FieldGlobalId, autofill::FieldType>
+          model_predictions;
       ParseResultIds fill_result;
       ParseResultIds save_result;
       const FormData form_data = GetFormDataAndExpectation(
-          test_case, &server_predictions, &fill_result, &save_result);
+          test_case, &server_predictions, &model_predictions, &fill_result,
+          &save_result);
       FormDataParser parser;
       parser.set_server_predictions(std::move(server_predictions));
+      parser.set_model_predictions(std::move(model_predictions));
       for (auto mode :
            {FormDataParser::Mode::kFilling, FormDataParser::Mode::kSaving}) {
         SCOPED_TRACE(
@@ -3049,7 +3063,8 @@ TEST_F(FormParserTest, InvalidURL) {
           },
   };
   FormData form_data = GetFormDataAndExpectation(
-      form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+      form_desc, /*server_predictions=*/nullptr, /*model_predictions=*/nullptr,
+      /*fill_result=*/nullptr,
       /*save_result=*/nullptr);
   // URL comes from https://crbug.com/1075515.
   form_data.set_url(GURL("FilEsysteM:htTp:E=/."));
@@ -3079,7 +3094,8 @@ TEST_F(FormParserTest, FindUsernameInHtmlParserResult_SkipPrediction) {
       }};
 
   const FormData form_data = GetFormDataAndExpectation(
-      form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+      form_desc, /*server_predictions=*/nullptr, /*model_predictions=*/nullptr,
+      /*fill_result=*/nullptr,
       /*save_result=*/nullptr);
 
   // Add all form fields in ProcessedField. A user typed only into
@@ -3148,7 +3164,8 @@ TEST_F(FormParserTest, SkipHiddenValueField) {
       }};
   for (const auto& form_desc : test_cases) {
     FormData form_data = GetFormDataAndExpectation(
-        form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+        form_desc, /*server_predictions=*/nullptr,
+        /*model_predictions=*/nullptr, /*fill_result=*/nullptr,
         /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
@@ -3198,7 +3215,8 @@ TEST_F(FormParserTest, DontSkipNotHiddenValues) {
 
   for (const auto& form_desc : test_cases) {
     FormData form_data = GetFormDataAndExpectation(
-        form_desc, /*server_predictions=*/nullptr, /*fill_result=*/nullptr,
+        form_desc, /*server_predictions=*/nullptr,
+        /*model_predictions=*/nullptr, /*fill_result=*/nullptr,
         /*save_result=*/nullptr);
     FormDataParser parser;
     EXPECT_TRUE(parser.Parse(form_data, FormDataParser::Mode::kFilling,
@@ -3392,7 +3410,8 @@ TEST_F(FormParserTest, UsernameFoundByServerPredictions) {
                   .server_predicted_type = autofill::PASSWORD}},
   };
   const FormData form_data = GetFormDataAndExpectation(
-      {test_case}, &server_predictions, &fill_result, &save_result);
+      {test_case}, &server_predictions, /*model_predictions=*/nullptr,
+      &fill_result, &save_result);
   FormDataParser parser;
   parser.set_server_predictions(std::move(server_predictions));
 
@@ -3491,6 +3510,224 @@ TEST_F(FormParserTest, ManualGenerationEnabledFields) {
                    .form_control_type = FormControlType::kInputPassword,
                },
            }},
+  });
+}
+
+// Check that complete and adequate predictions are applied properly.
+TEST_F(FormParserTest, ModelPredictions_Complete) {
+  CheckTestData({
+      {
+          .description_for_logging = "Login form.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::USERNAME},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+      {
+          .description_for_logging = "Sign up form.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::USERNAME},
+                  {.value = u"email@somewhere.com",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"new_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.role = ElementRole::CONFIRMATION_PASSWORD,
+                   .value = u"new_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::CONFIRMATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging = "Change pssword form.",
+          .fields =
+              {
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"old_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::PASSWORD},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"new_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.role = ElementRole::CONFIRMATION_PASSWORD,
+                   .value = u"new_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::CONFIRMATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging = "Single username form.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::USERNAME},
+              },
+      },
+      {
+          .description_for_logging = "Form unrelated to passwords.",
+          .fields =
+              {
+                  {.value = u"one_time_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+              },
+      },
+  });
+}
+
+// Theck that incomplete or inadequate predictions are not applied, and other
+// parsing mechanisms are used.
+TEST_F(FormParserTest, ModelPredictions_Incomplete) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "If model predictions contain no types for some of the fields, "
+              "parsing continues using other methods.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::NO_SERVER_DATA},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::CONFIRMATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "If model predictions do not contain some of the fields, parsing "
+              "continues using other methods.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::CONFIRMATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Confirmation password prediction is ignored without a new "
+              "password prediction, parsing continues using other methods.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .value = u"username",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::USERNAME},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::CONFIRMATION_PASSWORD},
+              },
+      },
+  });
+}
+
+TEST_F(FormParserTest, ModelPredictionsHavePriority) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "Model predictions have priority over the server predictions.",
+          .fields =
+              {
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Model predictions have priority over the server predictions, "
+              "even when the server says the field is not password related.",
+          .fields =
+              {
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .server_predicted_type =
+                       autofill::CREDIT_CARD_VERIFICATION_CODE,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Model predictions have priority over autocomplete attributes.",
+          .fields =
+              {
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .autocomplete_attribute = "new-password",
+                   .value = u"password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Model predictions have priority over local heuristics.",
+          .fields =
+              {
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"new_password",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+                  {.value = u"repeated_otp",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+                  {.value = u"repeated_otp",
+                   .form_control_type = FormControlType::kInputPassword,
+                   .model_predicted_type = autofill::UNKNOWN_TYPE},
+              },
+      },
+  });
+}
+
+TEST_F(FormParserTest, ModelPredictions_ClearTextPasswordFields) {
+  CheckTestData({
+      {
+          .description_for_logging =
+              "New password field model prediction is used.",
+          .fields =
+              {
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .value = u"new_password",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::ACCOUNT_CREATION_PASSWORD},
+              },
+      },
+      {
+          .description_for_logging =
+              "Current password field prediction is ignored.",
+          .fields =
+              {
+                  {.value = u"old_password",
+                   .form_control_type = FormControlType::kInputText,
+                   .model_predicted_type = autofill::PASSWORD},
+              },
+      },
   });
 }
 
