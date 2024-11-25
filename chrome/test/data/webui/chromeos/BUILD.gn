@@ -224,7 +224,7 @@ webui_ts_library("build_ts") {
     "network/network_config_element_behavior_test.js",
     "network/network_config_input_test.js",
     "network/network_config_select_test.js",
-    "network/network_config_test.js",
+    "network/network_config_test.ts",
     "network/network_config_toggle_test.js",
     "network/network_config_vpn_test.js",
     "network/network_config_wifi_test.js",

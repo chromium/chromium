@@ -2458,6 +2458,26 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
 
     return securityType as SecurityType;
   }
+
+  getSecurityTypeForTesting(): SecurityType {
+    return this.securityType_ as SecurityType;
+  }
+
+  setSecurityTypeForTesting(securityType: SecurityType): void {
+    this.securityType_ = securityType;
+  }
+
+  getShareNetworkForTesting(): boolean {
+    return this.shareNetwork_;
+  }
+
+  getPropertiesSentForTesting(): boolean {
+    return this.propertiesSent_;
+  }
+
+  setManagedPropertiesForTesting(managedProperties: ManagedProperties): void {
+    this.managedProperties_ = managedProperties;
+  }
 }
 
 declare global {

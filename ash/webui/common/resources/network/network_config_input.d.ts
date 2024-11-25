@@ -7,6 +7,8 @@ import {LegacyElementMixin} from '//resources/polymer/v3_0/polymer/lib/legacy/le
 interface NetworkConfigInputElement extends LegacyElementMixin, HTMLElement {
   value: string;
   invalid: boolean;
+  disabled: boolean;
+  readonly: boolean;
 }
 
 declare global {
