@@ -180,8 +180,6 @@ class PLATFORM_EXPORT CanvasResource
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
-  // Returns the texture format used by this resource.
-  viz::SharedImageFormat GetSharedImageFormat() const;
 
   SkImageInfo CreateSkImageInfo() const;
 

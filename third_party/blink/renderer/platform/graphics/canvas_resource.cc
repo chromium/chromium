@@ -238,7 +238,7 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
   *out_resource = viz::TransferableResource::MakeGpu(
       client_shared_image->mailbox(), client_shared_image->GetTextureTarget(),
       GetSyncTokenWithOptionalVerification(needs_verified_synctoken), Size(),
-      GetSharedImageFormat(), IsOverlayCandidate(),
+      client_shared_image->format(), IsOverlayCandidate(),
       viz::TransferableResource::ResourceSource::kCanvas);
 
   out_resource->color_space = GetColorSpace();
@@ -263,10 +263,6 @@ SkImageInfo CanvasResource::CreateSkImageInfo() const {
       SkISize::Make(Size().width(), Size().height()),
       viz::ToClosestSkColorType(/*gpu_compositing=*/true, format_), alpha_type_,
       color_space_.ToSkColorSpace());
-}
-
-viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
-  return format_;
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
@@ -530,7 +526,7 @@ GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
   texture_info.fTarget = GetClientSharedImage()->GetTextureTarget();
   texture_info.fFormat =
       context_provider_wrapper_->ContextProvider().GetGrGLTextureFormat(
-          GetSharedImageFormat());
+          GetClientSharedImage()->format());
   return GrBackendTextures::MakeGL(Size().width(), Size().height(),
                                    skgpu::Mipmapped::kNo, texture_info);
 }
