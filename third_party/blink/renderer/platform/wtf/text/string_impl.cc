@@ -702,71 +702,73 @@ scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,
 
 template <typename CharType, class UCharPredicate>
 inline scoped_refptr<StringImpl> StringImpl::SimplifyMatchedCharactersToSpace(
+    base::span<const CharType> from,
     UCharPredicate predicate,
     StripBehavior strip_behavior) {
   StringBuffer<CharType> data(length_);
 
-  const CharType* from = GetCharacters<CharType>();
-  const CharType* fromend = from + length_;
-  int outc = 0;
+  size_t outc = 0;
   bool changed_to_space = false;
 
-  CharType* to = data.Characters();
+  auto to = data.Span();
 
   if (strip_behavior == kStripExtraWhiteSpace) {
+    size_t i = 0;
     while (true) {
-      while (from != fromend && predicate(*from)) {
-        if (*from != ' ')
+      while (i < from.size() && predicate(from[i])) {
+        if (from[i] != ' ') {
           changed_to_space = true;
-        ++from;
+        }
+        ++i;
       }
-      while (from != fromend && !predicate(*from))
-        to[outc++] = *from++;
-      if (from != fromend)
+      while (i < from.size() && !predicate(from[i])) {
+        to[outc++] = from[i++];
+      }
+      if (i < from.size()) {
         to[outc++] = ' ';
-      else
+      } else {
         break;
+      }
     }
 
     if (outc > 0 && to[outc - 1] == ' ')
       --outc;
   } else {
-    for (; from != fromend; ++from) {
-      if (predicate(*from)) {
-        if (*from != ' ')
+    for (size_t i = 0; i < from.size(); ++i) {
+      CharType c = from[i];
+      if (predicate(c)) {
+        if (c != ' ') {
           changed_to_space = true;
-        to[outc++] = ' ';
-      } else {
-        to[outc++] = *from;
+        }
+        c = ' ';
       }
+      to[outc++] = c;
     }
   }
 
-  if (static_cast<wtf_size_t>(outc) == length_ && !changed_to_space)
+  if (outc == from.size() && !changed_to_space) {
     return this;
+  }
 
   data.Shrink(outc);
-
   return data.Release();
 }
 
 scoped_refptr<StringImpl> StringImpl::SimplifyWhiteSpace(
     StripBehavior strip_behavior) {
-  if (Is8Bit())
-    return StringImpl::SimplifyMatchedCharactersToSpace<LChar>(
-        SpaceOrNewlinePredicate(), strip_behavior);
-  return StringImpl::SimplifyMatchedCharactersToSpace<UChar>(
-      SpaceOrNewlinePredicate(), strip_behavior);
+  return VisitCharacters(*this, [&](auto chars) {
+    return SimplifyMatchedCharactersToSpace(chars, SpaceOrNewlinePredicate(),
+                                            strip_behavior);
+  });
 }
 
 scoped_refptr<StringImpl> StringImpl::SimplifyWhiteSpace(
     IsWhiteSpaceFunctionPtr is_white_space,
     StripBehavior strip_behavior) {
-  if (Is8Bit())
-    return StringImpl::SimplifyMatchedCharactersToSpace<LChar>(
-        UCharPredicate(is_white_space), strip_behavior);
-  return StringImpl::SimplifyMatchedCharactersToSpace<UChar>(
-      UCharPredicate(is_white_space), strip_behavior);
+  return VisitCharacters(*this, [&](auto chars) {
+    return SimplifyMatchedCharactersToSpace(
+        chars, UCharPredicate(is_white_space), strip_behavior);
+  });
 }
 
 int StringImpl::ToInt(NumberParsingOptions options, bool* ok) const {

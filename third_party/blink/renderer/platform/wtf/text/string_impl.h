@@ -593,8 +593,10 @@ class WTF_EXPORT StringImpl {
   template <class UCharPredicate>
   scoped_refptr<StringImpl> StripMatchedCharacters(UCharPredicate);
   template <typename CharType, class UCharPredicate>
-  scoped_refptr<StringImpl> SimplifyMatchedCharactersToSpace(UCharPredicate,
-                                                             StripBehavior);
+  scoped_refptr<StringImpl> SimplifyMatchedCharactersToSpace(
+      base::span<const CharType>,
+      UCharPredicate,
+      StripBehavior);
   NOINLINE wtf_size_t HashSlowCase() const;
 
   void DestroyIfNeeded() const;
