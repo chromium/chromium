@@ -522,9 +522,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
-  html_source->AddBoolean(
-      "isTrackingProtectionUxEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kTrackingProtection3pcdUx));
 
   html_source->AddBoolean(
       "isAlwaysBlock3pcsIncognitoEnabled",
