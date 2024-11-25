@@ -254,10 +254,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                             mProfile,
                             mModalDialogManagerSupplier,
                             SigninAndHistorySyncActivityLauncherImpl.get()));
-            // TODO(crbug.com/40751023): Create a shared interface for fragments that need access to
-            // LaunchIntentDispatcher::createCustomTabActivityIntent.
-            safetyHubFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
         if (fragment instanceof AccountManagementFragment) {
             ((AccountManagementFragment) fragment)
