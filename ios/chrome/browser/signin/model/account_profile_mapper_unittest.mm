@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/test/run_until.h"
@@ -14,6 +15,7 @@
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -726,6 +728,52 @@ TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
   NSArray* expected_identities_managed = @[ google_identity ];
   EXPECT_NSEQ(expected_identities_managed,
               GetIdentitiesForProfile(managed_profile_name));
+}
+
+// Tests that pre-existing identities which are already assigned to a profile
+// remain in that profile, even if they'd now be assigned to a different one.
+// This is important for managed accounts that pre-date the multi-profile
+// support, since those shouldn't be automatically moved into a new profile.
+TEST_F(AccountProfileMapperAccountsInSeparateProfilesTest,
+       DoesNotReassignIdentities) {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+  ASSERT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
+
+  // A consumer identity and a managed identity already exist before the
+  // AccountProfileMapper is created.
+  system_identity_manager_->AddIdentity(gmail_identity1);
+  system_identity_manager_->AddIdentity(google_identity);
+
+  // Both identities are already assigned to the personal profile. This is
+  // typically the case if the identities were added before multi-profile
+  // support was enabled.
+  ProfileAttributesStorageIOS* attributes =
+      profile_manager_->GetProfileAttributesStorage();
+  attributes->UpdateAttributesForProfileWithName(
+      kPersonalProfileName, base::BindOnce([](ProfileAttributesIOS attr) {
+        attr.SetAttachedGaiaIds(
+            {base::SysNSStringToUTF8(gmail_identity1.gaiaID),
+             base::SysNSStringToUTF8(google_identity.gaiaID)});
+        return attr;
+      }));
+  ASSERT_EQ(attributes->GetNumberOfProfiles(), 1u);
+
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, profile_manager_.get());
+
+  // Both identities should still be attached to the personal profile.
+  EXPECT_EQ(attributes->GetAttributesForProfileWithName(kPersonalProfileName)
+                .GetAttachedGaiaIds()
+                .size(),
+            2u);
+
+  // No additional profile should've been created.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(attributes->GetNumberOfProfiles(), 1u);
+  EXPECT_EQ(profile_manager_->GetLoadedProfiles().size(), 1u);
 }
 
 }  // namespace

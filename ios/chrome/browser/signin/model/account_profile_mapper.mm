@@ -190,9 +190,9 @@ class AccountProfileMapper::Assigner : public SystemIdentityManagerObserver {
   void HostedDomainedFetched(id<SystemIdentity> identity,
                              NSString* hosted_domain,
                              NSError* error);
-  // Assigns `identity` to a profile (or re-assigns it to a different profile)
-  // if necessary, based on whether it's a managed account or not. Note that the
-  // assignment may happen asynchronously in some cases.
+  // Assigns `identity` to a profile if necessary, based on whether it's a
+  // managed account or not. Note that the assignment may happen asynchronously
+  // in some cases.
   void AssignIdentityToProfile(id<SystemIdentity> identity,
                                bool is_managed_account);
   // Asynchronously creates a new profile with a random name, then calls
@@ -259,6 +259,8 @@ AccountProfileMapper::Assigner::Assigner(
 
   system_identity_manager_observation_.Observe(system_identity_manager_);
 
+  // TODO(crbug.com/355167413): Figure out how to keep pre-existing managed
+  // accounts in the personal profile.
   profile_to_gaia_ids_ = GetMappingFromProfileAttributes(
       system_identity_manager_, GetProfileAttributesStorage());
   // Ensure the mapping is populated and up-to-date.
@@ -283,14 +285,22 @@ void AccountProfileMapper::Assigner::OnIdentityListChanged() {
 
   // Check if any of the previously-assigned Gaia IDs have been removed.
   if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    ProfileAttributesStorageIOS* attributes_storage =
+        GetProfileAttributesStorage();
+    std::vector<std::string> profiles_to_delete;
     for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
       for (const std::string& gaia_id : gaia_ids) {
         if (!processed_gaia_ids.contains(gaia_id)) {
-          DetachGaiaIdFromProfile(GetProfileAttributesStorage(), profile_name,
-                                  gaia_id);
+          DetachGaiaIdFromProfile(attributes_storage, profile_name, gaia_id);
+          if (attributes_storage &&
+              profile_name != attributes_storage->GetPersonalProfileName()) {
+            profiles_to_delete.push_back(profile_name);
+          }
         }
       }
     }
+    // TODO(crbug.com/331783685): Delete the no-longer-needed managed profiles
+    // in `profiles_to_delete`.
   }
 
   // If any mappings were added/changed, let the observers know.
@@ -400,38 +410,15 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
 
   const std::string gaia_id = base::SysNSStringToUTF8(identity.gaiaID);
 
-  std::optional<std::string> current_assigned_profile;
+  // If the identity is already assigned to a profile, leave it there, even if
+  // it's the wrong type of profile (i.e. managed identity assigned to the
+  // personal profile). This can happen for pre-existing managed identities, and
+  // they should not be automatically migrated.
   for (const auto& [profile_name, gaia_ids] : profile_to_gaia_ids_) {
     if (gaia_ids.contains(gaia_id)) {
-      current_assigned_profile = profile_name;
-      break;
-    }
-  }
-
-  const std::string personal_profile_name = GetPersonalProfileName();
-
-  if (current_assigned_profile) {
-    // TODO(crbug.com/331783685): Validate the re-assignment logic - maybe it's
-    // better to keep accounts in their originally-assigned profiles until
-    // they're removed and re-added?
-    // Already assigned, check if it needs to be re-assigned. (This can happen
-    // if Chrome previously failed to determine the hosted domain, or in rare
-    // cases, if the hosted domain actually changed.)
-    bool is_in_personal_profile =
-        (*current_assigned_profile == personal_profile_name);
-    if (is_in_personal_profile != is_managed_account) {
-      // The account is already in the correct profile, nothing to be done.
       return;
     }
-    DetachGaiaIdFromProfile(GetProfileAttributesStorage(),
-                            *current_assigned_profile, gaia_id);
-    if (!is_in_personal_profile) {
-      // TODO(crbug.com/331783685): Delete the no-longer-needed profile.
-    }
   }
-
-  // Still here: The account isn't assigned to a profile yet, or was just
-  // unassigned.
 
   if (is_managed_account && profile_manager_) {
     // Managed account, create a new dedicated profile and assign the identity
@@ -441,8 +428,8 @@ void AccountProfileMapper::Assigner::AssignIdentityToProfile(
     CreateProfileForIdentity(identity);
   } else {
     // Consumer account, assign to the personal profile.
-    AttachGaiaIdToProfile(GetProfileAttributesStorage(), personal_profile_name,
-                          gaia_id);
+    AttachGaiaIdToProfile(GetProfileAttributesStorage(),
+                          GetPersonalProfileName(), gaia_id);
   }
 }
 
