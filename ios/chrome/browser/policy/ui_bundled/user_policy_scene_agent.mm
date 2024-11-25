@@ -172,7 +172,7 @@
 
   // Return NO when the scene cannot present views because it is blocked. This
   // is what prevents showing more than one dialog at a time.
-  return !self.sceneState.profileState.appState.currentUIBlocker;
+  return !self.sceneState.profileState.currentUIBlocker;
 }
 
 // Shows the User Policy notification dialog if the requirements are fulfilled.

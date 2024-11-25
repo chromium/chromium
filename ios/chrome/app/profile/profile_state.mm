@@ -267,14 +267,14 @@
   CHECK(_uiBlockerTarget == nil || target == _uiBlockerTarget)
       << "Another scene is already showing a blocking UI!";
   _blockingUICounter++;
-  _uiBlockerTarget = target;
+  [self setUiBlockerTarget:target];
 }
 
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
   CHECK_GT(_blockingUICounter, 0u);
   CHECK_EQ(_uiBlockerTarget, target);
   if (--_blockingUICounter == 0) {
-    _uiBlockerTarget = nil;
+    [self setUiBlockerTarget:nil];
     [_uiBlockerManagerObservers currentUIBlockerRemoved];
   }
 }
