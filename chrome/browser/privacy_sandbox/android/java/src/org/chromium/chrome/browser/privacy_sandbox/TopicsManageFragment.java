@@ -153,6 +153,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private void onLearnMoreClicked(View view) {
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked");
-        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+        getCustomTabLauncher()
+                .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 }

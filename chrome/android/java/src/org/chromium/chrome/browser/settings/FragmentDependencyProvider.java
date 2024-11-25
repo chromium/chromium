@@ -174,8 +174,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
             PrivacySandboxSettingsBaseFragment sandboxFragment =
                     (PrivacySandboxSettingsBaseFragment) fragment;
             sandboxFragment.setSnackbarManagerSupplier(mSnackbarManagerSupplier);
-            sandboxFragment.setCustomTabIntentHelper(
-                    LaunchIntentDispatcher::createCustomTabActivityIntent);
             sandboxFragment.setCookieSettingsIntentHelper(
                     (Context context) -> {
                         SiteSettingsHelper.showCategorySettings(
