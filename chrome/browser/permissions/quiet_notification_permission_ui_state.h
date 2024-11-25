@@ -33,14 +33,8 @@ class QuietNotificationPermissionUiState {
   // Register Profile-keyed preferences used for permission UI selection.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Whether to show a promo for the prompt indicator.
-  static bool ShouldShowPromo(Profile* profile);
-
-  // Records that the promo was shown.
-  static void PromoWasShown(Profile* profile);
-
   // Returns the method that was used to enable the quiet UI.
   static EnablingMethod GetQuietUiEnablingMethod(Profile* profile);
 };
 
-#endif  // CHROME_BROWSER_PERMISSIONS_QUIET_NOTIFICATION_PERMISSION_UI_STATE_H_:b
+#endif  // CHROME_BROWSER_PERMISSIONS_QUIET_NOTIFICATION_PERMISSION_UI_STATE_H_

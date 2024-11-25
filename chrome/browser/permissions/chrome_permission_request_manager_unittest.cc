@@ -562,8 +562,6 @@ TEST_F(ChromePermissionRequestManagerTest,
   NavigateAndCommit(notification7);
   permissions::MockPermissionRequest notification7_request(
       notification7, permissions::RequestType::kNotifications);
-  // For the first quiet permission prompt, show a promo.
-  EXPECT_TRUE(QuietNotificationPermissionUiState::ShouldShowPromo(profile()));
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        &notification7_request);
   WaitForBubbleToBeShown();

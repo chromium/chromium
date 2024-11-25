@@ -225,7 +225,6 @@ class ContentSettingNotificationsImageModel
 
   // ContentSettingSimpleImageModel:
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
-  void SetPromoWasShown(content::WebContents* contents) override;
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
@@ -465,10 +464,6 @@ void ContentSettingImageModel::Update(content::WebContents* contents) {
       ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
           image_type(), false);
     }
-    if (should_show_promo_) {
-      ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(
-          image_type(), false);
-    }
   }
 }
 
@@ -498,20 +493,6 @@ void ContentSettingImageModel::AccessibilityWasNotified(
     content::WebContents* contents) {
   ContentSettingImageModelStates::Get(contents)->SetAccessibilityNotified(
       image_type(), true);
-}
-
-bool ContentSettingImageModel::ShouldShowPromo(content::WebContents* contents) {
-  DCHECK(contents);
-  return should_show_promo_ &&
-         !ContentSettingImageModelStates::Get(contents)->PromoWasShown(
-             image_type());
-}
-
-void ContentSettingImageModel::SetPromoWasShown(
-    content::WebContents* contents) {
-  DCHECK(contents);
-  ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(image_type(),
-                                                                  true);
 }
 
 bool ContentSettingImageModel::ShouldAutoOpenBubble(
@@ -1125,7 +1106,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   set_should_auto_open_bubble(false);
   set_blocked_on_system_level(false);
-  set_should_show_promo(false);
 
 #if BUILDFLAG(IS_MAC)
   if (std::optional<webapps::AppId> app_id =
@@ -1166,8 +1146,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
 
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // We shouldn't show the icon unless we're a PWA.
   // TODO(crbug.com/40186737): Allow PermissionRequestManager to identify the
@@ -1181,10 +1159,7 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   }
 
   // |manager| may be null in tests.
-  // Show promo the first time a quiet prompt is shown to the user.
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
-  set_should_show_promo(
-      QuietNotificationPermissionUiState::ShouldShowPromo(profile));
   if (permissions::PermissionUiSelector::ShouldSuppressAnimation(
           manager->ReasonForUsingQuietUi())) {
     set_accessibility_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
@@ -1193,15 +1168,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   }
   return true;
-}
-
-void ContentSettingNotificationsImageModel::SetPromoWasShown(
-    content::WebContents* contents) {
-  DCHECK(contents);
-  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  QuietNotificationPermissionUiState::PromoWasShown(profile);
-
-  ContentSettingImageModel::SetPromoWasShown(contents);
 }
 
 std::unique_ptr<ContentSettingBubbleModel>

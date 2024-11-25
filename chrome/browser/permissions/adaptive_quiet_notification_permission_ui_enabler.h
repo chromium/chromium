@@ -58,11 +58,6 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   void PermissionPromptResolved();
 
   // Only used for testing.
-  void BackfillEnablingMethodIfMissingForTesting() {
-    BackfillEnablingMethodIfMissing();
-  }
-
-  // Only used for testing.
   void MigrateAdaptiveNotificationQuietingToCPSSForTesting() {
     MigrateAdaptiveNotificationQuietingToCPSS();
   }
@@ -70,10 +65,6 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
  private:
   // Called when the quiet UI state is updated in preferences.
   void OnQuietUiStateChanged();
-
-  // Retroactively backfills the enabling method, which was not populated
-  // before M88.
-  void BackfillEnablingMethodIfMissing();
 
   // Users who had manually enabled quiet ui for notification will stay in quiet
   // ui, others will be migrated to CPSS. Migration logic will be removed in

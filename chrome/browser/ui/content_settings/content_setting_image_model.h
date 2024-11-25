@@ -124,9 +124,6 @@ class ContentSettingImageModel {
   bool ShouldNotifyAccessibility(content::WebContents* contents) const;
   void AccessibilityWasNotified(content::WebContents* contents);
 
-  bool ShouldShowPromo(content::WebContents* contents);
-  virtual void SetPromoWasShown(content::WebContents* contents);
-
   const gfx::VectorIcon* icon() const { return icon_; }
 
   bool should_auto_open_bubble() { return should_auto_open_bubble_; }
@@ -160,9 +157,6 @@ class ContentSettingImageModel {
   void set_blocked_on_system_level(const bool blocked_on_system_level) {
     blocked_on_system_level_ = blocked_on_system_level;
   }
-  void set_should_show_promo(const bool should_show_promo) {
-    should_show_promo_ = should_show_promo;
-  }
 
   // Sets an icon based on the content setting type, and whether the setting is
   // blocked. We use ContentSettingsType rather than ImageType because some
@@ -185,7 +179,6 @@ class ContentSettingImageModel {
   const ImageType image_type_;
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
-  bool should_show_promo_ = false;
   bool blocked_on_system_level_ = false;
   std::optional<int> icon_size_;
 };

@@ -43,22 +43,6 @@ void QuietNotificationPermissionUiState::RegisterProfilePrefs(
 }
 
 // static
-bool QuietNotificationPermissionUiState::ShouldShowPromo(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(
-             prefs::kEnableQuietNotificationPermissionUi) &&
-         profile->GetPrefs()->GetBoolean(
-             prefs::kQuietNotificationPermissionShouldShowPromo) &&
-         !profile->GetPrefs()->GetBoolean(
-             prefs::kQuietNotificationPermissionPromoWasShown);
-}
-
-// static
-void QuietNotificationPermissionUiState::PromoWasShown(Profile* profile) {
-  profile->GetPrefs()->SetBoolean(
-      prefs::kQuietNotificationPermissionPromoWasShown, true /* value */);
-}
-
-// static
 QuietNotificationPermissionUiState::EnablingMethod
 QuietNotificationPermissionUiState::GetQuietUiEnablingMethod(Profile* profile) {
   // Since the `kEnableQuietNotificationPermissionUi` pref is not reset if the

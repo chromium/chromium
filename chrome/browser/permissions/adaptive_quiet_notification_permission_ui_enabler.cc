@@ -174,12 +174,6 @@ void AdaptiveQuietNotificationPermissionUiEnabler::PermissionPromptResolved() {
           prefs::kEnableQuietNotificationPermissionUi)) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kEnableQuietNotificationPermissionUi, true /* value */);
-    // TODO(crbug.com/40156618): If
-    // `kQuietNotificationPermissionShouldShowPromo` stops being a good
-    // indicator as to how the quiet UI pref was enabled, remove the
-    // |BackfillEnablingMethodIfMissing| logic.
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kQuietNotificationPermissionShouldShowPromo, true /* value */);
   }
 }
 
@@ -212,7 +206,6 @@ AdaptiveQuietNotificationPermissionUiEnabler::
     }
   }
 
-  BackfillEnablingMethodIfMissing();
   MigrateAdaptiveNotificationQuietingToCPSS();
 }
 
@@ -230,12 +223,6 @@ void AdaptiveQuietNotificationPermissionUiEnabler::OnQuietUiStateChanged() {
         prefs::kQuietNotificationPermissionUiEnablingMethod,
         static_cast<int>(EnablingMethod::kManual));
   } else {
-    // Reset the promo state so that if the quiet UI is enabled adaptively
-    // again, the promo will be shown again.
-    profile_->GetPrefs()->ClearPref(
-        prefs::kQuietNotificationPermissionShouldShowPromo);
-    profile_->GetPrefs()->ClearPref(
-        prefs::kQuietNotificationPermissionPromoWasShown);
     profile_->GetPrefs()->ClearPref(
         prefs::kQuietNotificationPermissionUiEnablingMethod);
 
@@ -245,26 +232,6 @@ void AdaptiveQuietNotificationPermissionUiEnabler::OnQuietUiStateChanged() {
     profile_->GetPrefs()->SetTime(
         prefs::kQuietNotificationPermissionUiDisabledTime, base::Time::Now());
   }
-}
-
-void AdaptiveQuietNotificationPermissionUiEnabler::
-    BackfillEnablingMethodIfMissing() {
-  if (QuietNotificationPermissionUiState::GetQuietUiEnablingMethod(profile_) !=
-      EnablingMethod::kUnspecified) {
-    return;
-  }
-
-  // `kQuietNotificationPermissionUiEnablingMethod` was not populated prior to
-  // M88, but `kQuietNotificationPermissionShouldShowPromo` is a solid
-  // indicator as to how the setting was enabled in the first place because
-  // it's only set to true when the quiet UI has been enabled adaptively.
-  const bool has_enabled_adaptively = profile_->GetPrefs()->GetBoolean(
-      prefs::kQuietNotificationPermissionShouldShowPromo);
-
-  profile_->GetPrefs()->SetInteger(
-      prefs::kQuietNotificationPermissionUiEnablingMethod,
-      static_cast<int>(has_enabled_adaptively ? EnablingMethod::kAdaptive
-                                              : EnablingMethod::kManual));
 }
 
 void AdaptiveQuietNotificationPermissionUiEnabler::
