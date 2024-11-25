@@ -436,7 +436,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
                      : "no")
               : "no value");
 
-      NOTREACHED(base::NotFatalUntil::M132);
+      NOTREACHED(base::NotFatalUntil::M135);
       caller_trace_key.Clear();
     }
   }
