@@ -7,6 +7,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBottomChinAllowed;
 
@@ -43,6 +44,11 @@ class EdgeToEdgeBottomChinMediator
     private int mEdgeToEdgeBottomInsetPx;
     private boolean mIsDrawingToEdge;
     private boolean mIsPagedOptedIntoEdgeToEdge;
+
+    // The offset of the composited view in the renderer. When BCIV is enabled, this will usually
+    // not be equal to the property model's Y_OFFSET value, since the composited view will be moved
+    // by viz instead of the browser.
+    private int mRendererOffset;
 
     /**
      * Tracks the latest value for layer visibility to watch for any changes to communicate to the
@@ -124,6 +130,10 @@ class EdgeToEdgeBottomChinMediator
         mFullscreenManager.removeObserver(this);
     }
 
+    private boolean isVisible() {
+        return mRendererOffset < mModel.get(HEIGHT);
+    }
+
     /**
      * Updates the height and visibility for the bottom chin. If either of these changes, that will
      * affect how the bottom chin interacts with the bottom controls, so a layer update will be
@@ -180,12 +190,20 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public void onNavigationBarColorChanged(int color) {
+        if (!isVisible()) {
+            return;
+        }
+
         // TODO(): Animate the color change.
         mModel.set(COLOR, color);
     }
 
     @Override
     public void onNavigationBarDividerChanged(int dividerColor) {
+        if (!isVisible()) {
+            return;
+        }
+
         mModel.set(DIVIDER_COLOR, dividerColor);
     }
 
@@ -236,12 +254,18 @@ class EdgeToEdgeBottomChinMediator
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         assert BottomControlsStacker.isDispatchingYOffset();
-        mModel.set(Y_OFFSET, layerYOffset);
+
+        mRendererOffset = layerYOffset;
+
+        if (!mBottomControlsStacker.isMoveableByViz()) {
+            mModel.set(Y_OFFSET, layerYOffset);
+        }
     }
 
     // TODO(peilinwang) implement bciv for chin.
     @Override
     public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        mModel.set(OFFSET_TAG, offsetTagsInfo.getBottomControlsOffsetTag());
         return 0;
     }
 }

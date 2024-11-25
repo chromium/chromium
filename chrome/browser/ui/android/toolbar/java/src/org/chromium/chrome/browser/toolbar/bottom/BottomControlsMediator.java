@@ -11,7 +11,6 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -19,7 +18,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -264,9 +262,9 @@ class BottomControlsMediator
     }
 
     private void setYOffset(int yOffset) {
-        int browserControlsState = mBottomControlsStacker.getBrowserControlsState();
-        if (!ChromeFeatureList.sBcivBottomControls.isEnabled()
-                || browserControlsState != BrowserControlsState.BOTH) {
+        // TODO(peilinwang) refactor and move this check to the BottomControlsStacker, since all
+        // BottomControlLayers will be checking this.
+        if (!mBottomControlsStacker.isMoveableByViz()) {
             mModel.set(BottomControlsProperties.Y_OFFSET, yOffset);
         }
 

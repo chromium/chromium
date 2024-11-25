@@ -54,6 +54,8 @@ public class EdgeToEdgeBottomChinMediatorTest {
     private PropertyModel mModel;
     private EdgeToEdgeBottomChinMediator mMediator;
 
+    private final int mDefaultHeight = 60;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -115,15 +117,33 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
     @Test
     public void testUpdateColor() {
+        enableDispatchYOffset();
+
+        // make view visible
+        mModel.set(HEIGHT, mDefaultHeight);
+        mMediator.onBrowserControlsOffsetUpdate(0);
+
         mMediator.onNavigationBarColorChanged(Color.BLUE);
         assertEquals("The color should have been updated to blue.", Color.BLUE, mModel.get(COLOR));
 
         mMediator.onNavigationBarColorChanged(Color.RED);
         assertEquals("The color should have been updated to red.", Color.RED, mModel.get(COLOR));
+
+        // scroll view offscreen
+        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT));
+
+        mMediator.onNavigationBarColorChanged(Color.WHITE);
+        assertEquals("The color should have not been updated.", Color.RED, mModel.get(COLOR));
     }
 
     @Test
     public void testDividerColorChanges() {
+        enableDispatchYOffset();
+
+        // make view visible
+        mModel.set(HEIGHT, mDefaultHeight);
+        mMediator.onBrowserControlsOffsetUpdate(0);
+
         mMediator.onNavigationBarDividerChanged(Color.WHITE);
         assertEquals(
                 "The divider color should have been updated to WHITE.",
@@ -133,6 +153,15 @@ public class EdgeToEdgeBottomChinMediatorTest {
         mMediator.onNavigationBarDividerChanged(Color.TRANSPARENT);
         assertEquals(
                 "The divider color should have been updated to TRANSPARENT.",
+                Color.TRANSPARENT,
+                mModel.get(DIVIDER_COLOR));
+
+        // scroll view offscreen
+        mMediator.onBrowserControlsOffsetUpdate(mModel.get(HEIGHT));
+
+        mMediator.onNavigationBarDividerChanged(Color.WHITE);
+        assertEquals(
+                "The color should not have not been updated.",
                 Color.TRANSPARENT,
                 mModel.get(DIVIDER_COLOR));
     }
@@ -267,11 +296,7 @@ public class EdgeToEdgeBottomChinMediatorTest {
 
     @Test
     public void testOnBrowserControlsOffsetUpdate() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
-        testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
-        FeatureList.setTestValues(testValues);
+        enableDispatchYOffset();
 
         mMediator.onBrowserControlsOffsetUpdate(0);
         assertEquals("The y-offset should be 0.", 0, mModel.get(Y_OFFSET));
@@ -307,5 +332,13 @@ public class EdgeToEdgeBottomChinMediatorTest {
             int bottomInset, boolean isDrawingToEdge, boolean isPageOptInToEdge) {
         doReturn(bottomInset).when(mEdgeToEdgeController).getSystemBottomInsetPx();
         mMediator.onToEdgeChange(bottomInset, isDrawingToEdge, isPageOptInToEdge);
+    }
+
+    private void enableDispatchYOffset() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching, "false");
+        testValues.addFeatureFlagOverride(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
+        FeatureList.setTestValues(testValues);
     }
 }

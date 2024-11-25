@@ -7,6 +7,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 
 import android.view.View;
@@ -57,6 +58,8 @@ class EdgeToEdgeBottomChinViewBinder {
             viewHolder.mSceneLayer.setColor(model.get(COLOR));
         } else if (DIVIDER_COLOR == propertyKey) {
             viewHolder.mSceneLayer.setDividerColor(model.get(DIVIDER_COLOR));
+        } else if (OFFSET_TAG == propertyKey) {
+            viewHolder.mSceneLayer.setOffsetTag(model.get(OFFSET_TAG));
         } else {
             assert false : "Unhandled property detected in EdgeToEdgeBottomChinViewBinder!";
         }
