@@ -44,17 +44,17 @@ using testing::Unused;
 namespace media {
 namespace {
 
-constexpr const ChannelLayout kTestChannelLayout = CHANNEL_LAYOUT_STEREO;
-constexpr const int kTestSampleRate = AudioParameters::kAudioCDSampleRate;
-constexpr const int kTestBitsPerSample = 16;
-constexpr const AudioParameters::Format kTestFormat =
+constexpr ChannelLayout kTestChannelLayout = CHANNEL_LAYOUT_STEREO;
+constexpr int kTestSampleRate = AudioParameters::kAudioCDSampleRate;
+constexpr size_t kTestBitsPerSample = 16;
+constexpr AudioParameters::Format kTestFormat =
     AudioParameters::AUDIO_PCM_LINEAR;
-constexpr const char kTestDeviceName[] = "TestDevice";
-constexpr const char kDummyMessage[] = "dummy";
-constexpr const uint32_t kTestFramesPerPacket = 1000;
-constexpr const int kTestFailedErrno = -EACCES;
+constexpr char kTestDeviceName[] = "TestDevice";
+constexpr char kDummyMessage[] = "dummy";
+constexpr uint32_t kTestFramesPerPacket = 1000;
+constexpr int kTestFailedErrno = -EACCES;
 
-const int kTestBytesPerFrame =
+const size_t kTestBytesPerFrame =
     kTestBitsPerSample / 8 * ChannelLayoutToChannelCount(kTestChannelLayout);
 const size_t kTestPacketSize = kTestFramesPerPacket * kTestBytesPerFrame;
 
@@ -409,27 +409,29 @@ TEST_F(AlsaPcmOutputStreamTest, WritePacketNormalPacket) {
   test_stream->TransitionTo(AlsaPcmOutputStream::kIsPlaying);
 
   // Write a little less than half the data.
-  int written = packet_->size() / kTestBytesPerFrame / 2 - 1;
+  size_t written = packet_->size() / kTestBytesPerFrame / 2 - 1;
   EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
-      .WillOnce(Return(written));
+      .WillOnce(Return(static_cast<snd_pcm_sframes_t>(written)));
   EXPECT_CALL(mock_alsa_wrapper_,
               PcmWritei(GetFakeHandle(), packet_->data().data(), _))
-      .WillOnce(Return(written));
+      .WillOnce(Return(static_cast<snd_pcm_sframes_t>(written)));
 
   test_stream->WritePacket();
 
-  ASSERT_EQ(test_stream->buffer_->forward_bytes(),
+  ASSERT_EQ(static_cast<size_t>(test_stream->buffer_->forward_bytes()),
             packet_->size() - written * kTestBytesPerFrame);
 
   // Write the rest.
   EXPECT_CALL(mock_alsa_wrapper_, PcmAvailUpdate(GetFakeHandle()))
-      .WillOnce(Return(kTestFramesPerPacket - written));
+      .WillOnce(Return(
+          static_cast<snd_pcm_sframes_t>(kTestFramesPerPacket - written)));
   EXPECT_CALL(
       mock_alsa_wrapper_,
       PcmWritei(GetFakeHandle(),
                 packet_->data().subspan(written * kTestBytesPerFrame).data(),
                 _))
-      .WillOnce(Return(packet_->size() / kTestBytesPerFrame - written));
+      .WillOnce(Return(static_cast<snd_pcm_sframes_t>(
+          packet_->size() / kTestBytesPerFrame - written)));
   test_stream->WritePacket();
   EXPECT_EQ(0u, test_stream->buffer_->forward_bytes());
 

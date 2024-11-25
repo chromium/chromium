@@ -48,7 +48,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
 
   const uint8_t clear_bytes = data[0];
   const uint8_t encryption_pattern = data[1];
-  data = data.subspan(2);
+  data = data.subspan<2>();
 
   static std::unique_ptr<crypto::SymmetricKey> key =
       crypto::SymmetricKey::Import(

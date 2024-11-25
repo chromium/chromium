@@ -53,9 +53,9 @@ ACTION_P4(CheckCountAndPostQuitTask, count, limit, task_runner, quit_closure) {
     task_runner->PostTask(FROM_HERE, quit_closure);
 }
 
-const float kCallbackTestTimeMs = 2000.0;
-const int kBytesPerSample = 2;
-const SampleFormat kSampleFormat = kSampleFormatS16;
+constexpr float kCallbackTestTimeMs = 2000.0;
+constexpr size_t kBytesPerSample = 2;
+constexpr SampleFormat kSampleFormat = kSampleFormatS16;
 
 // Converts AudioParameters::Format enumerator to readable string.
 std::string FormatToString(AudioParameters::Format format) {
@@ -174,7 +174,7 @@ class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
 class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
  public:
   explicit FileAudioSource(base::WaitableEvent* event, const std::string& name)
-      : event_(event), pos_(0) {
+      : event_(event) {
     // Reads a test file from media/test/data directory and stores it in
     // a DecoderBuffer.
     file_ = ReadTestDataFile(name);
@@ -198,7 +198,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
                  const AudioGlitchInfo& /* glitch_info */,
                  AudioBus* dest) override {
     bool stop_playing = false;
-    int max_size = dest->frames() * dest->channels() * kBytesPerSample;
+    size_t max_size = dest->frames() * dest->channels() * kBytesPerSample;
 
     // Adjust data size and prepare for end signal if file has ended.
     if (pos_ + max_size > file_size()) {
@@ -210,11 +210,12 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
     // the file and deinterleave to match the audio bus format.
     // FromInterleaved() will zero out any unfilled frames when there is not
     // sufficient data remaining in the file to fill up the complete frame.
-    int frames = max_size / (dest->channels() * kBytesPerSample);
+    size_t frames = max_size / (dest->channels() * kBytesPerSample);
     if (max_size) {
       auto* source = reinterpret_cast<const int16_t*>(
           base::span<const uint8_t>(*file_).subspan(pos_).data());
-      dest->FromInterleaved<SignedInt16SampleTypeTraits>(source, frames);
+      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
+          source, base::checked_cast<int>(frames));
       pos_ += max_size;
     }
 
@@ -227,11 +228,11 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
   void OnError(ErrorType type) override {}
 
-  int file_size() { return base::checked_cast<int>(file_->size()); }
+  size_t file_size() const { return file_->size(); }
 
  private:
   raw_ptr<base::WaitableEvent> event_;
-  int pos_;
+  size_t pos_ = 0;
   scoped_refptr<DecoderBuffer> file_;
 };
 

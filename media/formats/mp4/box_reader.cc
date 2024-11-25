@@ -83,7 +83,7 @@ bool BufferReader::ReadFourCC(FourCC* v) {
   return true;
 }
 
-bool BufferReader::ReadVec(std::vector<uint8_t>* vec, uint64_t count) {
+bool BufferReader::ReadVec(std::vector<uint8_t>* vec, size_t count) {
   RCHECK(HasBytes(count));
   vec->clear();
   auto range = buf_.subspan(pos_, count);

@@ -454,7 +454,7 @@ TEST_F(MP4StreamParserTest, NoMoovAfterFlush) {
   EXPECT_TRUE(AppendAllDataThenParseInPieces(buffer->AsSpan(), 512));
   parser_->Flush();
 
-  const int kFirstMoofOffset = 1307;
+  static constexpr size_t kFirstMoofOffset = 1307;
   EXPECT_TRUE(AppendAllDataThenParseInPieces(
       buffer->AsSpan().subspan(kFirstMoofOffset,
                                buffer->size() - kFirstMoofOffset),

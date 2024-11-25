@@ -53,7 +53,7 @@ class TsPacket {
   // The buffer size should be at least |kPacketSize|
   bool ParseHeader(const uint8_t* buf);
   bool ParseAdaptationField(BitReader* bit_reader,
-                            int adaptation_field_length);
+                            size_t adaptation_field_length);
 
   // TODO(367764863) Rewrite to base::raw_span.
   RAW_PTR_EXCLUSION base::span<const uint8_t> payload_;
