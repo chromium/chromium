@@ -84,12 +84,12 @@ void ScrollMarkerPseudoElement::SetSelected(bool value) {
   PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
 }
 
-void ScrollMarkerPseudoElement::Dispose() {
+void ScrollMarkerPseudoElement::DetachLayoutTree(bool performing_reattach) {
   if (scroll_marker_group_) {
     scroll_marker_group_->RemoveFromFocusGroup(*this);
     scroll_marker_group_ = nullptr;
   }
-  PseudoElement::Dispose();
+  PseudoElement::DetachLayoutTree(performing_reattach);
 }
 
 void ScrollMarkerPseudoElement::Trace(Visitor* v) const {

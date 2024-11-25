@@ -39,6 +39,7 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   void ActivateNextScrollMarker(bool focus);
   void ActivatePrevScrollMarker(bool focus);
 
+  void DetachLayoutTree(bool performing_reattach) final;
   void Dispose() final;
   void Trace(Visitor* v) const final;
 

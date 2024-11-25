@@ -226,4 +226,12 @@ bool ScrollMarkerGroupPseudoElement::ShouldScheduleNextService() {
   return false;
 }
 
+void ScrollMarkerGroupPseudoElement::DetachLayoutTree(
+    bool performing_reattach) {
+  for (ScrollMarkerPseudoElement* scroll_marker : focus_group_) {
+    scroll_marker->DetachLayoutTree(performing_reattach);
+  }
+  PseudoElement::DetachLayoutTree(performing_reattach);
+}
+
 }  // namespace blink
