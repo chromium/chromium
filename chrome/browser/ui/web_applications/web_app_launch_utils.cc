@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/navigation_capturing_information_forwarder.h"
 #include "chrome/browser/ui/web_applications/navigation_capturing_navigation_handle_user_data.h"
@@ -819,7 +820,9 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
 
   contents->Close();
 
-  preexisting_web_contents->Focus();
+  FocusAppContainer(client_mode_and_browser.browser,
+                    *client_mode_and_browser.tab_index);
+
   if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
     NavigateParams nav_params(client_mode_and_browser.browser, launch_url,
                               ui::PageTransition::PAGE_TRANSITION_LINK);
@@ -1828,6 +1831,7 @@ void FocusAppContainer(Browser* browser, int tab_index) {
         browser->tab_strip_model()->GetWebContentsAt(tab_index);
     CHECK(app_contents);
     app_contents->Focus();
+    browser->GetBrowserView().Activate();
   } else {
     // This will CHECK-fail if tab_index does not correspond to a valid tab
     // inside `browser`.
