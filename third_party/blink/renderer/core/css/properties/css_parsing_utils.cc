@@ -3050,22 +3050,18 @@ static CSSValue* ConsumeDeprecatedWebkitCrossFade(
     return nullptr;
   }
 
-  CSSPrimitiveValue* percentage = nullptr;
-  if (CSSPrimitiveValue* percent_value = ConsumePercent(
-          stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
-    percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(percent_value->GetDoubleValue() / 100.0, 0, 1),
-        CSSPrimitiveValue::UnitType::kNumber);
-  } else if (CSSPrimitiveValue* number_value = ConsumeNumber(
-                 stream, context, CSSPrimitiveValue::ValueRange::kAll)) {
-    percentage = CSSNumericLiteralValue::Create(
-        ClampTo<double>(number_value->GetDoubleValue(), 0, 1),
-        CSSPrimitiveValue::UnitType::kNumber);
-  }
-
+  CSSPrimitiveValue* percentage = ConsumeNumberOrPercent(
+      stream, context, CSSPrimitiveValue::ValueRange::kAll);
   if (!percentage) {
     return nullptr;
   }
+
+  if (percentage->IsNumericLiteralValue()) {
+    percentage = CSSNumericLiteralValue::Create(
+        ClampTo<double>(percentage->GetDoubleValue(), 0, 1),
+        CSSPrimitiveValue::UnitType::kNumber);
+  }
+
   return MakeGarbageCollected<cssvalue::CSSCrossfadeValue>(
       /*is_legacy_variant=*/true,
       HeapVector<std::pair<Member<CSSValue>, Member<CSSPrimitiveValue>>>{

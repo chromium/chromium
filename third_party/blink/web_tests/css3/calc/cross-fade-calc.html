@@ -13,7 +13,7 @@
 <div id="test"></div>
 <script>
     const div = document.querySelector("#test");
-    const expected = '-webkit-cross-fade(url("dummy://example.png"), url("dummy://example.png"), 0.7)'
+    const expected = '-webkit-cross-fade(url("dummy://example.png"), url("dummy://example.png"), 70%)'
     test(function() {
         assert_equals(getComputedStyle(div).backgroundImage, expected);
     }, "calc() in webkit-cross-fade");

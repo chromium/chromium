@@ -231,7 +231,8 @@ void StyleResolverState::LoadPendingResources() {
     return;
   }
 
-  element_style_resources_.LoadPendingResources(StyleBuilder());
+  element_style_resources_.LoadPendingResources(StyleBuilder(),
+                                                css_to_length_conversion_data_);
 }
 
 const FontDescription& StyleResolverState::ParentFontDescription() const {
