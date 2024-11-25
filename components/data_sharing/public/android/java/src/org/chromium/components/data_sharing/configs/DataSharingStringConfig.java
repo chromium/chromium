@@ -77,6 +77,8 @@ public class DataSharingStringConfig {
             LEAVE_GROUP_MESSAGE,
             STOP_SHARING_TITLE,
             STOP_SHARING_MESSAGE,
+            JOIN_TITLE_SINGLE,
+            TABS_COUNT_TITLE,
         })
         public @interface Key {}
 
@@ -101,5 +103,6 @@ public class DataSharingStringConfig {
         public static final int STOP_SHARING_TITLE = 18;
         public static final int STOP_SHARING_MESSAGE = 19;
         public static final int JOIN_TITLE_SINGLE = 20;
+        public static final int TABS_COUNT_TITLE = 21;
     }
 }

@@ -357,7 +357,7 @@ public class DataSharingTabManager {
                                 DataSharingStringConfig.StringKey.JOIN_TITLE,
                                 R.plurals.collaboration_preview_dialog_title_multiple)
                         .setResourceId(
-                                DataSharingStringConfig.StringKey.JOIN_TITLE,
+                                DataSharingStringConfig.StringKey.JOIN_TITLE_SINGLE,
                                 R.string.collaboration_preview_dialog_title_single)
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.JOIN_DESCRIPTION,
@@ -368,6 +368,9 @@ public class DataSharingTabManager {
                         .setResourceId(
                                 DataSharingStringConfig.StringKey.JOIN_DETAILS_HEADER,
                                 R.string.collaboration_preview_dialog_details_tabs_in_group)
+                        .setResourceId(
+                                DataSharingStringConfig.StringKey.TABS_COUNT_TITLE,
+                                R.plurals.collaboration_preview_dialog_tabs)
                         .build();
         DataSharingUiConfig commonConfig =
                 new DataSharingUiConfig.Builder()

@@ -6775,6 +6775,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_BODY" desc="The body for the dialog that shows a preview of a tab group.">
         <ph name="OWNER_FULL_NAME">%1$s<ex>Ali Connors</ex></ph> (<ph name="OWNER_EMAIL">%2$s<ex>ali.connors@gmail.com</ex></ph>) wants you to join a tab group. Anyone with the link can edit all tabs, so join with care. Link expires in 48 hr.
       </message>
+      <message name="IDS_COLLABORATION_PREVIEW_DIALOG_TABS" desc="Preview dialog tabs count string.">
+        {TABS_COUNT, plural,
+          =1 {1 tab}
+          other {<ph name="NUMBER_OF_TABS">%1$d<ex>4</ex></ph> tabs}
+        }
+      </message>
       <message name="IDS_COLLABORATION_PREVIEW_DIALOG_DETAILS_TABS_IN_GROUP" desc="The title for the tabs in group section in the preview details for a group.">
         Tabs in group
       </message>
