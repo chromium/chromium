@@ -61,6 +61,7 @@ source_set("app") {
     "//base",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/public/provider/chrome/browser/application_mode_fetcher:application_mode_fetcher_api",
     "//net",
     "//url",
   ]
