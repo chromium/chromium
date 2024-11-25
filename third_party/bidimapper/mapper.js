@@ -390,6 +390,15 @@
         parseHandleRequestDevicePromptParams(params) {
             return params;
         }
+        parseSimulateAdapterParameters(params) {
+            return params;
+        }
+        parseSimulateAdvertisementParameters(params) {
+            return params;
+        }
+        parseSimulatePreconnectedPeripheralParameters(params) {
+            return params;
+        }
         // keep-sorted end
         // Browser domain
         // keep-sorted start block=yes
@@ -551,8 +560,10 @@
      */
     class BrowserProcessor {
         #browserCdpClient;
-        constructor(browserCdpClient) {
+        #browsingContextStorage;
+        constructor(browserCdpClient, browsingContextStorage) {
             this.#browserCdpClient = browserCdpClient;
+            this.#browsingContextStorage = browsingContextStorage;
         }
         close() {
             // Ensure that it is put at the end of the event loop.
@@ -606,6 +617,35 @@
                     }),
                 ],
             };
+        }
+        async #getWindowInfo(targetId) {
+            const windowInfo = await this.#browserCdpClient.sendCommand('Browser.getWindowForTarget', { targetId });
+            return {
+                // `active` is not supported in CDP yet.
+                active: false,
+                clientWindow: `${windowInfo.windowId}`,
+                state: windowInfo.bounds.windowState ?? 'normal',
+                height: windowInfo.bounds.height ?? 0,
+                width: windowInfo.bounds.width ?? 0,
+                x: windowInfo.bounds.left ?? 0,
+                y: windowInfo.bounds.top ?? 0,
+            };
+        }
+        async getClientWindows() {
+            const topLevelTargetIds = this.#browsingContextStorage
+                .getTopLevelContexts()
+                .map((b) => b.cdpTarget.id);
+            const clientWindows = await Promise.all(topLevelTargetIds.map(async (targetId) => await this.#getWindowInfo(targetId)));
+            const uniqueClientWindowIds = new Set();
+            const uniqueClientWindows = new Array();
+            // Filter out duplicated client windows.
+            for (const window of clientWindows) {
+                if (!uniqueClientWindowIds.has(window.clientWindow)) {
+                    uniqueClientWindowIds.add(window.clientWindow);
+                    uniqueClientWindows.push(window);
+                }
+            }
+            return { clientWindows: uniqueClientWindows };
         }
     }
 
@@ -4456,7 +4496,7 @@
             this.#logger = logger;
             this.#bluetoothProcessor = bluetoothProcessor;
             // keep-sorted start block=yes
-            this.#browserProcessor = new BrowserProcessor(browserCdpClient);
+            this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage);
             this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, eventManager);
             this.#cdpProcessor = new CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
             this.#inputProcessor = new InputProcessor(browsingContextStorage);
@@ -4477,11 +4517,11 @@
                 case 'bluetooth.handleRequestDevicePrompt':
                     return await this.#bluetoothProcessor.handleRequestDevicePrompt(this.#parser.parseHandleRequestDevicePromptParams(command.params));
                 case 'bluetooth.simulateAdapter':
-                    return await this.#bluetoothProcessor.simulateAdapter(command.params);
+                    return await this.#bluetoothProcessor.simulateAdapter(this.#parser.parseSimulateAdapterParameters(command.params));
                 case 'bluetooth.simulateAdvertisement':
-                    return await this.#bluetoothProcessor.simulateAdvertisement(command.params);
+                    return await this.#bluetoothProcessor.simulateAdvertisement(this.#parser.parseSimulateAdvertisementParameters(command.params));
                 case 'bluetooth.simulatePreconnectedPeripheral':
-                    return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(command.params);
+                    return await this.#bluetoothProcessor.simulatePreconnectedPeripheral(this.#parser.parseSimulatePreconnectedPeripheralParameters(command.params));
                 // keep-sorted end
                 // Browser domain
                 // keep-sorted start block=yes
@@ -4490,7 +4530,7 @@
                 case 'browser.createUserContext':
                     return await this.#browserProcessor.createUserContext(command.params);
                 case 'browser.getClientWindows':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    return await this.#browserProcessor.getClientWindows();
                 case 'browser.getUserContexts':
                     return await this.#browserProcessor.getUserContexts();
                 case 'browser.removeUserContext':
@@ -4678,6 +4718,10 @@
         }
         async simulateAdapter(params) {
             const context = this.#browsingContextStorage.getContext(params.context);
+            // Bluetooth spec requires overriding the existing adapter (step 6). From the CDP
+            // perspective, we need to disable the emulation first.
+            // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+            await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.enable', {
                 state: params.state,
             });
@@ -4816,6 +4860,55 @@
     /** @return Given an input in cm, convert it to inches. */
     function inchesFromCm(cm) {
         return cm / 2.54;
+    }
+
+    /*
+     *  Copyright 2024 Google LLC.
+     *  Copyright (c) Microsoft Corporation.
+     *
+     *  Licensed under the Apache License, Version 2.0 (the "License");
+     *  you may not use this file except in compliance with the License.
+     *  You may obtain a copy of the License at
+     *
+     *      http://www.apache.org/licenses/LICENSE-2.0
+     *
+     *  Unless required by applicable law or agreed to in writing, software
+     *  distributed under the License is distributed on an "AS IS" BASIS,
+     *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     *  See the License for the specific language governing permissions and
+     *  limitations under the License.
+     *
+     */
+    /**
+     * A URL matches about:blank if its scheme is "about", its path contains a single string
+     * "blank", its username and password are the empty string, and its host is null.
+     * https://html.spec.whatwg.org/multipage/urls-and-fetching.html#matches-about:blank
+     * @param {string} url
+     * @return {boolean}
+     */
+    function urlMatchesAboutBlank(url) {
+        // An empty string is a special case, and considered to be about:blank.
+        // https://html.spec.whatwg.org/multipage/nav-history-apis.html#window-open-steps
+        if (url === '') {
+            return true;
+        }
+        try {
+            const parsedUrl = new URL(url);
+            const schema = parsedUrl.protocol.replace(/:$/, '');
+            return (schema.toLowerCase() === 'about' &&
+                parsedUrl.pathname.toLowerCase() === 'blank' &&
+                parsedUrl.username === '' &&
+                parsedUrl.password === '' &&
+                parsedUrl.host === '');
+        }
+        catch (err) {
+            // Wrong URL considered do not match about:blank.
+            if (err instanceof TypeError) {
+                return false;
+            }
+            // Re-throw other unexpected errors.
+            throw err;
+        }
     }
 
     class Realm {
@@ -5555,6 +5648,11 @@
         // Set if there is a pending navigation initiated by `BrowsingContext.navigate` command.
         // The promise is resolved when the navigation is finished or rejected when canceled.
         #pendingCommandNavigation;
+        // Flags if the initial navigation to `about:blank` is in progress.
+        #initialNavigation = true;
+        // Flags if the navigation is initiated by `browsingContext.navigate` or
+        // `browsingContext.reload` command.
+        #navigationInitiatedByCommand = false;
         #originalOpener;
         // Set when the user prompt is opened. Required to provide the type in closing event.
         #lastUserPromptType;
@@ -5817,24 +5915,29 @@
                 if (this.id !== params.frameId) {
                     return;
                 }
-                // Use `pendingNavigationId` if navigation initiated by BiDi
-                // `BrowsingContext.navigate` or generate a new navigation id.
-                this.#navigationId = this.#pendingNavigationId ?? uuidv4();
-                this.#pendingNavigationId = undefined;
-                this.#eventManager.registerEvent({
-                    type: 'event',
-                    method: BrowsingContext$2.EventNames.NavigationStarted,
-                    params: {
-                        context: this.id,
-                        navigation: this.#navigationId,
-                        timestamp: _a$5.getTimestamp(),
-                        // The URL of the navigation that is currently in progress. Although the URL
-                        // is not yet known in case of user-initiated navigations, it is possible to
-                        // provide the URL in case of BiDi-initiated navigations.
-                        // TODO: provide proper URL in case of user-initiated navigations.
-                        url: this.#pendingNavigationUrl ?? 'UNKNOWN',
-                    },
-                }, this.id);
+                if (this.#navigationInitiatedByCommand) {
+                    // In case of the navigation is initiated by `browsingContext.navigate` or
+                    // `browsingContext.reload` commands, the `Page.frameRequestedNavigation` is not
+                    // emitted, which means the `NavigationStarted` is not emitted.
+                    // TODO: consider emit it right after the CDP command `navigate` or `reload` is finished.
+                    // The URL of the navigation that is currently in progress. Although the URL
+                    // is not yet known in case of user-initiated navigations, it is possible to
+                    // provide the URL in case of BiDi-initiated navigations.
+                    // TODO: provide proper URL in case of user-initiated navigations.
+                    const url = this.#pendingNavigationUrl ?? 'UNKNOWN';
+                    this.#navigationId = this.#pendingNavigationId ?? uuidv4();
+                    this.#pendingNavigationId = undefined;
+                    this.#eventManager.registerEvent({
+                        type: 'event',
+                        method: BrowsingContext$2.EventNames.NavigationStarted,
+                        params: {
+                            context: this.id,
+                            navigation: this.#navigationId,
+                            timestamp: _a$5.getTimestamp(),
+                            url,
+                        },
+                    }, this.id);
+                }
             });
             // TODO: don't use deprecated `Page.frameScheduledNavigation` event.
             this.#cdpTarget.cdpClient.on('Page.frameScheduledNavigation', (params) => {
@@ -5859,8 +5962,30 @@
                             url: this.#url,
                         },
                     }, this.id);
-                    this.#pendingCommandNavigation.reject(BrowsingContext$2.EventNames.NavigationAborted);
+                    this.#pendingCommandNavigation.reject(new UnknownErrorException('navigation aborted'));
                     this.#pendingCommandNavigation = undefined;
+                    this.#navigationInitiatedByCommand = false;
+                }
+                if (!urlMatchesAboutBlank(params.url)) {
+                    // If the url does not match about:blank, do not consider it is an initial
+                    // navigation and emit all the required events.
+                    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/2793.
+                    this.#initialNavigation = false;
+                }
+                if (!this.#initialNavigation) {
+                    // Do not emit the event for the initial navigation to `about:blank`.
+                    this.#navigationId = this.#pendingNavigationId ?? uuidv4();
+                    this.#pendingNavigationId = undefined;
+                    this.#eventManager.registerEvent({
+                        type: 'event',
+                        method: BrowsingContext$2.EventNames.NavigationStarted,
+                        params: {
+                            context: this.id,
+                            navigation: this.#navigationId,
+                            timestamp: _a$5.getTimestamp(),
+                            url: params.url,
+                        },
+                    }, this.id);
                 }
                 this.#pendingNavigationUrl = params.url;
             });
@@ -5889,29 +6014,37 @@
                 const timestamp = _a$5.getTimestamp();
                 switch (params.name) {
                     case 'DOMContentLoaded':
-                        this.#eventManager.registerEvent({
-                            type: 'event',
-                            method: BrowsingContext$2.EventNames.DomContentLoaded,
-                            params: {
-                                context: this.id,
-                                navigation: this.#navigationId,
-                                timestamp,
-                                url: this.#url,
-                            },
-                        }, this.id);
+                        if (!this.#initialNavigation) {
+                            // Do not emit for the initial navigation.
+                            this.#eventManager.registerEvent({
+                                type: 'event',
+                                method: BrowsingContext$2.EventNames.DomContentLoaded,
+                                params: {
+                                    context: this.id,
+                                    navigation: this.#navigationId,
+                                    timestamp,
+                                    url: this.#url,
+                                },
+                            }, this.id);
+                        }
                         this.#lifecycle.DOMContentLoaded.resolve();
                         break;
                     case 'load':
-                        this.#eventManager.registerEvent({
-                            type: 'event',
-                            method: BrowsingContext$2.EventNames.Load,
-                            params: {
-                                context: this.id,
-                                navigation: this.#navigationId,
-                                timestamp,
-                                url: this.#url,
-                            },
-                        }, this.id);
+                        if (!this.#initialNavigation) {
+                            // Do not emit for the initial navigation.
+                            this.#eventManager.registerEvent({
+                                type: 'event',
+                                method: BrowsingContext$2.EventNames.Load,
+                                params: {
+                                    context: this.id,
+                                    navigation: this.#navigationId,
+                                    timestamp,
+                                    url: this.#url,
+                                },
+                            }, this.id);
+                        }
+                        // The initial navigation is finished.
+                        this.#initialNavigation = false;
                         this.#lifecycle.load.resolve();
                         break;
                 }
@@ -6115,6 +6248,7 @@
             const navigationId = uuidv4();
             this.#pendingNavigationId = navigationId;
             this.#pendingCommandNavigation = new Deferred();
+            this.#navigationInitiatedByCommand = true;
             // Navigate and wait for the result. If the navigation fails, the error event is
             // emitted and the promise is rejected.
             const cdpNavigatePromise = (async () => {
@@ -6159,12 +6293,13 @@
             ]).catch((e) => {
                 // Aborting navigation should not fail the original navigation command for now.
                 // https://github.com/w3c/webdriver-bidi/issues/799#issue-2605618955
-                if (e !== BrowsingContext$2.EventNames.NavigationAborted) {
+                if (e.message !== 'navigation aborted') {
                     throw e;
                 }
             });
             // `#pendingCommandNavigation` can be already rejected and set to undefined.
             this.#pendingCommandNavigation?.resolve();
+            this.#navigationInitiatedByCommand = false;
             this.#pendingCommandNavigation = undefined;
             return {
                 navigation: navigationId,
@@ -6192,6 +6327,7 @@
         async reload(ignoreCache, wait) {
             await this.targetUnblockedOrThrow();
             this.#resetLifecycleIfFinished();
+            this.#navigationInitiatedByCommand = true;
             await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
                 ignoreCache,
             });
@@ -15405,11 +15541,11 @@
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.InitiatorSchema = z.lazy(() => z.object({
-            type: z.enum(['parser', 'script', 'preflight', 'other']),
             columnNumber: JsUintSchema.optional(),
             lineNumber: JsUintSchema.optional(),
-            stackTrace: Script$1.StackTraceSchema.optional(),
             request: Network.RequestSchema.optional(),
+            stackTrace: Script$1.StackTraceSchema.optional(),
+            type: z.enum(['parser', 'script', 'preflight', 'other']).optional(),
         }));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -15427,6 +15563,8 @@
             cookies: z.array(Network.CookieSchema),
             headersSize: JsUintSchema,
             bodySize: z.union([JsUintSchema, z.null()]),
+            destination: z.string(),
+            initiatorType: z.union([z.string(), z.null()]),
             timings: Network.FetchTimingInfoSchema,
         }));
     })(Network$1 || (Network$1 = {}));
@@ -15631,7 +15769,7 @@
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
         Network.BeforeRequestSentParametersSchema = z.lazy(() => Network.BaseParametersSchema.and(z.object({
-            initiator: Network.InitiatorSchema,
+            initiator: Network.InitiatorSchema.optional(),
         })));
     })(Network$1 || (Network$1 = {}));
     (function (Network) {
@@ -16962,6 +17100,19 @@
                 .HandleRequestDevicePromptParametersSchema);
         }
         Bluetooth.parseHandleRequestDevicePromptParams = parseHandleRequestDevicePromptParams;
+        function parseSimulateAdapterParams(params) {
+            return parseObject(params, Bluetooth$1.SimulateAdapterParametersSchema);
+        }
+        Bluetooth.parseSimulateAdapterParams = parseSimulateAdapterParams;
+        function parseSimulateAdvertisementParams(params) {
+            return parseObject(params, Bluetooth$1.SimulateAdvertisementParametersSchema);
+        }
+        Bluetooth.parseSimulateAdvertisementParams = parseSimulateAdvertisementParams;
+        function parseSimulatePreconnectedPeripheralParams(params) {
+            return parseObject(params, Bluetooth$1
+                .SimulatePreconnectedPeripheralParametersSchema);
+        }
+        Bluetooth.parseSimulatePreconnectedPeripheralParams = parseSimulatePreconnectedPeripheralParams;
     })(Bluetooth || (Bluetooth = {}));
 
     class BidiParser {
@@ -16969,6 +17120,15 @@
         // keep-sorted start block=yes
         parseHandleRequestDevicePromptParams(params) {
             return Bluetooth.parseHandleRequestDevicePromptParams(params);
+        }
+        parseSimulateAdapterParameters(params) {
+            return Bluetooth.parseSimulateAdapterParams(params);
+        }
+        parseSimulateAdvertisementParameters(params) {
+            return Bluetooth.parseSimulateAdvertisementParams(params);
+        }
+        parseSimulatePreconnectedPeripheralParameters(params) {
+            return Bluetooth.parseSimulatePreconnectedPeripheralParams(params);
         }
         // keep-sorted end
         // Browser domain
