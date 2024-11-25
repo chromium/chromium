@@ -334,10 +334,8 @@ bool HasDecryptionFailedResult(
 bool EnterpriseResultIsFailure(BinaryUploadService::Result result,
                                bool block_large_files,
                                bool block_password_protected_files) {
-  return enterprise_connectors::IsResumableUploadEnabled()
-             ? enterprise_connectors::CloudResumableResultIsFailure(
-                   result, block_large_files, block_password_protected_files)
-             : enterprise_connectors::CloudMultipartResultIsFailure(result);
+  return enterprise_connectors::CloudResumableResultIsFailure(
+      result, block_large_files, block_password_protected_files);
 }
 
 void RecordEnterpriseScan(std::unique_ptr<FileAnalysisRequest> request,

@@ -23,7 +23,6 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
@@ -162,27 +161,17 @@ class DownloadDeepScanningBrowserTestBase
   // should be set at the machine or user scope.
   // |is_consumer| indicates whether the content scan is a consumer or an
   // enterprise scan.
-  // |is_resumable| indicates whether the metadata and content are transmitted
-  // by resumable upload protocol or multipart upload protocol. Resumable upload
-  // currently is only open to enterprise scans.
   // |is_obfuscated| indicates whether the downloaded file has been obfuscated
   // to prevent user access. Currently, this is done while waiting for an
   // enterprise deep scan verdict.
   explicit DownloadDeepScanningBrowserTestBase(bool connectors_machine_scope,
                                                bool is_consumer,
-                                               bool is_resumable,
                                                bool is_obfuscated)
       : is_consumer_(is_consumer),
-        is_resumable_(is_resumable),
         is_obfuscated_(is_obfuscated),
         connectors_machine_scope_(connectors_machine_scope) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    is_resumable_ ? enabled_features.push_back(
-                        enterprise_connectors::kResumableUploadEnabled)
-                  : disabled_features.push_back(
-                        enterprise_connectors::kResumableUploadEnabled);
     is_obfuscated_ ? enabled_features.push_back(
                          enterprise_obfuscation::kEnterpriseFileObfuscation)
                    : disabled_features.push_back(
@@ -447,8 +436,6 @@ class DownloadDeepScanningBrowserTestBase
 
   bool connectors_machine_scope() const { return connectors_machine_scope_; }
 
-  bool is_resumable() const { return is_resumable_; }
-
   bool is_obfuscated() const { return is_obfuscated_; }
 
   std::string GetProfileIdentifier() const {
@@ -568,16 +555,8 @@ class DownloadDeepScanningBrowserTestBase
     }
 
     if (request.url == connector_url_) {
-      if (is_resumable_) {
         ASSERT_TRUE(GetResumableUploadMetadata(network::GetUploadData(request),
                                                &last_request_));
-      } else {
-        ASSERT_TRUE(GetMultipartUploadMetadata(GetDataPipeUploadData(request),
-                                               &last_request_));
-        if (waiting_for_upload_closure_) {
-          std::move(waiting_for_upload_closure_).Run();
-        }
-      }
     }
   }
 
@@ -594,7 +573,6 @@ class DownloadDeepScanningBrowserTestBase
 
   base::test::ScopedFeatureList scoped_feature_list_;
   bool is_consumer_;
-  bool is_resumable_;
   bool is_obfuscated_;
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
@@ -624,27 +602,24 @@ class ConsumerDeepScanningBrowserTest
   ConsumerDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
                                             /*is_consumer=*/true,
-                                            /*is_resumable=*/false,
                                             /*is_obfuscated=*/false) {}
 };
 
 class DownloadDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   DownloadDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(
             /*connectors_machine_scope=*/std::get<0>(GetParam()),
             /*is_consumer=*/false,
-            /*is_resumable=*/std::get<1>(GetParam()),
-            /*is_obfuscated=*/std::get<2>(GetParam())) {}
+            /*is_obfuscated=*/std::get<1>(GetParam())) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          DownloadDeepScanningBrowserTest,
                          testing::Combine(
                              /*connectors_machine_scope=*/testing::Bool(),
-                             /*is_resumable=*/testing::Bool(),
                              /*is_obfuscated=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
@@ -664,12 +639,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   dlp_result->set_tag("dlp");
   dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -718,12 +690,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
   dlp_result->set_tag("dlp");
   dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -772,12 +741,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   dlp_result->set_tag("dlp");
   dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -832,12 +798,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
   auto* dlp_rule = dlp_result->add_triggered_rules();
   dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -921,12 +884,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
 
   // No scan runs synchronously.
   enterprise_connectors::ContentAnalysisResponse sync_response;
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -1044,12 +1004,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   auto* malware_rule = malware_result->add_triggered_rules();
   malware_rule->set_action(enterprise_connectors::TriggeredRule::WARN);
   malware_rule->set_rule_name("uws");
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   WaitForDeepScanRequest();
 
@@ -1110,7 +1067,6 @@ class DownloadRestrictionsDeepScanningBrowserTest
       : DownloadDeepScanningBrowserTestBase(
             /*connectors_machine_scope=*/GetParam(),
             /*is_consumer=*/false,
-            /*is_resumable=*/false,
             /*is_obfuscated*/ false) {}
   ~DownloadRestrictionsDeepScanningBrowserTest() override = default;
 
@@ -1193,14 +1149,13 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
 
 class AllowlistedUrlDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   AllowlistedUrlDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(
             /*connectors_machine_scope=*/std::get<0>(GetParam()),
             /*is_consumer=*/false,
-            /*is_resumable=*/std::get<1>(GetParam()),
-            /*is_obfuscated=*/std::get<2>(GetParam())) {}
+            /*is_obfuscated=*/std::get<1>(GetParam())) {}
   ~AllowlistedUrlDeepScanningBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -1217,7 +1172,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          AllowlistedUrlDeepScanningBrowserTest,
                          testing::Combine(
                              /*connectors_machine_scope=*/testing::Bool(),
-                             /*is_resumable=*/testing::Bool(),
                              /*is_obfuscated*/ testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(AllowlistedUrlDeepScanningBrowserTest,
@@ -1246,12 +1200,8 @@ IN_PROC_BROWSER_TEST_P(AllowlistedUrlDeepScanningBrowserTest,
   result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
-    ExpectContentAnalysisResumableContentResponse(sync_response);
-  } else {
-    ExpectContentAnalysisMultipartResponse(sync_response, {"dlp", "malware"});
-  }
+  ExpectContentAnalysisResumableMetadataResponse({"dlp", "malware"});
+  ExpectContentAnalysisResumableContentResponse(sync_response);
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
@@ -1379,7 +1329,6 @@ class SavePackageDeepScanningBrowserTest
   SavePackageDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
                                             /*is_consumer=*/false,
-                                            /*is_resumable=*/GetParam(),
                                             /*is_obfuscated=*/false) {}
 
   base::FilePath GetSaveDir() {
@@ -1391,23 +1340,16 @@ class SavePackageDeepScanningBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(, SavePackageDeepScanningBrowserTest, testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Allowed) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
   SetUpReporting();
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/save_page/text.txt")));
 
   // No scan runs synchronously.
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-    ExpectContentAnalysisResumableContentResponse(
-        enterprise_connectors::ContentAnalysisResponse());
-  } else {
-    ExpectContentAnalysisMultipartResponse(
-        enterprise_connectors::ContentAnalysisResponse(), {"dlp"});
-  }
+  ExpectContentAnalysisResumableMetadataResponse({"dlp"});
+  ExpectContentAnalysisResumableContentResponse(
+      enterprise_connectors::ContentAnalysisResponse());
 
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
@@ -1449,21 +1391,16 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Allowed) {
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Blocked) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // No scan runs synchronously.
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-    ExpectContentAnalysisResumableContentResponse(
-        enterprise_connectors::ContentAnalysisResponse());
-  } else {
-    ExpectContentAnalysisMultipartResponse(
-        enterprise_connectors::ContentAnalysisResponse(), {"dlp"});
-  }
+  ExpectContentAnalysisResumableMetadataResponse({"dlp"});
+  ExpectContentAnalysisResumableContentResponse(
+      enterprise_connectors::ContentAnalysisResponse());
 
   base::RunLoop run_loop;
   content::SavePackageFinishedObserver observer(
@@ -1526,21 +1463,16 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, Blocked) {
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // No scan runs synchronously.
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-    ExpectContentAnalysisResumableContentResponse(
-        enterprise_connectors::ContentAnalysisResponse());
-  } else {
-    ExpectContentAnalysisMultipartResponse(
-        enterprise_connectors::ContentAnalysisResponse(), {"dlp"});
-  }
+  ExpectContentAnalysisResumableMetadataResponse({"dlp"});
+  ExpectContentAnalysisResumableContentResponse(
+      enterprise_connectors::ContentAnalysisResponse());
 
   base::RunLoop save_package_run_loop;
   content::SavePackageFinishedObserver observer(
@@ -1643,7 +1575,7 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
                        DiscardAfterWarning) {
   SetUpReporting();
 
@@ -1651,14 +1583,9 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // No scan runs synchronously.
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-    ExpectContentAnalysisResumableContentResponse(
-        enterprise_connectors::ContentAnalysisResponse());
-  } else {
-    ExpectContentAnalysisMultipartResponse(
-        enterprise_connectors::ContentAnalysisResponse(), {"dlp"});
-  }
+  ExpectContentAnalysisResumableMetadataResponse({"dlp"});
+  ExpectContentAnalysisResumableContentResponse(
+      enterprise_connectors::ContentAnalysisResponse());
 
   base::RunLoop save_package_run_loop;
   content::SavePackageFinishedObserver observer(
@@ -1736,21 +1663,16 @@ IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest,
   EXPECT_FALSE(base::PathExists(extra_files_dir));
 }
 
-IN_PROC_BROWSER_TEST_P(SavePackageDeepScanningBrowserTest, OpenNow) {
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   SetUpReporting();
 
   GURL url = embedded_test_server()->GetURL("/save_page/text.txt");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // No scan runs synchronously.
-  if (is_resumable()) {
-    ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-    ExpectContentAnalysisResumableContentResponse(
-        enterprise_connectors::ContentAnalysisResponse());
-  } else {
-    ExpectContentAnalysisMultipartResponse(
-        enterprise_connectors::ContentAnalysisResponse(), {"dlp"});
-  }
+  ExpectContentAnalysisResumableMetadataResponse({"dlp"});
+  ExpectContentAnalysisResumableContentResponse(
+      enterprise_connectors::ContentAnalysisResponse());
 
   base::RunLoop save_package_run_loop;
   content::SavePackageFinishedObserver observer(

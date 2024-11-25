@@ -9,14 +9,8 @@
 
 namespace enterprise_connectors {
 
-// Controls whether the resumable upload protocol is enabled or not.
-BASE_DECLARE_FEATURE(kResumableUploadEnabled);
-
 // Controls whether Chrome can stop register fcm token.
 BASE_DECLARE_FEATURE(kStopRegisterFcmEnabled);
-
-// Returns true if resumable upload is enabled.
-bool IsResumableUploadEnabled();
 
 // Returns true if stop register fcm token is enabled.
 bool IsStopRegisterFcmEnabled();
