@@ -2471,12 +2471,31 @@ export class NetworkConfigElement extends NetworkConfigElementBase {
     return this.shareNetwork_;
   }
 
+  setShareNetworkForTesting(shareNetwork: boolean): void {
+    this.shareNetwork_ = shareNetwork;
+  }
+
   getPropertiesSentForTesting(): boolean {
     return this.propertiesSent_;
   }
 
+  getManagedPropertiesForTesting(): ManagedProperties {
+    assert(this.managedProperties_);
+    return this.managedProperties_;
+  }
+
   setManagedPropertiesForTesting(managedProperties: ManagedProperties): void {
     this.managedProperties_ = managedProperties;
+  }
+
+  setSerializedSubjectAltNameMatchForTesting(serializedSubjectAltNameMatch:
+                                                 string): void {
+    this.serializedSubjectAltNameMatch_ = serializedSubjectAltNameMatch;
+  }
+
+  setSerializedDomainSuffixMatchForTesting(serializedDomainSuffixMatch: string):
+      void {
+    this.serializedDomainSuffixMatch_ = serializedDomainSuffixMatch;
   }
 }
 
