@@ -12,17 +12,20 @@ load("@builtin//struct.star", "module")
 def __step_config(ctx, step_config):
     exceptions = [
         {
+            # TODO: crbug.com/380755128 - Make each compile unit smaller.
             "name": "fuzzer_large_compile",
             "action_outs": [
                 "./obj/chrome/test/fuzzing/htmlfuzzer_proto_gen/htmlfuzzer_sub.pb.o",
                 "./obj/chrome/test/fuzzing/jsfuzzer/jsfuzzer.o",
                 "./obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer.pb.o",
                 "./obj/chrome/test/fuzzing/jsfuzzer_proto_gen/jsfuzzer_sub.pb.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar/webidl_fuzzer_grammar.o",
+                "./obj/chrome/test/fuzzing/webidl_fuzzing/webidl_fuzzer_grammar_proto_gen/webidl_fuzzer_grammar.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer/webidlfuzzer.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer.pb.o",
                 "./obj/chrome/test/fuzzing/webidl_fuzzing/webidlfuzzer_proto_gen/webidlfuzzer_sub.pb.o",
             ],
-            "timeout": "10m",
+            "timeout": "15m",
             # need 9G for debug build
             "use_large": True,
         },
