@@ -23,6 +23,9 @@
   "     or `%B %d, %Y` (January 1, 2000). If the suite is not supposed to     ",
   "     expire, use `never`. A bug will be filed for removing expired suites. ",
 
+  "Note: for VTS includes wpt_internal tests, please also list them in headless_shell.filter",
+  "with a negative filter so that they can be run blink_wpt_tests step.",
+
   {
     "prefix": "verify-minimal-resource-request-kill-switch",
     "platforms": ["Linux"],

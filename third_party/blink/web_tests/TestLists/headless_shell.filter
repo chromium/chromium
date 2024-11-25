@@ -10,6 +10,37 @@
 # for `blink_wpt_tests`, `-*` will skip all tests by default.
 *
 
+# Do not skip wpt_internal tests on blink_wpt_tests
+-wpt_internal/*
+-virtual/threaded/wpt_internal/*
+-virtual/attribution-reporting-debug-mode/wpt_internal/*
+-virtual/stable/wpt_internal/*
+-virtual/isolated-context/wpt_internal/*
+-virtual/isolated-context-stable/wpt_internal/*
+-virtual/forced-high-contrast-colors/wpt_internal/*
+-virtual/trust-tokens/wpt_internal/*
+-virtual/details-styling-disabled/wpt_internal/*
+-virtual/third-party-storage-partitioning/wpt_internal/*
+-virtual/popover-hint-disabled/wpt_internal/*
+-virtual/async-script-scheduling-disabled/wpt_internal/*
+-virtual/async-script-scheduling-apply-to-cross-site-only/wpt_internal/*
+-virtual/async-script-scheduling-apply-to-allowlist/wpt_internal/*
+-virtual/async-script-scheduling-finished-parsing/wpt_internal/*
+-virtual/async-script-scheduling-paint-or-parsing/wpt_internal/*
+-virtual/private-aggregation-developer-mode/wpt_internal/*
+-virtual/task-tracking/wpt_internal/*
+-virtual/fenced-frame-mparch-internal/wpt_internal/*
+-virtual/prefetch-no-vary-search/wpt_internal/*
+-virtual/js-shared-memory/wpt_internal/*
+-virtual/new-text-size-adjust/wpt_internal/*
+-virtual/new-text-size-adjust-with-os-font-scale/wpt_internal/*
+-virtual/old-text-size-adjust/wpt_internal/*
+-virtual/old-text-size-adjust-with-os-font-scale/wpt_internal/*
+-virtual/generic-sensor-extra-classes/wpt_internal/*
+-virtual/unload-allowed/wpt_internal/*
+-virtual/css-mixins/wpt_internal/*
+-virtual/single-import-map/wpt_internal/*
+
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.
 -external/wpt/accelerometer/Accelerometer.https.html
@@ -1189,9 +1220,11 @@
 -virtual/verify-minimal-resource-request-kill-switch/external/wpt/fetch/stale-while-revalidate/stale-*
 -virtual/view-transition-layered-capture/*
 -virtual/view-transition-mpa-serialization/*
+-virtual/view-transition-mpa-serialization/wpt_internal/*
 # https://github.com/web-platform-tests/wpt/issues/48825
 -virtual/view-transition-on-navigation/*
 -virtual/view-transition-wide-gamut/*
+-virtual/view-transition-wide-gamut/wpt_internal/*
 -virtual/web-bluetooth-new-permissions-backend/*
 -virtual/webnn-service-on-cpu/*
 -virtual/webnn-service-on-npu/*
