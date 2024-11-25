@@ -318,11 +318,9 @@ void ScopedStyleResolver::CollectMatchingSlottedRules(
 
 void ScopedStyleResolver::CollectMatchingPartPseudoRules(
     ElementRuleCollector& collector,
-    PartNames* part_names,
-    bool for_shadow_pseudo) {
+    PartNames* part_names) {
   ForAllStylesheets(collector, [&](const MatchRequest& match_request) {
-    collector.CollectMatchingPartPseudoRules(match_request, part_names,
-                                             for_shadow_pseudo);
+    collector.CollectMatchingPartPseudoRules(match_request, part_names);
   });
 }
 

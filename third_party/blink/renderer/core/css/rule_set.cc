@@ -520,38 +520,28 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
 
   AtomicString ua_shadow_pseudo = get_ua_shadow_pseudo();
 
-  if (RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled()) {
-    // Any selector with or following ::part() or a UA shadow pseudo-element
-    // must go in the bucket for the *innermost* such pseudo-element.
+  // Any selector with or following ::part() or a UA shadow pseudo-element
+  // must go in the bucket for the *innermost* such pseudo-element.
 
-    // TODO(dbaron): Should this eventually check kShadowSlot as well?
-    if (part_name.empty() && ua_shadow_pseudo == g_null_atom && it &&
-        (it->Relation() == CSSSelector::RelationType::kUAShadow ||
-         it->Relation() == CSSSelector::RelationType::kShadowPart)) {
-      const CSSSelector* previous = it->NextSimpleSelector();
-      if (previous->Match() == CSSSelector::kPseudoElement) {
-        ExtractSelectorValues(previous, style_scope, id, class_name, attr_name,
-                              attr_value, is_exact_attr,
-                              custom_pseudo_element_name, tag_name, part_name,
-                              picker_name, pseudo_type);
-        ua_shadow_pseudo = get_ua_shadow_pseudo();
-      }
+  // TODO(dbaron): Should this eventually check kShadowSlot as well?
+  if (part_name.empty() && ua_shadow_pseudo == g_null_atom && it &&
+      (it->Relation() == CSSSelector::RelationType::kUAShadow ||
+       it->Relation() == CSSSelector::RelationType::kShadowPart)) {
+    const CSSSelector* previous = it->NextSimpleSelector();
+    if (previous->Match() == CSSSelector::kPseudoElement) {
+      ExtractSelectorValues(previous, style_scope, id, class_name, attr_name,
+                            attr_value, is_exact_attr,
+                            custom_pseudo_element_name, tag_name, part_name,
+                            picker_name, pseudo_type);
+      ua_shadow_pseudo = get_ua_shadow_pseudo();
     }
   }
 
   // Any selector with or following ::part() must go in the part bucket,
   // because we look in that bucket in higher scopes to find rules that need
   // to match inside the shadow tree.
-  if (!part_name.empty() ||
-      (it && it->FollowsPart() &&
-       !RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled())) {
-    // NOTE: Cannot mark as covered by bucketing because the part buckets are
-    // shared between the part itself and pseudo-elements inside of them.
-    // (Though we do check at least some of the relevant conditions *before*
-    // we check whether the selector is covered by bucketing, so it might be
-    // doable if we want.)
-    // TODO(https://crbug.com/40280846): When the CSSCascadeCorrectScope flag
-    // is removed (and enabled), we can revisit this.
+  if (!part_name.empty()) {
+    // TODO: Mark as covered by bucketing?
     AddToRuleSet(part_pseudo_rules_, rule_data);
     return;
   }

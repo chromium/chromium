@@ -89,8 +89,7 @@ class CORE_EXPORT ScopedStyleResolver final
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
   void CollectMatchingPartPseudoRules(ElementRuleCollector&,
-                                      PartNames* part_names,
-                                      bool for_shadow_pseudo);
+                                      PartNames* part_names);
   void MatchPageRules(PageRuleCollector&);
   void CollectFeaturesTo(RuleFeatureSet&,
                          HeapHashSet<Member<const StyleSheetContents>>&

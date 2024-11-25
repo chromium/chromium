@@ -591,10 +591,6 @@ class CORE_EXPORT CSSSelector {
   static bool IsElementBackedPseudoElement(CSSSelector::PseudoType pseudo);
   bool IsAllowedAfterPart() const;
 
-  // Returns true if the immediately preceding simple selector is ::part.
-  // TODO(https://crbug.com/40280846): Remove this when removing the
-  // CSSCascadeCorrectScope flag.
-  bool FollowsPart() const;
   // Returns true if the immediately preceding simple selector is ::slotted.
   bool FollowsSlotted() const;
 

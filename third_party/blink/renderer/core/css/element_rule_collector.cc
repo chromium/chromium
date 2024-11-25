@@ -484,8 +484,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
     const RuleSet* rule_set,
     int style_sheet_index,
     const SelectorChecker& checker,
-    SelectorChecker::SelectorCheckingContext& context,
-    PartRequest* part_request) {
+    SelectorChecker::SelectorCheckingContext& context) {
   bool reject_starting_styles = style_recalc_context_.is_ensuring_style ||
                                 style_recalc_context_.old_style;
 
@@ -522,15 +521,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
 
-    const auto& selector = rule_data.Selector();
-    if (part_request && part_request->for_shadow_pseudo) [[unlikely]] {
-      if (!selector.IsAllowedAfterPart()) {
-        DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoPart);
-        continue;
-      }
-      DCHECK_EQ(selector.Relation(), CSSSelector::kUAShadow);
-    }
-
     if (reject_starting_styles && rule_data.IsStartingStyle()) {
       continue;
     }
@@ -548,6 +538,7 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
           context.scope->OwnerShadowHost() == context.element) &&
         !context.style_scope;
 
+    const auto& selector = rule_data.Selector();
     SelectorChecker::MatchResult result;
     if (can_use_easy_selector_matching &&
         rule_data.IsEntirelyCoveredByBucketing()) {
@@ -703,8 +694,7 @@ bool ElementRuleCollector::CollectMatchingRulesForList(
     const RuleSet* rule_set,
     int style_sheet_index,
     const SelectorChecker& checker,
-    SelectorChecker::SelectorCheckingContext& context,
-    PartRequest* part_request) {
+    SelectorChecker::SelectorCheckingContext& context) {
   // This is a very common case for many style sheets, and by putting it here
   // instead of inside CollectMatchingRulesForListInternal(), we're usually
   // inlined into the caller (which saves on stack setup and call overhead
@@ -718,12 +708,10 @@ bool ElementRuleCollector::CollectMatchingRulesForList(
   // when tracing is not enabled.
   if (!*g_selector_stats_tracing_enabled) {
     return CollectMatchingRulesForListInternal<stop_at_first_match, false>(
-        rules, match_request, rule_set, style_sheet_index, checker, context,
-        part_request);
+        rules, match_request, rule_set, style_sheet_index, checker, context);
   } else {
     return CollectMatchingRulesForListInternal<stop_at_first_match, true>(
-        rules, match_request, rule_set, style_sheet_index, checker, context,
-        part_request);
+        rules, match_request, rule_set, style_sheet_index, checker, context);
   }
 }
 
@@ -1064,9 +1052,7 @@ void ElementRuleCollector::CollectMatchingSlottedRules(
 
 void ElementRuleCollector::CollectMatchingPartPseudoRules(
     const MatchRequest& match_request,
-    PartNames* part_names,
-    bool for_shadow_pseudo) {
-  PartRequest request{for_shadow_pseudo};
+    PartNames* part_names) {
   SelectorChecker checker(part_names, pseudo_style_request_, mode_,
                           matching_ua_rules_);
 
@@ -1077,7 +1063,7 @@ void ElementRuleCollector::CollectMatchingPartPseudoRules(
   for (const auto bundle : match_request.AllRuleSets()) {
     CollectMatchingRulesForList</*stop_at_first_match=*/false>(
         bundle.rule_set->PartPseudoRules(), match_request, bundle.rule_set,
-        bundle.style_sheet_index, checker, context.context, &request);
+        bundle.style_sheet_index, checker, context.context);
   }
 }
 

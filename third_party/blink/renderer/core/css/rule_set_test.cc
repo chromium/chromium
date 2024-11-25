@@ -320,7 +320,6 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_PartPseudoElements) {
 }
 
 TEST(RuleSetTest, findBestRuleSetAndAdd_ShadowPseudoAfterPart) {
-  ScopedCSSCascadeCorrectScopeForTest scoped_feature(true);
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 

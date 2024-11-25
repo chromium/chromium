@@ -1842,14 +1842,6 @@ static bool ForAnyInComplexSelector(const Functor& functor,
   return false;
 }
 
-bool CSSSelector::FollowsPart() const {
-  const CSSSelector* previous = NextSimpleSelector();
-  if (!previous) {
-    return false;
-  }
-  return previous->GetPseudoType() == kPseudoPart;
-}
-
 bool CSSSelector::FollowsSlotted() const {
   const CSSSelector* previous = NextSimpleSelector();
   if (!previous) {
