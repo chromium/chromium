@@ -42,6 +42,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_platform_apitest.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -404,7 +406,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
 
 // TODO(crbug.com/371426261): Enable this test on desktop android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-class BrowsingDataApiTest : public extensions::ExtensionApiTest {};
+using BrowsingDataApiTest = extensions::ExtensionApiTest;
+#else
+using BrowsingDataApiTest = extensions::ExtensionPlatformApiTest;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, ValidateFilters) {
   static constexpr char kManifest[] =
@@ -440,4 +445,3 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, ValidateFilters) {
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
   ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

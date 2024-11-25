@@ -17,7 +17,7 @@ schema_sources_ = [ "notifications.idl" ]
 # Schemas that should be used only to auto-generate the C++ types.
 # In many cases, this includes schemas used to generate types used in manifest
 # parsing.
-uncompiled_sources_ = []
+uncompiled_sources_ = [ "browsing_data.json" ]
 
 if (enable_extensions) {
   schema_sources_ += [
@@ -152,7 +152,6 @@ if (enable_extensions) {
   uncompiled_sources_ += [
     "action.json",
     "browser_action.json",
-    "browsing_data.json",
     "extension.json",
     "idltest.idl",
     "page_action.json",
