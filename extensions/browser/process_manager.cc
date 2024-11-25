@@ -90,7 +90,6 @@ bool IsFrameInExtensionHost(ExtensionHost* extension_host,
 class IncognitoProcessManager : public ProcessManager {
  public:
   IncognitoProcessManager(BrowserContext* incognito_context,
-                          BrowserContext* original_context,
                           ExtensionRegistry* extension_registry);
 
   IncognitoProcessManager(const IncognitoProcessManager&) = delete;
@@ -184,57 +183,27 @@ std::unique_ptr<ProcessManager> ProcessManager::Create(
     BrowserContext* context) {
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
-  if (client->IsGuestSession(context)) {
-    // In the guest session, there is a single off-the-record context.  Unlike
-    // a regular incognito mode, background pages of extensions must be
-    // created regardless of whether extensions use "spanning" or "split"
-    // incognito behavior.
-    BrowserContext* original_context =
-        client->GetContextRedirectedToOriginal(context);
-    return std::make_unique<ProcessManager>(context, original_context,
-                                            extension_registry);
-  }
 
-  if (context->IsOffTheRecord()) {
-    BrowserContext* original_context =
-        client->GetContextRedirectedToOriginal(context);
-    return std::make_unique<IncognitoProcessManager>(context, original_context,
+  // Create a specialized ProcessManager for incognito contexts. Note that in
+  // the guest session, there is a single off-the-record context.  Unlike a
+  // regular incognito mode, background pages of extensions must be created
+  // regardless of whether extensions use "spanning" or "split" incognito
+  // behavior.
+  if (context->IsOffTheRecord() && !client->IsGuestSession(context)) {
+    return std::make_unique<IncognitoProcessManager>(context,
                                                      extension_registry);
   }
 
-  return std::make_unique<ProcessManager>(context, context, extension_registry);
-}
-
-// static
-ProcessManager* ProcessManager::CreateForTesting(
-    BrowserContext* context,
-    ExtensionRegistry* extension_registry) {
-  DCHECK(!context->IsOffTheRecord());
-  return new ProcessManager(context, context, extension_registry);
-}
-
-// static
-ProcessManager* ProcessManager::CreateIncognitoForTesting(
-    BrowserContext* incognito_context,
-    BrowserContext* original_context,
-    ExtensionRegistry* extension_registry) {
-  DCHECK(incognito_context->IsOffTheRecord());
-  DCHECK(!original_context->IsOffTheRecord());
-  return new IncognitoProcessManager(incognito_context,
-                                     original_context,
-                                     extension_registry);
+  return std::make_unique<ProcessManager>(context, extension_registry);
 }
 
 ProcessManager::ProcessManager(BrowserContext* context,
-                               BrowserContext* original_context,
                                ExtensionRegistry* extension_registry)
     : extension_registry_(extension_registry),
       site_instance_(content::SiteInstance::Create(context)),
       browser_context_(context),
       startup_background_hosts_created_(false),
       last_background_close_sequence_id_(0) {
-  // ExtensionRegistry is shared between incognito and regular contexts.
-  DCHECK_EQ(original_context, extension_registry_->browser_context());
   extension_registry_->AddObserver(this);
 
   // Only the original profile needs to listen for ready to create background
@@ -1161,9 +1130,8 @@ void ProcessManager::ClearBackgroundPageData(const ExtensionId& extension_id) {
 
 IncognitoProcessManager::IncognitoProcessManager(
     BrowserContext* incognito_context,
-    BrowserContext* original_context,
     ExtensionRegistry* extension_registry)
-    : ProcessManager(incognito_context, original_context, extension_registry) {
+    : ProcessManager(incognito_context, extension_registry) {
   DCHECK(incognito_context->IsOffTheRecord());
 }
 

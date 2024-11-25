@@ -83,11 +83,15 @@ class ProcessManager : public KeyedService,
 
   static ProcessManager* Get(content::BrowserContext* context);
 
-  // |context| is incognito pass the original context as |original_context|.
-  // Otherwise pass the same context for both. Pass the ExtensionRegistry for
-  // |context| as |registry|, or override it for testing.
+  // Creates a new ProcessManager for the given `context`. This is independent
+  // from the constructor below as it may construct an incognito version of the
+  // ProcessManager.
+  // Note: Most callers should use `ProcessManager::Get()` instead to retrieve
+  // the ProcessManager for a given context.
+  static std::unique_ptr<ProcessManager> Create(
+      content::BrowserContext* context);
+
   ProcessManager(content::BrowserContext* context,
-                 content::BrowserContext* original_context,
                  ExtensionRegistry* registry);
 
   ProcessManager(const ProcessManager&) = delete;
@@ -245,18 +249,6 @@ class ProcessManager : public KeyedService,
   static void SetEventPageSuspendingTimeForTesting(
       unsigned suspending_time_msec);
 
-  // Creates a non-incognito instance for tests. |registry| allows unit tests
-  // to inject an ExtensionRegistry that is not managed by the usual
-  // BrowserContextKeyedServiceFactory system.
-  static ProcessManager* CreateForTesting(content::BrowserContext* context,
-                                          ExtensionRegistry* registry);
-
-  // Creates an incognito-context instance for tests.
-  static ProcessManager* CreateIncognitoForTesting(
-      content::BrowserContext* incognito_context,
-      content::BrowserContext* original_context,
-      ExtensionRegistry* registry);
-
   content::BrowserContext* browser_context() const { return browser_context_; }
 
   const ExtensionHostSet& background_hosts() const {
@@ -291,16 +283,10 @@ class ProcessManager : public KeyedService,
   std::vector<WorkerId> GetAllWorkersIdsForTesting();
 
  protected:
-  static std::unique_ptr<ProcessManager> Create(
-      content::BrowserContext* context);
-
   // Not owned. Also used by IncognitoProcessManager.
   raw_ptr<ExtensionRegistry> extension_registry_;
 
  private:
-  friend class ProcessManagerFactory;
-  friend class ProcessManagerTest;
-
   // ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
