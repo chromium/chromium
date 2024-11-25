@@ -16776,7 +16776,6 @@ from previous Chrome versions.
   <int value="-1421676705" label="force-webxr-runtime"/>
   <int value="-1420949910" label="ChromeWideEchoCancellation:enabled"/>
   <int value="-1420908477" label="EnterOverviewFromWallpaper:disabled"/>
-  <int value="-1420848224" label="WebViewForceDarkModeMatchTheme:enabled"/>
   <int value="-1420676362"
       label="FillingAcrossAffiliatedWebsitesAndroid:enabled"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
@@ -23134,7 +23133,6 @@ from previous Chrome versions.
   <int value="1140375528" label="CrabbyAvif:enabled"/>
   <int value="1140513364" label="IdentityStatusConsistency:disabled"/>
   <int value="1140541604" label="WinrtGeolocationImplementation:enabled"/>
-  <int value="1140776731" label="WebViewForceDarkModeMatchTheme:disabled"/>
   <int value="1140903063" label="FuseBox:enabled"/>
   <int value="1141918949" label="ContextualSearchLongpressPanelHelp:enabled"/>
   <int value="1142147693" label="webview-enable-app-recovery"/>

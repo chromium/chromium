@@ -21,7 +21,6 @@ BASE_DECLARE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes);
 BASE_DECLARE_FEATURE(kWebViewDragDropFiles);
 BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
-BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 // Feature parameter for `network::features::kMaskedDomainList` which is
 // defined in //services/network.
