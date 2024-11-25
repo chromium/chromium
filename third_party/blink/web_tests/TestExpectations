@@ -2679,24 +2679,20 @@ crbug.com/352390127 external/wpt/webcodecs/full-cycle-test.https.any.worker.html
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
 crbug.com/362556327 [ Mac ] external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 
-# Expression inside DCHECK expression appears to cause a crash with:
-#   ../../third_party/libc++/src/include/optional:810: assertion this->has_value() failed: optional operator* called on a disengaged value
-#
-# https://ci.chromium.org/ui/p/chromium/builders/try/linux-rel/1942084/overview
-crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-duration-computed.html [ Crash Failure Pass Timeout ]
-crbug.com/364676078 external/wpt/css/css-animations/parsing/animation-iteration-count-computed.html [ Crash Failure Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-function.html [ Crash Failure Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Crash Failure Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Crash Failure Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-hwb.html [ Crash Failure Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-lab.html [ Crash Failure Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-computed-rgb.html [ Crash Failure Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-color-function.html [ Crash Failure Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hsl.html [ Crash Failure Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-hwb.html [ Crash Failure Pass Timeout ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-lab.html [ Crash Failure Pass ]
-crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Crash Failure Pass Timeout ]
-crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Failure Pass ]
+# Expressions are attempted resolved during parsing, where lengths are not available
+crbug.com/40946458 external/wpt/css/css-animations/parsing/animation-duration-computed.html [ Crash Failure Pass Timeout ]
+crbug.com/40946458 external/wpt/css/css-animations/parsing/animation-iteration-count-computed.html [ Crash Failure Pass Timeout ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-color-function.html [ Crash Failure Pass ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-color-mix-function.html [ Crash Failure Pass Timeout ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-hsl.html [ Crash Failure Pass ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-hwb.html [ Crash Failure Pass Timeout ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-lab.html [ Crash Failure Pass ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-computed-rgb.html [ Crash Failure Pass ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-valid-color-function.html [ Crash Failure Pass ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-valid-hsl.html [ Crash Failure Pass Timeout ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-valid-hwb.html [ Crash Failure Pass Timeout ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-valid-lab.html [ Crash Failure Pass ]
+crbug.com/40946458 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Crash Failure Pass Timeout ]
 
 # Sometimes flaky when run with headless shell via ChromeDriver.
 crbug.com/343720396 external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-allow-popups-to-unsafe-none.https.html?1-2 [ Crash Failure Timeout ]

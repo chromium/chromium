@@ -579,7 +579,8 @@ StyleBuilderConverter::ConvertFontFeatureSettings(StyleResolverState& state,
   int len = list.length();
   for (int i = 0; i < len; ++i) {
     const auto& feature = To<cssvalue::CSSFontFeatureValue>(list.Item(i));
-    settings->Append(FontFeature(feature.Tag(), feature.Value()));
+    settings->Append(FontFeature(
+        feature.Tag(), feature.Value(state.CssToLengthConversionData())));
   }
   return settings;
 }
@@ -2242,10 +2243,9 @@ LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
 }
 
 template <typename T>
-T ConvertGapDecorationPropertyValue(
-    StyleResolverState& state,
-    const CSSValue& value,
-    bool for_visited_link = false);
+T ConvertGapDecorationPropertyValue(StyleResolverState& state,
+                                    const CSSValue& value,
+                                    bool for_visited_link = false);
 
 template <>
 StyleColor ConvertGapDecorationPropertyValue<StyleColor>(
