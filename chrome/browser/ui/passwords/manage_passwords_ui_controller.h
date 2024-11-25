@@ -277,6 +277,9 @@ class ManagePasswordsUIController
   void NavigateToPasswordCheckup(
       password_manager::PasswordCheckReferrer referrer) override;
   void OnLeakDialogHidden() override;
+  void ChangePassword(const GURL& url,
+                      const std::u16string& username,
+                      const std::u16string& password) override;
 
   enum class BubbleStatus {
     NOT_SHOWN,

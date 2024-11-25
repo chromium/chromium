@@ -24,7 +24,9 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -117,6 +119,12 @@ password_manager::PasswordStoreInterface* GetAccountPasswordStore(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
              ServiceAccessType::EXPLICIT_ACCESS)
       .get();
+}
+
+ChromePasswordChangeService* GetPasswordChangeService(
+    content::WebContents* web_contents) {
+  return PasswordChangeServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 }
 
 std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyFormVector(
@@ -1014,6 +1022,17 @@ void ManagePasswordsUIController::OnLeakDialogHidden() {
       bubble_status_ = BubbleStatus::SHOULD_POP_UP;
     }
     UpdateBubbleAndIconVisibility();
+  }
+}
+
+void ManagePasswordsUIController::ChangePassword(
+    const GURL& url,
+    const std::u16string& username,
+    const std::u16string& password) {
+  if (auto* password_change_service =
+          GetPasswordChangeService(web_contents())) {
+    password_change_service->StartPasswordChange(url, username, password,
+                                                 web_contents());
   }
 }
 
