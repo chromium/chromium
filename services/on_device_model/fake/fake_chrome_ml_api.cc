@@ -7,24 +7,35 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "services/on_device_model/ml/chrome_ml_api.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace fake_ml {
 namespace {
+
 std::string PieceToString(const ml::InputPiece& piece) {
   if (std::holds_alternative<std::string>(piece)) {
     return std::get<std::string>(piece);
   }
-  switch (std::get<ml::Token>(piece)) {
-    case ml::Token::kSystem:
-      return "System: ";
-    case ml::Token::kModel:
-      return "Model: ";
-    case ml::Token::kUser:
-      return "User: ";
-    case ml::Token::kEnd:
-      return " End.";
+  if (std::holds_alternative<ml::Token>(piece)) {
+    switch (std::get<ml::Token>(piece)) {
+      case ml::Token::kSystem:
+        return "System: ";
+      case ml::Token::kModel:
+        return "Model: ";
+      case ml::Token::kUser:
+        return "User: ";
+      case ml::Token::kEnd:
+        return " End.";
+    }
   }
+  if (std::holds_alternative<SkBitmap>(piece)) {
+    const SkBitmap& bitmap = std::get<SkBitmap>(piece);
+    return base::StringPrintf("[Bitmap of size %dx%d]", bitmap.width(),
+                              bitmap.height());
+  }
+  NOTREACHED();
 }
 
 int g_active_non_clone_sessions = 0;
@@ -144,12 +155,21 @@ bool SessionExecuteModel(ChromeMLSession session,
   std::string text;
   for (size_t i = 0; i < options->input_size; i++) {
     // SAFETY: `options->input_size` describes how big `options->input` is.
-    text += UNSAFE_BUFFERS(PieceToString(options->input[i]));
+    const ml::InputPiece& piece = UNSAFE_BUFFERS(options->input[i]);
+    if (!std::holds_alternative<std::string>(piece) &&
+        !std::holds_alternative<ml::Token>(piece)) {
+      // We could write code to handle token options and non-text inputs being
+      // passed together, but it would only be exercised by unit tests so would
+      // not improve real-world coverage.
+      CHECK(options->token_offset == 0);
+    }
+
+    text += PieceToString(piece);
   }
-  if (options->token_offset) {
+  if (options->token_offset > 0) {
     text.erase(text.begin(), text.begin() + options->token_offset);
   }
-  if (options->max_tokens && options->max_tokens < text.size()) {
+  if (options->max_tokens < text.size()) {
     text.resize(options->max_tokens);
   }
 
@@ -200,7 +220,13 @@ void SessionSizeInTokensInputPiece(ChromeMLSession session,
   std::string text;
   for (size_t i = 0; i < input_size; i++) {
     // SAFETY: `input_size` describes how big `input` is.
-    text += UNSAFE_BUFFERS(PieceToString(input[i]));
+    const ml::InputPiece& piece = UNSAFE_BUFFERS(input[i]);
+    if (!std::holds_alternative<std::string>(piece) &&
+        !std::holds_alternative<ml::Token>(piece)) {
+      continue;
+    }
+
+    text += PieceToString(piece);
   }
   fn(text.size());
 }

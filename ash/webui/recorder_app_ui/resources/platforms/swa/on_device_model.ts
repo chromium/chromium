@@ -92,12 +92,10 @@ abstract class OnDeviceModel<T> implements Model<T> {
     );
     session.execute(
       {
-        deprecatedText: '',
         ignoreContext: false,
-        maxTokens: null,
-        tokenOffset: null,
-        maxOutputTokens: null,
-        unusedSafetyInterval: null,
+        maxTokens: 0,
+        tokenOffset: 0,
+        maxOutputTokens: 0,
         topK: 1,
         temperature: 0,
         input: inputPieces,

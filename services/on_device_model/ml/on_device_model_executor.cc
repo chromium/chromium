@@ -327,8 +327,9 @@ void SessionImpl::AddContext(
       std::move(client),
       base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
       std::move(on_complete));
-  input->max_tokens =
-      std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
+  if (input->max_tokens == 0 || input->max_tokens > max_tokens_) {
+    input->max_tokens = max_tokens_;
+  }
   input->top_k = GetTopK(input->top_k);
   input->temperature = GetTemperature(input->temperature);
   ChromeMLContextSavedFn context_saved_fn =
@@ -349,8 +350,9 @@ void SessionImpl::Execute(
   responder_ = std::make_unique<Responder>(
       std::move(response), std::move(on_complete), std::move(cloned));
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
-  input->max_tokens =
-      std::min(input->max_tokens.value_or(max_tokens_), max_tokens_);
+  if (input->max_tokens == 0 || input->max_tokens > max_tokens_) {
+    input->max_tokens = max_tokens_;
+  }
   input->top_k = GetTopK(input->top_k);
   input->temperature = GetTemperature(input->temperature);
   ChromeMLContextSavedFn context_saved_fn = responder_->CreateContextSavedFn();

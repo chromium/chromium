@@ -121,7 +121,7 @@ void SessionAccessor::CreateInternal(
     }
     ChromeMLAdaptationDescriptor descriptor = {
         .model_data = &data,
-        .max_tokens = params->max_tokens.value_or(0),
+        .max_tokens = params->max_tokens,
     };
     session_ = chrome_ml_->api().CreateSession(model_, &descriptor);
   } else {
@@ -137,16 +137,14 @@ void SessionAccessor::ExecuteInternal(
     scoped_refptr<Canceler> canceler) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   ChromeMLExecuteOptions options{
-      .max_tokens = input->max_tokens.value_or(0),
-      .token_offset = input->token_offset.value_or(0),
-      .max_output_tokens = input->max_output_tokens.value_or(0),
+      .max_tokens = input->max_tokens,
+      .token_offset = input->token_offset,
+      .max_output_tokens = input->max_output_tokens,
       .top_k = input->top_k.value_or(1),
       .temperature = input->temperature.value_or(0),
   };
-  if (input->input) {
-    options.input = input->input->pieces.data();
-    options.input_size = input->input->pieces.size();
-  }
+  options.input = input->input->pieces.data();
+  options.input_size = input->input->pieces.size();
   if (context_saved_fn) {
     options.context_saved_fn = &context_saved_fn;
   }

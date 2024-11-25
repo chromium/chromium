@@ -562,6 +562,47 @@ TEST_F(OnDeviceModelServiceTest, AddContextWithTokens) {
                                                 "Input: User: bye\n"));
 }
 
+TEST_F(OnDeviceModelServiceTest, AddContextWithImages) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back("cheddar");
+
+    SkBitmap cheesy_bitmap;
+    cheesy_bitmap.allocN32Pixels(7, 21);
+    cheesy_bitmap.eraseColor(SK_ColorYELLOW);
+    pieces.push_back(cheesy_bitmap);
+
+    pieces.push_back("cheese");
+
+    session->AddContext(MakeInput(std::move(pieces)), {});
+  }
+
+  {
+    std::vector<ml::InputPiece> pieces;
+    pieces.push_back("bleu");
+
+    SkBitmap moldy_cheese;
+    moldy_cheese.allocN32Pixels(63, 42);
+    moldy_cheese.eraseColor(SK_ColorBLUE);
+    pieces.push_back(moldy_cheese);
+
+    pieces.push_back("cheese");
+
+    session->Execute(MakeInput(std::move(pieces)), response.BindRemote());
+    response.WaitForCompletion();
+  }
+
+  EXPECT_THAT(response.responses(),
+              ElementsAre("Context: cheddar[Bitmap of size 7x21]cheese\n",
+                          "Input: bleu[Bitmap of size 63x42]cheese\n"));
+}
+
 TEST_F(OnDeviceModelServiceTest, ClassifyTextSafety) {
   FakeFile ts_data("fake_ts_data");
   FakeFile ts_sp_model("fake_ts_sp_model");

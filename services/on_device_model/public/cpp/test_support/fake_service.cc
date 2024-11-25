@@ -36,15 +36,15 @@ std::string OnDeviceInputToString(const mojom::Input& input) {
 std::string CtxToString(const mojom::InputOptions& input) {
   std::string suffix;
   std::string context = OnDeviceInputToString(*input.input);
-  if (input.token_offset) {
-    context.erase(context.begin(), context.begin() + *input.token_offset);
-    suffix += " off:" + base::NumberToString(*input.token_offset);
+  if (input.token_offset > 0) {
+    context.erase(context.begin(), context.begin() + input.token_offset);
   }
-  if (input.max_tokens) {
+  suffix += " off:" + base::NumberToString(input.token_offset);
+  if (input.max_tokens > 0) {
     if (input.max_tokens < context.size()) {
-      context.resize(*input.max_tokens);
+      context.resize(input.max_tokens);
     }
-    suffix += " max:" + base::NumberToString(*input.max_tokens);
+    suffix += " max:" + base::NumberToString(input.max_tokens);
   }
   return context + suffix;
 }
@@ -84,12 +84,6 @@ void FakeOnDeviceSession::Execute(
                      weak_factory_.GetWeakPtr(), std::move(input),
                      std::move(response)),
       settings_->execute_delay);
-}
-
-void FakeOnDeviceSession::GetSizeInTokensDeprecated(
-    const std::string& text,
-    GetSizeInTokensCallback callback) {
-  std::move(callback).Run(0);
 }
 
 void FakeOnDeviceSession::GetSizeInTokens(mojom::InputPtr input,
@@ -157,8 +151,9 @@ void FakeOnDeviceSession::AddContextInternal(
     mojo::PendingRemote<mojom::ContextClient> client) {
   uint32_t input_tokens =
       static_cast<uint32_t>(OnDeviceInputToString(*input->input).size());
-  uint32_t max_tokens = input->max_tokens.value_or(input_tokens);
-  uint32_t token_offset = input->token_offset.value_or(0);
+  uint32_t max_tokens =
+      input->max_tokens > 0 ? input->max_tokens : input_tokens;
+  uint32_t token_offset = input->token_offset;
   uint32_t tokens_processed = std::min(input_tokens - token_offset, max_tokens);
   context_.emplace_back(std::move(input));
   if (client) {

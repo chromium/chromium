@@ -221,12 +221,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.session_.addContext(
         {
-          deprecatedText: '',
           ignoreContext: false,
-          maxTokens: null,
-          tokenOffset: null,
-          maxOutputTokens: null,
-          unusedSafetyInterval: null,
+          maxTokens: 0,
+          tokenOffset: 0,
+          maxOutputTokens: 0,
           topK: null,
           temperature: null,
           input: {pieces: textToInputPieces(this.contextText_)},
@@ -273,12 +271,10 @@ class OnDeviceInternalsToolsElement extends PolymerElement {
     }
     this.session_.execute(
         {
-          deprecatedText: '',
           ignoreContext: false,
-          maxTokens: null,
-          tokenOffset: null,
-          maxOutputTokens: null,
-          unusedSafetyInterval: null,
+          maxTokens: 0,
+          tokenOffset: 0,
+          maxOutputTokens: 0,
           topK: this.topK_,
           temperature: this.temperature_,
           input: {pieces: textToInputPieces(this.text_)},

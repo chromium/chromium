@@ -10,7 +10,12 @@ source_set("api") {
     "chrome_ml_api.h",
     "chrome_ml_types.h",
   ]
-  deps = [ "//third_party/dawn/src/dawn/native:headers" ]
+  deps = [
+    "//skia:skia_core_public_headers",
+    "//third_party/dawn/src/dawn/native:headers",
+  ]
+
+  # Any target that pulls in this source set needs to specify its own skia_config.
 }
 
 if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
@@ -21,6 +26,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     public_deps = [
       ":api",
       "//base",
+      "//skia",
     ]
   }
 
