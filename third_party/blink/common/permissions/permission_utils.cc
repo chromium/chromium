@@ -78,7 +78,7 @@ std::string GetPermissionString(PermissionType permission) {
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
     case PermissionType::WINDOW_MANAGEMENT:
-      return "WindowPlacement";
+      return "WindowManagement";
     case PermissionType::LOCAL_FONTS:
       return "LocalFonts";
     case PermissionType::DISPLAY_CAPTURE:
