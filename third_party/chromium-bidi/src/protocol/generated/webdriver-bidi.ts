@@ -990,8 +990,8 @@ export namespace Network {
   export type Initiator = {
     columnNumber?: JsUint;
     lineNumber?: JsUint;
-    stackTrace?: Script.StackTrace;
     request?: Network.Request;
+    stackTrace?: Script.StackTrace;
     type?: 'parser' | 'script' | 'preflight' | 'other';
   };
 }

@@ -1215,8 +1215,8 @@ export namespace Network {
     z.object({
       columnNumber: JsUintSchema.optional(),
       lineNumber: JsUintSchema.optional(),
-      stackTrace: Script.StackTraceSchema.optional(),
       request: Network.RequestSchema.optional(),
+      stackTrace: Script.StackTraceSchema.optional(),
       type: z.enum(['parser', 'script', 'preflight', 'other']).optional(),
     }),
   );
