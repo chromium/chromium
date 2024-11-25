@@ -85,6 +85,7 @@ public class WebViewChromiumAwInit {
         private Long mTotalTimeUiThreadChromiumInitMillis;
         private Long mMaxTimePerTaskUiThreadChromiumInitMillis;
         private Throwable mSynchronousChromiumInitLocation;
+        private Throwable mProviderInitOnMainLooperLocation;
 
         public Long getTotalTimeUiThreadChromiumInitMillis() {
             return mTotalTimeUiThreadChromiumInitMillis;
@@ -98,22 +99,32 @@ public class WebViewChromiumAwInit {
             return mSynchronousChromiumInitLocation;
         }
 
-        private void setTotalTimeUiThreadChromiumInitMillis(Long time) {
+        public @Nullable Throwable getProviderInitOnMainLooperLocationOrNull() {
+            return mProviderInitOnMainLooperLocation;
+        }
+
+        void setTotalTimeUiThreadChromiumInitMillis(Long time) {
             // The setter should only be called once.
             assert (mTotalTimeUiThreadChromiumInitMillis == null);
             mTotalTimeUiThreadChromiumInitMillis = time;
         }
 
-        private void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
+        void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
             // The setter should only be called once.
             assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
             mMaxTimePerTaskUiThreadChromiumInitMillis = time;
         }
 
-        private void setSynchronousChromiumInitLocation(Throwable t) {
+        void setSynchronousChromiumInitLocation(Throwable t) {
             // The setter should only be called once.
             assert (mSynchronousChromiumInitLocation == null);
             mSynchronousChromiumInitLocation = t;
+        }
+
+        void setProviderInitOnMainLooperLocation(Throwable t) {
+            // The setter should only be called once.
+            assert (mProviderInitOnMainLooperLocation == null);
+            mProviderInitOnMainLooperLocation = t;
         }
     }
 
@@ -153,6 +164,11 @@ public class WebViewChromiumAwInit {
     private final WebViewChromiumFactoryProvider mFactory;
     private final WebViewStartUpDiagnostics mWebViewStartUpDiagnostics =
             new WebViewStartUpDiagnostics();
+    private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
+            new WebViewChromiumRunQueue(
+                    () -> {
+                        return hasStarted();
+                    });
 
     // This enum must be kept in sync with WebViewStartup.CallSite in chrome_track_event.proto and
     // WebViewStartupCallSite in enums.xml.
@@ -209,6 +225,10 @@ public class WebViewChromiumAwInit {
             }
         }
         return mAwProxyController;
+    }
+
+    public void setProviderInitOnMainLooperLocation(Throwable t) {
+        mWebViewStartUpDiagnostics.setProviderInitOnMainLooperLocation(t);
     }
 
     // TODO: DIR_RESOURCE_PAKS_ANDROID needs to live somewhere sensible,
@@ -364,12 +384,12 @@ public class WebViewChromiumAwInit {
 
             AwCrashyClassUtils.maybeCrashIfEnabled();
         }
-
         long totalTimeTaken = SystemClock.uptimeMillis() - startTime;
         mWebViewStartUpDiagnostics.setTotalTimeUiThreadChromiumInitMillis(totalTimeTaken);
         // Currently `startUpChromium` is not split into multiple tasks, therefore we consider
         // `startUpChromium` as a single task.
         mWebViewStartUpDiagnostics.setMaxTimePerTaskUiThreadChromiumInitMillis(totalTimeTaken);
+        mWebViewStartUpCallbackRunQueue.drainQueue();
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.WebView.Startup.CreationTime.InitReason", callSite, CallSite.COUNT);
         RecordHistogram.recordTimesHistogram(
@@ -712,7 +732,8 @@ public class WebViewChromiumAwInit {
                 callback.onSuccess(mWebViewStartUpDiagnostics);
                 return;
             }
-            getRunQueue().addTask(() -> callback.onSuccess(mWebViewStartUpDiagnostics));
+            mWebViewStartUpCallbackRunQueue.addTask(
+                    () -> callback.onSuccess(mWebViewStartUpDiagnostics));
             ensureChromiumStartupHappensSoon(true, CallSite.ASYNC_WEBVIEW_STARTUP);
         }
     }

@@ -605,6 +605,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                                 supportLibResult.addBlockingStartUpLocation(
                                         syncChromiumInitLocation);
                             }
+                            Throwable providerInitOnMainLooperLocation =
+                                    result.getProviderInitOnMainLooperLocationOrNull();
+                            if (providerInitOnMainLooperLocation != null) {
+                                supportLibResult.addBlockingStartUpLocation(
+                                        providerInitOnMainLooperLocation);
+                            }
                             webViewStartUpCallback.onSuccess(
                                     BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                             supportLibResult));
