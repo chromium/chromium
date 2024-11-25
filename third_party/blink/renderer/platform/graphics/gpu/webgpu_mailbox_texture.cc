@@ -113,13 +113,13 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       canvas_resource->GetClientSharedImage();
   gpu::SyncToken sync_token = canvas_resource->GetSyncToken();
-  gfx::Size size = canvas_resource->Size();
+  gfx::Size size = shared_image->size();
 
   wgpu::TextureDescriptor tex_desc = {
       .usage = usage,
       .size = {base::checked_cast<uint32_t>(size.width()),
                base::checked_cast<uint32_t>(size.height())},
-      .format = VizToWGPUFormat(canvas_resource->GetSharedImageFormat()),
+      .format = VizToWGPUFormat(shared_image->format()),
   };
   return base::AdoptRef(new WebGPUMailboxTexture(
       std::move(dawn_control_client), device, tex_desc, std::move(shared_image),
