@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "apps/test/app_window_waiter.h"
+#include <string_view>
+
 #include "base/check_deref.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
-#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
-#include "chrome/browser/ash/login/test/device_state_mixin.h"
-#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -67,29 +67,34 @@ guest_view::TestGuestViewManager& GetGuestViewManager(
 
 }  // namespace
 
-class WebKioskGuestViewBrowserTest : public WebKioskBaseTest {
+class KioskGuestViewTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<KioskMixin::Config> {
  public:
-  WebKioskGuestViewBrowserTest() = default;
-  WebKioskGuestViewBrowserTest(const WebKioskGuestViewBrowserTest&) = delete;
-  WebKioskGuestViewBrowserTest& operator=(const WebKioskGuestViewBrowserTest&) =
-      delete;
+  KioskGuestViewTest() = default;
+  KioskGuestViewTest(const KioskGuestViewTest&) = delete;
+  KioskGuestViewTest& operator=(const KioskGuestViewTest&) = delete;
 
-  ~WebKioskGuestViewBrowserTest() override = default;
+  ~KioskGuestViewTest() override = default;
 
  protected:
+  const KioskMixin::Config& kiosk_mixin_config() { return GetParam(); }
+
   void SetUpOnMainThread() override {
-    WebKioskBaseTest::SetUpOnMainThread();
-    InitializeRegularOnlineKiosk();
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(kiosk_.WaitSessionLaunched());
   }
 
   guest_view::TestGuestViewManagerFactory& factory() { return factory_; }
 
  private:
+  ash::KioskMixin kiosk_{&mixin_host_,
+                         /*cached_configuration=*/kiosk_mixin_config()};
+
   guest_view::TestGuestViewManagerFactory factory_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebKioskGuestViewBrowserTest,
-                       AddingGuestViewDoesNotCrash) {
+IN_PROC_BROWSER_TEST_P(KioskGuestViewTest, AddingGuestViewDoesNotCrash) {
   EXPECT_EQ(0ULL, GetGuestViewManager(factory()).GetCurrentGuestCount());
   OpenWebUiWithGuestView();
 
@@ -100,55 +105,10 @@ IN_PROC_BROWSER_TEST_F(WebKioskGuestViewBrowserTest,
   EXPECT_NO_FATAL_FAILURE(NotifyKioskGuestAdded(guest_view->web_contents()));
 }
 
-class ChromeAppKioskGuestViewBrowserTest : public KioskBaseTest {
- public:
-  ChromeAppKioskGuestViewBrowserTest() = default;
-  ChromeAppKioskGuestViewBrowserTest(
-      const ChromeAppKioskGuestViewBrowserTest&) = delete;
-  ChromeAppKioskGuestViewBrowserTest& operator=(
-      const ChromeAppKioskGuestViewBrowserTest&) = delete;
-
-  ~ChromeAppKioskGuestViewBrowserTest() override = default;
-
- protected:
-  void LaunchApp() {
-    StartAppLaunchFromLoginScreen(NetworkStatus::kOnline);
-    WaitForAppLaunchWithOptions(/*check_launch_data=*/true,
-                                /*terminate_app=*/false,
-                                /*keep_app_open=*/true);
-  }
-
-  content::WebContents* WaitForAppWindowWebContents() {
-    extensions::AppWindowRegistry* app_window_registry =
-        extensions::AppWindowRegistry::Get(&GetProfile());
-    extensions::AppWindow& window = CHECK_DEREF(
-        apps::AppWindowWaiter(app_window_registry, test_app_id()).Wait());
-    return window.web_contents();
-  }
-
-  guest_view::TestGuestViewManagerFactory& factory() { return factory_; }
-
- private:
-  ash::DeviceStateMixin device_state_{
-      &mixin_host_,
-      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  LoginManagerMixin login_manager_{
-      &mixin_host_,
-      {{LoginManagerMixin::TestUserInfo{test_owner_account_id_}}}};
-
-  guest_view::TestGuestViewManagerFactory factory_;
-};
-
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskGuestViewBrowserTest,
-                       AddingGuestViewDoesNotCrash) {
-  LaunchApp();
-  EXPECT_EQ(0ULL, GetGuestViewManager(factory()).GetCurrentGuestCount());
-  OpenWebUiWithGuestView();
-  auto* guest_view =
-      GetGuestViewManager(factory()).WaitForSingleGuestViewCreated();
-  ASSERT_NE(guest_view, nullptr);
-  ASSERT_NE(guest_view->web_contents(), nullptr);
-  EXPECT_NO_FATAL_FAILURE(NotifyKioskGuestAdded(guest_view->web_contents()));
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskGuestViewTest,
+    testing::ValuesIn(KioskMixin::ConfigsToAutoLaunchEachAppType()),
+    KioskMixin::ConfigName);
 
 }  // namespace ash
