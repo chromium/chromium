@@ -298,7 +298,7 @@ std::vector<net::CanonicalCookie> FilterCookies(
     const std::string& name,
     const std::string& normalized_domain,
     const std::string& path,
-    Maybe<Network::CookiePartitionKey> partition_key) {
+    std::unique_ptr<Network::CookiePartitionKey> partition_key) {
   std::vector<net::CanonicalCookie> result;
 
   for (const auto& cookie : cookies) {
@@ -340,13 +340,14 @@ std::vector<net::CanonicalCookie> FilterCookies(
   return result;
 }
 
-void DeleteFilteredCookies(network::mojom::CookieManager* cookie_manager,
-                           const std::string& name,
-                           const std::string& normalized_domain,
-                           const std::string& path,
-                           Maybe<Network::CookiePartitionKey> partition_key,
-                           std::unique_ptr<DeleteCookiesCallback> callback,
-                           const std::vector<net::CanonicalCookie>& cookies) {
+void DeleteFilteredCookies(
+    network::mojom::CookieManager* cookie_manager,
+    const std::string& name,
+    const std::string& normalized_domain,
+    const std::string& path,
+    std::unique_ptr<Network::CookiePartitionKey> partition_key,
+    std::unique_ptr<DeleteCookiesCallback> callback,
+    const std::vector<net::CanonicalCookie>& cookies) {
   std::vector<net::CanonicalCookie> filtered_list = FilterCookies(
       cookies, name, normalized_domain, path, std::move(partition_key));
 
@@ -398,9 +399,9 @@ MakeCookieFromProtocolValues(
     const std::string& same_site,
     double expires,
     const std::string& priority,
-    const Maybe<std::string>& source_scheme,
-    const Maybe<int>& source_port,
-    Maybe<Network::CookiePartitionKey>& partition_key) {
+    const std::optional<std::string>& source_scheme,
+    const std::optional<int>& source_port,
+    std::unique_ptr<Network::CookiePartitionKey>& partition_key) {
   std::string normalized_domain = domain;
 
   if (url_spec.empty() && domain.empty()) {
@@ -523,8 +524,9 @@ MakeCookieFromProtocolValues(
   return cookie;
 }
 
-std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
-                                    Maybe<Array<String>>& protocol_urls) {
+std::vector<GURL> ComputeCookieURLs(
+    RenderFrameHostImpl* frame_host,
+    std::unique_ptr<Array<String>>& protocol_urls) {
   std::vector<GURL> urls;
 
   if (protocol_urls) {
@@ -1430,9 +1432,9 @@ void NetworkHandler::SetRenderer(int render_process_host_id,
     background_sync_restorer_->SetStoragePartition(storage_partition_);
 }
 
-Response NetworkHandler::Enable(Maybe<int> max_total_size,
-                                Maybe<int> max_resource_size,
-                                Maybe<int> max_post_data_size) {
+Response NetworkHandler::Enable(std::optional<int> max_total_size,
+                                std::optional<int> max_resource_size,
+                                std::optional<int> max_post_data_size) {
   enabled_ = true;
   return Response::FallThrough();
 }
@@ -1654,7 +1656,7 @@ void NetworkHandler::ClearBrowserCookies(
                      std::move(callback)));
 }
 
-void NetworkHandler::GetCookies(Maybe<Array<String>> protocol_urls,
+void NetworkHandler::GetCookies(std::unique_ptr<Array<String>> protocol_urls,
                                 std::unique_ptr<GetCookiesCallback> callback) {
   if (!host_ || !storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1706,21 +1708,22 @@ void NetworkHandler::GotAllCookies(
   callback->sendSuccess(NetworkHandler::BuildCookieArray(filtered_cookies));
 }
 
-void NetworkHandler::SetCookie(const std::string& name,
-                               const std::string& value,
-                               Maybe<std::string> url,
-                               Maybe<std::string> domain,
-                               Maybe<std::string> path,
-                               Maybe<bool> secure,
-                               Maybe<bool> http_only,
-                               Maybe<std::string> same_site,
-                               Maybe<double> expires,
-                               Maybe<std::string> priority,
-                               Maybe<bool> same_party,
-                               Maybe<std::string> source_scheme,
-                               Maybe<int> source_port,
-                               Maybe<Network::CookiePartitionKey> partition_key,
-                               std::unique_ptr<SetCookieCallback> callback) {
+void NetworkHandler::SetCookie(
+    const std::string& name,
+    const std::string& value,
+    std::optional<std::string> url,
+    std::optional<std::string> domain,
+    std::optional<std::string> path,
+    std::optional<bool> secure,
+    std::optional<bool> http_only,
+    std::optional<std::string> same_site,
+    std::optional<double> expires,
+    std::optional<std::string> priority,
+    std::optional<bool> same_party,
+    std::optional<std::string> source_scheme,
+    std::optional<int> source_port,
+    std::unique_ptr<Network::CookiePartitionKey> partition_key,
+    std::unique_ptr<SetCookieCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1760,17 +1763,18 @@ void NetworkHandler::SetCookies(
     base::OnceCallback<void(bool)> callback) {
   std::vector<std::unique_ptr<net::CanonicalCookie>> net_cookies;
   for (const std::unique_ptr<Network::CookieParam>& cookie : *cookies) {
-    // We need to pass Maybe<> to the function below, but we can't directly
-    // get to the `cookie`'s Maybe<> so instead we recreate them.
-    const Maybe<std::string> source_scheme =
+    // We need to pass std::optional<> to the function below, but we can't
+    // directly get to the `cookie`'s std::optional<> so instead we recreate
+    // them.
+    const std::optional<std::string> source_scheme =
         cookie->HasSourceScheme()
-            ? Maybe<std::string>(cookie->GetSourceScheme(""))
-            : Maybe<std::string>();
-    const Maybe<int> source_port = cookie->HasSourcePort()
-                                       ? Maybe<int>(cookie->GetSourcePort(0))
-                                       : Maybe<int>();
+            ? std::optional<std::string>(cookie->GetSourceScheme(""))
+            : std::nullopt;
+    const std::optional<int> source_port =
+        cookie->HasSourcePort() ? std::optional<int>(cookie->GetSourcePort(0))
+                                : std::nullopt;
 
-    Maybe<Network::CookiePartitionKey> partition_key;
+    std::unique_ptr<Network::CookiePartitionKey> partition_key;
     if (cookie->HasPartitionKey()) {
       protocol::Network::CookiePartitionKey* key =
           cookie->GetPartitionKey(nullptr);
@@ -1842,10 +1846,10 @@ void NetworkHandler::SetCookies(
 
 void NetworkHandler::DeleteCookies(
     const std::string& name,
-    Maybe<std::string> url_spec,
-    Maybe<std::string> domain,
-    Maybe<std::string> path,
-    Maybe<Network::CookiePartitionKey> partition_key,
+    std::optional<std::string> url_spec,
+    std::optional<std::string> domain,
+    std::optional<std::string> path,
+    std::unique_ptr<Network::CookiePartitionKey> partition_key,
     std::unique_ptr<DeleteCookiesCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1903,10 +1907,10 @@ Response NetworkHandler::EmulateNetworkConditions(
     double latency,
     double download_throughput,
     double upload_throughput,
-    Maybe<protocol::Network::ConnectionType>,
-    Maybe<double> packet_loss,
-    Maybe<int> packet_queue_length,
-    Maybe<bool> packet_reordering) {
+    std::optional<protocol::Network::ConnectionType>,
+    std::optional<double> packet_loss,
+    std::optional<int> packet_queue_length,
+    std::optional<bool> packet_reordering) {
   network::mojom::NetworkConditionsPtr network_conditions;
   bool throttling_enabled = offline || latency > 0 || download_throughput > 0 ||
                             upload_throughput > 0;
@@ -2261,7 +2265,7 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
   NOTREACHED();
 }
 
-Maybe<String> GetBlockedReasonFor(
+std::optional<String> GetBlockedReasonFor(
     const network::URLLoaderCompletionStatus& status) {
   if (status.blocked_by_response_reason) {
     switch (*status.blocked_by_response_reason) {
@@ -2294,7 +2298,7 @@ Maybe<String> GetBlockedReasonFor(
   }
   if (status.error_code != net::ERR_BLOCKED_BY_CLIENT &&
       status.error_code != net::ERR_BLOCKED_BY_RESPONSE)
-    return Maybe<String>();
+    return std::nullopt;
 
   if (status.extended_error_code <=
       static_cast<int>(blink::ResourceRequestBlockedReason::kMax)) {
@@ -2354,7 +2358,7 @@ void NetworkHandler::PrefetchRequestWillBeSent(
     const std::string& request_id,
     const network::ResourceRequest& request,
     const GURL& initiator_url,
-    Maybe<std::string> frame_token,
+    std::optional<std::string> frame_token,
     base::TimeTicks timestamp,
     std::optional<std::pair<const GURL&,
                             const network::mojom::URLResponseHeadDevToolsInfo&>>
@@ -2522,7 +2526,7 @@ void NetworkHandler::FencedFrameReportRequestSent(
       current_ticks, current_wall_time, std::move(initiator),
       /*redirectHasExtraInfo=*/false, std::unique_ptr<Network::Response>(),
       std::string(Network::ResourceTypeEnum::Other),
-      Maybe<std::string>() /* frame_id */, request.has_user_gesture);
+      std::nullopt /* frame_id */, request.has_user_gesture);
 }
 
 void NetworkHandler::RequestSent(
@@ -2577,7 +2581,7 @@ void NetworkHandler::RequestSent(
       timestamp.since_origin().InSecondsF(),
       base::Time::Now().InSecondsFSinceUnixEpoch(), std::move(initiator),
       /*redirectHasExtraInfo=*/false, std::unique_ptr<Network::Response>(),
-      resource_type, Maybe<std::string>() /* frame_id */,
+      resource_type, std::nullopt /* frame_id */,
       request_info.has_user_gesture);
 }
 
@@ -2699,7 +2703,7 @@ void NetworkHandler::ResponseReceived(
     const GURL& url,
     const char* resource_type,
     const network::mojom::URLResponseHeadDevToolsInfo& head,
-    Maybe<std::string> frame_id) {
+    std::optional<std::string> frame_id) {
   if (!enabled_)
     return;
   std::unique_ptr<Network::Response> response(BuildResponse(url, head));
@@ -2727,7 +2731,7 @@ void NetworkHandler::LoadingComplete(
         GetBlockedReasonFor(status),
         status.cors_error_status
             ? BuildCorsErrorStatus(*status.cors_error_status)
-            : Maybe<protocol::Network::CorsErrorStatus>());
+            : nullptr);
     return;
   }
   frontend_->LoadingFinished(
@@ -2741,7 +2745,7 @@ void NetworkHandler::FetchKeepAliveRequestWillBeSent(
     const std::string& request_id,
     const network::ResourceRequest& request,
     const GURL& initiator_url,
-    Maybe<std::string> frame_token,
+    std::optional<std::string> frame_token,
     base::TimeTicks timestamp,
     std::optional<std::pair<const GURL&,
                             const network::mojom::URLResponseHeadDevToolsInfo&>>
@@ -2921,13 +2925,14 @@ DispatchResponse NetworkHandler::SetRequestInterception(
 
 void NetworkHandler::ContinueInterceptedRequest(
     const std::string& interception_id,
-    Maybe<std::string> error_reason,
-    Maybe<protocol::Binary> raw_response,
-    Maybe<std::string> url,
-    Maybe<std::string> method,
-    Maybe<std::string> post_data,
-    Maybe<protocol::Network::Headers> opt_headers,
-    Maybe<protocol::Network::AuthChallengeResponse> auth_challenge_response,
+    std::optional<std::string> error_reason,
+    std::optional<protocol::Binary> raw_response,
+    std::optional<std::string> url,
+    std::optional<std::string> method,
+    std::optional<std::string> post_data,
+    std::unique_ptr<protocol::Network::Headers> opt_headers,
+    std::unique_ptr<protocol::Network::AuthChallengeResponse>
+        auth_challenge_response,
     std::unique_ptr<ContinueInterceptedRequestCallback> callback) {
   scoped_refptr<net::HttpResponseHeaders> response_headers;
   scoped_refptr<base::RefCountedMemory> response_body;
@@ -3001,7 +3006,7 @@ void NetworkHandler::ContinueInterceptedRequest(
     }
   }
 
-  Maybe<protocol::Binary> post_data_bytes;
+  std::optional<protocol::Binary> post_data_bytes;
   if (post_data.has_value()) {
     post_data_bytes = protocol::Binary::fromString(post_data.value());
   }
@@ -3174,12 +3179,12 @@ void NetworkHandler::ApplyOverrides(
 
 void NetworkHandler::RequestIntercepted(
     std::unique_ptr<InterceptedRequestInfo> info) {
-  protocol::Maybe<protocol::Network::ErrorReason> error_reason;
+  std::optional<protocol::Network::ErrorReason> error_reason;
   if (info->response_error_code < 0)
     error_reason = NetErrorToString(info->response_error_code);
 
-  Maybe<int> status_code;
-  Maybe<protocol::Network::Headers> response_headers;
+  std::optional<int> status_code;
+  std::unique_ptr<protocol::Network::Headers> response_headers;
   if (info->response_headers) {
     status_code = info->response_headers->response_code();
     response_headers = BuildResponseHeaders(info->response_headers.get());
@@ -3331,7 +3336,7 @@ makeContentSecurityPolicyStatus(
 }  // namespace
 
 DispatchResponse NetworkHandler::GetSecurityIsolationStatus(
-    Maybe<String> frame_id,
+    std::optional<String> frame_id,
     std::unique_ptr<protocol::Network::SecurityIsolationStatus>* out_info) {
   scoped_refptr<DevToolsAgentHostImpl> host =
       DevToolsAgentHostImpl::GetForId(host_id_);
@@ -3368,9 +3373,9 @@ void NetworkHandler::OnRequestWillBeSentExtraInfo(
       GetRawHeaders(request_headers), GetConnectTiming(timestamp),
       MaybeBuildClientSecurityState(security_state),
       other_partition_info
-          ? Maybe<bool>(
+          ? std::optional<bool>(
                 other_partition_info->site_has_cookie_in_other_partition)
-          : Maybe<bool>());
+          : std::nullopt);
 }
 
 void NetworkHandler::OnResponseReceivedExtraInfo(
@@ -3384,7 +3389,7 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
   if (!enabled_)
     return;
 
-  Maybe<Network::CookiePartitionKey> frontend_partition_key;
+  std::unique_ptr<Network::CookiePartitionKey> frontend_partition_key;
   // TODO (crbug.com/326605834) Once ancestor chain bit changes are implemented
   // update this method utilize the ancestor bit.
   if (cookie_partition_key) {
@@ -3403,12 +3408,10 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
       devtools_request_id, BuildProtocolBlockedSetCookies(response_cookie_list),
       GetRawHeaders(response_headers),
       BuildIpAddressSpace(resource_address_space), http_status_code,
-      response_headers_text.has_value() ? response_headers_text.value()
-                                        : Maybe<String>(),
-      std::move(frontend_partition_key),
+      response_headers_text, std::move(frontend_partition_key),
       cookie_partition_key
-          ? Maybe<bool>(!cookie_partition_key->IsSerializeable())
-          : Maybe<bool>(),
+          ? std::optional<bool>(!cookie_partition_key->IsSerializeable())
+          : std::nullopt,
       BuildProtocolExemptedSetCookies(response_cookie_list));
 }
 
@@ -3513,7 +3516,7 @@ CreateNetworkFactoryForDevTools(
 }  // namespace
 
 void NetworkHandler::LoadNetworkResource(
-    Maybe<protocol::String> maybe_frame_id,
+    std::optional<protocol::String> maybe_frame_id,
     const String& url,
     std::unique_ptr<protocol::Network::LoadNetworkResourceOptions> options,
     std::unique_ptr<LoadNetworkResourceCallback> callback) {
@@ -3663,11 +3666,11 @@ void NetworkHandler::OnTrustTokenOperationDone(
   if (!enabled_)
     return;
 
-  Maybe<String> top_level_origin;
+  std::optional<String> top_level_origin;
   if (result.top_level_origin) {
     top_level_origin = result.top_level_origin->Serialize();
   }
-  Maybe<String> issuer;
+  std::optional<String> issuer;
   if (result.issuer) {
     issuer = result.issuer->Serialize();
   }
@@ -3711,10 +3714,7 @@ void NetworkHandler::OnSubresourceWebBundleInnerResponse(
     return;
 
   frontend()->SubresourceWebBundleInnerResponseParsed(
-      inner_request_devtools_id, url.spec(),
-      bundle_request_devtools_id.has_value()
-          ? Maybe<std::string>(*bundle_request_devtools_id)
-          : Maybe<std::string>());
+      inner_request_devtools_id, url.spec(), bundle_request_devtools_id);
 }
 
 void NetworkHandler::OnSubresourceWebBundleInnerResponseError(
@@ -3727,9 +3727,7 @@ void NetworkHandler::OnSubresourceWebBundleInnerResponseError(
 
   frontend()->SubresourceWebBundleInnerResponseError(
       inner_request_devtools_id, url.spec(), error_message,
-      bundle_request_devtools_id.has_value()
-          ? Maybe<std::string>(*bundle_request_devtools_id)
-          : Maybe<std::string>());
+      bundle_request_devtools_id);
 }
 
 void NetworkHandler::OnPolicyContainerHostUpdated() {

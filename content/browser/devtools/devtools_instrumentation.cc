@@ -1034,7 +1034,7 @@ void OnSignedExchangeCertificateResponseReceived(
   DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::ResponseReceived,
                    request_id.ToString(), loader_id.ToString(), url,
                    protocol::Network::ResourceTypeEnum::Other, *head_info,
-                   protocol::Maybe<std::string>());
+                   std::nullopt);
 }
 
 void OnSignedExchangeCertificateRequestCompleted(
@@ -2478,7 +2478,7 @@ void OnFencedFrameReportResponseReceived(
                    /*request_id=*/devtools_request_id,
                    /*loader_id=*/devtools_request_id, final_url,
                    protocol::Network::ResourceTypeEnum::Other, *response_info,
-                   /*frame_id=*/protocol::Maybe<std::string>());
+                   /*frame_id=*/std::nullopt);
 
   DispatchToAgents(initiator_frame_tree_node_id,
                    &protocol::NetworkHandler::LoadingComplete,

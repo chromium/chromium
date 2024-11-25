@@ -333,7 +333,7 @@ void ServiceWorkerDevToolsManager::NavigationPreloadResponseReceived(
   for (auto* network : protocol::NetworkHandler::ForAgentHost(it->second.get()))
     network->ResponseReceived(request_id, std::string(), url,
                               protocol::Network::ResourceTypeEnum::Other,
-                              *head_info, protocol::Maybe<std::string>());
+                              *head_info, std::nullopt);
 }
 
 void ServiceWorkerDevToolsManager::NavigationPreloadCompleted(

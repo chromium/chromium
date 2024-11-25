@@ -172,7 +172,7 @@ void WebAuthnHandler::Wire(UberDispatcher* dispatcher) {
   WebAuthn::Dispatcher::wire(dispatcher, this);
 }
 
-Response WebAuthnHandler::Enable(Maybe<bool> enable_ui) {
+Response WebAuthnHandler::Enable(std::optional<bool> enable_ui) {
   if (!frame_host_)
     return Response::ServerError(kDevToolsNotAttached);
 
@@ -296,9 +296,9 @@ Response WebAuthnHandler::RemoveVirtualAuthenticator(
 
 Response WebAuthnHandler::SetResponseOverrideBits(
     const String& authenticator_id,
-    Maybe<bool> is_bogus_signature,
-    Maybe<bool> is_bad_uv,
-    Maybe<bool> is_bad_up) {
+    std::optional<bool> is_bogus_signature,
+    std::optional<bool> is_bad_uv,
+    std::optional<bool> is_bad_up) {
   VirtualAuthenticatorManagerImpl* authenticator_manager =
       AuthenticatorEnvironment::GetInstance()
           ->MaybeGetVirtualAuthenticatorManager(frame_host_->frame_tree_node());
@@ -514,8 +514,8 @@ Response WebAuthnHandler::SetAutomaticPresenceSimulation(
 Response WebAuthnHandler::SetCredentialProperties(
     const String& authenticator_id,
     const Binary& in_credential_id,
-    Maybe<bool> backup_eligibility,
-    Maybe<bool> backup_state) {
+    std::optional<bool> backup_eligibility,
+    std::optional<bool> backup_state) {
   VirtualAuthenticator* authenticator;
   Response response = FindAuthenticator(authenticator_id, &authenticator);
   if (!response.IsSuccess()) {

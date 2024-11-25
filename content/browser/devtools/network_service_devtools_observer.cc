@@ -196,7 +196,7 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightResponse(
   DispatchToAgents(host, &protocol::NetworkHandler::ResponseReceived, id,
                    /* loader_id=*/"", url,
                    protocol::Network::ResourceTypeEnum::Preflight, *head,
-                   protocol::Maybe<std::string>());
+                   std::nullopt);
 }
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightRequestCompleted(

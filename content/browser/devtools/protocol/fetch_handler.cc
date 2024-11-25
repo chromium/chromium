@@ -56,7 +56,7 @@ DevToolsURLLoaderInterceptor::InterceptionStage RequestStageToInterceptorStage(
 }
 
 Response ToInterceptionPatterns(
-    Maybe<Array<Fetch::RequestPattern>>& maybe_patterns,
+    std::unique_ptr<Array<Fetch::RequestPattern>>& maybe_patterns,
     std::vector<DevToolsURLLoaderInterceptor::Pattern>* result) {
   result->clear();
   if (!maybe_patterns) {
@@ -95,9 +95,10 @@ bool FetchHandler::MaybeCreateProxyForInterception(
                              is_navigation, is_download, intercepting_factory);
 }
 
-void FetchHandler::Enable(Maybe<Array<Fetch::RequestPattern>> patterns,
-                          Maybe<bool> handleAuth,
-                          std::unique_ptr<EnableCallback> callback) {
+void FetchHandler::Enable(
+    std::unique_ptr<Array<Fetch::RequestPattern>> patterns,
+    std::optional<bool> handleAuth,
+    std::unique_ptr<EnableCallback> callback) {
   if (!interceptor_) {
     interceptor_ =
         std::make_unique<DevToolsURLLoaderInterceptor>(base::BindRepeating(
@@ -217,10 +218,10 @@ std::string GetReasonPhrase(int responseCode) {
 void FetchHandler::FulfillRequest(
     const String& requestId,
     int responseCode,
-    Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
-    Maybe<Binary> binaryResponseHeaders,
-    Maybe<Binary> body,
-    Maybe<String> responsePhrase,
+    std::unique_ptr<Array<Fetch::HeaderEntry>> responseHeaders,
+    std::optional<Binary> binaryResponseHeaders,
+    std::optional<Binary> body,
+    std::optional<String> responsePhrase,
     std::unique_ptr<FulfillRequestCallback> callback) {
   if (!interceptor_) {
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
@@ -269,11 +270,11 @@ void FetchHandler::FulfillRequest(
 
 void FetchHandler::ContinueRequest(
     const String& requestId,
-    Maybe<String> url,
-    Maybe<String> method,
-    Maybe<protocol::Binary> postData,
-    Maybe<Array<Fetch::HeaderEntry>> headers,
-    Maybe<bool> interceptResponse,
+    std::optional<String> url,
+    std::optional<String> method,
+    std::optional<protocol::Binary> postData,
+    std::unique_ptr<Array<Fetch::HeaderEntry>> headers,
+    std::optional<bool> interceptResponse,
     std::unique_ptr<ContinueRequestCallback> callback) {
   if (!interceptor_) {
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
@@ -337,10 +338,10 @@ void FetchHandler::ContinueWithAuth(
 
 void FetchHandler::ContinueResponse(
     const String& requestId,
-    Maybe<int> responseCode,
-    Maybe<String> responsePhrase,
-    Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
-    Maybe<Binary> binaryResponseHeaders,
+    std::optional<int> responseCode,
+    std::optional<String> responsePhrase,
+    std::unique_ptr<Array<Fetch::HeaderEntry>> responseHeaders,
+    std::optional<Binary> binaryResponseHeaders,
     std::unique_ptr<ContinueResponseCallback> callback) {
   if (!interceptor_) {
     callback->sendFailure(Response::ServerError("Fetch domain is not enabled"));
@@ -431,13 +432,13 @@ std::unique_ptr<Array<Fetch::HeaderEntry>> ToHeaderEntryArray(
 
 void FetchHandler::RequestIntercepted(
     std::unique_ptr<InterceptedRequestInfo> info) {
-  protocol::Maybe<protocol::Network::ErrorReason> error_reason;
+  std::optional<protocol::Network::ErrorReason> error_reason;
   if (info->response_error_code < 0)
     error_reason = NetworkHandler::NetErrorToString(info->response_error_code);
 
-  Maybe<int> status_code;
-  Maybe<std::string> status_text;
-  Maybe<Array<Fetch::HeaderEntry>> response_headers;
+  std::optional<int> status_code;
+  std::optional<std::string> status_text;
+  std::unique_ptr<Array<Fetch::HeaderEntry>> response_headers;
   if (info->response_headers) {
     status_code = info->response_headers->response_code();
     status_text = info->response_headers->GetStatusText();

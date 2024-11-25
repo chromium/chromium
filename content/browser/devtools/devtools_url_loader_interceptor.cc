@@ -102,11 +102,11 @@ DevToolsURLLoaderInterceptor::Modifications::Modifications(
     : auth_challenge_response(std::move(auth_challenge_response)) {}
 
 DevToolsURLLoaderInterceptor::Modifications::Modifications(
-    protocol::Maybe<std::string> modified_url,
-    protocol::Maybe<std::string> modified_method,
-    protocol::Maybe<protocol::Binary> modified_post_data,
+    std::optional<std::string> modified_url,
+    std::optional<std::string> modified_method,
+    std::optional<protocol::Binary> modified_post_data,
     std::unique_ptr<HeadersVector> modified_headers,
-    protocol::Maybe<bool> intercept_response)
+    std::optional<bool> intercept_response)
     : modified_url(std::move(modified_url)),
       modified_method(std::move(modified_method)),
       modified_post_data(std::move(modified_post_data)),
@@ -118,9 +118,9 @@ DevToolsURLLoaderInterceptor::Modifications::Modifications(
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     scoped_refptr<base::RefCountedMemory> response_body,
     size_t body_offset,
-    protocol::Maybe<std::string> modified_url,
-    protocol::Maybe<std::string> modified_method,
-    protocol::Maybe<protocol::Binary> modified_post_data,
+    std::optional<std::string> modified_url,
+    std::optional<std::string> modified_method,
+    std::optional<protocol::Binary> modified_post_data,
     std::unique_ptr<HeadersVector> modified_headers,
     std::unique_ptr<AuthChallengeResponse> auth_challenge_response)
     : error_reason(std::move(error_reason)),

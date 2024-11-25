@@ -219,7 +219,7 @@ bool CanExecuteGlobalCommands(
   return false;
 }
 
-void GotManifest(protocol::Maybe<std::string> manifest_id,
+void GotManifest(std::optional<std::string> manifest_id,
                  std::unique_ptr<PageHandler::GetAppManifestCallback> callback,
                  const GURL& manifest_url,
                  ::blink::mojom::ManifestPtr input_manifest,
@@ -442,7 +442,7 @@ void GotManifest(protocol::Maybe<std::string> manifest_id,
 
   std::move(callback)->sendSuccess(
       manifest_url.possibly_invalid_spec(), std::move(errors),
-      failed ? Maybe<std::string>() : debug_info->raw_manifest,
+      failed ? std::optional<std::string>() : debug_info->raw_manifest,
       std::move(parsed), manifest.Build());
 }
 
@@ -670,9 +670,9 @@ Response PageHandler::Close() {
   return Response::Success();
 }
 
-void PageHandler::Reload(Maybe<bool> bypassCache,
-                         Maybe<std::string> script_to_evaluate_on_load,
-                         Maybe<std::string> loader_id,
+void PageHandler::Reload(std::optional<bool> bypassCache,
+                         std::optional<std::string> script_to_evaluate_on_load,
+                         std::optional<std::string> loader_id,
                          std::unique_ptr<ReloadCallback> callback) {
   Response response = AssureTopLevelActiveFrame();
   if (response.IsError()) {
@@ -742,16 +742,16 @@ void DispatchNavigateCallback(
   // started, in which case it is not marked as aborted. We report this as an
   // abort to DevTools anyway.
   if (!request->IsNavigationStarted()) {
-    callback->sendSuccess(frame_id, Maybe<std::string>(),
+    callback->sendSuccess(frame_id, std::nullopt,
                           net::ErrorToString(net::ERR_ABORTED));
     return;
   }
-  Maybe<std::string> opt_error;
+  std::optional<std::string> opt_error;
   if (request->GetNetErrorCode() != net::OK)
     opt_error = net::ErrorToString(request->GetNetErrorCode());
-  Maybe<std::string> loader_id =
+  std::optional<std::string> loader_id =
       request->IsSameDocument()
-          ? Maybe<std::string>()
+          ? std::optional<std::string>()
           : request->devtools_navigation_token().ToString();
   callback->sendSuccess(frame_id, std::move(loader_id), std::move(opt_error));
 }
@@ -759,10 +759,10 @@ void DispatchNavigateCallback(
 }  // namespace
 
 void PageHandler::Navigate(const std::string& url,
-                           Maybe<std::string> referrer,
-                           Maybe<std::string> maybe_transition_type,
-                           Maybe<std::string> frame_id,
-                           Maybe<std::string> referrer_policy,
+                           std::optional<std::string> referrer,
+                           std::optional<std::string> maybe_transition_type,
+                           std::optional<std::string> frame_id,
+                           std::optional<std::string> referrer_policy,
                            std::unique_ptr<NavigateCallback> callback) {
   GURL gurl(url);
   if (!gurl.is_valid()) {
@@ -856,7 +856,7 @@ void PageHandler::Navigate(const std::string& url,
   if (!weak_self)
     return;
   if (!navigation_handle) {
-    callback->sendSuccess(out_frame_id, Maybe<std::string>(),
+    callback->sendSuccess(out_frame_id, std::nullopt,
                           net::ErrorToString(net::ERR_ABORTED));
     return;
   }
@@ -1048,7 +1048,7 @@ Response PageHandler::ResetNavigationHistory() {
 }
 
 void PageHandler::CaptureSnapshot(
-    Maybe<std::string> format,
+    std::optional<std::string> format,
     std::unique_ptr<CaptureSnapshotCallback> callback) {
   if (!CanExecuteGlobalCommands(this, callback))
     return;
@@ -1070,9 +1070,9 @@ void PageHandler::CaptureSnapshot(
 // TODO(crbug.com/40238745): at the point this method is called, the page could
 // have changed its size.
 void PageHandler::CaptureFullPageScreenshot(
-    Maybe<std::string> format,
-    Maybe<int> quality,
-    Maybe<bool> optimize_for_speed,
+    std::optional<std::string> format,
+    std::optional<int> quality,
+    std::optional<bool> optimize_for_speed,
     std::unique_ptr<CaptureScreenshotCallback> callback,
     const gfx::Size& full_page_size) {
   // check width and height for validity
@@ -1097,12 +1097,12 @@ void PageHandler::CaptureFullPageScreenshot(
 }
 
 void PageHandler::CaptureScreenshot(
-    Maybe<std::string> format,
-    Maybe<int> quality,
-    Maybe<Page::Viewport> clip,
-    Maybe<bool> from_surface,
-    Maybe<bool> capture_beyond_viewport,
-    Maybe<bool> optimize_for_speed,
+    std::optional<std::string> format,
+    std::optional<int> quality,
+    std::unique_ptr<Page::Viewport> clip,
+    std::optional<bool> from_surface,
+    std::optional<bool> capture_beyond_viewport,
+    std::optional<bool> optimize_for_speed,
     std::unique_ptr<CaptureScreenshotCallback> callback) {
   if (!host_ || !host_->GetRenderWidgetHost() ||
       !host_->GetRenderWidgetHost()->GetView()) {
@@ -1285,11 +1285,11 @@ void PageHandler::CaptureScreenshot(
       true);
 }
 
-Response PageHandler::StartScreencast(Maybe<std::string> format,
-                                      Maybe<int> quality,
-                                      Maybe<int> max_width,
-                                      Maybe<int> max_height,
-                                      Maybe<int> every_nth_frame) {
+Response PageHandler::StartScreencast(std::optional<std::string> format,
+                                      std::optional<int> quality,
+                                      std::optional<int> max_width,
+                                      std::optional<int> max_height,
+                                      std::optional<int> every_nth_frame) {
   Response response = AssureTopLevelActiveFrame();
   if (response.IsError())
     return response;
@@ -1346,8 +1346,9 @@ Response PageHandler::ScreencastFrameAck(int session_id) {
   return Response::Success();
 }
 
-Response PageHandler::HandleJavaScriptDialog(bool accept,
-                                             Maybe<std::string> prompt_text) {
+Response PageHandler::HandleJavaScriptDialog(
+    bool accept,
+    std::optional<std::string> prompt_text) {
   ResponseOrWebContents result = GetWebContentsForTopLevelActiveFrame();
   if (absl::holds_alternative<Response>(result))
     return absl::get<Response>(result);
@@ -1395,8 +1396,9 @@ Response PageHandler::BringToFront() {
   return Response::Success();
 }
 
-Response PageHandler::SetDownloadBehavior(const std::string& behavior,
-                                          Maybe<std::string> download_path) {
+Response PageHandler::SetDownloadBehavior(
+    const std::string& behavior,
+    std::optional<std::string> download_path) {
   BrowserContext* browser_context =
       host_ ? host_->GetProcess()->GetBrowserContext() : nullptr;
   if (!browser_context)
@@ -1412,7 +1414,7 @@ Response PageHandler::SetDownloadBehavior(const std::string& behavior,
 }
 
 void PageHandler::GetAppManifest(
-    protocol::Maybe<std::string> manifest_id,
+    std::optional<std::string> manifest_id,
     std::unique_ptr<GetAppManifestCallback> callback) {
   if (!CanExecuteGlobalCommands(this, callback))
     return;
@@ -1604,14 +1606,13 @@ void PageHandler::GetManifestIcons(
     std::unique_ptr<GetManifestIconsCallback> callback) {
   // TODO: Use InstallableManager once it moves into content/.
   // Until then, this code is only used to return no image data in the tests.
-  callback->sendSuccess(Maybe<Binary>());
+  callback->sendSuccess(std::nullopt);
 }
 
 void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {
   // TODO: Use InstallableManager once it moves into content/.
   // Until then, this code is only used to return no image data in the tests.
-  callback->sendSuccess(protocol::Maybe<protocol::String>(),
-                        protocol::Maybe<protocol::String>());
+  callback->sendSuccess(std::nullopt, std::nullopt);
 }
 
 Response PageHandler::SetBypassCSP(bool enabled) {

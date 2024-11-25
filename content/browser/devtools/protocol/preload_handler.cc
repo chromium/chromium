@@ -407,15 +407,16 @@ void PreloadHandler::DidUpdatePrerenderStatus(
   if (protocol_target_hint.has_value()) {
     preloading_attempt_key->SetTargetHint(protocol_target_hint.value());
   }
-  Maybe<Preload::PrerenderFinalStatus> protocol_prerender_status =
+  std::optional<Preload::PrerenderFinalStatus> protocol_prerender_status =
       prerender_status.has_value()
           ? PrerenderFinalStatusToProtocol(prerender_status.value())
-          : Maybe<Preload::PrerenderFinalStatus>();
-  Maybe<std::string> protocol_disallowed_mojo_interface =
+          : std::optional<Preload::PrerenderFinalStatus>();
+  std::optional<std::string> protocol_disallowed_mojo_interface =
       disallowed_mojo_interface.has_value()
-          ? Maybe<std::string>(disallowed_mojo_interface.value())
-          : Maybe<std::string>();
-  Maybe<protocol::Array<protocol::Preload::PrerenderMismatchedHeaders>>
+          ? std::optional<std::string>(disallowed_mojo_interface.value())
+          : std::nullopt;
+  std::unique_ptr<
+      protocol::Array<protocol::Preload::PrerenderMismatchedHeaders>>
       maybe_mismatched_headers;
   if (mismatched_headers) {
     auto mismatched_headers_internal = std::make_unique<

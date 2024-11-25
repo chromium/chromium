@@ -54,9 +54,10 @@ Response BrowserHandler::Disable() {
   for (auto& browser_context_id : contexts_with_overridden_permissions_) {
     content::BrowserContext* browser_context = nullptr;
     std::string error;
-    Maybe<std::string> context_id =
-        browser_context_id == "" ? Maybe<std::string>()
-                                 : Maybe<std::string>(browser_context_id);
+    std::optional<std::string> context_id =
+        browser_context_id == ""
+            ? std::nullopt
+            : std::optional<std::string>(browser_context_id);
     FindBrowserContext(context_id, &browser_context);
     if (browser_context) {
       PermissionControllerImpl* permission_controller =
@@ -70,9 +71,10 @@ Response BrowserHandler::Disable() {
   for (auto& browser_context_id : contexts_with_overridden_downloads_) {
     content::BrowserContext* browser_context = nullptr;
     std::string error;
-    Maybe<std::string> context_id =
-        browser_context_id == "" ? Maybe<std::string>()
-                                 : Maybe<std::string>(browser_context_id);
+    std::optional<std::string> context_id =
+        browser_context_id == ""
+            ? std::nullopt
+            : std::optional<std::string>(browser_context_id);
     FindBrowserContext(context_id, &browser_context);
     if (browser_context) {
       auto* delegate =
@@ -299,7 +301,7 @@ Response PermissionSettingToPermissionStatus(
 
 // static
 Response BrowserHandler::FindBrowserContext(
-    const Maybe<std::string>& browser_context_id,
+    const std::optional<std::string>& browser_context_id,
     BrowserContext** browser_context) {
   DevToolsManagerDelegate* delegate =
       DevToolsManager::GetInstance()->delegate();
@@ -334,8 +336,8 @@ std::vector<BrowserHandler*> BrowserHandler::ForAgentHost(
 Response BrowserHandler::SetPermission(
     std::unique_ptr<protocol::Browser::PermissionDescriptor> permission,
     const protocol::Browser::PermissionSetting& setting,
-    Maybe<std::string> origin,
-    Maybe<std::string> browser_context_id) {
+    std::optional<std::string> origin,
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -378,8 +380,8 @@ Response BrowserHandler::SetPermission(
 Response BrowserHandler::GrantPermissions(
     std::unique_ptr<protocol::Array<protocol::Browser::PermissionType>>
         permissions,
-    Maybe<std::string> origin,
-    Maybe<std::string> browser_context_id) {
+    std::optional<std::string> origin,
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -417,7 +419,7 @@ Response BrowserHandler::GrantPermissions(
 }
 
 Response BrowserHandler::ResetPermissions(
-    Maybe<std::string> browser_context_id) {
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -431,9 +433,9 @@ Response BrowserHandler::ResetPermissions(
 
 Response BrowserHandler::SetDownloadBehavior(
     const std::string& behavior,
-    Maybe<std::string> browser_context_id,
-    Maybe<std::string> download_path,
-    Maybe<bool> events_enabled) {
+    std::optional<std::string> browser_context_id,
+    std::optional<std::string> download_path,
+    std::optional<bool> events_enabled) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -449,7 +451,7 @@ Response BrowserHandler::SetDownloadBehavior(
 Response BrowserHandler::DoSetDownloadBehavior(
     const std::string& behavior,
     BrowserContext* browser_context,
-    Maybe<std::string> download_path) {
+    std::optional<std::string> download_path) {
   if (!allow_set_download_behavior_)
     return Response::ServerError("Not allowed");
   if (behavior == Browser::SetDownloadBehavior::BehaviorEnum::Allow &&
@@ -489,8 +491,9 @@ Response BrowserHandler::DoSetDownloadBehavior(
   return Response::Success();
 }
 
-Response BrowserHandler::CancelDownload(const std::string& guid,
-                                        Maybe<std::string> browser_context_id) {
+Response BrowserHandler::CancelDownload(
+    const std::string& guid,
+    std::optional<std::string> browser_context_id) {
   BrowserContext* browser_context = nullptr;
   Response response = FindBrowserContext(browser_context_id, &browser_context);
   if (!response.IsSuccess())
@@ -508,8 +511,8 @@ Response BrowserHandler::CancelDownload(const std::string& guid,
 }
 
 Response BrowserHandler::GetHistograms(
-    const Maybe<std::string> in_query,
-    const Maybe<bool> in_delta,
+    const std::optional<std::string> in_query,
+    const std::optional<bool> in_delta,
     std::unique_ptr<Array<Browser::Histogram>>* const out_histograms) {
   DCHECK(out_histograms);
   bool get_deltas = in_delta.value_or(false);
@@ -526,7 +529,7 @@ Response BrowserHandler::GetHistograms(
 
 Response BrowserHandler::GetHistogram(
     const std::string& in_name,
-    const Maybe<bool> in_delta,
+    const std::optional<bool> in_delta,
     std::unique_ptr<Browser::Histogram>* const out_histogram) {
   // Get histogram by name.
   base::HistogramBase* const in_histogram =

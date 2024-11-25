@@ -33,11 +33,10 @@ class IOHandler : public DevToolsDomainHandler,
                    RenderFrameHostImpl* frame_host) override;
 
   // Protocol methods.
-  void Read(
-      const std::string& handle,
-      Maybe<int> offset,
-      Maybe<int> max_size,
-      std::unique_ptr<ReadCallback> callback) override;
+  void Read(const std::string& handle,
+            std::optional<int> offset,
+            std::optional<int> max_size,
+            std::unique_ptr<ReadCallback> callback) override;
   Response Close(const std::string& handle) override;
 
  private:
