@@ -155,7 +155,8 @@ class ExtensionAILanguageModelBrowserTest
     std::vector<std::string_view> enabled_features;
     // Disable all the other AI APIs to avoid unexpected ai namespace.
     std::vector<std::string_view> disabled_features{
-        "AISummarizationAPI", "AIWriterAPI", "AIRewriterAPI"};
+        "AISummarizationAPI", "AIWriterAPI", "AIRewriterAPI",
+        "LanguageDetectionAPI"};
 
     if (IsPromptAPIForWebPlatformEnabled(GetParam())) {
       enabled_features.push_back("AIPromptAPIForWebPlatform");
