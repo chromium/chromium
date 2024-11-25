@@ -382,7 +382,7 @@ const LayoutObject* GetPositionAnchorObject(
   return nullptr;
 }
 
-gfx::Vector2dF GetAnchorOffset(const BlockNode& node,
+PhysicalOffset GetAnchorOffset(const BlockNode& node,
                                const ComputedStyle& style,
                                const LogicalAnchorQuery* anchor_query) {
   if (const LayoutObject* anchor_object =
@@ -392,7 +392,7 @@ gfx::Vector2dF GetAnchorOffset(const BlockNode& node,
       return data->TotalOffset(*anchor_object);
     }
   }
-  return gfx::Vector2dF();
+  return PhysicalOffset();
 }
 
 // Updates `node`'s associated `PaintLayer` for `position-visibility`. See:

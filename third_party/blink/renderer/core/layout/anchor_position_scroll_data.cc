@@ -56,7 +56,7 @@ bool AnchorPositionScrollData::IsActive() const {
   return anchored_element_->GetAnchorPositionScrollData() == this;
 }
 
-gfx::Vector2dF AnchorPositionScrollData::TotalOffset(
+PhysicalOffset AnchorPositionScrollData::TotalOffset(
     const LayoutObject& anchor_object) const {
   if (anchor_object == default_anchor_adjustment_data_.anchor_object) {
     return default_anchor_adjustment_data_.TotalOffset();
@@ -85,10 +85,10 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
       *anchored_element_->GetLayoutObject());
 
   if (bounding_container && bounding_container->IsScrollContainer()) {
+    const ScrollableArea* scrollable_area =
+        To<LayoutBox>(bounding_container)->GetScrollableArea();
     result.anchored_element_container_scroll_offset =
-        To<LayoutBox>(bounding_container)
-            ->GetScrollableArea()
-            ->GetScrollOffset();
+        PhysicalOffset::FromVector2dFFloor(scrollable_area->GetScrollOffset());
   }
 
   for (const auto* container = &anchor;
@@ -102,7 +102,8 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
           To<LayoutBox>(container)->HasScrollableOverflow()) {
         result.adjustment_container_ids.push_back(
             scrollable_area->GetScrollElementId());
-        result.accumulated_adjustment += scrollable_area->GetScrollOffset();
+        result.accumulated_adjustment += PhysicalOffset::FromVector2dFFloor(
+            scrollable_area->GetScrollOffset());
         result.accumulated_adjustment_scroll_origin +=
             scrollable_area->ScrollOrigin().OffsetFromOrigin();
         if (scrollable_area->GetLayoutBox()->IsLayoutView()) {
@@ -116,8 +117,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
             CompositorElementIdFromUniqueObjectId(
                 box_model->UniqueId(),
                 CompositorElementIdNamespace::kStickyTranslation));
-        result.accumulated_adjustment -=
-            gfx::Vector2dF(box_model->StickyPositionOffset());
+        result.accumulated_adjustment -= box_model->StickyPositionOffset();
       }
     }
     if (const auto* box = DynamicTo<LayoutBox>(container)) {
@@ -132,8 +132,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
                   box->UniqueId(), CompositorElementIdNamespace::
                                        kAnchorPositionScrollTranslation));
           result.accumulated_adjustment +=
-              gfx::Vector2dF(data->ComputeDefaultAnchorAdjustmentData()
-                                 .accumulated_adjustment);
+              data->ComputeDefaultAnchorAdjustmentData().accumulated_adjustment;
         }
       }
     }
@@ -164,11 +163,11 @@ AnchorPositionScrollData::ComputeDefaultAnchorAdjustmentData() const {
   // These don't reset anchored_element_container_scroll_offset because the
   // scroll container always scrolls the anchored element.
   if (!needs_scroll_adjustment_in_x) {
-    result.accumulated_adjustment.set_x(0);
+    result.accumulated_adjustment.left = LayoutUnit();
     result.accumulated_adjustment_scroll_origin.set_x(0);
   }
   if (!needs_scroll_adjustment_in_y) {
-    result.accumulated_adjustment.set_y(0);
+    result.accumulated_adjustment.top = LayoutUnit();
     result.accumulated_adjustment_scroll_origin.set_y(0);
   }
   result.needs_scroll_adjustment_in_x = needs_scroll_adjustment_in_x;

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -78,9 +77,9 @@ class AnchorPositionScrollData
   // update) will reschedule layout, or ShouldScheduleNextService() (called at
   // the end of a lifecycle update) will schedule another lifecycle update,
   // if the final layout data may cause layout changes.
-  gfx::Vector2dF TotalOffset(const LayoutObject& anchor_object) const;
+  PhysicalOffset TotalOffset(const LayoutObject& anchor_object) const;
 
-  gfx::Vector2dF AccumulatedAdjustment() const {
+  PhysicalOffset AccumulatedAdjustment() const {
     return default_anchor_adjustment_data_.accumulated_adjustment;
   }
   gfx::Vector2d AccumulatedAdjustmentScrollOrigin() const {
@@ -102,7 +101,7 @@ class AnchorPositionScrollData
   // Physical/LogicalOffset, which only represents the location of a box within
   // a container, to represent a scroll offset. Stop using this function.
   PhysicalOffset TranslationAsPhysicalOffset() const {
-    return -PhysicalOffset::FromVector2dFFloor(AccumulatedAdjustment());
+    return -AccumulatedAdjustment();
   }
 
   // Returns whether `anchored_element_` is still an anchor-positioned element
@@ -150,7 +149,7 @@ class AnchorPositionScrollData
     // - scroll offsets of scroll containers,
     // - opposite of sticky offsets of stick-positioned containers,
     // - `accumulated_adjustment` of anchor-positioned containers.
-    gfx::Vector2dF accumulated_adjustment;
+    PhysicalOffset accumulated_adjustment;
 
     // Sum of the scroll origins of scroll containers in the above containers.
     // Used by the compositor to deal with writing modes.
@@ -159,7 +158,7 @@ class AnchorPositionScrollData
     // The scroll offset of the containing block of `anchored_element_` if it's
     // a scroll container. The offset doesn't contribute to the adjustment, but
     // may affect the results of position fallback and position visibility.
-    gfx::Vector2dF anchored_element_container_scroll_offset;
+    PhysicalOffset anchored_element_container_scroll_offset;
 
     // Whether viewport is in `container_ids`.
     bool containers_include_viewport = false;
@@ -174,7 +173,7 @@ class AnchorPositionScrollData
 
     void Trace(Visitor* visitor) const { visitor->Trace(anchor_object); }
 
-    gfx::Vector2dF TotalOffset() const {
+    PhysicalOffset TotalOffset() const {
       return accumulated_adjustment + anchored_element_container_scroll_offset;
     }
   };
