@@ -5,7 +5,6 @@
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -35,17 +34,17 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   // alternative error page function.
   content::mojom::AlternativeErrorPageOverrideInfoPtr GetErrorPageInfo(
       std::string_view html) {
-    ChromeContentBrowserClient browser_client;
-    content::ScopedContentBrowserClientSetting setting(&browser_client);
 
     const GURL app_url = embedded_test_server()->GetURL(html);
     web_app::NavigateViaLinkClickToURLAndWait(browser(), app_url);
     web_app::test::InstallPwaForCurrentUrl(browser());
     content::BrowserContext* context = browser()->profile();
 
-    return browser_client.GetAlternativeErrorPageOverrideInfo(
-        app_url, /*render_frame_host=*/nullptr, context,
-        net::ERR_INTERNET_DISCONNECTED);
+    return content::GetContentClientForTesting()
+        ->browser()
+        ->GetAlternativeErrorPageOverrideInfo(
+            app_url, /*render_frame_host=*/nullptr, context,
+            net::ERR_INTERNET_DISCONNECTED);
   }
 
  protected:
@@ -69,17 +68,16 @@ class AlternativeErrorPageOverrideInfoBrowserTest
 // Testing url outside the scope of an installed app.
 IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
                        NoManifest) {
-  ChromeContentBrowserClient browser_client;
-  content::ScopedContentBrowserClientSetting setting(&browser_client);
-
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/simple.html");
   content::BrowserContext* context = browser()->profile();
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      browser_client.GetAlternativeErrorPageOverrideInfo(
-          app_url, /*render_frame_host=*/nullptr, context,
-          net::ERR_INTERNET_DISCONNECTED);
+      content::GetContentClientForTesting()
+          ->browser()
+          ->GetAlternativeErrorPageOverrideInfo(
+              app_url, /*render_frame_host=*/nullptr, context,
+              net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct to be null.
   EXPECT_FALSE(info);
@@ -131,9 +129,6 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 // has no title
 IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithNoAppShortNameOrAppNameOrTitle) {
-  ChromeContentBrowserClient browser_client;
-  content::ScopedContentBrowserClientSetting setting(&browser_client);
-
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL app_url = embedded_test_server()->GetURL("/title1.html");
   web_app::NavigateViaLinkClickToURLAndWait(browser(), app_url);
@@ -141,9 +136,11 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   content::BrowserContext* context = browser()->profile();
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      browser_client.GetAlternativeErrorPageOverrideInfo(
-          app_url, /*render_frame_host=*/nullptr, context,
-          net::ERR_INTERNET_DISCONNECTED);
+      content::GetContentClientForTesting()
+          ->browser()
+          ->GetAlternativeErrorPageOverrideInfo(
+              app_url, /*render_frame_host=*/nullptr, context,
+              net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
@@ -155,8 +152,6 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
                        ManifestWithIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  ChromeContentBrowserClient browser_client;
-  content::ScopedContentBrowserClientSetting setting(&browser_client);
   const GURL app_url = embedded_test_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_one_icon.json");
@@ -176,9 +171,11 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
           });
   WebAppIconWaiter(profile, app_id.value()).Wait();
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
-      browser_client.GetAlternativeErrorPageOverrideInfo(
-          app_url, /*render_frame_host=*/nullptr, profile,
-          net::ERR_INTERNET_DISCONNECTED);
+      content::GetContentClientForTesting()
+          ->browser()
+          ->GetAlternativeErrorPageOverrideInfo(
+              app_url, /*render_frame_host=*/nullptr, profile,
+              net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct with everything (except the icon) filled out.
   EXPECT_TRUE(info);
