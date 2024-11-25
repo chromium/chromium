@@ -59,6 +59,8 @@ constexpr int kThumbnailResizeDimension = 64;
 // Prefix of links to icons in the Drive third-party icon repository.
 NSString* kDriveIconRepositoryPrefix =
     @"https://drive-thirdparty.googleusercontent.com/";
+// MIME type for folder items.
+NSString* kFolderMIMEType = @"application/vnd.google-apps.folder";
 
 }  // namespace
 
@@ -309,10 +311,25 @@ NSString* kDriveIconRepositoryPrefix =
 #pragma mark - DriveFilePickerMutator
 
 - (void)selectOrDeselectDriveItem:(NSString*)driveItemIdentifier {
+  // `driveItem` is null if the `DriveFilePickerItem` that was selected does not
+  // correspond to a `DriveItem` that was fetched i.e. it corresponds to a
+  // virtual collection.
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, driveItemIdentifier);
-  // If this is a real file, select and download it.
-  if (driveItem && !driveItem->is_folder && !driveItem->is_shared_drive) {
+  BOOL driveItemIsShortcutToFolder =
+      driveItem && driveItem->is_shortcut &&
+      [driveItem->shortcut_target_mime_type isEqualToString:kFolderMIMEType];
+
+  // Types of items are handled in the following order:
+  // I. Real items (items for which `driveItem` is not null)
+  //    1. Files and shortcuts to files are handled first,
+  //    2. Real collections i.e. shared drives, folders or shortcuts to folders.
+  // II. Virtual items
+  //    1. Virtual collections i.e. "My Drive", "Starred items", etc.
+
+  // I.1. If this is a file or shortcut to a file, select and download it.
+  if (driveItem && !driveItem->is_folder && !driveItem->is_shared_drive &&
+      !driveItemIsShortcutToFolder) {
     // Unfocusing the search bar so the confirmation button can become visible.
     _searchBarFocused = NO;
     [self.consumer setSearchBarFocused:NO searchText:_searchText];
@@ -324,10 +341,24 @@ NSString* kDriveIconRepositoryPrefix =
   // an item is already selected, clear the selection.
   [self setSelectedFiles:{}];
 
-  if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive)) {
+  // I.2. Handle real collections i.e. shared drives, folders or shortcuts to
+  // folders.
+  if (driveItem && (driveItem->is_folder || driveItem->is_shared_drive ||
+                    driveItemIsShortcutToFolder)) {
     if (_collectionType == DriveFilePickerCollectionType::kRoot &&
         _shouldShowSearchItems) {
       _metricsHelper.firstLevelItem = DriveFilePickerFirstLevel::kSearch;
+    }
+    NSString* folderIdentifier = nil;
+    if (driveItem->is_folder || driveItem->is_shared_drive) {
+      folderIdentifier = driveItem->identifier;
+    } else if (driveItemIsShortcutToFolder) {
+      folderIdentifier = driveItem->shortcut_target_identifier;
+    }
+    if (!folderIdentifier) {
+      // If no appropriate folder identifier could be retrieved from `driveItem`
+      // then do nothing.
+      return;
     }
     // If this is a real folder or shared drive, then open it.
     [self.delegate
@@ -336,7 +367,7 @@ NSString* kDriveIconRepositoryPrefix =
                             imagesPending:_imagesPending
                                imageCache:_imageCache
                            collectionType:DriveFilePickerCollectionType::kFolder
-                         folderIdentifier:driveItem->identifier
+                         folderIdentifier:folderIdentifier
                                    filter:_filter
                       ignoreAcceptedTypes:_ignoreAcceptedTypes
                           sortingCriteria:_sortingCriteria
@@ -344,7 +375,7 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
 
-  // Handle browsing to virtual collections.
+  // II.1. Handle browsing to virtual collections.
   DriveFilePickerItem* myDriveItem = [DriveFilePickerItem myDriveItem];
   DriveFilePickerItem* starredItem = [DriveFilePickerItem starredItem];
   DriveFilePickerItem* recentItem = [DriveFilePickerItem recentItem];
@@ -898,7 +929,8 @@ NSString* kDriveIconRepositoryPrefix =
     return;
   }
   CHECK(!_downloadingQueue.empty());
-  CHECK([fileIdentifier isEqualToString:_downloadingQueue.front().identifier]);
+  const DriveItem& fileToDequeue = _downloadingQueue.front();
+  CHECK([fileIdentifier isEqualToString:fileToDequeue.identifier]);
 
   if (readyForSelection) {
     // If there is a copy of the file ready, dequeue the file.
@@ -911,8 +943,18 @@ NSString* kDriveIconRepositoryPrefix =
   [self.consumer setDownloadStatus:DriveFileDownloadStatus::kInProgress];
   __weak __typeof(self) weakSelf = self;
   _downloadingFileIdentifier = [fileIdentifier copy];
+
+  // The file to download might be different from the file in the queue i.e. if
+  // the file in the queue is a shortcut to a real file, then the real file
+  // should be downloaded instead. Only the identifier should matter to use the
+  // downloader so a new DriveItem is created with only `identifier` set to the
+  // correct value.
+  DriveItem fileToDownload;
+  fileToDownload.identifier = fileToDequeue.is_shortcut
+                                  ? fileToDequeue.shortcut_target_identifier
+                                  : fileToDequeue.identifier;
   _downloadingFileDownloadID = _driveDownloader->DownloadFile(
-      _downloadingQueue.front(), fileURL,
+      fileToDownload, fileURL,
       base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
                             const DriveFileDownloadProgress& progress){
       }),

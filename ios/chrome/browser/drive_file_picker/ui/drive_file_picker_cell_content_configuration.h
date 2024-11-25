@@ -18,6 +18,8 @@
     UIListContentConfiguration* listContentConfiguration;
 // Whether the cell content should appear as enabled.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
+// Whether the cell represents a shortcut.
+@property(nonatomic, assign) BOOL isShortcut;
 
 // Returns the default configuration for a Drive file picker cell.
 + (instancetype)cellConfiguration;

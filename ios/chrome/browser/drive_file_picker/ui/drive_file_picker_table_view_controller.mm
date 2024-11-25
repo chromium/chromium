@@ -700,6 +700,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       kCellTextToSecondaryTextVerticalPadding;
 
   driveFilePickerContentConfiguration.enabled = item.enabled;
+  driveFilePickerContentConfiguration.isShortcut = item.isShortcut;
   cell.contentConfiguration = driveFilePickerContentConfiguration;
 
   // Set up background.
