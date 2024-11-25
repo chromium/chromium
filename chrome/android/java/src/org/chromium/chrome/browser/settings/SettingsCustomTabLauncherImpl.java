@@ -13,6 +13,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
 public class SettingsCustomTabLauncherImpl implements SettingsCustomTabLauncher {
     @Override

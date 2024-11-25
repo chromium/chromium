@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
 /**
  * Base class for settings in Chrome.
