@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/cronet/stale_host_resolver.h"
 #include "net/base/address_family.h"
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
@@ -27,6 +26,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mapped_host_resolver.h"
+#include "net/dns/stale_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log.h"
@@ -388,7 +388,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
   bool is_network_bound = bound_network != net::handles::kInvalidNetworkHandle;
   std::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
 
-  StaleHostResolver::StaleOptions stale_dns_options;
+  net::StaleHostResolver::StaleOptions stale_dns_options;
   const std::string* host_resolver_rules_string;
 
   for (auto iter = experimental_options.begin();
@@ -734,7 +734,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
       // for Cronet HostResolvers.
       if (stale_dns_enable) {
         DCHECK(!disable_ipv6_on_wifi);
-        host_resolver = std::make_unique<StaleHostResolver>(
+        host_resolver = std::make_unique<net::StaleHostResolver>(
             net::HostResolver::CreateStandaloneContextResolver(
                 net::NetLog::Get(), std::move(host_resolver_manager_options)),
             stale_dns_options);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CRONET_STALE_HOST_RESOLVER_H_
-#define COMPONENTS_CRONET_STALE_HOST_RESOLVER_H_
+#ifndef NET_DNS_STALE_HOST_RESOLVER_H_
+#define NET_DNS_STALE_HOST_RESOLVER_H_
 
 #include <memory>
 #include <optional>
@@ -14,6 +14,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
@@ -25,9 +26,7 @@ class TickClock;
 
 namespace net {
 class ContextHostResolver;
-}  // namespace net
 
-namespace cronet {
 namespace {
 class StaleHostResolverTest;
 }  // namespace
@@ -35,9 +34,9 @@ class StaleHostResolverTest;
 // A HostResolver that wraps a ContextHostResolver and uses it to make requests,
 // but "impatiently" returns stale data (if available and usable) after a delay,
 // to reduce DNS latency at the expense of accuracy.
-class StaleHostResolver : public net::HostResolver {
+class StaleHostResolver : public HostResolver {
  public:
-  struct StaleOptions {
+  struct NET_EXPORT StaleOptions {
     StaleOptions();
 
     // How long to wait before returning stale data, if available.
@@ -66,11 +65,12 @@ class StaleHostResolver : public net::HostResolver {
     bool use_stale_on_name_not_resolved;
   };
 
-  // Creates a StaleHostResolver that uses |inner_resolver| for actual
+  // Creates a StaleHostResolver that uses `inner_resolver` for actual
   // resolution, but potentially returns stale data according to
-  // |stale_options|.
-  StaleHostResolver(std::unique_ptr<net::ContextHostResolver> inner_resolver,
-                    const StaleOptions& stale_options);
+  // `stale_options`.
+  NET_EXPORT StaleHostResolver(
+      std::unique_ptr<ContextHostResolver> inner_resolver,
+      const StaleOptions& stale_options);
 
   StaleHostResolver(const StaleHostResolver&) = delete;
   StaleHostResolver& operator=(const StaleHostResolver&) = delete;
@@ -89,31 +89,39 @@ class StaleHostResolver : public net::HostResolver {
   // request to continue in order to repopulate the cache.
   std::unique_ptr<ResolveHostRequest> CreateRequest(
       url::SchemeHostPort host,
-      net::NetworkAnonymizationKey network_anonymization_key,
-      net::NetLogWithSource net_log,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
       std::optional<ResolveHostParameters> optional_parameters) override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
-      const net::HostPortPair& host,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      const net::NetLogWithSource& net_log,
+      const HostPortPair& host,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const NetLogWithSource& net_log,
       const std::optional<ResolveHostParameters>& optional_parameters) override;
   std::unique_ptr<ServiceEndpointRequest> CreateServiceEndpointRequest(
       Host host,
-      net::NetworkAnonymizationKey network_anonymization_key,
-      net::NetLogWithSource net_log,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
       ResolveHostParameters parameters) override;
 
   // The remaining public methods pass through to the inner resolver:
 
-  net::HostCache* GetHostCache() override;
+  HostCache* GetHostCache() override;
   base::Value::Dict GetDnsConfigAsValue() const override;
-  void SetRequestContext(net::URLRequestContext* request_context) override;
+  void SetRequestContext(URLRequestContext* request_context) override;
+
+  // Set `tick_clock_` for testing. Must be set before issuing any requests.
+  NET_EXPORT void SetTickClockForTesting(const base::TickClock* tick_clock);
+
+  void set_inner_resolver_for_testing(
+      std::unique_ptr<ContextHostResolver> inner_resolver) {
+    inner_resolver_ = std::move(inner_resolver);
+  }
 
  private:
   class RequestImpl;
   friend class StaleHostResolverTest;
 
-  // Called on completion of |network_request| when completed asynchronously (a
+  // Called on completion of `network_request` when completed asynchronously (a
   // "network" request). Determines if the request is owned by a RequestImpl or
   // if it is a detached request and handles appropriately.
   void OnNetworkRequestComplete(ResolveHostRequest* network_request,
@@ -121,15 +129,12 @@ class StaleHostResolver : public net::HostResolver {
                                 int error);
 
   // Detach an inner request from a RequestImpl, letting it finish (and populate
-  // the host cache) as long as |this| is not destroyed.
+  // the host cache) as long as `this` is not destroyed.
   void DetachRequest(std::unique_ptr<ResolveHostRequest> request);
-
-  // Set |tick_clock_| for testing. Must be set before issuing any requests.
-  void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   // The underlying ContextHostResolver that will be used to make cache and
   // network requests.
-  std::unique_ptr<net::ContextHostResolver> inner_resolver_;
+  std::unique_ptr<ContextHostResolver> inner_resolver_;
 
   // Shared instance of tick clock, overridden for testing.
   raw_ptr<const base::TickClock> tick_clock_ =
@@ -139,13 +144,13 @@ class StaleHostResolver : public net::HostResolver {
   const StaleOptions options_;
 
   // Requests not used for returned results but allowed to continue (unless
-  // |this| is destroyed) to backfill the cache.
+  // `this` is destroyed) to backfill the cache.
   std::unordered_map<ResolveHostRequest*, std::unique_ptr<ResolveHostRequest>>
       detached_requests_;
 
   base::WeakPtrFactory<StaleHostResolver> weak_ptr_factory_{this};
 };
 
-}  // namespace cronet
+}  // namespace net
 
-#endif  // COMPONENTS_CRONET_STALE_HOST_RESOLVER_H_
+#endif  // NET_DNS_STALE_HOST_RESOLVER_H_
