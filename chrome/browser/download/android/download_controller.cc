@@ -573,14 +573,16 @@ void DownloadController::OnDownloadComplete(download::DownloadItem* item) {
   if (web_contents) {
     tab = TabAndroid::FromWebContents(web_contents);
   }
-  download::DownloadItem::InsecureDownloadStatus status =
-      GetInsecureDownloadStatusForDownload(
-          Profile::FromBrowserContext(
-              content::DownloadItemUtils::GetBrowserContext(item)),
-          item->GetTargetFilePath(), item);
-  is_download_safe =
-      (status == download::DownloadItem::InsecureDownloadStatus::SAFE ||
-       status == download::DownloadItem::InsecureDownloadStatus::VALIDATED);
+  if (tab) {
+    download::DownloadItem::InsecureDownloadStatus status =
+        GetInsecureDownloadStatusForDownload(
+            Profile::FromBrowserContext(
+                content::DownloadItemUtils::GetBrowserContext(item)),
+            item->GetTargetFilePath(), item);
+    is_download_safe =
+        (status == download::DownloadItem::InsecureDownloadStatus::SAFE ||
+         status == download::DownloadItem::InsecureDownloadStatus::VALIDATED);
+  }
   Java_DownloadController_onDownloadCompleted(
       env, tab ? tab->GetJavaObject() : nullptr, j_item, is_download_safe);
 }
