@@ -386,6 +386,20 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
   }
 }
 
+net::CookieLegacyScope CookieSettingsBase::GetCookieLegacyScopeForDomain(
+    const std::string& cookie_domain) const {
+  ContentSetting setting = GetSettingForLegacyCookieScope(cookie_domain);
+  DCHECK(IsValidSettingForLegacyAccess(setting));
+  switch (setting) {
+    case CONTENT_SETTING_ALLOW:
+      return net::CookieLegacyScope::LEGACY;
+    case CONTENT_SETTING_BLOCK:
+      return net::CookieLegacyScope::NONLEGACY;
+    default:
+      NOTREACHED();
+  }
+}
+
 bool CookieSettingsBase::ShouldConsiderMitigationsFor3pcd(
     const GURL& first_party_url) const {
   // Mitigations should take effect if they are enabled (through means such as
@@ -825,6 +839,18 @@ ContentSetting CookieSettingsBase::GetSettingForLegacyCookieAccess(
 
   return GetContentSetting(cookie_domain_url, GURL(),
                            ContentSettingsType::LEGACY_COOKIE_ACCESS,
+                           /*info=*/nullptr);
+}
+
+ContentSetting CookieSettingsBase::GetSettingForLegacyCookieScope(
+    const std::string& cookie_domain) const {
+  // The content setting patterns are treated as domains, not URLs, so the
+  // scheme is irrelevant (so we can just arbitrarily pass false).
+  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      cookie_domain, false /*secure_scheme=*/);
+
+  return GetContentSetting(cookie_domain_url, GURL(),
+                           ContentSettingsType::LEGACY_COOKIE_SCOPE,
                            /*info=*/nullptr);
 }
 

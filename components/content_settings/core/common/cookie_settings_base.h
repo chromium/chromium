@@ -322,6 +322,23 @@ class CookieSettingsBase {
   ContentSetting GetSettingForLegacyCookieAccess(
       const std::string& cookie_domain) const;
 
+  // Gets the setting that controls whether legacy scope is allowed for a given
+  // cookie domain. The `cookie_domain` can be provided as the direct output of
+  // CanonicalCookie::Domain(), i.e. any leading dot does not have to be
+  // removed.
+  ContentSetting GetSettingForLegacyCookieScope(
+      const std::string& cookie_domain) const;
+
+  // Returns the cookie legacy scope (legacy or nonlegacy) to be applied for
+  // cookies on the given domain. The `cookie_domain` can be provided as the
+  // direct output of CanonicalCookie::Domain(), i.e. any leading dot does not
+  // have to be removed.
+  //
+  // Legacy behavior is based on the domain of the cookie itself, effectively
+  // the domain of the requested URL, which may be embedded in another domain.
+  net::CookieLegacyScope GetCookieLegacyScopeForDomain(
+      const std::string& cookie_domain) const;
+
   // Returns whether a cookie should be attached regardless of its SameSite
   // value vs the request context.
   // This currently returns true if the `site_for_cookies` is a Chrome UI scheme
