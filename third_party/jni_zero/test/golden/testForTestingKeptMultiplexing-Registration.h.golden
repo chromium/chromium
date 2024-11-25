@@ -63,6 +63,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStat
 
 // Multiplexing Methods.
 JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint switch_num) {
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 4);
   switch (switch_num) {
     case 0:
       return Muxed_org_jni_1zero_SampleProxyEdgeCases_fooForTest(env);
@@ -73,8 +74,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint swi
     case 3:
       return Muxed_org_jni_1zero_SampleProxyEdgeCases_foo__weirdly__escaped_name1(env);
     default:
-      JNI_ZERO_DCHECK(false);
-      return;
+      __builtin_unreachable();
   }
 }
 JNI_ZERO_BOUNDARY_EXPORT jint Java_J_N__1I_1I(
@@ -120,14 +120,14 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
     jint switch_num,
     jobject p0,
     jobject p1) {
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 2);
   switch (switch_num) {
     case 0:
       return Muxed_org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(env, p0, p1);
     case 1:
       return Muxed_org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(env, p0, p1);
     default:
-      JNI_ZERO_DCHECK(false);
-      return {};
+      __builtin_unreachable();
   }
 }
 

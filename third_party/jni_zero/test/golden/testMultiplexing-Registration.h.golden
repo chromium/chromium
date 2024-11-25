@@ -102,6 +102,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V(JNIEnv* env, jclass jcaller, jint swi
   return Muxed_org_jni_1zero_SampleForAnnotationProcessor_foo(env);
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O(JNIEnv* env, jclass jcaller, jint switch_num) {
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 13);
   switch (switch_num) {
     case 0:
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnClass(env);
@@ -130,8 +131,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O(JNIEnv* env, jclass jcaller, jint 
     case 12:
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables(env);
     default:
-      JNI_ZERO_DCHECK(false);
-      return {};
+      __builtin_unreachable();
   }
 }
 JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N__1Z(JNIEnv* env, jclass jcaller, jint switch_num) {
@@ -142,6 +142,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     jclass jcaller,
     jint switch_num,
     jobject p0) {
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 5);
   switch (switch_num) {
     case 0:
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_bar(env, p0);
@@ -154,8 +155,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     case 4:
       return Muxed_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(env, p0);
     default:
-      JNI_ZERO_DCHECK(false);
-      return {};
+      __builtin_unreachable();
   }
 }
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N__1O_1BCDFIJOOOOOOOOSZ(

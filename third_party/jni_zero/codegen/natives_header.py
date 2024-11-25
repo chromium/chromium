@@ -175,14 +175,12 @@ def multiplexing_boundary_method(sb, muxed_aliases, gen_jni_class):
       native = muxed_aliases[0]
       sb(f'return {native.muxed_entry_point_name}({param_call_str});\n')
     else:
+      num_aliases = len(muxed_aliases)
+      sb(f'JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < {num_aliases});\n')
       sb('switch (switch_num)')
       with sb.block():
         for native in muxed_aliases:
           sb(f'case {native.muxed_switch_num}:\n')
           sb(f'  return {native.muxed_entry_point_name}({param_call_str});\n')
         sb('default:\n')
-        sb('  JNI_ZERO_DCHECK(false);\n')
-        if sig.return_type.is_void():
-          sb('  return;\n')
-        else:
-          sb('  return {};\n')
+        sb('  __builtin_unreachable();\n')

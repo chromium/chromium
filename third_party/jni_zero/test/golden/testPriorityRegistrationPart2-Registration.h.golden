@@ -30,14 +30,14 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_J_N__1V_1IO(
     jint switch_num,
     jint p0,
     jobject p1) {
+  JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 2);
   switch (switch_num) {
     case 0:
       return Muxed_org_jni_1zero_TinySample2_test(env, p0, p1);
     case 1:
       return Muxed_org_jni_1zero_TinySample2_test2(env, p0, p1);
     default:
-      JNI_ZERO_DCHECK(false);
-      return;
+      __builtin_unreachable();
   }
 }
 
