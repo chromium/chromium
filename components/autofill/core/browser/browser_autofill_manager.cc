@@ -2111,14 +2111,6 @@ void BrowserAutofillManager::OnCreditCardFetched(
   // case it is non-null.
   CHECK(credit_card);
   OnCreditCardFetchedSuccessfully(*credit_card);
-
-  FormStructure* form_structure = nullptr;
-  AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form.global_id(), field_id, &form_structure,
-                             &autofill_field)) {
-    return;
-  }
-
   FillOrPreviewCreditCardForm(mojom::ActionPersistence::kFill, form, field_id,
                               *credit_card, fetched_credit_card_trigger_source);
 }
