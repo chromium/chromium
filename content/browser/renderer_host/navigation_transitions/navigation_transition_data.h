@@ -21,6 +21,8 @@ class NavigationTransitionData {
   // Used for recording UMA for cache hit/miss.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  //
+  // LINT.IfChange(CacheHitOrMissReason)
   enum class CacheHitOrMissReason {
     // The screenshot is captured and placed in the cache.
     kCacheHit = 0,
@@ -29,8 +31,8 @@ class NavigationTransitionData {
     // `CaptureNavigationEntryScreenshotForCrossDocumentNavigations`.
     kSentScreenshotRequest = 1,
 
-    // Received an empty bitmap when capturing the screenshot.
-    kCapturedEmptyBitmap = 2,
+    // Received an empty bitmap when capturing the screenshot from web pages.
+    kCapturedEmptyBitmapFromWebPage = 2,
 
     // [DEPRECATED] Screenshot is not captured for subframes.
     // kCacheMissSubframe = 3,
@@ -85,8 +87,12 @@ class NavigationTransitionData {
     // frame.
     kCacheMissNonPrimaryMainFrame = 17,
 
-    kMaxValue = kCacheMissNonPrimaryMainFrame
+    // Received an empty bitmap from embedder when capturing the screenshot.
+    kCapturedEmptyBitmapFromEmbedder = 18,
+
+    kMaxValue = kCapturedEmptyBitmapFromEmbedder
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationTransitionCacheHitOrMissReason)
 
   NavigationTransitionData();
   ~NavigationTransitionData() = default;

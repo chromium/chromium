@@ -424,10 +424,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
 
+<!-- LINT.IfChange(NavigationTransitionCacheHitOrMissReason) -->
+
 <enum name="NavigationTransitionCacheHitOrMissReason">
   <int value="0" label="Cache Hit"/>
   <int value="1" label="Sent Screenshot Request"/>
-  <int value="2" label="Captured Empty Bitmap"/>
+  <int value="2" label="Captured Empty Bitmap From Web Pages"/>
   <int value="3" label="[DEPRECATED] Cache Miss Subframe"/>
   <int value="4" label="Cache Miss Evicted"/>
   <int value="5" label="Cache Miss Purged Memory Pressure"/>
@@ -443,7 +445,10 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Window or compositor is detached"/>
   <int value="16" label="Browser not embedding a valid LocalSurfaceID"/>
   <int value="17" label="Not capture non primary main frames"/>
+  <int value="18" label="Captured Empty Bitmap From Embedder"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_data.h:CacheHitOrMissReason)-->
 
 <enum name="NavigationWasServedFromCache">
   <int value="0" label="Navigation wasn't served from cache"/>
