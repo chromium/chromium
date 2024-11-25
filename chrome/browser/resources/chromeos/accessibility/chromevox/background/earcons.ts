@@ -20,39 +20,37 @@ import {EarconEngine} from './earcon_engine.js';
 import {LogStore} from './logging/log_store.js';
 
 const DeviceType = chrome.audio.DeviceType;
+type AudioDeviceInfo = chrome.audio.AudioDeviceInfo;
+type Rect = chrome.automation.Rect;
 
 /**
  * High-level class that manages when each earcon should start (and when
  * relevant, stop) playing.
  */
 export class Earcons extends AbstractEarcons {
+  private engine_ = new EarconEngine();
+  private shouldPan_ = true;
+
   constructor() {
     super();
-
-    /**
-     * @type {EarconEngine}
-     * @private
-     */
-    this.engine_ = new EarconEngine();
-
-    /** @private {boolean} */
-    this.shouldPan_ = true;
 
     if (chrome.audio) {
       chrome.audio.getDevices(
           {isActive: true, streamTypes: [chrome.audio.StreamType.OUTPUT]},
-          devices => this.updateShouldPanForDevices_(devices));
+          (devices: AudioDeviceInfo[]) =>
+              this.updateShouldPanForDevices_(devices));
       chrome.audio.onDeviceListChanged.addListener(
-          devices => this.updateShouldPanForDevices_(devices));
+          (devices: AudioDeviceInfo[]) =>
+              this.updateShouldPanForDevices_(devices));
     } else {
       this.shouldPan_ = false;
     }
   }
 
   /**
-   * @return {string} The human-readable name of the earcon set.
+   * @return The human-readable name of the earcon set.
    */
-  getName() {
+  getName(): string {
     return 'ChromeVox earcons';
   }
 
@@ -61,9 +59,8 @@ export class Earcons extends AbstractEarcons {
    * @param {EarconId} earcon An earcon identifier.
    * @param {chrome.automation.Rect=} opt_location A location associated with
    *     the earcon such as a control's bounding rectangle.
-   * @override
    */
-  playEarcon(earcon, opt_location) {
+  override playEarcon(earcon: EarconId, opt_location?: Rect): void {
     if (!this.enabled) {
       return;
     }
@@ -74,8 +71,8 @@ export class Earcons extends AbstractEarcons {
     if (ChromeVoxRange.current?.isValid()) {
       const node = ChromeVoxRange.current.start.node;
       const rect = opt_location ?? node.location;
-      const container = node.root.location;
-      if (this.shouldPan_) {
+      const container = node.root?.location;
+      if (this.shouldPan_ && container) {
         this.engine_.setPositionForRect(rect, container);
       } else {
         this.engine_.resetPan();
@@ -85,8 +82,7 @@ export class Earcons extends AbstractEarcons {
     this.engine_.playEarcon(earcon);
   }
 
-  /** @override */
-  cancelEarcon(earcon) {
+  override cancelEarcon(earcon: EarconId): void {
     switch (earcon) {
       case EarconId.PAGE_START_LOADING:
         this.engine_.cancelProgress();
@@ -94,8 +90,7 @@ export class Earcons extends AbstractEarcons {
     }
   }
 
-  /** @override */
-  toggle() {
+  override toggle(): void {
     this.enabled = !this.enabled;
     const announce =
         this.enabled ? Msgs.getMsg('earcons_on') : Msgs.getMsg('earcons_off');
@@ -105,12 +100,11 @@ export class Earcons extends AbstractEarcons {
   /**
    * Updates |this.shouldPan_| based on whether internal speakers are active
    * or not.
-   * @param {Array<chrome.audio.AudioDeviceInfo>} devices
-   * @private
+   * @param devices
    */
-  updateShouldPanForDevices_(devices) {
+  private updateShouldPanForDevices_(devices: AudioDeviceInfo[]): void {
     this.shouldPan_ = !devices.some(
-        device => device.isActive &&
+        (device: AudioDeviceInfo) => device.isActive &&
             device.deviceType === DeviceType.INTERNAL_SPEAKER);
   }
 }
