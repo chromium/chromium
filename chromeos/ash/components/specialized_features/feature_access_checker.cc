@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 
+#include "base/command_line.h"
+#include "base/hash/sha1.h"
 #include "components/prefs/pref_service.h"
 
 namespace specialized_features {
@@ -31,6 +33,14 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
 
   if (!base::FeatureList::IsEnabled(*config_.feature_management_flag)) {
     failures.Put(kFeatureManagementCheckFailed);
+  }
+
+  if (config_.secret_key.has_value() &&
+      config_.secret_key->sha1_hashed_key_value !=
+          base::SHA1HashString(
+              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                  config_.secret_key->flag))) {
+    failures.Put(kSecretKeyCheckFailed);
   }
 
   return failures;

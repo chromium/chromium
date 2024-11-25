@@ -22,13 +22,23 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
       kDisabledInSettings,              // Settings toggle is off
       kFeatureFlagDisabled,             // The feature flag disabled.
       kFeatureManagementCheckFailed,  // FeatureManagement flag was not enabled.
-      kMaxValue = kFeatureManagementCheckFailed,
+      kSecretKeyCheckFailed,          // Secret key required and was not valid.
+      kMaxValue = kSecretKeyCheckFailed,
     };
 
 // EnumSet containing FeatureAccessFailures.
 using FeatureAccessFailureSet = base::EnumSet<FeatureAccessFailure,
                                               FeatureAccessFailure::kMinValue,
                                               FeatureAccessFailure::kMaxValue>;
+
+// Represents a secret key used to allow users to access a feature.
+struct COMPONENT_EXPORT(
+    CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES) SecretKey {
+  // Name of the flag.
+  std::string_view flag;
+  // The hashed value of the key.
+  std::string_view sha1_hashed_key_value;
+};
 
 // This configures the FeatureAccessChecker for different types of common
 // specialized feature checks.
@@ -51,6 +61,12 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // management system. The FeatureAccessChecker::Check() verifies if its value
   // is true and returns kFeatureManagementCheckFailed if not.
   raw_ref<const base::Feature> feature_management_flag;
+  // Special key used to guard users from accessing the feature.
+  // FeatureAccessChecker::Check() only checks this special key if the optional
+  // value is set since secret keys could be removed.
+  // FeatureAccessChecker::Check() will return kSecretKeyCheckFailed if this
+  // value is set and the secret key check fails.
+  std::optional<SecretKey> secret_key;
 };
 
 // Creates a class to check different dependencies for specialized features.

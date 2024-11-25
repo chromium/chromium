@@ -4,9 +4,11 @@
 
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 
+#include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/feature_list_buildflags.h"
+#include "base/hash/sha1.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -23,6 +25,7 @@ using enum FeatureAccessFailure;
 
 constexpr std::string_view kSettingsTogglePref = "settings-toggle";
 constexpr std::string_view kConsentAcceptedPref = "consent-accepted";
+constexpr std::string_view kSecretKeyFlag = "secret-key-flag";
 
 BASE_FEATURE(kFeatureOnByDefault,
              "OnByDefaultName",
@@ -47,7 +50,7 @@ void RegisterAndEnableAllPrefs(TestingPrefServiceSimple& pref) {
   pref.registry()->RegisterBooleanPref(kConsentAcceptedPref, true);
 }
 
-TEST(FeatureAccessCheckerTest, AllChecksPass) {
+TEST(FeatureAccessCheckerTest, AllPrefAndFeatureChecksPass) {
   TestingPrefServiceSimple pref;
   RegisterAndEnableAllPrefs(pref);
 
@@ -94,6 +97,33 @@ TEST(FeatureAccessCheckerTest, FeatureManagementFlagFail) {
 
   EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
               ElementsAre(kFeatureManagementCheckFailed));
+}
+
+TEST(FeatureAccessCheckerTest, SecretKeyCheckPass) {
+  TestingPrefServiceSimple pref;
+  RegisterAndEnableAllPrefs(pref);
+  std::string key_val = "hunter2";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
+                                                            key_val);
+  FeatureAccessConfig config = DefaultConfig();
+  std::string hashed = base::SHA1HashString(key_val);
+  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
+              IsEmpty());
+}
+
+TEST(FeatureAccessCheckerTest, SecretKeyCheckFail) {
+  TestingPrefServiceSimple pref;
+  RegisterAndEnableAllPrefs(pref);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(kSecretKeyFlag,
+                                                            "nothunter2atall");
+  FeatureAccessConfig config = DefaultConfig();
+  std::string hashed = base::SHA1HashString("hunter2");
+  config.secret_key = {.flag = kSecretKeyFlag, .sha1_hashed_key_value = hashed};
+
+  EXPECT_THAT(base::ToVector(FeatureAccessChecker(config, pref).Check()),
+              ElementsAre(kSecretKeyCheckFailed));
 }
 
 }  // namespace
