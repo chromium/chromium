@@ -308,6 +308,7 @@ class MockPrivacySandboxCountries : public PrivacySandboxCountries {
  public:
   MOCK_METHOD(bool, IsConsentCountry, (), (override));
   MOCK_METHOD(bool, IsRestOfWorldCountry, (), (override));
+  MOCK_METHOD(bool, IsChina, (), (override));
 };
 
 class PrivacySandboxServiceTest : public testing::Test {

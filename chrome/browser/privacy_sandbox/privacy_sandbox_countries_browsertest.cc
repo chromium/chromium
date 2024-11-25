@@ -24,6 +24,7 @@ struct PrivacySandboxCountriesTestData {
   // Expectations
   bool is_consent_country;
   bool is_rest_of_world;
+  bool is_china;
   bool is_varation_service_ready;
   bool is_variation_country_empty;
 };
@@ -58,6 +59,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxCountriesBrowserTest, ConsentCountryTest) {
             GetParam().is_consent_country);
   EXPECT_EQ(privacy_sandbox_countries()->IsRestOfWorldCountry(),
             GetParam().is_rest_of_world);
+  EXPECT_EQ(privacy_sandbox_countries()->IsChina(), GetParam().is_china);
   histogram_tester.ExpectBucketCount(
       "PrivacySandbox.NoticeRequirement.IsVariationServiceReady",
       GetParam().is_varation_service_ready, 1);
@@ -75,6 +77,7 @@ INSTANTIATE_TEST_SUITE_P(,
                                  // Expectations
                                  .is_consent_country = true,
                                  .is_rest_of_world = false,
+                                 .is_china = false,
                                  .is_varation_service_ready = true,
                                  .is_variation_country_empty = false,
                              },
@@ -84,6 +87,7 @@ INSTANTIATE_TEST_SUITE_P(,
                                  // Expectations
                                  .is_consent_country = true,
                                  .is_rest_of_world = false,
+                                 .is_china = false,
                                  .is_varation_service_ready = true,
                                  .is_variation_country_empty = false,
                              },
@@ -93,6 +97,7 @@ INSTANTIATE_TEST_SUITE_P(,
                                  // Expectations
                                  .is_consent_country = false,
                                  .is_rest_of_world = true,
+                                 .is_china = false,
                                  .is_varation_service_ready = true,
                                  .is_variation_country_empty = false,
                              },
@@ -102,8 +107,19 @@ INSTANTIATE_TEST_SUITE_P(,
                                  // Expectations
                                  .is_consent_country = false,
                                  .is_rest_of_world = false,
+                                 .is_china = false,
                                  .is_varation_service_ready = true,
                                  .is_variation_country_empty = true,
+                             },
+                             PrivacySandboxCountriesTestData{
+                                 // Inputs
+                                 .variation_country = "cn",
+                                 // Expectations
+                                 .is_consent_country = false,
+                                 .is_rest_of_world = true,
+                                 .is_china = true,
+                                 .is_varation_service_ready = true,
+                                 .is_variation_country_empty = false,
                              }));
 
 }  // namespace

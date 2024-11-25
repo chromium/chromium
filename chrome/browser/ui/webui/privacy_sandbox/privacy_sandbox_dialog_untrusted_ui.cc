@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -19,6 +21,13 @@
 #include "content/public/common/url_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+
+namespace {
+PrivacySandboxCountries& GetPrivacySandboxCountries() {
+  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
+  return *instance;
+}
+}  // namespace
 
 PrivacySandboxDialogUntrustedUIConfig::PrivacySandboxDialogUntrustedUIConfig()
     : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
@@ -35,13 +44,19 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIUntrustedPrivacySandboxDialogURL);
 
+  bool is_china_user = GetPrivacySandboxCountries().IsChina();
+
+  std::string privacy_policy_domain = is_china_user
+                                          ? "https://policies.google.cn;"
+                                          : "https://policies.google.com;";
+
   // Allows google pages to be embedded within the untrusted source.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
-      "frame-src https://policies.google.com;");
+      "frame-src " + privacy_policy_domain);
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc,
-      "object-src https://policies.google.com;");
+      "object-src " + privacy_policy_domain);
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome-untrusted://resources 'self' 'unsafe-inline';");
@@ -63,10 +78,17 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
           ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
           : color_scheme == ThemeService::BrowserColorScheme::kDark;
 
-  untrusted_source->AddString("privacyPolicyURL",
-                              is_dark_mode
-                                  ? chrome::kPrivacyPolicyOnlineDarkModeURLPath
-                                  : chrome::kPrivacyPolicyOnlineURLPath);
+  if (is_china_user) {
+    untrusted_source->AddString(
+        "privacyPolicyURL",
+        is_dark_mode ? chrome::kPrivacyPolicyEmbeddedDarkModeURLPathChina
+                     : chrome::kPrivacyPolicyEmbeddedURLPathChina);
+  } else {
+    untrusted_source->AddString(
+        "privacyPolicyURL", is_dark_mode
+                                ? chrome::kPrivacyPolicyOnlineDarkModeURLPath
+                                : chrome::kPrivacyPolicyOnlineURLPath);
+  }
 
   untrusted_source->AddFrameAncestor(
       GURL(chrome::kChromeUIPrivacySandboxDialogURL));

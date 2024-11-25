@@ -54,3 +54,9 @@ bool PrivacySandboxCountriesImpl::IsRestOfWorldCountry() {
       country.empty());
   return !country.empty() && !kPrivacySandboxConsentCountries.contains(country);
 }
+
+bool PrivacySandboxCountriesImpl::IsChina() {
+  CHECK(g_browser_process);
+  std::string country = GetCountry(g_browser_process->variations_service());
+  return !country.empty() && country == "cn";
+}

@@ -619,6 +619,10 @@ inline constexpr char16_t kCwsEnhancedSafeBrowsingLearnMoreURL[] =
 inline constexpr char kPrivacyPolicyURL[] =
     "https://policies.google.com/privacy";
 
+// The URL path to Google's Privacy Policy page for users in China.
+inline constexpr char kPrivacyPolicyURLChina[] =
+    "https://policies.google.cn/privacy";
+
 // The URL path to Google's Embedded Privacy Policy page.
 inline constexpr char kPrivacyPolicyOnlineURLPath[] =
     "https://policies.google.com/privacy/embedded";
@@ -626,6 +630,15 @@ inline constexpr char kPrivacyPolicyOnlineURLPath[] =
 // The URL path to Google's Embedded Privacy Policy page - Dark Mode.
 inline constexpr char kPrivacyPolicyOnlineDarkModeURLPath[] =
     "https://policies.google.com/privacy/embedded?color_scheme=dark";
+
+// The URL path to Google's Embedded Privacy Policy page for users in China.
+inline constexpr char kPrivacyPolicyEmbeddedURLPathChina[] =
+    "https://policies.google.cn/privacy/embedded";
+
+// The URL path to Google's Embedded Privacy Policy page for users in China -
+// Dark Mode.
+inline constexpr char kPrivacyPolicyEmbeddedDarkModeURLPathChina[] =
+    "https://policies.google.cn/privacy/embedded?color_scheme=dark";
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.

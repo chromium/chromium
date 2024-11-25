@@ -6,6 +6,8 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -23,6 +25,11 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
+
+PrivacySandboxCountries& GetPrivacySandboxCountries() {
+  static base::NoDestructor<PrivacySandboxCountriesImpl> instance;
+  return *instance;
+}
 
 // The name of the on-click function when the privacy policy link is pressed.
 constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
@@ -287,14 +294,17 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                                  .spec()),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_LEARN_MORE_BULLET_3_V2_LINK_ARIA_DESCRIPTION)));
+
+  bool is_china_user = GetPrivacySandboxCountries().IsChina();
+  const char* privacy_policy_url = is_china_user
+                                       ? chrome::kPrivacyPolicyURLChina
+                                       : chrome::kPrivacyPolicyURL;
+
   html_source->AddString(
       "siteSuggestedAdsPageDisclaimer",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER,
-          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
-                                 GURL(chrome::kPrivacyPolicyURL),
-                                 g_browser_process->GetApplicationLocale())
-                                 .spec()),
+          base::ASCIIToUTF16(privacy_policy_url),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc));
@@ -303,10 +313,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "adTopicsPageDisclaimer",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AD_TOPICS_PAGE_DISCLAIMER,
-          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
-                                 GURL(chrome::kPrivacyPolicyURL),
-                                 g_browser_process->GetApplicationLocale())
-                                 .spec()),
+          base::ASCIIToUTF16(privacy_policy_url),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc));
@@ -315,10 +322,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       "adMeasurementPageDisclaimer",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AD_MEASUREMENT_PAGE_DISCLAIMER,
-          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
-                                 GURL(chrome::kPrivacyPolicyURL),
-                                 g_browser_process->GetApplicationLocale())
-                                 .spec()),
+          base::ASCIIToUTF16(privacy_policy_url),
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_SITE_SUGGESTED_ADS_PAGE_DISCLAIMER_LINK_ARIA_DESCRIPTION),
           kPrivacyPolicyFunc));
