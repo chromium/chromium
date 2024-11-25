@@ -238,11 +238,12 @@ public class ConditionWaiter {
         boolean anyCriteriaMissing = processWaits(/* startMonitoringNewWaits= */ false);
 
         if (!anyCriteriaMissing && failOnAlreadyFulfilled) {
-            throw buildWaitConditionsException(
+            throw new CriteriaNotSatisfiedException(
                     "All Conditions already fulfilled before running Trigger. If this is expected,"
                         + " use a null Trigger. If this is possible but not necessarily expected,"
-                        + " use TransitionOptions.withPossiblyAlreadyFulfilled().",
-                    mWaits);
+                        + " use TransitionOptions.withPossiblyAlreadyFulfilled().\n"
+                            + createWaitConditionsSummary(
+                                    mWaits, /* generateMainMessage= */ false));
         }
     }
 
@@ -259,13 +260,16 @@ public class ConditionWaiter {
                     boolean anyCriteriaMissing = processWaits(/* startMonitoringNewWaits= */ true);
 
                     if (anyCriteriaMissing) {
-                        throw buildWaitConditionsException("Did not meet all conditions", mWaits);
+                        throw new CriteriaNotSatisfiedException(
+                                createWaitConditionsSummary(
+                                        mWaits, /* generateMainMessage= */ true));
                     } else {
                         Log.i(
                                 TAG,
                                 "%s: Conditions fulfilled:\n%s",
                                 transitionName,
-                                createWaitConditionsSummary(mWaits));
+                                createWaitConditionsSummary(
+                                        mWaits, /* generateMainMessage= */ false));
                     }
                 };
 
@@ -434,18 +438,16 @@ public class ConditionWaiter {
         return newElements;
     }
 
-    private static CriteriaNotSatisfiedException buildWaitConditionsException(
-            String message, List<ConditionWait> conditionWaits) {
-        return new CriteriaNotSatisfiedException(
-                message + ":\n" + createWaitConditionsSummary(conditionWaits));
-    }
-
-    private static String createWaitConditionsSummary(List<ConditionWait> conditionStatuses) {
+    private static String createWaitConditionsSummary(
+            List<ConditionWait> conditionStatuses, boolean generateMainMessage) {
+        String firstUnfulfilledConditionString = null;
+        int unfulfilledConditionCount = 0;
         StringBuilder detailsString = new StringBuilder();
-
         int i = 1;
         for (ConditionWait conditionStatus : conditionStatuses) {
             String conditionDescription = conditionStatus.mCondition.getDescription();
+
+            String indexString = "[" + i + "]";
 
             String marker = "  ";
             String originString = "";
@@ -466,20 +468,23 @@ public class ConditionWaiter {
             }
 
             String verdictString;
-            if (conditionStatus.getStatusStore().anyErrorsReported()) {
-                if (conditionStatus.isFulfilled()) {
+            if (conditionStatus.isFulfilled()) {
+                if (conditionStatus.getStatusStore().anyErrorsReported()) {
                     verdictString = "[OK* ]";
                 } else {
-                    verdictString = "[ERR*]";
-                    marker = "->";
+                    verdictString = "[OK  ]";
                 }
             } else {
-                if (conditionStatus.isFulfilled()) {
-                    verdictString = "[OK  ]";
+                if (conditionStatus.getStatusStore().anyErrorsReported()) {
+                    verdictString = "[ERR*]";
                 } else {
                     verdictString = "[FAIL]";
-                    marker = "->";
                 }
+                marker = "->";
+                if (firstUnfulfilledConditionString == null) {
+                    firstUnfulfilledConditionString = indexString + " " + conditionDescription;
+                }
+                unfulfilledConditionCount++;
             }
 
             StringBuilder historyString = new StringBuilder();
@@ -507,9 +512,9 @@ public class ConditionWaiter {
 
             detailsString
                     .append(marker)
-                    .append("  [")
-                    .append(i)
-                    .append("] ")
+                    .append("  ")
+                    .append(indexString)
+                    .append(" ")
                     .append(originString)
                     .append(" ")
                     .append(verdictString)
@@ -523,7 +528,26 @@ public class ConditionWaiter {
             detailsString.append('\n');
             i++;
         }
-        return detailsString.toString();
+
+        if (generateMainMessage) {
+            if (unfulfilledConditionCount == 0) {
+                return String.format("All Conditions fulfilled:\n%s", detailsString);
+            } else if (unfulfilledConditionCount == 1) {
+                return String.format(
+                        "Did not meet 1 Condition:%s\n%s",
+                        firstUnfulfilledConditionString, detailsString);
+            } else {
+                return String.format(
+                        "Did not meet %d Conditions: %s (+ %d other%s)\n%s",
+                        unfulfilledConditionCount,
+                        firstUnfulfilledConditionString,
+                        unfulfilledConditionCount - 1,
+                        unfulfilledConditionCount > 2 ? "s" : "",
+                        detailsString);
+            }
+        } else {
+            return detailsString.toString();
+        }
     }
 
     /** The origin of a {@link Condition} (enter, exit, transition). */
