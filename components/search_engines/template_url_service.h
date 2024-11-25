@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/choice_made_location.h"
@@ -636,6 +637,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   friend class Scoper;
   friend class TemplateURLServiceTestUtil;
   friend class TemplateUrlServiceAndroid;
+  friend class ProfileInternalsHandler;
 
   using GUIDToTURL =
       std::map<std::string, raw_ptr<TemplateURL, CtnExperimental>>;
@@ -888,6 +890,13 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void LogSiteSearchPolicyConflict(
       const OwnedTemplateURLVector& policy_site_search_engines);
 
+  int initial_keywords_database_country() {
+    return initial_keywords_database_country_;
+  }
+  int updated_keywords_database_country() {
+    return updated_keywords_database_country_;
+  }
+
   // ---------- Browser state related members ---------------------------------
   raw_ref<PrefService> prefs_;
 
@@ -1027,6 +1036,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // with deletion. Used to postpone the deletion in case the default search
   // engine changes later. See ProcessSyncChanges() for details.
   std::string postponed_deleted_default_engine_guid_;
+
+  // TODO(b:380002162) - Remove these 2 properties when the bug is fixed.
+  int initial_keywords_database_country_ = country_codes::kCountryIDUnknown;
+  int updated_keywords_database_country_ = country_codes::kCountryIDUnknown;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this TemplateURLService on

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/search_engines/search_engines_switches.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
+
+#include "components/search_engines/template_url_service.h"
 
 #include <algorithm>
 #include <iterator>
@@ -42,6 +43,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/country_codes/country_codes.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -52,11 +54,11 @@
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
-#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_client.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -1418,17 +1420,26 @@ void TemplateURLService::OnWebDataServiceRequestDone(
     return;
   }
 
+  DCHECK_EQ(KEYWORDS_RESULT, result->GetType());
   std::unique_ptr<OwnedTemplateURLVector> template_urls =
       std::make_unique<OwnedTemplateURLVector>();
   WDKeywordsResult::Metadata updated_keywords_metadata;
+
   {
+    const WDKeywordsResult& keyword_result =
+        reinterpret_cast<const WDResult<WDKeywordsResult>*>(result.get())
+            ->GetValue();
+    initial_keywords_database_country_ =
+        keyword_result.metadata.builtin_keyword_country;
     GetSearchProvidersUsingKeywordResult(
-        *result, web_data_service_.get(), &prefs_.get(),
+        keyword_result, web_data_service_.get(), &prefs_.get(),
         &search_engine_choice_service_.get(), template_urls.get(),
         (default_search_provider_source_ == DefaultSearchManager::FROM_USER)
             ? pre_loading_providers_->default_search_provider()
             : nullptr,
         search_terms_data(), updated_keywords_metadata, &pre_sync_deletes_);
+    updated_keywords_database_country_ =
+        updated_keywords_metadata.builtin_keyword_country;
   }
 
   Scoper scoper(this);

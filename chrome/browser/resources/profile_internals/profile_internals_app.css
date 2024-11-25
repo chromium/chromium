@@ -7,8 +7,14 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  --odd-row-background-color: rgb(239, 243, 255);
+  --nested-table-border-color: var(--odd-row-background-color);
+}
+
 tr:nth-child(odd) {
-  background: rgb(239, 243, 255);
+  --nested-table-border-color: white;
+  background: var(--odd-row-background-color);
 }
 
 ul {
@@ -28,4 +34,18 @@ ul {
 
 .unloaded {
   opacity: 50%;
+}
+
+table table {
+  border-style: hidden;
+  border-collapse: collapse;
+
+  td, th {
+    padding: 2px;
+    border: solid 2px var(--nested-table-border-color);
+  }
+
+  th {
+    font-size: .8em;
+  }
 }
