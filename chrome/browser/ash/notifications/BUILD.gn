@@ -59,6 +59,7 @@ static_library("notifications") {
     "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",

@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -204,6 +205,39 @@ TEST_F(ArcDiskSpaceMonitorTest,
   FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(notification_tester()->GetNotification(
       kLowDiskSpacePreStopNotificationId));
+}
+
+TEST_F(ArcDiskSpaceMonitorTest, DemoModeSkipNotification) {
+  testing_profile()
+      ->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
+      ->SetDemoMode();
+  // ThresholdForStoppingArc < free_disk_space < ThresholdForPreStopNotification
+  ash::FakeSpacedClient::Get()->set_free_disk_space(
+      std::make_optional(kDiskSpaceThresholdForPreStopNotification - 1));
+
+  arc_session_manager()->EmulateRequirementCheckCompletionForTesting();
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+
+  // Wait until ArcDiskSpaceMonitor::OnGetFreeDiskSpace() runs.
+  base::RunLoop loop;
+  arc_disk_space_monitor()->SetOnGetFreeDiskSpaceCallbackForTesting(
+      loop.QuitClosure());
+  loop.Run();
+
+  // ARC should still be active.
+  EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager()->state());
+  EXPECT_TRUE(arc_disk_space_monitor()->IsTimerRunningForTesting());
+
+  // The timer should be running with the short check interval.
+  EXPECT_EQ(kDiskSpaceCheckIntervalShort,
+            arc_disk_space_monitor()->GetTimerCurrentDelayForTesting());
+
+  // A pre-stop warning notification should not be shown.
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePreStopNotificationId));
+  EXPECT_FALSE(notification_tester()->GetNotification(
+      kLowDiskSpacePostStopNotificationId));
 }
 
 TEST_F(ArcDiskSpaceMonitorTest, FreeSpaceIsLowerThanThresholdForStoppingArc) {

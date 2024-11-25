@@ -14,6 +14,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
@@ -122,6 +123,10 @@ void ArcDiskSpaceMonitor::OnGetFreeDiskSpace(std::optional<int64_t> reply) {
   } else {
     ScheduleCheckDiskSpace(kDiskSpaceCheckIntervalLong);
   }
+
+  if (on_get_free_disk_space_callback_for_testing_) {
+    std::move(on_get_free_disk_space_callback_for_testing_).Run();
+  }
 }
 
 void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
@@ -133,6 +138,12 @@ void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
       return;
     }
     pre_stop_notification_last_shown_time_ = base::Time::Now();
+  }
+
+  if (ash::demo_mode::IsDeviceInDemoMode()) {
+    LOG(WARNING) << "Device is low on disk space, but the notification was "
+                 << "suppressed on a demo mode device.";
+    return;
   }
 
   const std::string notification_id = is_pre_stop
