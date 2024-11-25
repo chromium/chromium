@@ -32,6 +32,7 @@
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
+#include "content/browser/tracing/triggers_data_source.h"
 #include "content/common/child_process.mojom.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -419,6 +420,7 @@ void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
       base::BindRepeating(&BackgroundTracingManagerImpl::GenerateMetadataProto,
                           base::Unretained(this)));
   BackgroundMetadataDataSource::Register();
+  TriggersDataSource::Register();
 }
 
 bool BackgroundTracingManagerImpl::RequestActivateScenario() {

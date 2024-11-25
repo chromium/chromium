@@ -2219,6 +2219,8 @@ source_set("browser") {
     "tracing/tracing_scenario.h",
     "tracing/tracing_service_controller.cc",
     "tracing/tracing_service_controller.h",
+    "tracing/triggers_data_source.cc",
+    "tracing/triggers_data_source.h",
     "ukm_internals_ui.cc",
     "ukm_internals_ui.h",
     "url_info.cc",

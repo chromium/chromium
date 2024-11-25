@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_TRACING_PUBLIC_CPP_TRIGGERS_DATA_SOURCE_H_
-#define SERVICES_TRACING_PUBLIC_CPP_TRIGGERS_DATA_SOURCE_H_
+#ifndef CONTENT_BROWSER_TRACING_TRIGGERS_DATA_SOURCE_H_
+#define CONTENT_BROWSER_TRACING_TRIGGERS_DATA_SOURCE_H_
 
 #include <string>
 
-#include "base/component_export.h"
+#include "content/common/content_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/data_source.h"
 
-namespace tracing {
+namespace content {
 
-class COMPONENT_EXPORT(TRACING_CPP) TriggersDataSource
+class CONTENT_EXPORT TriggersDataSource
     : public perfetto::DataSource<TriggersDataSource> {
  public:
   static void Register();
@@ -22,6 +22,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TriggersDataSource
   void OnStop(const StopArgs&) override;
 };
 
-}  // namespace tracing
+}  // namespace content
 
-#endif  // SERVICES_TRACING_PUBLIC_CPP_TRIGGERS_DATA_SOURCE_H_
+#endif  // CONTENT_BROWSER_TRACING_TRIGGERS_DATA_SOURCE_H_
