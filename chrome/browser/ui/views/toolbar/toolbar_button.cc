@@ -124,10 +124,6 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-
-  if (model_) {
-    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
-  }
 }
 
 ToolbarButton::~ToolbarButton() = default;

@@ -29,6 +29,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
 
@@ -82,6 +83,10 @@ CastToolbarButton::CastToolbarButton(
   DCHECK(GetActionController());
   GetActionController()->AddObserver(this);
   SetVisible(GetActionController()->ShouldEnableAction());
+
+  if (menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 CastToolbarButton::~CastToolbarButton() {

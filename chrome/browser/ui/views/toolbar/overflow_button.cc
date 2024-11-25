@@ -26,6 +26,10 @@ OverflowButton::OverflowButton() {
   SetButtonController(std::move(menu_button_controller));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_OVERFLOW_BUTTON));
   SetVectorIcons(kOverflowButtonIcon, kOverflowButtonTouchIcon);
+
+  if (menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  }
 }
 
 void OverflowButton::RunMenu() {
