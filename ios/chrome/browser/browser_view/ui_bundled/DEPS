@@ -35,6 +35,7 @@ include_rules = [
   "+ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h",
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
   "+ios/chrome/browser/lens/model/lens_tab_helper.h",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",

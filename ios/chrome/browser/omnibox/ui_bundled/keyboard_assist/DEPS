@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/lens/ui_bundled",
 ]
 
 specific_include_rules = {

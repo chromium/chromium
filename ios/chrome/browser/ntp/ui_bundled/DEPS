@@ -11,7 +11,7 @@ include_rules = [
   "+ios/chrome/browser/overscroll_actions/ui_bundled",
   "+ios/chrome/browser/toolbar/ui_bundled/buttons",
   "+ios/chrome/browser/omnibox/ui_bundled",
-  "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/toolbar/ui_bundled/public",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/push_notification/ui_bundled",

@@ -5,13 +5,13 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_configuration_factory.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 
 namespace {

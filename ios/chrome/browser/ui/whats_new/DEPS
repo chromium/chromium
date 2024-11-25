@@ -4,6 +4,6 @@ include_rules = [
 
 specific_include_rules = {
   "whats_new_mediator\.mm": [
-    "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+    "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   ],
 }

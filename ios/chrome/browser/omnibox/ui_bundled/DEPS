@@ -18,7 +18,7 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h",
   "+ios/chrome/browser/toolbar/ui_bundled/public",
-  "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/url_loading/model",
 ]
 

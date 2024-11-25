@@ -8,7 +8,7 @@ include_rules = [
   "+ios/chrome/browser/orchestrator/ui_bundled",
   "+ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h",
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
-  "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_controller_delegate.h",
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_util.h",

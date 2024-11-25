@@ -24,7 +24,7 @@ include_rules = [
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h",
   "+ios/chrome/browser/ui/fullscreen",
-  "+ios/chrome/browser/ui/lens",
+  "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/ui/popup_menu/public",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",

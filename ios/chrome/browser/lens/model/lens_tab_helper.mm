@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
+
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
-#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 
 namespace {

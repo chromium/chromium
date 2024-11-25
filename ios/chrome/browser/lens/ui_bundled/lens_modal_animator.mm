@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/lens/lens_modal_animator.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_modal_animator.h"
+
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 
 // The time it takes for the presenting animation to complete.

@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/browser_container/ui_bundled",
   "+ios/chrome/browser/bookmarks/ui_bundled",
   "+ios/chrome/browser/bubble/ui_bundled",
-  "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
+  "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h",
   "+ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h",
   "+ios/chrome/browser/reading_list/ui_bundled",

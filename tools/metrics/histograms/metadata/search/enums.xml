@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
              Overlay, entered via keyboard (Image)"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/ui/lens/lens_entrypoint.h:IOSLensEntrypoint) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h:IOSLensEntrypoint) -->
 
 <enum name="AuxiliarySearchRequestStatus">
   <int value="0" label="Sent (overall number of requests issued)"/>
