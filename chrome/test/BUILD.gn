@@ -6839,8 +6839,10 @@ test("unit_tests") {
       "../browser/performance_monitor/metric_evaluator_helper_win_unittest.cc",
       "../browser/policy/browser_dm_token_storage_win_unittest.cc",
       "../browser/process_singleton_win_unittest.cc",
+      "../browser/profile_resetter/triggered_profile_resetter_win_unittest.cc",
       "../browser/profiles/profile_shortcut_manager_unittest_win.cc",
       "../browser/shell_integration_win_unittest.cc",
+      "../browser/task_manager/sampling/shared_sampler_win_unittest.cc",
       "../browser/ui/startup/credential_provider_signin_info_fetcher_win_unittest.cc",
       "../browser/ui/views/frame/windows_caption_button_unittest.cc",
       "../browser/ui/views/uninstall_view_unittest.cc",
@@ -6866,6 +6868,7 @@ test("unit_tests") {
       "../common/conflicts/remote_module_watcher_win_unittest.cc",
       "../common/win/delay_load_failure_hook_unittest.cc",
       "../common/win/delay_load_notify_hook_unittest.cc",
+      "../utility/importer/edge_database_reader_unittest_win.cc",
     ]
 
     data += [ "$root_out_dir/chrome.exe" ]

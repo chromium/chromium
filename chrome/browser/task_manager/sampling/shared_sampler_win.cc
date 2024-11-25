@@ -106,8 +106,8 @@ bool QuerySystemProcessInformation(ByteBuffer* buffer) {
     ULONG buffer_size = static_cast<ULONG>(buffer->capacity());
 
     if (g_query_system_information_for_test) {
-      data_size =
-          g_query_system_information_for_test(buffer->data(), buffer_size);
+      data_size = g_query_system_information_for_test(  // IN-TEST
+          base::span(buffer->data(), buffer_size));
       result =
           (data_size > buffer_size) ? STATUS_BUFFER_TOO_SMALL : STATUS_SUCCESS;
     } else {
