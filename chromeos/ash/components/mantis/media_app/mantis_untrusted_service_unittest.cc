@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/mantis/media_app/mantis_media_app_untrusted_processor.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
 
 #include <cstdint>
 #include <memory>
@@ -14,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,10 +55,13 @@ std::vector<uint8_t> GetFakeResult() {
 
 class MockMojoMantisProcessor : public mantis::mojom::MantisProcessor {
  public:
-  explicit MockMojoMantisProcessor(
-      mojo::PendingReceiver<mantis::mojom::MantisProcessor> processor)
-      : receiver_(this, std::move(processor)) {}
+  MockMojoMantisProcessor() : receiver_(this) {}
   ~MockMojoMantisProcessor() override = default;
+
+  mojo::PendingRemote<mantis::mojom::MantisProcessor>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
 
   MOCK_METHOD(void,
               Inpainting,
@@ -93,12 +97,12 @@ class MockMojoMantisProcessor : public mantis::mojom::MantisProcessor {
 class UntrustedProcessorTest : public testing::Test {
  public:
   UntrustedProcessorTest()
-      : mojo_mantis_processor_(processor_.BindNewPipeAndPassReceiver()) {}
+      : service_(mojo_mantis_processor_.BindNewPipeAndPassRemote()) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  MantisMediaAppUntrustedProcessor processor_;
   MockMojoMantisProcessor mojo_mantis_processor_;
+  MantisUntrustedService service_;
 };
 
 // MantisResultPtr is not copyable and unusable by parameterized tests.
@@ -126,8 +130,8 @@ TEST_P(ImageInferenceTest, SegmentImage) {
       .WillOnce(RunOnceCallback<2>(result.Clone()));
 
   base::test::TestFuture<mantis::mojom::MantisResultPtr> result_future;
-  processor_.SegmentImage(GetFakeImage(), GetFakeMask(),
-                          result_future.GetCallback());
+  service_.SegmentImage(GetFakeImage(), GetFakeMask(),
+                        result_future.GetCallback());
   EXPECT_EQ(result_future.Take(), result);
 }
 
@@ -138,8 +142,8 @@ TEST_P(ImageInferenceTest, GenerativeFillImage) {
       .WillOnce(RunOnceCallback<4>(result.Clone()));
 
   base::test::TestFuture<mantis::mojom::MantisResultPtr> result_future;
-  processor_.GenerativeFillImage(GetFakeImage(), GetFakeMask(), GetFakePrompt(),
-                                 GetFakeSeed(), result_future.GetCallback());
+  service_.GenerativeFillImage(GetFakeImage(), GetFakeMask(), GetFakePrompt(),
+                               GetFakeSeed(), result_future.GetCallback());
   EXPECT_EQ(result_future.Take(), result);
 }
 
@@ -150,8 +154,8 @@ TEST_P(ImageInferenceTest, InpaintImage) {
       .WillOnce(RunOnceCallback<3>(result.Clone()));
 
   base::test::TestFuture<mantis::mojom::MantisResultPtr> result_future;
-  processor_.InpaintImage(GetFakeImage(), GetFakeMask(), GetFakeSeed(),
-                          result_future.GetCallback());
+  service_.InpaintImage(GetFakeImage(), GetFakeMask(), GetFakeSeed(),
+                        result_future.GetCallback());
   EXPECT_EQ(result_future.Take(), result);
 }
 
@@ -186,7 +190,7 @@ TEST_P(ClassifyImageSafetyTest, ClassifyImageSafety) {
       .WillOnce(RunOnceCallback<1>(verdict));
 
   base::test::TestFuture<mantis::mojom::SafetyClassifierVerdict> verdict_future;
-  processor_.ClassifyImageSafety(GetFakeImage(), verdict_future.GetCallback());
+  service_.ClassifyImageSafety(GetFakeImage(), verdict_future.GetCallback());
   EXPECT_EQ(verdict_future.Take(), verdict);
 }
 

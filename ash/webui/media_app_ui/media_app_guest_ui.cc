@@ -24,7 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_processor_manager.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -310,11 +310,11 @@ void MediaAppGuestUI::CreateMantisUntrustedService(
   }
 
   // Mantis does not live in //chrome, no need to use delegate.
-  if (mantis_untrusted_processor_manager_ == nullptr) {
-    mantis_untrusted_processor_manager_ =
-        std::make_unique<MantisUntrustedProcessorManager>();
+  if (mantis_untrusted_service_manager_ == nullptr) {
+    mantis_untrusted_service_manager_ =
+        std::make_unique<MantisUntrustedServiceManager>();
   }
-  mantis_untrusted_processor_manager_->Create(std::move(callback));
+  mantis_untrusted_service_manager_->Create(std::move(callback));
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

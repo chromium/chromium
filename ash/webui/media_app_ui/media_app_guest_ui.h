@@ -11,7 +11,7 @@
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_processor_manager.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/gfx/native_widget_types.h"
@@ -104,8 +104,8 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   bool app_navigation_committed_ = false;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
-  std::unique_ptr<MantisUntrustedProcessorManager>
-      mantis_untrusted_processor_manager_;
+  std::unique_ptr<MantisUntrustedServiceManager>
+      mantis_untrusted_service_manager_;
   mojo::Receiver<media_app_ui::mojom::UntrustedServiceFactory>
       untrusted_service_factory_{this};
   std::unique_ptr<MediaAppGuestUIDelegate> delegate_;

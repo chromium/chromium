@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/mantis/media_app/mantis_media_app_untrusted_processor.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
 
 #include <utility>
 
@@ -12,30 +12,25 @@
 
 namespace ash {
 
-MantisMediaAppUntrustedProcessor::MantisMediaAppUntrustedProcessor()
-    : receiver_(this) {}
+MantisUntrustedService::MantisUntrustedService(
+    mojo::PendingRemote<mantis::mojom::MantisProcessor> processor)
+    : receiver_(this), processor_(std::move(processor)) {}
 
-MantisMediaAppUntrustedProcessor::~MantisMediaAppUntrustedProcessor() = default;
+MantisUntrustedService::~MantisUntrustedService() = default;
 
-mojo::PendingReceiver<mantis::mojom::MantisProcessor>
-MantisMediaAppUntrustedProcessor::BindNewPipeAndPassReceiver() {
-  return processor_.BindNewPipeAndPassReceiver();
-}
-
-mojo::PendingRemote<media_app_ui::mojom::MantisMediaAppUntrustedProcessor>
-MantisMediaAppUntrustedProcessor::BindNewPipeAndPassRemote() {
+mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedService>
+MantisUntrustedService::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-void MantisMediaAppUntrustedProcessor::SegmentImage(
-    const std::vector<uint8_t>& image,
-    const std::vector<uint8_t>& selection,
-    SegmentImageCallback callback) {
+void MantisUntrustedService::SegmentImage(const std::vector<uint8_t>& image,
+                                          const std::vector<uint8_t>& selection,
+                                          SegmentImageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   processor_->Segmentation(image, selection, std::move(callback));
 }
 
-void MantisMediaAppUntrustedProcessor::GenerativeFillImage(
+void MantisUntrustedService::GenerativeFillImage(
     const std::vector<uint8_t>& image,
     const std::vector<uint8_t>& mask,
     const std::string& text,
@@ -45,16 +40,15 @@ void MantisMediaAppUntrustedProcessor::GenerativeFillImage(
   processor_->GenerativeFill(image, mask, seed, text, std::move(callback));
 }
 
-void MantisMediaAppUntrustedProcessor::InpaintImage(
-    const std::vector<uint8_t>& image,
-    const std::vector<uint8_t>& mask,
-    uint32_t seed,
-    InpaintImageCallback callback) {
+void MantisUntrustedService::InpaintImage(const std::vector<uint8_t>& image,
+                                          const std::vector<uint8_t>& mask,
+                                          uint32_t seed,
+                                          InpaintImageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   processor_->Inpainting(image, mask, seed, std::move(callback));
 }
 
-void MantisMediaAppUntrustedProcessor::ClassifyImageSafety(
+void MantisUntrustedService::ClassifyImageSafety(
     const std::vector<uint8_t>& image,
     ClassifyImageSafetyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

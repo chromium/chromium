@@ -13,8 +13,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // an error.
 union MantisUntrustedServiceResult {
   // Implies success.
-  // TODO(http://crbug.com/379588392): Rename to  MantisUntrustedService.
-  pending_remote<MantisMediaAppUntrustedProcessor> processor;
+  pending_remote<MantisUntrustedService> service;
   // Implies failure.
   mantis.mojom.InitializeResult error;
 };
@@ -149,7 +148,7 @@ interface MahiUntrustedPage {
 // body, and length. The request will be passed to a sandboxed process in
 // CrOS where it checks the image header and use different decoder
 // appropriately.
-interface MantisMediaAppUntrustedProcessor {
+interface MantisUntrustedService {
   // Performs image segmentation on the `image` based on the prior `selection`.
   // The `image` and `selection` are byte arrays containing the
   // encoded format of an image (e.g., PNG, JPEG) with the same dimension.

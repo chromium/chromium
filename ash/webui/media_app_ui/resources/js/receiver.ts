@@ -12,7 +12,7 @@ import type {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
 import {InitializeResult} from './mantis_service.mojom-webui.js';
-import {MahiUntrustedServiceRemote, MantisMediaAppUntrustedProcessorRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
+import {MahiUntrustedServiceRemote, MantisUntrustedServiceRemote, OcrUntrustedServiceRemote, PageMetadata} from './media_app_ui_untrusted.mojom-webui.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {connectToMahiUntrustedService, connectToMantisUntrustedService, connectToOcrUntrustedService, mahiCallbackRouter, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
@@ -287,8 +287,7 @@ parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
 let ocrUntrustedService: OcrUntrustedServiceRemote;
 let mahiUntrustedService: MahiUntrustedServiceRemote;
-// TODO(http://crbug.com/379588392): Rename to  MantisUntrustedServiceRemote.
-let mantisUntrustedService: MantisMediaAppUntrustedProcessorRemote;
+let mantisUntrustedService: MantisUntrustedServiceRemote;
 
 ocrCallbackRouter.requestBitmap.addListener(async (requestedPageId: string) => {
   const app = getApp();
@@ -441,7 +440,7 @@ const DELEGATE: ClientApiDelegate = {
     if (response.error) {
       return response.error;
     }
-    mantisUntrustedService = response.processor!;
+    mantisUntrustedService = response.service!;
     return InitializeResult.kSuccess;
   },
   async segmentImage(image: number[], selection: number[]) {
