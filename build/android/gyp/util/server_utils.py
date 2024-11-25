@@ -24,6 +24,8 @@ BUILD_SERVER_ENV_VARIABLE = 'INVOKED_BY_BUILD_SERVER'
 ADD_TASK = 'add_task'
 QUERY_BUILD = 'query_build'
 POLL_HEARTBEAT = 'poll_heartbeat'
+REGISTER_BUILDER = 'register_builder'
+CANCEL_BUILD = 'cancel_build'
 
 SERVER_SCRIPT = pathlib.Path(
     build_utils.DIR_SOURCE_ROOT
@@ -43,6 +45,14 @@ def MaybeRunCommand(name, argv, stamp_file, force, experimental=False):
   # sends another request to the build server.
   if BUILD_SERVER_ENV_VARIABLE in os.environ:
     return False
+
+  autoninja_tty = os.environ.get('AUTONINJA_STDOUT_NAME')
+  autoninja_build_id = os.environ.get('AUTONINJA_BUILD_ID')
+  if experimental and not autoninja_tty:
+    raise RuntimeError('experimental_build_server=true is set but autoninja '
+                       'is not patched. Please make sure you are using a '
+                       'patched autoninja script.')
+
   with contextlib.closing(socket.socket(socket.AF_UNIX)) as sock:
     try:
       sock.connect(SOCKET_ADDRESS)
@@ -66,8 +76,8 @@ def MaybeRunCommand(name, argv, stamp_file, force, experimental=False):
             'message_type': ADD_TASK,
             'cmd': argv,
             'cwd': os.getcwd(),
-            'tty': os.environ.get('AUTONINJA_STDOUT_NAME'),
-            'build_id': os.environ.get('AUTONINJA_BUILD_ID'),
+            'tty': autoninja_tty,
+            'build_id': autoninja_build_id,
             'experimental': experimental,
             'stamp_file': stamp_file,
         }).encode('utf8'))
