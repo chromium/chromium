@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/webauthn/passkey_not_accepted_bubble_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_saved_confirmation_view.h"
 #include "chrome/browser/ui/views/webauthn/passkey_updated_confirmation_view.h"
+#include "chrome/browser/ui/views/webauthn/passkey_upgrade_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -181,6 +182,9 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
   } else if (model_state == password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE) {
     view = new PasskeyNotAcceptedBubbleView(web_contents, anchor_view, reason,
                                             delegate->PasskeyRpId());
+  } else if (model_state == password_manager::ui::PASSKEY_UPGRADE_STATE) {
+    view = new PasskeyUpgradeBubbleView(web_contents, anchor_view, reason,
+                                        delegate->PasskeyRpId());
   } else {
     NOTREACHED();
   }

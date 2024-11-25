@@ -110,10 +110,14 @@ enum class ManagePasswordsReferrer {
   // their passwords because the transition to UPM has not happened.
   kAccessLossWarning = 27,
 
+  // The bubble that notifies the user that a passkey was created automatically
+  // in GPM to upgrade an existing, matching password credential.
+  kPasskeyUpgradeBubble = 28,
+
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kAccessLossWarning,
+  kMaxValue = kPasskeyUpgradeBubble,
 };
 
 }  // namespace password_manager

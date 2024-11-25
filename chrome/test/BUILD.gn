@@ -7593,6 +7593,7 @@ test("unit_tests") {
       "../browser/ui/views/webauthn/passkey_not_accepted_bubble_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_saved_confirmation_view_unittest.cc",
       "../browser/ui/views/webauthn/passkey_updated_confirmation_view_unittest.cc",
+      "../browser/ui/views/webauthn/passkey_upgrade_bubble_view_unittest.cc",
       "../browser/ui/views/webauthn/pin_textfield_unittest.cc",
       "../browser/ui/views/webauthn/ring_progress_bar_unittest.cc",
       "../browser/ui/views/webid/account_selection_bubble_view_unittest.cc",

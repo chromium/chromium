@@ -539,6 +539,7 @@ chromium-metrics-reviews@google.com.
   <int value="25" label="Passkey updated confirmation bubble"/>
   <int value="26" label="Passkey not accepted confirmation bubble"/>
   <int value="27" label="Password access loss warning"/>
+  <int value="28" label="Passkey upgrade bubble"/>
 </enum>
 
 <enum name="OutdatedGMSDialogDismissalReason">

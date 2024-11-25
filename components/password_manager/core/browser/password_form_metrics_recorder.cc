@@ -1095,6 +1095,8 @@ void PasswordFormMetricsRecorder::RecordPasswordBubbleShown(
     case metrics_util::MANUAL_PASSKEY_UPDATED_CONFIRMATION:
     case metrics_util::AUTOMATIC_PASSKEY_NOT_ACCEPTED_BUBBLE:
     case metrics_util::MANUAL_PASSKEY_NOT_ACCEPTED_BUBBLE:
+    case metrics_util::AUTOMATIC_PASSKEY_UPGRADE_BUBBLE:
+    case metrics_util::MANUAL_PASSKEY_UPGRADE_BUBBLE:
       // Do nothing.
       return;
 

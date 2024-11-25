@@ -7,6 +7,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "device/fido/fido_discovery_factory.h"
 
 using RenderFrameHost = content::RenderFrameHost;
@@ -38,6 +40,7 @@ void PasskeyUpgradeRequestController::TryUpgradePasswordToPasskey(
     std::string rp_id,
     const std::string& user_name,
     base::OnceCallback<void(bool success)> callback) {
+  FIDO_LOG(EVENT) << "Passkey upgrade request started";
   CHECK(enclave_request_callback_);
   CHECK(!pending_callback_);
   pending_callback_ = std::move(callback);
@@ -101,6 +104,7 @@ void PasskeyUpgradeRequestController::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   if (!found) {
+    FIDO_LOG(EVENT) << "Passkey upgrade request failed, no matching password";
     std::move(pending_callback_).Run(false);
     return;
   }
@@ -139,6 +143,14 @@ void PasskeyUpgradeRequestController::HandlePINValidationResult(
 
 void PasskeyUpgradeRequestController::OnPasskeyCreated(
     const sync_pb::WebauthnCredentialSpecifics& passkey) {
+  PasswordsClientUIDelegate* manage_passwords_ui_controller =
+      PasswordsClientUIDelegateFromWebContents(
+          content::WebContents::FromRenderFrameHost(&render_frame_host()));
+  FIDO_LOG(EVENT) << "Passkey upgrade request succeeded";
+  if (manage_passwords_ui_controller) {
+    manage_passwords_ui_controller->OnPasskeyUpgrade(rp_id_);
+  }
+
   CHECK(pending_callback_);
   std::move(pending_callback_).Run(true);
 }

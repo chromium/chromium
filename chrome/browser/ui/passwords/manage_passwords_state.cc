@@ -267,6 +267,12 @@ void ManagePasswordsState::OnPasskeyNotAccepted(std::string passkey_rp_id) {
   SetState(password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
+void ManagePasswordsState::OnPasskeyUpgrade(std::string passkey_rp_id) {
+  ClearData();
+  passkey_rp_id_ = std::move(passkey_rp_id);
+  SetState(password_manager::ui::PASSKEY_UPGRADE_STATE);
+}
+
 void ManagePasswordsState::TransitionToState(
     password_manager::ui::State state) {
   CHECK_NE(password_manager::ui::INACTIVE_STATE, state_);

@@ -567,6 +567,12 @@ void ManagePasswordsUIController::OnPasskeyNotAccepted(
   UpdateBubbleAndIconVisibility();
 }
 
+void ManagePasswordsUIController::OnPasskeyUpgrade(std::string passkey_rp_id) {
+  passwords_data_.OnPasskeyUpgrade(std::move(passkey_rp_id));
+  bubble_status_ = BubbleStatus::SHOULD_POP_UP;
+  UpdateBubbleAndIconVisibility();
+}
+
 void ManagePasswordsUIController::OnAddUsernameSaveClicked(
     const std::u16string& username,
     const password_manager::PasswordForm& form_to_update) {

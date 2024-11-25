@@ -4903,6 +4903,8 @@ static_library("ui") {
       "views/webauthn/passkey_saved_confirmation_view.h",
       "views/webauthn/passkey_updated_confirmation_view.cc",
       "views/webauthn/passkey_updated_confirmation_view.h",
+      "views/webauthn/passkey_upgrade_bubble_view.cc",
+      "views/webauthn/passkey_upgrade_bubble_view.h",
       "views/webauthn/pin_options_button.cc",
       "views/webauthn/pin_options_button.h",
       "views/webauthn/pin_textfield.cc",
