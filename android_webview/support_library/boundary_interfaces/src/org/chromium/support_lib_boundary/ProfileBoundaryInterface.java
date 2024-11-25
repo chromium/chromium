@@ -31,7 +31,7 @@ public interface ProfileBoundaryInterface {
 
     void prefetchUrl(
             String url,
-            /* PrefetchParamsBoundaryInterface */ InvocationHandler prefetchParams,
+            /* SpeculativeLoadingParametersBoundaryInterface */ InvocationHandler prefetchParams,
             ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
                     callback);
 

@@ -11,7 +11,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.Map;
 
 /** Boundary interface for PrefetchParams. */
-public interface PrefetchParamsBoundaryInterface {
+public interface SpeculativeLoadingParametersBoundaryInterface {
 
     @NonNull
     Map<String, String> getAdditionalHeaders();
@@ -19,7 +19,5 @@ public interface PrefetchParamsBoundaryInterface {
     @Nullable
     /* NoVarySearchDataBoundaryInterface */ InvocationHandler getNoVarySearchData();
 
-    default boolean isJavaScriptEnabled() {
-        return false;
-    }
+    boolean isJavaScriptEnabled();
 }

@@ -20,8 +20,8 @@ import com.android.webview.chromium.Profile;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.NoVarySearchDataBoundaryInterface;
-import org.chromium.support_lib_boundary.PrefetchParamsBoundaryInterface;
 import org.chromium.support_lib_boundary.ProfileBoundaryInterface;
+import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
@@ -89,25 +89,26 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
     @Override
     public void prefetchUrl(
             String url,
-            /* PrefetchParamsBoundaryInterface */ InvocationHandler callbackInvocation,
+            /* SpeculativeLoadingParametersBoundaryInterface */ InvocationHandler
+                    callbackInvocation,
             ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
                     resultCallback) {
         recordApiCall(ApiCall.PREFETCH_URL_WITH_PARAMS);
-        PrefetchParamsBoundaryInterface prefetchParams =
+        SpeculativeLoadingParametersBoundaryInterface speculativeLoadingParams =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        PrefetchParamsBoundaryInterface.class, callbackInvocation);
+                        SpeculativeLoadingParametersBoundaryInterface.class, callbackInvocation);
 
         NoVarySearchDataBoundaryInterface noVarySearchData =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         NoVarySearchDataBoundaryInterface.class,
-                        prefetchParams.getNoVarySearchData());
+                        speculativeLoadingParams.getNoVarySearchData());
 
         mProfileImpl.prefetchUrl(
                 url,
                 new PrefetchParams(
-                        prefetchParams.getAdditionalHeaders(),
+                        speculativeLoadingParams.getAdditionalHeaders(),
                         mapNoVarySearchData(noVarySearchData),
-                        prefetchParams.isJavaScriptEnabled()),
+                        speculativeLoadingParams.isJavaScriptEnabled()),
                 value ->
                         resultCallback.onReceiveValue(
                                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(

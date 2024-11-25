@@ -282,7 +282,7 @@ public class Features {
 
     // Profile.prefetchUrl
     // Profile.clearPrefetchCache
-    public static final String PREFETCH_WITH_URL = "PREFETCH_URL";
+    public static final String PREFETCH_WITH_URL = "PREFETCH_URL_V2";
 
     // WebviewCompat.setDefaultTrafficStatsTag
     // WebviewCompat.setDefaultTrafficStatsUid
