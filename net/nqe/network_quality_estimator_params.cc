@@ -19,11 +19,6 @@ namespace net {
 
 const char kForceEffectiveConnectionType[] = "force_effective_connection_type";
 const char kEffectiveConnectionTypeSlow2GOnCellular[] = "Slow-2G-On-Cellular";
-const base::TimeDelta
-    kHttpRttEffectiveConnectionTypeThresholds[EFFECTIVE_CONNECTION_TYPE_LAST] =
-        {base::Milliseconds(0),    base::Milliseconds(0),
-         base::Milliseconds(2010), base::Milliseconds(1420),
-         base::Milliseconds(272),  base::Milliseconds(0)};
 
 namespace {
 
