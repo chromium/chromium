@@ -811,7 +811,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         plus_address_delegate->RecordAutofillSuggestionEvent(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kExistingPlusAddressChosen);
-        const bool did_show_email_suggestion = [this]() {
+        const bool did_show_email_suggestion = [this] {
           const AutofillField* autofill_trigger_field =
               GetQueriedAutofillField();
           const bool triggered_on_email_field =
@@ -1317,7 +1317,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           metadata.row,
           GetFillingProductFromSuggestionType(SuggestionType::kAddressEntry),
           manager_->client().IsOffTheRecord());
-      const bool email_and_plus_address_shown = [this]() {
+      const bool email_and_plus_address_shown = [this] {
         const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
         const bool triggered_on_email_field =
             autofill_trigger_field &&

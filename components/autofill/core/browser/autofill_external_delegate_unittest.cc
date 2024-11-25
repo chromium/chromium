@@ -2684,7 +2684,7 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
       "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents";
   base::HistogramTester histogram_tester;
 
-  auto show_suggestions = [&]() {
+  auto show_suggestions = [&] {
     std::vector<Suggestion> suggestions = {
         Suggestion(SuggestionType::kShowAccountCards)};
     OnSuggestionsReturned(queried_field().global_id(), suggestions);

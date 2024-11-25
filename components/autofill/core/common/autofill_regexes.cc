@@ -71,7 +71,7 @@ AutofillRegexCache::~AutofillRegexCache() {
 
 const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
     std::u16string_view regex) {
-  auto GetOrCreate = [&]() {
+  auto GetOrCreate = [&] {
     auto it = cache_.find(regex);
     if (it == cache_.end()) {
       bool success;

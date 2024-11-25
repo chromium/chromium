@@ -64,7 +64,7 @@ const FieldType kProfileFieldTypes[] = {NAME_FIRST,
                                         PHONE_HOME_WHOLE_NUMBER};
 
 const base::FilePath& GetTestDataDir() {
-  static base::NoDestructor<base::FilePath> dir([]() {
+  static base::NoDestructor<base::FilePath> dir([] {
     base::FilePath dir;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")

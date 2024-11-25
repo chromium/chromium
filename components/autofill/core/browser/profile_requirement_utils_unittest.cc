@@ -26,7 +26,7 @@ TEST(ProfileRequirementUtilsTest, IncompleteAddress) {
 // territoriales. Some websites ask for only one of the two and we still want to
 // offer saving addresses.
 TEST(ProfileRequirementUtilsTest, MXAddress) {
-  auto generate_address_stub = []() {
+  auto generate_address_stub = [] {
     AutofillProfile profile(AddressCountryCode("MX"));
     profile.SetRawInfo(ADDRESS_HOME_LINE1, u"C. Montes Urales 445, Lomas");
     profile.SetRawInfo(ADDRESS_HOME_ZIP, u"11000");

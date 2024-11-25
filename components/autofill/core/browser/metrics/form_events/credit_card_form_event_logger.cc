@@ -476,7 +476,7 @@ void CreditCardFormEventLogger::OnMetadataLoggingContextReceived(
 void CreditCardFormEventLogger::Log(FormEvent event,
                                     const FormStructure& form) {
   FormEventLoggerBase::Log(event, form);
-  const std::string_view data_suffix = [&]() {
+  const std::string_view data_suffix = [&] {
     if (server_record_type_count_ == 0 && local_record_type_count_ == 0) {
       return ".WithNoData";
     } else if (server_record_type_count_ > 0 && local_record_type_count_ == 0) {

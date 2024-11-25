@@ -1135,7 +1135,7 @@ class AutofillAgentTestNavigationReset : public AutofillAgentTest {
 TEST_F(AutofillAgentTestNavigationReset, NavigationResetsIsDomContentLoaded) {
   std::vector<bool> is_dom_content_loaded;
   EXPECT_CALL(autofill_agent(), DidDispatchDOMContentLoadedEvent)
-      .WillRepeatedly([&]() {
+      .WillRepeatedly([&] {
         is_dom_content_loaded.push_back(
             test_api(autofill_agent()).is_dom_content_loaded());
         autofill_agent().OverriddenDidDispatchDOMContentLoadedEvent();

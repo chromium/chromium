@@ -544,7 +544,7 @@ void AutofillAgent::FocusedElementChanged(
 
   // This behavior was introduced for to fix http://crbug.com/1105254. It's
   // unclear if this is still needed.
-  auto handle_focus_change = [&]() {
+  auto handle_focus_change = [&] {
     if ((config_.uses_keyboard_accessory_for_suggestions ||
          !config_.focus_requires_scroll) &&
         new_focused_element && unsafe_render_frame() &&
@@ -691,7 +691,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 
   // This checks whether another source, that is relevant for Autofill, already
   // reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_autofill = [&]() {
+  const bool is_duplicate_submission_for_autofill = [&] {
     DenseSet<mojom::SubmissionSource> af_sources = sources;
     // Autofill ignores DOM_MUTATION_AFTER_AUTOFILL on non-WebView platforms.
     // For this reason, the presence of DOM_MUTATION_AFTER_AUTOFILL in the
@@ -705,7 +705,7 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
 
   // This checks whether another source, that is relevant for PasswordManager,
   // already reported the submission of `form_data`.
-  const bool is_duplicate_submission_for_password_manager = [&]() {
+  const bool is_duplicate_submission_for_password_manager = [&] {
     DenseSet<mojom::SubmissionSource> pwm_sources = sources;
     // PasswordManager doesn't consider FORM_SUBMISSION as a sufficient
     // condition for "successful" submission.
@@ -1801,7 +1801,7 @@ void AutofillAgent::OnProvisionallySaveForm(
 
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
-  auto update_submission_data_on_user_edit = [&]() {
+  auto update_submission_data_on_user_edit = [&] {
     if (form_element && !base::FeatureList::IsEnabled(
                             features::kAutofillOptimizeFormExtraction)) {
       UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
@@ -2009,7 +2009,7 @@ std::optional<FormData> AutofillAgent::GetSubmittedForm(
   auto has_been_user_edited = [this](const FormFieldData& field) {
     return formless_elements_user_edited_.contains(field.renderer_id());
   };
-  auto know_expected_submitted_form = [&]() {
+  auto know_expected_submitted_form = [&] {
     return form_element.has_value() &&
            base::FeatureList::IsEnabled(
                features::kAutofillUseSubmittedFormInHtmlSubmission);

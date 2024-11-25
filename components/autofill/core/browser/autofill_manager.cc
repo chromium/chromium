@@ -253,7 +253,7 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
 void AutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
-  auto erase_removed_forms = [&]() {
+  auto erase_removed_forms = [&] {
     // Erase forms that have been removed from the DOM. This prevents
     // |form_structures_| from growing up its upper bound
     // kAutofillManagerMaxFormCacheSize.

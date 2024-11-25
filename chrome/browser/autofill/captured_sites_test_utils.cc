@@ -146,7 +146,7 @@ and then write commands into it:
 }
 
 std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
-  static auto map = []() {
+  static auto map = [] {
     std::map<std::string_view, autofill::FieldType> map;
     for (autofill::FieldType field_type : autofill::kAllFieldTypes) {
       map[autofill::AutofillType(field_type).ToStringView()] = field_type;

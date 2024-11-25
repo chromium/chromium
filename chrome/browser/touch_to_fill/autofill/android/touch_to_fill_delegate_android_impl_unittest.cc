@@ -87,7 +87,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
           captured_delegate_ = delegate;
           return true;
         });
-    EXPECT_CALL(*this, HideTouchToFillPaymentMethod).WillOnce([this]() {
+    EXPECT_CALL(*this, HideTouchToFillPaymentMethod).WillOnce([this] {
       EXPECT_FALSE(captured_delegate_);
     });
   }
@@ -99,7 +99,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
           captured_delegate_ = delegate;
           return true;
         });
-    EXPECT_CALL(*this, HideTouchToFillPaymentMethod).WillOnce([this]() {
+    EXPECT_CALL(*this, HideTouchToFillPaymentMethod).WillOnce([this] {
       EXPECT_FALSE(captured_delegate_);
     });
   }
@@ -199,7 +199,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     // view->Hide() on java side, which in its turn triggers onDismissed). Here
     // we mock this call.
     ON_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod)
-        .WillByDefault([delegate = touch_to_fill_delegate_weak]() -> void {
+        .WillByDefault([delegate = touch_to_fill_delegate_weak] {
           if (delegate) {
             delegate->OnDismissed(/*dismissed_by_user=*/false);
           }

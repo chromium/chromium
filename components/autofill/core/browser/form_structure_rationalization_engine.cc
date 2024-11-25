@@ -184,7 +184,7 @@ std::optional<size_t> FindFieldMeetingCondition(
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     size_t start_index,
     const FieldCondition& condition) {
-  int direction = [&condition]() {
+  int direction = [&condition] {
     switch (condition.location) {
       case FieldLocation::kPredecessor:
       case FieldLocation::kLastClassifiedPredecessor:
