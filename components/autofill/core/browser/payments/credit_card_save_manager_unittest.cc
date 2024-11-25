@@ -432,8 +432,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   }
 
   void ExpectUniqueFillableFormParsedUkm() {
-    ukm::TestUkmRecorder* test_ukm_recorder =
-        autofill_client_.GetTestUkmRecorder();
+    ukm::TestUkmRecorder* test_ukm_recorder = autofill_client_.GetUkmRecorder();
     auto entries = test_ukm_recorder->GetEntriesByName(
         UkmDeveloperEngagementType::kEntryName);
     EXPECT_EQ(1u, entries.size());
@@ -480,8 +479,7 @@ class CreditCardSaveManagerTest : public testing::Test {
                     const char* entry_name,
                     int expected_metric_value,
                     size_t expected_num_matching_entries) {
-    ukm::TestUkmRecorder* test_ukm_recorder =
-        autofill_client_.GetTestUkmRecorder();
+    ukm::TestUkmRecorder* test_ukm_recorder = autofill_client_.GetUkmRecorder();
     auto entries = test_ukm_recorder->GetEntriesByName(entry_name);
     EXPECT_EQ(expected_num_matching_entries, entries.size());
     for (const ukm::mojom::UkmEntry* const entry : entries) {

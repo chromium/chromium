@@ -29,7 +29,7 @@ void LogQualityMetrics(
     base::TimeTicks load_time,
     base::TimeTicks interaction_time,
     base::TimeTicks submission_time,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     bool observed_submission);
 
@@ -39,7 +39,7 @@ void LogQualityMetrics(
 // `source_id` is the UKM source ID of the page at the time of the submission.
 void LogQualityMetricsBasedOnAutocomplete(
     const FormStructure& form_structure,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id);
 
 }  // namespace autofill::autofill_metrics

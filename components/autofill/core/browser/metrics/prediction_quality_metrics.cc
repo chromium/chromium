@@ -611,7 +611,7 @@ void LogPredictionQualityMetricsForCommonFields(
 void LogPredictionQualityMetrics(
     QualityMetricPredictionSource prediction_source,
     FieldType predicted_type,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
@@ -640,7 +640,7 @@ void LogPredictionQualityMetrics(
   base::UmaHistogramSparse(raw_data_histogram,
                            (predicted_type << 16) | actual_type);
 
-  form_interactions_ukm_logger->LogFieldType(
+  form_interactions_ukm_logger.LogFieldType(
       source_id, form.form_parsed_timestamp(), form.form_signature(),
       field.GetFieldSignature(), prediction_source, metric_type, predicted_type,
       actual_type);
@@ -679,7 +679,7 @@ void LogPredictionQualityMetrics(
 }  // namespace
 
 void LogHeuristicPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
@@ -714,7 +714,7 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
 }
 
 void LogMlPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
@@ -728,7 +728,7 @@ void LogMlPredictionQualityMetrics(
 
 // static
 void LogServerPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
@@ -741,7 +741,7 @@ void LogServerPredictionQualityMetrics(
 
 // static
 void LogOverallPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,

@@ -312,8 +312,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
 
   VerifyUMAMetricsCollection(test_scenario, histogram_tester);
   VerifyStrikeCounts(test_scenario, *last_import, initial_strikes_for_domain);
-  VerifyUkmForAddressImport(autofill_client_.GetTestUkmRecorder(),
-                            test_scenario);
+  VerifyUkmForAddressImport(autofill_client_.GetUkmRecorder(), test_scenario);
 }
 
 void AddressProfileSaveManagerTest::VerifyFinalProfiles(

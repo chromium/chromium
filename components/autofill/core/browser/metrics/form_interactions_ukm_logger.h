@@ -33,6 +33,8 @@ bool ShouldRecordUkm();
 class UkmTimestampPin;
 
 // Utility to log URL keyed form interaction events.
+// Owned by AutofillClient. Therefore, it must not have page-specific state. In
+// particular, the page-specific `ukm::SourceId`s must be passed as a parameter.
 class FormInteractionsUkmLogger {
  public:
   // The autofill statuses of a field that are recorded into UKM to help us
@@ -87,8 +89,7 @@ class FormInteractionsUkmLogger {
   using FormEventSet =
       DenseSet<autofill_metrics::FormEvent, FormEventSetTraits>;
 
-  FormInteractionsUkmLogger(AutofillClient* autofill_client,
-                            ukm::UkmRecorder* ukm_recorder);
+  explicit FormInteractionsUkmLogger(AutofillClient* autofill_client);
 
   bool has_pinned_timestamp(base::PassKey<UkmTimestampPin> pass_key) const {
     return !pinned_timestamp_.is_null();
@@ -101,15 +102,6 @@ class FormInteractionsUkmLogger {
   void Record(ukm::SourceId ukm_source_id,
               ukm::builders::Autofill_CreditCardFill&& builder);
 
-  // Initializes this logger with a source_id. Unless forms is parsed no
-  // autofill UKM is recorded. However due to autofill_manager resets,
-  // it is possible to have the UKM being recorded after the forms were
-  // parsed. So, rely on autofill_client to pass correct source_id
-  // However during some cases there is a race for setting AutofillClient
-  // and generation of new source_id (by UKM) as they are both observing tab
-  // navigation. Ideally we need to refactor ownership of this logger
-  // so as not to rely on OnFormsParsed to record the metrics correctly.
-  // TODO(nikunjb): Refactor the logger to be owned by AutofillClient.
   void LogInteractedWithForm(ukm::SourceId ukm_source_id,
                              bool is_for_credit_card,
                              size_t local_record_type_count,
@@ -190,9 +182,7 @@ class FormInteractionsUkmLogger {
   int64_t MillisecondsSinceFormParsed(
       base::TimeTicks form_parsed_timestamp) const;
 
-  // These objects outlive.
-  const raw_ptr<AutofillClient> autofill_client_;
-  const raw_ptr<ukm::UkmRecorder> ukm_recorder_;
+  const raw_ref<AutofillClient> autofill_client_;
 
   // The pinned timestamp is used to that metrics logged sequentially refer to
   // the same timestamp to determine MillisecondsSinceFormParsed().

@@ -204,13 +204,9 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
     autofill_client_.GetPaymentsAutofillClient()->set_autofill_offer_manager(
         std::make_unique<AutofillOfferManager>(
             &autofill_client_.GetPersonalDataManager()));
-    form_interactions_ukm_logger_ =
-        std::make_unique<autofill_metrics::FormInteractionsUkmLogger>(
-            &autofill_client_, autofill_client_.GetUkmRecorder());
     credit_card_form_event_logger_ =
         std::make_unique<NiceMock<MockCreditCardFormEventLogger>>(
-            form_interactions_ukm_logger_.get(),
-            &autofill_client_.GetPersonalDataManager(), &autofill_manager_);
+            &autofill_manager_);
   }
 
   void TearDown() override {
@@ -303,8 +299,6 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   bool did_set_up_image_resource_for_test_ = false;
 
  protected:
-  std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
-      form_interactions_ukm_logger_;
   std::unique_ptr<MockCreditCardFormEventLogger> credit_card_form_event_logger_;
 };
 

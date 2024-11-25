@@ -92,6 +92,10 @@ class StrikeDatabase;
 struct Suggestion;
 enum class WebauthnDialogState;
 
+namespace autofill_metrics {
+class FormInteractionsUkmLogger;
+}
+
 namespace payments {
 class PaymentsAutofillClient;
 }
@@ -498,6 +502,9 @@ class AutofillClient {
   // Returns a LogManager instance. May be null for platforms that don't support
   // this.
   virtual LogManager* GetLogManager() const;
+
+  virtual autofill_metrics::FormInteractionsUkmLogger&
+  GetFormInteractionsUkmLogger() = 0;
 
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 

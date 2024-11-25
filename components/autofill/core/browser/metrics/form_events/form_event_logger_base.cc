@@ -84,13 +84,9 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
 
 }  // namespace
 
-FormEventLoggerBase::FormEventLoggerBase(
-    const std::string& form_type_name,
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    BrowserAutofillManager* owner)
-    : form_type_name_(form_type_name),
-      form_interactions_ukm_logger_(form_interactions_ukm_logger),
-      owner_(*owner) {}
+FormEventLoggerBase::FormEventLoggerBase(std::string form_type_name,
+                                         BrowserAutofillManager* owner)
+    : form_type_name_(std::move(form_type_name)), owner_(*owner) {}
 
 FormEventLoggerBase::~FormEventLoggerBase() {
   DCHECK(has_called_on_destroyed_);
@@ -139,7 +135,7 @@ void FormEventLoggerBase::OnDidShowSuggestions(
     const AutofillField& field,
     base::TimeTicks form_parsed_timestamp,
     bool off_the_record) {
-  form_interactions_ukm_logger_->LogSuggestionsShown(
+  client().GetFormInteractionsUkmLogger().LogSuggestionsShown(
       driver().GetPageUkmSourceId(), form, field, form_parsed_timestamp,
       off_the_record);
 
@@ -277,7 +273,7 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
 
   // Log UKM metrics for only autofillable form events.
   if (form.IsAutofillable()) {
-    form_interactions_ukm_logger_->LogFormEvent(
+    client().GetFormInteractionsUkmLogger().LogFormEvent(
         driver().GetPageUkmSourceId(), event, GetFormTypesForLogging(form),
         form.form_parsed_timestamp());
   }
@@ -397,14 +393,12 @@ void FormEventLoggerBase::RecordKeyMetrics() {
       RecordFillingCorrectness(logs);
     }
     RecordFillingAssistance(logs);
-    if (form_interactions_ukm_logger_) {
-      form_interactions_ukm_logger_->LogKeyMetrics(
-          driver().GetPageUkmSourceId(), submitted_form_types_,
-          HasLoggedDataToFillAvailable(), has_logged_suggestions_shown_,
-          has_logged_edited_autofilled_field_,
-          has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
-          flow_id_, fast_checkout_run_id_);
-    }
+    client().GetFormInteractionsUkmLogger().LogKeyMetrics(
+        driver().GetPageUkmSourceId(), submitted_form_types_,
+        HasLoggedDataToFillAvailable(), has_logged_suggestions_shown_,
+        has_logged_edited_autofilled_field_,
+        has_logged_form_filling_suggestion_filled_, form_interaction_counts_,
+        flow_id_, fast_checkout_run_id_);
   }
   if (has_logged_typed_into_non_filled_field_ ||
       has_logged_form_filling_suggestion_filled_) {

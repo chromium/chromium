@@ -115,7 +115,7 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
   }
 
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics> GetUkmMetrics() {
-    return autofill_client_.GetTestUkmRecorder()->GetMetrics(
+    return autofill_client_.GetUkmRecorder()->GetMetrics(
         ukm::builders::PlusAddresses_Submission::kEntryName,
         {"FieldCountBrowserForm", "FieldCountRendererForm", "PlusAddressCount",
          "CheckoutOrCartPage", "ManagedProfile", "NewlyCreatedPlusAddress",

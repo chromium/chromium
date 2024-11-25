@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
@@ -356,6 +357,11 @@ class TestAutofillClientTemplate : public T {
 
   LogManager* GetLogManager() const override { return log_manager_.get(); }
 
+  autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
+      override {
+    return form_interactions_ukm_logger_;
+  }
+
   const AutofillAblationStudy& GetAblationStudy() const override {
     static const AutofillAblationStudy default_ablation_study("seed");
     return default_ablation_study;
@@ -526,8 +532,6 @@ class TestAutofillClientTemplate : public T {
 
   GURL form_origin() { return form_origin_; }
 
-  ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
-
   signin::IdentityTestEnvironment& identity_test_environment() {
     return identity_test_env_;
   }
@@ -631,6 +635,8 @@ class TestAutofillClientTemplate : public T {
   } log_to_terminal_{log_router_};
   std::unique_ptr<LogManager> log_manager_ =
       LogManager::Create(&log_router_, base::NullCallback());
+  autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
+      this};
 
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };

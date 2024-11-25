@@ -536,7 +536,7 @@ void AutofillMetrics::LogDeveloperEngagementMetric(
 
 // static
 void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    autofill_metrics::FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field) {
@@ -577,7 +577,7 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
   // If the field was edited, record the event to UKM.
   if (editing_metric ==
       AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED) {
-    form_interactions_ukm_logger->LogEditedAutofilledFieldAtSubmission(
+    form_interactions_ukm_logger.LogEditedAutofilledFieldAtSubmission(
         source_id, form, field);
   }
 }

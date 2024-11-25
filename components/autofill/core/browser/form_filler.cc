@@ -654,8 +654,9 @@ void FormFiller::FillOrPreviewForm(
     if (!kPreUkmLoggingSkips.contains_any(
             skip_reasons[autofill_field->global_id()]) &&
         !autofill_field->IsFocusable()) {
-      manager_->form_interactions_ukm_logger()
-          ->LogHiddenRepresentationalFieldSkipDecision(
+      manager_->client()
+          .GetFormInteractionsUkmLogger()
+          .LogHiddenRepresentationalFieldSkipDecision(
               manager_->driver().GetPageUkmSourceId(), *form_structure,
               *autofill_field, !autofill_field->IsSelectElement());
     }

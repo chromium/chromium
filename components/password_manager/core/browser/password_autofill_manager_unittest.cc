@@ -1224,8 +1224,8 @@ TEST_F(PasswordAutofillManagerTest, ShowAllPasswordsOptionOnPasswordField) {
   manager.reset();
   client.reset();
 
-  const auto& entries = autofill_client.GetTestUkmRecorder()->GetEntriesByName(
-      UkmEntry::kEntryName);
+  const auto& entries =
+      autofill_client.GetUkmRecorder()->GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* entry : entries) {
     EXPECT_EQ(expected_source_id, entry->source_id);

@@ -601,10 +601,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
 
 BrowserAutofillManager::MetricsState::MetricsState(
     BrowserAutofillManager* owner)
-    : address_form_event_logger(owner->form_interactions_ukm_logger(), owner),
-      credit_card_form_event_logger(owner->form_interactions_ukm_logger(),
-                                    &owner->client().GetPersonalDataManager(),
-                                    owner) {}
+    : address_form_event_logger(owner), credit_card_form_event_logger(owner) {}
 
 BrowserAutofillManager::MetricsState::~MetricsState() {
   credit_card_form_event_logger.OnDestroyed();
@@ -1023,7 +1020,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   if (!metrics_->user_did_type || autofill_field->is_autofilled()) {
     metrics_->user_did_type = true;
-    form_interactions_ukm_logger()->LogTextFieldDidChange(
+    client().GetFormInteractionsUkmLogger().LogTextFieldDidChange(
         driver().GetPageUkmSourceId(), *form_structure, *autofill_field);
   }
 
@@ -2192,9 +2189,7 @@ void BrowserAutofillManager::Reset() {
   form_filler_->Reset();
 
   // The order below is relevant:
-  // - `credit_card_access_manager_` has a reference to `metrics_`.
-  // - `metrics_` has references to
-  //   AutofillManager::form_interactions_ukm_logger().
+  // `credit_card_access_manager_` has a reference to `metrics_`.
   credit_card_access_manager_.reset();
   metrics_.reset();
   AutofillManager::Reset();
@@ -2990,7 +2985,7 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
 
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
-      form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
+      client().GetFormInteractionsUkmLogger().LogAutofillFieldInfoAtFormRemove(
           driver().GetPageUkmSourceId(), form_structure, *autofill_field,
           AutofillMetrics::AutocompleteStateForSubmittedField(*autofill_field));
     }
@@ -3004,11 +2999,11 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
     form_events.insert_all(
         metrics_->credit_card_form_event_logger.GetFormEvents(
             form_structure.global_id()));
-    form_interactions_ukm_logger()->LogAutofillFormSummaryAtFormRemove(
+    client().GetFormInteractionsUkmLogger().LogAutofillFormSummaryAtFormRemove(
         driver().GetPageUkmSourceId(), form_structure, form_events,
         metrics_->initial_interaction_timestamp,
         metrics_->form_submitted_timestamp);
-    form_interactions_ukm_logger()->LogFocusedComplexFormAtFormRemove(
+    client().GetFormInteractionsUkmLogger().LogFocusedComplexFormAtFormRemove(
         driver().GetPageUkmSourceId(), form_structure, form_events,
         metrics_->initial_interaction_timestamp,
         metrics_->form_submitted_timestamp);
@@ -3018,8 +3013,9 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
       !metrics_->form_submitted_timestamp.is_null() &&
       form_structure.ShouldUploadUkm(
           /*require_classified_field=*/false)) {
-    form_interactions_ukm_logger()
-        ->LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
+    client()
+        .GetFormInteractionsUkmLogger()
+        .LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
             driver().GetPageUkmSourceId(), form_structure);
   }
 

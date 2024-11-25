@@ -31,10 +31,8 @@ namespace autofill::autofill_metrics {
 // the presence of server and/or local data.
 class FormEventLoggerBase {
  public:
-  FormEventLoggerBase(
-      const std::string& form_type_name,
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      BrowserAutofillManager* owner);
+  FormEventLoggerBase(std::string form_type_name,
+                      BrowserAutofillManager* owner);
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
@@ -239,10 +237,6 @@ class FormEventLoggerBase {
   // A map of the form's global id and its form events.
   std::map<FormGlobalId, FormInteractionsUkmLogger::FormEventSet>
       form_events_set_;
-
-  // Weak reference.
-  raw_ptr<autofill_metrics::FormInteractionsUkmLogger>
-      form_interactions_ukm_logger_;
 
   // Weak reference.
   const raw_ref<BrowserAutofillManager> owner_;

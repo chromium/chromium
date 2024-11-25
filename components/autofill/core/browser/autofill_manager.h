@@ -345,11 +345,6 @@ class AutofillManager
 
   AutofillDriver& driver() { return *driver_; }
 
-  // The return value shouldn't be cached, retrieve it as needed.
-  autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger() {
-    return form_interactions_ukm_logger_.get();
-  }
-
  protected:
   explicit AutofillManager(AutofillDriver* driver);
 
@@ -502,10 +497,6 @@ class AutofillManager
 
   // Our copy of the form data.
   std::map<FormGlobalId, std::unique_ptr<FormStructure>> form_structures_;
-
-  // Utility for logging URL keyed metrics.
-  std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
-      form_interactions_ukm_logger_;
 
   // Observers that listen to updates of this instance.
   base::ObserverList<Observer> observers_;

@@ -153,8 +153,7 @@ void AutofillManager::LogTypePredictionsAvailable(
 }
 
 AutofillManager::AutofillManager(AutofillDriver* driver)
-    : driver_(CHECK_DEREF(driver)),
-      form_interactions_ukm_logger_(CreateFormInteractionsUkmLogger()) {
+    : driver_(CHECK_DEREF(driver)) {
   if (auto* translate_driver = client().GetTranslateDriver()) {
     translate_observation_.Observe(translate_driver);
   }
@@ -180,7 +179,6 @@ void AutofillManager::OnAutofillDriverLifecycleStateChanged(
 void AutofillManager::Reset() {
   parsing_weak_ptr_factory_.InvalidateWeakPtrs();
   form_structures_.clear();
-  form_interactions_ukm_logger_ = CreateFormInteractionsUkmLogger();
 }
 
 void AutofillManager::OnLanguageDetermined(
@@ -500,12 +498,6 @@ bool AutofillManager::GetCachedFormAndField(
       base::ranges::find(*cached_form, field_id, &AutofillField::global_id);
   *autofill_field = field_it == cached_form->end() ? nullptr : field_it->get();
   return *autofill_field != nullptr;
-}
-
-std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
-AutofillManager::CreateFormInteractionsUkmLogger() {
-  return std::make_unique<autofill_metrics::FormInteractionsUkmLogger>(
-      &client(), client().GetUkmRecorder());
 }
 
 size_t AutofillManager::FindCachedFormsBySignature(
@@ -831,11 +823,10 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.
-  if (auto* logger = form_interactions_ukm_logger()) {
-    for (FormStructure* cur_form : queried_forms) {
-      autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
-          *cur_form, logger, driver().GetPageUkmSourceId());
-    }
+  for (FormStructure* cur_form : queried_forms) {
+    autofill_metrics::LogQualityMetricsBasedOnAutocomplete(
+        *cur_form, client().GetFormInteractionsUkmLogger(),
+        driver().GetPageUkmSourceId());
   }
 
   // Send field type predictions to the renderer so that it can possibly

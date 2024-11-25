@@ -251,7 +251,7 @@ class AutofillMetricsBaseTest {
   }
 
   ukm::TestUkmRecorder& test_ukm_recorder() {
-    return *autofill_client_->GetTestUkmRecorder();
+    return *autofill_client_->GetUkmRecorder();
   }
 
   MockPaymentsAutofillClient& payments_autofill_client() {

@@ -17,6 +17,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/android/view_android.h"
@@ -127,6 +128,8 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       bool is_refill) final;
   bool IsContextSecure() const final;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
+  autofill::autofill_metrics::FormInteractionsUkmLogger&
+  GetFormInteractionsUkmLogger() final;
 
   // ContentAutofillClient:
   std::unique_ptr<autofill::AutofillManager> CreateManager(
@@ -146,6 +149,9 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
 
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
+
+  autofill::autofill_metrics::FormInteractionsUkmLogger
+      form_interactions_ukm_logger_{this};
 
   base::WeakPtrFactory<AndroidAutofillClient> weak_ptr_factory_{this};
 };

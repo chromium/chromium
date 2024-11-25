@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/password_form_classification.h"
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
@@ -180,6 +181,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
                             bool is_refill) final;
   bool IsContextSecure() const final;
   LogManager* GetLogManager() const final;
+  autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
+      final;
+
   const AutofillAblationStudy& GetAblationStudy() const final;
 #if BUILDFLAG(IS_ANDROID)
   // The AutofillSnackbarController is used to show a snackbar notification
@@ -244,6 +248,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
 
   std::unique_ptr<LogManager> log_manager_;
+  autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
+      this};
 
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.

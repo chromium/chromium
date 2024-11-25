@@ -36,12 +36,9 @@
 namespace autofill::autofill_metrics {
 
 CreditCardFormEventLogger::CreditCardFormEventLogger(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    PersonalDataManager* personal_data_manager,
     BrowserAutofillManager* owner)
-    : FormEventLoggerBase("CreditCard", form_interactions_ukm_logger, owner),
-      current_authentication_flow_(UnmaskAuthFlowType::kNone),
-      personal_data_manager_(personal_data_manager) {}
+    : FormEventLoggerBase("CreditCard", owner),
+      current_authentication_flow_(UnmaskAuthFlowType::kNone) {}
 
 CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
@@ -183,7 +180,9 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
       if (!has_logged_masked_server_card_suggestion_selected_) {
         has_logged_masked_server_card_suggestion_selected_ = true;
         Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE, form);
-        if (personal_data_manager_->payments_data_manager()
+        if (client()
+                .GetPersonalDataManager()
+                .payments_data_manager()
                 .IsCardPresentAsBothLocalAndServerCards(credit_card)) {
           Log(FORM_EVENT_SERVER_CARD_SUGGESTION_SELECTED_FOR_AN_EXISTING_LOCAL_CARD_ONCE,
               form);
@@ -266,15 +265,17 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
         form);
 
     if (suggestions_.size() > 1) {
-      CHECK(personal_data_manager_);
       // Keeps track of which issuers and networks with metadata were not
       // selected. Can be none if there was only one card suggestion displayed
       // and that card was selected.
       for (const Suggestion& suggestion : suggestions_) {
         // TODO(crbug.com/40146355): Use instrument ID for server credit cards.
         const CreditCard* suggested_credit_card =
-            personal_data_manager_->payments_data_manager().GetCreditCardByGUID(
-                suggestion.GetPayload<Suggestion::Guid>().value());
+            client()
+                .GetPersonalDataManager()
+                .payments_data_manager()
+                .GetCreditCardByGUID(
+                    suggestion.GetPayload<Suggestion::Guid>().value());
         if (!suggested_credit_card) {
           // Ignore non credit card suggestions in the popup like separators,
           // manage payment methods, etc.
@@ -318,7 +319,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       owner_->driver().GetPageUkmSourceId());
   builder.SetFormSignature(HashFormSignature(form.form_signature()));
 
-  form_interactions_ukm_logger_->LogDidFillSuggestion(
+  client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
       driver().GetPageUkmSourceId(), form, field, record_type);
 
   AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
@@ -419,7 +420,9 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       case CreditCard::RecordType::kLocalCard:
         // Check if the local card is a duplicate of an existing server card
         // and log an additional metric if so.
-        if (personal_data_manager_->payments_data_manager()
+        if (client()
+                .GetPersonalDataManager()
+                .payments_data_manager()
                 .IsCardPresentAsBothLocalAndServerCards(credit_card)) {
           Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_FOR_AN_EXISTING_SERVER_CARD_ONCE,
               form);
@@ -428,7 +431,9 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         break;
       case CreditCard::RecordType::kMaskedServerCard:
         Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_FILLED_ONCE, form);
-        if (personal_data_manager_->payments_data_manager()
+        if (client()
+                .GetPersonalDataManager()
+                .payments_data_manager()
                 .IsCardPresentAsBothLocalAndServerCards(credit_card)) {
           Log(FORM_EVENT_SERVER_CARD_FILLED_FOR_AN_EXISTING_LOCAL_CARD_ONCE,
               form);
@@ -456,8 +461,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
-  form_interactions_ukm_logger_->Record(owner_->driver().GetPageUkmSourceId(),
-                                        std::move(builder));
+  client().GetFormInteractionsUkmLogger().Record(
+      owner_->driver().GetPageUkmSourceId(), std::move(builder));
 
   if (trigger_source != AutofillTriggerSource::kFastCheckout) {
     ++form_interaction_counts_.autofill_fills;
@@ -653,7 +658,7 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
 
 void CreditCardFormEventLogger::LogUkmInteractedWithForm(
     FormSignature form_signature) {
-  form_interactions_ukm_logger_->LogInteractedWithForm(
+  client().GetFormInteractionsUkmLogger().LogInteractedWithForm(
       driver().GetPageUkmSourceId(),
       /*is_for_credit_card=*/true, local_record_type_count_,
       server_record_type_count_, form_signature);
@@ -718,8 +723,10 @@ FormEvent CreditCardFormEventLogger::GetCardNumberStatusFormEvent(
   } else if (!PassesLuhnCheck(number)) {
     form_event =
         FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_FAIL_LUHN_CHECK_CARD;
-  } else if (personal_data_manager_->payments_data_manager().IsKnownCard(
-                 credit_card)) {
+  } else if (client()
+                 .GetPersonalDataManager()
+                 .payments_data_manager()
+                 .IsKnownCard(credit_card)) {
     form_event = FORM_EVENT_SUBMIT_WITHOUT_SELECTING_SUGGESTIONS_KNOWN_CARD;
   }
 

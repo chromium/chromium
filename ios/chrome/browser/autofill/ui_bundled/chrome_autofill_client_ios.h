@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/autofill_client.h"
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #import "components/autofill/core/browser/password_form_classification.h"
 #import "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -123,6 +124,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   bool IsContextSecure() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   LogManager* GetLogManager() const override;
+  autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
+      override;
   const AutofillAblationStudy& GetAblationStudy() const override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
   bool ShouldFormatForLargeKeyboardAccessory() const override;
@@ -164,6 +167,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   scoped_refptr<AutofillWebDataService> autofill_web_data_service_;
   raw_ptr<infobars::InfoBarManager> infobar_manager_;
   std::unique_ptr<LogManager> log_manager_;
+  autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
+      this};
   const AutofillAblationStudy ablation_study_;
 
   // Order matters for this initialization. This initialization must happen

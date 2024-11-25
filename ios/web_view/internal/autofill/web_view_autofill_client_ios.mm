@@ -295,6 +295,11 @@ LogManager* WebViewAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
 }
 
+autofill_metrics::FormInteractionsUkmLogger&
+WebViewAutofillClientIOS::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
+}
+
 void WebViewAutofillClientIOS::set_bridge(
     id<CWVAutofillClientIOSBridge> bridge) {
   bridge_ = bridge;

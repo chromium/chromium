@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
@@ -104,6 +105,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
                             bool is_refill) override;
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
+  autofill_metrics::FormInteractionsUkmLogger& GetFormInteractionsUkmLogger()
+      override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
 
   LogManager* GetLogManager() const override;
@@ -122,6 +125,8 @@ class WebViewAutofillClientIOS : public AutofillClient {
   StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;
   std::unique_ptr<LogManager> log_manager_;
+  autofill_metrics::FormInteractionsUkmLogger form_interactions_ukm_logger_{
+      this};
 
   // Order matters for this initialization. This initialization must happen
   // after all of the members passed into the constructor of

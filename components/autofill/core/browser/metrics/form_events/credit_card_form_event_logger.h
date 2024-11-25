@@ -26,8 +26,6 @@ enum class UnmaskAuthFlowType;
 
 namespace autofill_metrics {
 
-class FormInteractionsUkmLogger;
-
 class CreditCardFormEventLogger : public FormEventLoggerBase {
  public:
   enum class UnmaskAuthFlowEvent {
@@ -40,10 +38,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     kMaxValue = kFormSubmitted,
   };
 
-  CreditCardFormEventLogger(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      PersonalDataManager* personal_data_manager,
-      BrowserAutofillManager* owner);
+  explicit CreditCardFormEventLogger(BrowserAutofillManager* owner);
 
   ~CreditCardFormEventLogger() override;
 

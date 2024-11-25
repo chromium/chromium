@@ -19,8 +19,6 @@
 
 namespace autofill::autofill_metrics {
 
-class FormInteractionsUkmLogger;
-
 // To measure the added value of kAccount profiles, the filling readiness and
 // assistance metrics are split by profile category.
 // Even for assistance, the `kMixed` case is possible, since the metric is
@@ -36,9 +34,7 @@ enum class CategoryResolvedKeyMetricBucket {
 
 class AddressFormEventLogger : public FormEventLoggerBase {
  public:
-  AddressFormEventLogger(
-      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      BrowserAutofillManager* owner);
+  explicit AddressFormEventLogger(BrowserAutofillManager* owner);
 
   ~AddressFormEventLogger() override;
 

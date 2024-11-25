@@ -216,7 +216,8 @@ void VotesUploader::UploadVotesAndLogQuality(
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),
         interaction_time, submission_time,
-        owner_->form_interactions_ukm_logger(), source_id, observed_submission);
+        owner_->client().GetFormInteractionsUkmLogger(), source_id,
+        observed_submission);
     if (observed_submission) {
       // Ensure that callbacks for blur votes get sent as well here because
       // we are not sure whether a full navigation with a Reset() call follows.

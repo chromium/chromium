@@ -1828,8 +1828,7 @@ TEST_F(FieldLogUkmMetricTest,
       TypingFieldLogEvent{.has_value_after_typing = OptionalBoolean::kTrue});
   // No typing on field 5.
 
-  FormInteractionsUkmLogger logger(autofill_client_.get(),
-                                   &test_ukm_recorder());
+  FormInteractionsUkmLogger logger(autofill_client_.get());
   logger.LogAutofillFormWithExperimentalFieldsCountAtFormRemove(
       autofill_driver_->GetPageUkmSourceId(), form_structure);
 

@@ -770,6 +770,11 @@ LogManager* ChromeAutofillClient::GetLogManager() const {
   return log_manager_.get();
 }
 
+autofill_metrics::FormInteractionsUkmLogger&
+ChromeAutofillClient::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
+}
+
 const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
   return ablation_study_;
 }

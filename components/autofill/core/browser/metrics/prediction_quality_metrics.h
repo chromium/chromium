@@ -170,7 +170,7 @@ enum RationalizationQualityMetric {
 };
 
 void LogHeuristicPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
@@ -180,21 +180,21 @@ void LogHeuristicPredictionQualityPerLabelSourceMetric(
     const AutofillField& field);
 
 void LogMlPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type);
 
 void LogServerPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type);
 
 void LogOverallPredictionQualityMetrics(
-    autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    FormInteractionsUkmLogger& form_interactions_ukm_logger,
     ukm::SourceId source_id,
     const FormStructure& form,
     const AutofillField& field,
