@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/page_info/site_side_panel_throttle.h"
+#include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -28,7 +28,7 @@ class WebViewSidePanelView final
     : public views::FlexLayoutView,
       public content::WebContentsObserver,
       public content::WebContentsDelegate,
-      public SiteSidePanelWebContentsUserData::Delegate {
+      public WebViewSidePanelWebContentsUserData::Delegate {
  public:
   explicit WebViewSidePanelView(
       content::WebContents* parent_web_contents,
@@ -51,7 +51,7 @@ class WebViewSidePanelView final
   // Shows / hides the page to avoid showing loading artifacts.
   void SetContentVisible(bool visible);
 
-  // SiteWebContentsUserData::Delegate
+  // WebViewSidePanelWebContentsUserData::Delegate
   void OpenUrlInBrowser(const content::OpenURLParams& params) override;
   bool IsNavigationAllowed(const GURL& new_url, const GURL& old_url) override;
 

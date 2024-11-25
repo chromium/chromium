@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/page_info/site_side_panel_throttle.h"
+#include "chrome/browser/page_info/web_view_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -75,8 +75,8 @@ WebViewSidePanelView::WebViewSidePanelView(
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
   web_contents->SetUserData(
-      kSiteSidePanelWebContentsUserDataKey,
-      std::make_unique<SiteSidePanelWebContentsUserData>(AsWeakPtr()));
+      kWebViewSidePanelWebContentsUserDataKey,
+      std::make_unique<WebViewSidePanelWebContentsUserData>(AsWeakPtr()));
   Observe(web_contents);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kWebView);
@@ -86,7 +86,7 @@ WebViewSidePanelView::WebViewSidePanelView(
 
 void WebViewSidePanelView::LoadProgressChanged(double progress) {
   // Ignore the initial load progress since the navigation might be intercepted
-  // by SiteSidePanelThrottle.
+  // by WebViewSidePanelThrottle.
   if (progress == blink::kInitialLoadProgress) {
     return;
   }
@@ -182,7 +182,7 @@ void WebViewSidePanelView::OpenUrlInBrowser(
 }
 
 bool WebViewSidePanelView::IsNavigationAllowed(const GURL& new_url,
-                                                     const GURL& old_url) {
+                                               const GURL& old_url) {
   // Only allow the initial navigation of the SidePanel to stay in the
   // SidePanel. Other navigations will be moved to the main browser.
   return new_url == last_url_;
