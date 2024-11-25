@@ -26,15 +26,16 @@ Response TargetHandler::Disable() {
   return Response::Success();
 }
 
-Response TargetHandler::CreateTarget(const std::string& url,
-                                     Maybe<int> width,
-                                     Maybe<int> height,
-                                     Maybe<std::string> context_id,
-                                     Maybe<bool> enable_begin_frame_control,
-                                     Maybe<bool> new_window,
-                                     Maybe<bool> background,
-                                     Maybe<bool> for_tab,
-                                     std::string* out_target_id) {
+Response TargetHandler::CreateTarget(
+    const std::string& url,
+    std::optional<int> width,
+    std::optional<int> height,
+    std::optional<std::string> context_id,
+    std::optional<bool> enable_begin_frame_control,
+    std::optional<bool> new_window,
+    std::optional<bool> background,
+    std::optional<bool> for_tab,
+    std::string* out_target_id) {
 #if BUILDFLAG(IS_MAC)
   if (enable_begin_frame_control.value_or(false)) {
     return Response::ServerError(
