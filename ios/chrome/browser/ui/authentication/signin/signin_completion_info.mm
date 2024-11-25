@@ -7,18 +7,13 @@
 @implementation SigninCompletionInfo
 
 + (instancetype)signinCompletionInfoWithIdentity:(id<SystemIdentity>)identity {
-  return [[SigninCompletionInfo alloc]
-            initWithIdentity:identity
-      signinCompletionAction:SigninCompletionActionNone];
+  return [[SigninCompletionInfo alloc] initWithIdentity:identity];
 }
 
-- (instancetype)initWithIdentity:(id<SystemIdentity>)identity
-          signinCompletionAction:
-              (SigninCompletionAction)signinCompletionAction {
+- (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
   self = [super init];
   if (self) {
     _identity = identity;
-    _signinCompletionAction = signinCompletionAction;
   }
   return self;
 }

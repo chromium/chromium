@@ -174,8 +174,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, PresentScreens) {
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_info.identity, nil);
-  EXPECT_EQ(signin_completion_info.signinCompletionAction,
-            SigninCompletionActionNone);
   [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
@@ -203,8 +201,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, StopWillInterrupt) {
 
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_info.identity, nil);
-  EXPECT_EQ(signin_completion_info.signinCompletionAction,
-            SigninCompletionActionNone);
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
 
@@ -232,8 +228,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, CanceledByUser) {
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultCanceledByUser);
   EXPECT_EQ(signin_completion_info.identity, nil);
-  EXPECT_EQ(signin_completion_info.signinCompletionAction,
-            SigninCompletionActionNone);
   [coordinator_ stop];
   ExpectNoUpgradePromoHistogram(&histogram_tester);
 }
@@ -268,8 +262,6 @@ TEST_F(TwoScreensSigninCoordinatorTest, SwipeToDismiss) {
       base::Seconds(1), true, completion_condition));
   EXPECT_EQ(signin_result, SigninCoordinatorResultInterrupted);
   EXPECT_EQ(signin_completion_info.identity, nil);
-  EXPECT_EQ(signin_completion_info.signinCompletionAction,
-            SigninCompletionActionNone);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_TwoScreens_SwipeDismiss"));
 
   [coordinator_ stop];

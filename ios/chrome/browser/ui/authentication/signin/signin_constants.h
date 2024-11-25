@@ -77,15 +77,6 @@ extern NSString* const kTangibleSyncViewAccessibilityIdentifier;
 // consistency account chooser.
 extern NSString* const kConsistencyAccountChooserAddAccountIdentifier;
 
-// Action that is required to do to complete the sign-in, or instead of sign-in.
-// This action is in charge of the SigninCoordinator's owner.
-typedef NS_ENUM(NSUInteger, SigninCompletionAction) {
-  // No action needed.
-  SigninCompletionActionNone,
-  // The user tapped the manager, learn more, link and sign-in was cancelled.
-  SigninCompletionActionShowManagedLearnMore,
-};
-
 // Intent for TrustedVaultReauthenticationCoordinator to display either
 // the reauthentication or degraded recoverability dialog.
 typedef NS_ENUM(NSUInteger, SigninTrustedVaultDialogIntent) {

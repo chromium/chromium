@@ -19,17 +19,11 @@
 
 // Designated initializer.
 // `identity` is the identity chosen by the user to sign-in.
-// `signinCompletionAction` is the action required to complete the sign-in.
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity
-          signinCompletionAction:(SigninCompletionAction)signinCompletionAction
     NS_DESIGNATED_INITIALIZER;
 
 // Identity used by the user to sign-in.
 @property(nonatomic, strong, readonly) id<SystemIdentity> identity;
-// Action to take to finish the sign-in. This action is in charged of the
-// SigninCoordinator's owner.
-@property(nonatomic, assign, readonly)
-    SigninCompletionAction signinCompletionAction;
 
 @end
 
