@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 
@@ -19,7 +20,9 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
       kMinValue = 0,
       kConsentNotAccepted = kMinValue,  // User consent not given
       kDisabledInSettings,              // Settings toggle is off
-      kMaxValue = kDisabledInSettings,
+      kFeatureFlagDisabled,             // The feature flag disabled.
+      kFeatureManagementCheckFailed,  // FeatureManagement flag was not enabled.
+      kMaxValue = kFeatureManagementCheckFailed,
     };
 
 // EnumSet containing FeatureAccessFailures.
@@ -40,6 +43,14 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
   // if its value is true in the given prefs, and returns kConsentNotAccepted if
   // not.
   std::string_view consent_accepted_pref;
+  // The main feature flag that is used to enable/disable the feature itself.
+  // The FeatureAccessChecker::Check() verifies if its value is true and returns
+  // kFeatureFlagDisabled if not.
+  raw_ref<const base::Feature> feature_flag;
+  // This is for the feature flag that is related to the ChromeOS feature
+  // management system. The FeatureAccessChecker::Check() verifies if its value
+  // is true and returns kFeatureManagementCheckFailed if not.
+  raw_ref<const base::Feature> feature_management_flag;
 };
 
 // Creates a class to check different dependencies for specialized features.

@@ -20,9 +20,18 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() {
   if (!prefs_->GetBoolean(config_.settings_toggle_pref)) {
     failures.Put(kDisabledInSettings);
   }
+
   if (!prefs_->GetBoolean(config_.consent_accepted_pref)) {
     failures.Put(kConsentNotAccepted);
   };
+
+  if (!base::FeatureList::IsEnabled(*config_.feature_flag)) {
+    failures.Put(kFeatureFlagDisabled);
+  }
+
+  if (!base::FeatureList::IsEnabled(*config_.feature_management_flag)) {
+    failures.Put(kFeatureManagementCheckFailed);
+  }
 
   return failures;
 }
