@@ -212,8 +212,9 @@ def __rewrite_rewrapper(ctx, cmd, use_large = False):
         })
 
         # Some large compiles take longer than the default timeout 2m.
-        rwcfg["exec_timeout"] = "4m"
-        rwcfg["reclient_timeout"] = "4m"
+        # same as clang_exception.star.
+        rwcfg["exec_timeout"] = "10m"
+        rwcfg["reclient_timeout"] = "10m"
     ctx.actions.fix(
         args = args,
         reproxy_config = json.encode(rwcfg),
