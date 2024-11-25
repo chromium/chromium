@@ -122,6 +122,7 @@ public class ChromeCachedFlags {
                         EdgeToEdgeUtils.DISABLE_HUB_E2E,
                         EdgeToEdgeUtils.DISABLE_INCOGNITO_NTP_E2E,
                         EdgeToEdgeUtils.DISABLE_NTP_E2E,
+                        EdgeToEdgeUtils.DISABLE_RECENT_TABS_E2E,
                         EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_LIST,
                         EdgeToEdgeUtils.E2E_FIELD_TRIAL_OEM_MIN_VERSIONS,
                         HubFieldTrial.ALTERNATIVE_FAB_COLOR,
