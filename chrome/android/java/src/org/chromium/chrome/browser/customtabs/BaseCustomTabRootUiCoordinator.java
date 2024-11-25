@@ -319,6 +319,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         Profile profile = mProfileSupplier.get();
         if (profile == null) return null;
+
+        // Exclude incognito and ephemeral sessions.
+        if (profile.isOffTheRecord()) {
+            MismatchNotificationController.recordMismatchNoticeSuppressedHistogram(
+                    MismatchNotificationController.SuppressedReason.CCT_IS_OFF_THE_RECORD);
+            return null;
+        }
         return new MismatchNotificationChecker(
                 profile,
                 IdentityServicesProvider.get().getIdentityManager(profile),

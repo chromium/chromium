@@ -1009,6 +1009,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="The user has dismissed the notice multiple times."/>
   <int value="3" label="The user has recently seen the mismatch notice"/>
   <int value="4" label="The user recently went through the FRE"/>
+  <int value="5" label="The displayed CCT is off-the-record"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java:SuppressedReason) -->

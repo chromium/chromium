@@ -54,6 +54,7 @@ public class MismatchNotificationController
         SuppressedReason.NOTICE_DISMISSED_MULTIPLE_TIMES,
         SuppressedReason.NOTICE_DISPLAYED_RECENTLY,
         SuppressedReason.FRE_COMPLETED_RECENTLY,
+        SuppressedReason.CCT_IS_OFF_THE_RECORD,
         SuppressedReason.MAX
     })
     public @interface SuppressedReason {
@@ -62,7 +63,8 @@ public class MismatchNotificationController
         int NOTICE_DISMISSED_MULTIPLE_TIMES = 2;
         int NOTICE_DISPLAYED_RECENTLY = 3;
         int FRE_COMPLETED_RECENTLY = 4;
-        int MAX = 5;
+        int CCT_IS_OFF_THE_RECORD = 5;
+        int MAX = 6;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SuppressedReason)
