@@ -60,8 +60,9 @@ uint32_t ComputeTextureTargetForSharedImage(
       SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
       SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
-  bool uses_native_buffer = GMBIsNative(client_gmb_type) ||
-                            (metadata.usage & usages_requiring_native_buffer);
+  bool uses_native_buffer =
+      GMBIsNative(client_gmb_type) ||
+      metadata.usage.HasAny(usages_requiring_native_buffer);
 
   return uses_native_buffer
              ? sii->GetCapabilities().texture_target_for_io_surfaces

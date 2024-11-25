@@ -1153,7 +1153,7 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 
 #if BUILDFLAG(IS_MAC)
-  if ((shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
+  if (shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT) &&
       is_accelerated && adjusted_info.colorType() == kRGBA_8888_SkColorType) {
     // GPU-accelerated scannout usage on Mac uses IOSurface.  Must switch from
     // RGBA_8888 to BGRA_8888 in that case.

@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -61,14 +62,14 @@ namespace {
 // `usage`.
 void EnforceSharedImageUsage(const SharedImageBacking& backing,
                              SharedImageUsageSet usage) {
-  if (!(backing.usage() & usage)) {
+  if (!backing.usage().HasAny(usage)) {
     SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "debug_label",
                               backing.debug_label());
     SCOPED_CRASH_KEY_STRING32("SharedImageUsage", "name", backing.GetName());
     SCOPED_CRASH_KEY_NUMBER("SharedImageUsage", "required_usage",
-                            static_cast<int>(usage));
+                            static_cast<uint32_t>(usage));
     SCOPED_CRASH_KEY_NUMBER("ShareDImageUsage", "actual_usage",
-                            backing.usage());
+                            static_cast<uint32_t>(backing.usage()));
     base::debug::DumpWithoutCrashing();
   }
 }

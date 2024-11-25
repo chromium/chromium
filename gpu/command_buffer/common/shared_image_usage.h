@@ -175,6 +175,8 @@ class GPU_EXPORT SharedImageUsageSet {
   inline constexpr operator uint32_t() const { return set_storage_; }
   // NOLINTEND(google-explicit-constructor)
 
+  std::string ToString() const;
+
  private:
   friend inline constexpr bool operator==(gpu::SharedImageUsageSet set_a,
                                           gpu::SharedImageUsageSet set_b);

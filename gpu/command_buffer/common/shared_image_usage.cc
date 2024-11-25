@@ -75,4 +75,8 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
   return label;
 }
 
+std::string SharedImageUsageSet::ToString() const {
+  return CreateLabelForSharedImageUsage(*this);
+}
+
 }  // namespace gpu
