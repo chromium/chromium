@@ -25,8 +25,8 @@ namespace {
 // Top margin for the managed icon in the enteprised image view
 constexpr CGFloat kTopMarginForManagedIcon = 16.;
 
-// Enterprise icon in the bottom view.
-NSString* const kEnterpriseIconName = @"enterprise_icon";
+// Point size of enterprise icon in the bottom view.
+constexpr CGFloat kEnterpriseIconPointSize = 13;
 
 }  // namespace
 
@@ -145,7 +145,9 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
         self.signinStatus == SigninScreenConsumerSigninStatusDisabled
             ? self.specificContentView.topAnchor
             : self.identityControl.bottomAnchor;
-    UIImage* image = [UIImage imageNamed:kEnterpriseIconName];
+    UIImage* image = SymbolWithPalette(
+        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        @[ [UIColor colorNamed:kStaticGrey600Color] ]);
     UIImageView* enterpriseImageView =
         [[UIImageView alloc] initWithImage:image];
     enterpriseImageView.translatesAutoresizingMaskIntoConstraints = NO;
