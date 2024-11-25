@@ -166,7 +166,7 @@ void PopulateResourceRequestBody(const EncodedFormData& src,
   for (const auto& element : src.Elements()) {
     switch (element.type_) {
       case FormDataElement::kData:
-        dest->AppendBytes(element.data_.data(), element.data_.size());
+        dest->AppendCopyOfBytes(base::as_byte_span(element.data_));
         break;
       case FormDataElement::kEncodedFile:
         if (element.file_length_ == -1) {
