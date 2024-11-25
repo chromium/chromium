@@ -365,6 +365,12 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   // double-countintg.
   bool HasDetailedMemoryDumpProvider() const override { return true; }
 
+  // Signals that an external write has completed, passing the token that should
+  // be waited on to ensure that the service-side operations of the external
+  // write have completed. Ensures that the next read of this resource (whether
+  // via raster or the compositor) waits on this token.
+  void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
+
  private:
   // These members are either only accessed on the owning thread, or are only
   // updated on the owning thread and then are read on a different thread.

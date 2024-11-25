@@ -240,9 +240,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
     return nullptr;
   }
 
-  // Signals that an external write has completed, passing the token that this
-  // instance should wait on for the service-side operations of the external
-  // write to complete.
+  // Signals that an external write has completed, passing the token that should
+  // be waited on to ensure that the service-side operations of the external
+  // write have completed. Ensures that the next read of this resource (whether
+  // via raster or the compositor) waits on this token.
   virtual void EndExternalWrite(
       const gpu::SyncToken& external_write_sync_token) {
     NOTREACHED();
