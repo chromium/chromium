@@ -236,6 +236,7 @@ export class ProductSpecificationsElement extends PolymerElement {
   private id_: Uuid|null = null;
   private listenerIds_: number[] = [];
   private minLoadingAnimationMs_: number = 500;
+  private pendingSetUpdate_: (() => void)|null = null;
   private productSpecificationsFeatureState_: ProductSpecificationsFeatureState;
   private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
       ProductSpecificationsBrowserProxyImpl.getInstance();
@@ -265,8 +266,16 @@ export class ProductSpecificationsElement extends PolymerElement {
       const {state} =
           await this.shoppingApi_.getProductSpecificationsFeatureState();
       if (!state || areStatesEqual(previousState, state)) {
+        if (this.pendingSetUpdate_) {
+          this.pendingSetUpdate_();
+          this.pendingSetUpdate_ = null;
+        }
         return;
       }
+
+      // If there is a set update, the new set will be fetched when the table
+      // is reloaded.
+      this.pendingSetUpdate_ = null;
 
       // States have changed, so we need to reload the table.
       // Update the featureState after loadTable_(), so that the loading
@@ -706,6 +715,18 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private onSetUpdated_(set: ProductSpecificationsSet) {
+    // If the page does not have focus, schedule the update for later in case a
+    // newer update is received before the tab is focused. This prevents all
+    // updates from triggering at the same time, which may cause a flicker.
+    if (!document.hasFocus()) {
+      this.pendingSetUpdate_ = this.updateSet_.bind(this, set);
+      return;
+    }
+
+    this.updateSet_(set);
+  }
+
+  private updateSet_(set: ProductSpecificationsSet) {
     if (set.uuid.value !== this.id_?.value) {
       return;
     }
