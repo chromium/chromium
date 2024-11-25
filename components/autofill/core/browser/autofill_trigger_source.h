@@ -48,7 +48,9 @@ enum class AutofillTriggerSource {
   // unclassified form fields.
   kManualFallback = 9,
   // Autofill was triggered with prediction improvements.
-  kPredictionImprovements = 10
+  kPredictionImprovements = 10,
+  // Autofill was triggered with devtools trigger command.
+  kDevtools = 11
 };
 
 }  // namespace autofill
