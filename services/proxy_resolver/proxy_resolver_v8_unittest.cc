@@ -559,5 +559,19 @@ TEST_F(ProxyResolverV8Test, Terminate) {
   EXPECT_EQ("[kittens:88]", proxy_info.proxy_chain().ToDebugString());
 }
 
+TEST_F(ProxyResolverV8Test, NoWebAssembly) {
+  ASSERT_THAT(CreateResolver("no_webassembly.js"), IsOk());
+
+  net::ProxyInfo proxy_info;
+  int result = resolver().GetProxyForURL(GURL("http://www.google.com"),
+                                         &proxy_info, bindings());
+
+  EXPECT_THAT(result, IsOk());
+  EXPECT_TRUE(proxy_info.is_direct());
+
+  EXPECT_EQ(0U, bindings()->alerts.size());
+  EXPECT_EQ(0U, bindings()->errors.size());
+}
+
 }  // namespace
 }  // namespace proxy_resolver
