@@ -9,7 +9,6 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
-import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
 import androidx.annotation.NonNull;
@@ -73,30 +72,21 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
 
     @Override
     public void prefetchUrl(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    resultCallback) {
+            String url, /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL);
-        mProfileImpl.prefetchUrl(
-                url,
-                null,
-                value ->
-                        resultCallback.onReceiveValue(
-                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibPrefetchOperationResult(value))));
+        mProfileImpl.prefetchUrl(url, null, value -> {});
     }
 
     @Override
     public void prefetchUrl(
             String url,
-            /* SpeculativeLoadingParametersBoundaryInterface */ InvocationHandler
-                    callbackInvocation,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    resultCallback) {
+            /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParameters,
+            /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.PREFETCH_URL_WITH_PARAMS);
         SpeculativeLoadingParametersBoundaryInterface speculativeLoadingParams =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                        SpeculativeLoadingParametersBoundaryInterface.class, callbackInvocation);
+                        SpeculativeLoadingParametersBoundaryInterface.class,
+                        speculativeLoadingParameters);
 
         NoVarySearchDataBoundaryInterface noVarySearchData =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
@@ -109,10 +99,7 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
                         speculativeLoadingParams.getAdditionalHeaders(),
                         mapNoVarySearchData(noVarySearchData),
                         speculativeLoadingParams.isJavaScriptEnabled()),
-                value ->
-                        resultCallback.onReceiveValue(
-                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibPrefetchOperationResult(value))));
+                value -> {});
     }
 
     private NoVarySearchData mapNoVarySearchData(
@@ -127,29 +114,15 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
 
     @Override
     public void cancelPrefetch(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    resultCallback) {
+            String url, /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.CANCEL_PREFETCH);
-        mProfileImpl.cancelPrefetch(
-                url,
-                value ->
-                        resultCallback.onReceiveValue(
-                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibPrefetchOperationResult(value))));
+        mProfileImpl.cancelPrefetch(url, value -> {});
     }
 
     @Override
     public void clearPrefetch(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    resultCallback) {
+            String url, /* PrefetchOperationCallback */ InvocationHandler callback) {
         recordApiCall(ApiCall.CLEAR_PREFETCH);
-        mProfileImpl.clearPrefetch(
-                url,
-                value ->
-                        resultCallback.onReceiveValue(
-                                BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                                        new SupportLibPrefetchOperationResult(value))));
+        mProfileImpl.clearPrefetch(url, value -> {});
     }
 }

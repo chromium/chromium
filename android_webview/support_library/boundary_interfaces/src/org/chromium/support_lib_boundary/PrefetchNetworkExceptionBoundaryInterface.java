@@ -4,8 +4,8 @@
 
 package org.chromium.support_lib_boundary;
 
-public interface PrefetchOperationResultBoundaryInterface {
+public interface PrefetchNetworkExceptionBoundaryInterface
+        extends PrefetchExceptionBoundaryInterface {
 
-    @PrefetchStatusCodeBoundaryInterface
-    int getStatusCode();
+    int getHttpResponseStatusCode();
 }

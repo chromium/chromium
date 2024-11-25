@@ -7,7 +7,6 @@ package org.chromium.support_lib_boundary;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
-import android.webkit.ValueCallback;
 import android.webkit.WebStorage;
 
 import java.lang.reflect.InvocationHandler;
@@ -24,24 +23,14 @@ public interface ProfileBoundaryInterface {
 
     ServiceWorkerController getServiceWorkerController();
 
-    void prefetchUrl(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+    void prefetchUrl(String url, /* PrefetchOperationCallback */ InvocationHandler callback);
 
     void prefetchUrl(
             String url,
-            /* SpeculativeLoadingParametersBoundaryInterface */ InvocationHandler prefetchParams,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+            /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParams,
+            /* PrefetchOperationCallback */ InvocationHandler callback);
 
-    void cancelPrefetch(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+    void cancelPrefetch(String url, /* PrefetchOperationCallback */ InvocationHandler callback);
 
-    void clearPrefetch(
-            String url,
-            ValueCallback</* PrefetchOperationResultBoundaryInterface */ InvocationHandler>
-                    callback);
+    void clearPrefetch(String url, /* PrefetchOperationCallback */ InvocationHandler callback);
 }
