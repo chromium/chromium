@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_HANDLER_H_
 
+#include <memory>
+
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace ash::multidevice_setup {
@@ -25,6 +30,13 @@ class MultideviceSetupHandler : public content::WebUIMessageHandler {
 
   void HandleGetProfileInfo(const base::Value::List& args);
   void HandleOpenMultiDeviceSettings(const base::Value::List& args);
+
+  void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
+                                     std::optional<AuthenticationError> error);
+
+  AuthFactorEditor auth_factor_editor_;
+  // Whether the user has only pin factor and should be authenticated by pin.
+  bool authenticate_by_pin_ = false;
 };
 
 }  // namespace ash::multidevice_setup

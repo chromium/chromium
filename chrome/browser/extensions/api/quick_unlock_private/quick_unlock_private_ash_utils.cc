@@ -4,9 +4,11 @@
 
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 
+#include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/fingerprint_storage.h"
@@ -21,6 +23,7 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,6 +33,16 @@ namespace extensions {
 using AuthToken = ash::quick_unlock::AuthToken;
 using TokenInfo = api::quick_unlock_private::TokenInfo;
 using QuickUnlockStorage = ash::quick_unlock::QuickUnlockStorage;
+
+// Read the salt from local state.
+std::string GetUserSalt(const AccountId& account_id) {
+  user_manager::KnownUser known_user{g_browser_process->local_state()};
+  if (const std::string* salt = known_user.FindStringPath(
+          account_id, ash::prefs::kQuickUnlockPinSalt)) {
+    return *salt;
+  }
+  return {};
+}
 
 QuickUnlockPrivateGetAuthTokenHelper::QuickUnlockPrivateGetAuthTokenHelper(
     Profile* profile,
@@ -81,21 +94,34 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     return;
   }
 
+  auto on_authenticated =
+      base::BindOnce(&QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+
   const auto* password_factor =
       user_context->GetAuthFactorsData().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
   if (!password_factor) {
-    LOG(ERROR) << "Could not find password key";
+    const auto& auth_factors = user_context->GetAuthFactorsData();
+
+    auto* pin_factor = auth_factors.FindPinFactor();
+    if (pin_factor) {
+      if (!pin_factor->GetPinStatus().IsLockedFactor()) {
+        const std::string salt = GetUserSalt(user_context->GetAccountId());
+        auth_performer_.AuthenticateWithPin(password_, salt,
+                                            std::move(user_context),
+                                            std::move(on_authenticated));
+        return;
+      }
+    }
+
+    LOG(ERROR) << "Could not find password or PIN";
     std::move(callback).Run(
         std::nullopt, ash::AuthenticationError(
                           cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
                               user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND)));
     return;
   }
-
-  auto on_authenticated =
-      base::BindOnce(&QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated,
-                     weak_factory_.GetWeakPtr(), std::move(callback));
 
   auth_performer_.AuthenticateWithPassword(
       *(password_factor->ref().label()), std::move(password_),
@@ -108,7 +134,7 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated(
     std::optional<ash::AuthenticationError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (error.has_value()) {
-    LOG(ERROR) << "Failed to authenticate with password, code "
+    LOG(ERROR) << "Failed to authenticate with password or PIN, code "
                << error->get_cryptohome_error();
     std::move(callback).Run(std::nullopt, *error);
     return;
